@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.gui.security;
+package com.haulmont.cuba.gui.app.security.ds;
 
 import com.google.common.base.Predicate;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -12,8 +12,8 @@ import com.haulmont.cuba.gui.app.security.role.edit.PermissionValue;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
-import com.haulmont.cuba.gui.security.entity.OperationPermissionTarget;
-import com.haulmont.cuba.gui.security.entity.PermissionVariant;
+import com.haulmont.cuba.gui.app.security.entity.OperationPermissionTarget;
+import com.haulmont.cuba.gui.app.security.entity.PermissionVariant;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
 import org.apache.commons.lang.StringUtils;

@@ -16,15 +16,15 @@
         <collectionDatasource id="propertyPermissionsDs"
                               class="com.haulmont.cuba.security.entity.Permission"
                               view="role.edit"
-                              datasourceClass="com.haulmont.cuba.gui.security.RestorablePermissionDatasource">
+                              datasourceClass="com.haulmont.cuba.gui.app.security.ds.RestorablePermissionDatasource">
             <query>select p from sec$Permission p where p.role.id = :ds$roleDs and p.type = 30</query>
         </collectionDatasource>
 
         <collectionDatasource id="attributeTargetsDs"
-                              class="com.haulmont.cuba.gui.security.entity.MultiplePermissionTarget"
+                              class="com.haulmont.cuba.gui.app.security.entity.MultiplePermissionTarget"
                               allowCommit="false"
                               view="_local"
-                              datasourceClass="com.haulmont.cuba.gui.security.MultiplePermissionTargetsDatasource">
+                              datasourceClass="com.haulmont.cuba.gui.app.security.ds.MultiplePermissionTargetsDatasource">
         </collectionDatasource>
     </dsContext>
 

@@ -10,8 +10,8 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.TextField;
-import com.haulmont.cuba.gui.security.entity.AssignableTarget;
-import com.haulmont.cuba.gui.security.entity.EntityPermissionTarget;
+import com.haulmont.cuba.gui.app.security.entity.AssignableTarget;
+import com.haulmont.cuba.gui.app.security.entity.EntityPermissionTarget;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;

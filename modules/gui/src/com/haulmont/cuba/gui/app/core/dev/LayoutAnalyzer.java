@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.gui.dev;
+package com.haulmont.cuba.gui.app.core.dev;
 
 import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -15,8 +15,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static com.haulmont.cuba.gui.dev.LayoutTip.error;
-import static com.haulmont.cuba.gui.dev.LayoutTip.warn;
+import static com.haulmont.cuba.gui.app.core.dev.LayoutTip.error;
+import static com.haulmont.cuba.gui.app.core.dev.LayoutTip.warn;
 import static com.haulmont.cuba.gui.components.ExpandingLayout.ExpandDirection;
 
 /**

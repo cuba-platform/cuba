@@ -4,7 +4,7 @@
   -->
 
 <window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
-        class="com.haulmont.cuba.gui.dev.LayoutAnalyzerWindow"
+        class="com.haulmont.cuba.gui.app.core.dev.LayoutAnalyzerWindow"
         caption="msg://caption">
     <layout expand="analyzeResultBox" spacing="true">
         <textArea id="analyzeResultBox" width="100%"/>

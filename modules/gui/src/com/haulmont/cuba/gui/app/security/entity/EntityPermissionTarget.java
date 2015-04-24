@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.gui.security.entity;
+package com.haulmont.cuba.gui.app.security.entity;
 
 /**
  * @author krivopustov

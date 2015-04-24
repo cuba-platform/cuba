@@ -8,12 +8,12 @@
 
     <metadata-model root-package="com.haulmont.cuba">
         <class>com.haulmont.cuba.gui.app.core.showinfo.KeyValueEntity</class>
-        <class>com.haulmont.cuba.gui.security.entity.AbstractPermissionTarget</class>
-        <class>com.haulmont.cuba.gui.security.entity.AttributeTarget</class>
-        <class>com.haulmont.cuba.gui.security.entity.BasicPermissionTarget</class>
-        <class>com.haulmont.cuba.gui.security.entity.MultiplePermissionTarget</class>
-        <class>com.haulmont.cuba.gui.security.entity.OperationPermissionTarget</class>
-        <class>com.haulmont.cuba.gui.security.entity.UiPermissionTarget</class>
+        <class>com.haulmont.cuba.gui.app.security.entity.AbstractPermissionTarget</class>
+        <class>com.haulmont.cuba.gui.app.security.entity.AttributeTarget</class>
+        <class>com.haulmont.cuba.gui.app.security.entity.BasicPermissionTarget</class>
+        <class>com.haulmont.cuba.gui.app.security.entity.MultiplePermissionTarget</class>
+        <class>com.haulmont.cuba.gui.app.security.entity.OperationPermissionTarget</class>
+        <class>com.haulmont.cuba.gui.app.security.entity.UiPermissionTarget</class>
 
         <class>com.haulmont.cuba.gui.components.filter.condition.AbstractCondition</class>
         <class>com.haulmont.cuba.gui.components.filter.condition.PropertyCondition</class>

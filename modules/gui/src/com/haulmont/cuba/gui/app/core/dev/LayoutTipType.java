@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.gui.dev;
+package com.haulmont.cuba.gui.app.core.dev;
 
 /**
  * @author artamonov

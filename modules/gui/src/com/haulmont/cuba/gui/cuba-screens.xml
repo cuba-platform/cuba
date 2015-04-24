@@ -143,7 +143,7 @@
             template="/com/haulmont/cuba/gui/app/core/bulk/bulk-edit.xml"/>
 
     <screen id="layoutAnalyzer"
-            template="/com/haulmont/cuba/gui/dev/layout-analyzer.xml"/>
+            template="/com/haulmont/cuba/gui/app/core/dev/layout-analyzer.xml"/>
 
     <screen id="filterEditor"
             template="/com/haulmont/cuba/gui/components/filter/edit/filter-edit.xml"/>

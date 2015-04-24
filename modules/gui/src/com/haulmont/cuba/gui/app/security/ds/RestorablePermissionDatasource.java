@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.gui.security;
+package com.haulmont.cuba.gui.app.security.ds;
 
 import com.google.common.base.Predicate;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;

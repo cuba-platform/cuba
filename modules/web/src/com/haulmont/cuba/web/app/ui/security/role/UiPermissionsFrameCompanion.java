@@ -12,8 +12,8 @@ import com.haulmont.cuba.gui.app.security.role.edit.tabs.UiPermissionsFrame;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.security.entity.UiPermissionTarget;
-import com.haulmont.cuba.gui.security.entity.UiPermissionVariant;
+import com.haulmont.cuba.gui.app.security.entity.UiPermissionTarget;
+import com.haulmont.cuba.gui.app.security.entity.UiPermissionVariant;
 import com.haulmont.cuba.web.gui.components.WebComponentsUtils;
 
 /**

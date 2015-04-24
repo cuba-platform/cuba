@@ -13,8 +13,8 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TreeTable;
-import com.haulmont.cuba.gui.security.entity.BasicPermissionTarget;
-import com.haulmont.cuba.gui.security.entity.PermissionVariant;
+import com.haulmont.cuba.gui.app.security.entity.BasicPermissionTarget;
+import com.haulmont.cuba.gui.app.security.entity.PermissionVariant;
 import com.haulmont.cuba.web.gui.components.WebComponentsUtils;
 
 /**

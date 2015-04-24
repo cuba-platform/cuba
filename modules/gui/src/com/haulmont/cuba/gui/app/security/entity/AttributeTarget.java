@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.gui.security.entity;
+package com.haulmont.cuba.gui.app.security.entity;
 
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.model.MetaClass;
@@ -20,25 +20,21 @@ import java.util.UUID;
  *
  * @author artamonov
  */
-@com.haulmont.chile.core.annotations.MetaClass(name = "sec$AbstractTarget")
+@com.haulmont.chile.core.annotations.MetaClass(name = "sec$AttributeTarget")
 @SystemLevel
-public class AbstractPermissionTarget extends AbstractInstance
+public class AttributeTarget extends AbstractInstance
         implements Entity<String> {
-
-    @MetaProperty(mandatory = true)
-    protected String id;
-
-    @MetaProperty(mandatory = true)
-    protected String caption;
-
-    @MetaProperty(mandatory = true)
-    protected String permissionValue;
 
     private UUID uuid = UuidProvider.createUuid();
 
-    public AbstractPermissionTarget(String id, String caption) {
+    @MetaProperty(mandatory = true)
+    private String id;
+
+    @MetaProperty(mandatory = true)
+    private AttributePermissionVariant permissionVariant = AttributePermissionVariant.NOTSET;
+
+    public AttributeTarget(String id) {
         this.id = id;
-        this.caption = caption;
     }
 
     @Override
@@ -56,16 +52,11 @@ public class AbstractPermissionTarget extends AbstractInstance
         return MetadataProvider.getSession().getClass(getClass());
     }
 
-    public String getCaption() {
-        return caption;
+    public AttributePermissionVariant getPermissionVariant() {
+        return permissionVariant;
     }
 
-    @Override
-    public String toString() {
-        return caption;
-    }
-
-    public String getPermissionValue() {
-        return permissionValue;
+    public void setPermissionVariant(AttributePermissionVariant permissionVariant) {
+        this.permissionVariant = permissionVariant;
     }
 }

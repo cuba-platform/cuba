@@ -7,8 +7,8 @@ package com.haulmont.cuba.gui.app.security.role.edit;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.security.entity.BasicPermissionTarget;
-import com.haulmont.cuba.gui.security.entity.PermissionVariant;
+import com.haulmont.cuba.gui.app.security.entity.BasicPermissionTarget;
+import com.haulmont.cuba.gui.app.security.entity.PermissionVariant;
 
 /**
  * <p>$Id$</p>

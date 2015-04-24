@@ -16,15 +16,15 @@
         <collectionDatasource id="entityPermissionsDs"
                               class="com.haulmont.cuba.security.entity.Permission"
                               view="role.edit"
-                              datasourceClass="com.haulmont.cuba.gui.security.RestorablePermissionDatasource">
+                              datasourceClass="com.haulmont.cuba.gui.app.security.ds.RestorablePermissionDatasource">
             <query>select p from sec$Permission p where p.role.id = :ds$roleDs and p.type = 20</query>
         </collectionDatasource>
 
         <collectionDatasource id="entityTargetsDs"
-                              class="com.haulmont.cuba.gui.security.entity.OperationPermissionTarget"
+                              class="com.haulmont.cuba.gui.app.security.entity.OperationPermissionTarget"
                               allowCommit="false"
                               view="_local"
-                              datasourceClass="com.haulmont.cuba.gui.security.EntityPermissionTargetsDatasource"/>
+                              datasourceClass="com.haulmont.cuba.gui.app.security.ds.EntityPermissionTargetsDatasource"/>
     </dsContext>
 
     <layout expand="contentPane">

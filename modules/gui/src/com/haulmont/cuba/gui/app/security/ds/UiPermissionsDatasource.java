@@ -3,13 +3,13 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.gui.security;
+package com.haulmont.cuba.gui.app.security.ds;
 
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.GroupDatasourceImpl;
-import com.haulmont.cuba.gui.security.entity.UiPermissionTarget;
-import com.haulmont.cuba.gui.security.entity.UiPermissionVariant;
+import com.haulmont.cuba.gui.app.security.entity.UiPermissionTarget;
+import com.haulmont.cuba.gui.app.security.entity.UiPermissionVariant;
 import com.haulmont.cuba.security.entity.Permission;
 import org.apache.commons.lang.StringUtils;
 
