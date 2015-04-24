@@ -369,8 +369,6 @@ public class WebFieldGroup
         assignAutoDebugId();
 
         createFields(datasource);
-
-        AppBeans.get(DynamicAttributesGuiTools.class).listenDynamicAttributesChanges(datasource);
     }
 
     protected void createFields(Datasource datasource) {

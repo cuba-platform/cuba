@@ -155,7 +155,8 @@ public abstract class AbstractTableLoader extends ComponentLoader {
 
     protected void addDynamicAttributes(Table component, Datasource ds, List<Table.Column> availableColumns) {
         if (metadataTools.isPersistent(ds.getMetaClass())) {
-            DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.class);
+            DynamicAttributesGuiTools dynamicAttributesGuiTools =
+                    AppBeans.get(DynamicAttributesGuiTools.NAME, DynamicAttributesGuiTools.class);
             Set<CategoryAttribute> attributesToShow =
                     dynamicAttributesGuiTools.getAttributesToShowOnTheScreen(ds.getMetaClass(), context.getFullFrameId(), component.getId());
             if (CollectionUtils.isNotEmpty(attributesToShow)) {
@@ -180,6 +181,8 @@ public abstract class AbstractTableLoader extends ComponentLoader {
                     component.addColumn(column);
                 }
             }
+
+            dynamicAttributesGuiTools.listenDynamicAttributesChanges(ds);
         }
     }
 

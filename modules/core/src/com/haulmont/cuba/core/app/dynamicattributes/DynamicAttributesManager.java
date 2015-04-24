@@ -67,13 +67,17 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
         clusterManager.addListener(ReloadCacheMsg.class, new ClusterListenerAdapter<ReloadCacheMsg>() {
             @Override
             public void receive(ReloadCacheMsg message) {
-                loadCache();
+                doLoadCache(false);
             }
         });
     }
 
     @Override
     public void loadCache() {
+        doLoadCache(true);
+    }
+
+    protected void doLoadCache(boolean sendClusterMessage) {
         lock.writeLock().lock();
         Transaction tx = persistence.createTransaction();
         try {
@@ -107,7 +111,9 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
         } finally {
             lock.writeLock().unlock();
             tx.end();
-            clusterManager.send(new ReloadCacheMsg());
+            if (sendClusterMessage) {
+                clusterManager.send(new ReloadCacheMsg());
+            }
         }
     }
 

@@ -708,8 +708,6 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
         if (!canBeSorted(datasource))
             setSortable(false);
-
-        AppBeans.get(DynamicAttributesGuiTools.class).listenDynamicAttributesChanges(datasource);
     }
 
     protected boolean canBeSorted(CollectionDatasource datasource) {

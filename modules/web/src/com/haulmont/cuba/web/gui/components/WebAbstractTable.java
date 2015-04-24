@@ -845,8 +845,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             setSortable(false);
 
         assignAutoDebugId();
-
-        AppBeans.get(DynamicAttributesGuiTools.class).listenDynamicAttributesChanges(datasource);
     }
 
     protected boolean canBeSorted(CollectionDatasource datasource) {

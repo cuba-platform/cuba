@@ -191,8 +191,6 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         assignAutoDebugId();
 
         createFields();
-
-        AppBeans.get(DynamicAttributesGuiTools.class).listenDynamicAttributesChanges(datasource);
     }
 
     @Override
@@ -763,9 +761,11 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         if (c instanceof DatasourceComponent) {
             DatasourceComponent dsComponent = (DatasourceComponent) c;
             MetaPropertyPath propertyPath = dsComponent.getMetaPropertyPath();
-            MetaClass metaClass = dsComponent.getDatasource().getMetaClass();
-            dsComponent.setEditable(dsComponent.isEditable()
-                    && security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString()));
+            if (propertyPath != null) {
+                MetaClass metaClass = dsComponent.getDatasource().getMetaClass();
+                dsComponent.setEditable(dsComponent.isEditable()
+                        && security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString()));
+            }
         }
     }
 
