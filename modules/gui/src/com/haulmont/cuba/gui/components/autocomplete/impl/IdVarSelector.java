@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.gui.autocomplete.impl;
+package com.haulmont.cuba.gui.components.autocomplete.impl;
 
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.ErrorRec;
@@ -18,9 +18,8 @@ import org.antlr.runtime.tree.TreeVisitorAction;
 import java.util.*;
 
 /**
- * User: Alex Chevelev
- * Date: 15.10.2010
- * Time: 23:10:59
+ * @author chevelev
+ * @version $Id$
  */
 public class IdVarSelector implements TreeVisitorAction {
     private QueryVariableContext root;
@@ -37,6 +36,7 @@ public class IdVarSelector implements TreeVisitorAction {
         return root;
     }
 
+    @Override
     public Object pre(Object t) {
         if (!(t instanceof CommonTree))
             return t;
@@ -61,6 +61,7 @@ public class IdVarSelector implements TreeVisitorAction {
         return t;
     }
 
+    @Override
     public Object post(Object t) {
         if (!(t instanceof CommonTree))
             return t;
@@ -95,9 +96,7 @@ public class IdVarSelector implements TreeVisitorAction {
         return t;
     }
 
-
     public List<ErrorRec> getInvalidNodes() {
         return Collections.unmodifiableList(invalidIdVarNodes);
     }
-
 }

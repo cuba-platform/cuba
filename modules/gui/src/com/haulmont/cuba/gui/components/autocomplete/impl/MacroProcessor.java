@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.gui.autocomplete.impl;
+package com.haulmont.cuba.gui.components.autocomplete.impl;
 
 import com.haulmont.cuba.core.sys.jpql.InferredType;
 
@@ -11,9 +11,8 @@ import java.util.EnumSet;
 import java.util.Set;
 
 /**
- * Author: Alexander Chevelev
- * Date: 24.03.2011
- * Time: 20:50:57
+ * @author chevelev
+ * @version $Id$
  */
 public class MacroProcessor {
     private final static String BETWEEN_REPLACEMENT = " = :d ";

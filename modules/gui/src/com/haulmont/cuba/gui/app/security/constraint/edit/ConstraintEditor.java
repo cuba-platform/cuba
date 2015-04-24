@@ -7,10 +7,10 @@ package com.haulmont.cuba.gui.app.security.constraint.edit;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.gui.autocomplete.AutoCompleteSupport;
-import com.haulmont.cuba.gui.autocomplete.JpqlSuggestionFactory;
-import com.haulmont.cuba.gui.autocomplete.Suggester;
-import com.haulmont.cuba.gui.autocomplete.Suggestion;
+import com.haulmont.cuba.gui.components.autocomplete.AutoCompleteSupport;
+import com.haulmont.cuba.gui.components.autocomplete.JpqlSuggestionFactory;
+import com.haulmont.cuba.gui.components.autocomplete.Suggester;
+import com.haulmont.cuba.gui.components.autocomplete.Suggestion;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.SourceCodeEditor;

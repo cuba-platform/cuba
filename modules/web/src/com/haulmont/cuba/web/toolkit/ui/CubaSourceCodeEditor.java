@@ -5,7 +5,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.gui.autocomplete.AutoCompleteSupport;
+import com.haulmont.cuba.gui.components.autocomplete.AutoCompleteSupport;
 import com.vaadin.server.AbstractErrorMessage;
 import com.vaadin.server.CompositeErrorMessage;
 import com.vaadin.server.ErrorMessage;

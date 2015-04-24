@@ -3,15 +3,15 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.gui.autocomplete;
+package com.haulmont.cuba.gui.components.autocomplete;
 
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.DomainModelBuilder;
-import com.haulmont.cuba.gui.autocomplete.impl.HintProvider;
-import com.haulmont.cuba.gui.autocomplete.impl.HintRequest;
-import com.haulmont.cuba.gui.autocomplete.impl.HintResponse;
-import com.haulmont.cuba.gui.autocomplete.impl.Option;
+import com.haulmont.cuba.gui.components.autocomplete.impl.HintProvider;
+import com.haulmont.cuba.gui.components.autocomplete.impl.HintRequest;
+import com.haulmont.cuba.gui.components.autocomplete.impl.HintResponse;
+import com.haulmont.cuba.gui.components.autocomplete.impl.Option;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -3,14 +3,13 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.gui.autocomplete.impl;
+package com.haulmont.cuba.gui.components.autocomplete.impl;
 
 import java.util.*;
 
 /**
- * User: Alex Chevelev
- * Date: 13.10.2010
- * Time: 20:46:51
+ * @author chevelev
+ * @version $Id$
  */
 public class HintResponse {
     private final List<Option> options;

@@ -6,8 +6,8 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.google.common.base.Strings;
-import com.haulmont.cuba.gui.autocomplete.AutoCompleteSupport;
-import com.haulmont.cuba.gui.autocomplete.Suggester;
+import com.haulmont.cuba.gui.components.autocomplete.AutoCompleteSupport;
+import com.haulmont.cuba.gui.components.autocomplete.Suggester;
 import com.haulmont.cuba.gui.components.SourceCodeEditor;
 import com.haulmont.cuba.web.toolkit.ui.CubaSourceCodeEditor;
 import org.apache.commons.lang.StringUtils;
@@ -148,10 +148,10 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
                 return Collections.emptyList();
             }
 
-            List<com.haulmont.cuba.gui.autocomplete.Suggestion> suggestions =
+            List<com.haulmont.cuba.gui.components.autocomplete.Suggestion> suggestions =
                     suggester.getSuggestions(getAutoCompleteSupport(), text, cursor);
             List<Suggestion> vSuggestions = new ArrayList<>();
-            for (com.haulmont.cuba.gui.autocomplete.Suggestion s : suggestions) {
+            for (com.haulmont.cuba.gui.components.autocomplete.Suggestion s : suggestions) {
                 vSuggestions.add(new Suggestion(s.getDisplayText(), "", s.getValueText()));
             }
 

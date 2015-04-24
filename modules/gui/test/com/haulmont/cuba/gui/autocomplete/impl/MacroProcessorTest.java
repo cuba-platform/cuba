@@ -6,6 +6,8 @@
 package com.haulmont.cuba.gui.autocomplete.impl;
 
 import com.haulmont.cuba.core.sys.jpql.InferredType;
+import com.haulmont.cuba.gui.components.autocomplete.impl.HintRequest;
+import com.haulmont.cuba.gui.components.autocomplete.impl.MacroProcessor;
 import org.junit.Before;
 import org.junit.Test;
 

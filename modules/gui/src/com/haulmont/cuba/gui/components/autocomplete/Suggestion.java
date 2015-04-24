@@ -2,7 +2,7 @@
  * Copyright (c) 2008-2013 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
-package com.haulmont.cuba.gui.autocomplete;
+package com.haulmont.cuba.gui.components.autocomplete;
 
 /**
  * Class for single suggestion for an {@link AutoCompleteSupport} field.
@@ -11,14 +11,17 @@ package com.haulmont.cuba.gui.autocomplete;
  * user selects this suggestion this value will be inserted to text field.</li>
  * <li>Display value that is presented inside the suggestion box. <li>Cursor
  * positions (start and end) for the replacement.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 public class Suggestion {
 
-    String displayText;
-    String valueText;
-    String valueSuffix;
-    int startPosition;
-    int endPosition;
+    protected String displayText;
+    protected String valueText;
+    protected String valueSuffix;
+    protected int startPosition;
+    protected int endPosition;
 
     /**
      * Create new suggestion.
@@ -77,5 +80,4 @@ public class Suggestion {
     public int getEndPosition() {
         return endPosition;
     }
-
 }

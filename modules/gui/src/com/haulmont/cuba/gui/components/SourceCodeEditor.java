@@ -5,8 +5,8 @@
 
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.gui.autocomplete.AutoCompleteSupport;
-import com.haulmont.cuba.gui.autocomplete.Suggester;
+import com.haulmont.cuba.gui.components.autocomplete.AutoCompleteSupport;
+import com.haulmont.cuba.gui.components.autocomplete.Suggester;
 import org.apache.commons.lang.StringUtils;
 
 /**

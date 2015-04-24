@@ -3,12 +3,11 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.gui.autocomplete.impl;
+package com.haulmont.cuba.gui.components.autocomplete.impl;
 
 /**
- * Author: Alexander Chevelev
- * Date: 26.11.2010
- * Time: 3:02:27
+ * @author chevelev
+ * @version $Id$
  */
 public class Option {
     private String value;

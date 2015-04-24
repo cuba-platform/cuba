@@ -10,6 +10,8 @@ import com.haulmont.cuba.core.sys.jpql.InferredType;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
 import com.haulmont.cuba.core.sys.jpql.model.EntityImpl;
+import com.haulmont.cuba.gui.components.autocomplete.impl.HintProvider;
+import com.haulmont.cuba.gui.components.autocomplete.impl.HintResponse;
 import junit.framework.Assert;
 import org.antlr.runtime.RecognitionException;
 import org.junit.Test;
