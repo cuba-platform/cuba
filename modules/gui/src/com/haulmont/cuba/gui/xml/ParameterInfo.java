@@ -6,6 +6,10 @@ package com.haulmont.cuba.gui.xml;
 
 import javax.annotation.Nullable;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class ParameterInfo {
 
     public enum Type {
