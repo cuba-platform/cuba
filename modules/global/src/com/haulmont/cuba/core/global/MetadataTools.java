@@ -240,10 +240,9 @@ public class MetadataTools {
         Objects.requireNonNull(metaClass, "metaClass is null");
         Boolean systemLevel = (Boolean) metaClass.getAnnotations().get(SystemLevel.class.getName());
         if (systemLevel == null) {
-            for (MetaClass aClass : metaClass.getAncestors()) {
-                systemLevel = (Boolean) aClass.getAnnotations().get(SystemLevel.class.getName());
-                if (systemLevel != null)
-                    break;
+            MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
+            if (originalMetaClass != null) {
+                systemLevel = (Boolean) originalMetaClass.getAnnotations().get(SystemLevel.class.getName());
             }
         }
         return systemLevel == null ? false : systemLevel;
