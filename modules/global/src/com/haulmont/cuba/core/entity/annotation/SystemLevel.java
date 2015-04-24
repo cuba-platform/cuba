@@ -21,5 +21,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SystemLevel {
 
+    public String PROPAGATE = "_propagate";
+
     boolean value() default true;
+
+    boolean propagate() default false;
 }

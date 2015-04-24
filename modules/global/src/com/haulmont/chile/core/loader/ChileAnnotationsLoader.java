@@ -283,6 +283,7 @@ public class ChileAnnotationsLoader implements MetaClassLoader {
         SystemLevel systemLevel = annotatedElement.getAnnotation(SystemLevel.class);
         if (systemLevel != null) {
             metaProperty.getAnnotations().put(SystemLevel.class.getName(), systemLevel.value());
+            metaProperty.getAnnotations().put(SystemLevel.class.getName() + SystemLevel.PROPAGATE, systemLevel.propagate());
         }
 
         IgnoreUserTimeZone ignoreUserTimeZone = annotatedElement.getAnnotation(IgnoreUserTimeZone.class);

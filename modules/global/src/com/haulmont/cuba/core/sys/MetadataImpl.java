@@ -325,8 +325,10 @@ public class MetadataImpl implements Metadata {
         // @SystemLevel is not propagated down to the hierarchy
         Class<?> javaClass = metaClass.getJavaClass();
         SystemLevel annotation = javaClass.getAnnotation(SystemLevel.class);
-        if (annotation != null)
+        if (annotation != null) {
             metaClass.getAnnotations().put(SystemLevel.class.getName(), annotation.value());
+            metaClass.getAnnotations().put(SystemLevel.class.getName() + SystemLevel.PROPAGATE, annotation.propagate());
+        }
     }
 
     /**

@@ -18,6 +18,7 @@ import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.entity.Versioned;
 import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.ManagedBean;
@@ -240,9 +241,22 @@ public class MetadataTools {
         Objects.requireNonNull(metaClass, "metaClass is null");
         Boolean systemLevel = (Boolean) metaClass.getAnnotations().get(SystemLevel.class.getName());
         if (systemLevel == null) {
-            MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
-            if (originalMetaClass != null) {
-                systemLevel = (Boolean) originalMetaClass.getAnnotations().get(SystemLevel.class.getName());
+            String propagateKey = SystemLevel.class.getName() + SystemLevel.PROPAGATE;
+
+            for (MetaClass aClass : metaClass.getAncestors()) {
+                Boolean propagate = (Boolean) aClass.getAnnotations().get(propagateKey);
+                if (BooleanUtils.isFalse(propagate)) {
+                    // in case of non propagated SystemLevel, get it from original entity
+                    MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
+                    if (originalMetaClass != null) {
+                        systemLevel = (Boolean) originalMetaClass.getAnnotations().get(SystemLevel.class.getName());
+                    }
+                    break;
+                }
+
+                systemLevel = (Boolean) aClass.getAnnotations().get(SystemLevel.class.getName());
+                if (systemLevel != null)
+                    break;
             }
         }
         return systemLevel == null ? false : systemLevel;
