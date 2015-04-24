@@ -31,6 +31,7 @@ public class DynamicAttributesMetaProperty extends MetadataObjectImpl implements
     private MetaClass metaClass;
     private transient Range range;
     private Class javaClass;
+    private Boolean mandatory;
 
     private AnnotatedElement annotatedElement = new FakeAnnotatedElement();
 
@@ -38,6 +39,7 @@ public class DynamicAttributesMetaProperty extends MetadataObjectImpl implements
         this.javaClass = DynamicAttributesUtils.getAttributeClass(attribute);
         this.metaClass = metaClass;
         this.name = DynamicAttributesUtils.encodeAttributeCode(attribute.getCode());
+        this.mandatory = attribute.getRequired();
         Metadata metadata = AppBeans.get(Metadata.NAME);
         Session metadataSession = metadata.getSession();
         if (SetValueEntity.class.isAssignableFrom(javaClass)) {
@@ -72,7 +74,7 @@ public class DynamicAttributesMetaProperty extends MetadataObjectImpl implements
 
     @Override
     public boolean isMandatory() {
-        return false;
+        return Boolean.TRUE.equals(mandatory);
     }
 
     @Override

@@ -186,6 +186,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                     field.setType(metaPropertyPath.getRangeJavaClass());
                     field.setCaption(attribute.getName());
                     field.setDatasource(ds);
+                    field.setRequired(attribute.getRequired());
 
                     if (fieldGroup.getWidth() > 0) {
                         field.setWidth("100%");
