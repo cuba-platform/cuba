@@ -21,5 +21,8 @@ public class ControllerUtilsTest extends TestCase {
 
         URI externalUrl = new URI("http://ya.ru/app/sample/?param=value");
         assertEquals(ControllerUtils.getLocationWithoutParams(externalUrl), "http://ya.ru/app/sample/");
+
+        URI debugUrl = new URI("http://localhost:8080/app/?debug#!");
+        assertEquals(ControllerUtils.getLocationWithoutParams(debugUrl), "http://localhost:8080/app/");
     }
 }

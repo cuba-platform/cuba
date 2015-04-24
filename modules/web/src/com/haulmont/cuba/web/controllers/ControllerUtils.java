@@ -41,13 +41,12 @@ public final class ControllerUtils {
             StringBuilder baseUrl = new StringBuilder(location.toURL().toExternalForm());
             if (location.getQuery() != null) {
                 baseUrl.delete(baseUrl.indexOf("?" + location.getQuery()), baseUrl.length());
-            }
-            if (location.getFragment() != null) {
+            } else if (location.getFragment() != null) {
                 baseUrl.delete(baseUrl.indexOf("#" + location.getFragment()), baseUrl.length());
             }
             return baseUrl.toString();
         } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to get location without params", e);
         }
     }
 
@@ -106,10 +105,11 @@ public final class ControllerUtils {
                     return null;
                 }
             } catch (Exception e) {
-                log.warn(e);
+                log.warn("Unable to get session from Login Service", e);
                 return null;
             }
         } else {
+            //noinspection UnnecessaryLocalVariable
             UserSession userSession = (UserSession) req.getSession().getAttribute(App.USER_SESSION_ATTR);
             return userSession;
         }
