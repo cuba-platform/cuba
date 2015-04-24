@@ -8,8 +8,7 @@ package com.haulmont.cuba.gui.app.core.entitydiff;
 import com.haulmont.cuba.core.app.EntitySnapshotService;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 
 import java.util.List;
@@ -22,8 +21,8 @@ import java.util.UUID;
  */
 public class EntitySnapshotsDatasource extends CollectionDatasourceImpl<EntitySnapshot, UUID> {
 
-    private BaseEntity entity;
-    private List<EntitySnapshot> snapshots;
+    protected BaseEntity entity;
+    protected List<EntitySnapshot> snapshots;
 
     @Override
     public boolean isModified() {
@@ -43,10 +42,8 @@ public class EntitySnapshotsDatasource extends CollectionDatasourceImpl<EntitySn
         clear();
 
         if (entity != null) {
-            EntitySnapshotService snapshotService = ServiceLocator.lookup(EntitySnapshotService.NAME);
-            snapshots = snapshotService.getSnapshots(
-                    MetadataProvider.getSession().getClass(entity.getClass()),
-                    entity.getUuid());
+            EntitySnapshotService snapshotService = AppBeans.get(EntitySnapshotService.NAME);
+            snapshots = snapshotService.getSnapshots(entity.getMetaClass(), entity.getUuid());
 
             for (EntitySnapshot snapshot : snapshots) {
                 data.put(snapshot.getId(), snapshot);
