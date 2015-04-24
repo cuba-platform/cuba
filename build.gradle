@@ -256,11 +256,14 @@ configure(coreModule) {
     task testsJar(dependsOn: testClasses, type: Jar) {
         from sourceSets.test.output.classesDir
         from sourceSets.test.output.resourcesDir
+        from project.file('test')
         include 'com/haulmont/cuba/core/CubaTestCase*.class'
+        include 'com/haulmont/cuba/core/CubaTestCase*.java'
         include 'com/haulmont/cuba/testsupport/*'
         include '*'
         includeEmptyDirs = false
         classifier = 'tests'
+        duplicatesStrategy= DuplicatesStrategy.EXCLUDE
     }
 
     assembleDbScripts {
@@ -310,6 +313,7 @@ configure(clientModule) {
 
     task testsJar(dependsOn: testClasses, type: Jar) {
         from sourceSets.test.output.classesDir
+        from project.file('test')
         classifier = 'tests'
     }
 
