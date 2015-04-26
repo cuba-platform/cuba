@@ -5,13 +5,13 @@
 
 package com.haulmont.cuba.web.jmx;
 
-import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 /**
  * @author krivenko
  * @version $Id$
  */
+@SuppressWarnings("unused")
 @ManagedResource(description = "Provides information about web-client requests statistics")
 public interface StatisticsCounterMBean {
 

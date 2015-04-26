@@ -22,7 +22,7 @@
         <timer id="valuesTimer" delay="5000" autostart="true" repeating="true" onTimer="onRefresh"/>
     </timers>
 
-    <layout width="100%" height="100%" expand="main">
+    <layout width="100%" height="100%" expand="main" spacing="true">
         <groupBox>
             <grid spacing="true">
                 <columns>
@@ -31,8 +31,8 @@
                 </columns>
                 <rows>
                     <row>
-                        <label value="msg://com.haulmont.cuba.web.app.ui.jmxcontrol/targetJmxNode"/>
-                        <linkButton id="nodeLink" invoke="viewNode"/>
+                        <label value="msg://com.haulmont.cuba.web.app.ui.jmxcontrol/targetJmxNode" align="MIDDLE_CENTER"/>
+                        <linkButton id="nodeLink" invoke="viewNode" align="MIDDLE_CENTER"/>
                     </row>
                 </rows>
             </grid>

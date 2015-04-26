@@ -19,6 +19,7 @@ import java.util.concurrent.ArrayBlockingQueue;
  */
 @MetaClass(name = "stat$PerformanceParameter")
 @SystemLevel
+@SuppressWarnings("unused")
 public class PerformanceParameter extends AbstractNotPersistentEntity {
     private static final long serialVersionUID = 7529837429932823943L;
 
@@ -66,8 +67,8 @@ public class PerformanceParameter extends AbstractNotPersistentEntity {
     }
 
     public String getAverage1mStringValue() {
-        return average1mStringValue!=null ? average1mStringValue :
-                (average1m!=null ? average1m.toString() : "");
+        return average1mStringValue != null ? average1mStringValue :
+                (average1m != null ? average1m.toString() : "");
     }
 
     public void setAverage1mStringValue(String average1mStringValue) {
@@ -123,9 +124,9 @@ public class PerformanceParameter extends AbstractNotPersistentEntity {
     }
 
     public String getCurrentStringValue() {
-        return currentStringValue!=null ? currentStringValue :
-                (currentLongValue!=null ? currentLongValue.toString() :
-                        (currentDoubleValue!=null ? currentDoubleValue.toString() : ""));
+        return currentStringValue != null ? currentStringValue :
+                (currentLongValue != null ? currentLongValue.toString() :
+                        (currentDoubleValue != null ? currentDoubleValue.toString() : ""));
     }
 
     public void setCurrentStringValue(String currentStringValue) {
@@ -145,7 +146,7 @@ public class PerformanceParameter extends AbstractNotPersistentEntity {
 
     private void calcLongAverage(Long currentLongValue) {
         if (showUptime) {
-            setAverageForUptime( (double)currentLongValue / (uptime!=null ? uptime : 1));
+            setAverageForUptime((double) currentLongValue / (uptime != null ? uptime : 1));
         }
         if (showAverage) {
             if (!longValues.offer(currentLongValue)) {
@@ -153,11 +154,11 @@ public class PerformanceParameter extends AbstractNotPersistentEntity {
                 longValues.offer(currentLongValue);
             }
 
-            long sum=0;
+            long sum = 0;
             for (Long v : longValues) {
-                sum+=v;
+                sum += v;
             }
-            setAverage1m((double)sum/longValues.size());
+            setAverage1m((double) sum / longValues.size());
         }
     }
 
@@ -172,7 +173,7 @@ public class PerformanceParameter extends AbstractNotPersistentEntity {
 
     private void calcDoubleAverage(Double currentDoubleValue) {
         if (showUptime) {
-            setAverageForUptime(currentDoubleValue / (uptime!=null ? uptime : 1));
+            setAverageForUptime(currentDoubleValue / (uptime != null ? uptime : 1));
         }
         if (showAverage) {
             boolean added = doubleValues.offer(currentDoubleValue);
@@ -180,11 +181,11 @@ public class PerformanceParameter extends AbstractNotPersistentEntity {
                 doubleValues.poll();
                 doubleValues.offer(currentDoubleValue);
             }
-            double sum=0;
+            double sum = 0;
             for (Double v : doubleValues) {
-                sum+=v;
+                sum += v;
             }
-            setAverage1m(sum/doubleValues.size());
+            setAverage1m(sum / doubleValues.size());
         }
     }
 

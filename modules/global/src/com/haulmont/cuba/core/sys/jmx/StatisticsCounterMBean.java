@@ -5,16 +5,14 @@
 
 package com.haulmont.cuba.core.sys.jmx;
 
-import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
-
-import javax.management.openmbean.CompositeType;
 
 /**
  * @author krivenko
  * @version $Id$
  */
 @ManagedResource(description = "Provides various information about middleware performance statistics")
+@SuppressWarnings("unused")
 public interface StatisticsCounterMBean {
 
     Long getActiveTransactionsCount();

@@ -47,7 +47,7 @@ public class StatisticsCounterBean implements StatisticsCounterAPI {
 
     @Override
     public Long getActiveTransactionsCount() {
-        return (startedTransactionsCount.get()-committedTransactionsCount.get()-rolledBackTransactionsCount.get());
+        return (startedTransactionsCount.get() - committedTransactionsCount.get() - rolledBackTransactionsCount.get());
     }
 
     @Override

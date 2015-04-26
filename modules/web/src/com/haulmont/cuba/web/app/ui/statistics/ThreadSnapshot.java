@@ -14,7 +14,7 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
  * @author krivenko
  * @version $Id$
  */
-@MetaClass(name="stat$ThreadSnapshot")
+@MetaClass(name = "stat$ThreadSnapshot")
 @SystemLevel
 public class ThreadSnapshot extends AbstractNotPersistentEntity {
 

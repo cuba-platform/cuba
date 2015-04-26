@@ -25,8 +25,6 @@ import com.haulmont.cuba.web.jmx.JmxControlException;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.UUID;
 
@@ -36,13 +34,11 @@ import java.util.UUID;
  */
 public class StatisticsWindow extends AbstractWindow {
 
-    private static final long serialVersionUID = 9164872304110482393L;
-
     @Inject
     protected GroupTable paramsTable;
 
     @Inject
-    protected GroupDatasource statisticsDs;
+    protected GroupDatasource<PerformanceParameter, UUID> statisticsDs;
 
     @Inject
     protected JmxControlAPI jmxControlAPI;
@@ -73,37 +69,36 @@ public class StatisticsWindow extends AbstractWindow {
         parameterClass = metadata.getClass(PerformanceParameter.class);
 
         statisticsDs.addListener(new DsListenerAdapter<PerformanceParameter>() {
-            private static final long serialVersionUID = 8971263564912983432L;
 
-            private Formatter kilobyteFormatter = new KilobyteFormatter();
+            private Formatter<Object> kilobyteFormatter = new KilobyteFormatter<>();
             private DoubleDatatype doubleDatatype = Datatypes.get(DoubleDatatype.NAME);
+
             @Override
             public void valueChanged(PerformanceParameter source, String property, @Nullable Object prevValue, @Nullable Object value) {
                 if ("Uptime".equals(source.getParameterName()) && "currentLongValue".equals(property)) {
-                    long uptime = (long)value;
+                    long uptime = (long) value;
                     //propagate uptime to calculate uptime average
                     for (Datasource ds : getDsContext().getAll()) {
-                        if (ds.getMetaClass().equals(parameterClass)) {
-                            CollectionDatasource<PerformanceParameter, UUID> statDs = (CollectionDatasource<PerformanceParameter, UUID>) ds;
-                            for (PerformanceParameter param : statDs.getItems()) {
-                                if (param.getShowUptime()) param.setUptime(uptime);
+                        if (ds.getMetaClass().equals(parameterClass) && ds instanceof CollectionDatasource) {
+                            CollectionDatasource statDs = (CollectionDatasource) ds;
+                            for (Object item : statDs.getItems()) {
+                                if (item instanceof PerformanceParameter) {
+                                    PerformanceParameter param = (PerformanceParameter) item;
+                                    if (param.getShowUptime()) param.setUptime(uptime);
+                                }
                             }
                         }
                     }
-                }
-                else if ("Memory".equals(source.getParameterGroup())) {
+                } else if ("Memory".equals(source.getParameterGroup())) {
                     if ("currentLongValue".equals(property)) {
                         source.setCurrentStringValue(kilobyteFormatter.format(value));
-                    }
-                    else if ("average1m".equals(property)) {
+                    } else if ("average1m".equals(property)) {
                         source.setAverage1mStringValue(kilobyteFormatter.format(value));
                     }
-                }
-                else {
+                } else {
                     if ("currentDoubleValue".equals(property)) {
                         source.setCurrentStringValue(doubleDatatype.format((Double) value));
-                    }
-                    else if ("average1m".equals(property)) {
+                    } else if ("average1m".equals(property)) {
                         source.setAverage1mStringValue(doubleDatatype.format((Double) value));
                     }
                 }
@@ -125,8 +120,7 @@ public class StatisticsWindow extends AbstractWindow {
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                 try {
                     setNode(jmxConnectionField.<JmxInstance>getValue());
-                }
-                catch (JmxControlException e) {
+                } catch (JmxControlException e) {
                     JmxInstance jmxInstance = jmxConnectionField.getValue();
                     showNotification(messages.getMessage("com.haulmont.cuba.web.app.ui.jmxcontrol", "unableToConnectToInterface"), NotificationType.WARNING);
                     if (jmxInstance != localJmxInstance)
@@ -170,6 +164,7 @@ public class StatisticsWindow extends AbstractWindow {
 
     }
 
+    @SuppressWarnings("unused")
     public void onRefresh(Timer timer) {
         statisticsDs.refresh();
     }
@@ -178,7 +173,7 @@ public class StatisticsWindow extends AbstractWindow {
         statisticsDs.clear();
 
         int avgInterval = 60 * 1000 / timerDelay;
-        Map<String, Object> constantParams = ParamsMap.of("node", currentNode, "avgInterval",avgInterval);
+        Map<String, Object> constantParams = ParamsMap.of("node", currentNode, "avgInterval", avgInterval);
         statisticsDs.refresh(constantParams);
         statisticsDs.groupBy(new Object[]{new MetaPropertyPath(parameterClass, parameterClass.getProperty("parameterGroup"))});
         paramsTable.expandAll();
@@ -188,19 +183,18 @@ public class StatisticsWindow extends AbstractWindow {
         openWindow("threadsMonitoringWindow", WindowManager.OpenType.NEW_TAB, ParamsMap.of("node", jmxConnectionField.<JmxInstance>getValue()));
     }
 
-    protected static class KilobyteFormatter implements Formatter {
+    protected static class KilobyteFormatter<T> implements Formatter<T> {
         @Override
-        public String format(Object value) {
-            String res=null;
+        public String format(T value) {
+            String res = null;
             if (value instanceof Long) {
-                long longValue = (long)value;
-                res = String.format("%d KB",longValue/1024);
+                long longValue = (Long) value;
+                res = String.format("%d KB", longValue / 1024);
+            } else if (value instanceof Double) {
+                double doubleValue = (Double) value;
+                res = String.format("%.0f KB", doubleValue / 1024);
             }
-            else if (value instanceof Double) {
-                double doubleValue = (double)value;
-                res = String.format("%.0f KB",doubleValue/1024);
-            }
-            return res !=null ? res : value.toString();
+            return res != null ? res : value.toString();
         }
     }
 }

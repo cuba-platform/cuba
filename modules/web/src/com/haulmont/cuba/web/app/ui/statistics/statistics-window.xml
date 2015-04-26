@@ -29,8 +29,8 @@
     </timers>
 
     <assign name="fieldWidth" value="theme://cuba.web.display-mbeans.field.width"/>
-    <layout expand="main">
-        <groupBox>
+    <layout expand="main" spacing="true">
+        <groupBox width="800px">
             <grid spacing="true">
                 <columns>
                     <column/>
@@ -43,14 +43,16 @@
                         <label id="localJmxField" stylename="h2" width="${fieldWidth}"/>
                     </row>
                     <row>
-                        <label value="msg://com.haulmont.cuba.web.app.ui.jmxcontrol/targetJmxNode"/>
-                        <lookupPickerField id="jmxConnectionField" optionsDatasource="jmxInstancesDs" width="${fieldWidth}"/>
-                        <button id="monitorThreads" caption="msg://threadsMonitor" invoke="onMonitorThreads" align="MIDDLE_CENTER"/>
+                        <label value="msg://com.haulmont.cuba.web.app.ui.jmxcontrol/targetJmxNode" align="MIDDLE_CENTER"/>
+                        <lookupPickerField id="jmxConnectionField" optionsDatasource="jmxInstancesDs"
+                                           width="${fieldWidth}" align="MIDDLE_CENTER"/>
+                        <button id="monitorThreads" caption="msg://threadsMonitor" invoke="onMonitorThreads"
+                                align="MIDDLE_CENTER"/>
                     </row>
                 </rows>
             </grid>
         </groupBox>
-        <hbox id="main">
+        <hbox id="main" width="800px">
             <groupTable id="paramsTable" reorderingAllowed="false" sortable="false" width="AUTO" height="100%">
                 <columns>
                     <group>

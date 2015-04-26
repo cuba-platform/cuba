@@ -26,7 +26,7 @@ public class ThreadsDatasource extends CollectionDatasourceImpl<ThreadSnapshot, 
 
     protected JmxControlAPI jmxControlAPI;
 
-    private long prevUptime=-1;
+    private long prevUptime = -1;
 
     private Map<Long, Long> prevThread2CpuTime = new HashMap<>();
 
@@ -39,7 +39,7 @@ public class ThreadsDatasource extends CollectionDatasourceImpl<ThreadSnapshot, 
     protected Object getAttributeValue(JmxInstance node, String beanObjectName, String attrName) {
         ManagedBeanInfo bean = jmxControlAPI.getManagedBean(node, beanObjectName);
         Object res = null;
-        if (bean!=null) {
+        if (bean != null) {
             ManagedBeanAttribute attr = jmxControlAPI.loadAttribute(bean, attrName);
             jmxControlAPI.loadAttributeValue(attr);
             res = attr.getValue();
@@ -49,17 +49,17 @@ public class ThreadsDatasource extends CollectionDatasourceImpl<ThreadSnapshot, 
 
     @Override
     protected void loadData(Map<String, Object> params) {
-        JmxInstance node = (JmxInstance)params.get("node");
+        JmxInstance node = (JmxInstance) params.get("node");
         ManagedBeanInfo threadingBean = jmxControlAPI.getManagedBean(node, "java.lang:type=Threading");
-        int nCPUs = (int)getAttributeValue(node, "java.lang:type=OperatingSystem", "AvailableProcessors");
+        int nCPUs = (int) getAttributeValue(node, "java.lang:type=OperatingSystem", "AvailableProcessors");
 
-        final long[] allThreadsIds = (long[])getAttributeValue(node, "java.lang:type=Threading", "AllThreadIds");
+        final long[] allThreadsIds = (long[]) getAttributeValue(node, "java.lang:type=Threading", "AllThreadIds");
         ManagedBeanOperation getThreadInfo = jmxControlAPI.getOperation(threadingBean, "getThreadInfo", new String[]{"[J"});
-        CompositeData[] threadsInfo = (CompositeData[])jmxControlAPI.invokeOperation(getThreadInfo,new Object[] {allThreadsIds});
+        CompositeData[] threadsInfo = (CompositeData[]) jmxControlAPI.invokeOperation(getThreadInfo, new Object[]{allThreadsIds});
 
-        final long currentUptime = (long)getAttributeValue(node, "java.lang:type=Runtime", "Uptime");
+        final long currentUptime = (long) getAttributeValue(node, "java.lang:type=Runtime", "Uptime");
         ManagedBeanOperation getThreadCpuTime = jmxControlAPI.getOperation(threadingBean, "getThreadCpuTime", new String[]{"[J"});
-        long[] threadCpuTime = (long[])jmxControlAPI.invokeOperation(getThreadCpuTime, new Object[]{allThreadsIds});
+        long[] threadCpuTime = (long[]) jmxControlAPI.invokeOperation(getThreadCpuTime, new Object[]{allThreadsIds});
         if (prevUptime > 0L && currentUptime > prevUptime) {
             // elapsedTime is in ms
             long elapsedTime = currentUptime - prevUptime;
@@ -67,7 +67,7 @@ public class ThreadsDatasource extends CollectionDatasourceImpl<ThreadSnapshot, 
                 // elapsedCpu is in ns
                 Long threadId = allThreadsIds[i];
                 Long prevCpuTimeLong = prevThread2CpuTime.get(threadId); //for new threads returns null.
-                long prevCpuTime = prevCpuTimeLong!=null ? prevCpuTimeLong : 0L;
+                long prevCpuTime = prevCpuTimeLong != null ? prevCpuTimeLong : 0L;
                 long elapsedCpu = threadCpuTime[i] - prevCpuTime;
                 // cpuUsage could go higher than 100% because elapsedTime
                 // and elapsedCpu are not fetched simultaneously. Limit to 99%.
@@ -78,14 +78,14 @@ public class ThreadsDatasource extends CollectionDatasourceImpl<ThreadSnapshot, 
         }
         prevUptime = currentUptime;
         for (int i = 0; i < allThreadsIds.length; i++) {
-            long time = threadCpuTime[i]!=-1L ? threadCpuTime[i] : 0L;
+            long time = threadCpuTime[i] != -1L ? threadCpuTime[i] : 0L;
             prevThread2CpuTime.put(allThreadsIds[i], time);
         }
 
         ManagedBeanOperation findDeadlockedThreads = jmxControlAPI.getOperation(threadingBean, "findDeadlockedThreads", null);
-        Long[] deadlockedThreads = (Long[])jmxControlAPI.invokeOperation(findDeadlockedThreads, null);
-        Set<Long> deadLockedThreadsSet= new HashSet<>();
-        if (deadlockedThreads!=null) {
+        Long[] deadlockedThreads = (Long[]) jmxControlAPI.invokeOperation(findDeadlockedThreads, null);
+        Set<Long> deadLockedThreadsSet = new HashSet<>();
+        if (deadlockedThreads != null) {
             CollectionUtils.addAll(deadLockedThreadsSet, deadlockedThreads);
         }
         Set<Long> allThreadsSet = new HashSet<>();
@@ -111,9 +111,8 @@ public class ThreadsDatasource extends CollectionDatasourceImpl<ThreadSnapshot, 
                 item.setName((String) info.get("threadName"));
                 item.setStatus(info.get("threadState").toString());
                 item.setDeadLocked(deadLockedThreadsSet.contains(threadId));
-            }
-            else {
-                removeItem( getThreadSnapshot(allThreadsIds[i]) ); //no thread info available.
+            } else {
+                removeItem(getThreadSnapshot(allThreadsIds[i])); //no thread info available.
             }
         }
 
@@ -121,7 +120,7 @@ public class ThreadsDatasource extends CollectionDatasourceImpl<ThreadSnapshot, 
 
     protected ThreadSnapshot getThreadSnapshot(Long threadId) {
         ThreadSnapshot res = id2Thread.get(threadId);
-        if (res==null) {
+        if (res == null) {
             res = new ThreadSnapshot();
             res.setThreadId(threadId);
             id2Thread.put(threadId, res);
@@ -147,13 +146,13 @@ public class ThreadsDatasource extends CollectionDatasourceImpl<ThreadSnapshot, 
     }
 
     protected String getStackTrace(Long threadId) {
-        JmxInstance node = (JmxInstance)savedParameters.get("node");
+        JmxInstance node = (JmxInstance) savedParameters.get("node");
         ManagedBeanInfo threadingBean = jmxControlAPI.getManagedBean(node, "java.lang:type=Threading");
         ManagedBeanOperation getThreadInfo = jmxControlAPI.getOperation(threadingBean, "getThreadInfo", new String[]{"long", "int"});
-        CompositeData threadInfo = (CompositeData)jmxControlAPI.invokeOperation(getThreadInfo,new Object[] {threadId, Integer.MAX_VALUE});
+        CompositeData threadInfo = (CompositeData) jmxControlAPI.invokeOperation(getThreadInfo, new Object[]{threadId, Integer.MAX_VALUE});
 
         StringBuilder sb = new StringBuilder();
-        if (threadInfo!=null) {
+        if (threadInfo != null) {
             CompositeData[] traces = (CompositeData[]) threadInfo.get("stackTrace");
             ThreadSnapshot t = getThreadSnapshot(threadId);
             sb.append(t.getName()).append(" [id=").append(threadId).append("] (").append(t.getStatus()).append(")\n");

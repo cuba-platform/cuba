@@ -204,7 +204,7 @@ public class RunnerBean implements Runner {
                 } catch (Exception e) {
                     throw new RuntimeException(
                             String.format("An error occurred while running method call() of class %s.",
-                            task.getClassName()), e);
+                                    task.getClassName()), e);
                 }
             }
 
@@ -215,7 +215,7 @@ public class RunnerBean implements Runner {
             default: {
                 throw new IllegalStateException(
                         String.format("\"Defined by\" field has illegal value: %s. Task id: [%s].",
-                        task.getDefinedBy(), task.getId()));
+                                task.getDefinedBy(), task.getId()));
             }
         }
     }
