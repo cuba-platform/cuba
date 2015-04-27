@@ -334,17 +334,12 @@ public class CubaMaskedFieldWidget extends VTextField {
             setCursorPos(getNextPos(valueBuilder.length()));
         } else {
             int pasteLength = newText.length() - valueBuilder.length();
-            int pasteStart;
-            if (BrowserInfo.get().isGecko() || BrowserInfo.get().isIE()) {
-                pasteStart = getCursorPos() - pasteLength;
-            } else {
-                pasteStart = getCursorPos();
-            }
+            int pasteStart = getCursorPos() - pasteLength;
 
             StringBuilder maskedPart = maskValue(newText.substring(pasteStart, pasteStart + pasteLength), pasteStart, pasteStart + pasteLength);
             valueBuilder.replace(pasteStart, pasteStart + maskedPart.length(), maskedPart.toString());
             super.setText(valueBuilder.toString());
-            setCursorPos(getNextPos(pasteStart + maskedPart.length()));
+            setCursorPos(getNextPos(pasteStart + maskedPart.length() - 1));
         }
     }
 
