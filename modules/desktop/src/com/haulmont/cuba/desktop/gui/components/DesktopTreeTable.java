@@ -31,8 +31,6 @@ public class DesktopTreeTable extends DesktopAbstractTable<JXTreeTableExt> imple
 
     protected String hierarchyProperty;
 
-    protected Map<Integer, TableCellRenderer> cellRenderers = new HashMap<>();
-
     public DesktopTreeTable() {
         impl = new JXTreeTableExt() {
             @Override
@@ -42,10 +40,7 @@ public class DesktopTreeTable extends DesktopAbstractTable<JXTreeTableExt> imple
                     return columnRenderer;
                 }
 
-                TableCellRenderer cellRenderer = cellRenderers.get(column);
-                if (cellRenderer != null) {
-                    return cellRenderer;
-                } else if (styleProvider != null) {
+                if (styleProvider != null) {
                     TableCellRenderer defaultRenderer = super.getCellRenderer(row, column);
                     return new StylingCellRenderer(defaultRenderer);
                 } else {
@@ -60,16 +55,7 @@ public class DesktopTreeTable extends DesktopAbstractTable<JXTreeTableExt> imple
                     return cellEditor;
                 }
 
-                TableCellRenderer cellRenderer = cellRenderers.get(column);
-                if (cellRenderer instanceof TableCellEditor) {
-                    TableCellEditor tableCellEditor = DesktopTreeTable.this.getCellEditor(row, column);
-                    if (tableCellEditor != null)
-                        return tableCellEditor;
-
-                    return (TableCellEditor) cellRenderer;
-                } else {
-                    return super.getCellEditor(row, column);
-                }
+                return super.getCellEditor(row, column);
             }
 
             @Override
@@ -131,13 +117,13 @@ public class DesktopTreeTable extends DesktopAbstractTable<JXTreeTableExt> imple
         impl.addTreeExpansionListener(new TreeExpansionListener() {
             @Override
             public void treeExpanded(TreeExpansionEvent event) {
-                if (!cellRenderers.isEmpty())
+                if (tableModel.hasGeneratedColumns())
                     repaint();
             }
 
             @Override
             public void treeCollapsed(TreeExpansionEvent event) {
-                if (!cellRenderers.isEmpty())
+                if (tableModel.hasGeneratedColumns())
                     repaint();
             }
         });
@@ -359,27 +345,6 @@ public class DesktopTreeTable extends DesktopAbstractTable<JXTreeTableExt> imple
             }
         }
         super.applyFont(table, font);
-    }
-
-    @Override
-    public void repaint() {
-        for (TableCellRenderer renderer : cellRenderers.values()) {
-            if (renderer instanceof DesktopTableCellEditor) {
-                ((DesktopTableCellEditor) renderer).clearCache();
-            }
-        }
-
-        super.repaint();
-    }
-
-    @Override
-    protected void onDataChange() {
-        for (TableCellRenderer renderer : cellRenderers.values()) {
-            if (renderer instanceof DesktopTableCellEditor) {
-                ((DesktopTableCellEditor) renderer).clearCache();
-            }
-        }
-        super.onDataChange();
     }
 
     @Override

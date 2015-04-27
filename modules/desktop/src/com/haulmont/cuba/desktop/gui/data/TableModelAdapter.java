@@ -270,6 +270,11 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
     }
 
     @Override
+    public boolean hasGeneratedColumns() {
+        return !generatedColumns.isEmpty();
+    }
+
+    @Override
     public void addColumn(Table.Column column) {
         columns.add(column);
         if (column.getId() instanceof MetaPropertyPath)

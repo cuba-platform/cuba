@@ -30,6 +30,8 @@ public interface AnyTableModelAdapter extends TableModel {
 
     boolean isGeneratedColumn(Table.Column column);
 
+    boolean hasGeneratedColumns();
+
     void addColumn(Table.Column column);
 
     void removeColumn(Table.Column column);
