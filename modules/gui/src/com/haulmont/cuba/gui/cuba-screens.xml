@@ -92,13 +92,13 @@
             template="/com/haulmont/cuba/gui/app/core/file/file-edit.xml"/>
 
     <screen id="sys$Category.browse"
-            template="/com/haulmont/cuba/gui/categories/category-browse.xml"/>
+            template="/com/haulmont/cuba/gui/app/core/categories/category-browse.xml"/>
 
     <screen id="sys$Category.edit"
-            template="/com/haulmont/cuba/gui/categories/category-edit.xml"/>
+            template="/com/haulmont/cuba/gui/app/core/categories/category-edit.xml"/>
 
     <screen id="sys$CategoryAttribute.edit"
-            template="/com/haulmont/cuba/gui/categories/attribute-edit.xml"/>
+            template="/com/haulmont/cuba/gui/app/core/categories/attribute-edit.xml"/>
 
     <screen id="sys$EntitySnapshot.view"
             template="/com/haulmont/cuba/gui/app/core/entitydiff/diff-view.xml"/>
@@ -119,7 +119,7 @@
             template="/com/haulmont/cuba/gui/app/core/entityinspector/entity-inspector-edit.xml"/>
 
     <screen id="runtimePropertiesFrame"
-            template="/com/haulmont/cuba/gui/runtimeprops/runtime-properties-frame.xml"/>
+            template="/com/haulmont/cuba/gui/app/core/dynamicattributes/runtime-properties-frame.xml"/>
 
     <screen id="aboutWindow"
             template="/com/haulmont/cuba/gui/app/core/about/about-window.xml"/>

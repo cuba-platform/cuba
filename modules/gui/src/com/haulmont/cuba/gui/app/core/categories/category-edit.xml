@@ -1,10 +1,10 @@
 <!--
-  ~ Copyright (c) 2008-2013 Haulmont. All rights reserved.
+  ~ Copyright (c) 2008-2015 Haulmont. All rights reserved.
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 <window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
-        class="com.haulmont.cuba.gui.categories.CategoryEditor"
-        messagesPack="com.haulmont.cuba.gui.categories"
+        class="com.haulmont.cuba.gui.app.core.categories.CategoryEditor"
+        messagesPack="com.haulmont.cuba.gui.app.core.categories"
         caption="msg://editorCaption"
         datasource="categoryDs"
         focusComponent="name">
@@ -30,7 +30,7 @@
         </hbox>
         <label value="msg://attributes" stylename="h2"/>
 
-        <iframe id="categoryAttrsFrame" src="/com/haulmont/cuba/gui/categories/category-attrs-frame.xml"/>
+        <iframe id="categoryAttrsFrame" src="/com/haulmont/cuba/gui/app/core/categories/category-attrs-frame.xml"/>
 
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>

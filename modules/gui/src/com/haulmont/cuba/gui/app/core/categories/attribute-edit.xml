@@ -1,11 +1,11 @@
 <!--
-  ~ Copyright (c) 2008-2013 Haulmont. All rights reserved.
+  ~ Copyright (c) 2008-2015 Haulmont. All rights reserved.
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
 <window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
-        class="com.haulmont.cuba.gui.categories.AttributeEditor"
-        messagesPack="com.haulmont.cuba.gui.categories"
+        class="com.haulmont.cuba.gui.app.core.categories.AttributeEditor"
+        messagesPack="com.haulmont.cuba.gui.app.core.categories"
         datasource="attributeDs"
         caption="msg://AttributeEditor.caption">
     <dsContext>
@@ -15,7 +15,7 @@
                 view="category.edit"
                 >
         </datasource>
-        <collectionDatasource id="screensDs" class="com.haulmont.cuba.gui.categories.ScreenAndComponent"
+        <collectionDatasource id="screensDs" class="com.haulmont.cuba.gui.app.core.categories.ScreenAndComponent"
                               allowCommit="false" refreshMode="NEVER"/>
     </dsContext>
     <layout spacing="true" expand="buttons">

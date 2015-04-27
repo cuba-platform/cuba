@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Copyright (c) 2008-2015 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.gui.categories;
+package com.haulmont.cuba.gui.app.core.categories;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
@@ -117,6 +117,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
         codeField = factory.createComponent(TextField.NAME);
         codeField.setId("code");
+        codeField.setRequired(true);
         codeField.setCaption(getMessage("code"));
         codeField.setWidth(fieldWidth);
         codeField.setFrame(frame);

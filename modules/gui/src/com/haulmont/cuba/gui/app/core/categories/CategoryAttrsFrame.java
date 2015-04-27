@@ -1,17 +1,21 @@
 /*
- * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Copyright (c) 2008-2015 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.gui.categories;
+package com.haulmont.cuba.gui.app.core.categories;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
@@ -19,7 +23,6 @@ import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -247,7 +250,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
         }
 
         @Override
-        public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+        public void actionPerform(Component component) {
             Set<CategoryAttribute> selected = categoryAttrsTable.getSelected();
             if (!selected.isEmpty()) {
                 AttributeEditor editor = openEditor(
@@ -280,7 +283,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
         }
 
         @Override
-        public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+        public void actionPerform(Component component) {
             final CategoryAttribute attribute = metadata.create(CategoryAttribute.class);
             attribute.setCategory((Category) categoryDs.getItem());
             assignNextOrderNo(attribute);

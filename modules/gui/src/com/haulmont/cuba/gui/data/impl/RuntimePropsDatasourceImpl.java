@@ -93,6 +93,9 @@ public class RuntimePropsDatasourceImpl
         }
         if (!initializedBefore && category == null) {
             category = getDefaultCategory(entity);
+            if (mainDs.getMetaClass().getProperty("category") != null) {
+                entity.setValue("category", category);
+            }
         }
 
         item = new DynamicAttributesEntity(metaClass);

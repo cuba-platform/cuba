@@ -29,10 +29,10 @@ public class CategoryAttribute extends StandardEntity {
     @JoinColumn(name = "CATEGORY_ID")
     private Category category;
 
-    @Column(name = "NAME", length = NAME_FIELD_LENGTH)
+    @Column(name = "NAME", length = NAME_FIELD_LENGTH, nullable = false)
     private String name;
 
-    @Column(name = "CODE", length = CODE_FIELD_LENGTH)
+    @Column(name = "CODE", length = CODE_FIELD_LENGTH, nullable = false)
     private String code;
 
     @Column(name = "ENUMERATION")
@@ -57,7 +57,7 @@ public class CategoryAttribute extends StandardEntity {
     private Boolean lookup = false;
 
     @Column(name = "TARGET_SCREENS")
-    private String targetScreens;//comma separated list of screenId#componentId pairs. componentId might not exist
+    private String targetScreens;//comma separated list of screenId#componentId pairs. componentId might be empty
 
     @Column(name = "DEFAULT_STRING")
     private String defaultString;
