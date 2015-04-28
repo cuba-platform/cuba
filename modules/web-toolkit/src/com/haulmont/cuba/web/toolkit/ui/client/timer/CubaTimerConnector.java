@@ -10,8 +10,6 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
-import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLogger;
-import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLoggerFactory;
 import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.AbstractComponentConnector;
@@ -30,8 +28,6 @@ public class CubaTimerConnector extends AbstractComponentConnector {
 
     protected CubaTimerServerRpc rpc = RpcProxy.create(CubaTimerServerRpc.class, this);
 
-    protected ClientLogger logger = ClientLoggerFactory.getLogger("CubaTimer");
-
     protected boolean running = false;
     protected boolean scheduled = false;
 
@@ -42,8 +38,6 @@ public class CubaTimerConnector extends AbstractComponentConnector {
             @Override
             public void setRunning(boolean running) {
                 CubaTimerConnector.this.setRunning(running);
-
-                logger.log("Set running for timer " + getState().timerId + " to " + Boolean.toString(running));
             }
 
             @Override
@@ -51,7 +45,6 @@ public class CubaTimerConnector extends AbstractComponentConnector {
                 CubaTimerConnector.this.requestCompleted();
 
                 hasActiveRequest = false;
-                logger.log("Request completed for timer " + getState().timerId);
             }
         });
     }
@@ -70,18 +63,12 @@ public class CubaTimerConnector extends AbstractComponentConnector {
     }
 
     public void onTimer() {
-        logger.log("Timer tick " + getState().timerId);
-
         if (running && getState().listeners) {
             if (!hasActiveRequest) {
                 hasActiveRequest = true;
 
                 rpc.onTimer();
-
-                logger.log("Fire timer " + getState().timerId);
             } else {
-                logger.log("Has active request on server side, schedule deffered timer " + getState().timerId);
-
                 jsTimer.schedule(DEFFERED_DELAY_MS);
             }
         } else {
@@ -102,20 +89,14 @@ public class CubaTimerConnector extends AbstractComponentConnector {
     public void onStateChanged(StateChangeEvent stateChangeEvent) {
         super.onStateChanged(stateChangeEvent);
 
-        logger.log("State change for " + getState().timerId);
-
         if (running && getState().repeating) {
             if (!scheduled && getState().listeners) {
                 jsTimer.cancel();
                 jsTimer.schedule(getState().delay);
                 this.scheduled = true;
-
-                logger.log("Schedule " + getState().timerId);
             } else if (scheduled && !getState().listeners) {
                 jsTimer.cancel();
                 this.scheduled = false;
-
-                logger.log("Stop " + getState().timerId);
             }
         }
     }

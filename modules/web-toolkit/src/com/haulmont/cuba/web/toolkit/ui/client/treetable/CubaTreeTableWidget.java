@@ -6,21 +6,19 @@
 package com.haulmont.cuba.web.toolkit.ui.client.treetable;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.AggregatableTable;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.TableAggregationRow;
-import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLogger;
-import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLoggerFactory;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.LayoutManager;
 import com.vaadin.client.UIDL;
@@ -46,7 +44,6 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
     protected Widget presentationsMenu;
     protected Widget customContextMenu;
 
-    protected ClientLogger logger = ClientLoggerFactory.getLogger("CubaTreeTableWidget");
     protected boolean multiLineCells = false;
 
     protected TableAggregationRow aggregationRow;
@@ -444,10 +441,6 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
                             lastFocusedWidget = w;
 
-                            if (logger.enabled) {
-                                logger.log("onFocus: Focus widget in column: " + childWidgets.indexOf(topWidget));
-                            }
-
                             if (!isSelected()) {
                                 deselectAll();
 
@@ -466,21 +459,11 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
                     return;
                 }
 
-                logger.log("Handle focus");
-
                 if (isSelected()) {
                     if (lastFocusedWidget instanceof com.vaadin.client.Focusable) {
                         ((com.vaadin.client.Focusable) lastFocusedWidget).focus();
-
-                        if (logger.enabled) {
-                            logger.log("onSelect: Focus widget");
-                        }
                     } else if (lastFocusedWidget instanceof com.google.gwt.user.client.ui.Focusable) {
                         ((com.google.gwt.user.client.ui.Focusable) lastFocusedWidget).setFocus(true);
-
-                        if (logger.enabled) {
-                            logger.log("onSelect: Focus GWT widget");
-                        }
                     }
                 }
 

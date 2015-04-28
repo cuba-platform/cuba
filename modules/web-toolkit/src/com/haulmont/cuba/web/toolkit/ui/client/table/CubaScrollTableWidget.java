@@ -19,8 +19,6 @@ import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.AggregatableTable;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.TableAggregationRow;
-import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLogger;
-import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLoggerFactory;
 import com.vaadin.client.*;
 import com.vaadin.client.Focusable;
 import com.vaadin.client.ui.*;
@@ -37,8 +35,6 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
     protected boolean textSelectionEnabled = false;
     protected boolean contextMenuEnabled = true;
-
-    protected ClientLogger logger = ClientLoggerFactory.getLogger("CubaScrollTableWidget");
 
     protected VOverlay presentationsEditorPopup;
     protected VOverlay customContextMenuPopup;
@@ -448,10 +444,6 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
                             lastFocusedWidget = w;
 
-                            if (logger.enabled) {
-                                logger.log("onFocus: Focus widget in column: " + childWidgets.indexOf(topWidget));
-                            }
-
                             if (!isSelected()) {
                                 deselectAll();
 
@@ -470,21 +462,11 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
                     return;
                 }
 
-                logger.log("Handle focus");
-
                 if (isSelected()) {
                     if (lastFocusedWidget instanceof Focusable) {
                         ((Focusable) lastFocusedWidget).focus();
-
-                        if (logger.enabled) {
-                            logger.log("onSelect: Focus widget");
-                        }
                     } else if (lastFocusedWidget instanceof com.google.gwt.user.client.ui.Focusable) {
                         ((com.google.gwt.user.client.ui.Focusable) lastFocusedWidget).setFocus(true);
-
-                        if (logger.enabled) {
-                            logger.log("onSelect: Focus GWT widget");
-                        }
                     }
                 }
 

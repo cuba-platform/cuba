@@ -11,8 +11,6 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.History;
-import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLogger;
-import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLoggerFactory;
 import com.vaadin.client.BrowserInfo;
 
 /**
@@ -23,15 +21,12 @@ public abstract class HistoryGwtApi {
     private static final String TOP_HISTORY_TOKEN = "!";
     private static final String PREVIOUS_HISTORY_TOKEN = "_";
 
-    protected ClientLogger logger = ClientLoggerFactory.getLogger("HistoryGwtApi");
-
     private HandlerRegistration handlerRegistration;
     private String previousHistoryToken = TOP_HISTORY_TOKEN;
     private boolean isForward = false;
     private boolean isFireHistoryState = false;
 
     public HistoryGwtApi() {
-        logger.log(">>> INIT <<<");
         initStartState();
         initHandler();
     }
@@ -86,7 +81,6 @@ public abstract class HistoryGwtApi {
 
     protected boolean urlHasToken(String token) {
         String url = Document.get().getURL();
-        logger.log("url = " + url);
         return url.contains("#" + token);
     }
 
@@ -95,13 +89,11 @@ public abstract class HistoryGwtApi {
     protected abstract boolean isEnabled();
 
     public void disable() {
-        logger.log(">>> DISABLE <<<");
         handlerRegistration.removeHandler();
     }
 
     protected void handleHistoryStep() {
         if (!isEnabled()) {
-            logger.log(">>> Disabled history handler");
             disable();
             return;
         }
@@ -114,7 +106,6 @@ public abstract class HistoryGwtApi {
     }
 
     protected void goForward() {
-        logger.log(">>> Call history back handler");
         onHistoryBackPerformed();
     }
 
