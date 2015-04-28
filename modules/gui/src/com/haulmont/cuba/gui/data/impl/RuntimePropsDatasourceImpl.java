@@ -307,8 +307,14 @@ public class RuntimePropsDatasourceImpl
             return;
 
         if (Datasource.CommitMode.DATASTORE.equals(getCommitMode())) {
-            Collection itemsToUpdate = getItemsToUpdate();
-            CommitContext cc = new CommitContext(itemsToUpdate);
+            Set<Entity> commitInstances = new HashSet<>();
+            Set<Entity> deleteInstances = new HashSet<>();
+
+            commitInstances.addAll(itemToCreate);
+            commitInstances.addAll(itemToUpdate);
+            deleteInstances.addAll(itemToDelete);
+
+            CommitContext cc = new CommitContext(commitInstances, deleteInstances);
 
             Set<Entity> entities = getDataSupplier().commit(cc);
             committed(entities);
