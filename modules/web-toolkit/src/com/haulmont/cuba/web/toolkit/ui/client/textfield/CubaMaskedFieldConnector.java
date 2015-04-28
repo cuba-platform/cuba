@@ -5,8 +5,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.textfield;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaMaskedTextField;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.textfield.TextFieldConnector;
@@ -27,11 +25,6 @@ public class CubaMaskedFieldConnector extends TextFieldConnector {
     @Override
     public CubaMaskedFieldWidget getWidget() {
         return (CubaMaskedFieldWidget) super.getWidget();
-    }
-
-    @Override
-    protected Widget createWidget() {
-        return GWT.create(CubaMaskedFieldWidget.class);
     }
 
     @Override

@@ -89,7 +89,7 @@ public class CubaTreeTableConnector extends TreeTableConnector {
     @Override
     public TooltipInfo getTooltipInfo(Element element) {
         if (element != getWidget().getElement()) {
-            Object node = Util.findWidget(
+            Object node = WidgetUtil.findWidget(
                     element,
                     CubaTreeTableWidget.CubaTreeTableBody.CubaTreeTableRow.class);
 

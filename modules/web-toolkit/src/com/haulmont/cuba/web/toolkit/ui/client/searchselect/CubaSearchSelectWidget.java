@@ -63,7 +63,7 @@ public class CubaSearchSelectWidget extends VFilterSelect {
                         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
                             @Override
                             public void execute() {
-                                suggestionPopup.menu.selectFirstItem();
+                                suggestionPopup.selectFirstItem();
 
                                 MenuItem selectedItem = suggestionPopup.menu.getSelectedItem();
                                 suggestionPopup.menu.setKeyboardSelectedItem(selectedItem);
@@ -163,7 +163,7 @@ public class CubaSearchSelectWidget extends VFilterSelect {
                 suggestionPopup.selectNextItem();
                 suggestionPopup.menu.setKeyboardSelectedItem(suggestionPopup.menu
                         .getSelectedItem());
-                DOM.eventPreventDefault(DOM.eventGetCurrentEvent());
+                DOM.eventGetCurrentEvent().preventDefault();
                 event.stopPropagation();
                 break;
             case KeyCodes.KEY_UP:
@@ -171,7 +171,7 @@ public class CubaSearchSelectWidget extends VFilterSelect {
                 suggestionPopup.selectPrevItem();
                 suggestionPopup.menu.setKeyboardSelectedItem(suggestionPopup.menu
                         .getSelectedItem());
-                DOM.eventPreventDefault(DOM.eventGetCurrentEvent());
+                DOM.eventGetCurrentEvent().preventDefault();
                 event.stopPropagation();
                 break;
             case KeyCodes.KEY_PAGEDOWN:

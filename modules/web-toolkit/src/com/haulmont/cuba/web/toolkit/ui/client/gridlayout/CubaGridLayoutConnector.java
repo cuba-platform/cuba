@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.gridlayout;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaGridLayout;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
@@ -26,11 +25,6 @@ public class CubaGridLayoutConnector extends GridLayoutConnector {
     @Override
     public CubaGridLayoutWidget getWidget() {
         return (CubaGridLayoutWidget) super.getWidget();
-    }
-
-    @Override
-    protected Widget createWidget() {
-        return GWT.create(CubaGridLayoutWidget.class);
     }
 
     protected void setDefaultCaptionParameters(CubaCaptionWidget widget) {

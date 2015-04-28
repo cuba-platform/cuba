@@ -12,7 +12,7 @@ import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.vaadin.client.UIDL;
-import com.vaadin.client.Util;
+import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.ui.Icon;
 import com.vaadin.client.ui.VMenuBar;
 
@@ -43,13 +43,13 @@ public class CubaMenuBarWidget extends VMenuBar implements BlurHandler {
                     .append("-menuitem-caption\">");
             if (item.hasAttribute("icon")) {
                 itemHTML.append("<img src=\"")
-                        .append(Util.escapeAttribute(client.translateVaadinUri(item.getStringAttribute("icon"))))
+                        .append(WidgetUtil.escapeAttribute(client.translateVaadinUri(item.getStringAttribute("icon"))))
                         .append("\" class=\"")
                         .append(Icon.CLASSNAME).append("\" alt=\"\" />");
             }
             String itemText = item.getStringAttribute("text");
             if (!htmlContentAllowed) {
-                itemText = Util.escapeHTML(itemText);
+                itemText = WidgetUtil.escapeHTML(itemText);
             }
             itemHTML.append(itemText);
             itemHTML.append("</span>");

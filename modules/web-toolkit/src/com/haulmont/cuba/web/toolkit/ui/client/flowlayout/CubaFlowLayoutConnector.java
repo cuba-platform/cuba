@@ -5,8 +5,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.flowlayout;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaFlowLayout;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.csslayout.CssLayoutConnector;
@@ -28,11 +26,6 @@ public class CubaFlowLayoutConnector extends CssLayoutConnector {
     @Override
     public CubaFlowLayoutWidget getWidget() {
         return (CubaFlowLayoutWidget) super.getWidget();
-    }
-
-    @Override
-    protected Widget createWidget() {
-        return GWT.create(CubaFlowLayoutWidget.class);
     }
 
     @Override

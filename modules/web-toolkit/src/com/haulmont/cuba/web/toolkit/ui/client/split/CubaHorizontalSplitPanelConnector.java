@@ -5,8 +5,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.split;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalSplitPanel;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.splitpanel.HorizontalSplitPanelConnector;
@@ -27,11 +25,6 @@ public class CubaHorizontalSplitPanelConnector extends HorizontalSplitPanelConne
     @Override
     public CubaHorizontalSplitPanelWidget getWidget() {
         return (CubaHorizontalSplitPanelWidget) super.getWidget();
-    }
-
-    @Override
-    protected Widget createWidget() {
-        return GWT.create(CubaHorizontalSplitPanelWidget.class);
     }
 
     @Override

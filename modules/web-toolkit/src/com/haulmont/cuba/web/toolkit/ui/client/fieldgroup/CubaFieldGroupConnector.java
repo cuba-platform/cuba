@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.fieldgroup;
 
-import com.google.gwt.core.client.GWT;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroup;
 import com.haulmont.cuba.web.toolkit.ui.client.groupbox.CubaGroupBoxConnector;
 import com.vaadin.client.communication.StateChangeEvent;
@@ -21,11 +20,6 @@ public class CubaFieldGroupConnector extends CubaGroupBoxConnector {
     @Override
     public CubaFieldGroupWidget getWidget() {
         return (CubaFieldGroupWidget) super.getWidget();
-    }
-
-    @Override
-    protected CubaFieldGroupWidget createWidget() {
-        return GWT.create(CubaFieldGroupWidget.class);
     }
 
     @Override

@@ -5,14 +5,12 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.window;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
 import com.haulmont.cuba.web.toolkit.ui.client.action.RemoteAction;
 import com.haulmont.cuba.web.toolkit.ui.client.action.StaticActionOwner;
 import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.ClientAction;
-import com.vaadin.client.Util;
+import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.ui.Action;
 import com.vaadin.client.ui.window.WindowConnector;
@@ -72,13 +70,14 @@ public class CubaWindowConnector extends WindowConnector {
     }
 
     @Override
-    protected Widget createWidget() {
-        CubaWindowWidget widget = GWT.create(CubaWindowWidget.class);
-        widget.contextMenuHandler = new CubaWindowWidget.ContextMenuHandler() {
+    protected void init() {
+        super.init();
+
+        getWidget().contextMenuHandler = new CubaWindowWidget.ContextMenuHandler() {
             @Override
             public void onContextMenu(Event event) {
-                lastContextMenuX = Util.getTouchOrMouseClientX(event);
-                lastContextMenuY = Util.getTouchOrMouseClientY(event);
+                lastContextMenuX = WidgetUtil.getTouchOrMouseClientX(event);
+                lastContextMenuY = WidgetUtil.getTouchOrMouseClientY(event);
 
                 if (getState().hasContextActionHandlers) {
                     rpc.onWindowContextMenu();
@@ -88,6 +87,5 @@ public class CubaWindowConnector extends WindowConnector {
                 }
             }
         };
-        return widget;
     }
 }

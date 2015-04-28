@@ -9,7 +9,7 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.PreElement;
 import com.haulmont.cuba.web.toolkit.ui.CubaLabel;
 import com.vaadin.client.Profiler;
-import com.vaadin.client.Util;
+import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.label.LabelConnector;
 import com.vaadin.shared.ui.Connect;
@@ -44,7 +44,7 @@ public class CubaLabelConnector extends LabelConnector {
                 // Haulmont API
                 String text = getState().text;
                 if (text != null && text.contains("\n")) {
-                    text = Util.escapeHTML(text).replace("\n", "<br/>");
+                    text = WidgetUtil.escapeHTML(text).replace("\n", "<br/>");
                     getWidget().setHTML(text);
                 } else {
                     getWidget().setText(text);
@@ -73,7 +73,7 @@ public class CubaLabelConnector extends LabelConnector {
 
         if (sinkOnloads) {
             Profiler.enter("LabelConnector.onStateChanged sinkOnloads");
-            Util.sinkOnloadForImages(getWidget().getElement());
+            WidgetUtil.sinkOnloadForImages(getWidget().getElement());
             Profiler.leave("LabelConnector.onStateChanged sinkOnloads");
         }
     }

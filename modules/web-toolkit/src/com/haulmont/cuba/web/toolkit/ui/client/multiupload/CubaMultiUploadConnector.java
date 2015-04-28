@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.multiupload;
 
-import com.google.gwt.core.client.GWT;
 import com.haulmont.cuba.web.toolkit.ui.CubaMultiUpload;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.Paintable;
@@ -34,9 +33,10 @@ public class CubaMultiUploadConnector extends AbstractComponentConnector impleme
     }
 
     @Override
-    protected CubaMultiUploadWidget createWidget() {
-        CubaMultiUploadWidget uploadWidget = GWT.create(CubaMultiUploadWidget.class);
-        uploadWidget.bootstrapFailureHandler = new CubaMultiUploadWidget.BootstrapFailureHandler() {
+    protected void init() {
+        super.init();
+
+        getWidget().bootstrapFailureHandler = new CubaMultiUploadWidget.BootstrapFailureHandler() {
             @Override
             public void resourceLoadFailed() {
                 getRpcProxy(CubaMultiUploadServerRpc.class).resourceLoadingFailed();
@@ -47,7 +47,7 @@ public class CubaMultiUploadConnector extends AbstractComponentConnector impleme
                 getRpcProxy(CubaMultiUploadServerRpc.class).flashNotInstalled();
             }
         };
-        uploadWidget.notificationHandler = new CubaMultiUploadWidget.NotificationHandler() {
+        getWidget().notificationHandler = new CubaMultiUploadWidget.NotificationHandler() {
             @Override
             public void error(String fileName, String message, int code) {
                 getRpcProxy(CubaMultiUploadServerRpc.class).uploadError(fileName, message, code);
@@ -58,7 +58,6 @@ public class CubaMultiUploadConnector extends AbstractComponentConnector impleme
                 getRpcProxy(CubaMultiUploadServerRpc.class).queueUploadCompleted();
             }
         };
-        return uploadWidget;
     }
 
     @Override
@@ -74,7 +73,7 @@ public class CubaMultiUploadConnector extends AbstractComponentConnector impleme
 
             CubaMultiUploadWidget widget = getWidget();
 
-            widget.themeName = getConnection().getConfiguration().getThemeName();
+            widget.themeName = getConnection().getUIConnector().getActiveTheme();
 
             widget.resourcesVersion = appVersion;
             widget.buttonImageUri = getResourceUrl(CubaMultiUploadState.BUTTON_IMAGE_KEY);

@@ -12,8 +12,8 @@ import com.haulmont.cuba.web.toolkit.ui.client.caption.CaptionHolder;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
 import com.haulmont.cuba.web.toolkit.ui.client.gridlayout.CubaGridLayoutSlot;
 import com.vaadin.client.ComponentConnector;
-import com.vaadin.client.Util;
 import com.vaadin.client.VCaption;
+import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.ui.ManagedLayout;
 import com.vaadin.client.ui.VCheckBox;
 import com.vaadin.client.ui.checkbox.CheckBoxConnector;
@@ -140,7 +140,7 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot implem
         // Take into account right indicators
         double indicatorsWidth = 0;
         if (rightCaption != null) {
-            indicatorsWidth = Util.getRequiredWidth(rightCaption);
+            indicatorsWidth = WidgetUtil.getRequiredWidth(rightCaption);
             availableWidth -= indicatorsWidth;
             if (availableWidth < 0) {
                 availableWidth = 0;
@@ -286,12 +286,12 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot implem
         } else if (getCaption().shouldBePlacedAfterComponent() || isCaptionInline()) {
             widgetWidth += getCaptionWidth();
             if (rightCaption != null) {
-                widgetWidth += Util.getRequiredWidth(rightCaption);
+                widgetWidth += WidgetUtil.getRequiredWidth(rightCaption);
             }
             return widgetWidth;
         } else {
             if (rightCaption != null) {
-                widgetWidth += Util.getRequiredWidth(rightCaption);
+                widgetWidth += WidgetUtil.getRequiredWidth(rightCaption);
             }
             return Math.max(widgetWidth, getCaptionWidth());
         }
@@ -315,7 +315,7 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot implem
 
     public int getIndicatorsWidth() {
         if (rightCaption != null) {
-            return Util.getRequiredWidth(rightCaption);
+            return WidgetUtil.getRequiredWidth(rightCaption);
         } else {
             return 0;
         }

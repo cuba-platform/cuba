@@ -479,7 +479,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
                 if (event.getTypeInt() == Event.ONMOUSEDOWN) {
                     final Element eventTarget = event.getEventTarget().cast();
-                    Widget widget = Util.findWidget(eventTarget, null);
+                    Widget widget = WidgetUtil.findWidget(eventTarget, null);
 
                     if (widget != this) {
                         if (widget instanceof com.vaadin.client.Focusable || widget instanceof com.google.gwt.user.client.ui.Focusable) {
@@ -493,7 +493,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
             @Override
             protected Element getElementTdOrTr(Element eventTarget) {
-                Widget widget = Util.findWidget(eventTarget, null);
+                Widget widget = WidgetUtil.findWidget(eventTarget, null);
                 Widget targetWidget = widget;
 
                 if (widget != this) {
@@ -551,9 +551,9 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
             public void showContextMenu(Event event) {
                 if (contextMenuEnabled && enabled && (customContextMenu != null || actionKeys != null)) {
                     // Show context menu if there are registered action handlers
-                    int left = Util.getTouchOrMouseClientX(event)
+                    int left = WidgetUtil.getTouchOrMouseClientX(event)
                             + Window.getScrollLeft();
-                    int top = Util.getTouchOrMouseClientY(event)
+                    int top = WidgetUtil.getTouchOrMouseClientY(event)
                             + Window.getScrollTop();
 
                     selectRowForContextMenuActions(event);

@@ -5,8 +5,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.datefield;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaDateField;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.UIDL;
@@ -25,11 +23,6 @@ public class CubaDateFieldConnector extends PopupDateFieldConnector {
     @Override
     public CubaDateFieldWidget getWidget() {
         return (CubaDateFieldWidget) super.getWidget();
-    }
-
-    @Override
-    protected Widget createWidget() {
-        return GWT.create(CubaDateFieldWidget.class);
     }
 
     @Override

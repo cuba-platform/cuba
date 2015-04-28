@@ -19,10 +19,7 @@ import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.AggregatableTable;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.TableAggregationRow;
-import com.vaadin.client.ComponentConnector;
-import com.vaadin.client.LayoutManager;
-import com.vaadin.client.UIDL;
-import com.vaadin.client.Util;
+import com.vaadin.client.*;
 import com.vaadin.client.ui.*;
 
 /**
@@ -476,7 +473,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
                 if (event.getTypeInt() == Event.ONMOUSEDOWN) {
                     final Element eventTarget = event.getEventTarget().cast();
-                    Widget widget = Util.findWidget(eventTarget, null);
+                    Widget widget = WidgetUtil.findWidget(eventTarget, null);
 
                     if (widget != this) {
                         if (widget instanceof com.vaadin.client.Focusable || widget instanceof com.google.gwt.user.client.ui.Focusable) {
@@ -490,7 +487,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
             @Override
             protected Element getElementTdOrTr(Element eventTarget) {
-                Widget widget = Util.findWidget(eventTarget, null);
+                Widget widget = WidgetUtil.findWidget(eventTarget, null);
                 Widget targetWidget = widget;
 
                 if (widget != this) {
@@ -535,9 +532,9 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
             public void showContextMenu(Event event) {
                 if (contextMenuEnabled && enabled && (customContextMenu != null || actionKeys != null)) {
                     // Show context menu if there are registered action handlers
-                    int left = Util.getTouchOrMouseClientX(event)
+                    int left = WidgetUtil.getTouchOrMouseClientX(event)
                             + Window.getScrollLeft();
-                    int top = Util.getTouchOrMouseClientY(event)
+                    int top = WidgetUtil.getTouchOrMouseClientY(event)
                             + Window.getScrollTop();
 
                     selectRowForContextMenuActions(event);

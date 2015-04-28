@@ -5,8 +5,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.checkbox;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.checkbox.CheckBoxConnector;
@@ -27,11 +25,6 @@ public class CubaCheckBoxConnector extends CheckBoxConnector {
     @Override
     public CubaCheckBoxWidget getWidget() {
         return (CubaCheckBoxWidget) super.getWidget();
-    }
-
-    @Override
-    protected Widget createWidget() {
-        return GWT.create(CubaCheckBoxWidget.class);
     }
 
     @Override

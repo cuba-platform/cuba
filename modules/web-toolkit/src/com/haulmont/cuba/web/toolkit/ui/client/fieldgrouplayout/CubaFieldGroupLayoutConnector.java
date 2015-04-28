@@ -5,8 +5,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.fieldgrouplayout;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
 import com.haulmont.cuba.web.toolkit.ui.client.gridlayout.CubaGridLayoutConnector;
@@ -29,11 +27,6 @@ public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
     @Override
     public CubaFieldGroupLayoutWidget getWidget() {
         return (CubaFieldGroupLayoutWidget) super.getWidget();
-    }
-
-    @Override
-    protected Widget createWidget() {
-        return GWT.<CubaFieldGroupLayoutWidget>create(CubaFieldGroupLayoutWidget.class);
     }
 
     @Override

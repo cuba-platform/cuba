@@ -4,7 +4,8 @@
  */
 package com.haulmont.cuba.web.toolkit.ui.client.multiupload;
 
-import com.vaadin.client.VConsole;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author artamonov
@@ -29,7 +30,8 @@ public class SwfUploadAPI {
             try {
                 r.run();
             } catch (Throwable e) {
-                VConsole.log(e.toString());
+                java.util.logging.Logger logger = Logger.getLogger("SwfUploadAPI");
+                logger.log(Level.WARNING, e.getMessage() == null ? "" : e.getMessage(), e);
             }
         }
     }

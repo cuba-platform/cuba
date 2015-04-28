@@ -5,8 +5,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.resizabletextarea;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaResizableTextArea;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.textarea.TextAreaConnector;
@@ -27,11 +25,6 @@ public class CubaResizableTextAreaConnector extends TextAreaConnector {
     @Override
     public CubaResizableTextAreaWidget getWidget() {
         return (CubaResizableTextAreaWidget) super.getWidget();
-    }
-
-    @Override
-    protected Widget createWidget() {
-        return GWT.create(CubaResizableTextAreaWidget.class);
     }
 
     @Override

@@ -5,13 +5,11 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.tabsheet;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
-import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.haulmont.cuba.web.toolkit.ui.client.action.RemoteAction;
 import com.haulmont.cuba.web.toolkit.ui.client.action.StaticActionOwner;
-import com.vaadin.client.Util;
+import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.ui.Action;
 import com.vaadin.client.ui.tabsheet.TabsheetConnector;
@@ -66,13 +64,14 @@ public class CubaTabSheetConnector extends TabsheetConnector {
     }
 
     @Override
-    protected Widget createWidget() {
-        CubaTabSheetWidget widget = GWT.create(CubaTabSheetWidget.class);
-        widget.tabContextMenuHandler = new CubaTabSheetWidget.TabContextMenuHandler() {
+    protected void init() {
+        super.init();
+
+        getWidget().tabContextMenuHandler = new CubaTabSheetWidget.TabContextMenuHandler() {
             @Override
             public void onContextMenu(int tabIndex, ContextMenuEvent event) {
-                lastContextMenuX = Util.getTouchOrMouseClientX(event.getNativeEvent());
-                lastContextMenuY = Util.getTouchOrMouseClientY(event.getNativeEvent());
+                lastContextMenuX = WidgetUtil.getTouchOrMouseClientX(event.getNativeEvent());
+                lastContextMenuY = WidgetUtil.getTouchOrMouseClientY(event.getNativeEvent());
 
                 if (getState().hasActionsHandlers) {
                     rpc.onTabContextMenu(tabIndex);
@@ -82,7 +81,6 @@ public class CubaTabSheetConnector extends TabsheetConnector {
                 }
             }
         };
-        return widget;
     }
 
     @Override

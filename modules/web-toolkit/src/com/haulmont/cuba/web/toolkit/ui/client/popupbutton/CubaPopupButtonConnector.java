@@ -13,7 +13,7 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaPopupButton;
-import com.vaadin.client.Util;
+import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.VButton;
@@ -110,7 +110,7 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
 
                 case Event.ONKEYDOWN:
                     if (!getState().customLayout && getWidget().popupHasChild(target)) {
-                        Widget widget = Util.findWidget(target, null);
+                        Widget widget = WidgetUtil.findWidget(target, null);
                         if (widget instanceof VButton) {
                             Widget currentSlot = widget.getParent();
                             VAbstractOrderedLayout layout = (VAbstractOrderedLayout) currentSlot.getParent();
@@ -133,7 +133,7 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
 
                 case Event.ONMOUSEOVER:
                     if (!getState().customLayout && getWidget().popupHasChild(target)) {
-                        Widget widget = Util.findWidget(target, null);
+                        Widget widget = WidgetUtil.findWidget(target, null);
                         if (widget instanceof VButton && !widget.getStyleName().contains(SELECTED_ITEM_STYLE)) {
                             getWidget().resetSelectedItem();
 

@@ -5,8 +5,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.searchselect;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaSearchSelect;
 import com.vaadin.client.ui.combobox.ComboBoxConnector;
 import com.vaadin.shared.ui.Connect;
@@ -26,11 +24,6 @@ public class CubaSearchSelectConnector extends ComboBoxConnector {
     @Override
     public CubaSearchSelectWidget getWidget() {
         return (CubaSearchSelectWidget) super.getWidget();
-    }
-
-    @Override
-    protected Widget createWidget() {
-        return GWT.create(CubaSearchSelectWidget.class);
     }
 
     @Override

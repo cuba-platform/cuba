@@ -5,8 +5,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.tokenlistlabel;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaTokenListLabel;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.vaadin.client.ApplicationConnection;
@@ -22,6 +20,7 @@ import com.vaadin.shared.ui.Connect;
  */
 @Connect(CubaTokenListLabel.class)
 public class CubaTokenListLabelConnector extends PanelConnector {
+
     @Override
     public CubaTokenListLabelWidget getWidget() {
         return (CubaTokenListLabelWidget) super.getWidget();
@@ -39,9 +38,10 @@ public class CubaTokenListLabelConnector extends PanelConnector {
     }
 
     @Override
-    protected Widget createWidget() {
-        CubaTokenListLabelWidget widget = GWT.create(CubaTokenListLabelWidget.class);
-        widget.handler = new CubaTokenListLabelWidget.TokenListLabelHandler() {
+    public void init() {
+        super.init();
+
+        getWidget().handler = new CubaTokenListLabelWidget.TokenListLabelHandler() {
             @Override
             public void remove() {
                 getRpcProxy(CubaTokenListLabelServerRpc.class).removeToken();
@@ -52,8 +52,6 @@ public class CubaTokenListLabelConnector extends PanelConnector {
                 getRpcProxy(CubaTokenListLabelServerRpc.class).itemClick();
             }
         };
-
-        return widget;
     }
 
     @Override

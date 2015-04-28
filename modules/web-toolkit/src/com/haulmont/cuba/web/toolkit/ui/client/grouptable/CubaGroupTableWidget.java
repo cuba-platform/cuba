@@ -17,7 +17,7 @@ import com.haulmont.cuba.web.toolkit.ui.client.table.CubaScrollTableWidget;
 import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.UIDL;
-import com.vaadin.client.Util;
+import com.vaadin.client.WidgetUtil;
 import com.vaadin.shared.ui.table.TableConstants;
 
 import java.util.HashSet;
@@ -495,7 +495,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                 Element td = DOM.getChild(tr, DOM.getChildCount(tr) - 1);
 
                 Style wrapperStyle = td.getFirstChildElement().getStyle();
-                Util.setWidthExcludingPaddingAndBorder(td, totalSpannedWidth, 13, false);
+                WidgetUtil.setWidthExcludingPaddingAndBorder(td, totalSpannedWidth, 13, false);
 
                 String tdWidthPx = td.getStyle().getWidth().replace("px", "");
                 int wrapperWidth = Integer.parseInt(tdWidthPx);
@@ -547,7 +547,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                 switch (DOM.eventGetType(event)) {
                     case Event.ONCLICK:
                         if (BrowserInfo.get().getWebkitVersion() > 0
-                                && DOM.getElementPropertyBoolean(targetElement, "__cell")) {
+                                && targetElement.getPropertyBoolean("__cell")) {
                             scrollBodyPanel.setFocus(true);
                         }
                         handleRowClick(event);

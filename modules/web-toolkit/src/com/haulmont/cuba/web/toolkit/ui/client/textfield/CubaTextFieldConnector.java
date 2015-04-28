@@ -5,13 +5,10 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.textfield;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaTextField;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.annotations.OnStateChange;
-import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.textfield.TextFieldConnector;
 import com.vaadin.shared.ui.Connect;
@@ -22,11 +19,6 @@ import com.vaadin.shared.ui.Connect;
  */
 @Connect(value = CubaTextField.class, loadStyle = Connect.LoadStyle.EAGER)
 public class CubaTextFieldConnector extends TextFieldConnector {
-
-    @Override
-    protected Widget createWidget() {
-        return GWT.create(CubaTextFieldWidget.class);
-    }
 
     @Override
     public CubaTextFieldState getState() {

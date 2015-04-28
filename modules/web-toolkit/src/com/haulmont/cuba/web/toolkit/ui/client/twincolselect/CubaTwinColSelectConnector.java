@@ -5,8 +5,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.twincolselect;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaTwinColSelect;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.twincolselect.TwinColSelectConnector;
@@ -18,11 +16,6 @@ import com.vaadin.shared.ui.Connect;
  */
 @Connect(CubaTwinColSelect.class)
 public class CubaTwinColSelectConnector extends TwinColSelectConnector {
-
-    @Override
-    protected Widget createWidget() {
-        return GWT.create(CubaTwinColSelectWidget.class);
-    }
 
     @Override
     public CubaTwinColSelectWidget getWidget() {

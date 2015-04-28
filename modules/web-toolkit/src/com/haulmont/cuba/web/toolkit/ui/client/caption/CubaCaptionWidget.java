@@ -6,8 +6,8 @@
 package com.haulmont.cuba.web.toolkit.ui.client.caption;
 
 import com.google.gwt.aria.client.Roles;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.DOM;
 import com.vaadin.client.*;
 import com.vaadin.client.ui.AbstractFieldConnector;
 import com.vaadin.client.ui.ImageIcon;
@@ -217,20 +217,20 @@ public class CubaCaptionWidget extends VCaption {
         int width = 0;
 
         if (icon != null) {
-            width += Util.getRequiredWidth(icon.getElement());
+            width += WidgetUtil.getRequiredWidth(icon.getElement());
         }
 
         if (captionText != null) {
-            width += Util.getRequiredWidth(captionText);
+            width += WidgetUtil.getRequiredWidth(captionText);
         }
         if (requiredFieldIndicator != null && requiredFieldIndicator.getParentElement() == getElement()) {
-            width += Util.getRequiredWidth(requiredFieldIndicator);
+            width += WidgetUtil.getRequiredWidth(requiredFieldIndicator);
         }
         if (errorIndicatorElement != null && errorIndicatorElement.getParentElement() == getElement()) {
-            width += Util.getRequiredWidth(errorIndicatorElement);
+            width += WidgetUtil.getRequiredWidth(errorIndicatorElement);
         }
         if (toolTipIndicator != null && toolTipIndicator.getParentElement() == getElement()) {
-            width += Util.getRequiredWidth(toolTipIndicator);
+            width += WidgetUtil.getRequiredWidth(toolTipIndicator);
         }
         return width;
     }

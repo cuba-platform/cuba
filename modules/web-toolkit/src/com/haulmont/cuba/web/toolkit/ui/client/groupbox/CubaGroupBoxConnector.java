@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.groupbox;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
@@ -28,9 +27,11 @@ public class CubaGroupBoxConnector extends PanelConnector {
     }
 
     @Override
-    protected CubaGroupBoxWidget createWidget() {
-        CubaGroupBoxWidget groupBoxWidget = GWT.create(CubaGroupBoxWidget.class);
-        groupBoxWidget.expandHandler = new CubaGroupBoxWidget.ExpandHandler() {
+    public void init() {
+        super.init();
+        CubaGroupBoxWidget widget = getWidget();
+
+        widget.expandHandler = new CubaGroupBoxWidget.ExpandHandler() {
             @Override
             public void expand() {
                 getRpcProxy(CubaGroupBoxServerRpc.class).expand();
@@ -41,16 +42,8 @@ public class CubaGroupBoxConnector extends PanelConnector {
                 getRpcProxy(CubaGroupBoxServerRpc.class).collapse();
             }
         };
-        return groupBoxWidget;
-    }
-
-    @Override
-    public void init() {
-        super.init();
 
         LayoutManager layoutManager = getLayoutManager();
-        CubaGroupBoxWidget widget = getWidget();
-
         layoutManager.registerDependency(this, widget.captionStartDeco);
         layoutManager.registerDependency(this, widget.captionEndDeco);
     }
@@ -91,26 +84,27 @@ public class CubaGroupBoxConnector extends PanelConnector {
 
         boolean bordersVisible = panel.captionStartDeco.getOffsetWidth() > 0 || panel.captionEndDeco.getOffsetWidth() > 0;
 
+        Style captionWrapStyle = panel.captionWrap.getStyle();
         if (bordersVisible) {
             if (isUndefinedWidth()) {
                 // do not set width: 100% for captionEndDeco in CSS
                 // it breaks layout with width: AUTO
-                panel.captionWrap.getStyle().setWidth(Util.getRequiredWidth(panel.contentNode), Style.Unit.PX);
+                captionWrapStyle.setWidth(WidgetUtil.getRequiredWidth(panel.contentNode), Style.Unit.PX);
             } else {
-                panel.captionWrap.getStyle().setWidth(100, Style.Unit.PCT);
+                captionWrapStyle.setWidth(100, Style.Unit.PCT);
             }
 
             panel.captionEndDeco.getStyle().setWidth(100, Style.Unit.PCT);
 
             panel.captionNode.getStyle().clearWidth();
 
-            int captionWidth = Util.getRequiredWidth(panel.captionNode);
-            int captionStartWidth = Util.getRequiredWidth(panel.captionStartDeco);
+            int captionWidth = WidgetUtil.getRequiredWidth(panel.captionNode);
+            int captionStartWidth = WidgetUtil.getRequiredWidth(panel.captionStartDeco);
 
             // Fix caption width to avoid problems with fractional width of caption text
             panel.captionNode.getStyle().setWidth(captionWidth, Style.Unit.PX);
 
-            panel.captionWrap.getStyle().setPaddingLeft(captionWidth + captionStartWidth, Style.Unit.PX);
+            captionWrapStyle.setPaddingLeft(captionWidth + captionStartWidth, Style.Unit.PX);
             panel.captionStartDeco.getStyle().setMarginLeft(-captionStartWidth - captionWidth, Style.Unit.PX);
         }
 
@@ -126,7 +120,7 @@ public class CubaGroupBoxConnector extends PanelConnector {
 
         Profiler.enter("PanelConnector.layout modify style");
         Style style = panel.getElement().getStyle();
-        panel.captionWrap.getStyle().setMarginTop(-top, Style.Unit.PX);
+        captionWrapStyle.setMarginTop(-top, Style.Unit.PX);
         panel.bottomDecoration.getStyle().setMarginBottom(-bottom, Style.Unit.PX);
         style.setPaddingTop(top, Style.Unit.PX);
         style.setPaddingBottom(bottom, Style.Unit.PX);
