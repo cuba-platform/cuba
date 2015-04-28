@@ -307,7 +307,7 @@ public class RuntimePropsDatasourceImpl
             return;
 
         if (Datasource.CommitMode.DATASTORE.equals(getCommitMode())) {
-            Collection<DynamicAttributesEntity> itemsToUpdate = getItemsToUpdate();
+            Collection itemsToUpdate = getItemsToUpdate();
             CommitContext cc = new CommitContext(itemsToUpdate);
 
             Set<Entity> entities = getDataSupplier().commit(cc);
@@ -388,8 +388,9 @@ public class RuntimePropsDatasourceImpl
 
     @Override
     public void committed(Set<Entity> entities) {
-        if (!State.VALID.equals(state))
+        if (!State.VALID.equals(state)) {
             return;
+        }
 
         for (Entity entity : entities) {
             if (entity instanceof CategoryAttributeValue) {
