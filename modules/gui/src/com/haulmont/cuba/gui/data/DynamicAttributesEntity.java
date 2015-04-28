@@ -29,13 +29,13 @@ public class DynamicAttributesEntity implements BaseEntity {
 
     private static final long serialVersionUID = -8091230910619941201L;
 
-    private MetaClass metaClass;
-    private UUID id;
-    private Map<String, Object> changed = new HashMap<>();
-    private Set<ValueListener> listeners = new LinkedHashSet<>();
+    protected MetaClass metaClass;
+    protected UUID id;
+    protected Map<String, Object> changed = new HashMap<>();
+    protected Set<ValueListener> listeners = new LinkedHashSet<>();
 
-    private Map<String, CategoryAttributeValue> categoryValues = new HashMap<>();
-    private Map<String, Object> values = new HashMap<>();
+    protected Map<String, CategoryAttributeValue> categoryValues = new HashMap<>();
+    protected Map<String, Object> values = new HashMap<>();
 
     public DynamicAttributesEntity(MetaClass metaClass) {
         this.metaClass = metaClass;
@@ -201,5 +201,11 @@ public class DynamicAttributesEntity implements BaseEntity {
                     break;
             }
         }
+    }
+
+    public void updateAttributeValue(CategoryAttributeValue attributeValue) {
+        CategoryAttribute attribute = attributeValue.getCategoryAttribute();
+        String attributeCode = DynamicAttributesUtils.encodeAttributeCode(attribute.getCode());
+        categoryValues.put(attributeCode, attributeValue);
     }
 }

@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.data;
 
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.View;
 
 import java.util.Collection;
 
@@ -19,4 +20,6 @@ public interface RuntimePropsDatasource<T extends Entity> extends Datasource<T> 
     Datasource getMainDs();
 
     Collection<MetaProperty> getPropertiesFilteredByCategory();
+
+    View getAttributeValueView();
 }

@@ -257,6 +257,10 @@ public class DsContextImpl implements DsContextImplementation {
 
         entities.add(entity);
         views.put(entity, datasource.getView());
+
+        if (datasource instanceof RuntimePropsDatasource) {
+            views.put(entity, ((RuntimePropsDatasource) datasource).getAttributeValueView());
+        }
     }
 
     // Replace the reference to master entity with actual entity containing in the master datasource,

@@ -41,8 +41,10 @@ public class RuntimePropsDatasourceImpl
     protected State state = State.NOT_INITIALIZED;
 
     protected DynamicAttributesEntity item;
-    private final Collection<CategoryAttribute> attributes;
-    private Category category;
+    protected Category category;
+
+    protected final Collection<CategoryAttribute> attributes;
+    protected final View attributeValueView;
 
     public RuntimePropsDatasourceImpl(DsContext dsContext, DataSupplier dataSupplier, String id, String mainDsId) {
         this.id = id;
@@ -68,6 +70,14 @@ public class RuntimePropsDatasourceImpl
             }
         });
         mainDs.setLoadDynamicAttributes(true);
+
+        ViewRepository viewRepository = AppBeans.get(ViewRepository.NAME);
+
+        View baseAttributeValueView = viewRepository.getView(CategoryAttributeValue.class, View.LOCAL);
+        View baseAttributeView = viewRepository.getView(CategoryAttribute.class, View.LOCAL);
+
+        attributeValueView = new View(baseAttributeValueView, null, false)
+                .addProperty("categoryAttribute", new View(baseAttributeView, null, false).addProperty("category"));
     }
 
     @Override
@@ -107,8 +117,11 @@ public class RuntimePropsDatasourceImpl
             if (attributeValue == null) {
                 attributeValue = new CategoryAttributeValue();
                 dynamicAttributes.put(attribute.getCode(), attributeValue);
+
+                attributeValue.setCode(DynamicAttributesUtils.decodeAttributeCode(attribute.getCode()));
                 attributeValue.setCategoryAttribute(attribute);
                 attributeValue.setEntityId(entity.getUuid());
+
                 if (PersistenceHelper.isNew(entity) || categoryChanged) {
                     attributeValue.setStringValue(StringUtils.trimToNull(attribute.getDefaultString()));
                     attributeValue.setIntValue(attribute.getDefaultInt());
@@ -140,8 +153,10 @@ public class RuntimePropsDatasourceImpl
 
         item.addListener(listener);
         item.addListener(new com.haulmont.chile.core.common.ValueListener() {
+            @Override
             public void propertyChanged(Object item, String property, Object prevValue, Object value) {
                 modified = true;
+                //noinspection unchecked
                 itemToUpdate.add(((DynamicAttributesEntity) item).getCategoryValue(property));
             }
         });
@@ -165,9 +180,7 @@ public class RuntimePropsDatasourceImpl
         builder.reset().setMetaClass(metadata.getSession().getClass(SetValueEntity.class)).setId(id)
                 .setViewName(View.MINIMAL).setSoftDeletion(false);
 
-        final CollectionDatasource datasource;
-
-        datasource = builder
+        CollectionDatasource datasource = builder
                 .setRefreshMode(CollectionDatasource.RefreshMode.NEVER)
                 .buildCollectionDatasource();
         List<SetValueEntity> options = getOptions(attribute, attributeValue);
@@ -262,7 +275,6 @@ public class RuntimePropsDatasourceImpl
     }
 
     protected Entity parseEntity(String entityType, UUID uuid) {
-
         Entity entity;
         try {
             Class clazz = Class.forName(entityType);
@@ -295,11 +307,11 @@ public class RuntimePropsDatasourceImpl
             return;
 
         if (Datasource.CommitMode.DATASTORE.equals(getCommitMode())) {
-            final DataSupplier supplier = getDataSupplier();
-            item = supplier.commit(item, getView());
-            clearCommitLists();
-            modified = false;
+            Collection<DynamicAttributesEntity> itemsToUpdate = getItemsToUpdate();
+            CommitContext cc = new CommitContext(itemsToUpdate);
 
+            Set<Entity> entities = getDataSupplier().commit(cc);
+            committed(entities);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -356,6 +368,11 @@ public class RuntimePropsDatasourceImpl
     }
 
     @Override
+    public View getAttributeValueView() {
+        return attributeValueView;
+    }
+
+    @Override
     public void initialized() {
         final State prev = state;
         state = State.INVALID;
@@ -371,11 +388,13 @@ public class RuntimePropsDatasourceImpl
 
     @Override
     public void committed(Set<Entity> entities) {
+        if (!State.VALID.equals(state))
+            return;
+
         for (Entity entity : entities) {
-            if (entity.equals(item)) {
-                detachListener(item);
-                item = (DynamicAttributesEntity) entity;
-                attachListener(item);
+            if (entity instanceof CategoryAttributeValue) {
+                CategoryAttributeValue attributeValue = (CategoryAttributeValue) entity;
+                item.updateAttributeValue(attributeValue);
             }
         }
         modified = false;
@@ -384,8 +403,11 @@ public class RuntimePropsDatasourceImpl
 
     protected void setMainDs(String name) {
         mainDs = dsContext.get(name);
-        if (mainDs == null)
+        if (mainDs == null) {
             throw new DevelopmentException("runtimePropsDatasource initialization error: mainDs '" + name + "' does not exists");
+        }
+
+        //noinspection unchecked
         mainDs.addListener(
                 new DsListenerAdapter() {
                     @Override
@@ -406,6 +428,7 @@ public class RuntimePropsDatasourceImpl
         return mainDs;
     }
 
+    @Override
     public Collection<MetaProperty> getPropertiesFilteredByCategory() {
         return metaClass.getPropertiesFilteredByCategory(category);
     }
