@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
+import com.haulmont.cuba.web.toolkit.ui.CubaUpload;
 import com.vaadin.ui.Upload;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -28,9 +29,11 @@ import java.util.UUID;
  * @author abramov
  * @version $Id$
  */
-public class WebFileUploadField extends WebAbstractComponent<Upload> implements FileUploadField {
+public class WebFileUploadField extends WebAbstractComponent<CubaUpload> implements FileUploadField {
 
     private static final int BYTES_IN_MEGABYTE = 1048576;
+
+    protected Log log = LogFactory.getLog(getClass());
 
     protected FileUploadingAPI fileUploading;
     protected Messages messages;
@@ -42,30 +45,28 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
     protected FileOutputStream outputStream;
     protected UUID tempFileId;
 
-    private List<Listener> listeners = new ArrayList<>();
-
-    private Log log = LogFactory.getLog(getClass());
+    protected List<Listener> listeners = new ArrayList<>();
 
     public WebFileUploadField() {
         fileUploading = AppBeans.get(FileUploadingAPI.NAME);
         messages = AppBeans.get(Messages.NAME);
 
-        component = new Upload(
-                null,
-                new com.vaadin.ui.Upload.Receiver() {
-                    @Override
-                    public OutputStream receiveUpload(String filename, String MIMEType) {
-                        fileName = filename;
-                        try {
-                            tempFileId = fileUploading.createEmptyFile();
-                            File tmpFile = fileUploading.getFile(tempFileId);
-                            outputStream = new FileOutputStream(tmpFile);
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                        return outputStream;
-                    }
-                });
+        component = new CubaUpload();
+        component.setReceiver(new com.vaadin.ui.Upload.Receiver() {
+            @Override
+            public OutputStream receiveUpload(String filename, String MIMEType) {
+                fileName = filename;
+                try {
+                    tempFileId = fileUploading.createEmptyFile();
+                    File tmpFile = fileUploading.getFile(tempFileId);
+                    //noinspection ConstantConditions
+                    outputStream = new FileOutputStream(tmpFile);
+                } catch (Exception e) {
+                    throw new RuntimeException("Unable to receive file", e);
+                }
+                return outputStream;
+            }
+        });
         // Set single click upload functional
         component.setImmediate(true);
 
@@ -77,7 +78,8 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
                 final long maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
                 if (event.getContentLength() > maxSize) {
                     component.interruptUpload();
-                    String warningMsg = messages.formatMessage(AppConfig.getMessagesPack(), "upload.fileTooBig.message", event.getFilename(), maxUploadSizeMb);
+
+                    String warningMsg = messages.formatMainMessage("upload.fileTooBig.message", event.getFilename(), maxUploadSizeMb);
                     getFrame().showNotification(warningMsg, IFrame.NotificationType.WARNING);
                 } else {
                     final Listener.Event e = new Listener.Event(event.getFilename());
@@ -196,15 +198,6 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
     public void setDescription(String description) {
         component.setDescription(description);
     }
-
-//    vaadin7
-//    public String getButtonWidth() {
-//        return component.getButtonWidth();
-//    }
-//
-//    public void setButtonWidth(String buttonWidth) {
-//        component.setButtonWidth(buttonWidth);
-//    }
 
     /**
      * @return File id for uploaded file in {@link FileUploadingAPI}
