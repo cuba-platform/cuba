@@ -200,8 +200,8 @@ public class CubaSearchSelectWidget extends VFilterSelect {
                 event.stopPropagation();
                 break;
             case KeyCodes.KEY_ENTER:
-                MenuItem selectedItem = suggestionPopup.menu.getKeyboardSelectedItem();
-                if (selectedItem == null) {
+                int selectedIndex = suggestionPopup.menu.getSelectedIndex();
+                if (selectedIndex >= 0) {
                     /*
                      * Nothing selected using up/down. Happens e.g. when entering a
                      * text (causes popup to open) and then pressing enter.
@@ -209,9 +209,7 @@ public class CubaSearchSelectWidget extends VFilterSelect {
                     if (suggestionPopup.isAttached())
                         filterOptions(currentPage);
                 } else {
-                    currentSuggestion = ((FilterSelectSuggestion) suggestionPopup.menu
-                            .getKeyboardSelectedItem().getCommand());
-
+                    currentSuggestion = currentSuggestions.get(selectedIndex);
                     if (currentSuggestion != null &&
                             currentSuggestion.getReplacementString().equals(tb.getText())) {
                         this.preventFilterAfterSelect = true;
