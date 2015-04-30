@@ -22,17 +22,20 @@
 
   .#{$primary-stylename}.#{$primary-stylename}-h1 {
     font-size: $v-font-size--h1;
+    line-height: 1.5;
     margin: 0;
   }
 
   .#{$primary-stylename}.#{$primary-stylename}-h2 {
     margin: 0;
     font-size: $v-font-size--h2;
+    line-height: 1.5;
   }
 
   .#{$primary-stylename}.#{$primary-stylename}-h3 {
     margin: 0;
     font-size: $v-font-size--h3;
+    line-height: 1.5;
   }
 
   .#{$primary-stylename}.#{$primary-stylename}-h4 {
