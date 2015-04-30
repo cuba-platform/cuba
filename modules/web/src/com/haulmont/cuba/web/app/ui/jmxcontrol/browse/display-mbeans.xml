@@ -37,15 +37,15 @@
                 </columns>
                 <rows>
                     <row>
-                        <label value="msg://localJmxNode"/>
+                        <label value="msg://localJmxNode" align="MIDDLE_LEFT"/>
                         <label id="localJmxField" stylename="h2" width="${fieldWidth}"/>
                     </row>
                     <row>
-                        <label value="msg://targetJmxNode"/>
+                        <label value="msg://targetJmxNode" align="MIDDLE_LEFT"/>
                         <lookupPickerField id="jmxConnectionField" optionsDatasource="jmxInstancesDs" width="${fieldWidth}"/>
                     </row>
                     <row>
-                        <label value="msg://searchByObjectName"/>
+                        <label value="msg://searchByObjectName" align="MIDDLE_LEFT"/>
                         <textField id="objectNameField" width="${fieldWidth}"/>
                     </row>
                 </rows>
