@@ -25,12 +25,7 @@ public class ThreadsMonitoringWindow extends AbstractWindow {
     protected ThreadsDatasource threadsDs;
 
     @Inject
-    protected LinkButton nodeLink;
-
-    @Inject
     protected Table threadsTable;
-
-    private JmxInstance node;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -41,8 +36,9 @@ public class ThreadsMonitoringWindow extends AbstractWindow {
                 updateStacktrace(item);
             }
         });
-        node = (JmxInstance) params.get("node");
-        nodeLink.setCaption(node.getCaption());
+        JmxInstance node = (JmxInstance) params.get("node");
+        setCaption(formatMessage("threadsMonitoring.caption", node.getNodeName()));
+
         threadsTable.getColumn("cpu").setFormatter(new PercentFormatter());
     }
 
@@ -56,10 +52,6 @@ public class ThreadsMonitoringWindow extends AbstractWindow {
     public void onRefresh(Timer timer) {
         threadsDs.refresh();
         updateStacktrace(threadsDs.getItem());
-    }
-
-    public void viewNode() {
-        openEditor("sys$JmxInstance.edit", node, WindowManager.OpenType.DIALOG);
     }
 
     protected static class PercentFormatter implements Formatter {

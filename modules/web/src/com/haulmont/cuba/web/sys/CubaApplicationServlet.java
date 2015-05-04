@@ -9,7 +9,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.app.StatisticsCounterBean;
+import com.haulmont.cuba.web.app.WebStatisticsAccumulator;
 import com.haulmont.cuba.web.auth.RequestContext;
 import com.vaadin.server.*;
 import org.apache.commons.logging.Log;
@@ -42,7 +42,7 @@ public class CubaApplicationServlet extends VaadinServlet {
     protected WebConfig webConfig;
 
     //private StatisticsCounter statisticsCounter;
-    private StatisticsCounterBean statisticsCounter;
+    private WebStatisticsAccumulator statisticsCounter;
 
     @Override
     protected VaadinServletService createServletService(DeploymentConfiguration deploymentConfiguration)
@@ -56,7 +56,7 @@ public class CubaApplicationServlet extends VaadinServlet {
     public void init(ServletConfig servletConfig) throws ServletException {
         Configuration configuration = AppBeans.get(Configuration.NAME);
         webConfig = configuration.getConfig(WebConfig.class);
-        statisticsCounter = AppBeans.get(StatisticsCounterBean.class);
+        statisticsCounter = AppBeans.get(WebStatisticsAccumulator.class);
 
         super.init(servletConfig);
     }
@@ -146,7 +146,7 @@ public class CubaApplicationServlet extends VaadinServlet {
             httpSession.setAttribute(AppUI.LAST_REQUEST_PARAMS_ATTR, params);
         }
 
-        statisticsCounter.incWebClientRequestsCount();
+        statisticsCounter.incWebRequestsCount();
         log.debug("Redirect to application " + httpSession.getId());
         response.addCookie(new Cookie("JSESSIONID", httpSession.getId()));
         response.sendRedirect(sb.toString());
@@ -156,7 +156,7 @@ public class CubaApplicationServlet extends VaadinServlet {
             throws ServletException, IOException {
         RequestContext.create(request, response);
         AppContext.setSecurityContext(new VaadinSessionAwareSecurityContext());
-        statisticsCounter.incWebClientRequestsCount();
+        statisticsCounter.incWebRequestsCount();
 
         long startTs = System.currentTimeMillis();
 

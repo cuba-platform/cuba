@@ -15,5 +15,25 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 @ManagedResource(description = "Provides information about web-client requests statistics")
 public interface StatisticsCounterMBean {
 
-    Long getWebClientRequestsCount();
+    double getWebRequestsCount();
+
+    double getWebRequestsPerSecond();
+
+    double getSpringScheduledTasksCount();
+
+    double getSpringScheduledTasksPerSecond();
+
+    double getAvgHeapMemoryUsage();
+
+    double getAvgNonHeapMemoryUsage();
+
+    double getAvgFreePhysicalMemorySize();
+
+    double getAvgFreeSwapSpaceSize();
+
+    double getAvgSystemCpuLoad();
+
+    double getAvgProcessCpuLoad();
+
+    double getAvgThreadCount();
 }

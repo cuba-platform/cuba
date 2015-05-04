@@ -6,7 +6,7 @@
 package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.app.StatisticsCounterAPI;
+import com.haulmont.cuba.core.app.MiddlewareStatisticsAccumulator;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
@@ -31,7 +31,7 @@ public class EntityTransactionListener extends AbstractTransactionListener {
     private EntityListenerManager manager;
 
     @Inject
-    private StatisticsCounterAPI statisticsCounter;
+    private MiddlewareStatisticsAccumulator statisticsCounter;
 
     @Override
     public void beforeCommit(TransactionEvent event) {

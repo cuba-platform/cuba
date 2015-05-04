@@ -19,6 +19,12 @@ public class CubaThreadPoolTaskScheduler extends ThreadPoolTaskScheduler {
 
     private static final long serialVersionUID = -2882103892163602009L;
 
+    private StatisticsAccumulator statisticsAccumulator;
+
+    public void setStatisticsAccumulator(StatisticsAccumulator statisticsAccumulator) {
+        this.statisticsAccumulator = statisticsAccumulator;
+    }
+
     @Override
     protected ScheduledExecutorService createExecutor(int poolSize, ThreadFactory threadFactory, RejectedExecutionHandler rejectedExecutionHandler) {
         return new ScheduledThreadPoolExecutor(poolSize, threadFactory, rejectedExecutionHandler) {
@@ -47,21 +53,23 @@ public class CubaThreadPoolTaskScheduler extends ThreadPoolTaskScheduler {
     }
 
     protected <V> RunnableScheduledFuture<V> decorate(Runnable runnable, RunnableScheduledFuture<V> task) {
-        return new TaskDecorator<>(task);
+        return new TaskDecorator<>(task, statisticsAccumulator);
     }
 
     protected <V> RunnableScheduledFuture<V> decorate(Callable<V> callable, RunnableScheduledFuture<V> task) {
-        return new TaskDecorator<>(task);
+        return new TaskDecorator<>(task, statisticsAccumulator);
     }
 
     protected static class TaskDecorator<V> implements RunnableScheduledFuture<V> {
 
         protected RunnableScheduledFuture<V> delegate;
+        private StatisticsAccumulator statisticsAccumulator;
 
         protected Log log = LogFactory.getLog(getClass());
 
-        public TaskDecorator(RunnableScheduledFuture<V> delegate) {
+        public TaskDecorator(RunnableScheduledFuture<V> delegate, StatisticsAccumulator statisticsAccumulator) {
             this.delegate = delegate;
+            this.statisticsAccumulator = statisticsAccumulator;
         }
 
         @Override
@@ -73,6 +81,9 @@ public class CubaThreadPoolTaskScheduler extends ThreadPoolTaskScheduler {
         public void run() {
             if (log.isTraceEnabled())
                 log.trace("before execution: SecurityContext=" + AppContext.getSecurityContext());
+
+            if (statisticsAccumulator != null)
+                statisticsAccumulator.incSpringScheduledTasksCount();
 
             // Reset a SecurityContext in the thread before and after execution
             cleanContext();

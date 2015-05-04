@@ -9,9 +9,7 @@ import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-
-import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
+import com.haulmont.cuba.gui.components.Formatter;
 
 /**
  * @author krivenko
@@ -27,84 +25,80 @@ public class PerformanceParameter extends AbstractNotPersistentEntity {
     private String parameterName;
 
     @MetaProperty
+    private String displayName;
+
+    @MetaProperty
     private String parameterGroup;
 
+    private Double current;
+
+    private Double average;
+
+    private Double recent;
+
+    private Boolean showRecent;
+
+    private Long refreshCount;
+
+    private double sum;
+
+    private Formatter<Double> formatter;
+
     @MetaProperty
-    private String currentStringValue;
+    public String getCurrentStringValue() {
+        if (current == null)
+            return "";
 
-    private Long currentLongValue;
+        if (formatter == null)
+            return current.toString();
 
-    private Double currentDoubleValue;
+        return formatter.format(current);
+    }
 
     @MetaProperty
-    private Double averageForUptime;
+    public String getRecentStringValue() {
+        if (recent == null)
+            return "";
 
-    private Double average1m;
+        if (formatter == null)
+            return recent.toString();
+
+        return formatter.format(recent);
+    }
 
     @MetaProperty
-    private String average1mStringValue;
+    public String getAverageStringValue() {
+        if (average == null)
+            return "";
 
-    private Boolean showUptime;
+        if (formatter == null)
+            return average.toString();
 
-    private Boolean showAverage;
-
-    private Long uptime;
-
-    private Integer averageInterval;
-
-    private Queue<Long> longValues;
-
-    private Queue<Double> doubleValues;
-
-    public Integer getAverageInterval() {
-        return averageInterval;
+        return formatter.format(average);
     }
 
-    public void setAverageInterval(Integer averageInterval) {
-        this.averageInterval = averageInterval;
-        longValues = new ArrayBlockingQueue<>(averageInterval);
-        doubleValues = new ArrayBlockingQueue<>(averageInterval);
+    public Long getRefreshCount() {
+        return refreshCount;
     }
 
-    public String getAverage1mStringValue() {
-        return average1mStringValue != null ? average1mStringValue :
-                (average1m != null ? average1m.toString() : "");
+    public void setRefreshCount(Long refreshCount) {
+        this.refreshCount = refreshCount;
     }
 
-    public void setAverage1mStringValue(String average1mStringValue) {
-        this.average1mStringValue = average1mStringValue;
+    public Boolean getShowRecent() {
+        return showRecent;
     }
 
-    public Long getUptime() {
-        return uptime;
+    public void setShowRecent(Boolean showRecent) {
+        this.showRecent = showRecent;
     }
 
-    public void setUptime(Long uptime) {
-        this.uptime = uptime;
+    public Double getAverage() {
+        return average;
     }
 
-    public Boolean getShowUptime() {
-        return showUptime;
-    }
-
-    public void setShowUptime(Boolean showUptime) {
-        this.showUptime = showUptime;
-    }
-
-    public Boolean getShowAverage() {
-        return showAverage;
-    }
-
-    public void setShowAverage(Boolean showAverage) {
-        this.showAverage = showAverage;
-    }
-
-    public Double getAverageForUptime() {
-        return averageForUptime;
-    }
-
-    public void setAverageForUptime(Double averageForUptime) {
-        this.averageForUptime = averageForUptime;
+    public void setAverage(Double average) {
+        this.average = average;
     }
 
     public String getParameterName() {
@@ -115,6 +109,14 @@ public class PerformanceParameter extends AbstractNotPersistentEntity {
         this.parameterName = parameterName;
     }
 
+    public String getDisplayName() {
+        return displayName == null ? parameterName : displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
     public String getParameterGroup() {
         return parameterGroup;
     }
@@ -123,78 +125,44 @@ public class PerformanceParameter extends AbstractNotPersistentEntity {
         this.parameterGroup = parameterGroup;
     }
 
-    public String getCurrentStringValue() {
-        return currentStringValue != null ? currentStringValue :
-                (currentLongValue != null ? currentLongValue.toString() :
-                        (currentDoubleValue != null ? currentDoubleValue.toString() : ""));
+    public Double getCurrent() {
+        return current;
     }
 
-    public void setCurrentStringValue(String currentStringValue) {
-        this.currentStringValue = currentStringValue;
+    public void setCurrent(Double current) {
+        this.current = current;
+        calcRecent();
     }
 
-    public Long getCurrentLongValue() {
-        return currentLongValue;
+    public Long getCurrentLong() {
+        return current == null ? null : current.longValue();
     }
 
-
-    public void setCurrentLongValue(Long currentLongValue) {
-        this.currentLongValue = currentLongValue;
-
-        calcLongAverage(currentLongValue);
+    public void setCurrentLong(Long current) {
+        this.current = current == null ? null : current.doubleValue();
+        calcRecent();
     }
 
-    private void calcLongAverage(Long currentLongValue) {
-        if (showUptime) {
-            setAverageForUptime((double) currentLongValue / (uptime != null ? uptime : 1));
-        }
-        if (showAverage) {
-            if (!longValues.offer(currentLongValue)) {
-                longValues.poll();
-                longValues.offer(currentLongValue);
-            }
-
-            long sum = 0;
-            for (Long v : longValues) {
-                sum += v;
-            }
-            setAverage1m((double) sum / longValues.size());
+    private void calcRecent() {
+        if (showRecent) {
+            sum += current;
+            setRecent(sum / refreshCount);
         }
     }
 
-    public Double getCurrentDoubleValue() {
-        return currentDoubleValue;
+    public Double getRecent() {
+        return recent;
     }
 
-    public void setCurrentDoubleValue(Double currentDoubleValue) {
-        this.currentDoubleValue = currentDoubleValue;
-        calcDoubleAverage(currentDoubleValue);
+    public void setRecent(Double average1m) {
+        this.recent = average1m;
     }
 
-    private void calcDoubleAverage(Double currentDoubleValue) {
-        if (showUptime) {
-            setAverageForUptime(currentDoubleValue / (uptime != null ? uptime : 1));
-        }
-        if (showAverage) {
-            boolean added = doubleValues.offer(currentDoubleValue);
-            if (!added) {
-                doubleValues.poll();
-                doubleValues.offer(currentDoubleValue);
-            }
-            double sum = 0;
-            for (Double v : doubleValues) {
-                sum += v;
-            }
-            setAverage1m(sum / doubleValues.size());
-        }
+    public Formatter<Double> getFormatter() {
+        return formatter;
     }
 
-    public Double getAverage1m() {
-        return average1m;
+    public void setFormatter(Formatter<Double> formatter) {
+        this.formatter = formatter;
     }
-
-    public void setAverage1m(Double average1m) {
-        this.average1m = average1m;
-    }
-
 }

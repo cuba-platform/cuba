@@ -77,6 +77,7 @@ public class JmxControlBean implements JmxControlAPI {
     public JmxInstance getLocalInstance() {
         JmxInstance localJmxInstance = new JmxInstance();
         InstanceUtils.copy(JmxConnectionHelper.LOCAL_JMX_INSTANCE, localJmxInstance);
+        localJmxInstance.setNodeName(getLocalNodeName());
         return localJmxInstance;
     }
 

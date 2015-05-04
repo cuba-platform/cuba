@@ -102,10 +102,12 @@
     <bean id="scheduler" class="com.haulmont.cuba.core.sys.CubaThreadPoolTaskScheduler">
         <property name="daemon" value="true"/>
         <property name="poolSize" value="10"/>
+        <property name="statisticsAccumulator" ref="cuba_WebStatisticsAccumulator"/>
     </bean>
 
     <task:scheduled-tasks scheduler="scheduler">
         <task:scheduled ref="cuba_TriggerFilesProcessor" method="process" fixed-delay="${cuba.triggerFilesCheckInterval?:5000}"/>
+        <task:scheduled ref="cuba_WebStatisticsAccumulator" method="gatherParameters" fixed-rate="5000"/>
     </task:scheduled-tasks>
 
 </beans>

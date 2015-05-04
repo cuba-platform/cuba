@@ -73,6 +73,7 @@ public interface JmxControlAPI {
      * @param info     managed bean descriptor
      * @return loaded attribute, null if no attribute found.
      */
+    @Nullable
     ManagedBeanAttribute loadAttribute(ManagedBeanInfo info, String attributeName);
 
     /**

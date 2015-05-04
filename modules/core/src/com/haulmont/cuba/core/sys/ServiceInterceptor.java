@@ -5,7 +5,7 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.app.StatisticsCounterAPI;
+import com.haulmont.cuba.core.app.MiddlewareStatisticsAccumulator;
 import com.haulmont.cuba.core.global.Logging;
 import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
@@ -28,7 +28,7 @@ public class ServiceInterceptor {
 
     private Persistence persistence;
 
-    private StatisticsCounterAPI statisticsCounter;
+    private MiddlewareStatisticsAccumulator statisticsAccumulator;
 
     private Log log = LogFactory.getLog(getClass());
 
@@ -40,12 +40,12 @@ public class ServiceInterceptor {
         this.persistence = persistence;
     }
 
-    public void setStatisticsCounter(StatisticsCounterAPI statisticsCounter) {
-        this.statisticsCounter = statisticsCounter;
+    public void setStatisticsAccumulator(MiddlewareStatisticsAccumulator statisticsAccumulator) {
+        this.statisticsAccumulator = statisticsAccumulator;
     }
 
     private Object aroundInvoke(ProceedingJoinPoint ctx) throws Throwable {
-        statisticsCounter.incMiddlewareRequestsCount();
+        statisticsAccumulator.incMiddlewareRequestsCount();
 
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         for (int i = 2; i < stackTrace.length; i++) {

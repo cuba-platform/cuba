@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.ServerInfoAPI;
-import com.haulmont.cuba.core.app.StatisticsCounterAPI;
+import com.haulmont.cuba.core.app.MiddlewareStatisticsAccumulator;
 import com.haulmont.cuba.core.app.scheduled.MethodParameterInfo;
 import com.haulmont.cuba.core.entity.ScheduledExecution;
 import com.haulmont.cuba.core.entity.ScheduledTask;
@@ -71,7 +71,7 @@ public class RunnerBean implements Runner {
     protected Scripting scripting;
 
     @Inject
-    protected StatisticsCounterAPI statisticsCounter;
+    protected MiddlewareStatisticsAccumulator statisticsCounter;
 
     protected Map<String, UUID> userSessionIds = new ConcurrentHashMap<>();
 
@@ -100,7 +100,7 @@ public class RunnerBean implements Runner {
 
                     ScheduledExecution execution = registerExecutionStart(taskCopy, now);
                     scheduling.setRunning(taskCopy, true);
-                    statisticsCounter.incSchedulersCallsCount();
+                    statisticsCounter.incCubaScheduledTasksCount();
                     try {
                         Object result = executeTask(taskCopy);
                         registerExecutionFinish(taskCopy, execution, result);

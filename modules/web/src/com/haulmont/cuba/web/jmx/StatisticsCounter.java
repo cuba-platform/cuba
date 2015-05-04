@@ -5,7 +5,7 @@
 
 package com.haulmont.cuba.web.jmx;
 
-import com.haulmont.cuba.web.app.StatisticsCounterBean;
+import com.haulmont.cuba.web.app.WebStatisticsAccumulator;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -18,11 +18,60 @@ import javax.inject.Inject;
 public class StatisticsCounter implements StatisticsCounterMBean {
 
     @Inject
-    protected StatisticsCounterBean counterBean;
+    protected WebStatisticsAccumulator accumulator;
 
     @Override
-    public Long getWebClientRequestsCount() {
-        return counterBean.getWebClientRequestsCount();
+    public double getWebRequestsCount() {
+        return accumulator.getWebRequestsCount();
     }
 
+    @Override
+    public double getWebRequestsPerSecond() {
+        return accumulator.getWebRequestsPerSecond();
+    }
+
+    @Override
+    public double getSpringScheduledTasksCount() {
+        return accumulator.getSpringScheduledTasksCount();
+    }
+
+    @Override
+    public double getSpringScheduledTasksPerSecond() {
+        return accumulator.getSpringScheduledTasksPerSecond();
+    }
+
+    @Override
+    public double getAvgHeapMemoryUsage() {
+        return accumulator.getAvgHeapMemoryUsage();
+    }
+
+    @Override
+    public double getAvgNonHeapMemoryUsage() {
+        return accumulator.getAvgNonHeapMemoryUsage();
+    }
+
+    @Override
+    public double getAvgFreePhysicalMemorySize() {
+        return accumulator.getAvgFreePhysicalMemorySize();
+    }
+
+    @Override
+    public double getAvgFreeSwapSpaceSize() {
+        return accumulator.getAvgFreeSwapSpaceSize();
+    }
+
+    @Override
+    public double getAvgSystemCpuLoad() {
+        return accumulator.getAvgSystemCpuLoad();
+    }
+
+    @Override
+    public double getAvgProcessCpuLoad() {
+        return accumulator.getAvgProcessCpuLoad();
+    }
+
+    @Override
+    public double getAvgThreadCount() {
+        return accumulator.getAvgThreadCount();
+    }
 }

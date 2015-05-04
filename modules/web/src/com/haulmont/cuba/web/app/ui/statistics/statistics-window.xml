@@ -6,7 +6,8 @@
 <window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
         class="com.haulmont.cuba.web.app.ui.statistics.StatisticsWindow"
         messagesPack="com.haulmont.cuba.web.app.ui.statistics"
-        caption="msg://perfStat.caption">
+        caption="msg://perfStat.caption"
+        focusComponent="paramsTable">
 
     <dsContext>
         <collectionDatasource id="jmxInstancesDs"
@@ -28,44 +29,42 @@
         <timer id="valuesTimer" delay="5000" autostart="true" repeating="true" onTimer="onRefresh"/>
     </timers>
 
-    <assign name="fieldWidth" value="theme://cuba.web.display-mbeans.field.width"/>
-    <layout expand="main" spacing="true">
-        <groupBox width="800px">
-            <grid spacing="true">
+    <layout expand="paramsTable" spacing="true">
+        <groupBox orientation="horizontal" spacing="true" width="theme://cuba.web.perf-stat.width">
+            <grid spacing="true" width="100%">
                 <columns>
                     <column/>
                     <column/>
-                    <column/>
+                    <column flex="1.0"/>
                 </columns>
                 <rows>
                     <row>
                         <label value="msg://com.haulmont.cuba.web.app.ui.jmxcontrol/localJmxNode"/>
-                        <label id="localJmxField" stylename="h2" width="${fieldWidth}"/>
+                        <label id="localNodeLab" stylename="h2" width="theme://cuba.web.display-mbeans.field.width"/>
                     </row>
                     <row>
                         <label value="msg://com.haulmont.cuba.web.app.ui.jmxcontrol/targetJmxNode" align="MIDDLE_CENTER"/>
                         <lookupPickerField id="jmxConnectionField" optionsDatasource="jmxInstancesDs"
-                                           width="${fieldWidth}" align="MIDDLE_CENTER"/>
+                                           width="theme://cuba.web.display-mbeans.field.width"/>
                         <button id="monitorThreads" caption="msg://threadsMonitor" invoke="onMonitorThreads"
-                                align="MIDDLE_CENTER"/>
+                                align="MIDDLE_RIGHT"/>
                     </row>
                 </rows>
             </grid>
         </groupBox>
-        <hbox id="main" width="800px">
-            <groupTable id="paramsTable" reorderingAllowed="false" sortable="false" width="AUTO" height="100%">
-                <columns>
-                    <group>
-                        <column id="parameterGroup"/>
-                    </group>
-                    <column id="parameterName" calculatable="true"/>
-                    <column id="currentStringValue"/>
-                    <column id="average1mStringValue"/>
-                    <column id="averageForUptime"/>
-                </columns>
-                <rows datasource="statisticsDs"/>
-            </groupTable>
-        </hbox>
+        <groupTable id="paramsTable" reorderingAllowed="false" sortable="false" columnControlVisible="false"
+                    width="theme://cuba.web.perf-stat.width">
+            <columns>
+                <group>
+                    <column id="parameterGroup"/>
+                </group>
+                <column id="displayName"/>
+                <column id="currentStringValue"/>
+                <column id="recentStringValue"/>
+                <column id="averageStringValue"/>
+            </columns>
+            <rows datasource="statisticsDs"/>
+        </groupTable>
     </layout>
 
 </window>

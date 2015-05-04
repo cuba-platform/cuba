@@ -23,20 +23,6 @@
     </timers>
 
     <layout width="100%" height="100%" expand="main" spacing="true">
-        <groupBox>
-            <grid spacing="true">
-                <columns>
-                    <column/>
-                    <column/>
-                </columns>
-                <rows>
-                    <row>
-                        <label value="msg://com.haulmont.cuba.web.app.ui.jmxcontrol/targetJmxNode" align="MIDDLE_CENTER"/>
-                        <linkButton id="nodeLink" invoke="viewNode" align="MIDDLE_CENTER"/>
-                    </row>
-                </rows>
-            </grid>
-        </groupBox>
         <hbox id="main" width="100%" spacing="true">
             <vbox width="100%" height="100%">
                 <table id="threadsTable" width="100%" height="100%">

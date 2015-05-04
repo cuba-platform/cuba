@@ -62,7 +62,7 @@
     <bean id="serviceInterceptor" class="com.haulmont.cuba.core.sys.ServiceInterceptor">
         <property name="userSessions" ref="cuba_UserSessions"/>
         <property name="persistence" ref="cuba_Persistence"/>
-        <property name="statisticsCounter" ref="cuba_StatisticsCounter"/>
+        <property name="statisticsAccumulator" ref="cuba_MiddlewareStatisticsAccumulator"/>
     </bean>
 
     <bean id="authenticationInterceptor" class="com.haulmont.cuba.security.sys.AuthenticationInterceptor">
@@ -141,12 +141,15 @@
     <bean id="scheduler" class="com.haulmont.cuba.core.sys.CubaThreadPoolTaskScheduler">
         <property name="daemon" value="true"/>
         <property name="poolSize" value="10"/>
+        <property name="statisticsAccumulator" ref="cuba_MiddlewareStatisticsAccumulator"/>
     </bean>
 
     <task:scheduled-tasks scheduler="scheduler">
         <task:scheduled ref="cuba_UserSessions" method="processEviction" fixed-rate="10000"/>
         <task:scheduled ref="cuba_LockManager" method="expireLocks" fixed-rate="60000"/>
         <task:scheduled ref="cuba_Scheduling" method="processScheduledTasks" fixed-rate="${cuba.schedulingInterval?:1000}"/>
+        <task:scheduled ref="cuba_TriggerFilesProcessor" method="process" fixed-delay="${cuba.triggerFilesCheckInterval?:5000}"/>
+        <task:scheduled ref="cuba_MiddlewareStatisticsAccumulator" method="gatherParameters" fixed-rate="5000"/>
         <!--<task:scheduled ref="cuba_QueryResultsManager" method="deleteForInactiveSessions" fixed-rate="600000"/>-->
     </task:scheduled-tasks>
 
@@ -157,8 +160,4 @@
         <property name="maxPoolSize" value="10"/>
         <property name="queueCapacity" value="200"/>
     </bean>
-
-    <task:scheduled-tasks scheduler="scheduler">
-        <task:scheduled ref="cuba_TriggerFilesProcessor" method="process" fixed-delay="${cuba.triggerFilesCheckInterval?:5000}"/>
-    </task:scheduled-tasks>
 </beans>
