@@ -27,7 +27,6 @@ public class CubaTimerConnector extends AbstractComponentConnector {
     protected CubaTimerServerRpc rpc = RpcProxy.create(CubaTimerServerRpc.class, this);
 
     protected boolean running = false;
-    protected boolean scheduled = false;
 
     protected Timer jsTimer = new CubaTimerSource();
 
@@ -50,24 +49,24 @@ public class CubaTimerConnector extends AbstractComponentConnector {
 
         if (running) {
             jsTimer.schedule(getState().delay);
-            scheduled = true;
-        } else {
-            scheduled = false;
         }
 
         this.running = running;
     }
 
     public void onTimer() {
-        if (getConnection().isApplicationRunning()) {
-            if (running && getState().listeners) {
+        if (running) {
+            if (getState().listeners) {
                 if (!getConnection().hasActiveRequest()) {
-                    rpc.onTimer();
+                    // if application stopped we will not schedule new timer event
+                    if (getConnection().isApplicationRunning()) {
+                        rpc.onTimer();
+                    }
                 } else {
                     jsTimer.schedule(DEFFERED_DELAY_MS);
                 }
             } else {
-                scheduled = false;
+                requestCompleted();
             }
         }
     }
@@ -75,9 +74,6 @@ public class CubaTimerConnector extends AbstractComponentConnector {
     public void requestCompleted() {
         if (running && getState().repeating) {
             jsTimer.schedule(getState().delay);
-            scheduled = true;
-        } else {
-            scheduled = false;
         }
     }
 
