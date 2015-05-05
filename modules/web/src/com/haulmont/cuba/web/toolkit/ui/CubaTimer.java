@@ -25,11 +25,9 @@ import java.util.List;
  */
 public class CubaTimer extends AbstractComponent implements CubaTimerServerRpc {
 
-    private Log log = LogFactory.getLog(CubaTimer.class);
+    private static final Log log = LogFactory.getLog(CubaTimer.class);
 
     protected final List<TimerListener> listeners = new LinkedList<>();
-
-    protected boolean running = false;
 
     public CubaTimer() {
         registerRpc(this);
@@ -69,21 +67,21 @@ public class CubaTimer extends AbstractComponent implements CubaTimerServerRpc {
             throw new IllegalStateException("Undefined delay for timer");
         }
 
-        if (!running) {
+        if (!getState(false).running) {
             getRpcProxy(CubaTimerClientRpc.class).setRunning(true);
 
-            this.running = true;
+            getState().running = true;
         }
     }
 
     public void stop() {
-        if (running) {
+        if (getState(false).running) {
             getRpcProxy(CubaTimerClientRpc.class).setRunning(false);
 
             for (TimerListener listener : new ArrayList<>(listeners)) {
                 listener.onStopTimer(this);
             }
-            running = false;
+            getState().running = false;
         }
     }
 
@@ -115,13 +113,13 @@ public class CubaTimer extends AbstractComponent implements CubaTimerServerRpc {
                 //noinspection ThrowableResultOfMethodCallIgnored
                 if (cause.getThrowable() instanceof NoUserSessionException) {
                     log.warn("NoUserSessionException in timer '" + getLoggingTimerId() + "', timer will be stopped");
-                    running = false;
+                    stop();
                     break;
                 }
             }
         } else if (ExceptionUtils.indexOfThrowable(e, NoUserSessionException.class) > -1) {
             log.warn("NoUserSessionException in timer '" + getLoggingTimerId() + "', timer will be stopped");
-            running = false;
+            stop();
         }
 
         throw e;

@@ -24,8 +24,6 @@ public class CubaTimerConnector extends AbstractComponentConnector {
 
     protected static int DEFFERED_DELAY_MS = 1000;
 
-    protected static boolean hasActiveRequest = false;
-
     protected CubaTimerServerRpc rpc = RpcProxy.create(CubaTimerServerRpc.class, this);
 
     protected boolean running = false;
@@ -43,8 +41,6 @@ public class CubaTimerConnector extends AbstractComponentConnector {
             @Override
             public void requestCompleted() {
                 CubaTimerConnector.this.requestCompleted();
-
-                hasActiveRequest = false;
             }
         });
     }
@@ -52,7 +48,7 @@ public class CubaTimerConnector extends AbstractComponentConnector {
     public void setRunning(boolean running) {
         jsTimer.cancel();
 
-        if (running && getState().listeners) {
+        if (running) {
             jsTimer.schedule(getState().delay);
             scheduled = true;
         } else {
@@ -63,21 +59,21 @@ public class CubaTimerConnector extends AbstractComponentConnector {
     }
 
     public void onTimer() {
-        if (running && getState().listeners) {
-            if (!hasActiveRequest) {
-                hasActiveRequest = true;
-
-                rpc.onTimer();
+        if (getConnection().isApplicationRunning()) {
+            if (running && getState().listeners) {
+                if (!getConnection().hasActiveRequest()) {
+                    rpc.onTimer();
+                } else {
+                    jsTimer.schedule(DEFFERED_DELAY_MS);
+                }
             } else {
-                jsTimer.schedule(DEFFERED_DELAY_MS);
+                scheduled = false;
             }
-        } else {
-            scheduled = false;
         }
     }
 
     public void requestCompleted() {
-        if (running && getState().repeating && getState().listeners) {
+        if (running && getState().repeating) {
             jsTimer.schedule(getState().delay);
             scheduled = true;
         } else {
@@ -89,15 +85,9 @@ public class CubaTimerConnector extends AbstractComponentConnector {
     public void onStateChanged(StateChangeEvent stateChangeEvent) {
         super.onStateChanged(stateChangeEvent);
 
-        if (running && getState().repeating) {
-            if (!scheduled && getState().listeners) {
-                jsTimer.cancel();
-                jsTimer.schedule(getState().delay);
-                this.scheduled = true;
-            } else if (scheduled && !getState().listeners) {
-                jsTimer.cancel();
-                this.scheduled = false;
-            }
+        // in case of page refresh we need to schedule timer here
+        if (!running && getState().running && getState().repeating) {
+            setRunning(true);
         }
     }
 

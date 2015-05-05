@@ -20,4 +20,6 @@ public class CubaTimerState extends AbstractComponentState {
     public boolean listeners = false;
 
     public String timerId = "";
+
+    public boolean running = false;
 }
