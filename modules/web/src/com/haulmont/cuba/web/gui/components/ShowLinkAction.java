@@ -6,7 +6,6 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -24,21 +23,19 @@ public class ShowLinkAction extends BaseAction {
         String makeLink(Entity entity);
     }
 
-    private CollectionDatasource ds;
-    protected String mp;
+    protected CollectionDatasource ds;
     protected Handler handler;
 
     public ShowLinkAction(CollectionDatasource ds, Handler handler) {
         super(ACTION_ID);
 
-        mp = AppConfig.getMessagesPack();
         this.ds = ds;
         this.handler = handler;
     }
 
     @Override
     public String getCaption() {
-        return messages.getMessage(mp, "table.showLinkAction");
+        return messages.getMainMessage("table.showLinkAction");
     }
 
     @Override
@@ -47,7 +44,7 @@ public class ShowLinkAction extends BaseAction {
             return;
 
         App.getInstance().getWindowManager().showMessageDialog(
-                messages.getMessage(mp, "table.showLinkAction"),
+                messages.getMainMessage("table.showLinkAction"),
                 compileLink(ds),
                 IFrame.MessageType.CONFIRMATION_HTML
         );
@@ -56,9 +53,9 @@ public class ShowLinkAction extends BaseAction {
     private String compileLink(CollectionDatasource ds) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(messages.getMessage(mp, "table.showLinkAction.link")).append("<br/>");
-        sb.append("<textarea cols=\"55\" rows=\"5\" autofocus=\"true\" readonly=\"true\">").
-                append(handler.makeLink(ds.getItem()).replace("&", "&amp")).append(" </textarea>");
+        sb.append(messages.getMainMessage("table.showLinkAction.link")).append("<br/>");
+        sb.append("<textarea class=\"cuba-table-showlink-textarea\" autofocus=\"true\" readonly=\"true\">").
+                append(handler.makeLink(ds.getItem()).replace("&", "&amp")).append("</textarea>");
 
         return sb.toString();
     }

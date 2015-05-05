@@ -54,6 +54,7 @@
 @import "app/generic-filter";
 @import "app/table-presentations";
 @import "app/table-paging";
+@import "app/table-showlink";
 @import "app/app-menu";
 @import "app/app-window";
 @import "app/folders-pane";
@@ -104,6 +105,7 @@
   @include cuba-generic-filter;
   @include cuba-table-presentations;
   @include cuba-table-paging;
+  @include cuba-table-showlink;
   @include cuba-menubar;
   @include cuba-application-window;
   @include cuba-folders-pane;

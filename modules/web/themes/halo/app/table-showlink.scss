@@ -1,0 +1,15 @@
+/*
+ * Copyright (c) 2008-2015 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+@mixin cuba-table-showlink {
+  .cuba-table-showlink-textarea {
+    resize: vertical;
+    width: 100%;
+    height: 5 * $v-font-size;
+    outline: 0;
+    border: valo-border($color: $v-textfield-background-color, $border: $v-textfield-border, $strength: 0.5);
+    @include box-defaults();
+  }
+}

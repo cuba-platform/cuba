@@ -67,6 +67,7 @@
 @import "app/breadcrumbs";
 @import "app/generic-filter";
 @import "app/table-paging";
+@import "app/table-showlink";
 @import "app/table-presentations";
 @import "app/folders-pane";
 @import "app/log-control";
@@ -128,6 +129,7 @@
   @include cuba-application-window;
   @include cuba-generic-filter;
   @include cuba-table-paging;
+  @include cuba-table-showlink;
   @include cuba-table-presentations;
   @include cuba-folders-pane;
   @include cuba-breadcrumbs;
