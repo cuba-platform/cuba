@@ -94,9 +94,9 @@ public class EntityManagerImpl implements EntityManager {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T extends Entity> T find(Class<T> clazz, Object key) {
+    public <T extends Entity<K>, K> T find(Class<T> clazz, K key) {
+        //noinspection unchecked
         Class<T> effectiveClass = metadata.getExtendedEntities().getEffectiveClass(clazz);
 
         T entity = delegate.find(effectiveClass, key);
@@ -108,7 +108,7 @@ public class EntityManagerImpl implements EntityManager {
 
     @Nullable
     @Override
-    public <T extends Entity> T find(Class<T> entityClass, Object primaryKey, View... views) {
+    public <T extends Entity<K>, K> T find(Class<T> entityClass, K primaryKey, View... views) {
         setFetchPlan(Arrays.asList(views));
         try {
             return find(entityClass, primaryKey);
@@ -119,7 +119,7 @@ public class EntityManagerImpl implements EntityManager {
 
     @Nullable
     @Override
-    public <T extends Entity> T find(Class<T> entityClass, Object primaryKey, String... viewNames) {
+    public <T extends Entity<K>, K> T find(Class<T> entityClass, K primaryKey, String... viewNames) {
         View[] viewArray = new View[viewNames.length];
         for (int i = 0; i < viewNames.length; i++) {
             viewArray[i] = metadata.getViewRepository().getView(entityClass, viewNames[i]);
@@ -129,7 +129,7 @@ public class EntityManagerImpl implements EntityManager {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends Entity> T getReference(Class<T> clazz, Object key) {
+    public <T extends Entity<K>, K> T getReference(Class<T> clazz, K key) {
         Class<T> effectiveClass = metadata.getExtendedEntities().getEffectiveClass(clazz);
 
         return delegate.getReference(effectiveClass, key);
@@ -206,7 +206,7 @@ public class EntityManagerImpl implements EntityManager {
 
     @Nullable
     @Override
-    public <T extends Entity> T reload(Class<T> entityClass, Object id, String... viewNames) {
+    public <T extends Entity<K>, K> T reload(Class<T> entityClass, K id, String... viewNames) {
         Preconditions.checkNotNullArgument(entityClass, "entityClass is null");
         Preconditions.checkNotNullArgument(id, "id is null");
 

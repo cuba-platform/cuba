@@ -65,7 +65,7 @@ public interface EntityManager {
      *                                  not denote an entity type or the second argument is not a valid type for that entity's primary key
      */
     @Nullable
-    <T extends Entity> T find(Class<T> entityClass, Object primaryKey);
+    <T extends Entity<K>, K> T find(Class<T> entityClass, K primaryKey);
 
     /**
      * Find by primary key.
@@ -80,7 +80,7 @@ public interface EntityManager {
      *                                  not denote an entity type or the second argument is not a valid type for that entity's primary key
      */
     @Nullable
-    <T extends Entity> T find(Class<T> entityClass, Object primaryKey, View... views);
+    <T extends Entity<K>, K> T find(Class<T> entityClass, K primaryKey, View... views);
 
     /**
      * Find by primary key.
@@ -96,7 +96,7 @@ public interface EntityManager {
      *                                  not denote an entity type or the second argument is not a valid type for that entity's primary key
      */
     @Nullable
-    <T extends Entity> T find(Class<T> entityClass, Object primaryKey, String... viewNames);
+    <T extends Entity<K>, K> T find(Class<T> entityClass, K primaryKey, String... viewNames);
 
     /**
      * Get an instance, whose state may be lazily fetched.<br>
@@ -115,7 +115,7 @@ public interface EntityManager {
      * @throws javax.persistence.EntityNotFoundException
      *                                  if the entity state cannot be accessed
      */
-    <T extends Entity> T getReference(Class<T> entityClass, Object primaryKey);
+    <T extends Entity<K>, K> T getReference(Class<T> entityClass, K primaryKey);
 
     /**
      * Create an instance of Query for executing a Java Persistence query language statement.
@@ -215,7 +215,7 @@ public interface EntityManager {
      * @return              reloaded entity instance, or null if it doesn't exist or has been deleted
      */
     @Nullable
-    <T extends Entity> T reload(Class<T> entityClass, Object id, String... viewNames);
+    <T extends Entity<K>, K> T reload(Class<T> entityClass, K id, String... viewNames);
 
     /**
      * Reload an entity from DB according to a combined view defined by the given array of views.
