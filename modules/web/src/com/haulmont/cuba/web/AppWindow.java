@@ -547,7 +547,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
     public void closeStartupScreen() {
         if (AppWindow.Mode.TABBED.equals(getMode())) {
             if (tabSheet == null) {
-                tabSheet = new AppWindow.AppTabSheet();
+                tabSheet = createAppTabSheet();
                 if (ui.isTestMode()) {
                     tabSheet.setCubaId("appTabSheet");
                     tabSheet.setId(ui.getTestIdManager().reserveId("appTabSheet"));
@@ -563,6 +563,10 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         if (closeShortcut == null)
             closeShortcut = windowManager.createCloseShortcut();
         addAction(closeShortcut);
+    }
+
+    protected AppTabSheet createAppTabSheet() {
+        return new AppTabSheet();
     }
 
     protected void createTabShortcuts() {
