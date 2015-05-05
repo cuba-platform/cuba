@@ -27,7 +27,6 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
-import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.web.App;
@@ -39,7 +38,6 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.ui.CubaEnhancedTable;
-import com.haulmont.cuba.web.toolkit.ui.CubaFieldWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaResizableTextArea;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -1556,9 +1554,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             AbstractFieldFactory factory = (AbstractFieldFactory) component.getTableFieldFactory();
             com.haulmont.cuba.gui.components.Component columnComponent =
                     factory.createField(fieldDatasource, fieldPropertyId, columnConf.getXmlDescriptor());
-
-            com.vaadin.ui.Field fieldImpl = getFieldImplementation(columnComponent);
-
             if (columnComponent instanceof Field) {
                 Field cubaField = (Field) columnComponent;
 
@@ -1588,18 +1583,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
             columnComponent.setParent(WebAbstractTable.this);
 
-            return fieldImpl;
-        }
-
-        protected com.vaadin.ui.Field getFieldImplementation(com.haulmont.cuba.gui.components.Component columnComponent) {
-            com.vaadin.ui.Component composition = WebComponentsHelper.getComposition(columnComponent);
-            com.vaadin.ui.Field fieldImpl;
-            if (composition instanceof com.vaadin.ui.Field) {
-                fieldImpl = (com.vaadin.ui.Field) composition;
-            } else {
-                fieldImpl = new CubaFieldWrapper(columnComponent);
-            }
-            return fieldImpl;
+            return WebComponentsHelper.getComposition(columnComponent);
         }
 
         protected void applyPermissions(com.haulmont.cuba.gui.components.Component columnComponent) {
@@ -1783,8 +1767,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             com.haulmont.cuba.gui.components.Component columnComponent =
                     createField(fieldDatasource, fieldPropertyId, columnConf.getXmlDescriptor());
 
-            com.vaadin.ui.Field fieldImpl = getFieldImplementation(columnComponent);
-
             if (columnComponent instanceof Field) {
                 Field cubaField = (Field) columnComponent;
 
@@ -1814,18 +1796,31 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
             columnComponent.setParent(WebAbstractTable.this);
 
-            return fieldImpl;
+            Component componentImpl = getComponentImplementation(columnComponent);
+            if (componentImpl instanceof com.vaadin.ui.Field) {
+                return (com.vaadin.ui.Field<?>) componentImpl;
+            }
+
+            return new EditableColumnFieldWrapper(componentImpl);
         }
 
-        protected com.vaadin.ui.Field getFieldImplementation(com.haulmont.cuba.gui.components.Component columnComponent) {
+        protected Component getComponentImplementation(com.haulmont.cuba.gui.components.Component columnComponent) {
             com.vaadin.ui.Component composition = WebComponentsHelper.getComposition(columnComponent);
-            com.vaadin.ui.Field fieldImpl;
-            if (composition instanceof com.vaadin.ui.Field) {
-                fieldImpl = (com.vaadin.ui.Field) composition;
-            } else {
-                fieldImpl = new CubaFieldWrapper(columnComponent);
+            Component componentImpl = composition;
+            if (composition instanceof com.vaadin.ui.Field
+                    && ((com.vaadin.ui.Field) composition).isRequired()) {
+                VerticalLayout layout = new VerticalLayout();
+                layout.addComponent(composition);
+
+                if (composition.getWidth() < 0) {
+                    layout.setWidthUndefined();
+                } else {
+                    layout.setExpandRatio(composition, 1);
+                }
+
+                componentImpl = layout;
             }
-            return fieldImpl;
+            return componentImpl;
         }
 
         protected void applyPermissions(com.haulmont.cuba.gui.components.Component columnComponent) {
@@ -2026,6 +2021,55 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 }
             }
             return style;
+        }
+    }
+
+    protected static class EditableColumnFieldWrapper extends CustomField {
+
+        protected Component component;
+
+        public EditableColumnFieldWrapper(Component component) {
+            this.component = component;
+
+            if (component.getWidth() < 0) {
+                setWidthUndefined();
+            }
+        }
+
+        @Override
+        public Class getType() {
+            return Object.class;
+        }
+
+        @Override
+        protected Component initContent() {
+            return component;
+        }
+
+        @Override
+        public void setWidth(float width, Unit unit) {
+            super.setWidth(width, unit);
+
+            if (component != null) {
+                if (width < 0) {
+                    component.setWidth(com.haulmont.cuba.gui.components.Component.AUTO_SIZE);
+                } else {
+                    component.setWidth("100%");
+                }
+            }
+        }
+
+        @Override
+        public void setHeight(float height, Unit unit) {
+            super.setHeight(height, unit);
+
+            if (component != null) {
+                if (height < 0) {
+                    component.setHeight(com.haulmont.cuba.gui.components.Component.AUTO_SIZE);
+                } else {
+                    component.setHeight("100%");
+                }
+            }
         }
     }
 }
