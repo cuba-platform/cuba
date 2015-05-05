@@ -45,6 +45,19 @@ public class EnumUtilsTest extends TestCase {
         }
     }
 
+    public void testFromIdSafe() throws Exception {
+        Unit unit;
+
+        unit = EnumUtils.fromIdSafe(Unit.class, "pcs", Unit.M);
+        assertTrue(unit == Unit.PCS);
+
+        unit = EnumUtils.fromIdSafe(Unit.class, null, Unit.M);
+        assertTrue(unit == Unit.M);
+
+        unit = EnumUtils.fromIdSafe(Unit.class, "bla", null);
+        assertNull(unit);
+    }
+
     public enum Unit implements EnumClass<String> {
         PCS("pcs"),
         KG("kg"),
