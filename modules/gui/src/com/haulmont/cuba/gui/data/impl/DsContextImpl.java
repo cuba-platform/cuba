@@ -211,13 +211,19 @@ public class DsContextImpl implements DsContextImplementation {
         }
     }
 
-    private void fireBeforeCommit(CommitContext context) {
+    public void fireBeforeCommit(CommitContext context) {
         for (CommitListener commitListener : commitListeners) {
             commitListener.beforeCommit(context);
         }
+        for (DsContext childDsContext : children) {
+            ((DsContextImplementation) childDsContext).fireBeforeCommit(context);
+        }
     }
 
-    private void fireAfterCommit(CommitContext context, Set<Entity> committedEntities) {
+    public void fireAfterCommit(CommitContext context, Set<Entity> committedEntities) {
+        for (DsContext childDsContext : children) {
+            ((DsContextImplementation) childDsContext).fireAfterCommit(context, committedEntities);
+        }
         for (CommitListener commitListener : commitListeners) {
             commitListener.afterCommit(context, committedEntities);
         }

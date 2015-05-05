@@ -4,9 +4,13 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
+
+import java.util.Set;
 
 /**
  * @author krivopustov
@@ -28,4 +32,7 @@ public interface DsContextImplementation extends DsContext {
     void executeLazyTasks();
 
     void resumeSuspended();
+
+    void fireBeforeCommit(CommitContext context);
+    void fireAfterCommit(CommitContext context, Set<Entity> committedEntities);
 }
