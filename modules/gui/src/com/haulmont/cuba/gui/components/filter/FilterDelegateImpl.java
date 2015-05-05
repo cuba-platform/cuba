@@ -1198,6 +1198,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 }
                 return false;
             }
+            setFilterActionsEnabled();
         }
 
         applyDatasourceFilter();
@@ -1209,8 +1210,6 @@ public class FilterDelegateImpl implements FilterDelegate {
         } else {
             lastAppliedFilter = null;
         }
-
-        setFilterActionsEnabled();
 
         if ((applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
             filterHelper.removeTableFtsTooltips((Table) applyTo);
