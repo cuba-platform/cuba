@@ -134,6 +134,7 @@ public class StatisticsWindow extends AbstractWindow {
 
     protected void setNode(JmxInstance currentNode) {
         statisticsDs.clear();
+        startTime = System.currentTimeMillis();
 
         Map<String, Object> constantParams = ParamsMap.of("node", currentNode, "refreshPeriod", timerDelay);
         statisticsDs.refresh(constantParams);

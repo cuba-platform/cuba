@@ -76,11 +76,20 @@ public class StatisticsDatasource extends GroupDatasourceImpl<PerformanceParamet
 
     @Override
     protected void loadData(Map<String, Object> params) {
-        this.node = (JmxInstance) params.get("node");
+        JmxInstance node = (JmxInstance) params.get("node");
+        if (node != this.node) {
+            mwStatCounter = null;
+            webStatCounter = null;
+        }
+
+        this.node = node;
         this.refreshPeriod = (int) params.get("refreshPeriod");
 
-        mwStatCounter = new StatCounter(true);
-        webStatCounter = new StatCounter(false);
+        if (mwStatCounter == null)
+            mwStatCounter = new StatCounter(true);
+
+        if (webStatCounter == null)
+            webStatCounter = new StatCounter(false);
 
         if (data.isEmpty()) {
             initParameters();
@@ -494,12 +503,16 @@ public class StatisticsDatasource extends GroupDatasourceImpl<PerformanceParamet
             String appName = core ? coreAppName : webAppName;
             statCounterMBean = jmxControlAPI.getManagedBean(node, appName + ".cuba:type=StatisticsCounter");
             if (statCounterMBean == null) {
-                log.info("MBean " + appName + ".cuba:type=StatisticsCounter not found");
+                log.info("MBean " + appName + ".cuba:type=StatisticsCounter not found, " +
+                        (core ? "middleware" : "web") + " parameters will not be available");
             }
         }
 
         @Nullable
         Double getAttributeValue(String attrName) {
+            if (statCounterMBean == null)
+                return null;
+
             ManagedBeanAttribute attribute = name2attr.get(attrName);
             if (attribute == NOT_FOUND_ATTR)
                 return null;

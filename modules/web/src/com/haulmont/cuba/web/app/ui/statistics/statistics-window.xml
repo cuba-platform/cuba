@@ -40,10 +40,11 @@
                 <rows>
                     <row>
                         <label value="msg://com.haulmont.cuba.web.app.ui.jmxcontrol/localJmxNode"/>
-                        <label id="localNodeLab" stylename="h2" width="theme://cuba.web.display-mbeans.field.width"/>
+                        <label id="localNodeLab" width="theme://cuba.web.display-mbeans.field.width"
+                               align="MIDDLE_LEFT"/>
                     </row>
                     <row>
-                        <label value="msg://com.haulmont.cuba.web.app.ui.jmxcontrol/targetJmxNode" align="MIDDLE_CENTER"/>
+                        <label value="msg://com.haulmont.cuba.web.app.ui.jmxcontrol/targetJmxNode" align="MIDDLE_LEFT"/>
                         <lookupPickerField id="jmxConnectionField" optionsDatasource="jmxInstancesDs"
                                            width="theme://cuba.web.display-mbeans.field.width"/>
                         <button id="monitorThreads" caption="msg://threadsMonitor" invoke="onMonitorThreads"

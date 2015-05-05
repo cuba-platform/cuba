@@ -361,11 +361,11 @@ public class JmxControlBean implements JmxControlAPI {
                         types[i] = operation.getParameters().get(i).getType();
                     }
 
-                    log.info(String.format("Invoke method '%s' from '%s' on '%s'",
+                    log.debug(String.format("Invoke method '%s' from '%s' on '%s'",
                             operation.getName(), name.getCanonicalName(), operation.getMbean().getJmxInstance().getNodeName()));
                     return connection.invoke(name, operation.getName(), parameterValues, types);
                 } catch (Exception e) {
-                    log.warn(String.format("Error in method invocation '%s' from '%s' on '%s'",
+                    log.warn(String.format("Error invoking method '%s' from '%s' on '%s'",
                             operation.getName(), operation.getMbean().getObjectName(),
                             operation.getMbean().getJmxInstance().getNodeName()), e);
                     throw e;
