@@ -40,8 +40,8 @@ public class EntityTransactionListener extends AbstractTransactionListener {
                 continue;
 
             BaseEntity entity = (BaseEntity) obj;
-            entity.setDetached(true);
             manager.fireListener(entity, EntityListenerType.BEFORE_DETACH);
+            entity.setDetached(true);
         }
     }
 
