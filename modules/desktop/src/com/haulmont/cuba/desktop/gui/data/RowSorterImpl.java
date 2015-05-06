@@ -73,6 +73,11 @@ public class RowSorterImpl extends RowSorter<AnyTableModelAdapter> {
                 if (key == null || key.getColumn() < 0 || key.getColumn() >= max) {
                     throw new IllegalArgumentException("Invalid SortKey");
                 }
+
+                if (!(model.getColumn(key.getColumn()).getId() instanceof MetaPropertyPath)) {
+                    // do not sort by generated columns
+                    return;
+                }
             }
             this.sortKey = keys.get(0);
         } else {
