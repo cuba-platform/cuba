@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.OptionalDataException;
 
 /**
+ * Exports a middleware service bean as an HTTP invoker service endpoint.
+ *
  * @author krivopustov
  * @version $Id$
  */

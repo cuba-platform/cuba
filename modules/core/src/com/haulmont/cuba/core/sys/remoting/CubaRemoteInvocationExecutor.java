@@ -22,6 +22,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
 /**
+ * Executes {@link CubaRemoteInvocation} on middleware, setting and clearing a {@link SecurityContext} in the request
+ * handling thread.
+ *
  * @author krivopustov
  * @version $Id$
  */

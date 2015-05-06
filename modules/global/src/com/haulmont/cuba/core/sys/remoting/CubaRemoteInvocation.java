@@ -9,6 +9,13 @@ import org.springframework.remoting.support.RemoteInvocation;
 
 import java.util.UUID;
 
+/**
+ * Encapsulates a remote invocation of a middleware service.
+ * Additionally transfers the current user session identifier.
+ *
+ * @author krivopustov
+ * @version $Id$
+ */
 public class CubaRemoteInvocation extends RemoteInvocation {
 
     private static final long serialVersionUID = 5460262566597755733L;

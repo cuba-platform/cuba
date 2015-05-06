@@ -18,9 +18,11 @@ import java.net.URLConnection;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
+ * HttpInvokerRequestExecutor that executes a request on a server which is selected according to the current cluster
+ * topology, provided by {@link ClusterInvocationSupport}.
  *
  * @author krivopustov
+ * @version $Id$
  */
 public class ClusteredHttpInvokerRequestExecutor extends SimpleHttpInvokerRequestExecutor {
 
@@ -28,6 +30,8 @@ public class ClusteredHttpInvokerRequestExecutor extends SimpleHttpInvokerReques
 
     public ClusteredHttpInvokerRequestExecutor(ClusterInvocationSupport support) {
         this.support = support;
+        setConnectTimeout(support.getConnectTimeout());
+        setReadTimeout(support.getReadTimeout());
     }
 
     @Override

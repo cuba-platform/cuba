@@ -41,12 +41,25 @@ public class ClusterInvocationSupport {
     protected List<String> urls;
     protected ReadWriteLock lock = new ReentrantReadWriteLock();
 
-    protected String baseUrl = AppContext.getProperty("cuba.connectionUrlList");
+    protected String baseUrl;
+    protected int connectTimeout;
+    protected int readTimeout;
+
     protected boolean randomPriority = Boolean.valueOf(AppContext.getProperty("cuba.randomServerPriority"));
 
     protected String servletPath = "remoting";
 
     protected List<Listener> listeners = new ArrayList<>();
+
+    public ClusterInvocationSupport() {
+        baseUrl = AppContext.getProperty("cuba.connectionUrlList");
+
+        String connectTimeoutProp = AppContext.getProperty("cuba.connectionTimeout");
+        connectTimeout = connectTimeoutProp == null ? -1 : Integer.parseInt(connectTimeoutProp);
+
+        String readTimeoutProp = AppContext.getProperty("cuba.connectionReadTimeout");
+        readTimeout = readTimeoutProp == null ? -1 : Integer.parseInt(readTimeoutProp);
+    }
 
     public String getBaseUrl() {
         return baseUrl;
@@ -62,6 +75,22 @@ public class ClusterInvocationSupport {
 
     public void setServletPath(String servletPath) {
         this.servletPath = servletPath;
+    }
+
+    public int getConnectTimeout() {
+        return connectTimeout;
+    }
+
+    public void setConnectTimeout(int connectTimeout) {
+        this.connectTimeout = connectTimeout;
+    }
+
+    public int getReadTimeout() {
+        return readTimeout;
+    }
+
+    public void setReadTimeout(int readTimeout) {
+        this.readTimeout = readTimeout;
     }
 
     public void init() {
