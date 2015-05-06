@@ -33,19 +33,19 @@
                 <row>
                     <label id="categoryLabel" value="msg://DynamicAttributesConditionFrame.category" align="MIDDLE_LEFT"/>
                     <lookupField id="categoryLookup"
-                                 width="theme://cuba.gui.dynamicAttributeConditionFrame.lookup.width"
+                                 width="theme://cuba.gui.dynamicAttributesConditionFrame.lookup.width"
                                  required="true"/>
                 </row>
                 <row>
                     <label value="msg://DynamicAttributesConditionFrame.attribute" align="MIDDLE_LEFT"/>
                     <lookupField id="attributeLookup"
-                                 width="theme://cuba.gui.dynamicAttributeConditionFrame.lookup.width"
+                                 width="theme://cuba.gui.dynamicAttributesConditionFrame.lookup.width"
                                  required="true"/>
                 </row>
                 <row>
                     <label value="msg://DynamicAttributesConditionFrame.operation" align="MIDDLE_LEFT"/>
                     <lookupField id="operationLookup"
-                                 width="theme://cuba.gui.dynamicAttributeConditionFrame.lookup.width"
+                                 width="theme://cuba.gui.dynamicAttributesConditionFrame.lookup.width"
                                  required="true"/>
                 </row>
             </rows>

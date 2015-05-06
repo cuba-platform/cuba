@@ -7,12 +7,12 @@
         class="com.haulmont.cuba.gui.components.filter.edit.DynamicAttributesConditionEditor"
         caption="msg://DynamicAttributesConditionEditor.caption"
         messagesPack="com.haulmont.cuba.gui.components.filter.edit"
-        focusComponent="dynamicAttributeConditionFrame.categoryLookup">
+        focusComponent="dynamicAttributesConditionFrame.categoryLookup">
     <actions>
         <action id="commit" invoke="commit" caption="msg://actions.Ok" icon="icons/ok.png" shortcut="CTRL-ENTER"/>
     </actions>
     <layout spacing="true">
-        <iframe id="dynamicAttributeConditionFrame" screen="dynamicAttributeConditionFrame"/>
+        <iframe id="dynamicAttributesConditionFrame" screen="dynamicAttributesConditionFrame"/>
         <hbox spacing="true">
             <button id="commit" action="commit"/>
             <button id="cancel" invoke="cancel" caption="msg://actions.Cancel" icon="icons/cancel.png"/>

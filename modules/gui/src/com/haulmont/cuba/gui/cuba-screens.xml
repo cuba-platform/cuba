@@ -160,8 +160,8 @@
     <screen id="customConditionFrame"
             template="/com/haulmont/cuba/gui/components/filter/edit/custom-condition-frame.xml"/>
 
-    <screen id="dynamicAttributeConditionFrame"
-            template="/com/haulmont/cuba/gui/components/filter/edit/dynamic-attribute-condition-frame.xml"/>
+    <screen id="dynamicAttributesConditionFrame"
+            template="/com/haulmont/cuba/gui/components/filter/edit/dynamic-attributes-condition-frame.xml"/>
 
     <screen id="propertyConditionFrame"
             template="/com/haulmont/cuba/gui/components/filter/edit/property-condition-frame.xml"/>
@@ -169,8 +169,8 @@
     <screen id="customConditionEditor"
             template="/com/haulmont/cuba/gui/components/filter/edit/custom-condition-edit.xml"/>
 
-    <screen id="dynamicAttributeConditionEditor"
-            template="/com/haulmont/cuba/gui/components/filter/edit/dynamic-attribute-condition-edit.xml"/>
+    <screen id="dynamicAttributesConditionEditor"
+            template="/com/haulmont/cuba/gui/components/filter/edit/dynamic-attributes-condition-edit.xml"/>
 
     <screen id="groupConditionFrame"
             template="/com/haulmont/cuba/gui/components/filter/edit/group-condition-frame.xml"/>

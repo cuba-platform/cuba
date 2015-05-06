@@ -101,7 +101,7 @@ public class AddConditionHelper {
                 }
             });
         } else if (descriptor instanceof DynamicAttributesConditionCreator) {
-            WindowInfo windowInfo = windowConfig.getWindowInfo("dynamicAttributeConditionEditor");
+            WindowInfo windowInfo = windowConfig.getWindowInfo("dynamicAttributesConditionEditor");
             Map<String, Object> params = new HashMap<>();
             params.put("condition", condition);
             final DynamicAttributesConditionEditor window = windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);

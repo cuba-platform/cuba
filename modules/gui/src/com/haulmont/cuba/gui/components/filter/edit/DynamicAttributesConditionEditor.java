@@ -31,7 +31,7 @@ public class DynamicAttributesConditionEditor extends AbstractWindow {
         super.init(params);
 
         getDialogParams()
-                .setWidth(theme.getInt("cuba.gui.dynamicAttributeConditionEditor.dialog.width"))
+                .setWidth(theme.getInt("cuba.gui.dynamicAttributesConditionEditor.dialog.width"))
                 .setResizable(true);
 
         hideUnnecessaryFields();
