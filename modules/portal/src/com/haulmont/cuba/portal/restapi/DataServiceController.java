@@ -140,7 +140,7 @@ public class DataServiceController {
         }
         try {
             response.addHeader("Access-Control-Allow-Origin", "*");
-            MetaClass metaClass = getMetaClass(entityName);
+            MetaClass metaClass = metadata.getClass(entityName);
             if (metaClass == null) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Persistent entity " + entityName + " does not exist");
                 return;
@@ -510,15 +510,6 @@ public class DataServiceController {
         } catch (ParseException e) {
             throw new IllegalArgumentException(String.format("Cannot parse specified parameter of type '%s'", typeName), e);
         }
-    }
-
-    private MetaClass getMetaClass(String entityName) {
-        Collection<MetaClass> classes = metadataTools.getAllPersistentMetaClasses();
-        for (MetaClass metaClass : classes) {
-            if (entityName.equals(metaClass.getName()))
-                return metaClass;
-        }
-        return null;
     }
 
     /**
