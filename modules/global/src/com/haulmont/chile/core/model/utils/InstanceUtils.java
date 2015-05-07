@@ -7,14 +7,17 @@ package com.haulmont.chile.core.model.utils;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.IllegalEntityStateException;
 import com.haulmont.cuba.core.global.Messages;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -31,7 +34,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  */
 public final class InstanceUtils {
 
-    private static final Pattern instanceNameSplitPattern = Pattern.compile("[,;]");
+    private static final Pattern INSTANCE_NAME_SPLIT_PATTERN = Pattern.compile("[,;]");
 
     private InstanceUtils() {
     }
@@ -228,36 +231,26 @@ public final class InstanceUtils {
     public static String getInstanceName(Instance instance) {
         checkNotNullArgument(instance, "instance is null");
 
-        String pattern = (String) instance.getMetaClass().getAnnotations().get(NamePattern.class.getName());
-        if (StringUtils.isBlank(pattern)) {
+        NamePatternRec rec = parseNamePattern(instance.getMetaClass());
+        if (rec == null) {
             return instance.toString();
         } else {
-            int pos = pattern.indexOf("|");
-            if (pos < 0)
-                throw new IllegalArgumentException("Invalid name pattern: " + pattern);
-
-            String format = StringUtils.substring(pattern, 0, pos);
-            String trimmedFormat = format.trim();
-
-            if (trimmedFormat.startsWith("#")) {
+            if (rec.methodName != null) {
                 try {
-                    Method method = instance.getClass().getMethod(trimmedFormat.substring(1));
+                    Method method = instance.getClass().getMethod(rec.methodName);
                     Object result = method.invoke(instance);
                     return (String) result;
                 } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException("Error getting instance name", e);
                 }
             }
-
-            String fieldsStr = StringUtils.substring(pattern, pos + 1);
 
             // lazy initialized messages, used only for enum values
             Messages messages = null;
 
-            String[] fields = instanceNameSplitPattern.split(fieldsStr);
-            Object[] values = new Object[fields.length];
-            for (int i = 0; i < fields.length; i++) {
-                Object value = instance.getValue(fields[i]);
+            Object[] values = new Object[rec.fields.length];
+            for (int i = 0; i < rec.fields.length; i++) {
+                Object value = instance.getValue(rec.fields[i]);
                 if (value == null) {
                     values[i] = "";
                 } else if (value instanceof Instance) {
@@ -273,7 +266,51 @@ public final class InstanceUtils {
                 }
             }
 
-            return String.format(format, values);
+            return String.format(rec.format, values);
+        }
+    }
+
+    /**
+     * Parse a name pattern defined by {@link NamePattern} annotation.
+     * @param metaClass entity meta-class
+     * @return record containing the name pattern properties, or null if the @NamePattern is not defined for the meta-class
+     */
+    @Nullable
+    public static NamePatternRec parseNamePattern(MetaClass metaClass) {
+        String pattern = (String) metaClass.getAnnotations().get(NamePattern.class.getName());
+        if (StringUtils.isBlank(pattern))
+            return null;
+
+        int pos = pattern.indexOf("|");
+        if (pos < 0)
+            throw new DevelopmentException("Invalid name pattern: " + pattern);
+
+        String format = StringUtils.substring(pattern, 0, pos);
+        String trimmedFormat = format.trim();
+        String methodName = trimmedFormat.startsWith("#") ? trimmedFormat.substring(1) : null;
+        String fieldsStr = StringUtils.substring(pattern, pos + 1);
+        String[] fields = INSTANCE_NAME_SPLIT_PATTERN.split(fieldsStr);
+        return new NamePatternRec(format, methodName, fields);
+    }
+
+    public static class NamePatternRec {
+        /**
+         * Name pattern string format
+         */
+        public final String format;
+        /**
+         * Formatting method name or null
+         */
+        public final String methodName;
+        /**
+         * Array of property names
+         */
+        public final String[] fields;
+
+        public NamePatternRec(String format, String methodName, String[] fields) {
+            this.fields = fields;
+            this.format = format;
+            this.methodName = methodName;
         }
     }
 }

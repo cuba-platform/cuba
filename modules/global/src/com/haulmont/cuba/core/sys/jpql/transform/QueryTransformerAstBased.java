@@ -175,10 +175,17 @@ public class QueryTransformerAstBased implements QueryTransformer {
         return false;
     }
 
+    @Deprecated
+    @Override
     public void replaceOrderBy(String newOrderingFieldPath, boolean desc) {
+        replaceOrderBy(desc, newOrderingFieldPath);
+    }
+
+    @Override
+    public void replaceOrderBy(boolean desc, String... properties) {
         EntityReferenceInferer inferer = new EntityReferenceInferer(entityName);
         EntityReference ref = inferer.infer(queryAnalyzer);
-        queryAnalyzer.replaceOrderBy(ref.addFieldPath(newOrderingFieldPath), desc);
+        queryAnalyzer.replaceOrderBy(ref.addFieldPath(properties[0]), desc);
     }
 
     @Override

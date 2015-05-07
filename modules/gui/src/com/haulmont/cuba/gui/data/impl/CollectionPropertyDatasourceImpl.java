@@ -725,7 +725,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     public K firstItemId() {
         Collection<T> collection = __getCollection();
         if (collection != null && !collection.isEmpty()) {
-            return Iterables.getFirst(collection, null).getId();
+            T first = Iterables.getFirst(collection, null);
+            return first == null ? null : first.getId();
         }
         return null;
     }

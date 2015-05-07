@@ -241,7 +241,7 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         Matcher distinctMatcher = DISTINCT_PATTERN.matcher(buffer);
 
         buffer.replace(0, entityMatcher.start(),
-                "select "+ (distinctMatcher.find() ? "distinct " : "") + alias + ".id ");
+                "select " + (distinctMatcher.find() ? "distinct " : "") + alias + ".id ");
 
         Matcher orderMatcher = ORDER_BY_PATTERN.matcher(buffer);
         if (orderMatcher.find()) {
@@ -260,34 +260,41 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
     }
 
     @Override
+    @Deprecated
     public void replaceOrderBy(String property, boolean desc) {
+        replaceOrderBy(desc, property);
+    }
+
+    @Override
+    public void replaceOrderBy(boolean desc, String... properties) {
         Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(buffer);
         String alias = findAlias(entityMatcher);
 
-        int dotPos = property.lastIndexOf(".");
-        if (dotPos > -1) {
-            String path = property.substring(0, dotPos);
-            String joinedAlias = alias + "_" + path.replace(".", "_");
-            if (buffer.indexOf(" " + joinedAlias) == -1) {
-                String join = "left join " + alias + "." + path + " " + joinedAlias;
-                addJoinAsIs(join);
-            }
-
-            String orderBy = joinedAlias + "." + property.substring(dotPos + 1) + (desc ? " desc" : "");
-            Matcher matcher = ORDER_BY_PATTERN.matcher(buffer);
-            if (matcher.find()) {
-                buffer.replace(matcher.end(), buffer.length(), " " + orderBy);
-            } else {
-                buffer.append(" order by ").append(orderBy);
-            }
+        Matcher orderByMatcher = ORDER_BY_PATTERN.matcher(buffer);
+        if (orderByMatcher.find()) {
+            buffer.replace(orderByMatcher.end(), buffer.length(), "");
         } else {
-            String orderBy = alias + "." + property + (desc ? " desc" : "");
-            Matcher matcher = ORDER_BY_PATTERN.matcher(buffer);
-            if (matcher.find()) {
-                buffer.replace(matcher.end(), buffer.length(), " " + orderBy);
+            buffer.append(" order by");
+        }
+
+        String separator = " ";
+        for (String property : properties) {
+            int dotPos = property.lastIndexOf(".");
+            if (dotPos > -1) {
+                String path = property.substring(0, dotPos);
+                String joinedAlias = alias + "_" + path.replace(".", "_");
+                if (buffer.indexOf(" " + joinedAlias) == -1) {
+                    String join = "left join " + alias + "." + path + " " + joinedAlias;
+                    addJoinAsIs(join);
+                }
+
+                String orderBy = joinedAlias + "." + property.substring(dotPos + 1) + (desc ? " desc" : "");
+                buffer.append(separator).append(orderBy);
             } else {
-                buffer.append(" order by ").append(orderBy);
+                String orderBy = alias + "." + property + (desc ? " desc" : "");
+                buffer.append(separator).append(orderBy);
             }
+            separator = ", ";
         }
     }
 

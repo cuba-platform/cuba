@@ -44,8 +44,12 @@ public interface QueryTransformer {
      */
     boolean removeDistinct();
 
+    /** DEPRECATED: use {@link #replaceOrderBy(boolean, String...)} */
+    @Deprecated
+    void replaceOrderBy(String property, boolean desc);
+
     /** Adds or replaces 'order by' clause */
-    void replaceOrderBy(String property, boolean asc);
+    void replaceOrderBy(boolean desc, String... properties);
 
     /** Removes 'order by' clause */
     void removeOrderBy();

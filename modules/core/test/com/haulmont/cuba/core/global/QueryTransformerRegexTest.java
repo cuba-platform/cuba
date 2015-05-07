@@ -140,13 +140,13 @@ public class QueryTransformerRegexTest extends TestCase
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
                         "group by c.level having c.level > 0 order by c.level",
                 "sec$GroupHierarchy");
-        transformer.replaceOrderBy("group", false);
+        transformer.replaceOrderBy(false, "group");
         String res = transformer.getResult();
         assertEquals(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
                         "group by c.level having c.level > 0 order by h.group",
                 res);
-        transformer.replaceOrderBy("group", true);
+        transformer.replaceOrderBy(true, "group");
         res = transformer.getResult();
         assertEquals(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
@@ -161,7 +161,7 @@ public class QueryTransformerRegexTest extends TestCase
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
                         "group by c.level having c.level > 0 order by h.group asc",
                 "sec$GroupHierarchy");
-        transformer.replaceOrderBy("group", true);
+        transformer.replaceOrderBy(true, "group");
         String res = transformer.getResult();
         assertEquals(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
@@ -172,7 +172,7 @@ public class QueryTransformerRegexTest extends TestCase
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
                         "group by c.level having c.level > 0 order by h.group desc",
                 "sec$GroupHierarchy");
-        transformer.replaceOrderBy("group", false);
+        transformer.replaceOrderBy(false, "group");
         res = transformer.getResult();
         assertEquals(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
@@ -183,7 +183,7 @@ public class QueryTransformerRegexTest extends TestCase
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
                         "group by c.level having c.level > 0 order by h.group desc",
                 "sec$GroupHierarchy");
-        transformer.replaceOrderBy("group", true);
+        transformer.replaceOrderBy(true, "group");
         res = transformer.getResult();
         assertEquals(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
@@ -196,12 +196,12 @@ public class QueryTransformerRegexTest extends TestCase
         QueryTransformerRegex transformer = new QueryTransformerRegex(
                 "select c from ref$Car c where c.deleteTs is null",
                 "ref$Car");
-        transformer.replaceOrderBy("model.numberOfSeats", false);
+        transformer.replaceOrderBy(false, "model.numberOfSeats");
         String res = transformer.getResult();
         assertEquals(
                 "select c from ref$Car c left join c.model c_model where c.deleteTs is null order by c_model.numberOfSeats",
                 res);
-        transformer.replaceOrderBy("model.numberOfSeats", true);
+        transformer.replaceOrderBy(true, "model.numberOfSeats");
         res = transformer.getResult();
         assertEquals(
                 "select c from ref$Car c left join c.model c_model where c.deleteTs is null order by c_model.numberOfSeats desc",
@@ -211,15 +211,46 @@ public class QueryTransformerRegexTest extends TestCase
         transformer = new QueryTransformerRegex(
                 "select c from ref$Car c where c.deleteTs is null",
                 "ref$Car");
-        transformer.replaceOrderBy("model.manufacturer.name", false);
+        transformer.replaceOrderBy(false, "model.manufacturer.name");
         res = transformer.getResult();
         assertEquals(
                 "select c from ref$Car c left join c.model.manufacturer c_model_manufacturer where c.deleteTs is null order by c_model_manufacturer.name",
                 res);
-        transformer.replaceOrderBy("model.manufacturer.name", true);
+        transformer.replaceOrderBy(true, "model.manufacturer.name");
         res = transformer.getResult();
         assertEquals(
                 "select c from ref$Car c left join c.model.manufacturer c_model_manufacturer where c.deleteTs is null order by c_model_manufacturer.name desc",
+                res);
+    }
+
+    public void testOrderBySeveralProperties() throws Exception {
+        QueryTransformerRegex transformer = new QueryTransformerRegex(
+                "select c from ref$Car c where c.deleteTs is null",
+                "ref$Car");
+
+
+        transformer.replaceOrderBy(false, "createTs", "vin");
+        String res = transformer.getResult();
+        assertEquals(
+                "select c from ref$Car c where c.deleteTs is null order by c.createTs, c.vin",
+                res);
+
+        transformer.replaceOrderBy(false, "vin", "model.numberOfSeats");
+        res = transformer.getResult();
+        assertEquals(
+                "select c from ref$Car c left join c.model c_model where c.deleteTs is null order by c.vin, c_model.numberOfSeats",
+                res);
+
+        transformer.replaceOrderBy(true, "vin", "model.numberOfSeats");
+        res = transformer.getResult();
+        assertEquals(
+                "select c from ref$Car c left join c.model c_model where c.deleteTs is null order by c.vin desc, c_model.numberOfSeats desc",
+                res);
+
+        transformer.replaceOrderBy(false, "model.numberOfSeats", "vin");
+        res = transformer.getResult();
+        assertEquals(
+                "select c from ref$Car c left join c.model c_model where c.deleteTs is null order by c_model.numberOfSeats, c.vin",
                 res);
     }
 

@@ -557,11 +557,36 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     protected void setSortDirection(LoadContext.Query q) {
         boolean asc = Sortable.Order.ASC.equals(sortInfos[0].getOrder());
         MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
-        // Sort on DB only if the property is not transient and it is not an entity. Sorting by entity in JPQL
-        // translates to order by entity's id in SQL, that makes no sense.
+        String[] sortProperties = null;
+
         if (metadata.getTools().isPersistent(propertyPath) && !propertyPath.getMetaProperty().getRange().isClass()) {
+            // a scalar persistent attribute
+            sortProperties = new String[1];
+            sortProperties[0] = propertyPath.toString();
+        } else if (propertyPath.getMetaProperty().getRange().isClass()) {
+            // a reference attribute
+            MetaClass metaClass = propertyPath.getMetaProperty().getRange().asClass();
+            InstanceUtils.NamePatternRec rec = InstanceUtils.parseNamePattern(metaClass);
+            if (rec != null) {
+                sortProperties = new String[rec.fields.length];
+                for (int i = 0; i < rec.fields.length; i++) {
+                    sortProperties[i] = propertyPath.toString() + "." + rec.fields[i];
+                }
+            } else {
+                sortProperties = new String[1];
+                sortProperties[0] = propertyPath.toString();
+            }
+        } else if (!metadata.getTools().isPersistent(propertyPath)) {
+            // a non-persistent attribute
+            List<String> list = metadata.getTools().getRelatedProperties(propertyPath.getMetaProperty());
+            if (!list.isEmpty()) {
+                sortProperties = list.toArray(new String[list.size()]);
+            }
+        }
+
+        if (sortProperties != null) {
             QueryTransformer transformer = QueryTransformerFactory.createTransformer(q.getQueryString(), metaClass.getName());
-            transformer.replaceOrderBy(propertyPath.toString(), !asc);
+            transformer.replaceOrderBy(!asc, sortProperties);
             String jpqlQuery = transformer.getResult();
             q.setQueryString(jpqlQuery);
         }

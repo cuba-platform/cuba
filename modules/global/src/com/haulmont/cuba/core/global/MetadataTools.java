@@ -534,7 +534,15 @@ public class MetadataTools {
     public List<String> getRelatedProperties(Class<?> entityClass, String property) {
         List<String> result = new ArrayList<>();
         MetaClass metaClass = metadata.getClassNN(entityClass);
-        MetaProperty metaProperty = metaClass.getPropertyNN(property);
+        return getRelatedProperties(metaClass.getPropertyNN(property));
+    }
+
+    /**
+     * @return list of related properties defined in {@link com.haulmont.chile.core.annotations.MetaProperty#related()}
+     * or empty list
+     */
+    public List<String> getRelatedProperties(MetaProperty metaProperty) {
+        List<String> result = new ArrayList<>();
         String relatedProperties = (String) metaProperty.getAnnotations().get("relatedProperties");
         if (relatedProperties != null) {
             result.addAll(Arrays.asList(relatedProperties.split(",")));
