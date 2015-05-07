@@ -17,7 +17,7 @@ public class EntityComparator<T extends Entity> extends AbstractComparator<T> {
     public EntityComparator(MetaPropertyPath propertyPath, boolean asc) {
         super(asc);
         this.propertyPath = propertyPath;
-        if (propertyPath.get().length == 1) {
+        if (propertyPath.getMetaProperties().length == 1) {
             property = this.propertyPath.getMetaProperty();
         }
 

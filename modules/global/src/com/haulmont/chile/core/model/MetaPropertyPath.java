@@ -95,8 +95,9 @@ public class MetaPropertyPath implements Serializable {
     }
 
     /**
-     * Array of MetaProperties between the originating MetaClass and target MetaProperty
+     * DEPRECATED: use {@link #getMetaProperties()}
      */
+    @Deprecated
     public MetaProperty[] get() {
         return metaProperties;
     }

@@ -347,7 +347,7 @@ public class MetadataTools {
     public MetaClass getPropertyEnclosingMetaClass(MetaPropertyPath propertyPath) {
         checkNotNullArgument(propertyPath, "Property path should not be null");
 
-        MetaProperty[] propertyChain = propertyPath.get();
+        MetaProperty[] propertyChain = propertyPath.getMetaProperties();
         if (propertyChain.length > 1) {
             MetaProperty chainProperty = propertyChain[propertyChain.length - 2];
             return chainProperty.getRange().asClass();
@@ -449,7 +449,7 @@ public class MetadataTools {
      */
     public boolean viewContainsProperty(@Nullable View view, MetaPropertyPath propertyPath) {
         View currentView = view;
-        for (MetaProperty metaProperty : propertyPath.get()) {
+        for (MetaProperty metaProperty : propertyPath.getMetaProperties()) {
             if (currentView == null)
                 return false;
 

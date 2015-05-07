@@ -18,7 +18,7 @@ public class EntityByIdComparator<T extends Entity<K>, K> extends AbstractCompar
     public EntityByIdComparator(MetaPropertyPath propertyPath, CollectionDatasource<T, K> datasource, boolean asc) {
         super(asc);
         this.propertyPath = propertyPath;
-        if (propertyPath.get().length == 1) {
+        if (propertyPath.getMetaProperties().length == 1) {
             property = this.propertyPath.getMetaProperty();
         }
         this.datasource = datasource;
