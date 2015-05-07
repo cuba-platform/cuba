@@ -563,6 +563,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         saveInitialFilterState();
+        setFilterActionsEnabled();
         updateFilterModifiedIndicator();
     }
 
