@@ -1886,8 +1886,8 @@ public class FilterDelegateImpl implements FilterDelegate {
         CommitContext ctx = new CommitContext(Collections.emptyList(), Collections.singletonList(filterEntity));
         dataService.commit(ctx);
         filterEntities.remove(filterEntity);
-        initFilterSelectComponents();
         setFilterEntity(adHocFilter);
+        initFilterSelectComponents();
         updateWindowCaption();
     }
 
