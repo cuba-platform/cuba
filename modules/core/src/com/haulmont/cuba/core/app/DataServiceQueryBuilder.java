@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.PersistenceSecurity;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.QueryMacroHandler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -85,6 +86,10 @@ public class DataServiceQueryBuilder {
             applyConstraints(query);
         }
 
+        //we have to replace parameter names in macros because for {@link com.haulmont.cuba.core.sys.querymacro.TimeBetweenQueryMacroHandler}
+        //we need to replace a parameter with number of days with its value before macros is expanded to JPQL expression
+        replaceParamsInMacros(query);
+
         QueryParser parser = QueryTransformerFactory.createParser(queryString);
         Set<String> paramNames = parser.getParamNames();
 
@@ -118,6 +123,14 @@ public class DataServiceQueryBuilder {
         }
 
         return query;
+    }
+
+    protected void replaceParamsInMacros(Query query) {
+        Collection<QueryMacroHandler> handlers = AppBeans.getAll(QueryMacroHandler.class).values();
+        for (QueryMacroHandler handler : handlers) {
+            queryString = handler.replaceQueryParams(queryString, queryParams);
+        }
+        query.setQueryString(queryString);
     }
 
     protected void applyConstraints(Query query) {

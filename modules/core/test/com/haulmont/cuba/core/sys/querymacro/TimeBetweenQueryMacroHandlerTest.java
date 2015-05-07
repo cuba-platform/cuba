@@ -4,10 +4,16 @@
  */
 package com.haulmont.cuba.core.sys.querymacro;
 
+import com.haulmont.cuba.core.CubaTestCase;
 import com.haulmont.cuba.core.sys.querymacro.TimeBetweenQueryMacroHandler;
 import junit.framework.TestCase;
+import org.junit.Ignore;
 
-public class TimeBetweenQueryMacroHandlerTest extends TestCase {
+import java.util.HashMap;
+import java.util.Map;
+
+@Ignore
+public class TimeBetweenQueryMacroHandlerTest extends CubaTestCase {
 
     public void testExpandMacro() throws Exception {
         TimeBetweenQueryMacroHandler handler = new TimeBetweenQueryMacroHandler();
@@ -21,5 +27,13 @@ public class TimeBetweenQueryMacroHandlerTest extends TestCase {
                 " and u.deleteTs is null");
         System.out.println(res);
         System.out.println(handler.getParams());
+    }
+
+    public void testReplaceQueryParams() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("param1", 5);
+        TimeBetweenQueryMacroHandler handler = new TimeBetweenQueryMacroHandler();
+        String res = handler.replaceQueryParams("select u from sec$User where @between(u.createTs, now, now+:param1, day) and u.deleteTs is null", params);
+        System.out.println(res);
     }
 }

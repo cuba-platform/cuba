@@ -50,6 +50,11 @@ public class TimeTodayQueryMacroHandler implements QueryMacroHandler {
         return params;
     }
 
+    @Override
+    public String replaceQueryParams(String queryString, Map<String, Object> params) {
+        return queryString;
+    }
+
     private String doExpand(String macro) {
         count++;
         String param1 = macro.replace(".", "_") + "_" + count + "_1";

@@ -28,7 +28,8 @@ public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
 
     protected static final Pattern MACRO_PATTERN = Pattern.compile("@between\\s*\\(([^\\)]+)\\)");
     protected static final Pattern PARAM_PATTERN = Pattern.compile("(now)\\s*([+-]*)\\s*(\\d*)");
-    
+    protected static final Pattern QUERY_PARAM_PATTERN = Pattern.compile(":(\\w+)");
+
     protected static final Map<String, Object> units = new HashMap<>();
 
     static {
@@ -62,6 +63,33 @@ public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
     @Override
     public Map<String, Object> getParams() {
         return params;
+    }
+
+    @Override
+    public String replaceQueryParams(String queryString, Map<String, Object> params) {
+        Matcher matcher = MACRO_PATTERN.matcher(queryString);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            String macros = matcher.group(0);
+            macros = replaceParamsInMacros(macros, params);
+            matcher.appendReplacement(sb, macros);
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+
+    protected String replaceParamsInMacros(String macros, Map<String, Object> params) {
+        Matcher matcher = QUERY_PARAM_PATTERN.matcher(macros);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            String paramName = matcher.group(1);
+            if (params.containsKey(paramName)) {
+                matcher.appendReplacement(sb, params.get(paramName).toString());
+                params.remove(paramName);
+            }
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
     }
 
     protected String doExpand(String macro) {

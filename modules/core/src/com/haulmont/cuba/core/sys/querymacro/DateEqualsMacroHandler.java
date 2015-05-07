@@ -74,4 +74,9 @@ public class DateEqualsMacroHandler implements QueryMacroHandler {
         }
         return params;
     }
+
+    @Override
+    public String replaceQueryParams(String queryString, Map<String, Object> params) {
+        return queryString;
+    }
 }

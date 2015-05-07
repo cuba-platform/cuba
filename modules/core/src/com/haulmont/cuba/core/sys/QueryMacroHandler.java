@@ -17,4 +17,10 @@ public interface QueryMacroHandler {
     void setQueryParams(Map<String, Object> namedParameters);
 
     Map<String, Object> getParams();
+
+    /**
+     * Replaces param names in {@code queryString} with its values from {@code params} parameter
+     * @return modified query string
+     */
+    String replaceQueryParams(String queryString, Map<String, Object> params);
 }
