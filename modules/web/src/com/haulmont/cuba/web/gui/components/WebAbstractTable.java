@@ -1262,20 +1262,36 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                     @Override
                     public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
                         Entity entity = getDatasource().getItem(itemId);
+
                         com.haulmont.cuba.gui.components.Component component = getColumnGenerator().generateCell(entity);
-                        if (component == null)
+                        if (component == null) {
                             return null;
-                        else {
-                            com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(component);
-                            // wrap field for show required asterisk
-                            if ((vComponent instanceof com.vaadin.ui.Field)
-                                    && (((com.vaadin.ui.Field) vComponent).isRequired())) {
-                                VerticalLayout layout = new VerticalLayout();
-                                layout.addComponent(vComponent);
-                                vComponent = layout;
-                            }
-                            return vComponent;
                         }
+
+                        if (component instanceof BelongToFrame) {
+                            BelongToFrame belongToFrame = (BelongToFrame) component;
+                            if (belongToFrame.getFrame() == null) {
+                                belongToFrame.setFrame(getFrame());
+                            }
+                        }
+                        component.setParent(WebAbstractTable.this);
+
+                        com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(component);
+
+                        // wrap field for show required asterisk
+                        if ((vComponent instanceof com.vaadin.ui.Field)
+                                && (((com.vaadin.ui.Field) vComponent).isRequired())) {
+                            VerticalLayout layout = new VerticalLayout();
+                            layout.addComponent(vComponent);
+
+                            if (vComponent.getWidth() < 0) {
+                                layout.setWidthUndefined();
+                            }
+
+                            layout.addComponent(vComponent);
+                            vComponent = layout;
+                        }
+                        return vComponent;
                     }
                 }
         );
@@ -1813,8 +1829,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
                 if (composition.getWidth() < 0) {
                     layout.setWidthUndefined();
-                } else {
-                    layout.setExpandRatio(composition, 1);
                 }
 
                 componentImpl = layout;

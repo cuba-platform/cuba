@@ -23,6 +23,8 @@ import java.awt.*;
 import java.awt.Component;
 import java.util.*;
 
+import static com.haulmont.cuba.gui.components.Component.BelongToFrame;
+
 /**
  * @author Alexander Budarov
  * @version $Id$
@@ -124,6 +126,14 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
         if (component == null) {
             comp = new JLabel("");
         } else {
+            if (component instanceof BelongToFrame) {
+                BelongToFrame belongToFrame = (BelongToFrame) component;
+                if (belongToFrame.getFrame() == null) {
+                    belongToFrame.setFrame(desktopAbstractTable.getFrame());
+                }
+            }
+            component.setParent(desktopAbstractTable);
+
             JComponent jComposition = DesktopComponentsHelper.getComposition(component);
             jComposition.putClientProperty(CELL_EDITOR_TABLE, desktopAbstractTable.getComponent());
             jComposition.putClientProperty(CELL_COMPONENT, component);
