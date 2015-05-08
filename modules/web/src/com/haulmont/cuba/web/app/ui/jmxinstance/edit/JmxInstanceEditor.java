@@ -62,12 +62,7 @@ public class JmxInstanceEditor extends AbstractEditor<JmxInstance> {
         passwordField.setValue(getItem().getPassword());
     }
 
-    @Override
-    protected boolean preCommit() {
-        return validateConnection() && super.preCommit();
-    }
-
-    private boolean validateConnection() {
+    protected boolean validateConnection() {
         getItem().setPassword(passwordField.<String>getValue());
         // try to connect to instance and assign cluster node name
         try {
