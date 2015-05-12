@@ -629,6 +629,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                             set.add(entity);
                         }
                         attachListener(entity);
+                        fireCollectionChanged(CollectionDatasourceListener.Operation.UPDATE, Collections.<Entity>singletonList(item));
                     }
                 }
                 detachListener(item); // to avoid duplication in any case
