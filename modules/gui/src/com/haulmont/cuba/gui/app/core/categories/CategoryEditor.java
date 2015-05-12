@@ -17,11 +17,13 @@ import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.ValueListener;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.ObjectUtils;
 
 import javax.inject.Inject;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author devyatkin
@@ -56,7 +58,7 @@ public class CategoryEditor extends AbstractEditor<Category> {
         boolean hasValue = category.getEntityType() != null;
 
         LookupField categoryEntityTypeField = getComponent("entityType");
-        Map<String, Object> options = new HashMap<>();
+        Map<String, Object> options = new TreeMap<>();//the map sorts meta classes by the string key
         MetaClass entityType = null;
         for (MetaClass metaClass : metadata.getTools().getAllPersistentMetaClasses()) {
             options.put(messageTools.getDetailedEntityCaption(metaClass), metaClass);
