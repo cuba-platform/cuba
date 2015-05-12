@@ -87,7 +87,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected String fieldWidth;
 
     @Inject
-    private Table targetScreensTable;
+    protected Table targetScreensTable;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -118,6 +118,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         codeField = factory.createComponent(TextField.NAME);
         codeField.setId("code");
         codeField.setRequired(true);
+        codeField.setRequiredMessage(getMessage("codeRequired"));
         codeField.setCaption(getMessage("code"));
         codeField.setWidth(fieldWidth);
         codeField.setFrame(frame);
@@ -214,12 +215,14 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         Collection<ScreenAndComponent> screens = targetScreensTable.getDatasource().getItems();
         StringBuilder stringBuilder = new StringBuilder();
         for (ScreenAndComponent screenAndComponent : screens) {
-            stringBuilder.append(screenAndComponent.getScreen());
-            if (StringUtils.isNotBlank(screenAndComponent.getComponent())) {
-                stringBuilder.append("#");
-                stringBuilder.append(screenAndComponent.getComponent());
+            if (StringUtils.isNotBlank(screenAndComponent.getScreen())) {
+                stringBuilder.append(screenAndComponent.getScreen());
+                if (StringUtils.isNotBlank(screenAndComponent.getComponent())) {
+                    stringBuilder.append("#");
+                    stringBuilder.append(screenAndComponent.getComponent());
+                }
+                stringBuilder.append(",");
             }
-            stringBuilder.append(",");
         }
 
         if (stringBuilder.length() > 0) {
@@ -556,8 +559,10 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             }
         }
 
-        final Map<String, Object> optionsMap =
-                screensHelper.getAvailableScreens(metadata.getClassNN(attribute.getCategory().getEntityType()).getJavaClass());
+        MetaClass categorizedEntityMetaClass = metadata.getClass(attribute.getCategory().getEntityType());
+        final Map<String, Object> optionsMap = categorizedEntityMetaClass != null ?
+                screensHelper.getAvailableScreens(categorizedEntityMetaClass.getJavaClass()) :
+                Collections.<String, Object>emptyMap();
 
         targetScreensTable.addGeneratedColumn(
                 "screen",
@@ -567,6 +572,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                         LookupField lookupField = componentsFactory.createComponent(LookupField.NAME);
                         lookupField.setDatasource(targetScreensTable.getItemDatasource(entity), "screen");
                         lookupField.setOptionsMap(optionsMap);
+                        lookupField.setRequired(true);
                         lookupField.setWidth("100%");
                         return lookupField;
                     }
