@@ -292,7 +292,7 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
                 //noinspection unchecked
                 String formattedValue;
                 if (valueFormatter.getFormatter() == null) {
-                    formattedValue = datatype.format(datatypeValue);
+                    formattedValue = datatype.format(datatypeValue, locale);
                 } else {
                     formattedValue = valueFormatter.getFormatter().format(datatypeValue);
                 }
