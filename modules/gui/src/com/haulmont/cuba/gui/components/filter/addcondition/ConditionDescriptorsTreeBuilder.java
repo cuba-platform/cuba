@@ -49,7 +49,7 @@ public class ConditionDescriptorsTreeBuilder {
     protected MetadataTools metadataTools;
 
     /**
-     * @param filter
+     * @param filter filter
      * @param hierarchyDepth max level of properties hierarchy
      */
     public ConditionDescriptorsTreeBuilder(Filter filter, int hierarchyDepth) {
@@ -150,9 +150,10 @@ public class ConditionDescriptorsTreeBuilder {
         currentDepth++;
         List<AbstractConditionDescriptor> descriptors = new ArrayList<>();
         MetaClass filterMetaClass = filter.getDatasource().getMetaClass();
-        MetaPropertyPath mpp = filterMetaClass.getPropertyPath(parentNode.getData().getName());
+        String propertyId = parentNode.getData().getName();
+        MetaPropertyPath mpp = filterMetaClass.getPropertyPath(propertyId);
         if (mpp == null) {
-            throw new RuntimeException();
+            throw new RuntimeException("Unable to find property " + propertyId);
         }
 
         MetaProperty metaProperty = mpp.getMetaProperty();
@@ -190,7 +191,7 @@ public class ConditionDescriptorsTreeBuilder {
 
         List<String> includedProps = new ArrayList<>();
 
-        Pattern inclPattern = Pattern.compile(includeRe);
+        Pattern inclPattern = Pattern.compile(includeRe.replace(" ", ""));
 
         for (MetaProperty property : filter.getDatasource().getMetaClass().getProperties()) {
             if (metadata.getTools().isTransient(property))
@@ -209,7 +210,7 @@ public class ConditionDescriptorsTreeBuilder {
 
         Pattern exclPattern = null;
         if (!StringUtils.isBlank(excludeRe)) {
-            exclPattern = Pattern.compile(excludeRe.replaceAll(" ", ""));
+            exclPattern = Pattern.compile(excludeRe.replace(" ", ""));
         }
 
         for (String prop : includedProps) {

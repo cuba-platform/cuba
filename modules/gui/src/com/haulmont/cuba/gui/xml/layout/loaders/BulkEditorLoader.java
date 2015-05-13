@@ -66,7 +66,7 @@ public class BulkEditorLoader extends ComponentLoader {
 
         String exclude = element.attributeValue("exclude");
         if (StringUtils.isNotBlank(exclude)) {
-            component.setExcludePropertiesRegex(exclude);
+            component.setExcludePropertiesRegex(exclude.replace(" ", ""));
         }
 
         final String listComponent = element.attributeValue("for");
