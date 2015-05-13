@@ -10,7 +10,9 @@ import com.haulmont.chile.core.datatypes.impl.UUIDDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.entity.*;
+import com.haulmont.cuba.core.entity.CategorizedEntity;
+import com.haulmont.cuba.core.entity.Category;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParam;
@@ -28,7 +30,6 @@ import org.apache.openjpa.persistence.jdbc.EmbeddedMapping;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.persistence.Column;
 import javax.persistence.ManyToOne;
@@ -187,7 +188,6 @@ public class EntityInspectorEditor extends AbstractWindow {
 
         createCommitButtons();
         setCaption(meta.getName());
-        layout();
 
         if (focusFieldGroup != null && focusFieldId != null) {
             focusFieldGroup.requestFocus(focusFieldId);
@@ -216,7 +216,7 @@ public class EntityInspectorEditor extends AbstractWindow {
             params.put("runtimeDs", rDS.getId());
             params.put("categoriesDs", categoriesDs.getId());
             params.put("fieldWidth", themeConstants.get("cuba.gui.EntityInspectorEditor.field.width"));
-            params.put("borderVisible", "true");
+            params.put("borderVisible", Boolean.TRUE);
 
             RuntimePropertiesFrame runtimePropertiesFrame = openFrame(runtimePane, "runtimePropertiesFrame", params);
             runtimePropertiesFrame.setFrame(this.getFrame());
@@ -330,6 +330,7 @@ public class EntityInspectorEditor extends AbstractWindow {
      */
     private Entity loadSingleItem(MetaClass meta, Object id, View view) {
         LoadContext ctx = new LoadContext(meta);
+        ctx.setLoadDynamicAttributes(true);
         ctx.setView(view);
         String primaryKeyName = metadata.getTools().getPrimaryKeyName(meta);
         if (primaryKeyName == null)
@@ -348,6 +349,7 @@ public class EntityInspectorEditor extends AbstractWindow {
      */
     private void createDataComponents(MetaClass metaClass, Entity item) {
         FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.NAME);
+        fieldGroup.setWidth("100%");
         LinkedList<FieldGroup.FieldConfig> customFields = new LinkedList<>();
 
         contentPane.add(fieldGroup);
@@ -527,18 +529,6 @@ public class EntityInspectorEditor extends AbstractWindow {
         }
     }
 
-    /**
-     * Tunes up layout analysing created components
-     */
-    private void layout() {
-        //TODO: web & desktop layouts conflict: vbox("-1") + table("-1")
-//        for (Table table : tables)
-//            if (table.getDatasource().size() <= TABLE_MAX_ROW)
-//                table.setHeight("-1");
-//            else
-//                table.setHeight(TABLE_MAX_HEIGHT);
-    }
-
     private void createCommitButtons() {
         buttonsPanel = componentsFactory.createComponent(ButtonsPanel.NAME);
         commitButton = componentsFactory.createComponent(Button.NAME);
@@ -585,6 +575,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         field.setCustom(custom);
         field.setRequired(required);
         field.setEditable(!readOnly);
+        field.setWidth("100%");
 
         if (requireTextArea(metaProperty, item)) {
             Element root = DocumentHelper.createElement("textArea");
@@ -804,15 +795,14 @@ public class EntityInspectorEditor extends AbstractWindow {
 
         Button editButton = componentsFactory.createComponent(Button.NAME);
         EditAction editAction = new EditAction(metaProperty, table, propertyDs);
-        propertyDs.addListener(editAction);
         editButton.setAction(editAction);
         editButton.setCaption(messages.getMessage(EntityInspectorEditor.class, "edit"));
         editButton.setIcon("icons/edit.png");
+        table.addAction(editAction);
         table.setItemClickAction(editAction);
         table.setEnterPressAction(editAction);
 
         RemoveAction removeAction = createRemoveAction(metaProperty, table);
-        propertyDs.addListener(removeAction);
         Button removeButton = componentsFactory.createComponent(Button.NAME);
         removeButton.setAction(removeAction);
         table.addAction(removeAction);
@@ -1007,7 +997,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         private MetaProperty metaProperty;
 
         protected EditAction(MetaProperty metaProperty, Table entitiesTable, CollectionDatasource entitiesDs) {
-            super("edit");
+            super(entitiesTable, "edit");
             this.entitiesTable = entitiesTable;
             this.entitiesDs = entitiesDs;
             this.metaProperty = metaProperty;

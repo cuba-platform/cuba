@@ -187,6 +187,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
                 .setView(createView(meta))
                 .buildCollectionDatasource();
 
+        entitiesDs.setLoadDynamicAttributes(true);
         entitiesDs.setQuery(String.format("select e from %s e", meta.getName()));
 
         entitiesTable.setDatasource(entitiesDs);
@@ -201,9 +202,8 @@ public class EntityInspectorBrowse extends AbstractLookup {
         rowsCount.setDatasource(entitiesDs);
         entitiesTable.setRowsCount(rowsCount);
 
-        Action editAction = new EditAction();
-        entitiesTable.setEnterPressAction(editAction);
-        entitiesTable.setItemClickAction(editAction);
+        entitiesTable.setEnterPressAction(entitiesTable.getAction("edit"));
+        entitiesTable.setItemClickAction(entitiesTable.getAction("edit"));
         entitiesTable.setMultiSelect(true);
         filter.setDatasource(entitiesDs);
         filter.setVisible(true);
@@ -221,23 +221,22 @@ public class EntityInspectorBrowse extends AbstractLookup {
         createButton = componentsFactory.createComponent(Button.NAME);
         createButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "create"));
         CreateAction createAction = new CreateAction();
-        createButton.setAction(createAction);
         table.addAction(createAction);
+        createButton.setAction(createAction);
         createButton.setIcon("icons/create.png");
         createButton.setFrame(frame);
 
         editButton = componentsFactory.createComponent(Button.NAME);
         editButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "edit"));
         EditAction editAction = new EditAction();
+        table.addAction(editAction);
         editButton.setAction(editAction);
-        entitiesDs.addListener(editAction);
         editButton.setIcon("icons/edit.png");
         editButton.setFrame(frame);
 
         removeButton = componentsFactory.createComponent(Button.NAME);
         removeButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "remove"));
         RemoveAction removeAction = new RemoveAction(entitiesTable);
-        entitiesDs.addListener(removeAction);
         table.addAction(removeAction);
         removeButton.setAction(removeAction);
         removeButton.setIcon("icons/remove.png");
@@ -265,6 +264,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
     }
 
     protected View createView(MetaClass meta) {
+        //noinspection unchecked
         View view = new View(meta.getJavaClass(), false);
         for (MetaProperty metaProperty : meta.getProperties()) {
             switch (metaProperty.getType()) {
