@@ -39,7 +39,7 @@ public final class DynamicAttributesUtils {
     @Nullable
     public static MetaPropertyPath getMetaPropertyPath(MetaClass metaClass, String attributeCode) {
         attributeCode = decodeAttributeCode(attributeCode);
-        CategoryAttribute attribute = AppBeans.get(DynamicAttributesService.NAME, DynamicAttributesService.class)
+        CategoryAttribute attribute = AppBeans.get(DynamicAttributes.NAME, DynamicAttributes.class)
                 .getAttributeForMetaClass(metaClass, attributeCode);
 
         if (attribute != null) {

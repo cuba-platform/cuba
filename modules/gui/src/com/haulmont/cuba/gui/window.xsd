@@ -1437,6 +1437,7 @@
         <xs:attribute name="query" type="xs:string"/>
         <xs:attribute name="refreshMode" type="refreshMode"/>
         <xs:attribute name="softDeletion" type="xs:boolean"/>
+        <xs:attribute name="loadDynamicAttributes" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
     <!-- HierarchicalDatasource -->
@@ -1458,6 +1459,7 @@
         <xs:attribute name="hierarchyProperty" type="xs:string"/>
         <xs:attribute name="refreshMode" type="refreshMode"/>
         <xs:attribute name="softDeletion" type="xs:boolean"/>
+        <xs:attribute name="loadDynamicAttributes" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
     <!-- GroupDatasource -->
@@ -1479,6 +1481,7 @@
         <xs:attribute name="query" type="xs:string"/>
         <xs:attribute name="refreshMode" type="refreshMode"/>
         <xs:attribute name="softDeletion" type="xs:boolean"/>
+        <xs:attribute name="loadDynamicAttributes" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
     <!-- RuntimePropsDatasource -->
@@ -1528,6 +1531,7 @@
             <xs:group ref="nestedDatasources"/>
         </xs:sequence>
         <xs:attributeGroup ref="isDatasource"/>
+        <xs:attribute name="loadDynamicAttributes" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
     <!-- Layout -->

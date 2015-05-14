@@ -17,7 +17,7 @@ import java.util.Date;
  * @author degtyarjov
  * @version $Id$
  */
-public interface DynamicAttributesService {
+public interface DynamicAttributes {
     String NAME = "cuba_DynamicAttributesService";
 
     /**

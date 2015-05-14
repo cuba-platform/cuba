@@ -11,7 +11,7 @@ import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
-import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesService;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.CategoryAttributeValue;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -264,7 +264,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         java.util.List<FieldGroup.FieldConfig> fields = new ArrayList<>();
         for (MetaProperty property : metaProperties) {
             FieldGroup.FieldConfig field = new FieldGroup.FieldConfig(property.getName());
-            CategoryAttribute attribute = AppBeans.get(DynamicAttributesService.class)
+            CategoryAttribute attribute = AppBeans.get(DynamicAttributes.class)
                     .getAttributeForMetaClass(rds.getMainDs().getMetaClass(), property.getName().substring(1));
             field.setCaption(attribute != null ? attribute.getName() : property.getName());
             field.setWidth(fieldWidth);

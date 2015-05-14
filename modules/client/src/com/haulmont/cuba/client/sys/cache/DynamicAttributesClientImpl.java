@@ -3,16 +3,14 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.gui.dynamicattributes;
+package com.haulmont.cuba.client.sys.cache;
 
 import com.google.common.base.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesCache;
-import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesService;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
-import com.haulmont.cuba.gui.cache.ClientCacheManager;
-import com.haulmont.cuba.gui.cache.DynamicAttributesCacheStrategy;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
@@ -23,8 +21,8 @@ import java.util.Collection;
  * @author degtyarjov
  * @version $Id$
  */
-@ManagedBean(DynamicAttributesService.NAME)
-public class ClientDynamicAttributesServiceBean implements DynamicAttributesService {
+@ManagedBean(DynamicAttributes.NAME)
+public class DynamicAttributesClientImpl implements DynamicAttributes {
     @Inject
     protected ClientCacheManager clientCacheManager;
 

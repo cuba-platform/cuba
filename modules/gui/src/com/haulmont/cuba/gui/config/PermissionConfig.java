@@ -8,7 +8,7 @@ import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.*;
-import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesService;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.*;
@@ -44,7 +44,7 @@ import java.util.*;
 public class PermissionConfig {
 
     @Inject
-    protected DynamicAttributesService dynamicAttributesService;
+    protected DynamicAttributes dynamicAttributes;
 
     @Inject
     protected MetadataTools metadataTools;
@@ -169,7 +169,7 @@ public class PermissionConfig {
                                 "entity:" + entityName, caption, entityName);
 
                         List<MetaProperty> propertyList = new ArrayList<>(metaClass.getProperties());
-                        Collection<CategoryAttribute> dynamicAttributes = dynamicAttributesService.getAttributesForMetaClass(metaClass);
+                        Collection<CategoryAttribute> dynamicAttributes = PermissionConfig.this.dynamicAttributes.getAttributesForMetaClass(metaClass);
                         for (CategoryAttribute dynamicAttribute : dynamicAttributes) {
                             MetaPropertyPath metaPropertyPath =
                                     metadataTools.resolveMetaPropertyPath(metaClass,

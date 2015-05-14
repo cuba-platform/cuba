@@ -6,12 +6,10 @@
 package com.haulmont.cuba.gui.dynamicattributes;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesService;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
@@ -33,7 +31,7 @@ public class DynamicAttributesGuiTools {
     public static final String NAME = "cuba_DynamicAttributesGuiTools";
 
     @Inject
-    protected DynamicAttributesService dynamicAttributesService;
+    protected DynamicAttributes dynamicAttributes;
 
     @Inject
     protected MetadataTools metadataTools;
@@ -61,7 +59,7 @@ public class DynamicAttributesGuiTools {
      */
     public Set<CategoryAttribute> getAttributesToShowOnTheScreen(MetaClass metaClass, String screen, @Nullable String component) {
         Collection<CategoryAttribute> attributesForMetaClass =
-                dynamicAttributesService.getAttributesForMetaClass(metaClass);
+                dynamicAttributes.getAttributesForMetaClass(metaClass);
         Set<CategoryAttribute> categoryAttributes = new HashSet<>();
 
         for (CategoryAttribute attribute : attributesForMetaClass) {

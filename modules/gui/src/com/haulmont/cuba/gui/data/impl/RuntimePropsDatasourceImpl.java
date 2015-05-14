@@ -54,7 +54,7 @@ public class RuntimePropsDatasourceImpl
         this.setMainDs(mainDsId);
         this.setCommitMode(CommitMode.DATASTORE);
 
-        attributes = AppBeans.get(DynamicAttributesService.class).getAttributesForMetaClass(mainDs.getMetaClass());
+        attributes = AppBeans.get(DynamicAttributes.class).getAttributesForMetaClass(mainDs.getMetaClass());
         for (CategoryAttribute attribute : attributes) {
             MetaProperty metaProperty = DynamicAttributesUtils.getMetaPropertyPath(mainDs.getMetaClass(), attribute).getMetaProperty();
             this.metaClass.addProperty(metaProperty, attribute);
@@ -443,7 +443,7 @@ public class RuntimePropsDatasourceImpl
     @Nullable
     public Category getDefaultCategory(Entity entity) {
         MetaClass metaClass = metadata.getSession().getClassNN(entity.getClass());
-        Collection<Category> categoriesForMetaClass = AppBeans.get(DynamicAttributesService.class).getCategoriesForMetaClass(metaClass);
+        Collection<Category> categoriesForMetaClass = AppBeans.get(DynamicAttributes.class).getCategoriesForMetaClass(metaClass);
         for (Category category : categoriesForMetaClass) {
             if (Boolean.TRUE.equals(category.getIsDefault())) {
                 return category;
