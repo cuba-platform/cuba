@@ -6,10 +6,10 @@ package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.web.AppUI;
-import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.components.mainwindow.WebAppWorkArea;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -43,12 +43,12 @@ public class WindowBreadCrumbs extends HorizontalLayout {
 
     protected Set<Listener> listeners = new HashSet<>();
 
-    public WindowBreadCrumbs() {
+    public WindowBreadCrumbs(WebAppWorkArea workArea) {
         setWidth(100, Unit.PERCENTAGE);
         setHeight(-1, Unit.PIXELS);
         setStyleName("cuba-headline-container");
 
-        tabbedMode = AppWindow.Mode.TABBED.equals(App.getInstance().getAppWindow().getMode());
+        tabbedMode = workArea.getMode() == AppWorkArea.Mode.TABBED;
 
         if (tabbedMode)
             setVisible(false);

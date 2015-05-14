@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
@@ -262,9 +263,11 @@ public class WebComponentsHelper {
     }
 
     public static Button createButton(String icon) {
-        WebButton webButton = new WebButton();
-        webButton.setIcon(icon);
-        return (Button) unwrap(webButton);
+        ComponentsFactory cf = AppBeans.get(ComponentsFactory.NAME);
+        com.haulmont.cuba.gui.components.Button button =
+                cf.createComponent(com.haulmont.cuba.gui.components.Button.NAME);
+        button.setIcon(icon);
+        return (Button) unwrap(button);
     }
 
     public static IFrame getControllerFrame(IFrame frame) {

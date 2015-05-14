@@ -6,6 +6,7 @@ package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.cuba.gui.ComponentPalette;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.mainwindow.*;
 import com.haulmont.cuba.gui.xml.layout.loaders.*;
 
 import java.util.HashMap;
@@ -100,6 +101,17 @@ public class LayoutLoaderConfig {
         config.register(SearchField.NAME, SearchFieldLoader.class);
         config.register(RelatedEntities.NAME, RelatedEntitiesLoader.class);
         config.register(BulkEditor.NAME, BulkEditorLoader.class);
+
+        /* Main window components */
+
+        config.register(AppMenu.NAME, AppMenuLoader.class);
+        config.register(AppWorkArea.NAME, AppWorkAreaLoader.class);
+        config.register(LogoutButton.NAME, LogoutButtonLoader.class);
+        config.register(NewWindowButton.NAME, NewWindowButtonLoader.class);
+        config.register(UserIndicator.NAME, UserIndicatorLoader.class);
+        config.register(FoldersPane.NAME, FoldersPaneLoader.class);
+        config.register(FtsField.NAME, FtsFieldLoader.class);
+        config.register(TimeZoneIndicator.NAME, TimeZoneIndicatorLoader.class);
     }
 
     public static void registerLoader(String tagName, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> aClass) {

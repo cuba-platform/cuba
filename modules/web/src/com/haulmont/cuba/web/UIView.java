@@ -5,8 +5,7 @@
 
 package com.haulmont.cuba.web;
 
-import com.vaadin.ui.Panel;
-import org.apache.commons.lang.StringUtils;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * Base class for application's UI content.
@@ -17,24 +16,10 @@ import org.apache.commons.lang.StringUtils;
  * @author artamonov
  * @version $Id$
  */
-public abstract class UIView extends Panel {
-
-    protected String baseStyle = null;
-
-    public String getBaseStyle() {
-        return null;
-    }
-
-    public void setBaseStyle(String baseStyle) {
-        this.baseStyle = baseStyle;
-    }
-
-    public String getStyle(String style) {
-        if (StringUtils.isEmpty(baseStyle))
-            return style;
-        else
-            return baseStyle + "-" + style;
-    }
+public abstract class UIView extends VerticalLayout {
 
     public abstract String getTitle();
+
+    public void show() {
+    }
 }

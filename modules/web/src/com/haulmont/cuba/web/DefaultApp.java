@@ -30,7 +30,7 @@ import java.util.Map;
  * @author gorodnov
  * @version $Id$
  */
-public class DefaultApp extends App implements ConnectionListener {
+public class DefaultApp extends App implements ConnectionListener, UserSubstitutionListener {
 
     private static Log log = LogFactory.getLog(DefaultApp.class);
 
@@ -43,7 +43,8 @@ public class DefaultApp extends App implements ConnectionListener {
     @Override
     protected Connection createConnection() {
         Connection connection = new DefaultConnection();
-        connection.addListener(this);
+        connection.addConnectionListener(this);
+        connection.addSubstitutionListener(this);
         return connection;
     }
 
@@ -152,5 +153,19 @@ public class DefaultApp extends App implements ConnectionListener {
         }
 
         return false;
+    }
+
+    @Override
+    public void userSubstituted(Connection connection) {
+        cleanupBackgroundTasks();
+        clearSettingsCache();
+
+        for (AppUI ui : getAppUIs()) {
+            if (ui.isTestMode()) {
+                ui.getTestIdManager().reset();
+            }
+
+            ui.showView(createAppWindow(ui));
+        }
     }
 }

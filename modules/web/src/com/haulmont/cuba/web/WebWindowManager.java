@@ -6,27 +6,29 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.SilentException;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.app.core.dev.LayoutAnalyzer;
 import com.haulmont.cuba.gui.app.core.dev.LayoutTip;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
+import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
+import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.components.mainwindow.WebAppWorkArea;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
 import com.haulmont.cuba.web.toolkit.ui.CubaLabel;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
-import com.vaadin.event.*;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.BorderStyle;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -80,16 +82,17 @@ public class WebWindowManager extends WindowManager {
         this.appWindow = appWindow;
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
-
         webConfig = configuration.getConfig(WebConfig.class);
         clientConfig = configuration.getConfig(ClientConfig.class);
-
-        messages = AppBeans.get(Messages.NAME);
 
         screenHistorySupport = new ScreenHistorySupport();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public App getApp() {
+        return app;
+    }
 
     @Override
     public Collection<Window> getOpenWindows() {
@@ -104,8 +107,7 @@ public class WebWindowManager extends WindowManager {
             if (openType == OpenType.NEW_TAB || openType == OpenType.THIS_TAB) {
                 // show in tabsheet
                 Layout layout = (Layout) openMode.getData();
-
-                TabSheet webTabsheet = appWindow.getTabSheet();
+                TabSheet webTabsheet = getConfiguredWorkArea().getTabbedWindowContainer();
                 webTabsheet.setSelectedTab(layout);
             }
         }
@@ -118,6 +120,7 @@ public class WebWindowManager extends WindowManager {
             webWindow = ((Window.Wrapper) window).getWrappedWindow();
         }
         window.setCaption(caption);
+        window.setDebugId(description);
 
         WindowOpenMode openMode = windowOpenMode.get(webWindow);
         String formattedCaption;
@@ -133,9 +136,8 @@ public class WebWindowManager extends WindowManager {
                 com.vaadin.ui.Window dialog = (com.vaadin.ui.Window) openMode.getData();
                 dialog.setCaption(formattedCaption);
             } else {
-                TabSheet tabSheet = appWindow.getTabSheet();
-                if (tabSheet == null) {
-                    return; // for SINGLE tabbing mode
+                if (getConfiguredWorkArea().getMode() == AppWorkArea.Mode.SINGLE) {
+                    return;
                 }
 
                 com.vaadin.ui.Component tabContent = (Component) openMode.getData();
@@ -143,22 +145,22 @@ public class WebWindowManager extends WindowManager {
                     return;
                 }
 
+                TabSheet tabSheet = getConfiguredWorkArea().getTabbedWindowContainer();
                 TabSheet.Tab tab = tabSheet.getTab(tabContent);
                 if (tab == null) {
                     return;
                 }
 
                 tab.setCaption(formattedCaption);
+                tab.setDescription(formatTabDescription(caption, description));
             }
         }
     }
 
     protected static class WindowOpenMode {
-
         protected Window window;
         protected OpenType openType;
         protected Object data;
-        protected com.vaadin.ui.Window vaadinWindow;
 
         public WindowOpenMode(Window window, OpenType openType) {
             this.window = window;
@@ -180,22 +182,15 @@ public class WebWindowManager extends WindowManager {
         public OpenType getOpenType() {
             return openType;
         }
-
-        public com.vaadin.ui.Window getVaadinWindow() {
-            return vaadinWindow;
-        }
-
-        public void setVaadinWindow(com.vaadin.ui.Window vaadinWindow) {
-            this.vaadinWindow = vaadinWindow;
-        }
     }
 
     protected ComponentContainer findTab(Integer hashCode) {
         Set<Map.Entry<ComponentContainer, WindowBreadCrumbs>> set = tabs.entrySet();
         for (Map.Entry<ComponentContainer, WindowBreadCrumbs> entry : set) {
             Window currentWindow = entry.getValue().getCurrentWindow();
-            if (hashCode.equals(getWindowHashCode(currentWindow)))
+            if (hashCode.equals(getWindowHashCode(currentWindow))) {
                 return entry.getKey();
+            }
         }
         return null;
     }
@@ -206,8 +201,9 @@ public class WebWindowManager extends WindowManager {
 
     protected boolean hasModalWindow() {
         for (Map.Entry<Window, WindowOpenMode> openMode : windowOpenMode.entrySet()) {
-            if (OpenType.DIALOG.equals(openMode.getValue().getOpenType()))
+            if (OpenType.DIALOG.equals(openMode.getValue().getOpenType())) {
                 return true;
+            }
         }
         return false;
     }
@@ -218,7 +214,8 @@ public class WebWindowManager extends WindowManager {
     }
 
     @Override
-    protected void showWindow(final Window window, final String caption, final String description, OpenType type, final boolean multipleOpen) {
+    protected void showWindow(final Window window, final String caption, final String description, OpenType type,
+                              final boolean multipleOpen) {
         boolean forciblyDialog = false;
         if (type != OpenType.DIALOG && hasModalWindow()) {
             type = OpenType.DIALOG;
@@ -238,9 +235,11 @@ public class WebWindowManager extends WindowManager {
         switch (type) {
             case NEW_TAB:
             case NEW_WINDOW:
-                appWindow.closeStartupScreen();
-                if (AppWindow.Mode.SINGLE.equals(appWindow.getMode())) {
-                    VerticalLayout mainLayout = appWindow.getMainLayout();
+                final WebAppWorkArea workArea = getConfiguredWorkArea();
+                workArea.switchTo(AppWorkArea.State.WINDOW_CONTAINER);
+
+                if (workArea.getMode() == AppWorkArea.Mode.SINGLE) {
+                    VerticalLayout mainLayout = workArea.getSingleWindowContainer();
                     if (mainLayout.iterator().hasNext()) {
                         ComponentContainer oldLayout = (ComponentContainer) mainLayout.iterator().next();
                         WindowBreadCrumbs oldBreadCrumbs = tabs.get(oldLayout);
@@ -249,7 +248,7 @@ public class WebWindowManager extends WindowManager {
                             oldWindow.closeAndRun(MAIN_MENU_ACTION_ID, new Runnable() {
                                 @Override
                                 public void run() {
-                                    showWindow(window, caption, OpenType.NEW_TAB, false);
+                                    showWindow(window, caption, description, OpenType.NEW_TAB, false);
                                 }
                             });
                             return;
@@ -271,9 +270,10 @@ public class WebWindowManager extends WindowManager {
                         selectWindowTab(((Window.Wrapper) oldBreadCrumbs.getCurrentWindow()).getWrappedWindow());
 
                         int tabPosition = -1;
-                        TabSheet.Tab oldWindowTab = appWindow.getTabSheet().getTab(tab);
+                        final TabSheet tabSheet = workArea.getTabbedWindowContainer();
+                        TabSheet.Tab oldWindowTab = tabSheet.getTab(tab);
                         if (oldWindowTab != null) {
-                            tabPosition = appWindow.getTabSheet().getTabPosition(oldWindowTab);
+                            tabPosition = tabSheet.getTabPosition(oldWindowTab);
                         }
 
                         final int finalTabPosition = tabPosition;
@@ -287,24 +287,25 @@ public class WebWindowManager extends WindowManager {
                                     wrappedWindow = ((Window.Wrapper) window).getWrappedWindow();
                                 }
 
-                                if (finalTabPosition >= 0 && finalTabPosition < appWindow.getTabSheet().getComponentCount() - 1) {
-                                    moveWindowTab(wrappedWindow, finalTabPosition);
+                                if (finalTabPosition >= 0 && finalTabPosition < tabSheet.getComponentCount() - 1) {
+                                    moveWindowTab(workArea, wrappedWindow, finalTabPosition);
                                 }
                             }
                         });
                         return;
                     }
                 }
-                component = showWindowNewTab(window, multipleOpen, caption, description);
+                component = showWindowNewTab(window, multipleOpen);
                 break;
 
             case THIS_TAB:
-                appWindow.closeStartupScreen();
+                getConfiguredWorkArea().switchTo(AppWorkArea.State.WINDOW_CONTAINER);
+
                 component = showWindowThisTab(window, caption, description);
                 break;
 
             case DIALOG:
-                component = showWindowDialog(window, caption, description, forciblyDialog);
+                component = showWindowDialog(window, forciblyDialog);
                 break;
 
             default:
@@ -324,12 +325,15 @@ public class WebWindowManager extends WindowManager {
     }
 
     /**
-     * @param window Window implementation (WebWindow)
+     * @param workArea Work area
+     * @param window   Window implementation (WebWindow)
      * @param position new tab position
      */
-    protected void moveWindowTab(Window window, int position) {
+    protected void moveWindowTab(WebAppWorkArea workArea, Window window, int position) {
         // move tab to
-        if (position >= 0 && position < appWindow.getTabSheet().getComponentCount()) {
+        CubaTabSheet tabSheet = workArea.getTabbedWindowContainer();
+
+        if (position >= 0 && position < tabSheet.getComponentCount()) {
             WindowOpenMode openMode = windowOpenMode.get(window);
             if (openMode != null) {
                 OpenType openType = openMode.getOpenType();
@@ -337,74 +341,15 @@ public class WebWindowManager extends WindowManager {
                     // show in tabsheet
                     Layout layout = (Layout) openMode.getData();
 
-                    AppWindow.AppTabSheet webTabsheet = (AppWindow.AppTabSheet) appWindow.getTabSheet();
-
-                    webTabsheet.moveTab(layout, position);
-                    webTabsheet.setSelectedTab(layout);
+                    tabSheet.moveTab(layout, position);
+                    tabSheet.setSelectedTab(layout);
                 }
             }
         }
     }
 
-    public ShortcutListener createNextWindowTabShortcut() {
-        if (AppWindow.Mode.TABBED == appWindow.getMode()) {
-            String nextTabShortcut = clientConfig.getNextTabShortcut();
-            KeyCombination combination = KeyCombination.create(nextTabShortcut);
-
-            return new ShortcutListener("onNextTab", combination.getKey().getCode(),
-                    KeyCombination.Modifier.codes(combination.getModifiers())) {
-                @Override
-                public void handleAction(Object sender, Object target) {
-                    TabSheet tabSheet = appWindow.getTabSheet();
-
-                    if (tabSheet != null && !hasDialogWindows() && tabSheet.getComponentCount() > 1) {
-                        Component selectedTabComponent = tabSheet.getSelectedTab();
-                        TabSheet.Tab selectedTab = tabSheet.getTab(selectedTabComponent);
-                        int tabPosition = tabSheet.getTabPosition(selectedTab);
-                        int newTabPosition = (tabPosition + 1) % tabSheet.getComponentCount();
-
-                        TabSheet.Tab newTab = tabSheet.getTab(newTabPosition);
-                        tabSheet.setSelectedTab(newTab);
-
-                        moveFocus(tabSheet, newTab);
-                    }
-                }
-            };
-        }
-
-        return null;
-    }
-
-    public ShortcutListener createPreviousWindowTabShortcut() {
-        if (AppWindow.Mode.TABBED == appWindow.getMode()) {
-            String previousTabShortcut = clientConfig.getPreviousTabShortcut();
-            KeyCombination combination = KeyCombination.create(previousTabShortcut);
-
-            return new ShortcutListener("onPreviousTab", combination.getKey().getCode(),
-                    KeyCombination.Modifier.codes(combination.getModifiers())) {
-                @Override
-                public void handleAction(Object sender, Object target) {
-                    TabSheet tabSheet = appWindow.getTabSheet();
-
-                    if (tabSheet != null && !hasDialogWindows() && tabSheet.getComponentCount() > 1) {
-                        Component selectedTabComponent = tabSheet.getSelectedTab();
-                        TabSheet.Tab selectedTab = tabSheet.getTab(selectedTabComponent);
-                        int tabPosition = tabSheet.getTabPosition(selectedTab);
-                        int newTabPosition = (tabSheet.getComponentCount() + tabPosition - 1) % tabSheet.getComponentCount();
-
-                        TabSheet.Tab newTab = tabSheet.getTab(newTabPosition);
-                        tabSheet.setSelectedTab(newTab);
-
-                        moveFocus(tabSheet, newTab);
-                    }
-                }
-            };
-        }
-
-        return null;
-    }
-
     protected void moveFocus(TabSheet tabSheet, TabSheet.Tab tab) {
+        //noinspection SuspiciousMethodCalls
         Window window = tabs.get(tab.getComponent()).getCurrentWindow();
 
         if (window != null) {
@@ -428,57 +373,7 @@ public class WebWindowManager extends WindowManager {
         }
     }
 
-    protected boolean hasDialogWindows() {
-        return !ui.getWindows().isEmpty();
-    }
-
-    public ShortcutListener createCloseShortcut() {
-        String closeShortcut = clientConfig.getCloseShortcut();
-        KeyCombination combination = KeyCombination.create(closeShortcut);
-
-        return new ShortcutListener("onClose", combination.getKey().getCode(),
-                KeyCombination.Modifier.codes(combination.getModifiers())) {
-            @Override
-            public void handleAction(Object sender, Object target) {
-                if (AppWindow.Mode.TABBED == appWindow.getMode()) {
-                    final TabSheet tabSheet = appWindow.getTabSheet();
-                    if (tabSheet != null) {
-                        VerticalLayout layout = (VerticalLayout) tabSheet.getSelectedTab();
-                        if (layout != null) {
-                            tabSheet.focus();
-
-                            WindowBreadCrumbs breadCrumbs = tabs.get(layout);
-                            if (stacks.get(breadCrumbs).empty()) {
-                                final Component previousTab = ((AppWindow.AppTabSheet) tabSheet).getPreviousTab(layout);
-                                if (previousTab != null) {
-                                    breadCrumbs.getCurrentWindow().closeAndRun(Window.CLOSE_ACTION_ID, new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            tabSheet.setSelectedTab(previousTab);
-                                        }
-                                    });
-                                } else {
-                                    breadCrumbs.getCurrentWindow().close(Window.CLOSE_ACTION_ID);
-                                }
-                            } else {
-                                breadCrumbs.getCurrentWindow().close(Window.CLOSE_ACTION_ID);
-                            }
-                        }
-                    }
-                } else {
-                    ui.focus();
-
-                    Iterator<WindowBreadCrumbs> it = tabs.values().iterator();
-                    if (it.hasNext()) {
-                        it.next().getCurrentWindow().close(Window.CLOSE_ACTION_ID);
-                    }
-                }
-            }
-        };
-    }
-
-    protected Component showWindowNewTab(final Window window, final boolean multipleOpen, final String caption,
-                                         final String description) {
+    protected Component showWindowNewTab(final Window window, final boolean multipleOpen) {
         getDialogParams().reset();
 
         final WindowBreadCrumbs breadCrumbs = createWindowBreadCrumbs();
@@ -502,18 +397,21 @@ public class WebWindowManager extends WindowManager {
         );
         breadCrumbs.addWindow(window);
 
-        final Layout layout = createNewTabLayout(window, multipleOpen, caption, description, breadCrumbs);
+        //noinspection UnnecessaryLocalVariable
+        final Layout layout = createNewTabLayout(window, multipleOpen, breadCrumbs);
 
         return layout;
     }
 
-    protected Layout createNewTabLayout(final Window window, final boolean multipleOpen, final String caption,
-                                        final String description, Component... components) {
+    protected Layout createNewTabLayout(final Window window, final boolean multipleOpen, WindowBreadCrumbs breadCrumbs,
+                                        Component... additionalComponents) {
         final VerticalLayout layout = new VerticalLayout();
         layout.setStyleName("cuba-app-tabbed-window");
         layout.setSizeFull();
-        if (components != null) {
-            for (final Component c : components) {
+
+        layout.addComponent(breadCrumbs);
+        if (additionalComponents != null) {
+            for (final Component c : additionalComponents) {
                 layout.addComponent(c);
             }
         }
@@ -523,52 +421,53 @@ public class WebWindowManager extends WindowManager {
         layout.addComponent(component);
         layout.setExpandRatio(component, 1);
 
-        if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
-            TabSheet tabSheet = appWindow.getTabSheet();
+        WebAppWorkArea workArea = getConfiguredWorkArea();
+
+        if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
+            CubaTabSheet tabSheet = workArea.getTabbedWindowContainer();
+
             layout.setMargin(true);
             TabSheet.Tab newTab;
             Integer hashCode = getWindowHashCode(window);
             ComponentContainer tab = null;
-            if (hashCode != null)
+            if (hashCode != null) {
                 tab = findTab(hashCode);
+            }
             if (tab != null && !multipleOpen) {
                 tabSheet.replaceComponent(tab, layout);
                 tabSheet.removeComponent(tab);
-                tabs.put(layout, (WindowBreadCrumbs) components[0]);
+                tabs.put(layout, breadCrumbs);
                 newTab = tabSheet.getTab(layout);
             } else {
-                tabs.put(layout, (WindowBreadCrumbs) components[0]);
+                tabs.put(layout, breadCrumbs);
 
                 newTab = tabSheet.addTab(layout);
 
-                if (ui.isTestMode() && tabSheet instanceof CubaTabSheet) {
-                    CubaTabSheet mainTabsheet = (CubaTabSheet) tabSheet;
-                    mainTabsheet.setTestId(newTab, ui.getTestIdManager().getTestId("tab_" + window.getId()));
-                    mainTabsheet.setCubaId(newTab, "tab_" + window.getId());
+                if (ui.isTestMode()) {
+                    tabSheet.setTestId(newTab, ui.getTestIdManager().getTestId("tab_" + window.getId()));
+                    tabSheet.setCubaId(newTab, "tab_" + window.getId());
                 }
             }
-            newTab.setCaption(formatTabCaption(caption, description));
-            //newTab.setDescription(formatTabDescription(caption, description));
-            if (tabSheet instanceof AppWindow.AppTabSheet) {
-                newTab.setClosable(true);
-                ((AppWindow.AppTabSheet) tabSheet).setTabCloseHandler(
-                        layout,
-                        new AppWindow.AppTabSheet.TabCloseHandler() {
-                            @Override
-                            public void onClose(TabSheet tabSheet, Component tabContent) {
-                                WindowBreadCrumbs breadCrumbs = tabs.get(tabContent);
-                                Runnable closeTask = new TabCloseTask(breadCrumbs);
-                                closeTask.run();
-                            }
-                        });
-            }
+            newTab.setCaption(formatTabCaption(window.getCaption(), window.getDescription()));
+            newTab.setDescription(formatTabDescription(window.getCaption(), window.getDescription()));
+            newTab.setClosable(true);
+            tabSheet.setTabCloseHandler(layout,
+                    new CubaTabSheet.TabCloseHandler() {
+                        @Override
+                        public void onClose(TabSheet tabSheet, Component tabContent) {
+                            //noinspection SuspiciousMethodCalls
+                            WindowBreadCrumbs breadCrumbs = tabs.get(tabContent);
+                            Runnable closeTask = new TabCloseTask(breadCrumbs);
+                            closeTask.run();
+                        }
+                    });
             tabSheet.setSelectedTab(layout);
         } else {
-			tabs.put(layout, (WindowBreadCrumbs) components[0]);
-            layout.addStyleName("cuba-app-work-area-single-window");
+            tabs.put(layout, breadCrumbs);
+            layout.addStyleName("cuba-app-single-window");
             layout.setMargin(true);
 
-            VerticalLayout mainLayout = appWindow.getMainLayout();
+            VerticalLayout mainLayout = workArea.getSingleWindowContainer();
             mainLayout.removeAllComponents();
             mainLayout.addComponent(layout);
         }
@@ -592,14 +491,6 @@ public class WebWindowManager extends WindowManager {
         }
     }
 
-    /**
-     * @deprecated Use {@link WindowManager#setWindowCaption(com.haulmont.cuba.gui.components.Window, String, String)}
-     */
-    @Deprecated
-    public void setCurrentWindowCaption(Window window, String caption, String description) {
-        setWindowCaption(window, caption, description);
-    }
-
     protected String formatTabCaption(final String caption, final String description) {
         String s = formatTabDescription(caption, description);
         int maxLength = webConfig.getMainTabCaptionLength();
@@ -621,17 +512,20 @@ public class WebWindowManager extends WindowManager {
     protected Component showWindowThisTab(final Window window, final String caption, final String description) {
         getDialogParams().reset();
 
+        WebAppWorkArea workArea = getConfiguredWorkArea();
+
         VerticalLayout layout;
-        if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
-            TabSheet tabSheet = appWindow.getTabSheet();
+        if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
+            TabSheet tabSheet = workArea.getTabbedWindowContainer();
             layout = (VerticalLayout) tabSheet.getSelectedTab();
         } else {
-            layout = (VerticalLayout) appWindow.getMainLayout().iterator().next();
+            layout = (VerticalLayout) workArea.getSingleWindowContainer().getComponent(0);
         }
 
         final WindowBreadCrumbs breadCrumbs = tabs.get(layout);
-        if (breadCrumbs == null)
+        if (breadCrumbs == null) {
             throw new IllegalStateException("BreadCrumbs not found");
+        }
 
         final Window currentWindow = breadCrumbs.getCurrentWindow();
 
@@ -659,18 +553,27 @@ public class WebWindowManager extends WindowManager {
 
         breadCrumbs.addWindow(window);
 
-        if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
-            TabSheet tabSheet = appWindow.getTabSheet();
+        if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
+            TabSheet tabSheet = workArea.getTabbedWindowContainer();
             TabSheet.Tab tab = tabSheet.getTab(layout);
             tab.setCaption(formatTabCaption(caption, description));
-        } else
-            appWindow.getMainLayout().markAsDirtyRecursive();
+            tab.setDescription(formatTabDescription(caption, description));
+        } else {
+            layout.markAsDirtyRecursive();
+        }
 
         return layout;
     }
 
-    protected Component showWindowDialog(final Window window, final String caption, final String description,
-                                         boolean forciblyDialog) {
+    protected WebAppWorkArea getConfiguredWorkArea() {
+        AppWorkArea workArea = appWindow.getMainWindow().getWorkArea();
+        if (workArea == null) {
+            throw new IllegalStateException("Application does not have any configured work area");
+        }
+        return (WebAppWorkArea) workArea;
+    }
+
+    protected Component showWindowDialog(final Window window, boolean forciblyDialog) {
         final CubaWindow vWindow = createDialogWindow(window);
         vWindow.setStyleName("cuba-app-dialog-window");
         if (ui.isTestMode()) {
@@ -766,7 +669,7 @@ public class WebWindowManager extends WindowManager {
     }
 
     protected WindowBreadCrumbs createWindowBreadCrumbs() {
-        WindowBreadCrumbs windowBreadCrumbs = new WindowBreadCrumbs();
+        WindowBreadCrumbs windowBreadCrumbs = new WindowBreadCrumbs(getConfiguredWorkArea());
         stacks.put(windowBreadCrumbs, new Stack<Map.Entry<Window, Integer>>());
         return windowBreadCrumbs;
     }
@@ -795,6 +698,10 @@ public class WebWindowManager extends WindowManager {
         removeFromWindowMap(openMode.getWindow());
     }
 
+    public void checkModificationsAndCloseAll(Runnable runIfOk) {
+        checkModificationsAndCloseAll(runIfOk, null);
+    }
+
     public void checkModificationsAndCloseAll(final Runnable runIfOk, final @Nullable Runnable runIfCancel) {
         boolean modified = false;
         for (Window window : getOpenWindows()) {
@@ -802,10 +709,11 @@ public class WebWindowManager extends WindowManager {
                 screenHistorySupport.saveScreenHistory(window, windowOpenMode.get(window).getOpenType());
             }
 
-            if (window instanceof WrappedWindow && ((WrappedWindow) window).getWrapper() != null)
+            if (window instanceof WrappedWindow && ((WrappedWindow) window).getWrapper() != null) {
                 ((WrappedWindow) window).getWrapper().saveSettings();
-            else
+            } else {
                 window.saveSettings();
+            }
 
             if (window.getDsContext() != null && window.getDsContext().isModified()) {
                 modified = true;
@@ -824,8 +732,9 @@ public class WebWindowManager extends WindowManager {
                                     app.cleanupBackgroundTasks();
                                     app.closeAllWindows();
 
-                                    if (runIfOk != null)
+                                    if (runIfOk != null) {
                                         runIfOk.run();
+                                    }
                                 }
 
                                 @Override
@@ -836,8 +745,9 @@ public class WebWindowManager extends WindowManager {
                             new AbstractAction(messages.getMessage(WebWindow.class, "actions.Cancel")) {
                                 @Override
                                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                                    if (runIfCancel != null)
+                                    if (runIfCancel != null) {
                                         runIfCancel.run();
+                                    }
                                 }
 
                                 @Override
@@ -862,7 +772,7 @@ public class WebWindowManager extends WindowManager {
             window.stopTimers();
 
             if (window instanceof WebWindow.Editor) {
-                ((WebWindow.Editor)window).releaseLock();
+                ((WebWindow.Editor) window).releaseLock();
             }
             closeWindow(window, entries.get(i).getValue());
         }
@@ -890,13 +800,15 @@ public class WebWindowManager extends WindowManager {
                 final Layout layout = (Layout) openMode.getData();
                 layout.removeComponent(WebComponentsHelper.getComposition(window));
 
-                CubaTabSheet webTabsheet = (CubaTabSheet) appWindow.getTabSheet();
+                WebAppWorkArea workArea = getConfiguredWorkArea();
 
-                if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
-                    webTabsheet.silentCloseTabAndSelectPrevious(layout);
-                    webTabsheet.removeComponent(layout);
+                if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
+                    CubaTabSheet tabSheet = workArea.getTabbedWindowContainer();
+                    tabSheet.silentCloseTabAndSelectPrevious(layout);
+                    tabSheet.removeComponent(layout);
                 } else {
-                    appWindow.getMainLayout().removeComponent(layout);
+                    VerticalLayout singleLayout = workArea.getSingleWindowContainer();
+                    singleLayout.removeComponent(layout);
                 }
 
                 WindowBreadCrumbs windowBreadCrumbs = tabs.get(layout);
@@ -909,7 +821,7 @@ public class WebWindowManager extends WindowManager {
                 stacks.remove(windowBreadCrumbs);
                 fireListeners(window, !tabs.isEmpty());
                 if (tabs.isEmpty() && app.getConnection().isConnected()) {
-                    appWindow.showStartupScreen();
+                    workArea.switchTo(AppWorkArea.State.INITIAL_LAYOUT);
                 }
                 break;
             }
@@ -917,8 +829,9 @@ public class WebWindowManager extends WindowManager {
                 final VerticalLayout layout = (VerticalLayout) openMode.getData();
 
                 final WindowBreadCrumbs breadCrumbs = tabs.get(layout);
-                if (breadCrumbs == null)
+                if (breadCrumbs == null) {
                     throw new IllegalStateException("Unable to close screen: breadCrumbs not found");
+                }
 
                 breadCrumbs.removeWindow();
                 Window currentWindow = breadCrumbs.getCurrentWindow();
@@ -929,20 +842,23 @@ public class WebWindowManager extends WindowManager {
                 final Component component = WebComponentsHelper.getComposition(currentWindow);
                 component.setSizeFull();
 
+                WebAppWorkArea workArea = getConfiguredWorkArea();
+
                 layout.removeComponent(WebComponentsHelper.getComposition(window));
                 if (app.getConnection().isConnected()) {
                     layout.addComponent(component);
                     layout.setExpandRatio(component, 1);
 
-                    if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
-                        TabSheet tabSheet = appWindow.getTabSheet();
+                    if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
+                        TabSheet tabSheet = workArea.getTabbedWindowContainer();
                         TabSheet.Tab tab = tabSheet.getTab(layout);
                         tab.setCaption(formatTabCaption(currentWindow.getCaption(), currentWindow.getDescription()));
+                        tab.setDescription(formatTabDescription(currentWindow.getCaption(), currentWindow.getDescription()));
                     }
                 }
                 fireListeners(window, !tabs.isEmpty());
                 if (tabs.isEmpty() && app.getConnection().isConnected()) {
-                    appWindow.showStartupScreen();
+                    workArea.switchTo(AppWorkArea.State.INITIAL_LAYOUT);
                 }
                 break;
             }
@@ -1006,8 +922,11 @@ public class WebWindowManager extends WindowManager {
             vWindow.setId(ui.getTestIdManager().getTestId("messageDialog"));
         }
 
-        // todo artamonov get shortcuts from config
-        vWindow.addAction(new ShortcutListener("Esc", ShortcutAction.KeyCode.ESCAPE, null) {
+        String closeShortcut = clientConfig.getCloseShortcut();
+        KeyCombination closeCombination = KeyCombination.create(closeShortcut);
+
+        vWindow.addAction(new ShortcutListener("Esc", closeCombination.getKey().getCode(),
+                KeyCombination.Modifier.codes(closeCombination.getModifiers())) {
             @Override
             public void handleAction(Object sender, Object target) {
                 vWindow.close();
@@ -1160,8 +1079,9 @@ public class WebWindowManager extends WindowManager {
 
             buttonsContainer.addComponent(button);
         }
-        if (buttonsContainer.getComponentCount() > 0)
+        if (buttonsContainer.getComponentCount() > 0) {
             ((Button) buttonsContainer.getComponent(0)).focus();
+        }
 
         actionsBar.addComponent(buttonsContainer);
 
@@ -1190,8 +1110,9 @@ public class WebWindowManager extends WindowManager {
             border = (String) params.get("border");
             tryToOpenAsPopup = (Boolean) params.get("tryToOpenAsPopup");
         }
-        if (target == null)
+        if (target == null) {
             target = "_blank";
+        }
         if (width != null && height != null && border != null) {
             ui.getPage().open(url, target, width, height, BorderStyle.valueOf(border));
         } else if (tryToOpenAsPopup != null) {
@@ -1237,14 +1158,16 @@ public class WebWindowManager extends WindowManager {
         windows.remove(window);
     }
 
-    protected Integer getWindowHashCode(Window window){
-       return windows.get(window);
+    protected Integer getWindowHashCode(Window window) {
+        return windows.get(window);
     }
 
     @Override
     protected Window getWindow(Integer hashCode) {
-        if (AppWindow.Mode.SINGLE.equals(appWindow.getMode()))
+        if (getConfiguredWorkArea().getMode() == AppWorkArea.Mode.SINGLE) {
             return null;
+        }
+
         for (Map.Entry<Window, Integer> entry : windows.entrySet()) {
             if (hashCode.equals(entry.getValue())) {
                 return entry.getKey();
@@ -1273,25 +1196,207 @@ public class WebWindowManager extends WindowManager {
         }
     }
 
-    protected class DialogWindowActionHandler implements com.vaadin.event.Action.Handler {
+    protected void initMainWindow(WindowInfo windowInfo) {
+        String template = windowInfo.getTemplate();
+
+        final Window mainWindow;
+        Map<String, Object> params = Collections.emptyMap();
+        if (template != null) {
+            //noinspection unchecked
+            mainWindow = createWindow(windowInfo, OpenType.NEW_TAB, params, LayoutLoaderConfig.getWindowLoaders());
+        } else {
+            Class screenClass = windowInfo.getScreenClass();
+            if (screenClass != null) {
+                //noinspection unchecked
+                mainWindow = createWindowByScreenClass(windowInfo, params);
+            } else {
+                throw new DevelopmentException("Unable to load app window");
+            }
+        }
+
+        // detect work area
+        WebWindow windowImpl = ((Window.Wrapper) mainWindow).getWrappedWindow();
+
+        // bind system UI components to AbstractMainWindow
+        ComponentsHelper.walkComponents(windowImpl, new ComponentFinder() {
+            @Override
+            public boolean visit(com.haulmont.cuba.gui.components.Component component) {
+                if (component instanceof AppWorkArea) {
+                    ((AbstractMainWindow) mainWindow).setWorkArea((AppWorkArea) component);
+                } else if (component instanceof UserIndicator) {
+                    ((AbstractMainWindow) mainWindow).setUserIndicator((UserIndicator) component);
+                } else if (component instanceof FoldersPane) {
+                    ((AbstractMainWindow) mainWindow).setFoldersPane((FoldersPane) component);
+                }
+
+                return false;
+            }
+        });
+
+        // attach main window to UI
+        Component windowLayout = windowImpl.getComposition();
+        appWindow.addComponent(windowLayout, 0);
+        appWindow.setExpandRatio(windowLayout, 1);
+
+        appWindow.setMainWindow((Window.MainWindow) mainWindow);
+
+        getConfiguredWorkArea().addStateChangeListener(new AppWorkArea.StateChangeListener() {
+            @Override
+            public void stateChanged(AppWorkArea.State newState) {
+                if (newState == AppWorkArea.State.WINDOW_CONTAINER) {
+                    initTabShortcuts();
+
+                    // listener used only once
+                    getConfiguredWorkArea().removeStateChangeListener(this);
+                }
+            }
+        });
+
+        afterShowWindow(mainWindow);
+    }
+
+    protected void initTabShortcuts() {
+        if (getConfiguredWorkArea().getMode() == AppWorkArea.Mode.TABBED) {
+            appWindow.addShortcutListener(createNextWindowTabShortcut());
+            appWindow.addShortcutListener(createPreviousWindowTabShortcut());
+        }
+        appWindow.addShortcutListener(createCloseShortcut());
+    }
+
+    protected boolean hasDialogWindows() {
+        return !ui.getWindows().isEmpty();
+    }
+
+    public ShortcutListener createCloseShortcut() {
+        String closeShortcut = clientConfig.getCloseShortcut();
+        KeyCombination combination = KeyCombination.create(closeShortcut);
+
+        return new ShortcutListener("onClose", combination.getKey().getCode(),
+                KeyCombination.Modifier.codes(combination.getModifiers())) {
+            @Override
+            public void handleAction(Object sender, Object target) {
+                WebAppWorkArea workArea = getConfiguredWorkArea();
+                if (workArea.getState() != AppWorkArea.State.WINDOW_CONTAINER) {
+                    return;
+                }
+
+                if (AppWorkArea.Mode.TABBED == workArea.getMode()) {
+                    final CubaTabSheet tabSheet = workArea.getTabbedWindowContainer();
+                    if (tabSheet != null) {
+                        VerticalLayout layout = (VerticalLayout) tabSheet.getSelectedTab();
+                        if (layout != null) {
+                            tabSheet.focus();
+
+                            WindowBreadCrumbs breadCrumbs = tabs.get(layout);
+                            if (stacks.get(breadCrumbs).empty()) {
+                                final Component previousTab = tabSheet.getPreviousTab(layout);
+                                if (previousTab != null) {
+                                    breadCrumbs.getCurrentWindow().closeAndRun(Window.CLOSE_ACTION_ID, new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            tabSheet.setSelectedTab(previousTab);
+                                        }
+                                    });
+                                } else {
+                                    breadCrumbs.getCurrentWindow().close(Window.CLOSE_ACTION_ID);
+                                }
+                            } else {
+                                breadCrumbs.getCurrentWindow().close(Window.CLOSE_ACTION_ID);
+                            }
+                        }
+                    }
+                } else {
+                    ui.focus();
+
+                    Iterator<WindowBreadCrumbs> it = tabs.values().iterator();
+                    if (it.hasNext()) {
+                        it.next().getCurrentWindow().close(Window.CLOSE_ACTION_ID);
+                    }
+                }
+            }
+        };
+    }
+
+    public ShortcutListener createNextWindowTabShortcut() {
+        String nextTabShortcut = clientConfig.getNextTabShortcut();
+        KeyCombination combination = KeyCombination.create(nextTabShortcut);
+
+        return new ShortcutListener("onNextTab", combination.getKey().getCode(),
+                KeyCombination.Modifier.codes(combination.getModifiers())) {
+            @Override
+            public void handleAction(Object sender, Object target) {
+                TabSheet tabSheet = getConfiguredWorkArea().getTabbedWindowContainer();
+
+                if (tabSheet != null && !hasDialogWindows() && tabSheet.getComponentCount() > 1) {
+                    Component selectedTabComponent = tabSheet.getSelectedTab();
+                    TabSheet.Tab selectedTab = tabSheet.getTab(selectedTabComponent);
+                    int tabPosition = tabSheet.getTabPosition(selectedTab);
+                    int newTabPosition = (tabPosition + 1) % tabSheet.getComponentCount();
+
+                    TabSheet.Tab newTab = tabSheet.getTab(newTabPosition);
+                    tabSheet.setSelectedTab(newTab);
+
+                    moveFocus(tabSheet, newTab);
+                }
+            }
+        };
+    }
+
+    public ShortcutListener createPreviousWindowTabShortcut() {
+        String previousTabShortcut = clientConfig.getPreviousTabShortcut();
+        KeyCombination combination = KeyCombination.create(previousTabShortcut);
+
+        return new ShortcutListener("onPreviousTab", combination.getKey().getCode(),
+                KeyCombination.Modifier.codes(combination.getModifiers())) {
+            @Override
+            public void handleAction(Object sender, Object target) {
+                TabSheet tabSheet = getConfiguredWorkArea().getTabbedWindowContainer();
+
+                if (tabSheet != null && !hasDialogWindows() && tabSheet.getComponentCount() > 1) {
+                    Component selectedTabComponent = tabSheet.getSelectedTab();
+                    TabSheet.Tab selectedTab = tabSheet.getTab(selectedTabComponent);
+                    int tabPosition = tabSheet.getTabPosition(selectedTab);
+                    int newTabPosition = (tabSheet.getComponentCount() + tabPosition - 1) % tabSheet.getComponentCount();
+
+                    TabSheet.Tab newTab = tabSheet.getTab(newTabPosition);
+                    tabSheet.setSelectedTab(newTab);
+
+                    moveFocus(tabSheet, newTab);
+                }
+            }
+        };
+    }
+
+    protected static class DialogWindowActionHandler implements com.vaadin.event.Action.Handler {
+
         protected Window window;
         protected com.vaadin.event.Action saveSettingsAction;
         protected com.vaadin.event.Action restoreToDefaultsAction;
 
         protected com.vaadin.event.Action analyzeAction;
 
+        protected boolean initialized = false;
+
         public DialogWindowActionHandler(Window window) {
             this.window = window;
-
-            saveSettingsAction = new com.vaadin.event.Action(messages.getMainMessage("actions.saveSettings"));
-            restoreToDefaultsAction = new com.vaadin.event.Action(messages.getMainMessage("actions.restoreToDefaults"));
-            analyzeAction = new com.vaadin.event.Action(messages.getMainMessage("actions.analyzeLayout"));
         }
 
         @Override
         public com.vaadin.event.Action[] getActions(Object target, Object sender) {
+            if (!initialized) {
+                Messages messages = AppBeans.get(Messages.NAME);
+
+                saveSettingsAction = new com.vaadin.event.Action(messages.getMainMessage("actions.saveSettings"));
+                restoreToDefaultsAction = new com.vaadin.event.Action(messages.getMainMessage("actions.restoreToDefaults"));
+                analyzeAction = new com.vaadin.event.Action(messages.getMainMessage("actions.analyzeLayout"));
+
+                initialized = true;
+            }
+
             List<com.vaadin.event.Action> actions = new ArrayList<>(3);
 
+            Configuration configuration = AppBeans.get(Configuration.NAME);
+            ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
             if (clientConfig.getManualScreenSettingsSaving()) {
                 actions.add(saveSettingsAction);
                 actions.add(restoreToDefaultsAction);
@@ -1305,18 +1410,20 @@ public class WebWindowManager extends WindowManager {
 
         @Override
         public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
-            if (saveSettingsAction == action) {
-                window.saveSettings();
-            } else if (restoreToDefaultsAction == action) {
-                window.deleteSettings();
-            } else if (analyzeAction == action) {
-                LayoutAnalyzer analyzer = new LayoutAnalyzer();
-                List<LayoutTip> tipsList = analyzer.analyze(window);
+            if (initialized) {
+                if (saveSettingsAction == action) {
+                    window.saveSettings();
+                } else if (restoreToDefaultsAction == action) {
+                    window.deleteSettings();
+                } else if (analyzeAction == action) {
+                    LayoutAnalyzer analyzer = new LayoutAnalyzer();
+                    List<LayoutTip> tipsList = analyzer.analyze(window);
 
-                if (tipsList.isEmpty()) {
-                    showNotification("No layout problems found", NotificationType.HUMANIZED);
-                } else {
-                    window.openWindow("layoutAnalyzer", OpenType.DIALOG, ParamsMap.of("tipsList", tipsList));
+                    if (tipsList.isEmpty()) {
+                        window.showNotification("No layout problems found", NotificationType.HUMANIZED);
+                    } else {
+                        window.openWindow("layoutAnalyzer", OpenType.DIALOG, ParamsMap.of("tipsList", tipsList));
+                    }
                 }
             }
         }

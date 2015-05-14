@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2008-2015 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<xs:schema targetNamespace="http://schemas.haulmont.com/cuba/5.5/mainwindow.xsd"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="http://schemas.haulmont.com/cuba/5.5/mainwindow.xsd"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
+
+    <xs:simpleType name="align">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="TOP_RIGHT"/>
+            <xs:enumeration value="TOP_LEFT"/>
+            <xs:enumeration value="TOP_CENTER"/>
+            <xs:enumeration value="MIDDLE_RIGHT"/>
+            <xs:enumeration value="MIDDLE_LEFT"/>
+            <xs:enumeration value="MIDDLE_CENTER"/>
+            <xs:enumeration value="BOTTOM_RIGHT"/>
+            <xs:enumeration value="BOTTOM_LEFT"/>
+            <xs:enumeration value="BOTTOM_CENTER"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="componentSize">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="AUTO"/>
+                    <xs:enumeration value="100%"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
+    <xs:complexType name="baseMainElement">
+        <xs:attribute name="id" type="xs:string"/>
+        <xs:attribute name="width" type="componentSize"/>
+        <xs:attribute name="height" type="componentSize"/>
+        <xs:attribute name="align" type="align"/>
+        <xs:attribute name="stylename" type="xs:string"/>
+        <xs:attribute name="enable" type="xs:boolean"/>
+        <xs:attribute name="visible" type="xs:boolean"/>
+    </xs:complexType>
+
+    <xs:element name="menu">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="baseMainElement">
+
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="initialLayout">
+        <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:choice>
+        </xs:sequence>
+
+        <xs:attribute name="id" type="xs:string"/>
+        <xs:attribute name="align" type="align"/>
+        <xs:attribute name="stylename" type="xs:string"/>
+        <xs:attribute name="enable" type="xs:boolean"/>
+        <xs:attribute name="visible" type="xs:boolean"/>
+
+        <xs:attribute name="expand" type="xs:string"/>
+        <xs:attribute name="spacing" type="xs:boolean"/>
+        <xs:attribute name="margin" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:element name="workArea">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="baseMainElement">
+                    <xs:sequence>
+                        <xs:element name="initialLayout" type="initialLayout"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="foldersPane">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="baseMainElement">
+
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="timeZoneIndicator">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="baseMainElement">
+
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="userIndicator">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="baseMainElement">
+
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="ftsField">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="baseMainElement">
+
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="newWindowButton">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="baseMainElement">
+
+                    <xs:attribute name="icon" type="xs:string"/>
+                    <xs:attribute name="description" type="xs:string"/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="logoutButton">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="baseMainElement">
+
+                    <xs:attribute name="icon" type="xs:string"/>
+                    <xs:attribute name="description" type="xs:string"/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

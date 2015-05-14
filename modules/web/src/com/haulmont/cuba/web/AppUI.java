@@ -185,12 +185,19 @@ public class AppUI extends UI implements ErrorHandler {
 
     @Override
     public void handleRequest(VaadinRequest request) {
+        // on refresh page call
         processExternalLink(request);
     }
 
     public void showView(UIView view) {
-        setContent(view);
-        getPage().setTitle(view.getTitle());
+        try {
+            setContent(view);
+            getPage().setTitle(view.getTitle());
+
+            view.show();
+        } catch (Exception e) {
+            error(new com.vaadin.server.ErrorEvent(e));
+        }
     }
 
     /**
@@ -255,11 +262,16 @@ public class AppUI extends UI implements ErrorHandler {
                 log.warn("Unable to process the external link: lastRequestParams not found in session");
                 return;
             }
-            LinkHandler linkHandler = AppBeans.getPrototype(LinkHandler.NAME, app, action, params);
-            if (app.connection.isConnected()) {
-                linkHandler.handle();
-            } else {
-                app.linkHandler = linkHandler;
+
+            try {
+                LinkHandler linkHandler = AppBeans.getPrototype(LinkHandler.NAME, app, action, params);
+                if (app.connection.isConnected()) {
+                    linkHandler.handle();
+                } else {
+                    app.linkHandler = linkHandler;
+                }
+            } catch (Exception e) {
+                error(new com.vaadin.server.ErrorEvent(e));
             }
         }
     }

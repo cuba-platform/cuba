@@ -35,7 +35,6 @@ import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.event.Action;
 import com.vaadin.event.ItemClickEvent;
-import com.vaadin.server.Resource;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
@@ -53,7 +52,7 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-public class FoldersPane extends VerticalLayout {
+public class CubaFoldersPane extends VerticalLayout {
 
     private static final long serialVersionUID = 6666603397626574763L;
 
@@ -61,9 +60,6 @@ public class FoldersPane extends VerticalLayout {
 
     protected Tree appFoldersTree;
     protected Tree searchFoldersTree;
-
-    protected MenuBar menuBar;
-    protected MenuBar.MenuItem menuItem;
 
     protected Label appFoldersLabel;
     protected Label searchFoldersLabel;
@@ -73,12 +69,9 @@ public class FoldersPane extends VerticalLayout {
     protected FoldersPaneTimer timer;
 
     protected static final int DEFAULT_VERT_SPLIT_POS = 50;
-    protected int horizontalSplitPos;
     protected int verticalSplitPos;
 
-    protected AppWindow parentAppWindow;
     protected VerticalSplitPanel vertSplit;
-    protected HorizontalSplitPanel horSplit;
 
     protected WebConfig webConfig = AppBeans.<Configuration>get(Configuration.NAME).getConfig(WebConfig.class);
 
@@ -100,58 +93,22 @@ public class FoldersPane extends VerticalLayout {
 
     protected BackgroundTaskWrapper<Integer, List<AppFolder>> folderUpdateBackgroundTaskWrapper;
 
-    public FoldersPane(MenuBar menuBar, AppWindow appWindow) {
-        this.menuBar = menuBar;
-        parentAppWindow = appWindow;
-
+    public CubaFoldersPane() {
         setHeight(100, Unit.PERCENTAGE);
         setStyleName("cuba-folders-pane");
         //noinspection unchecked
         folderUpdateBackgroundTaskWrapper = new BackgroundTaskWrapper(new AppFolderUpdateBackgroundTask(10));
     }
 
-    public void init(Component parent) {
-        if (parent instanceof HorizontalSplitPanel) {
-            horSplit = (HorizontalSplitPanel) parent;
-        }
-
-        boolean visible;
+    public void loadFolders() {
         UserSettingsTools.FoldersState state = userSettingsTools.loadFoldersState();
         if (state == null) {
-            visible = webConfig.getFoldersPaneVisibleByDefault() || webConfig.getUseLightHeader();
-            horizontalSplitPos = webConfig.getFoldersPaneDefaultWidth();
             verticalSplitPos = DEFAULT_VERT_SPLIT_POS;
         } else {
-            visible = state.visible;
-            horizontalSplitPos = state.horizontalSplit;
             verticalSplitPos = state.verticalSplit;
         }
 
-        showFolders(visible);
-
-        MenuBar.MenuItem firstItem = getFirstMenuItem(menuBar);
-
-        if (!webConfig.getUseLightHeader()) {
-            menuItem = menuBar.addItemBefore(getMenuItemCaption(),
-                    getMenuItemIcon(),
-                    createMenuBarCommand(),
-                    firstItem);
-
-            menuItem.setStyleName(getMenuItemStyle());
-        }
-    }
-
-    protected MenuBar.Command createMenuBarCommand() {
-        return new MenuBar.Command() {
-
-            @Override
-            public void menuSelected(MenuBar.MenuItem selectedItem) {
-                showFolders(!visible);
-                selectedItem.setText(getMenuItemCaption());
-                selectedItem.setIcon(getMenuItemIcon());
-                selectedItem.setStyleName(getMenuItemStyle());
-            }
-        };
+        showFolders(true);
     }
 
     protected void showFolders(boolean show) {
@@ -159,13 +116,6 @@ public class FoldersPane extends VerticalLayout {
             return;
 
         if (show) {
-            if (horSplit != null) {
-                horSplit.setSplitPosition(horizontalSplitPos);
-                horSplit.setLocked(false);
-            } else {
-                setWidth(horizontalSplitPos, Unit.PIXELS);
-            }
-
             setSizeFull();
             setMargin(false);
             setSpacing(true);
@@ -183,8 +133,9 @@ public class FoldersPane extends VerticalLayout {
 
                 int period = webConfig.getAppFoldersRefreshPeriodSec() * 1000;
 
-                for (CubaTimer t : parentAppWindow.getTimers()) {
-                    if (t instanceof FoldersPane.FoldersPaneTimer) {
+                AppWindow appWindow = App.getInstance().getAppWindow();
+                for (CubaTimer t : appWindow.getTimers()) {
+                    if (t instanceof CubaFoldersPane.FoldersPaneTimer) {
                         t.stop();
                     }
                 }
@@ -195,7 +146,7 @@ public class FoldersPane extends VerticalLayout {
                 timer.addTimerListener(createAppFolderUpdater());
                 timer.start();
 
-                parentAppWindow.addTimer(timer);
+                appWindow.addTimer(timer);
             }
 
             Component searchFoldersPane = createSearchFoldersPane();
@@ -267,13 +218,6 @@ public class FoldersPane extends VerticalLayout {
             setMargin(false);
 
             savePosition();
-
-            if (horSplit != null) {
-                horSplit.setSplitPosition(0, Unit.PIXELS);
-                horSplit.setLocked(true);
-            } else {
-                setWidth(0, Unit.PIXELS);
-            }
 
             appFoldersTree = null;
             searchFoldersTree = null;
@@ -367,16 +311,10 @@ public class FoldersPane extends VerticalLayout {
 
     public void savePosition() {
         if (visible) {
-            if (horSplit != null)
-                horizontalSplitPos = (int) horSplit.getSplitPosition();
             if (vertSplit != null)
                 verticalSplitPos = (int) vertSplit.getSplitPosition();
         }
-        userSettingsTools.saveFoldersState(
-                visible,
-                horizontalSplitPos,
-                verticalSplitPos
-        );
+        userSettingsTools.saveFoldersState(visible, -1, verticalSplitPos);
     }
 
     protected CubaTimer.TimerListener createAppFolderUpdater() {
@@ -563,25 +501,6 @@ public class FoldersPane extends VerticalLayout {
                 tree.setChildrenAllowed(folder, false);
             }
         }
-    }
-
-    protected String getMenuItemCaption() {
-        return "";
-    }
-
-    protected String getDefaultMenuItemCaption() {
-        return messages.getMainMessage(visible ? "folders.hideFolders" : "folders.showFolders");
-    }
-
-    protected Resource getMenuItemIcon() {
-        return null;
-    }
-
-    protected String getMenuItemStyle() {
-        if (visible)
-            return "folders-pane-icon-active";
-        else
-            return "folders-pane-icon";
     }
 
     protected void openFolder(AbstractSearchFolder folder) {
@@ -1014,10 +933,6 @@ public class FoldersPane extends VerticalLayout {
         @Override
         public void onStopTimer(CubaTimer timer) {
         }
-    }
-
-    protected static MenuBar.MenuItem getFirstMenuItem(MenuBar menuBar) {
-        return menuBar.getItems().isEmpty() ? null : menuBar.getItems().get(0);
     }
 
     // used for instance of to detect folders pane timer

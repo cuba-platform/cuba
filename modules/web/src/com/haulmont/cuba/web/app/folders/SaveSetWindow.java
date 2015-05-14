@@ -25,7 +25,7 @@ public class SaveSetWindow extends AbstractWindow {
     private String componentId;
     private String entityType;
     private String entityClass;
-    private FoldersPane foldersPane;
+    private CubaFoldersPane foldersPane;
     private LookupField foldersSelect;
     private String query;
 
@@ -37,7 +37,7 @@ public class SaveSetWindow extends AbstractWindow {
         componentPath = (String) params.get("componentPath");
         componentId = (String) params.get("componentId");
         entityType = (String) params.get("entityType");
-        foldersPane = (FoldersPane) params.get("foldersPane");
+        foldersPane = (CubaFoldersPane) params.get("foldersPane");
         entityClass = (String) params.get("entityClass");
         query = (String) params.get("query");
         foldersSelect = getComponent("folderSelect");

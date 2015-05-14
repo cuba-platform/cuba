@@ -6,7 +6,6 @@
 // Version: $Id$
 
 @mixin halo-button($primary-stylename: v-button) {
-
   .#{$primary-stylename} {
     font-size: $v-font-size;
   }
@@ -24,12 +23,24 @@
     }
   }
 
+  .#{$primary-stylename}-empty-caption {
+    .#{$primary-stylename}-caption {
+      display: none;
+    }
+
+    .#{$primary-stylename}-wrap {
+      .v-icon {
+        margin-right: 0;
+      }
+    }
+  }
+
   .v-disabled.#{$primary-stylename}-link:focus {
-    border: 1px dashed transparent;
+    border-color: transparent;
   }
 
   .#{$primary-stylename}-link:focus {
     outline: none;
-    border: 1px dashed $v-link-font-color;
+    border-color: $v-link-font-color;
   }
 }

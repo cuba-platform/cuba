@@ -87,6 +87,10 @@
       border-bottom: 0;
     }
 
+    & > .#{$primary-stylename}-tabcontainer {
+      background: transparent none;
+    }
+
     .#{$primary-stylename}-tabs {
       background: transparent url(images/middle-tabsheet-bg.png) repeat-x bottom;
 
@@ -243,8 +247,12 @@
       background-image: url(sprites/prev-tab.png); /** sprite-ref: components; */
     }
 
-    .#{$primary-stylename}-tabcontainer {
+    & > .#{$primary-stylename}-tabcontainer {
       height: 33px;
+    }
+
+    & > .#{$primary-stylename}-tabcontainer {
+      background: url(images/top-tabsheet-bg.png) repeat-x bottom;
     }
 
     .#{$primary-stylename}-tabs {
@@ -256,7 +264,6 @@
       height: 33px;
       width: 100%;
       overflow:hidden;
-      background: url(images/top-tabsheet-bg.png) repeat-x bottom;
 
       .v-caption {
         white-space: nowrap;

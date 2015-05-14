@@ -61,4 +61,8 @@
 
     <screen id="threadsMonitoringWindow"
             template="/com/haulmont/cuba/web/app/ui/statistics/threads-monitoring-window.xml" multipleOpen="true"/>
+
+    <screen id="mainWindow"
+            template="/com/haulmont/cuba/web/app/mainwindow/mainwindow.xml"/>
+
 </screen-config>

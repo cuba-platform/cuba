@@ -28,6 +28,8 @@ public class CubaTabSheet extends com.vaadin.ui.TabSheet implements Action.Conta
 
     protected KeyMapper<Action> actionMapper = null;
 
+    protected Map<Component, TabCloseHandler> closeHandlers = null;
+
     protected CubaTabSheetServerRpc rpc = new CubaTabSheetServerRpc() {
         @Override
         public void onTabContextMenu(int tabIndex) {
@@ -74,6 +76,18 @@ public class CubaTabSheet extends com.vaadin.ui.TabSheet implements Action.Conta
 
     public CubaTabSheet() {
         registerRpc(rpc);
+
+        setCloseHandler(new CloseHandler() {
+            @Override
+            public void onTabClose(com.vaadin.ui.TabSheet tabsheet, Component tabContent) {
+                if (closeHandlers != null) {
+                    TabCloseHandler closeHandler = closeHandlers.get(tabContent);
+                    if (closeHandler != null) {
+                        closeHandler.onClose(CubaTabSheet.this, tabContent);
+                    }
+                }
+            }
+        });
     }
 
     protected HashSet<Action> getActions(Component actionTarget) {
@@ -133,7 +147,7 @@ public class CubaTabSheet extends com.vaadin.ui.TabSheet implements Action.Conta
         }
     }
 
-    protected void closeTab(Component tab) {
+    public void closeTab(Component tab) {
         while (openedComponents.removeElement(tab)) {
             openedComponents.removeElement(tab);
         }
@@ -152,6 +166,22 @@ public class CubaTabSheet extends com.vaadin.ui.TabSheet implements Action.Conta
         getState(true).tabs.get(tabPosition).cubaId = id;
     }
 
+    public String getCubaId(Tab tab) {
+        int tabPosition = getTabPosition(tab);
+        return getState(true).tabs.get(tabPosition).cubaId;
+    }
+
+    @Override
+    public void removeComponent(Component c) {
+        super.removeComponent(c);
+        if (c != null && closeHandlers != null) {
+            closeHandlers.remove(c);
+            if (closeHandlers.isEmpty()) {
+                closeHandlers = null;
+            }
+        }
+    }
+
     @Override
     public void addActionHandler(Action.Handler actionHandler) {
         actionHandlers.add(actionHandler);
@@ -160,5 +190,52 @@ public class CubaTabSheet extends com.vaadin.ui.TabSheet implements Action.Conta
     @Override
     public void removeActionHandler(Action.Handler actionHandler) {
         actionHandlers.remove(actionHandler);
+    }
+
+    public void moveTab(Component c, int position) {
+        Tab oldTab = getTab(c);
+        String tabCubaId = getCubaId(oldTab);
+
+        // do not detach close handler
+        // call super
+        super.removeComponent(oldTab.getComponent());
+
+        Tab newTab = addTab(c, position);
+
+        newTab.setCaption(oldTab.getCaption());
+        newTab.setDescription(oldTab.getDescription());
+        newTab.setClosable(oldTab.isClosable());
+        newTab.setEnabled(oldTab.isEnabled());
+        newTab.setVisible(oldTab.isVisible());
+        newTab.setIcon(oldTab.getIcon());
+        newTab.setStyleName(oldTab.getStyleName());
+
+        setCubaId(newTab, tabCubaId);
+    }
+
+    public void setTabCloseHandler(Component tabContent, TabCloseHandler closeHandler) {
+        if (closeHandlers == null) {
+            closeHandlers = new LinkedHashMap<>();
+        }
+        closeHandlers.put(tabContent, closeHandler);
+    }
+
+    public interface TabCloseHandler {
+        void onClose(com.vaadin.ui.TabSheet tabSheet, Component tabContent);
+    }
+
+    public void closeOtherTabs(Component currentTab) {
+        Set<Component> tabs = new HashSet<>(this.tabs.keySet());
+        for (final Component tab : tabs) {
+            if (tab.equals(currentTab)) continue;
+            closeTab(tab);
+        }
+    }
+
+    public void closeAllTabs() {
+        Set<Component> tabs = new HashSet<>(this.tabs.keySet());
+        for (final Component tab : tabs) {
+            closeTab(tab);
+        }
     }
 }

@@ -221,6 +221,17 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     }
 
     @Override
+    public void setSplitPosition(int pos, int unit) {
+        if (unit == UNITS_PIXELS) {
+            component.setSplitPosition(pos, Sizeable.Unit.PIXELS);
+        } else if (unit == UNITS_PERCENTAGE) {
+            component.setSplitPosition(pos, Sizeable.Unit.PERCENTAGE);
+        } else {
+            throw new IllegalArgumentException("Unsupported unit " + unit);
+        }
+    }
+
+    @Override
     public void setLocked(boolean locked) {
         component.setLocked(locked);
     }

@@ -8,6 +8,7 @@ package com.haulmont.cuba.web.toolkit.ui.client.button;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.haulmont.cuba.web.toolkit.ui.client.appui.ValidationErrorHolder;
+import com.vaadin.client.annotations.OnStateChange;
 import com.vaadin.client.communication.StateChangeEvent;
 
 import com.vaadin.client.ui.button.ButtonConnector;
@@ -46,6 +47,15 @@ public class CubaButtonConnector extends ButtonConnector {
         stopResponsePending();
 
         super.onStateChanged(stateChangeEvent);
+
+        if (stateChangeEvent.hasPropertyChanged("caption")) {
+            String text = getState().caption;
+            if (text == null || "".equals(text)) {
+                getWidget().addStyleDependentName("empty-caption");
+            } else {
+                getWidget().removeStyleDependentName("empty-caption");
+            }
+        }
     }
 
     @Override

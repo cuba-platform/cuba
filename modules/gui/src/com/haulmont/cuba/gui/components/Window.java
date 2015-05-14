@@ -7,6 +7,9 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
+import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
+import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.settings.Settings;
 
@@ -321,6 +324,18 @@ public interface Window extends IFrame, Component.HasCaption {
              */
             boolean validate();
         }
+    }
+
+    interface MainWindow extends Window {
+
+        @Nullable
+        AppWorkArea getWorkArea();
+
+        @Nullable
+        UserIndicator getUserIndicator();
+
+        @Nullable
+        FoldersPane getFoldersPane();
     }
 
     /**

@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -92,6 +91,16 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
 
         impl.revalidate();
         impl.repaint();
+    }
+
+    @Override
+    public void setSplitPosition(int pos, int unit) {
+        if (unit != UNITS_PERCENTAGE) {
+            // not supported
+            return;
+        }
+
+        setSplitPosition(pos);
     }
 
     @Override

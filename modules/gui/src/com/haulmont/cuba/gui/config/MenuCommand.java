@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.Window;
 import org.apache.commons.lang.BooleanUtils;
@@ -29,18 +30,15 @@ import java.util.Map;
  */
 public class MenuCommand {
 
-    private WindowManager windowManager;
     private MenuItem item;
     private WindowInfo windowInfo;
 
-    public MenuCommand(WindowManager windowManager, MenuItem item, WindowInfo windowInfo) {
-        this.windowManager = windowManager;
+    public MenuCommand(MenuItem item, WindowInfo windowInfo) {
         this.item = item;
         this.windowInfo = windowInfo;
     }
 
     public void execute() {
-
         Element descriptor = item.getDescriptor();
         Map<String, Object> params = loadParams(descriptor);
 
@@ -50,10 +48,13 @@ public class MenuCommand {
             openType = WindowManager.OpenType.valueOf(openTypeStr);
         }
 
+        WindowManagerProvider wmProvider = AppBeans.get(WindowManagerProvider.NAME);
+        WindowManager wm = wmProvider.get();
+
         if (openType == WindowManager.OpenType.DIALOG) {
             String resizable = descriptor.attributeValue("resizable");
             if (!StringUtils.isEmpty(resizable)) {
-                windowManager.getDialogParams().setResizable(BooleanUtils.toBoolean(resizable));
+                wm.getDialogParams().setResizable(BooleanUtils.toBoolean(resizable));
             }
         }
 
@@ -76,14 +77,14 @@ public class MenuCommand {
                 Metadata metadata = AppBeans.get(Metadata.NAME);
                 entityItem = metadata.create(metaClassName);
             }
-            windowManager.openEditor(
+            wm.openEditor(
                     windowInfo,
                     entityItem,
                     openType,
                     params
             );
         } else {
-            windowManager.openWindow(
+            wm.openWindow(
                     windowInfo,
                     openType,
                     params

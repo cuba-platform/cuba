@@ -89,27 +89,37 @@ public interface Connection {
      */
     void update(UserSession session) throws LoginException;
 
+    void addConnectionListener(ConnectionListener listener);
+    void removeConnectionListener(ConnectionListener listener);
+
+    void addSubstitutionListener(UserSubstitutionListener listener);
+    void removeSubstitutionListener(UserSubstitutionListener listener);
+
     /**
      * Add a connection listener.
      * @param listener  listener to add
      */
+    @Deprecated
     void addListener(ConnectionListener listener);
 
     /**
      * Remove a connection listener.
      * @param listener  listener to remove
      */
+    @Deprecated
     void removeListener(ConnectionListener listener);
 
     /**
      * Add a user substitution listener.
      * @param listener  listener to add
      */
+    @Deprecated
     void addListener(UserSubstitutionListener listener);
 
     /**
      * Remove a user substitution listener.
      * @param listener  listener to remove
      */
+    @Deprecated
     void removeListener(UserSubstitutionListener listener);
 }

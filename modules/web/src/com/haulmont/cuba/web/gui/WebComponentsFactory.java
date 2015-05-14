@@ -6,11 +6,12 @@ package com.haulmont.cuba.web.gui;
 
 import com.haulmont.cuba.gui.ComponentPalette;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.mainwindow.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.gui.components.*;
+import com.haulmont.cuba.web.gui.components.mainwindow.*;
 
 import javax.annotation.ManagedBean;
-import java.lang.reflect.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -82,6 +83,17 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(BulkEditor.NAME, WebBulkEditor.class);
 
         classes.put(EntityLinkField.NAME, WebEntityLinkField.class);
+
+        /* Main window components */
+
+        classes.put(AppMenu.NAME, WebAppMenu.class);
+        classes.put(AppWorkArea.NAME, WebAppWorkArea.class);
+        classes.put(LogoutButton.NAME, WebLogoutButton.class);
+        classes.put(NewWindowButton.NAME, WebNewWindowButton.class);
+        classes.put(UserIndicator.NAME, WebUserIndicator.class);
+        classes.put(FoldersPane.NAME, WebFoldersPane.class);
+        classes.put(FtsField.NAME, WebFtsField.class);
+        classes.put(TimeZoneIndicator.NAME, WebTimeZoneIndicator.class);
     }
 
     public static void registerComponent(String element, Class<? extends Component> componentClass) {

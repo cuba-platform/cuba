@@ -15,12 +15,14 @@ import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.GroupCondition;
+import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.app.folders.AppFolderEditWindow;
+import com.haulmont.cuba.web.app.folders.CubaFoldersPane;
 import com.haulmont.cuba.web.app.folders.FolderEditWindow;
-import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.toolkit.ui.CubaTextField;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.Transferable;
@@ -68,11 +70,14 @@ public class WebFilterHelper implements FilterHelper {
     @Override
     @Nullable
     public AbstractSearchFolder saveFolder(AbstractSearchFolder folder) {
-        FoldersPane foldersPane = AppUI.getCurrent().getAppWindow().getFoldersPane();
+        AppWindow appWindow = AppUI.getCurrent().getAppWindow();
+        FoldersPane foldersPane = appWindow.getMainWindow().getFoldersPane();
         if (foldersPane == null)
             return null;
-        AbstractSearchFolder savedFolder = (AbstractSearchFolder) foldersPane.saveFolder(folder);
-        foldersPane.refreshFolders();
+
+        CubaFoldersPane foldersPaneImpl = WebComponentsHelper.unwrap(foldersPane);
+        AbstractSearchFolder savedFolder = (AbstractSearchFolder) foldersPaneImpl.saveFolder(folder);
+        foldersPaneImpl.refreshFolders();
         return savedFolder;
     }
 
@@ -184,14 +189,27 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public Object getFoldersPane() {
-        return AppUI.getCurrent().getAppWindow().getFoldersPane();
+        AppWindow appWindow = AppUI.getCurrent().getAppWindow();
+        FoldersPane foldersPane = appWindow.getMainWindow().getFoldersPane();
+        if (foldersPane == null) {
+            return null;
+        }
+
+        return WebComponentsHelper.<CubaFoldersPane>unwrap(foldersPane);
     }
 
     @Override
     public void removeFolderFromFoldersPane(Folder folder) {
-        FoldersPane foldersPane = AppUI.getCurrent().getAppWindow().getFoldersPane();
-        foldersPane.removeFolder(folder);
-        foldersPane.refreshFolders();
+        AppWindow appWindow = AppUI.getCurrent().getAppWindow();
+        FoldersPane foldersPane = appWindow.getMainWindow().getFoldersPane();
+        if (foldersPane == null) {
+            return;
+        }
+
+        CubaFoldersPane foldersPaneImpl = WebComponentsHelper.unwrap(foldersPane);
+
+        foldersPaneImpl.removeFolder(folder);
+        foldersPaneImpl.refreshFolders();
     }
 
     @Override
@@ -203,6 +221,7 @@ public class WebFilterHelper implements FilterHelper {
     public void initTableFtsTooltips(Table table, final Map<UUID, String> tooltips) {
         com.vaadin.ui.Table vTable = WebComponentsHelper.unwrap(table);
         vTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
+            @SuppressWarnings("SuspiciousMethodCalls")
             @Override
             public String generateDescription(Component source, Object itemId, Object propertyId) {
                 if (tooltips.keySet().contains(itemId)) {

@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.components.Embedded;
 import com.haulmont.cuba.gui.export.ClosedDataProviderException;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 import com.haulmont.cuba.web.WebConfig;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.server.ConnectorResource;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FileResource;
@@ -64,8 +65,11 @@ public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> im
                 try {
                     setSource(new URL(src));
                 } catch (MalformedURLException e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException("Unable to parse url for embedded source", e);
                 }
+            } else if (src.startsWith("theme://")) {
+                String themeResource = src.substring("theme://".length());
+                component.setSource(new VersionedThemeResource(themeResource));
             } else {
                 File file = new File(src);
                 if (!file.isAbsolute()) {

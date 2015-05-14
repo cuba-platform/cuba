@@ -49,9 +49,9 @@ public class TestIdManager {
 
     public String normalize(String id) {
         if (id != null) {
-            return  id.replaceAll("[^\\p{L}\\p{Nd}]", "_");
+            return id.replaceAll("[^\\p{L}\\p{Nd}]", "_");
         }
-        return id;
+        return null;
     }
 
     public void reset() {

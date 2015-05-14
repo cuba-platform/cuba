@@ -6,8 +6,8 @@
 package com.haulmont.cuba.web.app;
 
 import com.haulmont.cuba.core.global.ClientType;
+import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.security.app.UserSettingService;
-import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebConfig;
 
 import javax.annotation.ManagedBean;
@@ -43,19 +43,19 @@ public class UserSettingsTools {
     @Inject
     protected WebConfig webConfig;
 
-    public AppWindow.Mode loadAppWindowMode() {
+    public AppWorkArea.Mode loadAppWindowMode() {
         String s = userSettingService.loadSetting(ClientType.WEB, "appWindowMode");
         if (s != null) {
-            if (AppWindow.Mode.SINGLE.name().equals(s)) {
-                return AppWindow.Mode.SINGLE;
-            } else if (AppWindow.Mode.TABBED.name().equals(s)) {
-                return AppWindow.Mode.TABBED;
+            if (AppWorkArea.Mode.SINGLE.name().equals(s)) {
+                return AppWorkArea.Mode.SINGLE;
+            } else if (AppWorkArea.Mode.TABBED.name().equals(s)) {
+                return AppWorkArea.Mode.TABBED;
             }
         }
-        return AppWindow.Mode.valueOf(webConfig.getAppWindowMode().toUpperCase());
+        return AppWorkArea.Mode.valueOf(webConfig.getAppWindowMode().toUpperCase());
     }
 
-    public void saveAppWindowMode(AppWindow.Mode mode) {
+    public void saveAppWindowMode(AppWorkArea.Mode mode) {
         userSettingService.saveSetting(ClientType.WEB, "appWindowMode", mode.name());
     }
 

@@ -1,0 +1,46 @@
+<!--
+  ~ Copyright (c) 2008-2015 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
+        xmlns:main="http://schemas.haulmont.com/cuba/5.5/mainwindow.xsd"
+        class="com.haulmont.cuba.web.app.mainwindow.AppMainWindow">
+
+    <layout expand="foldersSplit">
+        <hbox id="titleBar" stylename="cuba-app-menubar"
+              expand="mainMenu" width="100%" height="40px"
+              spacing="true" margin="false;false;false;true">
+
+            <embedded id="logoImage" align="MIDDLE_LEFT" type="IMAGE" stylename="cuba-app-icon"/>
+
+            <main:menu id="mainMenu" align="MIDDLE_LEFT"/>
+
+            <main:ftsField id="ftsField" align="MIDDLE_LEFT"/>
+
+            <main:userIndicator id="userIndicator" align="MIDDLE_LEFT"/>
+
+            <main:timeZoneIndicator id="timeZoneIndicator" align="MIDDLE_LEFT"/>
+
+            <hbox id="mainButtonsBox" stylename="cuba-main-buttons" align="MIDDLE_LEFT">
+                <main:newWindowButton id="newWindowButton"
+                                      icon="app/images/new-window.png"
+                                      description="msg://newWindowBtnDescription"/>
+
+                <main:logoutButton id="logoutButton"
+                                   icon="app/images/exit.png"
+                                   description="msg://logoutBtnDescription"/>
+            </hbox>
+        </hbox>
+
+        <split id="foldersSplit" width="100%" orientation="horizontal">
+            <main:foldersPane id="foldersPane" width="100%" height="100%"/>
+
+            <main:workArea id="workArea" width="100%" height="100%">
+                <main:initialLayout spacing="true" margin="true">
+
+                </main:initialLayout>
+            </main:workArea>
+        </split>
+    </layout>
+</window>

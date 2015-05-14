@@ -89,6 +89,8 @@ public abstract class WindowManager {
 
     protected Resources resources = AppBeans.get(Resources.NAME);
 
+    protected Security security = AppBeans.get(Security.NAME);
+
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
     private DialogParams dialogParams;
@@ -197,7 +199,7 @@ public abstract class WindowManager {
     }
 
     private void checkPermission(WindowInfo windowInfo) {
-        boolean permitted = userSessionSource.getUserSession().isScreenPermitted(windowInfo.getId());
+        boolean permitted = security.isScreenPermitted(windowInfo.getId());
         if (!permitted)
             throw new AccessDeniedException(PermissionType.SCREEN, windowInfo.getId());
     }

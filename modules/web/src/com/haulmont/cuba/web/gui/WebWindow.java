@@ -63,11 +63,11 @@ public class WebWindow implements Window, Component.Wrapper,
     protected String id;
     protected String debugId;
 
-    protected Map<String, Component> componentByIds = new HashMap<>();
     protected Collection<Component> ownComponents = new LinkedHashSet<>();
     protected Map<String, Component> allComponents = new HashMap<>();
 
-    protected List<Timer> timers = new LinkedList<>();
+    protected List<CloseListener> listeners = null; // lazy initialized listeners list
+    protected List<Timer> timers = null; // lazy initialized timers list
 
     protected String messagePack;
 
@@ -83,9 +83,7 @@ public class WebWindow implements Window, Component.Wrapper,
     protected String caption;
     protected String description;
 
-    protected List<CloseListener> listeners = new ArrayList<>();
-
-    protected boolean forceClose;
+    protected boolean forceClose = false;
     protected boolean closing = false;
 
     protected Runnable doAfterClose;
@@ -127,8 +125,9 @@ public class WebWindow implements Window, Component.Wrapper,
         return new WindowDelegate(this);
     }
 
-    protected com.vaadin.ui.Component createLayout() {
+    protected ComponentContainer createLayout() {
         CubaVerticalActionsLayout layout = new CubaVerticalActionsLayout();
+        layout.setStyleName("cuba-window-layout");
         layout.setSizeFull();
         return layout;
     }
@@ -166,27 +165,29 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public void setStyleName(String name) {
-        component.setStyleName(name);
+        getContainer().setStyleName(name);
+
+        getContainer().addStyleName("cuba-window-layout");
     }
 
     @Override
     public void setSpacing(boolean enabled) {
-        if (component instanceof Layout.SpacingHandler) {
-            ((Layout.SpacingHandler) component).setSpacing(true);
+        if (getContainer() instanceof Layout.SpacingHandler) {
+            ((Layout.SpacingHandler) getContainer()).setSpacing(true);
         }
     }
 
     @Override
     public void setMargin(boolean enable) {
-        if (component instanceof Layout.MarginHandler) {
-            ((Layout.MarginHandler) component).setMargin(new MarginInfo(enable));
+        if (getContainer() instanceof Layout.MarginHandler) {
+            ((Layout.MarginHandler) getContainer()).setMargin(new MarginInfo(enable));
         }
     }
 
     @Override
     public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
-        if (component instanceof Layout.MarginHandler) {
-            ((Layout.MarginHandler) component).setMargin(new MarginInfo(topEnable, rightEnable, bottomEnable, leftEnable));
+        if (getContainer() instanceof Layout.MarginHandler) {
+            ((Layout.MarginHandler) getContainer()).setMargin(new MarginInfo(topEnable, rightEnable, bottomEnable, leftEnable));
         }
     }
 
@@ -285,25 +286,6 @@ public class WebWindow implements Window, Component.Wrapper,
                 }
             }
         }
-
-//                    // TODO validate table columns - smthng like this:
-//                    if (impl instanceof com.vaadin.ui.Table) {
-//                        Set visibleComponents = ((Table) impl).getVisibleComponents();
-//                        for (Object visibleComponent : visibleComponents) {
-//                            if (visibleComponent instanceof com.vaadin.ui.FieldConfig
-//                                    && ((com.vaadin.ui.FieldConfig) visibleComponent).isEnabled() &&
-//                                    !((com.vaadin.ui.FieldConfig) visibleComponent).isReadOnly()) {
-//                                try {
-//                                    ((com.vaadin.ui.FieldConfig) visibleComponent).validate();
-//                                } catch (Validator.InvalidValueException e) {
-//                                    problems.put(e, ((com.vaadin.ui.FieldConfig) visibleComponent));
-//                                }
-//                            }
-//                        }
-//                    }
-//
-//                }
-//            });
 
         return handleValidationErrors(errors);
     }
@@ -542,13 +524,20 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public void addListener(CloseListener listener) {
-        if (!listeners.contains(listener))
+        if (listeners == null) {
+            listeners = new LinkedList<>();
+        }
+
+        if (!listeners.contains(listener)) {
             listeners.add(listener);
+        }
     }
 
     @Override
     public void removeListener(CloseListener listener) {
-        listeners.remove(listener);
+        if (listeners != null) {
+            listeners.remove(listener);
+        }
     }
 
     @Override
@@ -561,11 +550,18 @@ public class WebWindow implements Window, Component.Wrapper,
         AppWindow appWindow = AppUI.getCurrent().getAppWindow();
         appWindow.addTimer((CubaTimer) WebComponentsHelper.unwrap(timer));
 
+        if (timers == null) {
+            timers = new LinkedList<>();
+        }
         timers.add(timer);
     }
 
     @Override
     public Timer getTimer(final String id) {
+        if (timers == null) {
+            return null;
+        }
+
         return (Timer) CollectionUtils.find(timers, new Predicate() {
             @Override
             public boolean evaluate(Object object) {
@@ -576,9 +572,11 @@ public class WebWindow implements Window, Component.Wrapper,
 
     public void stopTimers() {
         AppWindow appWindow = AppUI.getCurrent().getAppWindow();
-        for (Timer timer : timers) {
-            timer.stop();
-            appWindow.removeTimer((CubaTimer) WebComponentsHelper.unwrap(timer));
+        if (timers != null) {
+            for (Timer timer : timers) {
+                timer.stop();
+                appWindow.removeTimer((CubaTimer) WebComponentsHelper.unwrap(timer));
+            }
         }
     }
 
@@ -627,10 +625,6 @@ public class WebWindow implements Window, Component.Wrapper,
         com.vaadin.ui.Alignment alignment = convertAlignment(childComponent.getAlignment());
         ((AbstractOrderedLayout) container).setComponentAlignment(vComponent, alignment);
 
-        if (childComponent.getId() != null) {
-            componentByIds.put(childComponent.getId(), childComponent);
-        }
-
         if (childComponent instanceof BelongToFrame
                 && ((BelongToFrame) childComponent).getFrame() == null) {
             ((BelongToFrame) childComponent).setFrame(this);
@@ -654,9 +648,6 @@ public class WebWindow implements Window, Component.Wrapper,
     @Override
     public void remove(Component childComponent) {
         getContainer().removeComponent(WebComponentsHelper.getComposition(childComponent));
-        if (childComponent.getId() != null) {
-            componentByIds.remove(childComponent.getId());
-        }
         ownComponents.remove(childComponent);
 
         childComponent.setParent(null);
@@ -665,10 +656,11 @@ public class WebWindow implements Window, Component.Wrapper,
     @Override
     public void removeAll() {
         getContainer().removeAllComponents();
-        for (String childId : componentByIds.keySet()) {
-            allComponents.remove(childId);
+        for (Component childComponent : ownComponents) {
+            if (childComponent.getId() != null) {
+                allComponents.remove(childComponent.getId());
+            }
         }
-        componentByIds.clear();
 
         List<Component> childComponents = new ArrayList<>(ownComponents);
         ownComponents.clear();
@@ -694,9 +686,11 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     protected void fireWindowClosed(String actionId) {
-        for (Object listener : listeners) {
-            if (listener instanceof CloseListener) {
-                ((CloseListener) listener).windowClosed(actionId);
+        if (listeners != null) {
+            for (Object listener : listeners) {
+                if (listener instanceof CloseListener) {
+                    ((CloseListener) listener).windowClosed(actionId);
+                }
             }
         }
     }
@@ -794,8 +788,13 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public <T extends Component> T getOwnComponent(String id) {
-        //noinspection unchecked
-        return (T) componentByIds.get(id);
+        Component nestedComponent = allComponents.get(id);
+        if (ownComponents.contains(nestedComponent)) {
+            //noinspection unchecked
+            return (T) nestedComponent;
+        }
+
+        return null;
     }
 
     @Nullable
@@ -1258,35 +1257,17 @@ public class WebWindow implements Window, Component.Wrapper,
         }
 
         @Override
-        public void setSpacing(boolean enabled) {
-            container.setSpacing(enabled);
-        }
-
-        @Override
-        public void setStyleName(String name) {
-            container.setStyleName(name);
-        }
-
-        @Override
         public String getStyleName() {
             return container.getStyleName();
         }
 
         @Override
-        public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
-            container.setMargin(new MarginInfo(topEnable, rightEnable, bottomEnable, leftEnable));
-        }
-
-        @Override
-        public void setMargin(boolean enable) {
-            container.setMargin(enable);
-        }
-
-        @Override
-        protected com.vaadin.ui.Component createLayout() {
+        protected ComponentContainer createLayout() {
             final CubaVerticalActionsLayout form = new CubaVerticalActionsLayout();
+            form.setStyleName("cuba-lookup-window-wrapper");
 
             container = new VerticalLayout();
+            container.setStyleName("cuba-window-layout");
 
             boolean isTestMode = AppUI.getCurrent().isTestMode();
 
@@ -1296,12 +1277,9 @@ public class WebWindow implements Window, Component.Wrapper,
             okbar.setMargin(new MarginInfo(true, false, false, false));
             okbar.setSpacing(true);
 
-            Messages messages = AppBeans.get(Messages.NAME);
-
-            final String messagesPackage = AppConfig.getMessagesPack();
             selectAction = new SelectAction(this);
             selectButton = WebComponentsHelper.createButton();
-            selectButton.setCaption(messages.getMessage(messagesPackage, "actions.Select"));
+            selectButton.setCaption(messages.getMainMessage("actions.Select"));
             selectButton.setIcon(WebComponentsHelper.getIcon("icons/ok.png"));
             selectButton.addClickListener(selectAction);
             selectButton.setStyleName("cuba-window-action-button");
@@ -1310,7 +1288,7 @@ public class WebWindow implements Window, Component.Wrapper,
             }
 
             cancelButton = WebComponentsHelper.createButton();
-            cancelButton.setCaption(messages.getMessage(messagesPackage, "actions.Cancel"));
+            cancelButton.setCaption(messages.getMainMessage("actions.Cancel"));
             cancelButton.addClickListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
@@ -1331,7 +1309,6 @@ public class WebWindow implements Window, Component.Wrapper,
 
             container.setSizeFull();
             form.setExpandRatio(container, 1);
-            form.setComponentAlignment(okbar, com.vaadin.ui.Alignment.MIDDLE_LEFT);
             form.setSizeFull();
 
             return form;
@@ -1341,9 +1318,9 @@ public class WebWindow implements Window, Component.Wrapper,
         public void setId(String id) {
             super.setId(id);
 
-            AppUI ui = AppUI.getCurrent();
-            if (ui.isTestMode()) {
-                if (debugId != null) {
+            if (debugId != null) {
+                AppUI ui = AppUI.getCurrent();
+                if (ui.isTestMode()) {
                     TestIdManager testIdManager = ui.getTestIdManager();
                     selectButton.setId(testIdManager.getTestId(debugId + "_selectButton"));
                     cancelButton.setId(testIdManager.getTestId(debugId + "_cancelButton"));

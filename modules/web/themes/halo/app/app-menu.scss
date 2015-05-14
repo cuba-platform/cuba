@@ -120,46 +120,47 @@
   }
 
   @if ($v-support-inverse-menu) {
-    .cuba-inverse-header {
-      .cuba-app-menubar.cuba-app-light-header {
-        background: #1c1e20;
-        border: 1px solid #1c1e20;
+    .cuba-inverse-header.cuba-app-menubar {
+      background: #1c1e20;
+      border: 1px solid #1c1e20;
 
-        @include box-shadow(none);
+      @include box-shadow(none);
 
-        .cuba-main-menu {
-          .v-menubar-menuitem-more-item,
-          .v-menubar-menuitem-caption {
-            color: #adaeb0;
-          }
-
-          .v-menubar-menuitem:hover .v-menubar-menuitem-caption,
-          .v-menubar-menuitem.v-menubar-menuitem-more-item:hover,
-          .v-menubar-menuitem-selected .v-menubar-menuitem-caption,
-          .v-menubar-menuitem-selected.v-menubar-menuitem-more-item {
-            color: #e8e8e8;
-          }
-        }
-
-        .cuba-user-select-label {
+      .cuba-main-menu {
+        .v-menubar-menuitem-more-item,
+        .v-menubar-menuitem-caption {
           color: #adaeb0;
         }
 
-        .cuba-user-timezone-label {
-          color: #adaeb0;
-        }
-
-        .cuba-fts-button,
-        .cuba-buttons-white-border {
-          color: #adaeb0;
-        }
-
-        .cuba-fts-button:hover,
-        .cuba-fts-button:focus,
-        .cuba-buttons-white-border:hover,
-        .cuba-buttons-white-border:focus {
+        .v-menubar-menuitem:hover .v-menubar-menuitem-caption,
+        .v-menubar-menuitem.v-menubar-menuitem-more-item:hover,
+        .v-menubar-menuitem-selected .v-menubar-menuitem-caption,
+        .v-menubar-menuitem-selected.v-menubar-menuitem-more-item {
           color: #e8e8e8;
         }
+      }
+
+      .cuba-user-select-label {
+        color: #adaeb0;
+      }
+
+      .cuba-user-timezone-label {
+        color: #adaeb0;
+      }
+
+      .cuba-fts-button,
+      .cuba-logout-button,
+      .cuba-newwindow-button {
+        color: #adaeb0;
+      }
+
+      .cuba-fts-button:hover,
+      .cuba-fts-button:focus,
+      .cuba-logout-button:hover,
+      .cuba-newwindow-button:hover,
+      .cuba-logout-button:focus,
+      .cuba-newwindow-button:focus {
+        color: #e8e8e8;
       }
     }
   }

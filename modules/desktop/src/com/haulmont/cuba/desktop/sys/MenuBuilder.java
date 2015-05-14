@@ -6,7 +6,6 @@
 package com.haulmont.cuba.desktop.sys;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.validation.ValidationAwareActionListener;
 import com.haulmont.cuba.gui.NoSuchScreenException;
@@ -95,8 +94,7 @@ public class MenuBuilder {
             return;
         }
 
-        DesktopWindowManager wm = App.getInstance().getMainFrame().getWindowManager();
-        final MenuCommand command = new MenuCommand(wm, item, windowInfo);
+        final MenuCommand command = new MenuCommand(item, windowInfo);
         jMenuItem.addActionListener(new ValidationAwareActionListener() {
             @Override
             public void actionPerformedAfterValidation(ActionEvent e) {

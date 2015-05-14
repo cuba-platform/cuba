@@ -22,8 +22,8 @@ import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 import com.vaadin.data.Property;
-import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -47,21 +47,17 @@ import java.util.Set;
  * @author krivopustov
  * @version $Id$
  */
-public class LoginWindow extends UIView implements Action.Handler {
-
-    protected Log log = LogFactory.getLog(getClass());
+public class LoginWindow extends UIView {
 
     public static final String COOKIE_LOGIN = "rememberMe.Login";
     public static final String COOKIE_PASSWORD = "rememberMe.Password";
     public static final String COOKIE_REMEMBER_ME = "rememberMe";
 
-    protected Connection connection;
-
-    protected final AppUI ui;
+    protected static final Log log = LogFactory.getLog(LoginWindow.class);
 
     protected final App app;
-
-    protected VerticalLayout mainLayout;
+    protected final AppUI ui;
+    protected final Connection connection;
 
     protected TextField loginField;
     protected PasswordField passwordField;
@@ -73,28 +69,21 @@ public class LoginWindow extends UIView implements Action.Handler {
     protected GlobalConfig globalConfig;
     protected WebConfig webConfig;
 
+    protected CheckBox rememberMeCheckBox;
     protected boolean rememberMeAllowed = false;
-    protected CheckBox rememberMe;
     protected boolean loginByRememberMe = false;
 
     protected Property.ValueChangeListener loginChangeListener;
 
     protected Button okButton;
 
-    protected Messages messages;
-    protected Configuration configuration;
-    protected PasswordEncryption passwordEncryption;
-
-    protected UserManagementService userManagementService;
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     public LoginWindow(AppUI ui) {
         log.trace("Creating " + this);
         this.ui = ui;
 
-        configuration = AppBeans.get(Configuration.NAME);
-        messages = AppBeans.get(Messages.NAME);
-        passwordEncryption = AppBeans.get(PasswordEncryption.NAME);
-        userManagementService = AppBeans.get(UserManagementService.NAME);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
 
         globalConfig = configuration.getConfig(GlobalConfig.class);
         webConfig = configuration.getConfig(WebConfig.class);
@@ -121,11 +110,10 @@ public class LoginWindow extends UIView implements Action.Handler {
         rememberMeAllowed = webConfig.getRememberMeEnabled();
 
         if (rememberMeAllowed) {
-            rememberMe = new CubaCheckBox();
+            rememberMeCheckBox = new CubaCheckBox();
         }
 
         setSizeFull();
-        setBaseStyle("cuba-login");
 
         // load theme from cookies if it is changed by user in settings dialog
         applyUserTheme();
@@ -133,28 +121,33 @@ public class LoginWindow extends UIView implements Action.Handler {
         initUI();
 
         if (ui.isTestMode()) {
-            TestIdManager testIdManager = ui.getTestIdManager();
-
             loginField.setCubaId("loginField");
             passwordField.setCubaId("passwordField");
             localesSelect.setCubaId("localesField");
             okButton.setCubaId("loginSubmitButton");
 
-            if (rememberMe != null) {
-                rememberMe.setCubaId("rememberMeCheckBox");
+            if (rememberMeCheckBox != null) {
+                rememberMeCheckBox.setCubaId("rememberMeCheckBox");
             }
+
+            TestIdManager testIdManager = ui.getTestIdManager();
 
             loginField.setId(testIdManager.reserveId("loginField"));
             passwordField.setId(testIdManager.reserveId("passwordField"));
             localesSelect.setId(testIdManager.reserveId("localesField"));
 
             okButton.setId(testIdManager.reserveId("loginSubmitButton"));
-            if (rememberMe != null) {
-                rememberMe.setId(ui.getTestIdManager().reserveId("rememberMeCheckBox"));
+            if (rememberMeCheckBox != null) {
+                rememberMeCheckBox.setId(testIdManager.reserveId("rememberMeCheckBox"));
             }
         }
 
-        addActionHandler(this);
+        addShortcutListener(new ShortcutListener("Default key", ShortcutAction.KeyCode.ENTER, null) {
+            @Override
+            public void handleAction(Object sender, Object target) {
+                doLogin();
+            }
+        });
     }
 
     protected void applyUserTheme() {
@@ -195,20 +188,15 @@ public class LoginWindow extends UIView implements Action.Handler {
     }
 
     protected void initStandartUI(int formWidth, int formHeight, int fieldWidth, boolean localesSelectVisible) {
-        mainLayout = new VerticalLayout();
-        mainLayout.setStyleName(getStyle("main-layout"));
+        setStyleName("cuba-login-main-layout");
 
         FormLayout loginFormLayout = new FormLayout();
-        Panel form = new Panel(loginFormLayout);
-        form.setStyleName(getStyle("form"));
-        form.setWidthUndefined();
-        form.setHeightUndefined();
-
+        loginFormLayout.setStyleName("cuba-login-form");
         loginFormLayout.setSpacing(true);
-        loginFormLayout.setWidthUndefined();
+        loginFormLayout.setSizeUndefined();
 
         HorizontalLayout welcomeLayout = new HorizontalLayout();
-        welcomeLayout.setStyleName(getStyle("form-caption"));
+        welcomeLayout.setStyleName("cuba-login-form-caption");
         welcomeLayout.setWidthUndefined();
         welcomeLayout.setHeightUndefined();
         welcomeLayout.setSpacing(true);
@@ -217,17 +205,17 @@ public class LoginWindow extends UIView implements Action.Handler {
         Label label = new Label(welcomeMsg.replace("\n", "<br/>"));
         label.setContentMode(ContentMode.HTML);
         label.setWidthUndefined();
-        label.setStyleName(getStyle("caption"));
+        label.setStyleName("cuba-login-caption");
 
         VerticalLayout centerLayout = new VerticalLayout();
-        centerLayout.setStyleName(getStyle("bottom"));
+        centerLayout.setStyleName("cuba-login-bottom");
         centerLayout.setWidth(formWidth + "px");
         centerLayout.setHeight(formHeight + "px");
 
         centerLayout.setHeight(formHeight + "px");
 
         HorizontalLayout titleLayout = new HorizontalLayout();
-        titleLayout.setStyleName(getStyle("title"));
+        titleLayout.setStyleName("cuba-login-title");
         titleLayout.setSpacing(true);
 
         Image logoImage = getLogoImage();
@@ -244,18 +232,18 @@ public class LoginWindow extends UIView implements Action.Handler {
         centerLayout.addComponent(titleLayout);
         centerLayout.setComponentAlignment(titleLayout, Alignment.MIDDLE_CENTER);
 
-        centerLayout.addComponent(form);
-        centerLayout.setComponentAlignment(form, Alignment.MIDDLE_CENTER);
+        centerLayout.addComponent(loginFormLayout);
+        centerLayout.setComponentAlignment(loginFormLayout, Alignment.MIDDLE_CENTER);
 
         loginField.setCaption(messages.getMainMessage("loginWindow.loginField", resolvedLocale));
         loginFormLayout.addComponent(loginField);
         loginField.setWidth(fieldWidth + "px");
-        loginField.setStyleName(getStyle("username-field"));
+        loginField.setStyleName("username-field");
         loginFormLayout.setComponentAlignment(loginField, Alignment.MIDDLE_CENTER);
 
         passwordField.setCaption(messages.getMainMessage("loginWindow.passwordField", resolvedLocale));
         passwordField.setWidth(fieldWidth + "px");
-        passwordField.setStyleName(getStyle("password-field"));
+        passwordField.setStyleName("password-field");
         loginFormLayout.addComponent(passwordField);
         loginFormLayout.setComponentAlignment(passwordField, Alignment.MIDDLE_CENTER);
 
@@ -268,28 +256,26 @@ public class LoginWindow extends UIView implements Action.Handler {
         }
 
         if (rememberMeAllowed) {
-            rememberMe.setCaption(messages.getMainMessage("loginWindow.rememberMe", resolvedLocale));
-            rememberMe.setStyleName(getStyle("remember-me"));
-            loginFormLayout.addComponent(rememberMe);
-            loginFormLayout.setComponentAlignment(rememberMe, Alignment.MIDDLE_CENTER);
+            rememberMeCheckBox.setCaption(messages.getMainMessage("loginWindow.rememberMe", resolvedLocale));
+            rememberMeCheckBox.setStyleName("remember-me");
+            loginFormLayout.addComponent(rememberMeCheckBox);
+            loginFormLayout.setComponentAlignment(rememberMeCheckBox, Alignment.MIDDLE_CENTER);
         }
 
         okButton.setCaption(messages.getMainMessage("loginWindow.okButton", resolvedLocale));
         okButton.addClickListener(new SubmitListener());
-        okButton.setStyleName(getStyle("submit"));
+        okButton.setStyleName("cuba-login-submit");
         okButton.setIcon(WebComponentsHelper.getIcon("app/images/login-button.png"));
 
         loginFormLayout.addComponent(okButton);
         loginFormLayout.setComponentAlignment(okButton, Alignment.MIDDLE_CENTER);
 
-        mainLayout.addComponent(centerLayout);
-        mainLayout.setSizeFull();
-        mainLayout.setComponentAlignment(centerLayout, Alignment.MIDDLE_CENTER);
+        addComponent(centerLayout);
+        setSizeFull();
+        setComponentAlignment(centerLayout, Alignment.MIDDLE_CENTER);
 
         initFields();
         loginField.focus();
-
-        setContent(mainLayout);
     }
 
     @Nullable
@@ -302,7 +288,7 @@ public class LoginWindow extends UIView implements Action.Handler {
     }
 
     protected void initUI() {
-        boolean localeSelectVisible = configuration.getConfig(GlobalConfig.class).getLocaleSelectVisible();
+        boolean localeSelectVisible = globalConfig.getLocaleSelectVisible();
 
         ThemeConstants theme = app.getThemeConstants();
         int formWidth = theme.getInt("cuba.web.LoginWindow.form.width");
@@ -325,7 +311,7 @@ public class LoginWindow extends UIView implements Action.Handler {
 
             String rememberMeToken = app.getCookieValue(COOKIE_PASSWORD) != null ? app.getCookieValue(COOKIE_PASSWORD) : "";
             if (connection.checkRememberMe(login, rememberMeToken)) {
-                rememberMe.setValue(true);
+                rememberMeCheckBox.setValue(true);
                 loginField.setValue(login);
 
                 passwordField.setValue(rememberMeToken);
@@ -342,7 +328,7 @@ public class LoginWindow extends UIView implements Action.Handler {
             loginField.addValueChangeListener(loginChangeListener);
             passwordField.addValueChangeListener(loginChangeListener);
         } else {
-            rememberMe.setValue(false);
+            rememberMeCheckBox.setValue(false);
             loginChangeListener = null;
         }
     }
@@ -397,21 +383,6 @@ public class LoginWindow extends UIView implements Action.Handler {
         }
     }
 
-    @Override
-    public Action[] getActions(Object target, Object sender) {
-        final Action[] actions = new Action[1];
-        actions[0] = new ShortcutAction("Default key",
-                ShortcutAction.KeyCode.ENTER, null);
-        return actions;
-    }
-
-    @Override
-    public void handleAction(Action action, Object sender, Object target) {
-        if (sender == this) {
-            doLogin();
-        }
-    }
-
     protected void login() {
         String login = loginField.getValue();
         String password = passwordField.getValue() != null ? passwordField.getValue() : "";
@@ -425,6 +396,8 @@ public class LoginWindow extends UIView implements Action.Handler {
         try {
             Locale locale = getUserLocale();
             app.setLocale(locale);
+
+            PasswordEncryption passwordEncryption = AppBeans.get(PasswordEncryption.NAME);
 
             if (loginByRememberMe && rememberMeAllowed) {
                 loginByRememberMe(login, password, locale);
@@ -508,7 +481,7 @@ public class LoginWindow extends UIView implements Action.Handler {
 
         if (connection.isConnected()) {
             if (rememberMeAllowed) {
-                if (Boolean.TRUE.equals(rememberMe.getValue())) {
+                if (Boolean.TRUE.equals(rememberMeCheckBox.getValue())) {
                     if (!loginByRememberMe) {
                         app.addCookie(COOKIE_REMEMBER_ME, Boolean.TRUE.toString());
 
@@ -530,6 +503,7 @@ public class LoginWindow extends UIView implements Action.Handler {
 
                         User user = session.getUser();
 
+                        UserManagementService userManagementService = AppBeans.get(UserManagementService.NAME);
                         String rememberMeToken = userManagementService.generateRememberMeToken(user.getId());
 
                         app.addCookie(COOKIE_PASSWORD, rememberMeToken);

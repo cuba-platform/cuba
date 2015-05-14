@@ -10,7 +10,8 @@
 // Application Window styles
 @mixin cuba-application-window {
 
-  .v-button.cuba-buttons-white-border {
+  .v-button.cuba-logout-button,
+  .v-button.cuba-newwindow-button {
     background: none;
     border: 2px solid transparent;
 
@@ -31,21 +32,18 @@
     }
   }
 
-  .v-button.cuba-buttons-white-border:focus {
+  .v-button.cuba-logout-button:focus,
+  .v-button.cuba-newwindow-button:focus {
     border-color: $cuba-app-menu-highlight-color;
   }
 
-  .v-button.cuba-buttons-white-border:hover {
+  .v-button.cuba-logout-button:hover,
+  .v-button.cuba-newwindow-button:hover {
     background: none;
     border-color: $cuba-app-menu-highlight-color;
+
     .v-button-caption {
       text-shadow: black 1px 1px;
-    }
-  }
-
-  .v-button.cuba-buttons-white-border.nocaption {
-    .v-button-caption {
-      display: none;
     }
   }
 
@@ -106,6 +104,14 @@
       margin-right: 5px;
     }
 
+    .cuba-app-icon {
+      margin-left: 5px;
+    }
+
+    .v-menubar {
+      padding: 0;
+    }
+
     .v-menubar-menuitem-more-item {
       text-indent: -90000px;
       width: 12px;
@@ -115,19 +121,21 @@
     }
   }
 
-  .cuba-app-work-area,
-  .cuba-app-work-area-single {
+  .cuba-app-workarea-initial {
     background: $cuba-app-work-area-color;
   }
 
-  .cuba-app-work-area-single-window {
+  .cuba-main-singlewindow {
     background: #fff;
 
     @include havana-tabsheet-second(v-tabsheet);
   }
 
   .cuba-app-icon {
-    padding-left: 10px;
+    img {
+      @include box-defaults;
+      height: 100%;
+    }
   }
 
   .cuba-fts-button.v-button {

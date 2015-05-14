@@ -7,11 +7,15 @@ package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.TestIdManager;
+import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
 import com.haulmont.cuba.gui.config.*;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.AppWindow;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
 import com.haulmont.cuba.web.toolkit.ui.CubaMenuBar;
 import com.vaadin.ui.MenuBar;
@@ -31,18 +35,20 @@ public class MenuBuilder {
 
     private Log log = LogFactory.getLog(MenuBuilder.class);
 
-    protected AppWindow appWindow;
-
     protected UserSession session;
 
     protected CubaMenuBar menuBar;
 
+    protected AppWindow appWindow;
+
     protected MenuConfig menuConfig = AppBeans.get(MenuConfig.NAME);
 
-    public MenuBuilder(AppWindow appWindow, UserSession session, CubaMenuBar menuBar) {
-        this.appWindow = appWindow;
-        this.session = session;
-        this.menuBar = menuBar;
+    protected UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
+
+    public MenuBuilder(AppMenu menu) {
+        this.session = uss.getUserSession();
+        this.menuBar = WebComponentsHelper.unwrap(menu);
+        this.appWindow = AppUI.getCurrent().getAppWindow();
     }
 
     public void build() {
@@ -134,7 +140,7 @@ public class MenuBuilder {
 
         final MenuCommand command;
         if (windowInfo != null) {
-            command = new MenuCommand(appWindow.getWindowManager(), item, windowInfo);
+            command = new MenuCommand(item, windowInfo);
         } else {
             command = null;
         }
@@ -163,13 +169,14 @@ public class MenuBuilder {
     protected void assignShortcut(MenuBar.MenuItem menuItem, MenuItem item) {
         if (item.getShortcut() != null && menuItem.getCommand() != null) {
             MenuShortcutAction shortcut = new MenuShortcutAction(menuItem, "shortcut_" + item.getId(), item.getShortcut());
-            appWindow.addAction(shortcut);
+            appWindow.addShortcutListener(shortcut);
             menuBar.setShortcut(menuItem, item.getShortcut());
         }
     }
 
     protected void assignTestId(MenuBar.MenuItem menuItem, MenuItem conf) {
-        if (menuBar.getId() != null && !conf.isSeparator()) {
+        if (menuBar.getId() != null && menuBar.getCubaId() != null && !conf.isSeparator()) {
+            AppWindow appWindow = AppUI.getCurrent().getAppWindow();
             TestIdManager testIdManager = appWindow.getAppUI().getTestIdManager();
 
             String id = testIdManager.normalize(conf.getId());
@@ -177,7 +184,7 @@ public class MenuBuilder {
             testIdManager.reserveId(testId);
 
             menuBar.setTestId(menuItem, testId);
-            menuBar.setCubaId(menuItem, id);
+            menuBar.setCubaId(menuItem, conf.getId());
         }
     }
 }

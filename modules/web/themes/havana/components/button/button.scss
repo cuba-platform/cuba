@@ -71,6 +71,9 @@
   }
 
   .#{$primary-stylename}-empty-caption {
+    .#{$primary-stylename}-caption {
+      display: none;
+    }
 
     .#{$primary-stylename}-wrap {
       .v-icon {

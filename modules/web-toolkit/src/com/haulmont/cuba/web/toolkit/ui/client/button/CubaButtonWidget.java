@@ -19,7 +19,6 @@ import com.vaadin.client.ui.VButton;
 public class CubaButtonWidget extends VButton {
 
     public CubaButtonWidget() {
-        addStyleDependentName("empty-caption");
     }
 
     @Override
@@ -30,17 +29,6 @@ public class CubaButtonWidget extends VButton {
         }
 
         super.onClick(event);
-    }
-
-    @Override
-    public void setText(String text) {
-        if (text == null || "".equals(text)) {
-            addStyleDependentName("empty-caption");
-        } else {
-            removeStyleDependentName("empty-caption");
-        }
-
-        super.setText(text);
     }
 
     @Override

@@ -102,14 +102,14 @@ public interface WebConfig extends Config {
     boolean getShowFolderIcons();
 
     /**
-     * @return Whether to show {@link com.haulmont.cuba.web.app.folders.FoldersPane} on first login.
+     * @return Whether to show {@link com.haulmont.cuba.web.app.folders.CubaFoldersPane} on first login.
      */
     @Property("cuba.web.foldersPaneVisibleByDefault")
     @DefaultBoolean(false)
     boolean getFoldersPaneVisibleByDefault();
 
     /**
-     * @return Default {@link com.haulmont.cuba.web.app.folders.FoldersPane} width.
+     * @return Default {@link com.haulmont.cuba.web.app.folders.CubaFoldersPane} width.
      */
     @Property("cuba.web.foldersPaneDefaultWidth")
     @DefaultInt(200)
@@ -145,13 +145,6 @@ public interface WebConfig extends Config {
     @Default("havana|halo")
     @Deprecated
     List<String> getAvailableAppThemes();
-
-    /**
-     * @return Whether to use lightweight header (app icon, menu, app settings in the same row).
-     */
-    @DefaultBoolean(true)
-    @Property("cuba.web.useLightHeader")
-    boolean getUseLightHeader();
 
     /**
      * @return Whether to use inverse header colors if it is supported by theme.

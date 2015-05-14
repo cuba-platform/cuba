@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.TimeZones;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserManagementService;
@@ -17,8 +18,9 @@ import com.haulmont.cuba.security.app.UserTimeZone;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.app.UserSettingsTools;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.vaadin.ui.ComboBox;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -82,12 +84,12 @@ public class SettingsWindow extends AbstractWindow {
             changeThemeEnabled = changeThemeEnabledParam;
         }
 
-        AppWindow.Mode mode = userSettingsTools.loadAppWindowMode();
+        AppWorkArea.Mode mode = userSettingsTools.loadAppWindowMode();
         msgTabbed = getMessage("modeTabbed");
         msgSingle = getMessage("modeSingle");
 
         modeOptions.setOptionsList(Arrays.asList(msgTabbed, msgSingle));
-        if (mode == AppWindow.Mode.TABBED)
+        if (mode == AppWorkArea.Mode.TABBED)
             modeOptions.setValue(msgTabbed);
         else
             modeOptions.setValue(msgSingle);
@@ -99,6 +101,8 @@ public class SettingsWindow extends AbstractWindow {
         String userAppTheme = userSettingsTools.loadAppWindowTheme();
         appThemeField.setValue(userAppTheme);
 
+        ComboBox vAppThemeField = WebComponentsHelper.unwrap(appThemeField);
+        vAppThemeField.setTextInputAllowed(false);
         appThemeField.setEditable(changeThemeEnabled);
 
         initTimeZoneFields();
@@ -133,12 +137,12 @@ public class SettingsWindow extends AbstractWindow {
                     userSettingsTools.saveAppWindowTheme(selectedTheme);
                     App.getInstance().setUserAppTheme(selectedTheme);
                 }
-                AppWindow.Mode m = modeOptions.getValue() == msgTabbed ? AppWindow.Mode.TABBED : AppWindow.Mode.SINGLE;
+                AppWorkArea.Mode m = modeOptions.getValue() == msgTabbed ? AppWorkArea.Mode.TABBED : AppWorkArea.Mode.SINGLE;
                 userSettingsTools.saveAppWindowMode(m);
                 saveTimeZoneSettings();
                 showNotification(getMessage("modeChangeNotification"), NotificationType.HUMANIZED);
 
-                close("ok");
+                close(COMMIT_ACTION_ID);
             }
         };
         
@@ -149,7 +153,7 @@ public class SettingsWindow extends AbstractWindow {
                 new AbstractAction("cancel") {
                     @Override
                     public void actionPerform(Component component) {
-                        close("cancel");
+                        close(CLOSE_ACTION_ID);
                     }
                 }
         );

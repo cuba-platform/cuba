@@ -81,10 +81,12 @@
             <xs:simpleType>
                 <xs:restriction base="xs:string">
                     <xs:enumeration value="AUTO"/>
+                    <xs:enumeration value="100%"/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
     </xs:simpleType>
+
     <xs:simpleType name="orientation">
         <xs:restriction base="xs:string">
             <xs:enumeration value="horizontal"/>
@@ -128,6 +130,14 @@
             <xs:enumeration value="THIS_TAB"/>
             <xs:enumeration value="DIALOG"/>
             <xs:enumeration value="NEW_WINDOW"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="embeddedType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="IMAGE"/>
+            <xs:enumeration value="OBJECT"/>
+            <xs:enumeration value="BROWSER"/>
         </xs:restriction>
     </xs:simpleType>
 
@@ -792,8 +802,10 @@
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasAlign"/>
+        <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attribute name="src" type="xs:string"/>
+        <xs:attribute name="type" type="embeddedType"/>
     </xs:complexType>
 
     <!-- Tree -->

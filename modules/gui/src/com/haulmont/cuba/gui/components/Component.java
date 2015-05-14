@@ -98,7 +98,7 @@ public interface Component {
     /** Current style name. Styles implementation is client-type-specific */
     String getStyleName();
     /** Set style name. Styles implementation is client-type-specific */
-    void setStyleName(String name);
+    void setStyleName(String styleName);
 
     /**
      * Component which can contain other components

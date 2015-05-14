@@ -185,23 +185,43 @@ public abstract class AbstractConnection implements Connection {
     }
 
     @Override
-    public void addListener(ConnectionListener listener) {
+    public void addConnectionListener(ConnectionListener listener) {
         connListeners.put(listener, null);
     }
 
     @Override
-    public void removeListener(ConnectionListener listener) {
+    public void removeConnectionListener(ConnectionListener listener) {
         connListeners.remove(listener);
     }
 
     @Override
-    public void addListener(UserSubstitutionListener listener) {
+    public void addSubstitutionListener(UserSubstitutionListener listener) {
         usListeners.put(listener, null);
     }
 
     @Override
-    public void removeListener(UserSubstitutionListener listener) {
+    public void removeSubstitutionListener(UserSubstitutionListener listener) {
         usListeners.remove(listener);
+    }
+
+    @Override
+    public void addListener(ConnectionListener listener) {
+        addConnectionListener(listener);
+    }
+
+    @Override
+    public void removeListener(ConnectionListener listener) {
+        removeConnectionListener(listener);
+    }
+
+    @Override
+    public void addListener(UserSubstitutionListener listener) {
+        addSubstitutionListener(listener);
+    }
+
+    @Override
+    public void removeListener(UserSubstitutionListener listener) {
+        removeSubstitutionListener(listener);
     }
 
     protected void fireConnectionListeners() throws LoginException {

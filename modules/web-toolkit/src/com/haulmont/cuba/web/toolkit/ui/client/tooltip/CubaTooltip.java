@@ -20,6 +20,7 @@ import com.vaadin.client.*;
 import com.vaadin.client.ui.button.ButtonConnector;
 import com.vaadin.client.ui.checkbox.CheckBoxConnector;
 import com.vaadin.client.ui.table.TableConnector;
+import com.vaadin.client.ui.tabsheet.TabsheetConnector;
 
 /**
  * @author devyatkin
@@ -227,6 +228,7 @@ public class CubaTooltip extends VTooltip {
         protected boolean isStandardTooltip(ComponentConnector connector) {
             return (connector instanceof ButtonConnector
                     || connector instanceof CheckBoxConnector
+                    || connector instanceof TabsheetConnector
                     || connector instanceof TableConnector);
         }
     }
