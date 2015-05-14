@@ -316,7 +316,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         String requiredMessage = messages.formatMessage(
                 AppConfig.getMessagesPack(),
                 "validation.required.defaultMsg",
-                field.getId()
+                categoryAttributeValue.getCategoryAttribute().getName()
         );
         fieldGroup.setRequired(field, categoryAttributeValue.getCategoryAttribute().getRequired() && requiredControlEnabled, requiredMessage);
     }

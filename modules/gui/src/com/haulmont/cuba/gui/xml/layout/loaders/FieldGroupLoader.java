@@ -187,6 +187,10 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                     field.setCaption(attribute.getName());
                     field.setDatasource(ds);
                     field.setRequired(attribute.getRequired());
+                    field.setRequiredError( messages.formatMessage(
+                            messages.getMainMessagePack(),
+                            "validation.required.defaultMsg",
+                            attribute.getName()));
 
                     if (fieldGroup.getWidth() > 0) {
                         field.setWidth("100%");
