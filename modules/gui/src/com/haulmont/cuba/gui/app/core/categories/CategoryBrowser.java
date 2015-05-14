@@ -6,6 +6,7 @@
 package com.haulmont.cuba.gui.app.core.categories;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesCacheService;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
@@ -38,6 +39,9 @@ public class CategoryBrowser extends AbstractLookup {
     @Inject
     protected CollectionDatasource categoriesDs;
 
+    @Inject
+    protected DynamicAttributesCacheService dynamicAttributesCacheService;
+
     @Override
     public void init(Map<String, Object> params) {
         categoriesDs = getDsContext().get("categoriesDs");
@@ -45,6 +49,12 @@ public class CategoryBrowser extends AbstractLookup {
         categoryTable.addAction(new CreateAction());
         categoryTable.addAction(new EditAction());
         categoryTable.addAction(new RemoveAction(categoryTable));
+        categoryTable.addAction(new AbstractAction("applyChanges") {
+            @Override
+            public void actionPerform(Component component) {
+                dynamicAttributesCacheService.loadCache();
+            }
+        });
 
         categoryTable.removeGeneratedColumn("entityType");
 

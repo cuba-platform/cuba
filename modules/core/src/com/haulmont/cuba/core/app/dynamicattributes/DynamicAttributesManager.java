@@ -5,8 +5,6 @@
 
 package com.haulmont.cuba.core.app.dynamicattributes;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.haulmont.chile.core.model.MetaClass;
@@ -19,18 +17,16 @@ import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewRepository;
-import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.GuardedBy;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.*;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author degtyarjov
@@ -42,20 +38,19 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
     protected Metadata metadata;
 
     @Inject
+    protected TimeSource timeSource;
+
+    @Inject
     protected ViewRepository viewRepository;
 
     @Inject
     protected Persistence persistence;
 
-    private ClusterManagerAPI clusterManager;
+    protected ClusterManagerAPI clusterManager;
 
-    protected ReadWriteLock lock = new ReentrantReadWriteLock();
+    protected ReentrantLock loadCacheLock = new ReentrantLock();
 
-    @GuardedBy("lock")
-    protected Multimap<MetaClass, Category> categoriesCache;
-
-    @GuardedBy("lock")
-    protected Map<MetaClass, Map<String, CategoryAttribute>> attributesCache;
+    protected volatile DynamicAttributesCache dynamicAttributesCache;
 
     private static class ReloadCacheMsg implements Serializable {
         private static final long serialVersionUID = -3116358584797500962L;
@@ -67,20 +62,24 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
         clusterManager.addListener(ReloadCacheMsg.class, new ClusterListenerAdapter<ReloadCacheMsg>() {
             @Override
             public void receive(ReloadCacheMsg message) {
-                doLoadCache(false);
+                doLoadCache(false, false);
             }
         });
     }
 
     @Override
     public void loadCache() {
-        doLoadCache(true);
+        doLoadCache(true, false);
     }
 
-    protected void doLoadCache(boolean sendClusterMessage) {
-        lock.writeLock().lock();
+    protected void doLoadCache(boolean sendClusterMessage, boolean stopIfNotNull) {
+        loadCacheLock.lock();
         Transaction tx = persistence.createTransaction();
         try {
+            if (stopIfNotNull && dynamicAttributesCache != null){
+                return;
+            }
+
             EntityManager entityManager = persistence.getEntityManager();
             TypedQuery<Category> query = entityManager.createQuery("select c from sys$Category c", Category.class);
             View categoryView = new View(viewRepository.getView(Category.class, View.LOCAL), null, false)
@@ -106,83 +105,49 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
             }
             tx.commit();
 
-            this.categoriesCache = categoriesCache;
-            this.attributesCache = attributesCache;
-        } finally {
-            lock.writeLock().unlock();
-            tx.end();
+            dynamicAttributesCache = new DynamicAttributesCache(categoriesCache, attributesCache, timeSource.currentTimestamp());
             if (sendClusterMessage) {
                 clusterManager.send(new ReloadCacheMsg());
             }
+        } finally {
+            loadCacheLock.unlock();
+            tx.end();
         }
     }
 
     @Override
     public Collection<Category> getCategoriesForMetaClass(MetaClass metaClass) {
-        MetaClass targetMetaClass = resolveTargetMetaClass(metaClass);
-        return new ArrayList<>(categories().get(targetMetaClass));
+        return cache().getCategoriesForMetaClass(metaClass);
     }
 
     @Override
     public Collection<CategoryAttribute> getAttributesForMetaClass(MetaClass metaClass) {
-        MetaClass targetMetaClass = resolveTargetMetaClass(metaClass);
-        Collection<Category> categories = categories().get(targetMetaClass);
-        List<CategoryAttribute> categoryAttributes = new ArrayList<>();
-        for (Category category : categories) {
-            categoryAttributes.addAll(Collections2.filter(category.getCategoryAttrs(), new Predicate<CategoryAttribute>() {
-                @Override
-                public boolean apply(@Nullable CategoryAttribute input) {
-                    return input != null && StringUtils.isNotBlank(input.getCode());
-                }
-            }));
-        }
-        return categoryAttributes;
+        return cache().getAttributesForMetaClass(metaClass);
     }
 
     @Nullable
     @Override
     public CategoryAttribute getAttributeForMetaClass(MetaClass metaClass, String code) {
-        MetaClass targetMetaClass = resolveTargetMetaClass(metaClass);
-        Map<String, CategoryAttribute> attributes = attributes().get(targetMetaClass);
-        if (attributes != null) {
-            return attributes.get(code);
-        }
-
-        return null;
+        return cache().getAttributeForMetaClass(metaClass, code);
     }
 
-    protected Multimap<MetaClass, Category> categories() {
-        this.lock.readLock().lock();
-        try {
-            if (this.categoriesCache == null) {
-                try {
-                    this.lock.readLock().unlock();
-                    loadCache();
-                } finally {
-                    this.lock.readLock().lock();
-                }
-            }
-            return this.categoriesCache;
-        } finally {
-            lock.readLock().unlock();
+    @Override
+    public DynamicAttributesCache getCacheIfNewer(Date clientCacheDate) {
+        if (clientCacheDate == null
+                || this.dynamicAttributesCache == null
+                || this.dynamicAttributesCache.getCreationDate() == null
+                || clientCacheDate.before(this.dynamicAttributesCache.getCreationDate())) {
+            return cache();
+        } else {
+            return null;
         }
     }
 
-    protected Map<MetaClass, Map<String, CategoryAttribute>> attributes() {
-        this.lock.readLock().lock();
-        try {
-            if (this.attributesCache == null) {
-                try {
-                    this.lock.readLock().unlock();
-                    loadCache();
-                } finally {
-                    this.lock.readLock().lock();
-                }
-            }
-            return this.attributesCache;
-        } finally {
-            lock.readLock().unlock();
+    protected DynamicAttributesCache cache() {
+        if (this.dynamicAttributesCache == null) {
+            doLoadCache(true, true);
         }
+        return this.dynamicAttributesCache;
     }
 
     protected MetaClass resolveTargetMetaClass(MetaClass metaClass) {
@@ -196,5 +161,4 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
         }
         return targetMetaClass;
     }
-
 }

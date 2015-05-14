@@ -20,6 +20,7 @@ import com.haulmont.cuba.desktop.theme.DesktopThemeLoader;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.cache.ClientCacheManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -601,6 +602,9 @@ public class App implements ConnectionListener {
     public void connectionStateChanged(Connection connection) throws LoginException {
         MessagesClientImpl messagesClient = AppBeans.get(Messages.NAME);
         SessionMessagesNotifier messagesNotifier = AppBeans.get(SessionMessagesNotifier.NAME);
+
+        ClientCacheManager clientCacheManager = AppBeans.get(ClientCacheManager.NAME);
+        clientCacheManager.initialize();
 
         if (connection.isConnected()) {
             applicationSession = new ApplicationSession(new ConcurrentHashMap<String, Object>());

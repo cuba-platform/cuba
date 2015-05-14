@@ -13,29 +13,24 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * @author degtyarjov
  * @version $Id$
  */
-@Service(DynamicAttributesService.NAME)
-public class DynamicAttributesServiceBean implements DynamicAttributesService {
+@Service(DynamicAttributesCacheService.NAME)
+public class DynamicAttributesCacheServiceBean implements DynamicAttributesCacheService {
     @Inject
     protected DynamicAttributesManagerAPI dynamicAttributesManagerAPI;
 
     @Override
-    public Collection<Category> getCategoriesForMetaClass(MetaClass metaClass) {
-        return dynamicAttributesManagerAPI.getCategoriesForMetaClass(metaClass);
+    public void loadCache(){
+        dynamicAttributesManagerAPI.loadCache();
     }
 
     @Override
-    public Collection<CategoryAttribute> getAttributesForMetaClass(MetaClass metaClass){
-        return dynamicAttributesManagerAPI.getAttributesForMetaClass(metaClass);
-    }
-
-    @Nullable
-    @Override
-    public CategoryAttribute getAttributeForMetaClass(MetaClass metaClass, String code) {
-        return dynamicAttributesManagerAPI.getAttributeForMetaClass(metaClass, code);
+    public DynamicAttributesCache getCacheIfNewer(Date clientCacheDate) {
+        return dynamicAttributesManagerAPI.getCacheIfNewer(clientCacheDate);
     }
 }

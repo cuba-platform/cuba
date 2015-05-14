@@ -30,6 +30,7 @@
                 <button action="categoryTable.create" icon="icons/create.png" caption="msg://categoryTable.create"/>
                 <button action="categoryTable.edit" icon="icons/edit.png" caption="msg://categoryTable.edit"/>
                 <button action="categoryTable.remove" icon="icons/remove.png" caption="msg://categoryTable.remove"/>
+                <button action="categoryTable.applyChanges" icon="icons/ok.png" caption="msg://categoryTable.applyChanges"/>
             </buttonsPanel>
             <columns>
                 <column id="name"/>

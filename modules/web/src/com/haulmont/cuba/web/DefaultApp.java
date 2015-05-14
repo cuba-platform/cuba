@@ -7,6 +7,7 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.cache.ClientCacheManager;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.security.entity.User;
@@ -49,6 +50,9 @@ public class DefaultApp extends App implements ConnectionListener {
     @Override
     public void connectionStateChanged(Connection connection) throws LoginException {
         if (connection.isConnected()) {
+            ClientCacheManager clientCacheManager = AppBeans.get(ClientCacheManager.NAME);
+            clientCacheManager.initialize();
+
             if (webConfig.getUseSessionFixationProtection()) {
                 VaadinService.reinitializeSession(VaadinService.getCurrentRequest());
 
