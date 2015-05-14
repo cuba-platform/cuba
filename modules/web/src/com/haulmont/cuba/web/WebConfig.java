@@ -115,6 +115,10 @@ public interface WebConfig extends Config {
     @DefaultInt(200)
     int getFoldersPaneDefaultWidth();
 
+    @Property("cuba.web.showBreadCrumbs")
+    @DefaultBoolean(true)
+    boolean getShowBreadCrumbs();
+
     /**
      * @return Maximum number of symbols in main tabs captions.
      */

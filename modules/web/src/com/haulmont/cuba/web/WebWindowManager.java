@@ -670,6 +670,7 @@ public class WebWindowManager extends WindowManager {
 
     protected WindowBreadCrumbs createWindowBreadCrumbs() {
         WindowBreadCrumbs windowBreadCrumbs = new WindowBreadCrumbs(getConfiguredWorkArea());
+        windowBreadCrumbs.setVisible(webConfig.getShowBreadCrumbs());
         stacks.put(windowBreadCrumbs, new Stack<Map.Entry<Window, Integer>>());
         return windowBreadCrumbs;
     }

@@ -27,6 +27,8 @@ import java.util.*;
  */
 public class WindowBreadCrumbs extends HorizontalLayout {
 
+    protected boolean visibleExplicitly = true;
+
     public interface Listener {
         void windowClick(Window window);
     }
@@ -51,7 +53,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
         tabbedMode = workArea.getMode() == AppWorkArea.Mode.TABBED;
 
         if (tabbedMode)
-            setVisible(false);
+            super.setVisible(false);
 
         logoLayout = new HorizontalLayout();
         logoLayout.setStyleName("cuba-breadcrumbs-logo");
@@ -112,7 +114,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
         windows.add(window);
         update();
         if (windows.size() > 1 && tabbedMode)
-            setVisible(true);
+            super.setVisible(visibleExplicitly);
     }
 
     public void removeWindow() {
@@ -121,7 +123,14 @@ public class WindowBreadCrumbs extends HorizontalLayout {
             update();
         }
         if (windows.size() <= 1 && tabbedMode)
-            setVisible(false);
+            super.setVisible(false);
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        this.visibleExplicitly = visible;
+
+        super.setVisible(isVisible() && visibleExplicitly);
     }
 
     public void addListener(Listener listener) {
