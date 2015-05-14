@@ -41,7 +41,5 @@ public class AppMenuLoader extends ComponentLoader {
         loadHeight(component, element);
 
         assignFrame(component);
-
-        component.loadMenu();
     }
 }

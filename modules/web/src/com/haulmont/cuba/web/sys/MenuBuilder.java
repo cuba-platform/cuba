@@ -45,10 +45,11 @@ public class MenuBuilder {
 
     protected UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
 
+    // call MenuBuilder after attaching menubar to UI
     public MenuBuilder(AppMenu menu) {
         this.session = uss.getUserSession();
         this.menuBar = WebComponentsHelper.unwrap(menu);
-        this.appWindow = AppUI.getCurrent().getAppWindow();
+        this.appWindow = ((AppUI) menuBar.getUI()).getAppWindow();
     }
 
     public void build() {

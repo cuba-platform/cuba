@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.app.core.dev.LayoutAnalyzer;
 import com.haulmont.cuba.gui.app.core.dev.LayoutTip;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
 import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
@@ -1240,6 +1241,19 @@ public class WebWindowManager extends WindowManager {
         appWindow.setExpandRatio(windowLayout, 1);
 
         appWindow.setMainWindow((Window.MainWindow) mainWindow);
+
+        // load menu
+        ComponentsHelper.walkComponents(windowImpl, new ComponentFinder() {
+            @Override
+            public boolean visit(com.haulmont.cuba.gui.components.Component component) {
+                if (component instanceof AppMenu) {
+                    ((AppMenu) component).loadMenu();
+                    return true;
+                }
+
+                return false;
+            }
+        });
 
         getConfiguredWorkArea().addStateChangeListener(new AppWorkArea.StateChangeListener() {
             @Override
