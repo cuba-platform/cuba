@@ -443,7 +443,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                 collection.clear();
                 // Notify listeners
                 for (T item : collectionItems) {
-                    if (metaProperty.getRange().getCardinality() == Range.Cardinality.MANY_TO_ONE) {
+                    if (metaProperty.getRange().getCardinality() == Range.Cardinality.ONE_TO_MANY) {
                         MetaProperty inverseProperty = metaProperty.getInverse();
                         if (inverseProperty == null) {
                             throw new UnsupportedOperationException("No inverse property for " + metaProperty);
