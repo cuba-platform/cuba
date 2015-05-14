@@ -25,6 +25,7 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -94,7 +95,7 @@ public class JSONConvertor implements Convertor {
     }
 
     @Override
-    public String process(List<Entity> entities, MetaClass metaClass, View view)  throws Exception {
+    public String process(List<Entity> entities, MetaClass metaClass, View view) throws Exception {
         MyJSONObject.Array array = _process(entities, metaClass, view);
         return array.toString();
     }
@@ -160,7 +161,7 @@ public class JSONConvertor implements Convertor {
     }
 
     protected Datatype getDatatype(Class clazz) {
-        if (clazz == Integer.TYPE  || clazz == Byte.TYPE || clazz == Short.TYPE) return Datatypes.get(Integer.class);
+        if (clazz == Integer.TYPE || clazz == Byte.TYPE || clazz == Short.TYPE) return Datatypes.get(Integer.class);
         if (clazz == Long.TYPE) return Datatypes.get(Long.class);
         if (clazz == Boolean.TYPE) return Datatypes.get(Boolean.class);
 
@@ -510,7 +511,7 @@ public class JSONConvertor implements Convertor {
      *
      * @param entity  the managed instance to be encoded. Can be null.
      * @param visited the persistent instances that had been encoded already. Must not be null or immutable.
-     * @param view view on which loaded the entity
+     * @param view    view on which loaded the entity
      * @return the new element. The element has been appended as a child to the given parent in this method.
      */
     protected MyJSONObject encodeInstance(final Entity entity, final Set<Entity> visited, MetaClass metaClass, View view)
@@ -531,7 +532,8 @@ public class JSONConvertor implements Convertor {
         }
 
         MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
-        List<MetaProperty> properties = ConvertorHelper.getOrderedProperties(metaClass);
+        List<MetaProperty> properties = ConvertorHelper.getActualMetaProperties(metaClass, entity);
+
         for (MetaProperty property : properties) {
 
             if (!attrViewPermitted(metaClass, property.getName()))
@@ -545,7 +547,8 @@ public class JSONConvertor implements Convertor {
                 continue;
             }
 
-            if (!isPropertyIncluded(view, property, metadataTools)){
+            if (!isPropertyIncluded(view, property, metadataTools)
+                    && !DynamicAttributesUtils.isDynamicAttribute(property.getName())) {
                 continue;
             }
 
@@ -553,7 +556,7 @@ public class JSONConvertor implements Convertor {
                 case DATATYPE:
                     if (value != null) {
                         root.set(property.getName(), property.getRange().asDatatype().format(value));
-                    } else {
+                    } else if (!DynamicAttributesUtils.isDynamicAttribute(property.getName())) {
                         root.set(property.getName(), null);
                     }
 

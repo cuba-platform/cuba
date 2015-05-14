@@ -10,6 +10,7 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -146,7 +147,7 @@ public class XMLConvertor2 implements Convertor {
     }
 
     protected Datatype getDatatype(Class clazz) {
-        if (clazz == Integer.TYPE  || clazz == Byte.TYPE || clazz == Short.TYPE) return Datatypes.get(Integer.class);
+        if (clazz == Integer.TYPE || clazz == Byte.TYPE || clazz == Short.TYPE) return Datatypes.get(Integer.class);
         if (clazz == Long.TYPE) return Datatypes.get(Long.class);
         if (clazz == Boolean.TYPE) return Datatypes.get(Boolean.class);
 
@@ -328,9 +329,9 @@ public class XMLConvertor2 implements Convertor {
     /**
      * Converts a content of XML element to an entity.
      *
-     * @param instanceEl element that contains entity description
-     * @param entity if this parameter is not null then its fields will be filled,
-     *               if it is null then new entity will be created.
+     * @param instanceEl    element that contains entity description
+     * @param entity        if this parameter is not null then its fields will be filled,
+     *                      if it is null then new entity will be created.
      * @param commitRequest must not be null if method is called when parsing a {@code CommitRequest}.
      *                      Security permissions checks are performed based on existing/absence of this
      *                      parameter.
@@ -450,16 +451,16 @@ public class XMLConvertor2 implements Convertor {
     }
 
     protected void encodeEntity(Entity entity, HashSet<Entity> visited, View view, Element parentEl) throws Exception {
-            if (entity == null) {
-                parentEl.addAttribute("null", "true");
-                return;
-            }
+        if (entity == null) {
+            parentEl.addAttribute("null", "true");
+            return;
+        }
 
-            if (!readPermitted(entity.getMetaClass()))
-                throw new IllegalAccessException();
+        if (!readPermitted(entity.getMetaClass()))
+            throw new IllegalAccessException();
 
-            Element instanceEl = parentEl.addElement("instance");
-            instanceEl.addAttribute("id", EntityLoadInfo.create(entity).toString());
+        Element instanceEl = parentEl.addElement("instance");
+        instanceEl.addAttribute("id", EntityLoadInfo.create(entity).toString());
 
         boolean entityAlreadyVisited = !visited.add(entity);
         if (entityAlreadyVisited) {
@@ -467,77 +468,78 @@ public class XMLConvertor2 implements Convertor {
         }
 
         MetaClass metaClass = entity.getMetaClass();
-            List<MetaProperty> orderedProperties = ConvertorHelper.getOrderedProperties(metaClass);
-            for (MetaProperty property : orderedProperties) {
-                if (!attrViewPermitted(metaClass, property.getName()))
-                    continue;
+        List<MetaProperty> orderedProperties = ConvertorHelper.getActualMetaProperties(metaClass, entity);
+        for (MetaProperty property : orderedProperties) {
+            if (!attrViewPermitted(metaClass, property.getName()))
+                continue;
 
-                if (!isPropertyIncluded(view, property)) {
-                    continue;
-                }
+            if (!isPropertyIncluded(view, property)
+                    && !DynamicAttributesUtils.isDynamicAttribute(property.getName())) {
+                continue;
+            }
 
-                Object value = entity.getValue(property.getName());
+            Object value = entity.getValue(property.getName());
 
-                switch (property.getType()) {
-                    case DATATYPE:
-                        if (property.equals(metadataTools.getPrimaryKeyProperty(metaClass))
-                                && !property.getJavaType().equals(String.class)) {
-                            // skipping id for non-String-key entities
-                            continue;
-                        }
-                        Element fieldEl = instanceEl.addElement("field");
-                        fieldEl.addAttribute("name", property.getName());
-                        if (value == null) {
-                            encodeNull(fieldEl);
-                        } else {
-                            fieldEl.setText(property.getRange().asDatatype().format(value));
-                        }
+            switch (property.getType()) {
+                case DATATYPE:
+                    if (property.equals(metadataTools.getPrimaryKeyProperty(metaClass))
+                            && !property.getJavaType().equals(String.class)) {
+                        // skipping id for non-String-key entities
+                        continue;
+                    }
+                    Element fieldEl = instanceEl.addElement("field");
+                    fieldEl.addAttribute("name", property.getName());
+                    if (value != null) {
+                        fieldEl.setText(property.getRange().asDatatype().format(value));
+                    } else if (!DynamicAttributesUtils.isDynamicAttribute(property.getName())) {
+                        encodeNull(fieldEl);
+                    }
+                    break;
+                case ENUM:
+                    fieldEl = instanceEl.addElement("field");
+                    fieldEl.addAttribute("name", property.getName());
+                    if (value == null) {
+                        encodeNull(fieldEl);
+                    } else {
+                        fieldEl.setText(property.getRange().asEnumeration().format(value));
+                    }
+                    break;
+                case COMPOSITION:
+                case ASSOCIATION:
+                    MetaClass meta = propertyMetaClass(property);
+                    //checks if the user permitted to read a property
+                    if (!readPermitted(meta)) {
                         break;
-                    case ENUM:
-                        fieldEl = instanceEl.addElement("field");
-                        fieldEl.addAttribute("name", property.getName());
+                    }
+
+                    View propertyView = null;
+                    if (view != null) {
+                        ViewProperty vp = view.getProperty(property.getName());
+                        if (vp != null) propertyView = vp.getView();
+                    }
+
+                    if (!property.getRange().getCardinality().isMany()) {
+                        Element referenceEl = instanceEl.addElement("reference");
+                        referenceEl.addAttribute("name", property.getName());
+                        encodeEntity((Entity) value, visited, propertyView, referenceEl);
+                    } else {
+                        Element collectionEl = instanceEl.addElement("collection");
+                        collectionEl.addAttribute("name", property.getName());
+
                         if (value == null) {
-                            encodeNull(fieldEl);
-                        } else {
-                            fieldEl.setText(property.getRange().asEnumeration().format(value));
-                        }
-                        break;
-                    case COMPOSITION:
-                    case ASSOCIATION:
-                        MetaClass meta = propertyMetaClass(property);
-                        //checks if the user permitted to read a property
-                        if (!readPermitted(meta)) {
+                            encodeNull(collectionEl);
                             break;
                         }
 
-                        View propertyView = null;
-                        if (view != null) {
-                            ViewProperty vp = view.getProperty(property.getName());
-                            if (vp != null) propertyView = vp.getView();
+                        for (Object childEntity : (Collection) value) {
+                            encodeEntity((Entity) childEntity, visited, propertyView, collectionEl);
                         }
-
-                        if (!property.getRange().getCardinality().isMany()) {
-                            Element referenceEl = instanceEl.addElement("reference");
-                            referenceEl.addAttribute("name", property.getName());
-                            encodeEntity((Entity) value, visited, propertyView, referenceEl);
-                        } else {
-                            Element collectionEl = instanceEl.addElement("collection");
-                            collectionEl.addAttribute("name", property.getName());
-
-                            if (value == null) {
-                                encodeNull(collectionEl);
-                                break;
-                            }
-
-                            for (Object childEntity : (Collection) value) {
-                                encodeEntity((Entity) childEntity, visited, propertyView, collectionEl);
-                            }
-                        }
-                        break;
-                    default:
-                        throw new IllegalStateException("Unknown property type");
-                }
+                    }
+                    break;
+                default:
+                    throw new IllegalStateException("Unknown property type");
             }
+        }
     }
 
     protected boolean attrViewPermitted(MetaClass metaClass, String property) {

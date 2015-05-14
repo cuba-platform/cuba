@@ -5,6 +5,8 @@
 
 package com.haulmont.cuba.portal;
 
+import com.haulmont.cuba.client.sys.cache.ClientCacheManager;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.portal.sys.security.PortalSecurityContext;
 
@@ -28,6 +30,8 @@ public class App {
         this.connection = connection;
         this.request = request;
         this.response = response;
+        ClientCacheManager clientCacheManager = AppBeans.get(ClientCacheManager.NAME);
+        clientCacheManager.initialize();
     }
 
     public static boolean isBound() {

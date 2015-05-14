@@ -83,6 +83,7 @@
                 <entry key="cuba_DomainDescriptionService" value="com.haulmont.cuba.core.app.DomainDescriptionService"/>
                 <entry key="cuba_RelatedEntitiesService" value="com.haulmont.cuba.core.app.RelatedEntitiesService"/>
                 <entry key="cuba_NumberIdService" value="com.haulmont.cuba.core.app.NumberIdService"/>
+                <entry key="cuba_DynamicAttributesCacheService" value="com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesCacheService"/>
             </map>
         </property>
     </bean>

@@ -6,7 +6,12 @@
 
 <services xmlns="http://schemas.haulmont.com/cuba/5.5/rest-services.xsd">
     <!--<service name="cuba_SampleService">-->
-        <!--<method name="doSmth"/>-->
-        <!--<method name="doSmthElse"/>-->
+    <!--<method name="doSmth"/>-->
+    <!--<method name="doSmthElse"/>-->
     <!--</service>-->
+
+    <!--Exposed for REST API functional tests-->
+    <service name="cuba_DynamicAttributesCacheService">
+        <method name="loadCache"/>
+    </service>
 </services>

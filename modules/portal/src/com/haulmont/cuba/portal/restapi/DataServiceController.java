@@ -76,6 +76,7 @@ public class DataServiceController {
     public void find(@PathVariable String type,
                      @RequestParam(value = "e") String entityRef,
                      @RequestParam(value = "s") String sessionId,
+                     @RequestParam(value = "dynamicAttributes", required = false) Boolean dynamicAttributes,
                      HttpServletRequest request,
                      HttpServletResponse response) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
@@ -99,6 +100,7 @@ public class DataServiceController {
             Object objectId = loadInfo.getId();
 
             LoadContext loadCtx = new LoadContext(metaClass);
+            loadCtx.setLoadDynamicAttributes(Boolean.TRUE.equals(dynamicAttributes));
             loadCtx.setId(objectId);
             loadCtx.setUseSecurityConstraints(true);
             if (loadInfo.getViewName() != null) {
@@ -131,6 +133,7 @@ public class DataServiceController {
                       @RequestParam(value = "first", required = false) Integer firstResult,
                       @RequestParam(value = "max", required = false) Integer maxResults,
                       @RequestParam(value = "s") String sessionId,
+                      @RequestParam(value = "dynamicAttributes", required = false) Boolean dynamicAttributes,
                       HttpServletRequest request,
                       HttpServletResponse response) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
@@ -158,8 +161,10 @@ public class DataServiceController {
             queryParams.remove("first");
             queryParams.remove("s");
             queryParams.remove("max");
+            queryParams.remove("dynamicAttributes");
 
             LoadContext loadCtx = new LoadContext(metaClass);
+            loadCtx.setLoadDynamicAttributes(Boolean.TRUE.equals(dynamicAttributes));
             loadCtx.setUseSecurityConstraints(true);
             LoadContext.Query query = new LoadContext.Query(queryStr);
             loadCtx.setQuery(query);

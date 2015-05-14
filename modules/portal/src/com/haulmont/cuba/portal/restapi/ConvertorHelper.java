@@ -7,11 +7,14 @@ package com.haulmont.cuba.portal.restapi;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author chevelev
@@ -26,6 +29,21 @@ public class ConvertorHelper {
 
     public static List<MetaProperty> getOrderedProperties(MetaClass metaClass) {
         List<MetaProperty> result = new ArrayList<MetaProperty>(metaClass.getProperties());
+        Collections.sort(result, PROPERTY_COMPARATOR);
+        return result;
+    }
+
+    public static List<MetaProperty> getActualMetaProperties(MetaClass metaClass, Entity entity) {
+        List<MetaProperty> result = new ArrayList<MetaProperty>(metaClass.getProperties());
+        if (entity instanceof BaseGenericIdEntity
+                && ((BaseGenericIdEntity) entity).getDynamicAttributes() != null) {
+            Collection<CategoryAttribute> dynamicAttributes
+                    = AppBeans.get(DynamicAttributes.NAME, DynamicAttributes.class).getAttributesForMetaClass(metaClass);
+            for (CategoryAttribute dynamicAttribute : dynamicAttributes) {
+                result.add(DynamicAttributesUtils.getMetaPropertyPath(metaClass, dynamicAttribute).getMetaProperty());
+            }
+        }
+
         Collections.sort(result, PROPERTY_COMPARATOR);
         return result;
     }
