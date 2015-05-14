@@ -725,8 +725,9 @@ create table SYS_CATEGORY_ATTR (
     DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
+    CATEGORY_ENTITY_TYPE varchar(4000),
     NAME varchar(255),
-    CODE varchar(50),
+    CODE varchar(50) not null,
     CATEGORY_ID uniqueidentifier,
     IS_ENTITY tinyint,
     DATA_TYPE varchar(200),
@@ -749,7 +750,7 @@ create table SYS_CATEGORY_ATTR (
 )^
 
 create clustered index IDX_SYS_CATEGORY_ATTR_CATEGORY on SYS_CATEGORY_ATTR (CATEGORY_ID)^
-
+create unique index IDX_CAT_ATTR_ENT_TYPE_AND_CODE on SYS_CATEGORY_ATTR (CATEGORY_ENTITY_TYPE, CODE, DELETE_TS);
 -------------------------------------------------------------------------------------------------------------
 
 create table SYS_ATTR_VALUE (

@@ -669,8 +669,9 @@ create table SYS_CATEGORY_ATTR(
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
     --
+    CATEGORY_ENTITY_TYPE varchar(4000),
     NAME varchar(255),
-    CODE varchar(50),
+    CODE varchar(50) not null,
     CATEGORY_ID varchar(36),
     IS_ENTITY boolean,
     DATA_TYPE varchar(200),
@@ -690,6 +691,8 @@ create table SYS_CATEGORY_ATTR(
     --
     primary key (ID)
 )^
+
+create unique index IDX_CAT_ATTR_ENT_TYPE_AND_CODE on SYS_CATEGORY_ATTR (CATEGORY_ENTITY_TYPE, CODE, DELETE_TS);
 
 alter table SYS_CATEGORY_ATTR add constraint SYS_CATEGORY_ATTR_CATEGORY_ID foreign key (CATEGORY_ID) references SYS_CATEGORY(ID)^
 

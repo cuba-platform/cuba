@@ -56,8 +56,9 @@ create table SYS_CATEGORY_ATTR (
     UPDATED_BY varchar2(50),
     DELETE_TS timestamp,
     DELETED_BY varchar2(50),
+    CATEGORY_ENTITY_TYPE varchar(4000),
     NAME varchar2(255),
-    CODE varchar2(50),
+    CODE varchar2(50) not null,
     CATEGORY_ID varchar2(32),
     IS_ENTITY char(1),
     DATA_TYPE varchar2(200),
@@ -77,6 +78,7 @@ create table SYS_CATEGORY_ATTR (
     primary key(ID)
 )^
 create index IDX_SYS_CATEGORY_ATTR_CATEGORY on SYS_CATEGORY_ATTR(CATEGORY_ID)^
+create unique index IDX_CAT_ATTR_ENT_TYPE_AND_CODE on SYS_CATEGORY_ATTR (CATEGORY_ENTITY_TYPE, CODE, DELETE_TS);
 
 create table SYS_CONFIG (
     ID varchar2(32) not null,

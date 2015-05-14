@@ -6,6 +6,7 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.annotations.NamePattern;
+import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.persistence.Persistent;
@@ -18,6 +19,7 @@ import java.util.*;
 @Table(name = "SYS_CATEGORY_ATTR")
 @NamePattern("%s|name")
 @SystemLevel
+@Listeners("report_CategoryAttributeListener")
 public class CategoryAttribute extends StandardEntity {
 
     private static final long serialVersionUID = -6959392628534815752L;
@@ -28,6 +30,9 @@ public class CategoryAttribute extends StandardEntity {
     @ManyToOne
     @JoinColumn(name = "CATEGORY_ID")
     private Category category;
+
+    @Column(name = "CATEGORY_ENTITY_TYPE")
+    private String categoryEntityType;
 
     @Column(name = "NAME", length = NAME_FIELD_LENGTH, nullable = false)
     private String name;
@@ -236,6 +241,14 @@ public class CategoryAttribute extends StandardEntity {
 
     public void setTargetScreens(String targetScreens) {
         this.targetScreens = targetScreens;
+    }
+
+    public String getCategoryEntityType() {
+        return categoryEntityType;
+    }
+
+    public void setCategoryEntityType(String categoryEntityType) {
+        this.categoryEntityType = categoryEntityType;
     }
 
     public Set<String> targetScreensSet(){
