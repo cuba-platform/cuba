@@ -16,9 +16,12 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.locks.Lock;
 
 /**
+ * Provides ability to cache any abstract object in client application
+ *
  * @author degtyarjov
  * @version $Id$
  */
+
 @ManagedBean(ClientCacheManager.NAME)
 public class ClientCacheManager {
     public static final String NAME = "cuba_ClientCacheManager";
@@ -41,6 +44,9 @@ public class ClientCacheManager {
         }
     }
 
+    /**
+     * Get cached object by its name
+     */
     @Nullable
     @SuppressWarnings("unchecked")
     public <T> T getCached(String name) {
@@ -74,6 +80,9 @@ public class ClientCacheManager {
         return null;
     }
 
+    /**
+     * Add new cached object (described in cachingStrategy)
+     */
     public void addCachedObject(String key, CachingStrategy cachingStrategy) {
         Lock writeLock = cachingStrategy.lock().writeLock();
         try {

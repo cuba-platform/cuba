@@ -18,6 +18,10 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
+ * Each time dynamic attributes cache is used, the strategy initiate check of cache validity
+ * The check is performed in separate thread
+ * So applied changes in dynamic attributes structure will be visible after 10 seconds
+ *
  * @author degtyarjov
  * @version $Id$
  */
