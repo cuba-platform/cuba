@@ -5,15 +5,25 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.gui.components.SourceCodeEditor;
 import com.haulmont.cuba.gui.components.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.gui.components.autocomplete.Suggester;
-import com.haulmont.cuba.gui.components.SourceCodeEditor;
+import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+
+import javax.swing.*;
+import javax.swing.text.Document;
+import java.awt.*;
+import java.awt.event.KeyEvent;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class DesktopSourceCodeEditor extends DesktopResizableTextArea implements SourceCodeEditor {
+public class DesktopSourceCodeEditor extends DesktopAbstractTextField<RSyntaxTextArea> implements SourceCodeEditor {
+
+    protected JComponent composition;
 
     protected Suggester suggester;
     protected Mode mode;
@@ -23,8 +33,39 @@ public class DesktopSourceCodeEditor extends DesktopResizableTextArea implements
     protected boolean highlightActiveLine = true;
 
     @Override
-    protected boolean isTabTraversal() {
-        return false;
+    protected RSyntaxTextArea createTextComponentImpl() {
+        RSyntaxTextArea impl = new RSyntaxTextArea();
+
+        int height = (int) impl.getPreferredSize().getHeight();
+        impl.setMinimumSize(new Dimension(0, height));
+
+        composition = new JScrollPane(impl);
+        composition.setPreferredSize(new Dimension(150, height));
+        composition.setMinimumSize(new Dimension(0, height));
+
+        doc.putProperty("filterNewlines", false);
+
+        return impl;
+    }
+
+    @Override
+    public JComponent getComposition() {
+        return composition;
+    }
+
+    @Override
+    protected TextFieldListener createTextListener() {
+        return new TextFieldListener() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                updateMissingValueState();
+            }
+        };
+    }
+
+    @Override
+    protected Document createDocument() {
+        return new RSyntaxDocument(SyntaxConstants.SYNTAX_STYLE_NONE);
     }
 
     @Override
@@ -35,6 +76,40 @@ public class DesktopSourceCodeEditor extends DesktopResizableTextArea implements
     @Override
     public void setMode(Mode mode) {
         this.mode = mode;
+
+        switch (mode) {
+            case Groovy:
+                impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_GROOVY);
+                break;
+
+            case HTML:
+                impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HTML);
+                break;
+
+            case Java:
+                impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+                break;
+
+            case JavaScript:
+                impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
+                break;
+
+            case Properties:
+                impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_PROPERTIES_FILE);
+                break;
+
+            case SQL:
+                impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_SQL);
+                break;
+
+            case XML:
+                impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
+                break;
+
+            case Text:
+                impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE);
+                break;
+        }
     }
 
     @Override
@@ -91,4 +166,5 @@ public class DesktopSourceCodeEditor extends DesktopResizableTextArea implements
     public boolean isHighlightActiveLine() {
         return highlightActiveLine;
     }
+
 }

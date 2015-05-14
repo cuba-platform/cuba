@@ -141,12 +141,12 @@ public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> impleme
 
     @Override
     public int getMaxLength() {
-        return doc.getMaxLength();
+        return ((TextComponentDocument) doc).getMaxLength();
     }
 
     @Override
     public void setMaxLength(int value) {
-        doc.setMaxLength(value);
+        ((TextComponentDocument) doc).setMaxLength(value);
     }
 
     @Override

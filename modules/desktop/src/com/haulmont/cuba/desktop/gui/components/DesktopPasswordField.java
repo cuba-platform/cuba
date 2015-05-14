@@ -33,7 +33,7 @@ public class DesktopPasswordField extends DesktopAbstractTextField<JPasswordFiel
     @Override
     public void setMaxLength(int value) {
         maxLength = value;
-        doc.setMaxLength(value);
+        ((TextComponentDocument) doc).setMaxLength(value);
     }
 
     private class PasswordFlushableField extends JPasswordField implements Flushable {

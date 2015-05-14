@@ -38,7 +38,7 @@ public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> i
     @Override
     public void setMaxLength(int value) {
         maxLength = value;
-        doc.setMaxLength(value);
+        ((TextComponentDocument) doc).setMaxLength(value);
     }
 
     @Override
