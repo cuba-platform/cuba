@@ -3,7 +3,7 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd">
+<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd">
     <layout>
         <hbox spacing="true" stylename="cuba-edit-window-actions">
             <button id="windowCommit" action="windowCommit" icon="icons/ok.png"/>

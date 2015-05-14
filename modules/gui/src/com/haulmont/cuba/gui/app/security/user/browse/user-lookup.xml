@@ -3,14 +3,13 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
         class="com.haulmont.cuba.gui.app.security.user.browse.UserLookup"
         lookupComponent="usersTable"
         caption="msg://caption"
         messagesPack="com.haulmont.cuba.gui.app.security.user.browse"
-        focusComponent="genericFilter"
-        >
+        focusComponent="genericFilter">
+
     <dsContext>
         <collectionDatasource
                 id="usersDs"

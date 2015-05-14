@@ -4,7 +4,7 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<screen-config xmlns="http://schemas.haulmont.com/cuba/5.4/screens.xsd">
+<screen-config xmlns="http://schemas.haulmont.com/cuba/5.5/screens.xsd">
 
     <include file="/com/haulmont/cuba/gui/cuba-screens.xml"/>
 

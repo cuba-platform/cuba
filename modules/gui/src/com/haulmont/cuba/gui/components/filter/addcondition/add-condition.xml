@@ -1,4 +1,4 @@
-<window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
         class="com.haulmont.cuba.gui.components.filter.addcondition.AddConditionWindow"
         messagesPack="com.haulmont.cuba.gui.components.filter.addcondition"
         caption="msg://AddCondition.caption">

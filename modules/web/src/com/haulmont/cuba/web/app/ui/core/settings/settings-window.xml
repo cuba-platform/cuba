@@ -4,7 +4,7 @@
   -->
 
 <window
-        xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
         class="com.haulmont.cuba.web.app.ui.core.settings.SettingsWindow"
         messagesPack="com.haulmont.cuba.web.app.ui.core.settings"
         focusComponent="appThemeField"
