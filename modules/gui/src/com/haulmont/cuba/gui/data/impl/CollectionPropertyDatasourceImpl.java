@@ -436,20 +436,21 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         checkState();
         Collection<T> collection = __getCollection();
         if (collection != null) {
-            Collection<Object> collectionItems = new ArrayList<Object>(collection);
+            Collection<T> collectionItems = new ArrayList<>(collection);
             doNotModify = true;
             try {
                 // Clear collection
                 collection.clear();
                 // Notify listeners
-                for (Object obj : collectionItems) {
-                    T item = (T) obj;
+                for (T item : collectionItems) {
+                    if (metaProperty.getRange().getCardinality() == Range.Cardinality.MANY_TO_ONE) {
+                        MetaProperty inverseProperty = metaProperty.getInverse();
+                        if (inverseProperty == null) {
+                            throw new UnsupportedOperationException("No inverse property for " + metaProperty);
+                        }
 
-                    MetaProperty inverseProperty = metaProperty.getInverse();
-                    if (inverseProperty == null)
-                        throw new UnsupportedOperationException("No inverse property for " + metaProperty);
-
-                    item.setValue(inverseProperty.getName(), null);
+                        item.setValue(inverseProperty.getName(), null);
+                    }
 
                     // detach listener only after setting value to the link property
                     detachListener(item);
