@@ -59,7 +59,7 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
                     && ((BelongToFrame) childComponent).getFrame() == null) {
                 ((BelongToFrame) childComponent).setFrame(frame);
             } else {
-                frame.registerComponent(childComponent);
+                attachToFrame(childComponent);
             }
         }
 
@@ -74,6 +74,10 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
         }
 
         childComponent.setParent(this);
+    }
+
+    protected void attachToFrame(Component childComponent) {
+        frame.registerComponent(childComponent);
     }
 
     @Override

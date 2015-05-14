@@ -107,7 +107,7 @@ public abstract class DesktopAbstractBox
                     && ((BelongToFrame) component).getFrame() == null) {
                 ((BelongToFrame) component).setFrame(frame);
             } else {
-                frame.registerComponent(component);
+                attachToFrame(component);
             }
         }
 
@@ -132,6 +132,10 @@ public abstract class DesktopAbstractBox
         requestContainerUpdate();
 
         requestRepaint();
+    }
+
+    protected void attachToFrame(Component component) {
+        frame.registerComponent(component);
     }
 
     protected int getActualIndex(int originalIndex) {

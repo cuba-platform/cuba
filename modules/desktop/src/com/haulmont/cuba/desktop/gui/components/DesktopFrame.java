@@ -90,6 +90,11 @@ public class DesktopFrame
     }
 
     @Override
+    protected void attachToFrame(Component component) {
+        registerComponent(component);
+    }
+
+    @Override
     public void registerComponent(Component component) {
         if (component.getId() != null)
             allComponents.put(component.getId(), component);
