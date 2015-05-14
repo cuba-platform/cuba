@@ -98,8 +98,8 @@ public class RuntimePropsDatasourceImpl
         Map<String, CategoryAttributeValue> dynamicAttributes = baseGenericIdEntity.getDynamicAttributes();
         Preconditions.checkNotNullArgument(dynamicAttributes, "Dynamic attributes should be loaded explicitly");
 
-        if (entity instanceof CategorizedEntity) {
-            category = ((CategorizedEntity) entity).getCategory();
+        if (entity instanceof Categorized) {
+            category = ((Categorized) entity).getCategory();
         }
         if (!initializedBefore && category == null) {
             category = getDefaultCategory(entity);

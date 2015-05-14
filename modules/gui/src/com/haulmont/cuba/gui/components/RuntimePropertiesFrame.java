@@ -40,7 +40,7 @@ import static com.haulmont.cuba.gui.components.PickerField.LookupAction;
 
 /**
  * Universal frame for editing dynamic attributes
- * of any {@link com.haulmont.cuba.core.entity.CategorizedEntity} subclass.
+ * of any {@link com.haulmont.cuba.core.entity.Categorized} implementations.
  *
  * @author devyatkin
  * @version $Id$

@@ -13,12 +13,15 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
 /**
+ * Base class for entities with fixed category
+ * Please consider  implementation of  {@link com.haulmont.cuba.core.entity.Categorized} instead of extension of this class
+ *
  * <p>$Id$</p>
  *
  * @author devyatkin
  */
 @MappedSuperclass
-public abstract class CategorizedEntity extends BaseUuidEntity {
+public abstract class CategorizedEntity extends BaseUuidEntity implements Categorized {
 
     private static final long serialVersionUID = -4359158051274491070L;
 
@@ -27,10 +30,12 @@ public abstract class CategorizedEntity extends BaseUuidEntity {
     @OnDeleteInverse(DeletePolicy.DENY)
     protected Category category;
 
+    @Override
     public Category getCategory() {
         return category;
     }
 
+    @Override
     public void setCategory(Category category) {
         this.category = category;
     }

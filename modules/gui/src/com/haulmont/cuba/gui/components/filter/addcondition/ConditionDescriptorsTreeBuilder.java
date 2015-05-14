@@ -11,7 +11,7 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.entity.CategorizedEntity;
+import com.haulmont.cuba.core.entity.Categorized;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Filter;
@@ -137,7 +137,7 @@ public class ConditionDescriptorsTreeBuilder {
             rootNodes.add(new Node<AbstractConditionDescriptor>(new CustomConditionCreator(filterComponentName, datasource)));
         }
 
-        if (CategorizedEntity.class.isAssignableFrom(datasource.getMetaClass().getJavaClass())) {
+        if (Categorized.class.isAssignableFrom(datasource.getMetaClass().getJavaClass())) {//todo eude not only for categorized?
             rootNodes.add(new Node<AbstractConditionDescriptor>(new DynamicAttributesConditionCreator(filterComponentName, datasource)));
         }
 

@@ -10,7 +10,7 @@ import com.haulmont.chile.core.datatypes.impl.UUIDDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.entity.CategorizedEntity;
+import com.haulmont.cuba.core.entity.Categorized;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -154,7 +154,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         }
         createEmbeddedFields(meta, item);
 
-        boolean categorizedEntity = item instanceof CategorizedEntity;
+        boolean categorizedEntity = item instanceof Categorized;
 
         if (datasource == null) {
             datasource = new DatasourceImpl<>();
