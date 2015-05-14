@@ -78,16 +78,18 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
     }
 
     private void onDockButtonClick() {
+        String newPosition = position;
+
         if (dockMode == SplitPanelDockMode.LEFT) {
             if (dockButtonState == DockButtonState.LEFT) {
                 defaultPosition = position;
-                position = "0px";
+                newPosition = "0px";
             } else if (defaultPosition != null) {
-                position = defaultPosition;
+                newPosition = defaultPosition;
             }
         } // todo artamonov SplitPanelDockMode.RIGHT
 
-        setSplitPosition(position);
+        setSplitPosition(newPosition);
         fireEvent(new SplitterMoveHandler.SplitterMoveEvent(this));
     }
 
