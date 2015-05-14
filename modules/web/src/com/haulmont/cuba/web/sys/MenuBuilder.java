@@ -177,7 +177,6 @@ public class MenuBuilder {
 
     protected void assignTestId(MenuBar.MenuItem menuItem, MenuItem conf) {
         if (menuBar.getId() != null && menuBar.getCubaId() != null && !conf.isSeparator()) {
-            AppWindow appWindow = AppUI.getCurrent().getAppWindow();
             TestIdManager testIdManager = appWindow.getAppUI().getTestIdManager();
 
             String id = testIdManager.normalize(conf.getId());
