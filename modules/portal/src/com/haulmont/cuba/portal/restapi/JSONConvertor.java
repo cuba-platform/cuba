@@ -28,6 +28,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -184,11 +185,10 @@ public class JSONConvertor implements Convertor {
     }
 
     @Override
-    public CommitRequest parseCommitRequest(String content, boolean commitDynamicAttributes) {
+    public CommitRequest parseCommitRequest(String content) {
         try {
             JSONObject jsonContent = new JSONObject(content);
             CommitRequest result = new CommitRequest();
-            result.setCommitDynamicAttributes(commitDynamicAttributes);
 
             if (jsonContent.has("commitInstances")) {
                 JSONArray entitiesNodeList = jsonContent.getJSONArray("commitInstances");
@@ -236,51 +236,54 @@ public class JSONConvertor implements Convertor {
 
     protected void asJavaTree(CommitRequest commitRequest, Entity entity, MetaClass metaClass, JSONObject json)
             throws JSONException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException, IntrospectionException, ParseException {
-        if (commitRequest.isCommitDynamicAttributes()) {
-            ConvertorHelper.fetchDynamicAttributes(entity);
-        }
-
         Iterator iter = json.keys();
         while (iter.hasNext()) {
-            String key = (String) iter.next();
+            String propertyName = (String) iter.next();
 
-            if ("id".equals(key)) {
+
+            if ("id".equals(propertyName)) {
                 // id was parsed already
                 continue;
             }
 
             //version is readonly property
-            if ("version".equals(key))
+            if ("version".equals(propertyName))
                 continue;
 
-            MetaPropertyPath metaPropertyPath = metadata.getTools().resolveMetaPropertyPath(metaClass, key);
-            Preconditions.checkNotNullArgument(metaPropertyPath, "Could not resolve property '%s' in '%s'", key, metaClass);
+            MetaPropertyPath metaPropertyPath = metadata.getTools().resolveMetaPropertyPath(metaClass, propertyName);
+            Preconditions.checkNotNullArgument(metaPropertyPath, "Could not resolve property '%s' in '%s'", propertyName, metaClass);
             MetaProperty property = metaPropertyPath.getMetaProperty();
 
             if (!attrModifyPermitted(metaClass, property.getName()))
                 continue;
 
-            if (json.get(key) == null) {
-                setField(entity, key, new Object[]{null});
+            if (entity instanceof BaseGenericIdEntity
+                    && DynamicAttributesUtils.isDynamicAttribute(propertyName)
+                    && ((BaseGenericIdEntity) entity).getDynamicAttributes() == null) {
+                ConvertorHelper.fetchDynamicAttributes(entity);
+            }
+
+            if (json.get(propertyName) == null) {
+                setField(entity, propertyName, null);
                 continue;
             }
 
             switch (property.getType()) {
                 case DATATYPE:
                     String value = null;
-                    if (!json.isNull(key)) {
-                        value = json.get(key).toString();
+                    if (!json.isNull(propertyName)) {
+                        value = json.get(propertyName).toString();
                     }
 
-                    setField(entity, key, property.getRange().asDatatype().parse(value));
+                    setField(entity, propertyName, property.getRange().asDatatype().parse(value));
                     break;
                 case ENUM:
-                    setField(entity, key, property.getRange().asEnumeration().parse(json.getString(key)));
+                    setField(entity, propertyName, property.getRange().asEnumeration().parse(json.getString(propertyName)));
                     break;
                 case COMPOSITION:
                 case ASSOCIATION:
-                    if ("null".equals(json.get(key).toString())) {
-                        setField(entity, key, null);
+                    if ("null".equals(json.get(propertyName).toString())) {
+                        setField(entity, propertyName, null);
                         break;
                     }
                     MetaClass propertyMetaClass = propertyMetaClass(property);
@@ -289,7 +292,7 @@ public class JSONConvertor implements Convertor {
                         break;
 
                     if (!property.getRange().getCardinality().isMany()) {
-                        JSONObject jsonChild = json.getJSONObject(key);
+                        JSONObject jsonChild = json.getJSONObject(propertyName);
                         Entity child;
                         MetaClass childMetaClass;
 
@@ -304,7 +307,7 @@ public class JSONConvertor implements Convertor {
                                     throw new IllegalArgumentException("Unable to parse ID: " + id);
                                 BaseUuidEntity ref = loadInfo.getMetaClass().createInstance();
                                 ref.setValue("id", loadInfo.getId());
-                                setField(entity, key, ref);
+                                setField(entity, propertyName, ref);
                                 break;
                             }
 
@@ -316,13 +319,13 @@ public class JSONConvertor implements Convertor {
                             child = childMetaClass.createInstance();
                         }
                         asJavaTree(commitRequest, child, childMetaClass, jsonChild);
-                        setField(entity, key, child);
+                        setField(entity, propertyName, child);
                     } else {
-                        JSONArray jsonArray = json.getJSONArray(key);
+                        JSONArray jsonArray = json.getJSONArray(propertyName);
                         Collection<Object> coll = property.getRange().isOrdered()
                                 ? new ArrayList<>()
                                 : new HashSet<>();
-                        setField(entity, key, coll);
+                        setField(entity, propertyName, coll);
 
                         for (int i = 0; i < jsonArray.length(); i++) {
                             Object arrayValue = jsonArray.get(i);

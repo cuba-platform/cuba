@@ -153,7 +153,7 @@ public class XMLConvertor implements Convertor {
     }
 
     @Override
-    public CommitRequest parseCommitRequest(String content, boolean commitDynamicAttributes) {
+    public CommitRequest parseCommitRequest(String content) {
         try {
             DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
             DOMImplementationLS lsImpl = (DOMImplementationLS) registry.getDOMImplementation("LS");

@@ -13,6 +13,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -165,10 +166,9 @@ public class XMLConvertor2 implements Convertor {
     }
 
     @Override
-    public CommitRequest parseCommitRequest(String content, boolean commitDynamicAttributes) {
+    public CommitRequest parseCommitRequest(String content) {
         try {
             CommitRequest commitRequest = new CommitRequest();
-            commitRequest.setCommitDynamicAttributes(commitDynamicAttributes);
 
             Document document = Dom4j.readDocument(content);
             Element rootElement = document.getRootElement();
@@ -353,12 +353,7 @@ public class XMLConvertor2 implements Convertor {
                 entity.setValue("id", loadInfo.getId());
             }
 
-            if (commitRequest != null && commitRequest.isCommitDynamicAttributes()) {
-                ConvertorHelper.fetchDynamicAttributes(entity);
-            }
-
             MetaClass metaClass = entity.getMetaClass();
-
             List propertyEls = instanceEl.elements();
             for (Object el : propertyEls) {
                 Element propertyEl = (Element) el;
@@ -379,6 +374,12 @@ public class XMLConvertor2 implements Convertor {
                 if (Boolean.parseBoolean(propertyEl.attributeValue("null"))) {
                     entity.setValue(propertyName, null);
                     continue;
+                }
+
+                if (entity instanceof BaseGenericIdEntity
+                        && DynamicAttributesUtils.isDynamicAttribute(propertyName)
+                        && ((BaseGenericIdEntity) entity).getDynamicAttributes() == null) {
+                    ConvertorHelper.fetchDynamicAttributes(entity);
                 }
 
                 String stringValue = propertyEl.getText();

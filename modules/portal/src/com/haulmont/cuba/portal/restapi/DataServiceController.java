@@ -207,7 +207,6 @@ public class DataServiceController {
     @RequestMapping(value = "/api/commit", method = RequestMethod.POST)
     public void commit(@RequestParam(value = "s") String sessionId,
                        @RequestHeader(value = "Content-Type") MimeType contentType,
-                       @RequestParam(value = "dynamicAttributes", required = false) Boolean dynamicAttributes,
                        @RequestBody String requestContent,
                        HttpServletRequest request,
                        HttpServletResponse response) throws
@@ -222,7 +221,7 @@ public class DataServiceController {
 
             Convertor convertor = conversionFactory.getConvertor(contentType);
 
-            CommitRequest commitRequest = convertor.parseCommitRequest(requestContent, Boolean.TRUE.equals(dynamicAttributes));
+            CommitRequest commitRequest = convertor.parseCommitRequest(requestContent);
 
             Collection commitInstances = commitRequest.getCommitInstances();
             Set<String> newInstanceIds = commitRequest.getNewInstanceIds();
