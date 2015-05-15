@@ -33,7 +33,7 @@ public class ParamWrapper implements Component.HasValue {
 
     protected Component parent;
 
-    protected ParamWrapper(AbstractCondition condition, Param param) {
+    public ParamWrapper(AbstractCondition condition, Param param) {
         this.condition = condition;
         this.param = param;
     }
