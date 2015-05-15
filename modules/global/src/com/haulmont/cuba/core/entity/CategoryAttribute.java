@@ -6,6 +6,7 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.annotations.NamePattern;
+import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.commons.lang.StringUtils;
@@ -44,7 +45,7 @@ public class CategoryAttribute extends StandardEntity {
     private String enumeration;
 
     @Column(name = "DATA_TYPE")
-    private String dataType;
+    private String dataType = PropertyType.STRING.name();
 
     @Column(name = "IS_ENTITY")
     private Boolean isEntity;

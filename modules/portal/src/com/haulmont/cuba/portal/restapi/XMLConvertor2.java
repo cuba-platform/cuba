@@ -6,10 +6,12 @@
 package com.haulmont.cuba.portal.restapi;
 
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
@@ -163,9 +165,11 @@ public class XMLConvertor2 implements Convertor {
     }
 
     @Override
-    public CommitRequest parseCommitRequest(String content) {
+    public CommitRequest parseCommitRequest(String content, boolean commitDynamicAttributes) {
         try {
             CommitRequest commitRequest = new CommitRequest();
+            commitRequest.setCommitDynamicAttributes(commitDynamicAttributes);
+
             Document document = Dom4j.readDocument(content);
             Element rootElement = document.getRootElement();
 
@@ -348,18 +352,28 @@ public class XMLConvertor2 implements Convertor {
                 entity = createEmptyInstance(loadInfo);
                 entity.setValue("id", loadInfo.getId());
             }
+
+            if (commitRequest != null && commitRequest.isCommitDynamicAttributes()) {
+                ConvertorHelper.fetchDynamicAttributes(entity);
+            }
+
             MetaClass metaClass = entity.getMetaClass();
 
             List propertyEls = instanceEl.elements();
             for (Object el : propertyEls) {
                 Element propertyEl = (Element) el;
                 String propertyName = propertyEl.attributeValue("name");
-                MetaProperty property = metaClass.getPropertyNN(propertyName);
+
+                MetaPropertyPath metaPropertyPath = metadata.getTools().resolveMetaPropertyPath(metaClass, propertyName);
+                Preconditions.checkNotNullArgument(metaPropertyPath, "Could not resolve property '%s' in '%s'", propertyName, metaClass);
+                MetaProperty property = metaPropertyPath.getMetaProperty();
 
                 if (commitRequest != null && !attrModifyPermitted(metaClass, propertyName))
                     continue;
 
-                if (commitRequest != null && metadataTools.isTransient(property))
+                if (commitRequest != null
+                        && metadataTools.isTransient(property)
+                        && !DynamicAttributesUtils.isDynamicAttribute(propertyName))
                     continue;
 
                 if (Boolean.parseBoolean(propertyEl.attributeValue("null"))) {

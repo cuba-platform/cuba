@@ -24,6 +24,7 @@ public class CommitRequest {
     private Set<String> newInstanceIds = new HashSet<>();
     private Map<String, InstanceRef> instanceRefs = new HashMap<>();
     private Set<String> commitIds = new HashSet<>();
+    private boolean commitDynamicAttributes = false;
 
     public Collection getCommitInstances() {
         return commitInstances == null ? Collections.emptyList() : commitInstances;
@@ -119,5 +120,13 @@ public class CommitRequest {
         } else {
             throw new UnsupportedOperationException("Cannot generate ID for " + entityName);
         }
+    }
+
+    public boolean isCommitDynamicAttributes() {
+        return commitDynamicAttributes;
+    }
+
+    public void setCommitDynamicAttributes(boolean commitDynamicAttributes) {
+        this.commitDynamicAttributes = commitDynamicAttributes;
     }
 }

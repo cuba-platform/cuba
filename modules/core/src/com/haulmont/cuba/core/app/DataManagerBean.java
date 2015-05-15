@@ -102,9 +102,10 @@ public class DataManagerBean implements DataManager {
 
             if (result != null && context.getView() != null) {
                 em.fetch(result, context.getView());
-                if (result instanceof BaseGenericIdEntity && context.getLoadDynamicAttributes()) {
-                    fetchDynamicAttributes(Collections.singletonList((BaseGenericIdEntity) result));
-                }
+            }
+
+            if (result instanceof BaseGenericIdEntity && context.getLoadDynamicAttributes()) {
+                fetchDynamicAttributes(Collections.singletonList((BaseGenericIdEntity) result));
             }
 
             tx.commit();
@@ -416,6 +417,10 @@ public class DataManagerBean implements DataManager {
                         ((AbstractInstance) entity).setValue(property.getName(), refEntity, false);
                     }
                 }
+            }
+
+            if (entity instanceof BaseGenericIdEntity) {
+                storeDynamicAttributes((BaseGenericIdEntity) entity);
             }
 
             if (entityLoadInfoBuilder.contains(newInstances, entity)) {

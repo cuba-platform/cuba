@@ -51,7 +51,7 @@ public interface Convertor {
     /**
      * Converts a string representation of {@code CommitContext} to {@code CommitRequest}
      */
-    CommitRequest parseCommitRequest(String content);
+    CommitRequest parseCommitRequest(String content, boolean commitDynamicAttributes);
 
     /**
      * Converts a string representation of service invocation request to {@code ServiceRequest} object

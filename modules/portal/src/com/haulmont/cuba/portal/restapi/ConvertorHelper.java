@@ -7,12 +7,15 @@ package com.haulmont.cuba.portal.restapi;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
+import com.haulmont.cuba.core.entity.CategoryAttributeValue;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.LoadContext;
 
 import java.util.*;
 
@@ -46,5 +49,19 @@ public class ConvertorHelper {
 
         Collections.sort(result, PROPERTY_COMPARATOR);
         return result;
+    }
+
+    public static void fetchDynamicAttributes(Entity entity){
+        if (entity instanceof BaseGenericIdEntity) {
+            LoadContext loadContext = new LoadContext(entity.getMetaClass());
+            loadContext.setId(entity.getId()).setLoadDynamicAttributes(true);
+            BaseGenericIdEntity reloaded = AppBeans.get(DataService.NAME, DataService.class)
+                    .load(loadContext);
+            if (reloaded != null) {
+                ((BaseGenericIdEntity) entity).setDynamicAttributes(reloaded.getDynamicAttributes());
+            } else {
+                ((BaseGenericIdEntity) entity).setDynamicAttributes(new HashMap<String, CategoryAttributeValue>());
+            }
+        }
     }
 }

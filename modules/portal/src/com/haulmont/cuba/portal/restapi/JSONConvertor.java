@@ -21,10 +21,12 @@
 
 package com.haulmont.cuba.portal.restapi;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
@@ -40,7 +42,6 @@ import org.springframework.util.ClassUtils;
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.*;
@@ -50,7 +51,6 @@ import java.util.*;
  * @version $Id$
  */
 public class JSONConvertor implements Convertor {
-
     public static final String MIME_STR = "application/json;charset=UTF-8";
     public static final String TYPE_JSON = "json";
     public static final MimeType MIME_TYPE_JSON;
@@ -184,10 +184,11 @@ public class JSONConvertor implements Convertor {
     }
 
     @Override
-    public CommitRequest parseCommitRequest(String content) {
+    public CommitRequest parseCommitRequest(String content, boolean commitDynamicAttributes) {
         try {
             JSONObject jsonContent = new JSONObject(content);
             CommitRequest result = new CommitRequest();
+            result.setCommitDynamicAttributes(commitDynamicAttributes);
 
             if (jsonContent.has("commitInstances")) {
                 JSONArray entitiesNodeList = jsonContent.getJSONArray("commitInstances");
@@ -233,8 +234,12 @@ public class JSONConvertor implements Convertor {
         return result;
     }
 
-    protected void asJavaTree(CommitRequest commitRequest, Object bean, MetaClass metaClass, JSONObject json)
+    protected void asJavaTree(CommitRequest commitRequest, Entity entity, MetaClass metaClass, JSONObject json)
             throws JSONException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException, IntrospectionException, ParseException {
+        if (commitRequest.isCommitDynamicAttributes()) {
+            ConvertorHelper.fetchDynamicAttributes(entity);
+        }
+
         Iterator iter = json.keys();
         while (iter.hasNext()) {
             String key = (String) iter.next();
@@ -248,13 +253,15 @@ public class JSONConvertor implements Convertor {
             if ("version".equals(key))
                 continue;
 
-            MetaProperty property = metaClass.getPropertyNN(key);
+            MetaPropertyPath metaPropertyPath = metadata.getTools().resolveMetaPropertyPath(metaClass, key);
+            Preconditions.checkNotNullArgument(metaPropertyPath, "Could not resolve property '%s' in '%s'", key, metaClass);
+            MetaProperty property = metaPropertyPath.getMetaProperty();
 
             if (!attrModifyPermitted(metaClass, property.getName()))
                 continue;
 
             if (json.get(key) == null) {
-                setField(bean, key, new Object[]{null});
+                setField(entity, key, new Object[]{null});
                 continue;
             }
 
@@ -265,15 +272,15 @@ public class JSONConvertor implements Convertor {
                         value = json.get(key).toString();
                     }
 
-                    setField(bean, key, property.getRange().asDatatype().parse(value));
+                    setField(entity, key, property.getRange().asDatatype().parse(value));
                     break;
                 case ENUM:
-                    setField(bean, key, property.getRange().asEnumeration().parse(json.getString(key)));
+                    setField(entity, key, property.getRange().asEnumeration().parse(json.getString(key)));
                     break;
                 case COMPOSITION:
                 case ASSOCIATION:
                     if ("null".equals(json.get(key).toString())) {
-                        setField(bean, key, null);
+                        setField(entity, key, null);
                         break;
                     }
                     MetaClass propertyMetaClass = propertyMetaClass(property);
@@ -283,7 +290,7 @@ public class JSONConvertor implements Convertor {
 
                     if (!property.getRange().getCardinality().isMany()) {
                         JSONObject jsonChild = json.getJSONObject(key);
-                        Object child;
+                        Entity child;
                         MetaClass childMetaClass;
 
                         if (jsonChild.has("id")) {
@@ -297,7 +304,7 @@ public class JSONConvertor implements Convertor {
                                     throw new IllegalArgumentException("Unable to parse ID: " + id);
                                 BaseUuidEntity ref = loadInfo.getMetaClass().createInstance();
                                 ref.setValue("id", loadInfo.getId());
-                                setField(bean, key, ref);
+                                setField(entity, key, ref);
                                 break;
                             }
 
@@ -309,13 +316,13 @@ public class JSONConvertor implements Convertor {
                             child = childMetaClass.createInstance();
                         }
                         asJavaTree(commitRequest, child, childMetaClass, jsonChild);
-                        setField(bean, key, child);
+                        setField(entity, key, child);
                     } else {
                         JSONArray jsonArray = json.getJSONArray(key);
                         Collection<Object> coll = property.getRange().isOrdered()
                                 ? new ArrayList<>()
                                 : new HashSet<>();
-                        setField(bean, key, coll);
+                        setField(entity, key, coll);
 
                         for (int i = 0; i < jsonArray.length(); i++) {
                             Object arrayValue = jsonArray.get(i);
@@ -325,7 +332,7 @@ public class JSONConvertor implements Convertor {
                                 //assuming no simple type here
                                 JSONObject jsonChild = (JSONObject) arrayValue;
                                 InstanceRef ref = commitRequest.parseInstanceRefAndRegister(jsonChild.getString("id"));
-                                Object child = ref.getInstance();
+                                Entity child = ref.getInstance();
                                 coll.add(child);
                                 asJavaTree(commitRequest, child, ref.getMetaClass(), jsonChild);
                             }
@@ -474,9 +481,9 @@ public class JSONConvertor implements Convertor {
         return instance;
     }
 
-    protected void setField(Object bean, String field, Object value)
+    protected void setField(Entity bean, String field, Object value)
             throws IllegalAccessException, InvocationTargetException, IntrospectionException {
-        new PropertyDescriptor(field, bean.getClass()).getWriteMethod().invoke(bean, value);
+        bean.setValue(field, value);
     }
 
     @Override

@@ -40,11 +40,9 @@ import org.w3c.dom.ls.LSParserFilter;
 import org.w3c.dom.traversal.NodeFilter;
 
 import javax.activation.MimeType;
-import javax.annotation.Nullable;
 import javax.persistence.Embedded;
 import javax.persistence.Id;
 import javax.persistence.Version;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -56,7 +54,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
@@ -156,7 +153,7 @@ public class XMLConvertor implements Convertor {
     }
 
     @Override
-    public CommitRequest parseCommitRequest(String content) {
+    public CommitRequest parseCommitRequest(String content, boolean commitDynamicAttributes) {
         try {
             DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
             DOMImplementationLS lsImpl = (DOMImplementationLS) registry.getDOMImplementation("LS");
