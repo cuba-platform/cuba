@@ -9,7 +9,7 @@
 
     <layout expand="foldersSplit">
         <hbox id="titleBar" stylename="cuba-app-menubar"
-              expand="mainMenu" width="100%" height="40px"
+              expand="mainMenu" width="100%" height="theme://cuba.web.mainWindow.header.height"
               spacing="true" margin="false;false;false;true">
 
             <embedded id="logoImage" align="MIDDLE_LEFT" type="IMAGE" stylename="cuba-app-icon"/>
