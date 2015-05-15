@@ -33,6 +33,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * GenericUI class holding information about all permission targets.
@@ -286,7 +287,7 @@ public class PermissionConfig {
 
     private ClientType clientType;
 
-    private List<Item> items = new ArrayList<>();
+    private List<Item> items = new CopyOnWriteArrayList<>();
 
     private Log log = LogFactory.getLog(PermissionConfig.class);
 
@@ -342,6 +343,10 @@ public class PermissionConfig {
      */
     public Tree<BasicPermissionTarget> getSpecific(Locale locale) {
         return getItem(locale).specific;
+    }
+
+    public void clearConfigCache() {
+        items.clear();
     }
 
     private static class MetadataObjectAlphabetComparator implements Comparator<MetadataObject> {

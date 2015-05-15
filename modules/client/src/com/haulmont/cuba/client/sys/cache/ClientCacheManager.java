@@ -80,6 +80,19 @@ public class ClientCacheManager {
         return null;
     }
 
+    public void refreshCached(String name) {
+        CachingStrategy cachingStrategy = cache.get(name);
+        if (cachingStrategy != null) {
+            Lock writeLock = cachingStrategy.lock().writeLock();
+            try {
+                writeLock.lock();
+                cachingStrategy.loadObject();
+            } finally {
+                writeLock.unlock();
+            }
+        }
+    }
+
     /**
      * Add new cached object (described in cachingStrategy)
      */

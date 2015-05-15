@@ -6,6 +6,8 @@
 package com.haulmont.cuba.gui.app.core.categories;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.client.sys.cache.ClientCacheManager;
+import com.haulmont.cuba.client.sys.cache.DynamicAttributesCacheStrategy;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesCacheService;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.global.MessageTools;
@@ -15,6 +17,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
+import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import javax.inject.Inject;
@@ -42,6 +45,12 @@ public class CategoryBrowser extends AbstractLookup {
     @Inject
     protected DynamicAttributesCacheService dynamicAttributesCacheService;
 
+    @Inject
+    protected PermissionConfig permissionConfig;
+
+    @Inject
+    protected ClientCacheManager clientCacheManager;
+
     @Override
     public void init(Map<String, Object> params) {
         categoriesDs = getDsContext().get("categoriesDs");
@@ -53,6 +62,8 @@ public class CategoryBrowser extends AbstractLookup {
             @Override
             public void actionPerform(Component component) {
                 dynamicAttributesCacheService.loadCache();
+                clientCacheManager.refreshCached(DynamicAttributesCacheStrategy.NAME);
+                permissionConfig.clearConfigCache();
             }
         });
 
