@@ -19,6 +19,7 @@
 @import "components/label/label";
 @import "components/link/link";
 @import "components/button/button";
+@import "components/select/select";
 @import "components/window/window";
 @import "components/menubar/menubar";
 @import "components/checkbox/checkbox";
@@ -79,6 +80,7 @@
   @include halo-twincolumn;
   @include halo-optiongroup;
   @include halo-popupbutton;
+  @include halo-filterselect;
   @include halo-notification;
   @include halo-richtextarea;
   @include halo-orderedlayout;
