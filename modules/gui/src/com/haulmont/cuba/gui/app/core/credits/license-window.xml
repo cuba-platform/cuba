@@ -3,15 +3,12 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
         class="com.haulmont.cuba.gui.app.core.credits.LicenseWindow"
         messagesPack="com.haulmont.cuba.gui.app.core.credits"
         caption="msg://license"
         focusComponent="licenseTextArea">
-    <dsContext/>
-
-    <layout margin="true">
+    <layout>
         <textArea id="licenseTextArea" height="100%" width="100%"/>
     </layout>
 </window>
