@@ -569,9 +569,17 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                 new Table.ColumnGenerator<ScreenAndComponent>() {
                     @Override
                     public Component generateCell(ScreenAndComponent entity) {
-                        LookupField lookupField = componentsFactory.createComponent(LookupField.NAME);
+                        final LookupField lookupField = componentsFactory.createComponent(LookupField.NAME);
                         lookupField.setDatasource(targetScreensTable.getItemDatasource(entity), "screen");
                         lookupField.setOptionsMap(optionsMap);
+                        lookupField.setNewOptionAllowed(true);
+                        lookupField.setNewOptionHandler(new LookupField.NewOptionHandler() {
+                            @Override
+                            public void addNewOption(String caption) {
+                                optionsMap.put(caption, caption);
+                                lookupField.setValue(caption);
+                            }
+                        });
                         lookupField.setRequired(true);
                         lookupField.setWidth("100%");
                         return lookupField;
