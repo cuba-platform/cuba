@@ -27,15 +27,15 @@ import java.util.List;
 public class CubaHttpFilter implements Filter {
     private static Log log = LogFactory.getLog(CubaHttpFilter.class);
 
-    private List<String> bypassUrls = new ArrayList<>();
-    private CubaAuthProvider activeDirectoryFilter;
+    protected List<String> bypassUrls = new ArrayList<>();
+    protected CubaAuthProvider authProvider;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         if (ActiveDirectoryHelper.useActiveDirectory()) {
             try {
-                activeDirectoryFilter = AppBeans.get(CubaAuthProvider.NAME);
-                activeDirectoryFilter.init(filterConfig);
+                authProvider = AppBeans.get(CubaAuthProvider.NAME);
+                authProvider.init(filterConfig);
             } catch (Exception e) {
                 throw new ServletException(e);
             }
@@ -64,7 +64,7 @@ public class CubaHttpFilter implements Filter {
 
         boolean filtered = false;
 
-        if (activeDirectoryFilter != null) {
+        if (authProvider != null) {
             // Active Directory integration
             if (!requestURI.endsWith("/")) {
                 requestURI = requestURI + "/";
@@ -78,21 +78,33 @@ public class CubaHttpFilter implements Filter {
                     break;
                 }
             }
-            if (!bypass) {
-                activeDirectoryFilter.doFilter(request, response, chain);
-                filtered = true;
-            }
+
+            filtered = filterByAuthProvider(request, response, chain, bypass);
         }
 
         if (!filtered) {
-            chain.doFilter(request, response);
+            handleNotFiltered(request, response, chain);
         }
     }
 
     @Override
     public void destroy() {
-        if (activeDirectoryFilter != null) {
-            activeDirectoryFilter.destroy();
+        if (authProvider != null) {
+            authProvider.destroy();
         }
+    }
+
+    protected void handleNotFiltered(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+        chain.doFilter(request, response);
+    }
+
+    protected boolean filterByAuthProvider(HttpServletRequest request, HttpServletResponse response,
+                                           FilterChain chain, boolean byPass) throws IOException, ServletException {
+        if (!byPass) {
+            authProvider.doFilter(request, response, chain);
+            return true;
+        }
+        return false;
     }
 }
