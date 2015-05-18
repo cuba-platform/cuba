@@ -180,12 +180,13 @@ public abstract class AbstractCondition extends AbstractNotPersistentEntity{
     }
 
     protected Param createParam() {
-        if (unary)
-            return new Param(paramName, null, null, null, null, false, required);
-
         if (Strings.isNullOrEmpty(paramName)) {
             paramName = createParamName();
         }
+
+        if (unary)
+            return new Param(paramName, null, null, null, null, false, required);
+
         if (categoryAttrId != null) {
             return new Param(paramName, paramClass, entityParamWhere,
                     entityParamView, datasource, inExpr, categoryAttrId, required);
