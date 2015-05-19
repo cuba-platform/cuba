@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 
+import javax.annotation.Nullable;
 import javax.swing.BoxLayout;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -71,6 +72,15 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
 
     private PickerField.LookupAction lookupAction;
 
+    protected final ValueListener lookupSelectListener = new ValueListener() {
+        @Override
+        public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
+            if (isEditable()) {
+                addValueFromLookupPickerField();
+            }
+        }
+    };
+
     public DesktopTokenList() {
         impl = new TokenListImpl();
         addButton = new DesktopButton();
@@ -78,6 +88,7 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
         addButton.setCaption(messages.getMessage(TokenList.class, "actions.Add"));
 
         lookupPickerField = new DesktopLookupPickerField();
+        lookupPickerField.addListener(lookupSelectListener);
 
         setMultiSelect(false);
         setWidth("100%");
@@ -268,6 +279,7 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
     @Override
     public void setSimple(boolean simple) {
         this.simple = simple;
+        this.addButton.setVisible(simple);
         this.impl.editor = null;
         this.impl.refreshComponent();
     }
@@ -597,21 +609,9 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
                 openLookupWindow();
             } else {
                 if (isEditable()) {
-                    getValueFromField();
+                    addValueFromLookupPickerField();
                 }
             }
-        }
-
-        private void getValueFromField() {
-            final Entity newItem = lookupPickerField.getValue();
-            if (newItem == null) return;
-            if (itemChangeHandler != null) {
-                itemChangeHandler.addItem(newItem);
-            } else {
-                if (datasource != null)
-                    datasource.addItem(newItem);
-            }
-            lookupPickerField.setValue(null);
         }
 
         private void openLookupWindow() {
@@ -723,6 +723,9 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
             hBox.setWidth("100%");
 
             if (!isSimple()) {
+                if (lookupPickerField.getParent() instanceof Container) {
+                    ((Container) lookupPickerField.getParent()).remove(lookupPickerField);
+                }
                 lookupPickerField.setWidth("100%");
                 hBox.add(lookupPickerField);
                 hBox.expand(lookupPickerField);
@@ -730,8 +733,12 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
             addButton.setAction(new AddAction());
 
             lookupPickerField.setVisible(!isSimple());
+            addButton.setVisible(isSimple());
 
             addButton.setStyleName("add-btn");
+            if (addButton.getParent() instanceof Container) {
+                ((Container) addButton.getParent()).remove(addButton);
+            }
             hBox.add(addButton);
 
             editor = hBox;
@@ -862,5 +869,17 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
                     itemClickListener.onClick(item);
             }
         }
+    }
+
+    protected void addValueFromLookupPickerField() {
+        final Entity newItem = lookupPickerField.getValue();
+        if (newItem == null) return;
+        if (itemChangeHandler != null) {
+            itemChangeHandler.addItem(newItem);
+        } else {
+            if (datasource != null)
+                datasource.addItem(newItem);
+        }
+        lookupPickerField.setValue(null);
     }
 }

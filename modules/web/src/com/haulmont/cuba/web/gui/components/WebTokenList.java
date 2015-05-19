@@ -25,6 +25,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.*;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -66,12 +67,22 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
     protected boolean multiselect;
     protected PickerField.LookupAction lookupAction;
 
+    protected final ValueListener lookupSelectListener = new ValueListener() {
+        @Override
+        public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
+            if (isEditable()) {
+                addValueFromLookupPickerField();
+            }
+        }
+    };
+
     public WebTokenList() {
         addButton = new WebButton();
         Messages messages = AppBeans.get(Messages.NAME);
         addButton.setCaption(messages.getMessage(TokenList.class, "actions.Add"));
 
         lookupPickerField = new WebLookupPickerField();
+        lookupPickerField.addListener(lookupSelectListener);
         component = new CubaTokenList();
 
         setMultiSelect(false);
@@ -394,6 +405,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
     @Override
     public void setSimple(boolean simple) {
         this.simple = simple;
+        this.addButton.setVisible(simple);
         this.component.refreshComponent();
     }
 
@@ -473,10 +485,10 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
             } else {
                 lookupPickerField.setVisible(false);
             }
-
+            addButton.setVisible(isSimple());
             addButton.setStyleName("add-btn");
 
-            Button wrappedButton = (Button) WebComponentsHelper.unwrap(addButton);
+            Button wrappedButton = WebComponentsHelper.unwrap(addButton);
             Collection listeners = wrappedButton.getListeners(Button.ClickEvent.class);
             for (Object listener : listeners) {
                 wrappedButton.removeClickListener((Button.ClickListener) listener);
@@ -487,15 +499,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
                         if (isEditable()) {
-                            final Entity newItem = lookupPickerField.getValue();
-                            if (newItem == null) return;
-                            if (itemChangeHandler != null) {
-                                itemChangeHandler.addItem(newItem);
-                            } else {
-                                if (datasource != null)
-                                    datasource.addItem(newItem);
-                            }
-                            lookupPickerField.setValue(null);
+                            addValueFromLookupPickerField();
                         }
                     }
                 });
@@ -703,5 +707,17 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
         public void removeAllValidators() {
             getValidators().clear();
         }
+    }
+
+    protected void addValueFromLookupPickerField() {
+        final Entity newItem = lookupPickerField.getValue();
+        if (newItem == null) return;
+        if (itemChangeHandler != null) {
+            itemChangeHandler.addItem(newItem);
+        } else {
+            if (datasource != null)
+                datasource.addItem(newItem);
+        }
+        lookupPickerField.setValue(null);
     }
 }
