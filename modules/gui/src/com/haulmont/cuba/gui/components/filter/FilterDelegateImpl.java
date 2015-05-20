@@ -506,7 +506,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         boolean pinAppliedActionEnabled = lastAppliedFilter != null
                 && !(lastAppliedFilter.getFilterEntity() == adHocFilter && lastAppliedFilter.getConditions().getRoots().size() == 0);
         boolean saveAsSearchFolderActionEnabled = !isFolder && !hasCode;
-        boolean saveAsAppFolderActionEnabled = !isFolder && !hasCode;
+        boolean saveAsAppFolderActionEnabled = !isFolder && !hasCode && userCanEditGlobalAppFolder;
 
         saveAction.setEnabled(saveActionEnabled);
         saveAsAction.setEnabled(saveAsActionEnabled);
