@@ -7,20 +7,15 @@ package com.haulmont.cuba.gui.app.core.categories;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Category;
-import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.ValueListener;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.ObjectUtils;
 
 import javax.inject.Inject;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -30,9 +25,7 @@ import java.util.TreeMap;
  * @version $Id$
  */
 public class CategoryEditor extends AbstractEditor<Category> {
-
-    protected Category category;
-    protected CheckBox cb;
+    @Inject
     protected DataSupplier dataSupplier;
 
     @Inject
@@ -41,46 +34,48 @@ public class CategoryEditor extends AbstractEditor<Category> {
     @Inject
     protected MessageTools messageTools;
 
-    @Override
-    public void init(Map<String, Object> params) {
-        dataSupplier = getDsContext().getDataSupplier();
-        cb = getComponent("isDefault");
-    }
+    @Inject
+    private LookupField entityType;
+
+    @Inject
+    private CheckBox isDefault;
+
+    protected Category category;
 
     @Override
     protected void postInit() {
         category = getItem();
-        generateEntityTypeField();
-        initCb();
+        initEntityTypeField();
+        initIsDefaultCheckbox();
     }
 
-    protected void generateEntityTypeField() {
-        boolean hasValue = category.getEntityType() != null;
+    protected void initEntityTypeField() {
+        final ExtendedEntities extendedEntities = metadata.getExtendedEntities();
 
-        LookupField categoryEntityTypeField = getComponent("entityType");
         Map<String, Object> options = new TreeMap<>();//the map sorts meta classes by the string key
-        MetaClass entityType = null;
         for (MetaClass metaClass : metadata.getTools().getAllPersistentMetaClasses()) {
             options.put(messageTools.getDetailedEntityCaption(metaClass), metaClass);
-            if (hasValue && metaClass.getName().equals(category.getEntityType())) {
-                entityType = metaClass;
-            }
         }
-        categoryEntityTypeField.setOptionsMap(options);
-        categoryEntityTypeField.setValue(entityType);
-        categoryEntityTypeField.addListener(new ValueListener() {
+        entityType.setOptionsMap(options);
+
+        if (category.getEntityType() != null) {
+            entityType.setValue(extendedEntities.getEffectiveMetaClass(
+                    extendedEntities.getEffectiveClass(category.getEntityType())));
+        }
+
+        entityType.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                 MetaClass metaClass = (MetaClass) value;
-                MetaClass originalClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
+                MetaClass originalClass = extendedEntities.getOriginalMetaClass(metaClass);
                 category.setEntityType(originalClass == null ? metaClass.getName() : originalClass.getName());
             }
         });
     }
 
-    protected void initCb() {
-        cb.setValue(BooleanUtils.isTrue(category.getIsDefault()));
-        cb.addListener(new ValueListener() {
+    protected void initIsDefaultCheckbox() {
+        isDefault.setValue(BooleanUtils.isTrue(category.getIsDefault()));
+        isDefault.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                 if (Boolean.TRUE.equals(value)) {

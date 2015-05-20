@@ -64,6 +64,7 @@ public class CategoryBrowser extends AbstractLookup {
                 dynamicAttributesCacheService.loadCache();
                 clientCacheManager.refreshCached(DynamicAttributesCacheStrategy.NAME);
                 permissionConfig.clearConfigCache();
+                showNotification(getMessage("notification.changesApplied"), NotificationType.HUMANIZED);
             }
         });
 
