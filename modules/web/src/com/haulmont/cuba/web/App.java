@@ -386,17 +386,22 @@ public abstract class App {
     public void closeAllWindows() {
         log.debug("Closing all windows");
         try {
-            for (AppUI ui : getAppUIs()) {
-                AppWindow appWindow = ui.getAppWindow();
-                if (appWindow != null) {
-                    WebWindowManager webWindowManager = appWindow.getWindowManager();
-                    webWindowManager.disableSavingScreenHistory = true;
-                    webWindowManager.closeAll();
-                }
+            for (final AppUI ui : getAppUIs()) {
+                ui.accessSynchronously(new Runnable() {
+                    @Override
+                    public void run() {
+                        AppWindow appWindow = ui.getAppWindow();
+                        if (appWindow != null) {
+                            WebWindowManager webWindowManager = appWindow.getWindowManager();
+                            webWindowManager.disableSavingScreenHistory = true;
+                            webWindowManager.closeAll();
+                        }
 
-                for (com.vaadin.ui.Window win : new ArrayList<>(ui.getWindows())) {
-                    ui.removeWindow(win);
-                }
+                        for (com.vaadin.ui.Window win : new ArrayList<>(ui.getWindows())) {
+                            ui.removeWindow(win);
+                        }
+                    }
+                });
             }
         } catch (Throwable e) {
             log.error("Error closing all windows", e);

@@ -64,9 +64,14 @@ public class DefaultApp extends App implements ConnectionListener, UserSubstitut
             log.debug("Creating AppWindow");
 
             initExceptionHandlers(true);
-            for (AppUI ui : getAppUIs()) {
-                AppWindow appWindow = createAppWindow(ui);
-                ui.showView(appWindow);
+            for (final AppUI ui : getAppUIs()) {
+                ui.accessSynchronously(new Runnable() {
+                    @Override
+                    public void run() {
+                        AppWindow appWindow = createAppWindow(ui);
+                        ui.showView(appWindow);
+                    }
+                });
             }
 
             if (linkHandler != null) {
@@ -80,13 +85,18 @@ public class DefaultApp extends App implements ConnectionListener, UserSubstitut
             closeAllWindows();
             clearSettingsCache();
 
-            for (AppUI ui : getAppUIs()) {
-                if (ui.isTestMode()) {
-                    ui.getTestIdManager().reset();
-                }
+            for (final AppUI ui : getAppUIs()) {
+                ui.accessSynchronously(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (ui.isTestMode()) {
+                            ui.getTestIdManager().reset();
+                        }
 
-                UIView window = createLoginWindow(ui);
-                ui.showView(window);
+                        UIView window = createLoginWindow(ui);
+                        ui.showView(window);
+                    }
+                });
             }
             initExceptionHandlers(false);
         }
@@ -160,12 +170,17 @@ public class DefaultApp extends App implements ConnectionListener, UserSubstitut
         cleanupBackgroundTasks();
         clearSettingsCache();
 
-        for (AppUI ui : getAppUIs()) {
-            if (ui.isTestMode()) {
-                ui.getTestIdManager().reset();
-            }
+        for (final AppUI ui : getAppUIs()) {
+            ui.accessSynchronously(new Runnable() {
+                @Override
+                public void run() {
+                    if (ui.isTestMode()) {
+                        ui.getTestIdManager().reset();
+                    }
 
-            ui.showView(createAppWindow(ui));
+                    ui.showView(createAppWindow(ui));
+                }
+            });
         }
     }
 }
