@@ -27,7 +27,7 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
 
     protected Mode mode = Mode.Text;
     protected Suggester suggester;
-    private SuggestionExtension suggestionExtension;
+    protected SuggestionExtension suggestionExtension;
 
     public WebSourceCodeEditor() {
         component = new CubaSourceCodeEditor();
