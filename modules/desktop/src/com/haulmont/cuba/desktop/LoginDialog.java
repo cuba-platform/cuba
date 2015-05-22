@@ -120,6 +120,12 @@ public class LoginDialog extends JDialog {
 
         getRootPane().setDefaultButton(loginBtn);
 
+        assignTestIdsIfNeeded(panel);
+
+        return panel;
+    }
+
+    protected void assignTestIdsIfNeeded(JPanel panel) {
         if (App.getInstance().isTestMode()) {
             panel.setName("contentPane");
             nameField.setName("nameField");
@@ -127,8 +133,6 @@ public class LoginDialog extends JDialog {
             loginBtn.setName("loginBtn");
             localeCombo.setName("localeCombo");
         }
-
-        return panel;
     }
 
     protected void doLogin() {
