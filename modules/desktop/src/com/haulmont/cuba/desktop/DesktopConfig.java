@@ -83,8 +83,4 @@ public interface DesktopConfig extends Config {
     @Property("cuba.desktop.sessionMessagesIntervalSec")
     @DefaultInt(60)
     int getSessionMessagesIntervalSec();
-
-    @Property("cuba.desktop.testMode")
-    @DefaultBoolean(false)
-    boolean getTestMode();
 }

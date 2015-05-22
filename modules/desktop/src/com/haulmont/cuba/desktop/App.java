@@ -235,7 +235,7 @@ public class App implements ConnectionListener {
     }
 
     protected void initTestMode() {
-        this.testMode = configuration.getConfig(DesktopConfig.class).getTestMode();
+        this.testMode = configuration.getConfig(GlobalConfig.class).getTestMode();
     }
 
     protected void initTheme() throws Exception {
