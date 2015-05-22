@@ -6,6 +6,7 @@
 package com.haulmont.cuba.client.sys.cache;
 
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.sys.AppContext;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
@@ -31,6 +32,24 @@ public class ClientCacheManager {
 
     protected ConcurrentHashMap<String, CachingStrategy> cache = new ConcurrentHashMap<>();
     protected ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+
+    public ClientCacheManager() {
+        AppContext.addListener(new AppContext.Listener() {
+            @Override
+            public void applicationStarted() {
+
+            }
+
+            @Override
+            public void applicationStopped() {
+                try {
+                    executorService.shutdownNow();
+                } catch (Exception e) {
+                    //do nothing
+                }
+            }
+        });
+    }
 
     public void initialize() {
         if (!initialized) {
