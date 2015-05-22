@@ -10,9 +10,12 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.EntitySqlGenerationService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.security.entity.Permission;
+import com.haulmont.cuba.security.entity.Role;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -88,7 +91,23 @@ public class SystemInfoWindow extends AbstractWindow {
 
     public void generateInsert() {
         scriptArea.setEditable(true);
-        scriptArea.setValue(sqlGenerationService.generateInsertScript(item));
+        if (item instanceof Role) {
+            View localView = metadata.getViewRepository().getView(Role.class, View.LOCAL);
+            View roleView = new View(localView, Role.class, "role-export-view", true)
+                    .addProperty("permissions", metadata.getViewRepository().getView(Permission.class, View.LOCAL));
+            item = getDsContext().getDataSupplier().reload(item, roleView);
+
+            StringBuilder result = new StringBuilder();
+            result.append(sqlGenerationService.generateInsertScript(item)).append("\n");
+            for (Permission permission : ((Role) item).getPermissions()) {
+                result.append(sqlGenerationService.generateInsertScript(permission)).append("\n");
+            }
+
+            scriptArea.setValue(result.toString());
+        } else {
+            scriptArea.setValue(sqlGenerationService.generateInsertScript(item));
+        }
+
         scriptArea.setVisible(true);
         scriptArea.setEditable(false);
     }
