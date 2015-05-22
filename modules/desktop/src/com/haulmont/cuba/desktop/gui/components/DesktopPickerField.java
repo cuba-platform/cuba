@@ -59,8 +59,6 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
     protected String caption;
     protected boolean updatingInstance;
 
-    protected Object nullValue = new Object();
-
     protected Metadata metadata = AppBeans.get(Metadata.NAME);
 
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
@@ -161,7 +159,6 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
 
     protected void fireFieldListener(FieldListener listener, String fieldText) {
         if (!(ObjectUtils.equals(prevTextValue, fieldText))) {
-            prevValue = nullValue;
             prevTextValue = fieldText;
             listener.actionPerformed(fieldText, getValue());
         }
@@ -291,7 +288,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
         if ((datasource.getState() == Datasource.State.VALID) && (datasource.getItem() != null)) {
             Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
             updateComponent(newValue);
-            fireChangeListeners();
+            fireChangeListeners(newValue);
         }
 
         setRequired(metaProperty.isMandatory());
@@ -303,10 +300,6 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
         if (metaProperty.isReadOnly()) {
             setEditable(false);
         }
-    }
-
-    protected void fireChangeListeners() {
-        fireChangeListeners(getValue());
     }
 
     protected void fireChangeListeners(Object newValue) {
