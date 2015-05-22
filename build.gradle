@@ -341,6 +341,7 @@ configure(guiModule) {
         includes = ['**/*Test.class']
 
         exclude 'com/haulmont/cuba/gui/components/**'
+        include 'com/haulmont/cuba/gui/components/validators'
     }
 }
 
