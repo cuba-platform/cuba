@@ -340,8 +340,7 @@ configure(guiModule) {
         scanForTestClasses = false
         includes = ['**/*Test.class']
 
-        exclude 'com/haulmont/cuba/gui/components/**'
-        include 'com/haulmont/cuba/gui/components/validators'
+        exclude 'com/haulmont/cuba/gui/components/*'
     }
 }
 
