@@ -121,6 +121,7 @@ public class MenuBuilder {
                     items.add(new MenuItemContainer());
                 } else {
                     JMenuItem jMenuItem = new JMenuItem(MenuConfig.getMenuItemCaption(child.getId()));
+                    jMenuItem.setName(child.getId());
                     assignCommand(jMenuItem, child);
                     assignShortcut(jMenuItem, child);
                     items.add(new MenuItemContainer(jMenuItem));
