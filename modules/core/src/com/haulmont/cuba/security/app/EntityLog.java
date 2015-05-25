@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.security.app;
 
+import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
@@ -14,6 +15,7 @@ import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
 import com.haulmont.cuba.security.entity.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
@@ -23,6 +25,7 @@ import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -66,6 +69,49 @@ public class EntityLog implements EntityLogAPI {
     @Override
     public void processLoggingForCurrentThread(boolean enabled) {
         entityLogSwitchedOn.set(enabled);
+    }
+
+    @Override
+    public void flush() {
+        List<EntityLogItem> items = persistence.getEntityManagerContext().getAttribute(EntityLog.class.getName());
+        if (items == null || items.isEmpty())
+            return;
+
+        List<UUID> ids = new ArrayList<>();
+
+        for (int i = items.size() - 1; i >= 0; i--) {
+            EntityLogItem item = items.get(i);
+            UUID entityId = item.getEntityId();
+            if (!ids.contains(entityId)) {
+                saveItem(item);
+                ids.add(entityId);
+            }
+        }
+    }
+
+    private void saveItem(EntityLogItem item) {
+        DbTypeConverter converter = persistence.getDbTypeConverter();
+
+        QueryRunner queryRunner = new QueryRunner();
+        try {
+            queryRunner.update(
+                    persistence.getEntityManager().getConnection(),
+                    "insert into SEC_ENTITY_LOG (ID,CREATE_TS,CREATED_BY,EVENT_TS,USER_ID,CHANGE_TYPE,ENTITY,ENTITY_ID,CHANGES) " +
+                            "values (?,current_timestamp,?,?,?,?,?,?,?)",
+                    new Object[] {
+                            converter.getSqlObject(item.getId()),
+                            userSessionSource.getUserSession().getUser().getLogin(),
+                            converter.getSqlObject(item.getEventTs()),
+                            converter.getSqlObject(item.getUser().getId()),
+                            item.getType().getId(),
+                            item.getEntity(),
+                            converter.getSqlObject(item.getEntityId()),
+                            item.getChanges()
+                    }
+            );
+        } catch (SQLException e) {
+            log.error("Error saving EntityLogItem", e);
+        }
     }
 
     public synchronized boolean isEnabled() {
@@ -199,11 +245,20 @@ public class EntityLog implements EntityLogAPI {
             }
             item.setChanges(getChanges(properties));
 
-            em.persist(item);
+            enqueueItem(item);
 
         } catch (Exception e) {
             log.warn("Unable to log entity " + entity + ", id=" + entity.getId(), e);
         }
+    }
+
+    private void enqueueItem(EntityLogItem item) {
+        List<EntityLogItem> items = persistence.getEntityManagerContext().getAttribute(EntityLog.class.getName());
+        if (items == null) {
+            items = new ArrayList<>();
+            persistence.getEntityManagerContext().setAttribute(EntityLog.class.getName(), items);
+        }
+        items.add(item);
     }
 
     protected User findUser(EntityManager em) {
@@ -258,7 +313,8 @@ public class EntityLog implements EntityLogAPI {
                 item.setEntity(entityName);
                 item.setEntityId(entity.getUuid());
                 item.setChanges(getChanges(properties));
-                em.persist(item);
+
+                enqueueItem(item);
             }
 
         } catch (Exception e) {
@@ -324,8 +380,7 @@ public class EntityLog implements EntityLogAPI {
             }
             item.setChanges(getChanges(properties));
 
-            em.persist(item);
-
+            enqueueItem(item);
         } catch (Exception e) {
             log.warn("Unable to log entity " + entity + ", id=" + entity.getId(), e);
         }

@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +17,8 @@ public class EntityManagerContext {
     private boolean softDeletion = true;
 
     private Map<String, Object> dbHints = new HashMap<>();
+
+    private Map<Object, Object> attributes = new HashMap<>();
 
     public boolean isSoftDeletion() {
         return softDeletion;
@@ -31,5 +34,14 @@ public class EntityManagerContext {
 
     public void setDbHints(Map<String, Object> dbHints) {
         this.dbHints = dbHints;
+    }
+
+    public void setAttribute(Object key, Object value) {
+        attributes.put(key, value);
+    }
+
+    @Nullable
+    public <T> T getAttribute(Object key) {
+        return (T) attributes.get(key);
     }
 }

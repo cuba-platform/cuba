@@ -4,12 +4,16 @@
  */
 package com.haulmont.cuba.security;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.security.app.EntityLogAPI;
 import com.haulmont.cuba.security.entity.*;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -29,22 +33,9 @@ public class EntityLogTest extends CubaTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
+        cleanup();
+
         Transaction tx = persistence.createTransaction();
-        try {
-            EntityManager em = persistence.getEntityManager();
-
-            Query q = em.createNativeQuery("delete from SEC_LOGGED_ATTR");
-            q.executeUpdate();
-
-            q = em.createNativeQuery("delete from SEC_LOGGED_ENTITY");
-            q.executeUpdate();
-
-            tx.commit();
-        } finally {
-            tx.end();
-        }
-
-        tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
 
@@ -85,6 +76,24 @@ public class EntityLogTest extends CubaTestCase {
 
         EntityLogAPI entityLog = AppBeans.get(EntityLogAPI.NAME);
         entityLog.invalidateCache();
+    }
+
+    protected void tearDown() throws Exception {
+        cleanup();
+
+        if (userId != null)
+            deleteRecord("SEC_USER", userId);
+
+        if (roleId != null)
+            deleteRecord("SEC_ROLE", roleId);
+
+        super.tearDown();
+    }
+
+    private void cleanup() throws SQLException {
+        QueryRunner runner = new QueryRunner(persistence.getDataSource());
+        runner.update("delete from SEC_LOGGED_ATTR");
+        runner.update("delete from SEC_LOGGED_ENTITY");
     }
 
     public void test() throws Exception {
@@ -215,40 +224,95 @@ public class EntityLogTest extends CubaTestCase {
         assertEquals(messages.getMessage(RoleType.READONLY), attr.getDisplayValue());
     }
 
-    protected void tearDown() throws Exception {
+    public void testMultipleFlush() throws Exception {
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            Query q;
 
-            for (UUID uuid : laId) {
-                q = em.createNativeQuery("delete from SEC_LOGGED_ATTR where ID = ?");
-                q.setParameter(1, uuid.toString());
-                q.executeUpdate();
-            }
+            Group group = em.find(Group.class, UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93"));
 
-            for (UUID uuid : leId) {
-                q = em.createNativeQuery("delete from SEC_LOGGED_ENTITY where ID = ?");
-                q.setParameter(1, uuid.toString());
-                q.executeUpdate();
-            }
+            User user = new User();
+            userId = user.getId();
+            user.setGroup(group);
+            user.setLogin("test");
+            user.setName("test-name");
+            user.setEmail("name@test.com");
+            em.persist(user);
 
-            if (userId != null) {
-                q = em.createNativeQuery("delete from SEC_USER where ID = ?");
-                q.setParameter(1, userId.toString());
-                q.executeUpdate();
-            }
+            em.flush();
 
-            if (roleId != null) {
-                q = em.createNativeQuery("delete from SEC_ROLE where ID = ?");
-                q.setParameter(1, roleId.toString());
-                q.executeUpdate();
-            }
+            user.setEmail("changed-name@test.com");
 
             tx.commit();
         } finally {
             tx.end();
         }
-        super.tearDown();
+
+        List<EntityLogItem> items = getEntityLogItems();
+        assertNotNull(items);
+        assertEquals(1, items.size());
+
+        EntityLogItem item = items.get(0);
+        assertEquals(EntityLogItem.Type.CREATE, item.getType());
+
+        EntityLogAttr attr = Iterables.find(item.getAttributes(), new Predicate<EntityLogAttr>() {
+            @Override
+            public boolean apply(EntityLogAttr attr) {
+                return "email".equals(attr.getName());
+            }
+        });
+        assertEquals("changed-name@test.com", attr.getValue());
+
+        ////////
+
+        tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+
+            User user = em.find(User.class, userId);
+            user.setEmail("changed-2@test.com");
+
+            em.flush();
+
+            user.setEmail("changed-3@test.com");
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+        items = getEntityLogItems();
+        assertNotNull(items);
+        assertEquals(2, items.size());
+
+        item = items.get(0); // the last because of sorting in query
+        assertEquals(EntityLogItem.Type.MODIFY, item.getType());
+
+        attr = Iterables.find(item.getAttributes(), new Predicate<EntityLogAttr>() {
+            @Override
+            public boolean apply(EntityLogAttr attr) {
+                return "email".equals(attr.getName());
+            }
+        });
+        assertEquals("changed-3@test.com", attr.getValue());
+    }
+
+    private List<EntityLogItem> getEntityLogItems() {
+        Transaction tx;
+        List<EntityLogItem> items;
+        tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            TypedQuery<EntityLogItem> query = em.createQuery(
+                    "select i from sec$EntityLog i where i.entity = ?1 and i.entityId = ?2 order by i.eventTs desc", EntityLogItem.class);
+            query.setParameter(1, "sec$User");
+            query.setParameter(2, userId);
+            items = query.getResultList();
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+        return items;
     }
 }

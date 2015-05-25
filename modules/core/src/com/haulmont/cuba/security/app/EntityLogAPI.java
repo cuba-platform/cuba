@@ -23,16 +23,37 @@ public interface EntityLogAPI {
     boolean isEnabled();
     void setEnabled(boolean enabled);
 
+    /**
+     * Logs creation of an entity which is configured for manual logging (LoggedEntity.auto == false).
+     */
     void registerCreate(BaseEntity entity);
 
+    /**
+     * Logs creation of an entity which is configured for auto or manual logging
+     * (depending on the {@code auto} parameter).
+     */
     void registerCreate(BaseEntity entity, boolean auto);
 
+    /**
+     * Logs modification of an entity which is configured for manual logging (LoggedEntity.auto == false).
+     */
     void registerModify(BaseEntity entity);
 
+    /**
+     * Logs modification of an entity which is configured for auto or manual logging
+     * (depending on the {@code auto} parameter).
+     */
     void registerModify(BaseEntity entity, boolean auto);
 
+    /**
+     * Logs deletion of an entity which is configured for manual logging (LoggedEntity.auto == false).
+     */
     void registerDelete(BaseEntity entity);
 
+    /**
+     * Logs deletion of an entity which is configured for auto or manual logging
+     * (depending on the {@code auto} parameter).
+     */
     void registerDelete(BaseEntity entity, boolean auto);
 
     /**
@@ -48,4 +69,9 @@ public interface EntityLogAPI {
      * @param enabled entity logging disabled if false, enabled otherwise.
      */
     void processLoggingForCurrentThread(boolean enabled);
+
+    /**
+     * For internal use only. Called by the framework to actually save log records to the database.
+     */
+    void flush();
 }

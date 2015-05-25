@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.app.MiddlewareStatisticsAccumulator;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
+import com.haulmont.cuba.security.app.EntityLogAPI;
 import org.apache.openjpa.event.AbstractTransactionListener;
 import org.apache.openjpa.event.TransactionEvent;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
@@ -33,6 +34,9 @@ public class EntityTransactionListener extends AbstractTransactionListener {
     @Inject
     private MiddlewareStatisticsAccumulator statisticsCounter;
 
+    @Inject
+    private EntityLogAPI entityLog;
+
     @Override
     public void beforeCommit(TransactionEvent event) {
         for (Object obj : ((OpenJPAEntityManagerSPI) persistence.getEntityManager().getDelegate()).getManagedObjects()) {
@@ -52,6 +56,7 @@ public class EntityTransactionListener extends AbstractTransactionListener {
 
     @Override
     public void afterCommit(TransactionEvent event) {
+        entityLog.flush();
         statisticsCounter.incCommittedTransactionsCount();
     }
 
