@@ -20,6 +20,7 @@ import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -47,7 +48,7 @@ public class DynamicAttributesCacheStrategy implements CachingStrategy {
 
     //there is no need for atomicity when change needToValidateCache or lastRequestedSessionId
     protected volatile boolean needToValidateCache;
-    protected volatile UUID lastRequestedSessionId;
+    protected volatile AtomicReference<UUID> lastRequestedSessionId = new AtomicReference<>();
 
     protected Log log = LogFactory.getLog(getClass());
 
@@ -56,12 +57,13 @@ public class DynamicAttributesCacheStrategy implements CachingStrategy {
         clientCacheManager.getExecutorService().scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
-                if (needToValidateCache && lastRequestedSessionId != null) {
+                UUID lastSessionId = lastRequestedSessionId.get();
+                if (needToValidateCache && lastSessionId != null) {
                     try{
-                        AppContext.setSecurityContext(new SecurityContext(lastRequestedSessionId));
+                        AppContext.setSecurityContext(new SecurityContext(lastSessionId));
                         loadObject();
                     } catch (NoUserSessionException e) {
-                        //do nothing
+                        lastRequestedSessionId.compareAndSet(lastSessionId, null);
                     } catch (Exception e) {
                         log.error("Unable to update dynamic attributes cache", e);
                     }
@@ -74,7 +76,7 @@ public class DynamicAttributesCacheStrategy implements CachingStrategy {
     public Object getObject() {
         needToValidateCache = true;
         if (AppContext.getSecurityContext() != null) {
-            lastRequestedSessionId = AppContext.getSecurityContext().getSessionId();
+            lastRequestedSessionId.set(AppContext.getSecurityContext().getSessionId());
         }
         return dynamicAttributesCache;
     }
