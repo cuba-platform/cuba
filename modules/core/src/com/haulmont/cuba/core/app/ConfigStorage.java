@@ -103,7 +103,7 @@ public class ConfigStorage implements ConfigStorageAPI {
     @Override
     public void setDbProperty(String name, String value) {
         Preconditions.checkNotNullArgument(name, "name is null");
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = persistence.getTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
             Config instance = getConfigInstance(name);
