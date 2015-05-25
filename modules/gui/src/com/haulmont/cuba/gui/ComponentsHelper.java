@@ -255,11 +255,12 @@ public abstract class ComponentsHelper {
     }
 
     public static String getFilterComponentPath(Filter filter) {
-        StringBuilder sb = new StringBuilder(filter.getId() != null ? filter.getId() : "filterWithoutId");
+        String filterId = filter.getId() != null ? filter.getId() : "filterWithoutId";
+        StringBuilder sb = new StringBuilder(filterId);
         IFrame frame = filter.getFrame();
         while (frame != null) {
             sb.insert(0, ".");
-            String s = frame.getId();
+            String s = filterId;
             if (s.contains(".")) {
                 s = "[" + s + "]";
             }
