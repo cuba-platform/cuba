@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.global.NoUserSessionException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -59,6 +60,8 @@ public class DynamicAttributesCacheStrategy implements CachingStrategy {
                     try{
                         AppContext.setSecurityContext(new SecurityContext(lastRequestedSessionId));
                         loadObject();
+                    } catch (NoUserSessionException e) {
+                        //do nothing
                     } catch (Exception e) {
                         log.error("Unable to update dynamic attributes cache", e);
                     }
