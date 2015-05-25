@@ -265,10 +265,12 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
         }
     }
 
+    @Override
     public void addColumnCollapseListener(ColumnCollapseListener listener) {
         columnCollapseListeners.add(listener);
     }
 
+    @Override
     public void removeColumnCollapseListener(ColumnCollapseListener listener) {
         columnCollapseListeners.remove(listener);
     }

@@ -209,10 +209,12 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
         }
     }
 
+    @Override
     public void addColumnCollapseListener(ColumnCollapseListener listener) {
         columnCollapseListeners.add(listener);
     }
 
+    @Override
     public void removeColumnCollapseListener(ColumnCollapseListener listener) {
         columnCollapseListeners.remove(listener);
     }

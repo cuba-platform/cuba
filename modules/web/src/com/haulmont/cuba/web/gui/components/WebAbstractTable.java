@@ -67,10 +67,8 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  * @version $Id$
  */
 public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhancedTable>
-        extends
-        WebAbstractList<T>
-        implements
-        Table {
+        extends WebAbstractList<T>
+        implements Table {
 
     protected Map<Object, Column> columns = new HashMap<>();
     protected List<Table.Column> columnsOrder = new ArrayList<>();
@@ -1045,6 +1043,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
         final Element columnsElem = element.element("columns");
         if (columnsElem != null) {
+            boolean refreshWasEnabled = component.disableContentBufferRefreshing();
+
             Collection<String> modelIds = new LinkedList<>();
             for (Object column : component.getVisibleColumns()) {
                 modelIds.add(String.valueOf(column));
@@ -1062,6 +1062,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                     || CollectionUtils.isEqualCollection(modelIds, loadedIds)) {
                 applyColumnSettings(element);
             }
+
+            component.enableContentBufferRefreshing(refreshWasEnabled);
         }
     }
 
