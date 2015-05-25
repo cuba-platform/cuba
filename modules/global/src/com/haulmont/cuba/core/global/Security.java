@@ -102,4 +102,12 @@ public interface Security {
      * @param name specific permission id
      */
     boolean isSpecificPermitted(String name);
+
+    /**
+     * Check if current user has a specific permission.
+     *
+     * @param name specific permission id
+     * @throws AccessDeniedException if the user has no specified permission
+     */
+    void checkSpecificPermission(String name);
 }

@@ -10,6 +10,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.entity.PermissionType;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -81,6 +82,12 @@ public class SecurityImpl implements Security {
     @Override
     public boolean isSpecificPermitted(String name) {
         return userSessionSource.getUserSession().isSpecificPermitted(name);
+    }
+
+    @Override
+    public void checkSpecificPermission(String name) {
+        if (!isSpecificPermitted(name))
+            throw new AccessDeniedException(PermissionType.SPECIFIC, name);
     }
 
     protected boolean isEntityAttrReadPermitted(MetaPropertyPath mpp) {
