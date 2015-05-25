@@ -417,8 +417,10 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
                 td.getFirstChildElement().addClassName(WIDGET_CELL_CLASSNAME);
 
-                // Support for #PL-2080
-                recursiveAddFocusHandler(w, w);
+                if (isSelectable()) {
+                    // Support for #PL-2080
+                    recursiveAddFocusHandler(w, w);
+                }
             }
 
             protected void recursiveAddFocusHandler(final Widget w, final Widget topWidget) {
