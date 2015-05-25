@@ -9,6 +9,8 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.PasswordEncryption;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.portal.sys.security.PortalSecurityContext;
 import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.LoginException;
@@ -107,6 +109,19 @@ public class LoginServiceController {
         try {
             LoginService loginService = AppBeans.get(LoginService.NAME);
             UserSession userSession = loginService.login(username, passwordEncryption.getPlainHash(password), locale);
+
+            if (!userSession.isSpecificPermitted(Authentication.PERMISSION_NAME)) {
+                log.info(String.format("User %s is not allowed to use REST-API", username));
+                AppContext.setSecurityContext(new PortalSecurityContext(userSession));
+                try {
+                    loginService.logout();
+                } finally {
+                    AppContext.setSecurityContext(null);
+                }
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+
             setSessionInfo(request, userSession);
 
             response.setStatus(HttpServletResponse.SC_OK);
@@ -133,6 +148,19 @@ public class LoginServiceController {
             LoginService loginService = AppBeans.get(LoginService.NAME);
 
             UserSession userSession = loginService.login(username, passwordEncryption.getPlainHash(password), locale);
+
+            if (!userSession.isSpecificPermitted(Authentication.PERMISSION_NAME)) {
+                log.info(String.format("User %s is not allowed to use REST-API", username));
+                AppContext.setSecurityContext(new PortalSecurityContext(userSession));
+                try {
+                    loginService.logout();
+                } finally {
+                    AppContext.setSecurityContext(null);
+                }
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+
             setSessionInfo(request, userSession);
 
             response.setStatus(HttpServletResponse.SC_OK);

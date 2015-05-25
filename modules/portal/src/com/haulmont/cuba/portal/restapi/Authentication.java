@@ -26,6 +26,8 @@ public class Authentication {
 
     public static final String NAME = "cuba_RestApiAuthentication";
 
+    public static final String PERMISSION_NAME = "cuba.restApi.enabled";
+
     @Inject
     protected LoginService loginService;
 
@@ -42,6 +44,9 @@ public class Authentication {
 
         UserSession session = loginService.getSession(uuid);
         if (session == null)
+            return false;
+
+        if (!session.isSpecificPermitted(PERMISSION_NAME))
             return false;
 
         PortalSession portalSession = portalSessionFactory.createPortalSession(session, null);

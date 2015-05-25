@@ -24,6 +24,9 @@
                 </category>
                 <permission id="cuba.gui.bulkEdit"/>
             </category>
+            <category id="cuba.restApi">
+                <permission id="cuba.restApi.enabled"/>
+            </category>
         </category>
     </specific>
 </permission-config>
