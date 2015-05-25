@@ -74,7 +74,8 @@ public class AppLog {
         if (t instanceof Validator.InvalidValueException)
             return;
 
-        if (t instanceof SocketException) {
+        if (t instanceof SocketException
+                || ExceptionUtils.getRootCause(t) instanceof SocketException) {
             // Most likely client browser closed socket
             LogItem item = new LogItem(LogLevel.WARNING,
                     "SocketException in CommunicationManager. Most likely client (browser) closed socket.", null);
