@@ -14,10 +14,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.TableAggregationRow;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaScrollTableWidget;
-import com.vaadin.client.BrowserInfo;
-import com.vaadin.client.ComponentConnector;
-import com.vaadin.client.UIDL;
-import com.vaadin.client.WidgetUtil;
+import com.vaadin.client.*;
 import com.vaadin.shared.ui.table.TableConstants;
 
 import java.util.HashSet;
@@ -312,15 +309,6 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                 return new CubaGroupTableRow(uidl, aligns2);
         }
 
-        @Override
-        protected void addRow(VScrollTableRow row) {
-            super.addRow(row);
-            if (row instanceof CubaGroupTableGroupRow
-                    && ((CubaGroupTableGroupRow) row).isExpanded()) {
-                row.addStyleName("v-expanded");
-            }
-        }
-
         protected class CubaGroupTableRow extends CubaScrollTableRow {
             protected TableCellElement groupDividerCell;
 
@@ -370,6 +358,10 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
             protected void addCellsFromUIDL(UIDL uidl, char[] aligns, int colIndex, int visibleColumnIndex) {
                 this.groupKey = uidl.getStringAttribute("groupKey");
                 this.expanded = uidl.hasAttribute("expanded") && uidl.getBooleanAttribute("expanded");
+
+                if (expanded) {
+                    addStyleName("v-expanded");
+                }
 
                 int currentColIndex = colIndex;
                 if (currentColIndex < visibleColOrder.length) {
