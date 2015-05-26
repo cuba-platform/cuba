@@ -569,10 +569,15 @@ public class AbstractViewRepository implements ViewRepository {
                 // try to import anonymous views
                 Class rangeClass = range.asClass().getJavaClass();
 
-                if (refView == null) {
-                    refView = new View(rangeClass);
-                } else {
+                if (refView != null) {
                     refView = new View(refView, rangeClass, "", true);
+                } else {
+                    ViewProperty existingProperty = view.getProperty(propertyName);
+                    if (existingProperty != null && existingProperty.getView() != null) {
+                        refView = existingProperty.getView();
+                    } else {
+                        refView = new View(rangeClass);
+                    }
                 }
                 loadView(rootElem, propElem, refView, visited);
             }
