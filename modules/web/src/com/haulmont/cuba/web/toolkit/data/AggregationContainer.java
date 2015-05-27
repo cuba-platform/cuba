@@ -20,7 +20,8 @@ public interface AggregationContainer extends Container {
         AVG,
         COUNT,
         MIN,
-        MAX
+        MAX,
+        CUSTOM
     }
 
     Collection getAggregationPropertyIds();

@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ListActionType;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.aggregation.AggregationStrategy;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
@@ -377,10 +378,33 @@ public abstract class AbstractTableLoader extends ComponentLoader {
         if (aggregationElement != null) {
             final AggregationInfo aggregation = new AggregationInfo();
             aggregation.setPropertyPath((MetaPropertyPath) column.getId());
-            aggregation.setType(AggregationInfo.Type.valueOf(aggregationElement.attributeValue("type")));
+            String aggregationType = aggregationElement.attributeValue("type");
+            if (StringUtils.isNotEmpty(aggregationType)) {
+                aggregation.setType(AggregationInfo.Type.valueOf(aggregationType));
+            }
+
             Formatter formatter = loadFormatter(aggregationElement);
             aggregation.setFormatter(formatter == null ? column.getFormatter() : formatter);
             column.setAggregation(aggregation);
+
+            String strategyClass = aggregationElement.attributeValue("strategyClass");
+            if (StringUtils.isNotEmpty(strategyClass)) {
+                Class<Object> aggregationClass = scripting.loadClass(strategyClass);
+                if (aggregationClass == null) {
+                    throw new GuiDevelopmentException(String.format("Class %s is not found", strategyClass), context.getFullFrameId());
+                }
+
+                try {
+                    AggregationStrategy customStrategy = (AggregationStrategy) aggregationClass.newInstance();
+                    aggregation.setStrategy(customStrategy);
+                } catch (Exception e) {
+                    throw new RuntimeException("Unable to instantiate strategy for aggregation", e);
+                }
+            }
+
+            if (aggregationType == null && strategyClass == null) {
+                throw new GuiDevelopmentException("Incorrect aggregation - type or strategyClass is required", context.getFullFrameId());
+            }
         }
     }
 
@@ -408,8 +432,10 @@ public abstract class AbstractTableLoader extends ComponentLoader {
             }
 
             Class<Formatter> aClass = scripting.loadClass(className);
-            if (aClass == null)
-                throw new GuiDevelopmentException("Class " + className + " is not found", context.getFullFrameId());
+            if (aClass == null) {
+                throw new GuiDevelopmentException(String.format("Class %s is not found", className), context.getFullFrameId());
+            }
+
             try {
                 final Constructor<Formatter> constructor = aClass.getConstructor(Element.class);
                 try {

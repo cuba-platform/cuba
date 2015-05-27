@@ -18,6 +18,6 @@ public class BigDecimalAggregation extends BasicNumberAggregation<BigDecimal> {
 
     @Override
     public BigDecimal convert(Double result) {
-        return BigDecimal.valueOf(result);
+        return result == null ? null : BigDecimal.valueOf(result);
     }
 }

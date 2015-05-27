@@ -26,12 +26,8 @@ public class DateAggregation extends BasicAggregation<Date> {
                 helper.addItem((double) item.getTime());
             }
         }
-        return new Date(helper.min().longValue());
-    }
-
-    @Override
-    public boolean allowMin() {
-        return true;
+        Double result = helper.min();
+        return result != null ? new Date(result.longValue()) : null;
     }
 
     @Override
@@ -42,11 +38,7 @@ public class DateAggregation extends BasicAggregation<Date> {
                 helper.addItem((double) item.getTime());
             }
         }
-        return new Date(helper.max().longValue());
-    }
-
-    @Override
-    public boolean allowMax() {
-        return true;
+        Double result = helper.max();
+        return result != null ? new Date(result.longValue()) : null;
     }
 }

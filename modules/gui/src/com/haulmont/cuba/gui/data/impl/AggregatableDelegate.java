@@ -7,7 +7,10 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.data.aggregation.Aggregation;
+import com.haulmont.cuba.gui.data.aggregation.AggregationStrategy;
 import com.haulmont.cuba.gui.data.aggregation.Aggregations;
 import com.haulmont.cuba.gui.components.AggregationInfo;
 
@@ -29,10 +32,7 @@ public abstract class AggregatableDelegate<K> {
     protected Map<Object, String> doAggregation(Collection<K> itemIds, AggregationInfo[] aggregationInfos) {
         final Map<Object, String> aggregationResults = new HashMap<>();
         for (AggregationInfo aggregationInfo : aggregationInfos) {
-            Class rangeJavaClass = aggregationInfo.getPropertyPath().getRangeJavaClass();
-            final Aggregation aggregation = Aggregations.get(rangeJavaClass);
-
-            final Object value = doPropertyAggregation(aggregationInfo, aggregation, itemIds);
+            final Object value = doPropertyAggregation(aggregationInfo, itemIds);
 
             String formattedValue;
             if (aggregationInfo.getFormatter() != null) {
@@ -41,11 +41,35 @@ public abstract class AggregatableDelegate<K> {
             } else {
                 MetaPropertyPath propertyPath = aggregationInfo.getPropertyPath();
                 final Range range = propertyPath.getRange();
-                if (range.isDatatype() && aggregationInfo.getType() != AggregationInfo.Type.COUNT) {
-                    //noinspection unchecked
-                    formattedValue = Datatypes.getNN(aggregation.getJavaClass()).format(value);
+                if (range.isDatatype()) {
+                    if (aggregationInfo.getType() != AggregationInfo.Type.COUNT) {
+                        Class resultClass;
+                        if (aggregationInfo.getStrategy() == null) {
+                            Class rangeJavaClass = aggregationInfo.getPropertyPath().getRangeJavaClass();
+                            Aggregation aggregation = Aggregations.get(rangeJavaClass);
+                            resultClass = aggregation.getResultClass();
+                        } else {
+                            resultClass = aggregationInfo.getStrategy().getResultClass();
+                        }
+
+                        UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+                        Locale locale = userSessionSource.getLocale();
+                        //noinspection unchecked
+                        formattedValue = Datatypes.getNN(resultClass).format(value, locale);
+                    } else {
+                        formattedValue = value.toString();
+                    }
                 } else {
-                    formattedValue = value.toString();
+                    if (aggregationInfo.getStrategy() != null) {
+                        Class resultClass = aggregationInfo.getStrategy().getResultClass();
+
+                        UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+                        Locale locale = userSessionSource.getLocale();
+                        //noinspection unchecked
+                        formattedValue = Datatypes.getNN(resultClass).format(value, locale);
+                    } else {
+                        formattedValue = value.toString();
+                    }
                 }
             }
 
@@ -55,23 +79,31 @@ public abstract class AggregatableDelegate<K> {
     }
 
     @SuppressWarnings("unchecked")
-    protected Object doPropertyAggregation(AggregationInfo aggregationInfo, Aggregation aggregation,
-                                           Collection<K> itemIds) {
+    protected Object doPropertyAggregation(AggregationInfo aggregationInfo, Collection<K> itemIds) {
         List items = valuesByProperty(aggregationInfo.getPropertyPath(), itemIds);
-        switch (aggregationInfo.getType()) {
-            case COUNT:
-                return aggregation.count(items);
-            case AVG:
-                return aggregation.avg(items);
-            case MAX:
-                return aggregation.max(items);
-            case MIN:
-                return aggregation.min(items);
-            case SUM:
-                return aggregation.sum(items);
-            default:
-                throw new IllegalArgumentException(String.format("Unknown aggregation type: %s",
-                        aggregationInfo.getType()));
+
+        if (aggregationInfo.getStrategy() == null) {
+            Class rangeJavaClass = aggregationInfo.getPropertyPath().getRangeJavaClass();
+            Aggregation aggregation = Aggregations.get(rangeJavaClass);
+
+            switch (aggregationInfo.getType()) {
+                case COUNT:
+                    return aggregation.count(items);
+                case AVG:
+                    return aggregation.avg(items);
+                case MAX:
+                    return aggregation.max(items);
+                case MIN:
+                    return aggregation.min(items);
+                case SUM:
+                    return aggregation.sum(items);
+                default:
+                    throw new IllegalArgumentException(String.format("Unknown aggregation type: %s",
+                            aggregationInfo.getType()));
+            }
+        } else {
+            AggregationStrategy strategy = aggregationInfo.getStrategy();
+            return strategy.aggregate(items);
         }
     }
 

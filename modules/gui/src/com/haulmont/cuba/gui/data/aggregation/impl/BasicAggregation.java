@@ -26,18 +26,8 @@ public class BasicAggregation<T> implements Aggregation<T> {
     }
 
     @Override
-    public boolean allowSum() {
-        return false;
-    }
-
-    @Override
     public T avg(Collection<T> items) {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean allowAvg() {
-        return false;
     }
 
     @Override
@@ -46,18 +36,8 @@ public class BasicAggregation<T> implements Aggregation<T> {
     }
 
     @Override
-    public boolean allowMin() {
-        return false;
-    }
-
-    @Override
     public T max(Collection<T> items) {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean allowMax() {
-        return false;
     }
 
     @Override
@@ -66,12 +46,7 @@ public class BasicAggregation<T> implements Aggregation<T> {
     }
 
     @Override
-    public boolean allowCount() {
-        return true;
-    }
-
-    @Override
-    public Class<T> getJavaClass() {
+    public Class<T> getResultClass() {
         return clazz;
     }
 }

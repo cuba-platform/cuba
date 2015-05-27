@@ -906,7 +906,8 @@
                     <xs:sequence>
                         <xs:element name="formatter" minOccurs="0" maxOccurs="1" type="formatterType"/>
                     </xs:sequence>
-                    <xs:attribute name="type" type="aggregation" use="required"/>
+                    <xs:attribute name="type" type="aggregation" use="optional"/>
+                    <xs:attribute name="strategyClass" type="xs:string" use="optional"/>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>

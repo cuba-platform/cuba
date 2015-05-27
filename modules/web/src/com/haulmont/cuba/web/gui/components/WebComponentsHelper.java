@@ -236,6 +236,8 @@ public class WebComponentsHelper {
                 return AggregationContainer.Type.MIN;
             case SUM:
                 return AggregationContainer.Type.SUM;
+            case CUSTOM:
+                return AggregationContainer.Type.CUSTOM;
             default:
                 throw new IllegalArgumentException("Unknown function: " + function);
         }

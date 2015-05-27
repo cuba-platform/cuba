@@ -5,6 +5,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.gui.data.aggregation.AggregationStrategy;
 
 /**
  * @author gorodnov
@@ -17,12 +18,14 @@ public class AggregationInfo {
         AVG,
         COUNT,
         MIN,
-        MAX
+        MAX,
+        CUSTOM
     }
 
     private MetaPropertyPath propertyPath;
     private Type type;
     private Formatter formatter;
+    private AggregationStrategy strategy;
 
     public MetaPropertyPath getPropertyPath() {
         return propertyPath;
@@ -46,5 +49,16 @@ public class AggregationInfo {
 
     public void setFormatter(Formatter formatter) {
         this.formatter = formatter;
+    }
+
+    public AggregationStrategy getStrategy() {
+        return strategy;
+    }
+
+    public void setStrategy(AggregationStrategy strategy) {
+        if (strategy != null) {
+            setType(Type.CUSTOM);
+        }
+        this.strategy = strategy;
     }
 }

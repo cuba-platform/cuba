@@ -15,6 +15,6 @@ public class LongAggregation extends BasicNumberAggregation<Long> {
 
     @Override
     protected Long convert(Double result) {
-        return result.longValue();
+        return result == null ? null : result.longValue();
     }
 }

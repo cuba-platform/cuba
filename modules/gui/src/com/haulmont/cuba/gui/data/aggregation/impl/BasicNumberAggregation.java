@@ -30,11 +30,6 @@ public abstract class BasicNumberAggregation<T extends Number> extends BasicAggr
     }
 
     @Override
-    public boolean allowSum() {
-        return true;
-    }
-
-    @Override
     public T avg(Collection<T> items) {
         NumberAggregationHelper helper = new NumberAggregationHelper();
         for (final T item : items) {
@@ -43,11 +38,6 @@ public abstract class BasicNumberAggregation<T extends Number> extends BasicAggr
             }
         }
         return convert(helper.avg());
-    }
-
-    @Override
-    public boolean allowAvg() {
-        return true;
     }
 
     @Override
@@ -62,11 +52,6 @@ public abstract class BasicNumberAggregation<T extends Number> extends BasicAggr
     }
 
     @Override
-    public boolean allowMax() {
-        return true;
-    }
-
-    @Override
     public T min(Collection<T> items) {
         NumberAggregationHelper helper = new NumberAggregationHelper();
         for (final T item : items) {
@@ -75,11 +60,6 @@ public abstract class BasicNumberAggregation<T extends Number> extends BasicAggr
             }
         }
         return convert(helper.min());
-    }
-
-    @Override
-    public boolean allowMin() {
-        return true;
     }
 
     protected abstract T convert(Double result);
