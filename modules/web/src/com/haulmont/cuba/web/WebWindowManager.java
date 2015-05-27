@@ -700,10 +700,19 @@ public class WebWindowManager extends WindowManager {
         removeFromWindowMap(openMode.getWindow());
     }
 
+    /**
+     * Check modifications and close all screens in all main windows.
+     * @param runIfOk   a closure to run after all screens are closed
+     */
     public void checkModificationsAndCloseAll(Runnable runIfOk) {
         checkModificationsAndCloseAll(runIfOk, null);
     }
 
+    /**
+     * Check modifications and close all screens in all main windows.
+     * @param runIfOk       a closure to run after all screens are closed
+     * @param runIfCancel   a closure to run if there were modifications and a user canceled the operation
+     */
     public void checkModificationsAndCloseAll(final Runnable runIfOk, final @Nullable Runnable runIfCancel) {
         boolean modified = false;
         for (Window window : getOpenWindows()) {
@@ -731,12 +740,8 @@ public class WebWindowManager extends WindowManager {
                             new AbstractAction(messages.getMessage(WebWindow.class, "closeApplication")) {
                                 @Override
                                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                                    app.cleanupBackgroundTasks();
-                                    app.closeAllWindows();
-
-                                    if (runIfOk != null) {
-                                        runIfOk.run();
-                                    }
+                                    closeAllWindows();
+                                    runIfOk.run();
                                 }
 
                                 @Override
@@ -760,13 +765,22 @@ public class WebWindowManager extends WindowManager {
                     }
             );
         } else {
-            app.cleanupBackgroundTasks();
-            app.closeAllWindows();
-
+            closeAllWindows();
             runIfOk.run();
         }
     }
 
+    /**
+     * Close all screens in all main windows (browser tabs).
+     */
+    public void closeAllWindows() {
+        app.cleanupBackgroundTasks();
+        app.closeAllWindows();
+    }
+
+    /**
+     * Close all screens in the main window (browser tab) this WindowManager belongs to.
+     */
     public void closeAll() {
         List<Map.Entry<Window, WindowOpenMode>> entries = new ArrayList<>(windowOpenMode.entrySet());
         for (int i = entries.size() - 1; i >= 0; i--) {
@@ -1166,7 +1180,8 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     protected Window getWindow(Integer hashCode) {
-        if (getConfiguredWorkArea().getMode() == AppWorkArea.Mode.SINGLE) {
+        AppWorkArea workArea = appWindow.getMainWindow().getWorkArea();
+        if (workArea == null || workArea.getMode() == AppWorkArea.Mode.SINGLE) {
             return null;
         }
 
@@ -1255,17 +1270,20 @@ public class WebWindowManager extends WindowManager {
             }
         });
 
-        getConfiguredWorkArea().addStateChangeListener(new AppWorkArea.StateChangeListener() {
-            @Override
-            public void stateChanged(AppWorkArea.State newState) {
-                if (newState == AppWorkArea.State.WINDOW_CONTAINER) {
-                    initTabShortcuts();
+        AppWorkArea workArea = appWindow.getMainWindow().getWorkArea();
+        if (workArea != null) {
+            workArea.addStateChangeListener(new AppWorkArea.StateChangeListener() {
+                @Override
+                public void stateChanged(AppWorkArea.State newState) {
+                    if (newState == AppWorkArea.State.WINDOW_CONTAINER) {
+                        initTabShortcuts();
 
-                    // listener used only once
-                    getConfiguredWorkArea().removeStateChangeListener(this);
+                        // listener used only once
+                        getConfiguredWorkArea().removeStateChangeListener(this);
+                    }
                 }
-            }
-        });
+            });
+        }
 
         afterShowWindow(mainWindow);
     }
