@@ -255,6 +255,8 @@ public class FilterEditor extends AbstractWindow {
         filterEntity.setName((String) filterName.getValue());
         if (availableForAllCb.getValue())
             filterEntity.setUser(null);
+        else
+            filterEntity.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
         filterEntity.setIsDefault((Boolean) defaultCb.getValue());
         filterEntity.setApplyDefault((Boolean) applyDefaultCb.getValue());
         close(COMMIT_ACTION_ID, true);
