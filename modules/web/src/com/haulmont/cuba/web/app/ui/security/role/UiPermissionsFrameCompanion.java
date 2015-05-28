@@ -38,7 +38,7 @@ public class UiPermissionsFrameCompanion implements UiPermissionsFrame.Companion
                 UiPermissionVariant permissionVariant = entity.getPermissionVariant();
 
                 if (permissionVariant != UiPermissionVariant.NOTSET) {
-                    builder.append("<span style=\"color:").append(permissionVariant.getColor()).append(";\">")
+                    builder.append("<span style=\"role-permission-").append(permissionVariant.getColor()).append("\">")
                             .append(messages.getMessage(permissionVariant)).append("</span>");
                 }
 

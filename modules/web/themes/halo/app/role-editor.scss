@@ -1,0 +1,39 @@
+/*
+ * Copyright (c) 2008-2015 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+// Version: $Id$// Version: $Id$
+
+@mixin cuba-role-editor {
+  .role-permission-red {
+    color: #ff0000;
+  }
+
+  .role-permission-green {
+    color: green;
+  }
+
+  .role-permission-black {
+    color: #000000;
+  }
+
+  .role-permission-blue {
+    color: blue;
+  }
+
+  .role-permission-red,
+  .role-permission-green,
+  .role-permission-blue,
+  .role-permission-black {
+    padding: round($v-unit-size/10) round($v-unit-size/3);
+  }
+
+  .v-selected .role-permission-red,
+  .v-selected .role-permission-green,
+  .v-selected .role-permission-blue,
+  .v-selected .role-permission-black {
+    border-radius: round($v-unit-size/5);
+    background: $v-table-background-color or valo-table-background-color();
+  }
+}

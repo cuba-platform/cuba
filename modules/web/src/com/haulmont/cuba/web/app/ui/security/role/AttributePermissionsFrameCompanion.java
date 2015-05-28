@@ -43,7 +43,7 @@ public class AttributePermissionsFrameCompanion implements AttributePermissionsF
                             if (i > 0)
                                 builder.append(", ");
 
-                            builder.append("<span style=\"color:").append(permissionVariant.getColor()).append(";\">")
+                            builder.append("<span class=\"role-permission-").append(permissionVariant.getColor()).append("\">")
                                     .append(attributeTarget.getId()).append("</span>");
                         } else {
                             builder.append(", ...");

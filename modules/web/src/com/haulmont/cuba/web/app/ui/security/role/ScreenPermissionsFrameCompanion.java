@@ -39,7 +39,7 @@ public class ScreenPermissionsFrameCompanion implements ScreenPermissionsFrame.C
                 PermissionVariant permissionVariant = entity.getPermissionVariant();
 
                 if (permissionVariant != PermissionVariant.NOTSET) {
-                    builder.append("<span style=\"color:").append(permissionVariant.getColor()).append(";\">")
+                    builder.append("<span class=\"role-permission-").append(permissionVariant.getColor()).append("\">")
                             .append(messages.getMessage(permissionVariant)).append("</span>");
                 }
 
