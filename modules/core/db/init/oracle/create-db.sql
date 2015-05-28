@@ -58,7 +58,7 @@ create table SYS_CATEGORY_ATTR (
     DELETED_BY varchar2(50),
     CATEGORY_ENTITY_TYPE varchar(4000),
     NAME varchar2(255),
-    CODE varchar2(50) not null,
+    CODE varchar2(100) not null,
     CATEGORY_ID varchar2(32),
     IS_ENTITY char(1),
     DATA_TYPE varchar2(200),
