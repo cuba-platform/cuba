@@ -537,8 +537,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         return context;
     }
 
-    @SuppressWarnings("unused")
-    protected void afterLoadData(Map<String, Object> params, LoadContext context, Collection<T> entities) {
+    protected void afterLoadData(@SuppressWarnings("unused") Map<String, Object> params, LoadContext context, Collection<T> entities) {
         detachListener(data.values());
         data.clear();
 
@@ -566,7 +565,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     @SuppressWarnings("unchecked")
-    public Map<Object, String> aggregate(AggregationInfo[] aggregationInfos, Collection itemIds) {
+    public Map<AggregationInfo, String> aggregate(AggregationInfo[] aggregationInfos, Collection itemIds) {
         return aggregatableDelegate.aggregate(aggregationInfos, itemIds);
     }
 

@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.aggregation.Aggregation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -66,6 +67,10 @@ public interface Table
 
     void setColumnAlignment(String columnId, ColumnAlignment alignment);
     void setColumnAlignment(Column column, ColumnAlignment alignment);
+
+    void addAggregationProperty(String columnId, AggregationInfo.Type type);
+    void addAggregationProperty(Column columnId, AggregationInfo.Type type);
+    void removeAggregationProperty(String columnId);
 
     /**
      * Assign action to be executed on double click inside a table row.
@@ -462,6 +467,9 @@ public interface Table
 
         public void setAggregation(AggregationInfo aggregation) {
             this.aggregation = aggregation;
+            if (owner != null) {
+                owner.addAggregationProperty(this, aggregation.getType());
+            }
         }
 
         public boolean isCalculatable() {

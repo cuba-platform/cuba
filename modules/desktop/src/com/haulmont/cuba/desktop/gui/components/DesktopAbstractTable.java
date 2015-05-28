@@ -29,7 +29,6 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.presentations.Presentations;
-import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.ObjectUtils;
@@ -50,7 +49,8 @@ import javax.swing.AbstractAction;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -1426,6 +1426,18 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             repaintImplIfNeeded();
             setContentRepaintEnabled(oldContentRepaintEnabled);
         }
+    }
+
+    @Override
+    public void addAggregationProperty(String columnId, AggregationInfo.Type type) {
+    }
+
+    @Override
+    public void addAggregationProperty(Column columnId, AggregationInfo.Type type) {
+    }
+
+    @Override
+    public void removeAggregationProperty(String columnId) {
     }
 
     @Override

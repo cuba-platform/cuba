@@ -293,7 +293,7 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
         /**
          * Perform aggregation
          */
-        Map<Object, String> aggregate(AggregationInfo[] aggregationInfos, Collection<K> itemIds);
+        Map<AggregationInfo, String> aggregate(AggregationInfo[] aggregationInfos, Collection<K> itemIds);
     }
 
     /**

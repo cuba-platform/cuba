@@ -21,7 +21,7 @@ import java.util.*;
  * @version $Id$
  */
 public abstract class AggregatableDelegate<K> {
-    public Map<Object, String> aggregate(AggregationInfo[] aggregationInfos, Collection<K> itemIds) {
+    public Map<AggregationInfo, String> aggregate(AggregationInfo[] aggregationInfos, Collection<K> itemIds) {
         if (aggregationInfos == null || aggregationInfos.length == 0) {
             throw new NullPointerException("Aggregation must be executed at least by one field");
         }
@@ -29,8 +29,8 @@ public abstract class AggregatableDelegate<K> {
         return doAggregation(itemIds, aggregationInfos);
     }
 
-    protected Map<Object, String> doAggregation(Collection<K> itemIds, AggregationInfo[] aggregationInfos) {
-        final Map<Object, String> aggregationResults = new HashMap<>();
+    protected Map<AggregationInfo, String> doAggregation(Collection<K> itemIds, AggregationInfo[] aggregationInfos) {
+        final Map<AggregationInfo, String> aggregationResults = new HashMap<>();
         for (AggregationInfo aggregationInfo : aggregationInfos) {
             final Object value = doPropertyAggregation(aggregationInfo, itemIds);
 
@@ -45,7 +45,7 @@ public abstract class AggregatableDelegate<K> {
                     if (aggregationInfo.getType() != AggregationInfo.Type.COUNT) {
                         Class resultClass;
                         if (aggregationInfo.getStrategy() == null) {
-                            Class rangeJavaClass = aggregationInfo.getPropertyPath().getRangeJavaClass();
+                            Class rangeJavaClass = propertyPath.getRangeJavaClass();
                             Aggregation aggregation = Aggregations.get(rangeJavaClass);
                             resultClass = aggregation.getResultClass();
                         } else {
@@ -73,7 +73,7 @@ public abstract class AggregatableDelegate<K> {
                 }
             }
 
-            aggregationResults.put(aggregationInfo.getPropertyPath(), formattedValue);
+            aggregationResults.put(aggregationInfo, formattedValue);
         }
         return aggregationResults;
     }

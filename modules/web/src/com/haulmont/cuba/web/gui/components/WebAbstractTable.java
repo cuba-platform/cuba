@@ -1313,6 +1313,21 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
+    public void addAggregationProperty(String columnId, AggregationInfo.Type type) {
+        addAggregationProperty(getColumn(columnId), type);
+    }
+
+    @Override
+    public void addAggregationProperty(Column column, AggregationInfo.Type type) {
+        component.addContainerPropertyAggregation(column.getId(), WebComponentsHelper.convertAggregationType(type));
+    }
+
+    @Override
+    public void removeAggregationProperty(String columnId) {
+        component.removeContainerPropertyAggregation(getColumn(columnId).getId());
+    }
+
+    @Override
     public void setColumnCaption(String columnId, String caption) {
         Column column = getColumn(columnId);
         if (column == null) {
@@ -1413,22 +1428,28 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     protected Map<Object, Object> __aggregate(AggregationContainer container, AggregationContainer.Context context) {
         final List<AggregationInfo> aggregationInfos = new LinkedList<>();
-        for (final Object o : container.getAggregationPropertyIds()) {
-            final MetaPropertyPath propertyId = (MetaPropertyPath) o;
+        for (final Object propertyId : container.getAggregationPropertyIds()) {
             final Table.Column column = columns.get(propertyId);
             if (column.getAggregation() != null) {
                 aggregationInfos.add(column.getAggregation());
             }
         }
         @SuppressWarnings("unchecked")
-        Map<Object, Object> results = ((CollectionDatasource.Aggregatable) datasource).aggregate(
+        Map<AggregationInfo, Object> results = ((CollectionDatasource.Aggregatable) datasource).aggregate(
                 aggregationInfos.toArray(new AggregationInfo[aggregationInfos.size()]),
                 context.getItemIds()
         );
-        if (aggregationCells != null) {
-            results = __handleAggregationResults(context, results);
+        Map<Object, Object> resultsByColumns = new LinkedHashMap<>();
+        for (final Object propertyId : container.getAggregationPropertyIds()) {
+            final Table.Column column = columns.get(propertyId);
+            if (column.getAggregation() != null) {
+                resultsByColumns.put(column.getId(), results.get(column.getAggregation()));
+            }
         }
-        return results;
+        if (aggregationCells != null) {
+            resultsByColumns = __handleAggregationResults(context, resultsByColumns);
+        }
+        return resultsByColumns;
     }
 
     protected Map<Object, Object> __handleAggregationResults(AggregationContainer.Context context,
