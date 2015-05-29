@@ -574,7 +574,7 @@ public class AbstractViewRepository implements ViewRepository {
                 } else {
                     ViewProperty existingProperty = view.getProperty(propertyName);
                     if (existingProperty != null && existingProperty.getView() != null) {
-                        refView = existingProperty.getView();
+                        refView = new View(existingProperty.getView(), rangeClass, "", true);
                     } else {
                         refView = new View(rangeClass);
                     }
