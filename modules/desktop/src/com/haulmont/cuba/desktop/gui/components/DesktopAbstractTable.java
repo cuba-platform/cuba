@@ -127,6 +127,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     protected Document defaultSettings;
     protected boolean multiLineCells;
+    protected boolean settigsEnabled = true;
 
     protected DesktopAbstractTable() {
         shortcutsDelegate.setAllowEnterShortcut(false);
@@ -1703,6 +1704,10 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     @Override
     public void applySettings(Element element) {
+        if (!isSettingsEnabled()) {
+            return;
+        }
+
         if (defaultSettings == null) {
             // save default view before apply custom
             defaultSettings = DocumentHelper.createDocument();
@@ -1716,7 +1721,17 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     @Override
     public boolean saveSettings(Element element) {
-        return tableSettings.saveSettings(element);
+        return isSettingsEnabled() && tableSettings.saveSettings(element);
+    }
+
+    @Override
+    public boolean isSettingsEnabled() {
+        return settigsEnabled;
+    }
+
+    @Override
+    public void setSettingsEnabled(boolean settingsEnabled) {
+        this.settigsEnabled = settingsEnabled;
     }
 
     @Override

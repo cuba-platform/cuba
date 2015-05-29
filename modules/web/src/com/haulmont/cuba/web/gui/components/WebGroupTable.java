@@ -84,6 +84,10 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
 
     @Override
     public boolean saveSettings(Element element) {
+        if (!isSettingsEnabled()) {
+            return false;
+        }
+
         super.saveSettings(element);
 
         Element groupPropertiesElement = element.element("groupProperties");

@@ -111,6 +111,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     protected static final int MAX_TEXT_LENGTH_GAP = 10;
 
     protected Security security = AppBeans.get(Security.NAME);
+    protected boolean settigsEnabled = true;
 
     @Override
     public java.util.List<Table.Column> getColumns() {
@@ -1024,6 +1025,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public void applySettings(Element element) {
+        if (!isSettingsEnabled()) {
+            return;
+        }
+
         if (defaultSettings == null) {
             // save default view before apply custom
             defaultSettings = DocumentHelper.createDocument();
@@ -1131,6 +1136,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public boolean saveSettings(Element element) {
+        if (!isSettingsEnabled()) {
+            return false;
+        }
+
         if (isUsePresentations()) {
             element.addAttribute("textSelection", String.valueOf(component.isTextSelectionEnabled()));
         }
@@ -1163,6 +1172,16 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         }
 
         return true;
+    }
+
+    @Override
+    public boolean isSettingsEnabled() {
+        return settigsEnabled;
+    }
+
+    @Override
+    public void setSettingsEnabled(boolean settingsEnabled) {
+        this.settigsEnabled = settingsEnabled;
     }
 
     @Override

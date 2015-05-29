@@ -33,6 +33,7 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
 
     protected Map<String, Component> componentByIds = new HashMap<>();
     protected Collection<Component> ownComponents = new LinkedHashSet<>();
+    protected boolean settigsEnabled = true;
 
     public DesktopSplitPanel() {
         impl = new JSplitPane() {
@@ -233,6 +234,10 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
 
     @Override
     public void applySettings(Element element) {
+        if (!isSettingsEnabled()) {
+            return;
+        }
+
         Element e = element.element("position");
         if (e != null) {
             String value = e.attributeValue("value");
@@ -249,6 +254,10 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
 
     @Override
     public boolean saveSettings(Element element) {
+        if (!isSettingsEnabled()) {
+            return false;
+        }
+
         if (!positionChanged) {
             return false; // most probably user didn't change the divider location
         }
@@ -260,6 +269,16 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
         }
         e.addAttribute("value", String.valueOf(location));
         return true;
+    }
+
+    @Override
+    public boolean isSettingsEnabled() {
+        return settigsEnabled;
+    }
+
+    @Override
+    public void setSettingsEnabled(boolean settingsEnabled) {
+        this.settigsEnabled = settingsEnabled;
     }
 
     @Override

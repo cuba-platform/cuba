@@ -22,12 +22,13 @@ import java.util.Objects;
  */
 public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayout, AutoExpanding {
 
-    private Orientation orientation = Orientation.VERTICAL;
+    protected Orientation orientation = Orientation.VERTICAL;
 
-    private CollapsiblePanel collapsiblePanel;
+    protected CollapsiblePanel collapsiblePanel;
 
-    private List<ExpandListener> expandListeners = null;
-    private List<CollapseListener> collapseListeners = null;
+    protected List<ExpandListener> expandListeners = null;
+    protected List<CollapseListener> collapseListeners = null;
+    protected boolean settigsEnabled = true;
 
     public DesktopGroupBox() {
         collapsiblePanel = new CollapsiblePanel(super.getComposition());
@@ -160,17 +161,23 @@ public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayou
 
     @Override
     public void applySettings(Element element) {
-        Element groupBoxElement = element.element("groupBox");
-        if (groupBoxElement != null) {
-            String expanded = groupBoxElement.attributeValue("expanded");
-            if (expanded != null) {
-                setExpanded(BooleanUtils.toBoolean(expanded));
+        if (isSettingsEnabled()) {
+            Element groupBoxElement = element.element("groupBox");
+            if (groupBoxElement != null) {
+                String expanded = groupBoxElement.attributeValue("expanded");
+                if (expanded != null) {
+                    setExpanded(BooleanUtils.toBoolean(expanded));
+                }
             }
         }
     }
 
     @Override
     public boolean saveSettings(Element element) {
+        if (!isSettingsEnabled()) {
+            return false;
+        }
+
         Element groupBoxElement = element.element("groupBox");
         if (groupBoxElement != null) {
             element.remove(groupBoxElement);
@@ -178,6 +185,16 @@ public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayou
         groupBoxElement = element.addElement("groupBox");
         groupBoxElement.addAttribute("expanded", BooleanUtils.toStringTrueFalse(isExpanded()));
         return true;
+    }
+
+    @Override
+    public boolean isSettingsEnabled() {
+        return settigsEnabled;
+    }
+
+    @Override
+    public void setSettingsEnabled(boolean settingsEnabled) {
+        this.settigsEnabled = settingsEnabled;
     }
 
     @Override

@@ -36,6 +36,7 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
 
     protected List<ExpandListener> expandListeners = null;
     protected List<CollapseListener> collapseListeners = null;
+    protected boolean settigsEnabled = true;
 
     public WebGroupBox() {
         component = new CubaGroupBox();
@@ -278,17 +279,23 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
 
     @Override
     public void applySettings(Element element) {
-        Element groupBoxElement = element.element("groupBox");
-        if (groupBoxElement != null) {
-            String expanded = groupBoxElement.attributeValue("expanded");
-            if (expanded != null) {
-                setExpanded(BooleanUtils.toBoolean(expanded));
+        if (isSettingsEnabled()) {
+            Element groupBoxElement = element.element("groupBox");
+            if (groupBoxElement != null) {
+                String expanded = groupBoxElement.attributeValue("expanded");
+                if (expanded != null) {
+                    setExpanded(BooleanUtils.toBoolean(expanded));
+                }
             }
         }
     }
 
     @Override
     public boolean saveSettings(Element element) {
+        if (!isSettingsEnabled()) {
+            return false;
+        }
+
         Element groupBoxElement = element.element("groupBox");
         if (groupBoxElement != null) {
             element.remove(groupBoxElement);
@@ -296,6 +303,16 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
         groupBoxElement = element.addElement("groupBox");
         groupBoxElement.addAttribute("expanded", BooleanUtils.toStringTrueFalse(isExpanded()));
         return true;
+    }
+
+    @Override
+    public boolean isSettingsEnabled() {
+        return settigsEnabled;
+    }
+
+    @Override
+    public void setSettingsEnabled(boolean settingsEnabled) {
+        this.settigsEnabled = settingsEnabled;
     }
 
     @Override

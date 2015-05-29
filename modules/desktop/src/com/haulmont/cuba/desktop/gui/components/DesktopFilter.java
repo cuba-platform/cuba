@@ -30,6 +30,7 @@ import java.util.List;
 public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements Filter, FilterImplementation {
 
     protected FilterDelegate delegate;
+    protected boolean settigsEnabled = true;
 
     public DesktopFilter() {
         delegate = AppBeans.get(FilterDelegate.class);
@@ -126,12 +127,24 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     @Override
     public void applySettings(Element element) {
-        delegate.applySettings(element);
+        if (isSettingsEnabled()) {
+            delegate.applySettings(element);
+        }
     }
 
     @Override
     public boolean saveSettings(Element element) {
-        return delegate.saveSettings(element);
+        return isSettingsEnabled() && delegate.saveSettings(element);
+    }
+
+    @Override
+    public boolean isSettingsEnabled() {
+        return settigsEnabled;
+    }
+
+    @Override
+    public void setSettingsEnabled(boolean settingsEnabled) {
+        this.settigsEnabled = settingsEnabled;
     }
 
     @Override

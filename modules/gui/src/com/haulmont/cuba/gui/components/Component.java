@@ -283,6 +283,9 @@ public interface Component {
     interface HasSettings {
         void applySettings(Element element);
         boolean saveSettings(Element element);
+
+        boolean isSettingsEnabled();
+        void setSettingsEnabled(boolean settingsEnabled);
     }
 
     /**

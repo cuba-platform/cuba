@@ -32,6 +32,7 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     protected SplitPanel.PositionUpdateListener positionListener;
 
     protected int orientation;
+    protected boolean settigsEnabled = true;
 
     @Override
     public void add(Component childComponent) {
@@ -174,6 +175,10 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
 
     @Override
     public void applySettings(Element element) {
+        if (!isSettingsEnabled()) {
+            return;
+        }
+
         Element e = element.element("position");
         if (e != null) {
             String value = e.attributeValue("value");
@@ -192,6 +197,10 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
 
     @Override
     public boolean saveSettings(Element element) {
+        if (!isSettingsEnabled()) {
+            return false;
+        }
+
         Element e = element.element("position");
         if (e == null) {
             e = element.addElement("position");
@@ -199,6 +208,16 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
         e.addAttribute("value", String.valueOf(component.getSplitPosition()));
         e.addAttribute("unit", String.valueOf(component.getSplitPositionUnit()));
         return true;
+    }
+
+    @Override
+    public boolean isSettingsEnabled() {
+        return settigsEnabled;
+    }
+
+    @Override
+    public void setSettingsEnabled(boolean settingsEnabled) {
+        this.settigsEnabled = settingsEnabled;
     }
 
     @Override
