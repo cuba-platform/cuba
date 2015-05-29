@@ -94,7 +94,10 @@ public class CubaFoldersPane extends VerticalLayout {
     protected BackgroundTaskWrapper<Integer, List<AppFolder>> folderUpdateBackgroundTaskWrapper;
 
     public CubaFoldersPane() {
-        setHeight(100, Unit.PERCENTAGE);
+        setSizeFull();
+        setMargin(false);
+        setSpacing(true);
+
         setStyleName("cuba-folders-pane");
         //noinspection unchecked
         folderUpdateBackgroundTaskWrapper = new BackgroundTaskWrapper(new AppFolderUpdateBackgroundTask(10));
@@ -116,10 +119,6 @@ public class CubaFoldersPane extends VerticalLayout {
             return;
 
         if (show) {
-            setSizeFull();
-            setMargin(false);
-            setSpacing(true);
-
             Component appFoldersPane = createAppFoldersPane();
             if (appFoldersPane != null) {
                 appFoldersPane.setHeight("100%");
