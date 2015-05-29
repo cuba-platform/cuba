@@ -46,7 +46,7 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
 
     protected boolean aggregatable = false;
 
-    protected List<ColumnCollapseListener> columnCollapseListeners = new ArrayList<>();
+    protected List<ColumnCollapseListener> columnCollapseListeners; // lazily intialized List
 
     @Override
     protected CubaTableState getState() {
@@ -267,17 +267,24 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
 
     @Override
     public void addColumnCollapseListener(ColumnCollapseListener listener) {
+        if (columnCollapseListeners == null) {
+            columnCollapseListeners = new LinkedList<>();
+        }
+
         columnCollapseListeners.add(listener);
     }
 
     @Override
     public void removeColumnCollapseListener(ColumnCollapseListener listener) {
-        columnCollapseListeners.remove(listener);
+        if (columnCollapseListeners != null) {
+            columnCollapseListeners.remove(listener);
+        }
     }
 
     @Override
     public void setColumnCollapsed(Object propertyId, boolean collapsed) throws IllegalStateException {
-        if (isColumnCollapsed(propertyId) != collapsed) {
+        if (isColumnCollapsed(propertyId) != collapsed
+                && columnCollapseListeners != null) {
             for (ColumnCollapseListener listener : columnCollapseListeners) {
                 listener.columnCollapsed(propertyId, collapsed);
             }

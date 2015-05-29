@@ -80,13 +80,13 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     protected Table.StyleProvider styleProvider;
     protected Table.IconProvider iconProvider;
 
-    protected Map<Table.Column, String> requiredColumns = new HashMap<>();
+    protected Map<Table.Column, String> requiredColumns; // lazily initialized Map
 
-    protected Map<Table.Column, Set<Field.Validator>> validatorsMap = new HashMap<>();
+    protected Map<Table.Column, Set<Field.Validator>> validatorsMap; // lazily initialized Map
 
-    protected Set<com.haulmont.cuba.gui.components.Field.Validator> tableValidators = new LinkedHashSet<>();
+    protected Set<com.haulmont.cuba.gui.components.Field.Validator> tableValidators; // lazily initialized LinkedHashSet
 
-    protected Map<Entity, Datasource> fieldDatasources = new WeakHashMap<>();
+    protected Map<Entity, Datasource> fieldDatasources; // lazily initialized WeakHashMap;
 
     protected CompositionLayout componentComposition;
 
@@ -103,10 +103,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     protected Presentations presentations;
     protected Document defaultSettings;
 
-    protected List<ColumnCollapseListener> columnCollapseListeners = new ArrayList<>();
+    protected List<ColumnCollapseListener> columnCollapseListeners; // lazily initialized List
 
     // Map column id to Printable representation
-    protected Map<String, Printable> printables = new HashMap<>();
+    protected Map<String, Printable> printables; // lazily initialized Map
 
     protected static final int MAX_TEXT_LENGTH_GAP = 10;
 
@@ -163,6 +163,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     @SuppressWarnings("unchecked")
     @Override
     public Datasource getItemDatasource(Entity item) {
+        if (fieldDatasources == null) {
+            fieldDatasources = new WeakHashMap<>();
+        }
+
         Datasource fieldDatasource = fieldDatasources.get(item);
 
         if (fieldDatasource == null) {
@@ -203,12 +207,18 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public void addPrintable(String columnId, Printable printable) {
+        if (printables == null) {
+            printables = new HashMap<>();
+        }
+
         printables.put(columnId, printable);
     }
 
     @Override
     public void removePrintable(String columnId) {
-        printables.remove(columnId);
+        if (printables != null) {
+            printables.remove(columnId);
+        }
     }
 
     @Override
@@ -220,7 +230,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     @Nullable
     @Override
     public Printable getPrintable(String columnId) {
-        Printable printable = printables.get(columnId);
+        Printable printable = printables != null ? printables.get(columnId) : null;
         if (printable != null) {
             return printable;
         } else {
@@ -529,17 +539,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             }
         });
 
-        // vaadin7
-        component.addColumnCollapseListener(new CubaEnhancedTable.ColumnCollapseListener() {
-            @Override
-            public void columnCollapsed(Object columnId, boolean collapsed) {
-                final Column collapsedColumn = getColumn(columnId.toString());
-                for (ColumnCollapseListener listener : columnCollapseListeners) {
-                    listener.columnCollapsed(collapsedColumn, collapsed);
-                }
-            }
-        });
-
         component.setSelectable(true);
         component.setTableFieldFactory(new WebTableFieldFactory());
         component.setColumnCollapsingAllowed(true);
@@ -711,18 +710,20 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         datasource.addListener(new CollectionDsListenerAdapter<Entity>() {
             @Override
             public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
-                switch (operation) {
-                    case CLEAR:
-                    case REFRESH:
-                        fieldDatasources.clear();
-                        break;
+                if (fieldDatasources != null) {
+                    switch (operation) {
+                        case CLEAR:
+                        case REFRESH:
+                            fieldDatasources.clear();
+                            break;
 
-                    case UPDATE:
-                    case REMOVE:
-                        for (Entity entity : items) {
-                            fieldDatasources.remove(entity);
-                        }
-                        break;
+                        case UPDATE:
+                        case REMOVE:
+                            for (Entity entity : items) {
+                                fieldDatasources.remove(entity);
+                            }
+                            break;
+                    }
                 }
             }
         });
@@ -945,14 +946,24 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public void setRequired(Table.Column column, boolean required, String message) {
-        if (required)
+        if (required) {
+            if (requiredColumns == null) {
+                requiredColumns = new HashMap<>();
+            }
             requiredColumns.put(column, message);
-        else
-            requiredColumns.remove(column);
+        } else {
+            if (requiredColumns != null) {
+                requiredColumns.remove(column);
+            }
+        }
     }
 
     @Override
     public void addValidator(Table.Column column, final com.haulmont.cuba.gui.components.Field.Validator validator) {
+        if (validatorsMap == null) {
+            validatorsMap = new HashMap<>();
+        }
+
         Set<com.haulmont.cuba.gui.components.Field.Validator> validators = validatorsMap.get(column);
         if (validators == null) {
             validators = new HashSet<>();
@@ -963,12 +974,18 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public void addValidator(final com.haulmont.cuba.gui.components.Field.Validator validator) {
+        if (tableValidators == null) {
+            tableValidators = new LinkedHashSet<>();
+        }
+
         tableValidators.add(validator);
     }
 
     public void validate() throws ValidationException {
-        for (com.haulmont.cuba.gui.components.Field.Validator tableValidator : tableValidators) {
-            tableValidator.validate(getSelected());
+        if (tableValidators != null) {
+            for (com.haulmont.cuba.gui.components.Field.Validator tableValidator : tableValidators) {
+                tableValidator.validate(getSelected());
+            }
         }
     }
 
@@ -1830,7 +1847,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 if (columnConf.getDescription() != null) {
                     cubaField.setDescription(columnConf.getDescription());
                 }
-                if (requiredColumns.containsKey(columnConf)) {
+                if (requiredColumns != null && requiredColumns.containsKey(columnConf)) {
                     cubaField.setRequired(true);
                     cubaField.setRequiredMessage(requiredColumns.get(columnConf));
                 }
@@ -2035,12 +2052,28 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public void addColumnCollapsedListener(ColumnCollapseListener columnCollapsedListener) {
+        if (columnCollapseListeners == null) {
+            columnCollapseListeners = new LinkedList<>();
+
+            component.addColumnCollapseListener(new CubaEnhancedTable.ColumnCollapseListener() {
+                @Override
+                public void columnCollapsed(Object columnId, boolean collapsed) {
+                    final Column collapsedColumn = getColumn(columnId.toString());
+                    for (ColumnCollapseListener listener : columnCollapseListeners) {
+                        listener.columnCollapsed(collapsedColumn, collapsed);
+                    }
+                }
+            });
+        }
+
         columnCollapseListeners.add(columnCollapsedListener);
     }
 
     @Override
     public void removeColumnCollapseListener(ColumnCollapseListener columnCollapseListener) {
-        columnCollapseListeners.remove(columnCollapseListener);
+        if (columnCollapseListeners != null) {
+            columnCollapseListeners.remove(columnCollapseListener);
+        }
     }
 
     protected class StyleGeneratorAdapter implements com.vaadin.ui.Table.CellStyleGenerator {

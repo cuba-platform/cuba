@@ -50,7 +50,7 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
 
     protected boolean aggregatable = false;
 
-    protected List<ColumnCollapseListener> columnCollapseListeners = new ArrayList<>();
+    protected List<ColumnCollapseListener> columnCollapseListeners; // lazily initialized List
 
     @Override
     protected CubaTreeTableState getState() {
@@ -211,17 +211,24 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
 
     @Override
     public void addColumnCollapseListener(ColumnCollapseListener listener) {
+        if (columnCollapseListeners == null) {
+            columnCollapseListeners = new LinkedList<>();
+        }
+
         columnCollapseListeners.add(listener);
     }
 
     @Override
     public void removeColumnCollapseListener(ColumnCollapseListener listener) {
-        columnCollapseListeners.remove(listener);
+        if (columnCollapseListeners != null) {
+            columnCollapseListeners.remove(listener);
+        }
     }
 
     @Override
     public void setColumnCollapsed(Object propertyId, boolean collapsed) throws IllegalStateException {
-        if (isColumnCollapsed(propertyId) != collapsed) {
+        if (isColumnCollapsed(propertyId) != collapsed
+                && columnCollapseListeners != null) {
             for (ColumnCollapseListener listener : columnCollapseListeners) {
                 listener.columnCollapsed(propertyId, collapsed);
             }
