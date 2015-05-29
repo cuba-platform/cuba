@@ -496,7 +496,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         filterSavingPossible = editActionEnabled &&
                 ((isGlobal && userCanEditGlobalFilter) || (!isGlobal && createdByCurrentUser)) &&
                 ((!isFolder && !hasCode) || isSearchFolder || (isAppFolder && userCanEditGlobalAppFolder));
-        boolean saveActionEnabled = filterSavingPossible && isFilterModified();
+        boolean saveActionEnabled = filterSavingPossible && (isFolder || isFilterModified());
         boolean saveAsActionEnabled = !isSet && filterEditable && userCanEditFilters;
         boolean removeActionEnabled = !isSet &&
                 (!hasCode && !isFolder) &&
@@ -819,7 +819,8 @@ public class FilterDelegateImpl implements FilterDelegate {
                 !Objects.equals(initialFilterEntity.getCode(), filterEntity.getCode()) ||
                 !Objects.equals(initialFilterEntity.getUser(), filterEntity.getUser());
         if (filterPropertiesModified) return true;
-        String filterXml = FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE);
+        String filterXml = filterEntity.getFolder() == null ? FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE)
+                : FilterParser.getXml(conditions, Param.ValueProperty.VALUE);
         return !StringUtils.equals(filterXml, initialFilterEntity.getXml());
     }
 
@@ -1694,7 +1695,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         @Override
         public void actionPerform(Component component) {
-            if (PersistenceHelper.isNew(filterEntity)) {
+            if (PersistenceHelper.isNew(filterEntity) && filterEntity.getFolder() == null) {
                 WindowInfo windowInfo = windowConfig.getWindowInfo("saveFilter");
                 Map<String, Object> params = new HashMap<>();
                 if (!getMessage("Filter.adHocFilter").equals(filterEntity.getName())) {
@@ -1720,7 +1721,9 @@ public class FilterDelegateImpl implements FilterDelegate {
                     }
                 });
             } else {
-                filterEntity.setXml(FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE));
+                String xml = filterEntity.getFolder() == null ?  FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE)
+                        : FilterParser.getXml(conditions, Param.ValueProperty.VALUE);
+                filterEntity.setXml(xml);
                 saveFilterEntity();
             }
         }
@@ -1760,9 +1763,11 @@ public class FilterDelegateImpl implements FilterDelegate {
                         if (newFilterEntity.getUser() == null && !uerCanEditGlobalFilter()) {
                             newFilterEntity.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
                         }
+                        String xml = filterEntity.getFolder() == null ?  FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE)
+                                : FilterParser.getXml(conditions, Param.ValueProperty.VALUE);
                         filterEntity = newFilterEntity;
                         filterEntity.setName(filterName);
-                        filterEntity.setXml(FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE));
+                        filterEntity.setXml(xml);
                         saveFilterEntity();
                         initFilterSelectComponents();
                         updateWindowCaption();
