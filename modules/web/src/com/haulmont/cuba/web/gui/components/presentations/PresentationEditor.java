@@ -17,6 +17,7 @@ import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
+import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -29,7 +30,7 @@ import org.dom4j.DocumentHelper;
  * @author gorodnov
  * @version $Id$
  */
-public class PresentationEditor extends Window {
+public class PresentationEditor extends CubaWindow {
 
     protected Presentation presentation;
 

@@ -26,6 +26,7 @@ import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
+import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.shared.ui.MarginInfo;
@@ -44,7 +45,7 @@ import java.util.List;
  * @author krivopustov
  * @version $Id$
  */
-public class FolderEditWindow extends Window {
+public class FolderEditWindow extends CubaWindow {
 
     protected Folder folder;
     protected String messagesPack;

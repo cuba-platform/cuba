@@ -14,6 +14,7 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
+import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.*;
@@ -39,7 +40,7 @@ import java.util.Map;
  * @author krivopustov
  * @version $Id$
  */
-public class ExceptionDialog extends Window {
+public class ExceptionDialog extends CubaWindow {
 
     protected Log log = LogFactory.getLog(getClass());
 

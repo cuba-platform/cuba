@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
+import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -24,7 +25,7 @@ import java.util.List;
  * @author krivopustov
  * @version $Id$
  */
-public class LogWindow extends Window {
+public class LogWindow extends CubaWindow {
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     public LogWindow() {
