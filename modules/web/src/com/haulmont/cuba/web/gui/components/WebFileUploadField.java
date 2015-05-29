@@ -51,7 +51,7 @@ public class WebFileUploadField extends WebAbstractComponent<CubaUpload> impleme
         fileUploading = AppBeans.get(FileUploadingAPI.NAME);
         messages = AppBeans.get(Messages.NAME);
 
-        component = new CubaUpload();
+        component = createComponent();
         component.setReceiver(new com.vaadin.ui.Upload.Receiver() {
             @Override
             public OutputStream receiveUpload(String filename, String MIMEType) {
@@ -136,6 +136,10 @@ public class WebFileUploadField extends WebAbstractComponent<CubaUpload> impleme
             }
         });
         component.setButtonCaption(messages.getMessage(AppConfig.getMessagesPack(), "upload.submit"));
+    }
+
+    protected CubaUpload createComponent() {
+        return new CubaUpload();
     }
 
     @Override
