@@ -33,6 +33,8 @@ public class SaveSetWindow extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
+        getDialogParams().setWidthAuto();
+
         ids = (Set) params.get("items");
         componentPath = (String) params.get("componentPath");
         componentId = (String) params.get("componentId");
