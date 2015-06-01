@@ -127,10 +127,11 @@ public class DataServiceQueryBuilder {
 
     protected void replaceParamsInMacros(Query query) {
         Collection<QueryMacroHandler> handlers = AppBeans.getAll(QueryMacroHandler.class).values();
+        String modifiedQuery = query.getQueryString();
         for (QueryMacroHandler handler : handlers) {
-            queryString = handler.replaceQueryParams(queryString, queryParams);
+            modifiedQuery = handler.replaceQueryParams(modifiedQuery, queryParams);
         }
-        query.setQueryString(queryString);
+        query.setQueryString(modifiedQuery);
     }
 
     protected void applyConstraints(Query query) {
