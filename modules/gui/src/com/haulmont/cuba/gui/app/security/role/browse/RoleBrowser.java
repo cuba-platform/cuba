@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Role;
@@ -44,6 +45,8 @@ public class RoleBrowser extends AbstractLookup {
     @Inject
     protected DataManager dataManager;
 
+    @Inject
+    protected DataSupplier dataSupplier;
 
     @Inject
     protected CollectionDatasource rolesDs;
@@ -122,9 +125,7 @@ public class RoleBrowser extends AbstractLookup {
             public void valueChanged(Role source, String property, @Nullable Object prevValue, @Nullable Object value) {
                 super.valueChanged(source, property, prevValue, value);
                 if (DEFAULT_ROLE_PROPERTY.equals(property)) {
-                    Role commitedRole = dataManager.commit(source);
-                    Role reloadedRole = dataManager.reload(commitedRole, View.LOCAL);
-                    rolesDs.updateItem(reloadedRole);
+                    dataSupplier.commit(source);
                 }
             }
         });
