@@ -17,7 +17,7 @@ import org.apache.commons.logging.LogFactory;
  * @version $Id$
  */
 public class ConfigPersisterImpl implements ConfigPersister {
-    private final Log log = LogFactory.getLog(ConfigPersisterImpl.class);
+    protected static final Log log = LogFactory.getLog(ConfigPersisterImpl.class);
 
     @Override
     public String getProperty(SourceType sourceType, String name) {

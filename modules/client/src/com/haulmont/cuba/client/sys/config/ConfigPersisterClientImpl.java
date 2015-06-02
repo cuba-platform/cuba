@@ -26,7 +26,7 @@ public class ConfigPersisterClientImpl implements ConfigPersister {
 
     private volatile boolean cacheLoaded;
 
-    private final Log log = LogFactory.getLog(ConfigPersisterClientImpl.class);
+    protected static final Log log = LogFactory.getLog(ConfigPersisterClientImpl.class);
     private boolean caching;
 
     public ConfigPersisterClientImpl(boolean caching) {
