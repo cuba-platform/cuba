@@ -1757,6 +1757,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                         String filterName = window.getFilterName();
                         FilterEntity newFilterEntity = metadata.create(FilterEntity.class);
                         InstanceUtils.copy(filterEntity, newFilterEntity);
+                        newFilterEntity.setCode(null);
                         newFilterEntity.setId(UuidProvider.createUuid());
                         //if filter was global but current user cannot create global filter then new filter
                         //will be connected with current user
