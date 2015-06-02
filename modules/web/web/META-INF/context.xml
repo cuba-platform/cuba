@@ -6,9 +6,6 @@
 <Context>
 
     <!-- Switch off session serialization -->
-    <Manager className="org.apache.catalina.session.PersistentManager" debug="0" distributable="false"
-             saveOnRestart="false">
-        <Store className="org.apache.catalina.session.FileStore"/>
-    </Manager>
+    <Manager pathname=""/>
 
 </Context>
