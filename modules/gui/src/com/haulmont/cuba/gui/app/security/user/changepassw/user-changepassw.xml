@@ -19,22 +19,22 @@
     <assign name="fieldWidth" value="theme://cuba.gui.user-changepassw.field.width"/>
 
     <layout spacing="true">
-        <grid spacing="true">
+        <grid spacing="true" id="grid">
             <columns>
                 <column flex="1"/>
                 <column flex="1"/>
             </columns>
             <rows>
-                <row>
+                <row id="currentPasswordRow">
                     <label id="currentPasswordLabel" value="msg://currentPassword" visible="false"/>
                     <passwordField id="currentPasswordField" width="${fieldWidth}" visible="false"
                                    required="true" requiredMessage="msg://currentPasswordRequired"/>
                 </row>
-                <row>
+                <row id="passwordRow">
                     <label id="passwLab" value="msg://password"/>
                     <passwordField id="passwField" width="${fieldWidth}" required="true" requiredMessage="msg://passwordRequired"/>
                 </row>
-                <row>
+                <row id="passwordConfirmationRow">
                     <label id="confirmPasswLab" value="msg://confirmPassword"/>
                     <passwordField id="confirmPasswField" width="${fieldWidth}" required="true" requiredMessage="msg://passwordConfirmRequired"/>
                 </row>

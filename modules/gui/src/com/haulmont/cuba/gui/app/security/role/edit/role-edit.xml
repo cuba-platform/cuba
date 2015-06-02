@@ -23,7 +23,7 @@
                 <grid id="roleNameGrid" spacing="true">
                     <columns count="6"/>
                     <rows>
-                        <row>
+                        <row id="gridRowUp">
                             <label value="msg://name" align="MIDDLE_LEFT"/>
                             <textField id="name" datasource="roleDs" property="name" width="${width}" required="true"
                                        requiredMessage="msg://nameMsg"/>
@@ -37,7 +37,7 @@
                                       rowspan="2"
                                       height="100%" width="theme://cuba.gui.role-edit.description.width"/>
                         </row>
-                        <row>
+                        <row id="gridRowDown">
                             <label value="msg://locName" align="MIDDLE_LEFT"/>
                             <textField id="locName" datasource="roleDs" property="locName" width="${width}"/>
 

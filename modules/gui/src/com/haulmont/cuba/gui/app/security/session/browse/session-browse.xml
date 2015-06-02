@@ -22,9 +22,9 @@
     <assign name="filterFieldWidth" value="theme://cuba.gui.session-browse.filterField.width"/>
 
     <layout expand="sessionsTable" spacing="true">
-        <hbox spacing="true" expand="spacer" width="100%">
-            <groupBox caption="msg://filter" orientation="horizontal" spacing="true" width="AUTO">
-                <grid spacing="true">
+        <hbox id="filterHBox" spacing="true" expand="spacer" width="100%">
+            <groupBox id="filterGroupBox" caption="msg://filter" orientation="horizontal" spacing="true" width="AUTO">
+                <grid id="filterGrid" spacing="true">
                     <columns count="4"/>
                     <rows>
                         <row>
@@ -54,9 +54,9 @@
                 <action id="kill" caption="msg://kill" invoke="kill" trackSelection="true"/>
             </actions>
             <buttonsPanel>
-                <button action="sessionsTable.refresh"/>
-                <button action="sessionsTable.message"/>
-                <button action="sessionsTable.kill"/>
+                <button id="sessionsTableRefreshBtn" action="sessionsTable.refresh"/>
+                <button id="sessionsTableMessageBtn" action="sessionsTable.message"/>
+                <button id="sessionsTableKillBtn" action="sessionsTable.kill"/>
             </buttonsPanel>
             <rowsCount/>
             <columns>

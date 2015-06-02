@@ -57,10 +57,10 @@
     <layout spacing="true">
         <tabSheet id="tabsheet" width="100%" height="100%">
             <tab id="view" caption="msg://view" expand="split1" spacing="true">
-                <grid id="grid" spacing="true" margin="true;false;false;true">
+                <grid id="grid" spacing="true" margin="true,false,false,true">
                     <columns count="7"/>
                     <rows>
-                        <row>
+                        <row id="gridRowUp">
                             <label value="msg://user" align="MIDDLE_LEFT"/>
                             <lookupField id="userField" optionsDatasource="usersDs" width="${fieldWidth}"/>
                             <label value="msg://changeType" align="MIDDLE_LEFT"/>
@@ -69,7 +69,7 @@
                             <dateField id="fromDateField"/>
                             <button width="${buttonWidth}" caption="msg://search" invoke="search"/>
                         </row>
-                        <row>
+                        <row id="gridRowDown">
                             <label value="msg://entity" align="MIDDLE_LEFT"/>
                             <lookupField id="filterEntityNameField" width="${fieldWidth}"/>
                             <label value="msg://instance" align="MIDDLE_LEFT"/>
@@ -82,7 +82,7 @@
                 </grid>
 
                 <split id="split1" orientation="horizontal" pos="70" width="100%">
-                    <vbox id="entityLogTableBox" width="100%" height="100%" margin="false;true;true;true" spacing="true">
+                    <vbox id="entityLogTableBox" width="100%" height="100%" margin="false,true,true,true" spacing="true">
                         <table id="entityLogTable" width="100%" height="100%">
                             <buttonsPanel id="logTablePanel">
                                 <button visible="false"/>
@@ -111,7 +111,7 @@
             </tab>
             <tab id="setup" spacing="true"  expand="split2" margin="true"  caption="msg://setup">
                 <split id="split2" orientation="horizontal" pos="70" width="100%">
-                    <vbox id="loggedEntityTableBox" width="100%" height="100%" margin="false;true;false;false" spacing="true">
+                    <vbox id="loggedEntityTableBox" width="100%" height="100%" margin="false,true,false,false" spacing="true">
                         <groupTable id="loggedEntityTable" width="100%" height="100%">
                             <actions>
                                 <action id="create" invoke="create" />
@@ -131,10 +131,10 @@
                             <rows datasource="loggedEntityDs"/>
                         </groupTable>
                     </vbox>
-                    <vbox id="loggedEntityMiscBox" expand="expandableLabel" height="100%" width="100%" margin="false;false;false;true" spacing="true">
-                        <label value="msg://name"/>
+                    <vbox id="loggedEntityMiscBox" expand="expandableLabel" height="100%" width="100%" margin="false,false,false,true" spacing="true">
+                        <label id="miscNameLabel" value="msg://name"/>
                         <lookupField width="100%" datasource="loggedEntityDs" id="entityNameField" property="name"/>
-                        <hbox width="100%">
+                        <hbox id="checkersBox" width="100%">
                             <checkBox id="autoCheckBox" caption="msg://auto" datasource="loggedEntityDs" property="auto"/>
                             <checkBox id="manualCheckBox" caption="msg://manual" datasource="loggedEntityDs" property="manual"/>
                         </hbox>
@@ -143,7 +143,7 @@
                         </groupBox>
 
                         <vbox id="actionsPaneLayout" visible="false">
-                            <hbox align="MIDDLE_LEFT" spacing="true">
+                            <hbox id="buttonsBox" align="MIDDLE_LEFT" spacing="true">
                                 <button id="saveBtn" action="save" caption="msg://save" icon="icons/ok.png"/>
                                 <button id="cancelBtn" action="cancel" caption="msg://cancel" icon="icons/cancel.png"/>
                             </hbox>
@@ -151,7 +151,7 @@
                         <label id="expandableLabel"/>
                     </vbox>
                 </split>
-                <button invoke="reloadConfiguration" caption="msg://reloadConfiguration"/>
+                <button id="reloadBtn" invoke="reloadConfiguration" caption="msg://reloadConfiguration"/>
             </tab>
         </tabSheet>
     </layout>

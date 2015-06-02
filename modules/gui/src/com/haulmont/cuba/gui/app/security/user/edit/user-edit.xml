@@ -64,13 +64,13 @@
         </groupBox>
 
         <split id="split" orientation="horizontal" pos="50" width="100%">
-            <vbox id="roles-panel" expand="rolesTable" spacing="true" margin="false,true,false,false"
+            <vbox id="rolesPanel" expand="rolesTable" spacing="true" margin="false,true,false,false"
                   height="100%" width="100%">
                 <label value="msg://roles" stylename="h2"/>
                 <buttonsPanel>
-                    <button action="rolesTable.add"/>
-                    <button action="rolesTable.edit"/>
-                    <button action="rolesTable.remove"/>
+                    <button id="rolesTableAddBtn" action="rolesTable.add"/>
+                    <button id="rolesTableEditBtn" action="rolesTable.edit"/>
+                    <button id="rolesTableRemoveBtn" action="rolesTable.remove"/>
                 </buttonsPanel>
                 <table id="rolesTable" editable="false" multiselect="true" width="100%">
                     <actions>
@@ -86,13 +86,13 @@
                 </table>
             </vbox>
 
-            <vbox id="subst-panel" expand="substTable" spacing="true" margin="false,false,false,true"
+            <vbox id="substPanel" expand="substTable" spacing="true" margin="false,false,false,true"
                   height="100%" width="100%">
                 <label value="msg://substUsers" stylename="h2"/>
                 <buttonsPanel>
-                    <button action="substTable.add"/>
-                    <button action="substTable.edit"/>
-                    <button action="substTable.remove"/>
+                    <button id="substTableAddBtn" action="substTable.add"/>
+                    <button id="substTableEditBtn" action="substTable.edit"/>
+                    <button id="substTableRemoveBtn" action="substTable.remove"/>
                 </buttonsPanel>
                 <table id="substTable" editable="false" multiselect="true" width="100%">
                     <actions>

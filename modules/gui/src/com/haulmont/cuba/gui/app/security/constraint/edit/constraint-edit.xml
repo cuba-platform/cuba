@@ -19,18 +19,18 @@
         <grid id="grid" spacing="true">
             <columns count="2"/>
             <rows>
-                <row>
+                <row id="nameRow">
                     <label value="msg://entityName"/>
                     <lookupField id="entityName" datasource="constraint" property="entityName" required="true"
                                  width="${width}"/>
                 </row>
-                <row>
+                <row id="joinRow">
                     <label value="msg://joinClause"/>
                     <sourceCodeEditor id="joinClause" datasource="constraint" property="joinClause"
                                            width="${width}"
                                            height="theme://cuba.gui.constraint-edit.joinClause.height"/>
                 </row>
-                <row>
+                <row id="whereRow">
                     <label value="msg://whereClause"/>
                     <sourceCodeEditor id="whereClause" datasource="constraint" property="whereClause"
                                            width="${width}"

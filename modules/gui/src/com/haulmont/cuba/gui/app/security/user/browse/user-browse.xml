@@ -48,12 +48,12 @@
                 <action id="excel"/>
             </actions>
             <buttonsPanel>
-                <button action="usersTable.create"/>
-                <button action="usersTable.edit"/>
+                <button id="userTableCreateBtn" action="usersTable.create"/>
+                <button id="userTableEditBtn" action="usersTable.edit"/>
                 <button id="userTableCopyButton" action="usersTable.copy"/>
-                <button action="usersTable.remove"/>
+                <button id="userTableRemoveBtn" action="usersTable.remove"/>
                 <popupButton id="additionalActionsBtn" caption="msg://additional" icon="icons/gear.png"/>
-                <button action="usersTable.excel"/>
+                <button id="userTableExcelBtn" action="usersTable.excel"/>
             </buttonsPanel>
             <rowsCount/>
             <columns>

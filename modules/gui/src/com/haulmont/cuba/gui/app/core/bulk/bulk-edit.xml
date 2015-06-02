@@ -7,14 +7,15 @@
         class="com.haulmont.cuba.gui.app.core.bulk.BulkEditorWindow"
         caption="msg://bulkEditor.caption">
     <layout expand="fieldsScrollBox" spacing="true">
-        <groupBox>
+        <groupBox id="infoBox">
             <label id="infoLabel" value="msg://bulkEditor.description" width="100%"/>
         </groupBox>
 
         <scrollBox id="fieldsScrollBox" width="100%" spacing="true" scrollBars="both">
             <vbox id="contentPane" width="AUTO"/>
         </scrollBox>
-        <hbox spacing="true">
+
+        <hbox id="buttonsBox" spacing="true">
             <button id="applyButton" caption="msg://actions.Apply" icon="icons/ok.png" invoke="applyChanges"/>
             <button caption="msg://actions.Close" icon="icons/cancel.png" invoke="cancelChanges"/>
         </hbox>
