@@ -19,7 +19,7 @@
     </dsContext>
 
     <layout>
-        <table id="rolesTable" height="100%" width="100%">
+        <table id="rolesTable" height="100%" width="100%" editable="true">
             <actions>
                 <action id="create"/>
                 <action id="edit"/>
@@ -39,7 +39,7 @@
                 <column id="name" caption="msg://role.name"/>
                 <column id="locName" caption="msg://role.locName"/>
                 <column id="description" caption="msg://role.description"/>
-                <column id="defaultRole" caption="msg://role.defaultRole"/>
+                <column id="defaultRole" caption="msg://role.defaultRole" editable="true"/>
                 <column id="type" caption="msg://role.type"/>
             </columns>
             <rows datasource="rolesDs"/>

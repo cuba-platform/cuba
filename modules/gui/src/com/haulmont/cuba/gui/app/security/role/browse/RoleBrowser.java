@@ -13,11 +13,14 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -26,6 +29,8 @@ import java.util.*;
  * @version $Id$
  */
 public class RoleBrowser extends AbstractLookup {
+
+    private static final String DEFAULT_ROLE_PROPERTY = "defaultRole";
 
     @Inject
     protected Table rolesTable;
@@ -38,6 +43,10 @@ public class RoleBrowser extends AbstractLookup {
 
     @Inject
     protected DataManager dataManager;
+
+
+    @Inject
+    protected CollectionDatasource rolesDs;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -107,5 +116,17 @@ public class RoleBrowser extends AbstractLookup {
         if ("sec$User.edit".equals(windowOpener)) {
             rolesTable.setMultiSelect(true);
         }
+
+        rolesDs.addListener(new CollectionDsListenerAdapter<Role>() {
+            @Override
+            public void valueChanged(Role source, String property, @Nullable Object prevValue, @Nullable Object value) {
+                super.valueChanged(source, property, prevValue, value);
+                if (DEFAULT_ROLE_PROPERTY.equals(property)) {
+                    Role commitedRole = dataManager.commit(source);
+                    Role reloadedRole = dataManager.reload(commitedRole, View.LOCAL);
+                    rolesDs.updateItem(reloadedRole);
+                }
+            }
+        });
     }
 }
