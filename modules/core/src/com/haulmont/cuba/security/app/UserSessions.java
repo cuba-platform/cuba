@@ -23,14 +23,13 @@ import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
 import javax.annotation.ManagedBean;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.crypto.Cipher;
 import javax.inject.Inject;
 import java.io.*;
@@ -53,7 +52,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version $Id$
  */
 @ManagedBean(UserSessionsAPI.NAME)
-public final class UserSessions implements UserSessionsAPI {
+public final class UserSessions implements UserSessionsAPI, AppContext.Listener {
 
     public static final String NOT_RESTRICTED = "Not restricted";
 
@@ -123,6 +122,7 @@ public final class UserSessions implements UserSessionsAPI {
                 return AppContext.NO_USER_CONTEXT.getSessionId();
             }
         };
+        AppContext.addListener(this);
     }
 
     @Inject
@@ -191,8 +191,8 @@ public final class UserSessions implements UserSessionsAPI {
         );
     }
 
-    @PostConstruct
-    public void start() {
+    @Override
+    public void applicationStarted() {
         String encodedStr = resources.getResourceAsString(serverConfig.getLicensePath());
         if (encodedStr == null) {
             log.error("\n======================================================"
@@ -238,8 +238,8 @@ public final class UserSessions implements UserSessionsAPI {
         }
     }
 
-    @PreDestroy
-    public void stop() {
+    @Override
+    public void applicationStopped() {
         try {
             String serverId = serverInfo.getServerId();
             long now = timeSource.currentTimeMillis();
@@ -375,6 +375,7 @@ public final class UserSessions implements UserSessionsAPI {
         } catch (Exception e) {
             log.error("\n======================================================"
                     + "\nInvalid license data at " + serverConfig.getLicensePath()
+                    + ("on".equals(System.getProperty("cuba.lcnsng.debug")) ? "\n" + ExceptionUtils.getFullStackTrace(e) : "")
                     + "\n======================================================");
             return null;
         }
