@@ -81,8 +81,29 @@
   }
 
   .#{$primary-stylename}-column-selector {
+    @include valo-button-style;
+
+    z-index: 2;
     top: round($v-unit-size/2) - round($v-unit-size/4);
     right: round($v-unit-size/2) - round($v-unit-size/4);
+    height: round($v-unit-size/2);
+    line-height: round($v-unit-size/2);
+    width: round($v-unit-size/2);
+    padding: 0;
+    border-radius: 50%;
+
+    @include opacity(0);
+    @if $v-animations-enabled {
+      @include transition(opacity 200ms 1s);
+    }
+
+    &:after {
+      border-radius: inherit;
+    }
+
+    &:active:after {
+      @include valo-button-active-style;
+    }
   }
 
   .v-scrollable > .#{$primary-stylename} .#{$primary-stylename}-column-selector {
