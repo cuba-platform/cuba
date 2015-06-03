@@ -122,7 +122,6 @@ public class RoleBrowser extends AbstractLookup {
                 super.valueChanged(source, property, prevValue, value);
                 if (DEFAULT_ROLE_PROPERTY.equals(property)) {
                     rolesDs.commit();
-                    rolesDs.updateItem(source);
                 }
             }
         });
