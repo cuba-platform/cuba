@@ -247,11 +247,13 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
             log.trace("propertyChanged: item=" + item + ", property=" + property +
                     ", value=" + value + ", prevValue=" + prevValue);
 
+            if (!metadata.getTools().isTransient(item, property)) {
+                modified((T) item);
+            }
+
             for (DatasourceListener dsListener : new ArrayList<>(dsListeners)) {
                 dsListener.valueChanged(item, property, prevValue, value);
             }
-            if (!metadata.getTools().isTransient(item, property))
-                modified((T)item);
         }
     }
 
