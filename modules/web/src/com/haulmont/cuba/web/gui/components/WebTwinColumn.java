@@ -199,10 +199,9 @@ public class WebTwinColumn extends WebAbstractOptionsField<CubaTwinColSelect> im
         return component.isAddAllBtnEnabled();
     }
 
-    @Override
     protected <T> T getValueFromKey(Object key) {
         if (key instanceof Collection) {
-            final Set<Object> set = new LinkedHashSet<Object>();
+            final Set<Object> set = new LinkedHashSet<>();
             for (Object o : (Collection) key) {
                 Object t = getValue(o);
                 set.add(t);
@@ -226,7 +225,6 @@ public class WebTwinColumn extends WebAbstractOptionsField<CubaTwinColSelect> im
         return t;
     }
 
-    @Override
     protected Object getKeyFromValue(Object value) {
         if (value == null) {
             return null;

@@ -125,7 +125,6 @@ public class WebOptionsGroup extends WebAbstractOptionsField<CubaOptionGroup> im
         }
     }
 
-    @Override
     @SuppressWarnings({"unchecked"})
     protected <T> T getValueFromKey(Object key) {
         if (key instanceof Collection) {
@@ -164,7 +163,6 @@ public class WebOptionsGroup extends WebAbstractOptionsField<CubaOptionGroup> im
         super.setValue(getKeyFromValue(value));
     }
 
-    @Override
     protected Object getKeyFromValue(Object value) {
         Object v;
         if (isMultiSelect()) {

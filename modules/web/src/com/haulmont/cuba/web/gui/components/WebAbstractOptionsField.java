@@ -254,7 +254,4 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
             return (T) o;
         }
     }
-
-    protected abstract <T> T getValueFromKey(Object key);
-    protected abstract Object getKeyFromValue(Object value);
 }

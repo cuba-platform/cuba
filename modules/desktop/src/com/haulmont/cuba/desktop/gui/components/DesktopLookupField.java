@@ -456,6 +456,20 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
         updateMissingValueState();
     }
 
+    protected Object getValueFromOptions(Object value) {
+        if (optionsDatasource != null && value instanceof Entity) {
+            if (Datasource.State.INVALID == optionsDatasource.getState()) {
+                optionsDatasource.refresh();
+            }
+            Object itemId = ((Entity) value).getId();
+            if (optionsDatasource.containsItem(itemId)) {
+                value = optionsDatasource.getItem(itemId);
+            }
+        }
+
+        return value;
+    }
+
     @Override
     public void setValue(Object value) {
         settingValue = true;
@@ -464,7 +478,7 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
                 value = null;
             }
 
-            super.setValue(value);
+            super.setValue(getValueFromOptions(value));
         } finally {
             settingValue = false;
         }

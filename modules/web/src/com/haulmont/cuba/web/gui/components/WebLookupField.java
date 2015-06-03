@@ -24,6 +24,7 @@ import com.vaadin.ui.AbstractSelect;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -104,40 +105,23 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
         // Don't support multiselection for Lookup
     }
 
-    @Override
-    protected Object getKeyFromValue(Object value) {
-        if (value instanceof Enum) {
-            return value;
-        } else {
-            if (optionsDatasource != null) {
-                if (Datasource.State.INVALID == optionsDatasource.getState()) {
-                    optionsDatasource.refresh();
-                }
-                return value;
-            } else {
-                return value;
-            }
-        }
-    }
-
-    @Override
-    protected <T> T getValueFromKey(Object key) {
-        if (key == null) return null;
-        if (key instanceof Enum) {
-            return (T) key;
-        }
-
-        Object v;
-        if (optionsDatasource != null) {
+    protected Object getValueFromOptions(Object value) {
+        if (optionsDatasource != null && value instanceof Entity) {
             if (Datasource.State.INVALID == optionsDatasource.getState()) {
                 optionsDatasource.refresh();
             }
-            v = optionsDatasource.getItem(key);
-        } else {
-            v = key;
+            Object itemId = ((Entity) value).getId();
+            if (optionsDatasource.containsItem(itemId)) {
+                value = optionsDatasource.getItem(itemId);
+            }
         }
 
-        return (T) v;
+        return value;
+    }
+
+    @Override
+    public void setValue(@Nullable Object value) {
+        super.setValue(getValueFromOptions(value));
     }
 
     @Override
