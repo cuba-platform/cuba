@@ -35,7 +35,11 @@ public class EntityPermissionsFrame extends AbstractFrame {
 
     public interface Companion {
         void initPermissionColoredColumns(Table entityPermissionsTable);
+        void initTextFieldFilter(TextField entityFilter, Runnable runnable);
     }
+
+    @Inject
+    protected Companion companion;
 
     @Inject
     protected Datasource<Role> roleDs;
@@ -175,8 +179,13 @@ public class EntityPermissionsFrame extends AbstractFrame {
 
         entityPermissionsDs.refresh();
 
-        Companion companion = getCompanion();
         companion.initPermissionColoredColumns(entityPermissionsTable);
+        companion.initTextFieldFilter(entityFilter, new Runnable() {
+            @Override
+            public void run() {
+                applyFilter();
+            }
+        });
 
         entityTargetsDs.addListener(new CollectionDsListenerAdapter<OperationPermissionTarget>() {
             @Override

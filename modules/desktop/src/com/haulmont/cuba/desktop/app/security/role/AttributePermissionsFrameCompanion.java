@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.app.security.entity.AttributePermissionVariant;
 import com.haulmont.cuba.gui.app.security.entity.AttributeTarget;
 import com.haulmont.cuba.gui.app.security.entity.MultiplePermissionTarget;
+import com.haulmont.cuba.gui.components.TextField;
 
 import javax.swing.*;
 import java.util.Iterator;
@@ -56,5 +57,10 @@ public class AttributePermissionsFrameCompanion implements AttributePermissionsF
                 return label;
             }
         }, Label.class);
+    }
+
+    @Override
+    public void initTextFieldFilter(TextField entityFilter, Runnable runnable) {
+        DesktopComponentsHelper.addEnterShortcut(entityFilter, runnable);
     }
 }

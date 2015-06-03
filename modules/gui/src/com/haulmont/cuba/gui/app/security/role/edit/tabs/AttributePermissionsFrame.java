@@ -8,16 +8,16 @@ package com.haulmont.cuba.gui.app.security.role.edit.tabs;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.app.security.ds.MultiplePermissionTargetsDatasource;
 import com.haulmont.cuba.gui.app.security.ds.RestorablePermissionDatasource;
 import com.haulmont.cuba.gui.app.security.entity.AttributePermissionVariant;
 import com.haulmont.cuba.gui.app.security.entity.AttributeTarget;
 import com.haulmont.cuba.gui.app.security.entity.MultiplePermissionTarget;
+import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
@@ -37,7 +37,11 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
     public interface Companion {
         void initPermissionColoredColumn(Table propertyPermissionsTable);
+        void initTextFieldFilter(TextField entityFilter, Runnable runnable);
     }
+
+    @Inject
+    protected Companion companion;
 
     @Inject
     protected Datasource<Role> roleDs;
@@ -242,8 +246,13 @@ public class AttributePermissionsFrame extends AbstractFrame {
         propertyPermissionsDs.refresh();
 
         // client specific code
-        Companion companion = getCompanion();
         companion.initPermissionColoredColumn(propertyPermissionsTable);
+        companion.initTextFieldFilter(entityFilter, new Runnable() {
+            @Override
+            public void run() {
+                applyFilter();
+            }
+        });
 
         attributeTargetsDs.addListener(new CollectionDsListenerAdapter<MultiplePermissionTarget>() {
             @Override

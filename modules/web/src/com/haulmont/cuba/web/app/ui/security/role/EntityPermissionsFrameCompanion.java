@@ -8,12 +8,14 @@ package com.haulmont.cuba.web.app.ui.security.role;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.app.security.entity.OperationPermissionTarget;
+import com.haulmont.cuba.gui.app.security.entity.PermissionVariant;
 import com.haulmont.cuba.gui.app.security.role.edit.tabs.EntityPermissionsFrame;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.app.security.entity.OperationPermissionTarget;
-import com.haulmont.cuba.gui.app.security.entity.PermissionVariant;
+import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebComponentsUtils;
 
 /**
@@ -30,6 +32,11 @@ public class EntityPermissionsFrameCompanion implements EntityPermissionsFrame.C
         addGeneratedColumnByOperation(entityPermissionsTable, "readPermissionVariant");
         addGeneratedColumnByOperation(entityPermissionsTable, "updatePermissionVariant");
         addGeneratedColumnByOperation(entityPermissionsTable, "deletePermissionVariant");
+    }
+
+    @Override
+    public void initTextFieldFilter(TextField entityFilter, final Runnable runnable) {
+        WebComponentsHelper.addEnterShortcut(entityFilter, runnable);
     }
 
     protected void addGeneratedColumnByOperation(Table entityPermissionsTable, final String propertyName) {

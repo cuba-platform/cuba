@@ -8,6 +8,7 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DetachedFrame;
 import com.haulmont.cuba.desktop.TopLevelFrame;
+import com.haulmont.cuba.desktop.sys.validation.ValidationAwareAction;
 import com.haulmont.cuba.desktop.sys.vcl.CollapsiblePanel;
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
 import com.haulmont.cuba.gui.components.AbstractFrame;
@@ -17,6 +18,7 @@ import com.haulmont.cuba.gui.components.KeyCombination;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.util.Collections;
 
@@ -361,5 +363,17 @@ public class DesktopComponentsHelper {
         } else if (focusOwner != null && focusOwner.getParent() instanceof Flushable) {
             ((Flushable) focusOwner.getParent()).flushValue();
         }
+    }
+
+    public static void addEnterShortcut(com.haulmont.cuba.gui.components.TextField textField, final Runnable runnable) {
+        JTextField impl = DesktopComponentsHelper.unwrap(textField);
+
+        impl.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
+        impl.getActionMap().put("enter", new ValidationAwareAction() {
+            @Override
+            public void actionPerformedAfterValidation(ActionEvent e) {
+                runnable.run();
+            }
+        });
     }
 }

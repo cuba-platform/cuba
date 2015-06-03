@@ -8,6 +8,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
+import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.App;
@@ -16,8 +17,11 @@ import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalActionsLayout;
+import com.haulmont.cuba.web.toolkit.ui.CubaTextField;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.vaadin.event.Action;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.ClassResource;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.FontAwesome;
@@ -477,5 +481,15 @@ public class WebComponentsHelper {
             }
         }
         return new VersionedThemeResource(iconName);
+    }
+
+    public static void addEnterShortcut(TextField textField, final Runnable runnable) {
+        CubaTextField cubaTextField = WebComponentsHelper.unwrap(textField);
+        cubaTextField.addShortcutListener(new ShortcutListener("", ShortcutAction.KeyCode.ENTER, KeyCombination.Modifier.codes()) {
+            @Override
+            public void handleAction(Object sender, Object target) {
+                runnable.run();
+            }
+        });
     }
 }

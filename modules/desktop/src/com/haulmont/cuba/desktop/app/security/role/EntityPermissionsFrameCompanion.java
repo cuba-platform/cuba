@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.app.security.entity.OperationPermissionTarget;
 import com.haulmont.cuba.gui.app.security.entity.PermissionVariant;
+import com.haulmont.cuba.gui.components.TextField;
 
 import javax.swing.*;
 
@@ -57,9 +58,14 @@ public class EntityPermissionsFrameCompanion implements EntityPermissionsFrame.C
         }, Label.class);
     }
 
+    @Override
+    public void initTextFieldFilter(TextField entityFilter, Runnable runnable) {
+        DesktopComponentsHelper.addEnterShortcut(entityFilter, runnable);
+    }
+
     private Label generateLabelByPermissionVariant(PermissionVariant permissionVariant) {
         Label label = AppConfig.getFactory().createComponent(Label.NAME);
-        JLabel jLabel = (JLabel) DesktopComponentsHelper.unwrap(label);
+        JLabel jLabel = DesktopComponentsHelper.unwrap(label);
 
         StringBuilder builder = new StringBuilder();
 

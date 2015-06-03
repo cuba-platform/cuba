@@ -13,6 +13,8 @@ import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.app.security.entity.AttributePermissionVariant;
 import com.haulmont.cuba.gui.app.security.entity.AttributeTarget;
 import com.haulmont.cuba.gui.app.security.entity.MultiplePermissionTarget;
+import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebComponentsUtils;
 
 import java.util.Iterator;
@@ -56,5 +58,10 @@ public class AttributePermissionsFrameCompanion implements AttributePermissionsF
                 return label;
             }
         });
+    }
+
+    @Override
+    public void initTextFieldFilter(TextField entityFilter, Runnable runnable) {
+        WebComponentsHelper.addEnterShortcut(entityFilter, runnable);
     }
 }
