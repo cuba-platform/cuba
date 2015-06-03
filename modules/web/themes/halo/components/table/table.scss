@@ -70,6 +70,16 @@
     }
   }
 
+  .v-selected {
+    .#{$primary-stylename}-cell-content.boolean-cell-true .#{$primary-stylename}-cell-wrapper,
+    .#{$primary-stylename}-cell-content.boolean-cell-false .#{$primary-stylename}-cell-wrapper {
+      &:before {
+        $font-color: valo-font-color($v-selection-color, 0.9);
+        color: $font-color;
+      }
+    }
+  }
+
   .#{$primary-stylename}-column-selector {
     top: round($v-unit-size/2) - round($v-unit-size/4);
     right: round($v-unit-size/2) - round($v-unit-size/4);
