@@ -125,4 +125,10 @@ public class CubaTreeConnector extends TreeConnector implements HasComponentsCon
         return ensureHandlerManager().addHandler(
                 ConnectorHierarchyChangeEvent.TYPE, handler);
     }
+
+    @Override
+    public boolean isUseSimpleModeForTouchDevice() {
+        // CAUTION Do not use multiselect mode SIMPLE for touch devices, it may be laptop with touch screen
+        return false;
+    }
 }

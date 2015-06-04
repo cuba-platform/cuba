@@ -166,6 +166,12 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     }
 
     @Override
+    public boolean isUseSimpleModeForTouchDevice() {
+        // CAUTION Do not use multiselect mode SIMPLE for touch devices, it may be laptop with touch screen
+        return false;
+    }
+
+    @Override
     protected void setColWidth(int colIndex, int w, boolean isDefinedWidth) {
         super.setColWidth(colIndex, w, isDefinedWidth);
 

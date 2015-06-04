@@ -102,6 +102,12 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
     }
 
     @Override
+    public boolean isUseSimpleModeForTouchDevice() {
+        // CAUTION Do not use multiselect mode SIMPLE for touch devices, it may be laptop with touch screen
+        return false;
+    }
+
+    @Override
     public void onFocus(FocusEvent event) {
         super.onFocus(event);
 
