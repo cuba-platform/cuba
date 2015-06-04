@@ -7,7 +7,6 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.datatypes.Enumeration;
 import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
@@ -27,8 +26,6 @@ import javax.swing.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author krivopustov

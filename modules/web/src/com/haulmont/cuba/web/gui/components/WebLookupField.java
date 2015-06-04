@@ -124,6 +124,13 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
         super.setValue(getValueFromOptions(value));
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getValue() {
+        final Object value = super.getValue();
+        return (T) getValueFromOptions(value);
+    }
+
     @Override
     public void setFilterMode(FilterMode mode) {
         filterMode = mode;

@@ -484,6 +484,13 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
         }
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getValue() {
+        final Object value = super.getValue();
+        return (T) getValueFromOptions(value);
+    }
+
     @Override
     protected void fireChangeListeners(Object newValue) {
         Object oldValue = prevValue;

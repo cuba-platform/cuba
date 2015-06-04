@@ -232,4 +232,58 @@ public abstract class LookupFieldTest extends AbstractComponentTest {
 
         assertEquals(3, counter.get());
     }
+
+    @Test
+    public void testValueLoadFromOptions() {
+        LookupField component = factory.createComponent(LookupField.NAME);
+
+        //noinspection unchecked
+        Datasource<User> testDs = new DsBuilder()
+                .setId("testDs")
+                .setJavaClass(User.class)
+                .setView(viewRepository.getView(User.class, View.LOCAL))
+                .buildDatasource();
+
+        testDs.setItem(new User());
+        ((DatasourceImpl) testDs).valid();
+
+        assertNull(component.getValue());
+        final Group g = new Group();
+        testDs.getItem().setGroup(g);
+
+        CollectionDatasource<Group, UUID> groupsDs = new DsBuilder()
+                .setId("testDs")
+                .setJavaClass(Group.class)
+                .setView(viewRepository.getView(Group.class, View.LOCAL))
+                .setRefreshMode(CollectionDatasource.RefreshMode.NEVER)
+                .setAllowCommit(false)
+                .buildCollectionDatasource();
+
+        groupsDs.includeItem(g);
+        final Group g1 = new Group();
+        g1.setId(g.getId());
+        groupsDs.includeItem(g1);
+        final Group g2 = new Group();
+        groupsDs.includeItem(g2);
+
+        component.setOptionsDatasource(groupsDs);
+
+        component.setDatasource(testDs, "group");
+
+        assertTrue("Value should be from options ds", g1 == component.getValue());
+
+        component.setValue(g2);
+
+        ValueListener listener1 = new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property,
+                                     @Nullable Object prevValue, @Nullable Object value) {
+                assertEquals(g2, prevValue);
+                assertEquals(g1, value);
+            }
+        };
+        component.addListener(listener1);
+
+        component.setValue(g);
+    }
 }
