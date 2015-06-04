@@ -53,6 +53,7 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
             }, ClickEvent.getType());
 
             dockButtonContainer = new VOverlay();
+            dockButtonContainer.addStyleName("cuba-splitpanel-dock-overlay");
             dockButtonContainer.getElement().getStyle().setZIndex(9999);
 
             if (dockMode == SplitPanelDockMode.LEFT) {
