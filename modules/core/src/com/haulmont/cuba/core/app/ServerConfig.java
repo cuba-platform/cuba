@@ -147,4 +147,8 @@ public interface ServerConfig extends Config {
     @Property("cuba.clusterMessageSendingThreadPoolSize")
     @DefaultInt(100)
     int getClusterMessageSendingThreadPoolSize();
+
+    @Property("cuba.prettyTimeProperties")
+    @DefaultString("")
+    String getPrettyTimeProperties();
 }
