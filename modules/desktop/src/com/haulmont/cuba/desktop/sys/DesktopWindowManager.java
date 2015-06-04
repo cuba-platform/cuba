@@ -382,6 +382,7 @@ public class DesktopWindowManager extends WindowManager {
         window.setWidth("100%");
 
         TopLevelFrame windowFrame = createTopLevelFrame(caption);
+        windowFrame.setName(window.getId());
 
         DialogParams dialogParams = getDialogParams();
         Dimension dimension = new Dimension();
@@ -526,6 +527,7 @@ public class DesktopWindowManager extends WindowManager {
 
     protected JDialog showWindowDialog(final Window window, String caption, String description, boolean forciblyDialog) {
         final DialogWindow dialog = new DialogWindow(frame, caption);
+        dialog.setName(window.getId());
         dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
         final DialogParams dialogParams = getDialogParams();
