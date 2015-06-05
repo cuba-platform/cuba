@@ -45,7 +45,7 @@ public class CategoryAttribute extends StandardEntity {
     private String enumeration;
 
     @Column(name = "DATA_TYPE")
-    private String dataType = PropertyType.STRING.name();
+    private String dataType;
 
     @Column(name = "IS_ENTITY")
     private Boolean isEntity;
