@@ -10,6 +10,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.LockService;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -21,6 +22,7 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.EntityCopyUtils;
+import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.security.entity.EntityOp;
 
 import javax.annotation.Nullable;
@@ -152,6 +154,11 @@ public class EditorWindowDelegate extends WindowDelegate {
             Entity newItem = ds.getDataSupplier().newInstance(ds.getMetaClass());
             InstanceUtils.copy(item, newItem);
             item = newItem;
+        }
+
+        if (PersistenceHelper.isNew(item) && ds.getLoadDynamicAttributes() && item instanceof BaseGenericIdEntity) {
+            DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.NAME);
+            dynamicAttributesGuiTools.initDefaultAttributeValues((BaseGenericIdEntity) item);
         }
 
         this.item = item;

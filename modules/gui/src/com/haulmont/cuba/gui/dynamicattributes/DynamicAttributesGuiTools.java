@@ -8,9 +8,13 @@ package com.haulmont.cuba.gui.dynamicattributes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
+import com.haulmont.cuba.core.entity.CategoryAttributeValue;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
@@ -19,6 +23,7 @@ import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -69,6 +74,21 @@ public class DynamicAttributesGuiTools {
         }
 
         return categoryAttributes;
+    }
+
+    public void initDefaultAttributeValues(BaseGenericIdEntity item) {
+        Collection<CategoryAttribute> attributes =
+                dynamicAttributes.getAttributesForMetaClass(item.getMetaClass());
+        item.setDynamicAttributes(new HashMap<String, CategoryAttributeValue>());
+
+        for (CategoryAttribute categoryAttribute : attributes) {
+            String code = DynamicAttributesUtils.encodeAttributeCode(categoryAttribute.getCode());
+            if (categoryAttribute.getDefaultValue() != null) {
+                item.setValue(code, categoryAttribute.getDefaultValue());
+            } else if (Boolean.TRUE.equals(categoryAttribute.getDefaultDateIsCurrent())) {
+                item.setValue(code, AppBeans.get(TimeSource.NAME, TimeSource.class).currentTimestamp());
+            }
+        }
     }
 
     protected boolean attributeShouldBeShownOnTheScreen(String screen, String component, CategoryAttribute attribute) {
