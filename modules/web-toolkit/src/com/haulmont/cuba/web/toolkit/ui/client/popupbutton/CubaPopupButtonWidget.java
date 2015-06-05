@@ -12,6 +12,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ui.VButton;
+import com.vaadin.client.ui.VUpload;
 import com.vaadin.client.ui.orderedlayout.Slot;
 import com.vaadin.client.ui.orderedlayout.VAbstractOrderedLayout;
 import org.vaadin.hene.popupbutton.widgetset.client.ui.VPopupButton;
@@ -61,29 +62,34 @@ public class CubaPopupButtonWidget extends VPopupButton {
                 for (Widget slot : content) {
                     Widget contentChild = ((Slot) slot).getWidget();
 
-                    if (contentChild instanceof VButton) {
-                        final VButton button = (VButton) contentChild;
+                    VButton button = null;
+                    if (contentChild instanceof VUpload) {
+                        button = ((VUpload) contentChild).submitButton;
+                    } else if (contentChild instanceof VButton) {
+                        button = (VButton) contentChild;
+                    }
 
+                    if (button != null) {
+                        final VButton finalButton = button;
                         button.addFocusHandler(new FocusHandler() {
                             @Override
                             public void onFocus(FocusEvent event) {
-                                childButtonFocused(button);
+                                childWidgetFocused(finalButton);
                             }
                         });
 
                         // sink mouse over
-                        DOM.sinkEvents(button.getElement(),
-                                Event.ONMOUSEOVER | DOM.getEventsSunk(button.getElement()));
+                        DOM.sinkEvents(button.getElement(), Event.ONMOUSEOVER | DOM.getEventsSunk(button.getElement()));
                     }
                 }
             }
         }
     }
 
-    protected void childButtonFocused(VButton targetButton) {
+    protected void childWidgetFocused(Widget target) {
         resetSelectedItem();
 
-        targetButton.addStyleName(SELECTED_ITEM_STYLE);
+        target.addStyleName(SELECTED_ITEM_STYLE);
     }
 
     protected void resetSelectedItem() {
@@ -93,12 +99,15 @@ public class CubaPopupButtonWidget extends VPopupButton {
                 for (Widget slot : content) {
                     Widget contentChild = ((Slot) slot).getWidget();
 
+                    VButton button = null;
                     if (contentChild instanceof VButton) {
-                        VButton button = (VButton) contentChild;
+                        button = (VButton) contentChild;
+                    } else if (contentChild instanceof VUpload) {
+                        button = ((VUpload) contentChild).submitButton;
+                    }
 
-                        if (button.getStyleName().contains(SELECTED_ITEM_STYLE)) {
-                            button.removeStyleName(SELECTED_ITEM_STYLE);
-                        }
+                    if (button != null && button.getStyleName().contains(SELECTED_ITEM_STYLE)) {
+                        button.removeStyleName(SELECTED_ITEM_STYLE);
                     }
                 }
             }

@@ -17,6 +17,7 @@ import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.VButton;
+import com.vaadin.client.ui.VUpload;
 import com.vaadin.client.ui.orderedlayout.Slot;
 import com.vaadin.client.ui.orderedlayout.VAbstractOrderedLayout;
 import com.vaadin.shared.ui.Connect;
@@ -111,21 +112,32 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
                 case Event.ONKEYDOWN:
                     if (!getState().customLayout && getWidget().popupHasChild(target)) {
                         Widget widget = WidgetUtil.findWidget(target, null);
-                        if (widget instanceof VButton) {
-                            Widget currentSlot = widget.getParent();
-                            VAbstractOrderedLayout layout = (VAbstractOrderedLayout) currentSlot.getParent();
-                            VButton focusButton = null;
-
-                            int widgetIndex = layout.getWidgetIndex(currentSlot);
-                            if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_DOWN) {
-                                focusButton = findNextButton(layout, widgetIndex);
-                            } else if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_UP) {
-                                focusButton = findPrevButton(layout, widgetIndex);
+                        if (widget instanceof VButton || widget instanceof VUpload) {
+                            Widget widgetParent = widget.getParent();
+                            if (widgetParent.getParent() instanceof VUpload) {
+                                VUpload upload = (VUpload) widgetParent.getParent();
+                                widgetParent = upload.getParent(); //upload parent is Slot
                             }
 
-                            if (focusButton != null) {
-                                getWidget().resetSelectedItem();
-                                focusButton.setFocus(true);
+                            VAbstractOrderedLayout layout = (VAbstractOrderedLayout) widgetParent.getParent();
+                            Widget focusWidget = null;
+
+                            int widgetIndex = layout.getWidgetIndex(widgetParent);
+                            if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_DOWN) {
+                                focusWidget = findNextWidget(layout, widgetIndex);
+                            } else if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_UP) {
+                                focusWidget = findPrevWidget(layout, widgetIndex);
+                            }
+
+                            if (focusWidget instanceof VButton || focusWidget instanceof VUpload) {
+                                getWidget().childWidgetFocused(focusWidget);
+                                VButton button;
+                                if (focusWidget instanceof VButton) {
+                                    button = (VButton) focusWidget;
+                                } else {
+                                    button = ((VUpload) focusWidget).submitButton;
+                                }
+                                button.setFocus(true);
                             }
                         }
                     }
@@ -134,11 +146,17 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
                 case Event.ONMOUSEOVER:
                     if (!getState().customLayout && getWidget().popupHasChild(target)) {
                         Widget widget = WidgetUtil.findWidget(target, null);
-                        if (widget instanceof VButton && !widget.getStyleName().contains(SELECTED_ITEM_STYLE)) {
-                            getWidget().resetSelectedItem();
+                        if ((widget instanceof VButton || widget instanceof VUpload) &&
+                                !widget.getStyleName().contains(SELECTED_ITEM_STYLE)) {
+                            getWidget().childWidgetFocused(widget);
 
-                            widget.addStyleName(SELECTED_ITEM_STYLE);
-                            ((VButton) widget).setFocus(true);
+                            VButton button;
+                            if (widget instanceof VButton) {
+                                button = (VButton) widget;
+                            } else {
+                                button = ((VUpload) widget).submitButton;
+                            }
+                            button.setFocus(true);
                         }
                     }
                     break;
@@ -146,7 +164,7 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
         }
     }
 
-    protected VButton findPrevButton(VAbstractOrderedLayout layout, int widgetIndex) {
+    protected Widget findPrevWidget(VAbstractOrderedLayout layout, int widgetIndex) {
         for (int i = widgetIndex - 1; i >= 0; i--) {
             Slot slot = (Slot) layout.getWidget(i);
             Widget slotWidget = slot.getWidget();
@@ -156,6 +174,8 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
                 if (button.isEnabled()) {
                     return button;
                 }
+            } else if (slotWidget instanceof VUpload) {
+                return slotWidget;
             }
         }
 
@@ -169,12 +189,14 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
                 if (button.isEnabled()) {
                     return button;
                 }
+            } else if (slotWidget instanceof VUpload) {
+                return slotWidget;
             }
         }
         return null;
     }
 
-    protected VButton findNextButton(VAbstractOrderedLayout layout, int widgetIndex) {
+    protected Widget findNextWidget(VAbstractOrderedLayout layout, int widgetIndex) {
         for (int i = widgetIndex + 1; i < layout.getWidgetCount(); i++) {
             Slot slot = (Slot) layout.getWidget(i);
             Widget slotWidget = slot.getWidget();
@@ -184,6 +206,8 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
                 if (button.isEnabled()) {
                     return button;
                 }
+            } else if (slotWidget instanceof VUpload) {
+                return slotWidget;
             }
         }
 
@@ -197,6 +221,8 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
                 if (button.isEnabled()) {
                     return button;
                 }
+            } else if (slotWidget instanceof VUpload) {
+                return slotWidget;
             }
         }
 
