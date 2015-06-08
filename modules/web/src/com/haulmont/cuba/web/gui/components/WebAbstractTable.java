@@ -1279,7 +1279,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         Column column = getColumn(columnId);
         Column associatedRuntimeColumn = null;
         if (column == null) {
-            Column newColumn = new Column(columnId);
+            Column newColumn = new Column(generatedColumnId);
 
             columns.put(newColumn.getId(), newColumn);
             columnsOrder.add(newColumn);
