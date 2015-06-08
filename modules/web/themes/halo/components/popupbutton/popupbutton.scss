@@ -11,7 +11,9 @@
     .v-popup-indicator {
       padding-left: round($v-unit-size/4);
       background: none;
-
+      .v-sa8 & {
+        display: inline;
+      }
       &:after {
         font-family: FontAwesome;
         content: "\f107";
