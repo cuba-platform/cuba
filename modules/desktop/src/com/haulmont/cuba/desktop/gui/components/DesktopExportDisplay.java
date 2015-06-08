@@ -105,7 +105,7 @@ public class DesktopExportDisplay implements ExportDisplay {
     private void openFileAction(String finalFileName, ExportDataProvider dataProvider) {
         File destFile = null;
         try {
-            destFile = File.createTempFile(FilenameUtils.getBaseName(finalFileName), "." + getFileExt(finalFileName));
+            destFile = File.createTempFile("get_" + FilenameUtils.getBaseName(finalFileName), "." + getFileExt(finalFileName));
         } catch (IOException e) {
             String message = messages.getMessage(DesktopExportDisplay.class, "export.tempFileError");
             getFrame().getWindowManager().showNotification(message, IFrame.NotificationType.WARNING);
