@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.impl.AbstractDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -162,6 +163,9 @@ public class UserEditor extends AbstractEditor<User> {
                 rolesDs.excludeItem(userRole);
             }
         }
+
+        // if we add default roles, rolesDs becomes modified on setItem
+        ((AbstractDatasource) rolesDs).setModified(false);
     }
 
     @Override
@@ -176,11 +180,12 @@ public class UserEditor extends AbstractEditor<User> {
         List<Role> defaultRoles = dataSupplier.loadList(ctx);
 
         List<UserRole> newRoles = new ArrayList<>();
-        if (user.getUserRoles() != null)
+        if (user.getUserRoles() != null) {
             newRoles.addAll(user.getUserRoles());
+        }
 
+        final MetaClass metaClass = rolesDs.getMetaClass();
         for (Role role : defaultRoles) {
-            final MetaClass metaClass = rolesDs.getMetaClass();
             UserRole userRole = dataSupplier.newInstance(metaClass);
             userRole.setRole(role);
             userRole.setUser(user);
