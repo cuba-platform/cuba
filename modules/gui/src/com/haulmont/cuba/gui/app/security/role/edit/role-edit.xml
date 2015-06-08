@@ -8,7 +8,6 @@
         caption="msg://caption"
         class="com.haulmont.cuba.gui.app.security.role.edit.RoleEditor"
         messagesPack="com.haulmont.cuba.gui.app.security.role.edit"
-        lookupComponent="name"
         focusComponent="name">
 
     <dsContext>

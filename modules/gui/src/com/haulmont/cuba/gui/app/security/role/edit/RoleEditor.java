@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.gui.app.security.role.edit;
 
-import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.app.security.role.edit.tabs.ScreenPermissionsFrame;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.TextField;
@@ -32,10 +31,5 @@ public class RoleEditor extends AbstractEditor<Role> {
     @Override
     protected void postInit() {
         screensTabFrame.loadPermissions();
-
-        if (!PersistenceHelper.isNew(getItem())) {
-            nameField.setEnabled(false);
-            locName.requestFocus();
-        }
     }
 }
