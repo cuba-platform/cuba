@@ -56,6 +56,8 @@ public class WebUserIndicator extends WebAbstractComponent<HorizontalLayout> imp
         User user = uss.getUserSession().getUser();
         AppUI ui = AppUI.getCurrent();
         if (substitutions.isEmpty()) {
+            userComboBox = null;
+
             userNameLabel = new Label(getSubstitutedUserCaption(user));
             userNameLabel.setStyleName("cuba-user-select-label");
             userNameLabel.setSizeUndefined();
@@ -66,6 +68,8 @@ public class WebUserIndicator extends WebAbstractComponent<HorizontalLayout> imp
 
             component.addComponent(userNameLabel);
         } else {
+            userNameLabel = null;
+
             userComboBox = new CubaComboBox();
             userComboBox.setFilteringMode(FilteringMode.CONTAINS);
 
