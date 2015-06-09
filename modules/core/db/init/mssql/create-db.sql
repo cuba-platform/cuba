@@ -704,7 +704,6 @@ create table SYS_CATEGORY(
     DELETED_BY varchar(50),
     --
     NAME varchar(255),
-    CODE varchar(50),
     SPECIAL varchar(50),
     ENTITY_TYPE varchar(30),
     IS_DEFAULT tinyint,
