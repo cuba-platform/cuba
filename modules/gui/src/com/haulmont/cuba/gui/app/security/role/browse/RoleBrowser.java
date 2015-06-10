@@ -121,6 +121,10 @@ public class RoleBrowser extends AbstractLookup {
             public void valueChanged(Role source, String property, @Nullable Object prevValue, @Nullable Object value) {
                 super.valueChanged(source, property, prevValue, value);
                 if (DEFAULT_ROLE_PROPERTY.equals(property)) {
+                    Role reloadedRole = dataManager.reload(source, View.LOCAL);
+                    reloadedRole.setDefaultRole(source.getDefaultRole());
+                    rolesDs.updateItem(reloadedRole);
+                    rolesDs.modifyItem(reloadedRole);
                     rolesDs.commit();
                 }
             }
