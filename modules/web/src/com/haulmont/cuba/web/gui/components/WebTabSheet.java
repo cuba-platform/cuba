@@ -394,6 +394,12 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
     }
 
     @Override
+    public Component getTabComponent(String name) {
+        Tab tab = tabs.get(name);
+        return tab.getComponent();
+    }
+
+    @Override
     public Collection<TabSheet.Tab> getTabs() {
         //noinspection unchecked
         return (Collection) tabs.values();

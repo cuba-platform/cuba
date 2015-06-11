@@ -29,6 +29,7 @@ public interface TabSheet extends Component, Component.BelongToFrame {
     void setTab(String name);
 
     Tab getTab(String name);
+    Component getTabComponent(String name);
 
     Collection<Tab> getTabs();
 

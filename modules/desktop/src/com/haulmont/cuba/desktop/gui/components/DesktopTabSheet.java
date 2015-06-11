@@ -349,6 +349,12 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
     }
 
     @Override
+    public Component getTabComponent(String name) {
+        TabImpl tab = getTabImpl(name);
+        return tab.getComponent();
+    }
+
+    @Override
     public Collection<Tab> getTabs() {
         return Collections.<Tab>unmodifiableCollection(tabs);
     }
