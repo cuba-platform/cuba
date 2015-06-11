@@ -6,12 +6,14 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
 import com.haulmont.cuba.gui.AppConfig;
@@ -30,11 +32,10 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author krivopustov
@@ -58,7 +59,7 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
     public DesktopTimeField() {
         UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
 
-        timeFormat = Datatypes.getFormatStrings(uss.getLocale()).getTimeFormat();
+        timeFormat = Datatypes.getFormatStringsNN(uss.getLocale()).getTimeFormat();
         resolution = DateField.Resolution.MIN;
         formatter = new MaskFormatter();
         formatter.setPlaceholderCharacter('_');
@@ -76,13 +77,29 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
     }
 
     private Object validateRawValue(String value) throws NumberFormatException, ParseException {
-        if (value.equals(StringUtils.replaceChars(mask, "#U", "__")))
+        if (value.equals(StringUtils.replaceChars(mask, "#U", "__"))) {
             return null;
+        }
 
         SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
         sdf.setLenient(false);
         try {
-            return sdf.parse(value);
+            Date parsedValue = sdf.parse(value);
+
+            Class targetType = null;
+            if (datasource != null && metaPropertyPath != null) {
+                targetType = metaPropertyPath.getRangeJavaClass();
+            }
+
+            if (targetType == java.sql.Time.class) {
+                return new Time(parsedValue.getTime());
+            }
+            if (targetType == java.sql.Date.class) {
+                log.warn("Do not use java.sql.Date with time field");
+                return new java.sql.Date(parsedValue.getTime());
+            }
+
+            return parsedValue;
         } catch (ParseException e) {
             showValidationMessage();
             return prevValue;
