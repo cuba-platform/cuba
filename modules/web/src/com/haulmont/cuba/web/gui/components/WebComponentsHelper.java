@@ -96,16 +96,16 @@ public class WebComponentsHelper {
         }
     }
 
-    public static <T extends Component> Collection<T> getComponents(ComponentContainer container, Class<T> aClass) {
+    @SuppressWarnings("unchecked")
+    public static <T extends Component> Collection<T> getComponents(HasComponents container, Class<T> aClass) {
         List<T> res = new ArrayList<>();
         for (Object aContainer : container) {
             Component component = (Component) aContainer;
             if (aClass.isAssignableFrom(component.getClass())) {
                 res.add((T) component);
-            } else if (ComponentContainer.class.isAssignableFrom(component.getClass())) {
-                res.addAll(getComponents((ComponentContainer) component, aClass));
+            } else if (HasComponents.class.isAssignableFrom(component.getClass())) {
+                res.addAll(getComponents((HasComponents) component, aClass));
             }
-
         }
 
         return res;
