@@ -68,7 +68,7 @@
         </property>
     </bean>
 
-    <!-- Web-level exception handlers -->
+    <!-- Desktop-level exception handlers -->
 
     <bean id="cuba_exceptionHandlersConf" class="com.haulmont.cuba.desktop.exception.ExceptionHandlersConfiguration">
         <property name="handlerClasses">
