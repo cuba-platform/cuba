@@ -181,6 +181,7 @@ public class BulkEditorWindow extends AbstractWindow {
             Label label = componentsFactory.createComponent(Label.NAME);
             label.setFrame(getFrame());
             label.setValue(field.getLocalizedName());
+            label.setAlignment(Alignment.MIDDLE_LEFT);
 
             grid.add(label);
 
