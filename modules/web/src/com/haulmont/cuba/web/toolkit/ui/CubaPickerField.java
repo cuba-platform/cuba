@@ -42,6 +42,7 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
         initTextField();
         initLayout();
         setValidationVisible(false);
+        setShowBufferedSourceException(false);
     }
 
     public CubaPickerField(com.vaadin.ui.AbstractField field) {
@@ -49,6 +50,7 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
         this.useCustomField = true;
         initLayout();
         setValidationVisible(false);
+        setShowBufferedSourceException(false);
     }
 
     @Override

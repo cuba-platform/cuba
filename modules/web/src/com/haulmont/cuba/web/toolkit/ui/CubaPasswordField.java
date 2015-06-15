@@ -18,6 +18,7 @@ public class CubaPasswordField extends PasswordField {
 
     public CubaPasswordField() {
         setValidationVisible(false);
+        setShowBufferedSourceException(false);
     }
 
     @Override

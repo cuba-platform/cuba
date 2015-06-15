@@ -32,6 +32,7 @@ public class CubaSourceCodeEditor extends AceEditor implements AutoCompleteSuppo
         setTextChangeTimeout(200);
 
         setValidationVisible(false);
+        setShowBufferedSourceException(false);
     }
 
     @Override

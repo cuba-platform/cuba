@@ -15,6 +15,11 @@ import com.vaadin.ui.OptionGroup;
  */
 public class CubaOptionGroup extends OptionGroup {
 
+    public CubaOptionGroup() {
+        setValidationVisible(false);
+        setShowBufferedSourceException(false);
+    }
+
     @Override
     protected CubaOptionGroupState getState() {
         return (CubaOptionGroupState) super.getState();

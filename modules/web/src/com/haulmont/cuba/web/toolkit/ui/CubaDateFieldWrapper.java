@@ -28,6 +28,7 @@ public class CubaDateFieldWrapper extends com.vaadin.ui.CustomField {
     protected final WebDateField dateField;
 
     protected ThemeConstants theme;
+    protected boolean showBufferedExceptions = false;
 
     public CubaDateFieldWrapper(WebDateField dateField, Layout composition) {
         this.dateField = dateField;
@@ -38,11 +39,22 @@ public class CubaDateFieldWrapper extends com.vaadin.ui.CustomField {
         }
 
         setSizeUndefined();
+        //noinspection unchecked
         setConverter(new ObjectToObjectConverter());
 
         setValidationVisible(false);
+        setShowBufferedSourceException(false);
 
         setPrimaryStyleName("cuba-datefield-composition");
+    }
+
+    @Override
+    protected SourceException getCurrentBufferedSourceException() {
+        if (!showBufferedExceptions) {
+            return null;
+        }
+
+        return super.getCurrentBufferedSourceException();
     }
 
     @Override

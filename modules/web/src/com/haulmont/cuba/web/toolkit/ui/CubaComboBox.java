@@ -29,6 +29,7 @@ public class CubaComboBox extends ComboBox implements Action.Container {
 
     public CubaComboBox() {
         setValidationVisible(false);
+        setShowBufferedSourceException(false);
     }
 
     @Override

@@ -17,6 +17,7 @@ import com.vaadin.ui.TextArea;
 public class CubaTextArea extends TextArea {
     public CubaTextArea() {
         setValidationVisible(false);
+        setShowBufferedSourceException(false);
     }
 
     @Override

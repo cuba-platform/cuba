@@ -15,10 +15,13 @@ import com.vaadin.ui.CheckBox;
 public class CubaCheckBox extends CheckBox {
 
     public CubaCheckBox() {
+        setValidationVisible(false);
+        setShowBufferedSourceException(false);
     }
 
     public CubaCheckBox(String caption) {
-        super(caption);
+        this();
+        setCaption(caption);
     }
 
     @Override

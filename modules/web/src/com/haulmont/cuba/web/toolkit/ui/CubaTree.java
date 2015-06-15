@@ -29,6 +29,11 @@ import java.util.Set;
  */
 public class CubaTree extends Tree implements HasComponents {
 
+    public CubaTree() {
+        setValidationVisible(false);
+        setShowBufferedSourceException(false);
+    }
+
     /**
      * Keeps track of the ShortcutListeners added to this component, and manages the painting and handling as well.
      */

@@ -469,6 +469,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         component.setNullSelectionAllowed(false);
         component.setImmediate(true);
         component.setValidationVisible(false);
+        component.setShowBufferedSourceException(false);
         component.setPageLength(15);
 
         int defaultRowHeaderWidth = 16;

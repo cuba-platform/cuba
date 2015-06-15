@@ -28,6 +28,7 @@ public class CubaTextField extends TextField implements Action.Container {
 
     public CubaTextField() {
         setValidationVisible(false);
+        setShowBufferedSourceException(false);
     }
 
     @Override
