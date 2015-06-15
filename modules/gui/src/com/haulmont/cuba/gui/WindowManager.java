@@ -560,6 +560,7 @@ public abstract class WindowManager {
             component.setMessagesPack(parentFrame.getMessagesPack());
         }
 
+        component.setId(windowInfo.getId());
         component.setFrame(parentFrame);
         context.setFrame(component);
         context.executePostInitTasks();
