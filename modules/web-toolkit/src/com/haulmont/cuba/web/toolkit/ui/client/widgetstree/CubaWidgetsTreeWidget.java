@@ -25,15 +25,6 @@ public class CubaWidgetsTreeWidget extends CubaTreeWidget {
 
         public void setNodeWidget(Widget nodeWidget) {
             this.nodeWidget = nodeWidget;
-            nodeWidgetRoot.setWidget(nodeWidget);
-        }
-
-        @Override
-        protected void constructDom() {
-            if (nodeWidget == null) {
-                super.constructDom();
-                return;
-            }
 
             addStyleName(CLASSNAME);
 
@@ -60,6 +51,7 @@ public class CubaWidgetsTreeWidget extends CubaTreeWidget {
 
             nodeWidgetRoot = new SimplePanel();
             nodeWidgetRoot.setStylePrimaryName(CLASSNAME + "-widget");
+            nodeWidgetRoot.setWidget(nodeWidget);
             nodeContent.add(nodeWidgetRoot);
 
             childNodeContainer = new FlowPanel();
