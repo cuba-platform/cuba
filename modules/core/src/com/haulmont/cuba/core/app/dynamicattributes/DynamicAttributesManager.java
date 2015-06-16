@@ -87,16 +87,16 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
             query.setView(categoryView);
             List<Category> resultList = query.getResultList();
 
-            Multimap<MetaClass, Category> categoriesCache = HashMultimap.create();
-            Map<MetaClass, Map<String, CategoryAttribute>> attributesCache = new HashMap<>();
+            Multimap<String, Category> categoriesCache = HashMultimap.create();
+            Map<String, Map<String, CategoryAttribute>> attributesCache = new HashMap<>();
 
             for (Category category : resultList) {
                 MetaClass metaClass = resolveTargetMetaClass(metadata.getSession().getClass(category.getEntityType()));
-                categoriesCache.put(metaClass, category);
-                Map<String, CategoryAttribute> attributes = attributesCache.get(metaClass);
+                categoriesCache.put(metaClass.getName(), category);
+                Map<String, CategoryAttribute> attributes = attributesCache.get(metaClass.getName());
                 if (attributes == null) {
                     attributes = new HashMap<>();
-                    attributesCache.put(metaClass, attributes);
+                    attributesCache.put(metaClass.getName(), attributes);
                 }
 
                 for (CategoryAttribute categoryAttribute : category.getCategoryAttrs()) {

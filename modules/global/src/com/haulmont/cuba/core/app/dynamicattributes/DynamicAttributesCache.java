@@ -26,12 +26,12 @@ import java.util.*;
  */
 @Immutable
 public class DynamicAttributesCache implements Serializable {
-    protected final Multimap<MetaClass, Category> categoriesCache;
-    protected final Map<MetaClass, Map<String, CategoryAttribute>> attributesCache;
+    protected final Multimap<String, Category> categoriesCache;
+    protected final Map<String, Map<String, CategoryAttribute>> attributesCache;
     protected final Date creationDate;
 
-    public DynamicAttributesCache(Multimap<MetaClass, Category> categoriesCache,
-                                  Map<MetaClass, Map<String, CategoryAttribute>> attributesCache,
+    public DynamicAttributesCache(Multimap<String, Category> categoriesCache,
+                                  Map<String, Map<String, CategoryAttribute>> attributesCache,
                                   Date creationDate) {
         this.categoriesCache = categoriesCache;
         this.attributesCache = attributesCache;
@@ -40,12 +40,12 @@ public class DynamicAttributesCache implements Serializable {
 
     public Collection<Category> getCategoriesForMetaClass(MetaClass metaClass) {
         MetaClass targetMetaClass = resolveTargetMetaClass(metaClass);
-        return new ArrayList<>(categoriesCache.get(targetMetaClass));
+        return new ArrayList<>(categoriesCache.get(targetMetaClass.getName()));
     }
 
     public Collection<CategoryAttribute> getAttributesForMetaClass(MetaClass metaClass) {
         MetaClass targetMetaClass = resolveTargetMetaClass(metaClass);
-        Collection<Category> categories = categoriesCache.get(targetMetaClass);
+        Collection<Category> categories = categoriesCache.get(targetMetaClass.getName());
         List<CategoryAttribute> categoryAttributes = new ArrayList<>();
         for (Category category : categories) {
             categoryAttributes.addAll(Collections2.filter(category.getCategoryAttrs(), new Predicate<CategoryAttribute>() {
@@ -61,7 +61,7 @@ public class DynamicAttributesCache implements Serializable {
     @Nullable
     public CategoryAttribute getAttributeForMetaClass(MetaClass metaClass, String code) {
         MetaClass targetMetaClass = resolveTargetMetaClass(metaClass);
-        Map<String, CategoryAttribute> attributes = attributesCache.get(targetMetaClass);
+        Map<String, CategoryAttribute> attributes = attributesCache.get(targetMetaClass.getName());
         if (attributes != null) {
             return attributes.get(code);
         }
