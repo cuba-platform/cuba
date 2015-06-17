@@ -51,6 +51,7 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
     @Column(name = "CREATED_BY", length = LOGIN_FIELD_LEN)
     protected String createdBy;
 
+    @Transient
     protected Map<String, CategoryAttributeValue> dynamicAttributes = null;
 
     public abstract void setId(T id);
