@@ -90,7 +90,7 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
         compile(group: 'org.perf4j', name: 'perf4j', version: '0.9.16')
         compile(group: 'com.google.code.findbugs', name: 'jsr305', version: '2.0.3')
         compile(group: 'com.haulmont.thirdparty', name: 'javaee-api', version: '6.0.20091228')
-        compile(group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.1.6')
+        compile(groovyArtifact)
         compile(group: 'antlr', name: 'antlr', version: '2.7.7')
         compile(asm)
         compile(group: 'com.google.guava', name: 'guava', version: '16.0.1')
