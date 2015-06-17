@@ -22,19 +22,39 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 public class SetValueEntity extends AbstractNotPersistentEntity {
     private static final long serialVersionUID = -1652898874022057451L;
 
-    public SetValueEntity(String value){
-        this.value=value;
+    public SetValueEntity(String value) {
+        this.value = value;
     }
 
     private String value;
 
     @MetaProperty
-    public String getValue(){
+    public String getValue() {
         return value;
     }
 
     @MetaProperty
-    public void setValue(String value){
-        this.value=value;
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (super.equals(o)) return true;
+
+        SetValueEntity that = (SetValueEntity) o;
+
+        if (value != null ? !value.equals(that.value) : that.value != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (value != null ? value.hashCode() : 0);
+        return result;
     }
 }

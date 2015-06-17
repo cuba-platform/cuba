@@ -8,7 +8,10 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.core.app.dynamicattributes.*;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesMetaClass;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.SetValueEntity;
@@ -139,10 +142,6 @@ public class RuntimePropsDatasourceImpl
             }
 
             item.addAttributeValue(attribute, attributeValue, value);
-
-            if (DynamicAttributesUtils.getAttributeClass(attribute).equals(SetValueEntity.class)) {
-                createOptionsDatasource(attribute, (SetValueEntity) value);
-            }
         }
 
         view = new View(DynamicAttributesEntity.class);
@@ -166,46 +165,6 @@ public class RuntimePropsDatasourceImpl
             modified = true;
         }
         fireItemChanged(null);
-    }
-
-    protected void createOptionsDatasource(CategoryAttribute attribute, final SetValueEntity attributeValue) {
-        final String property = attribute.getName();
-        final MetaClass metaClass = this.getMetaClass();
-        final MetaProperty metaProperty = metaClass.getProperty(property);
-        if (metaProperty == null) {
-            throw new DevelopmentException(
-                    String.format("Can't find property '%s' in datasource '%s'", property, this.getId()));
-        }
-        DsBuilder builder = new DsBuilder(getDsContext());
-        builder.reset().setMetaClass(metadata.getSession().getClass(SetValueEntity.class)).setId(id)
-                .setViewName(View.MINIMAL).setSoftDeletion(false);
-
-        CollectionDatasource datasource = builder
-                .setRefreshMode(CollectionDatasource.RefreshMode.NEVER)
-                .buildCollectionDatasource();
-        List<SetValueEntity> options = getOptions(attribute, attributeValue);
-        for (SetValueEntity option : options) {
-            datasource.includeItem(option);
-        }
-
-        ((DatasourceImpl) datasource).valid();
-        //datasource.setItem(attributeValue);
-    }
-
-    protected List<SetValueEntity> getOptions(CategoryAttribute attribute, SetValueEntity attributeValue) {
-        String enumeration = attribute.getEnumeration();
-        String[] values = StringUtils.split(enumeration, ',');
-        List<SetValueEntity> options = new LinkedList<>();
-        for (String value : values) {
-            String trimmedValue = StringUtils.trimToNull(value);
-            if (trimmedValue != null) {
-                if (attributeValue != null && trimmedValue.equals(attributeValue.getValue()))
-                    options.add(attributeValue);
-                else
-                    options.add(new SetValueEntity(trimmedValue));
-            }
-        }
-        return options;
     }
 
     protected CategoryAttributeValue getValue(CategoryAttribute attribute, Collection<CategoryAttributeValue> entityValues) {

@@ -7,6 +7,7 @@ package com.haulmont.cuba.core.entity;
 import com.google.common.base.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.global.*;
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -125,7 +126,9 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
             if (categoryAttributeValue != null) {
                 if (obj != null) {
                     categoryAttributeValue.setValue(obj);
+                    categoryAttributeValue.setDeleteTs(null);
                 } else {
+                    categoryAttributeValue.setValue(null);
                     categoryAttributeValue.setDeleteTs(AppBeans.get(TimeSource.class).currentTimestamp());
                 }
             } else if (obj != null) {
@@ -133,6 +136,9 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
                 categoryAttributeValue.setValue(obj);
                 categoryAttributeValue.setEntityId(getUuid());
                 categoryAttributeValue.setCode(attributeCode);
+                DynamicAttributes dynamicAttributesBean = AppBeans.get(DynamicAttributes.NAME);
+                categoryAttributeValue.setCategoryAttribute(
+                        dynamicAttributesBean.getAttributeForMetaClass(getMetaClass(), attributeCode));
                 dynamicAttributes.put(attributeCode, categoryAttributeValue);
             }
 

@@ -180,7 +180,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
                 String defaultValue = "";
 
                 if (BooleanUtils.isNotTrue(attribute.getIsEntity())) {
-                    PropertyType dataType = PropertyType.valueOf(attribute.getDataType());
+                    PropertyType dataType = attribute.getDataTypeAsPropertyType();
                     switch (dataType) {
                         case DATE:
                             Date date = attribute.getDefaultDate();

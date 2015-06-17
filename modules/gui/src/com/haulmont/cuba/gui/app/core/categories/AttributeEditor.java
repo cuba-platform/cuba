@@ -536,7 +536,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             dataTypeField.setValue(PropertyType.ENTITY);
         } else {
             if (attribute.getDataType() != null) {
-                PropertyType type = PropertyType.valueOf(attribute.getDataType());
+                PropertyType type = attribute.getDataTypeAsPropertyType();
                 dataTypeField.setValue(type);
             }
         }

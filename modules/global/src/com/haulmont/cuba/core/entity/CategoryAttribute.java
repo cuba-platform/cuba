@@ -5,10 +5,12 @@
 
 package com.haulmont.cuba.core.entity;
 
+import com.google.common.base.Preconditions;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+import com.haulmont.cuba.core.sys.SetValueEntity;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.persistence.Persistent;
 
@@ -252,11 +254,31 @@ public class CategoryAttribute extends StandardEntity {
         this.categoryEntityType = categoryEntityType;
     }
 
-    public Set<String> targetScreensSet(){
+    public Set<String> targetScreensSet() {
         if (StringUtils.isNotBlank(targetScreens)) {
             return new HashSet<>(Arrays.asList(targetScreens.split(",")));
         } else {
             return Collections.emptySet();
         }
+    }
+
+    public PropertyType getDataTypeAsPropertyType() {
+        if (isEntity) {
+            return PropertyType.ENTITY;
+        }
+
+        return PropertyType.valueOf(dataType);
+    }
+
+    public List<SetValueEntity> getEnumerationOptions() {
+        Preconditions.checkState(getDataTypeAsPropertyType() == PropertyType.ENUMERATION, "Only enumeration attributes have options");
+        String enumeration = getEnumeration();
+        String[] values = StringUtils.split(enumeration, ',');
+        List<SetValueEntity> options = new LinkedList<>();
+        for (String value : values) {
+            String trimmedValue = StringUtils.trimToNull(value);
+            options.add(new SetValueEntity(trimmedValue));
+        }
+        return options;
     }
 }

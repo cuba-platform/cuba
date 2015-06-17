@@ -49,6 +49,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
 
     public static final String NAME = "runtimeProperties";
     public static final String DEFAULT_FIELD_WIDTH = "100%";
+    private final DynamicAttributes dynamicAttributes = AppBeans.get(DynamicAttributes.NAME);
 
     protected RuntimePropsDatasource rds;
     protected CollectionDatasource categoriesDs;
@@ -188,21 +189,12 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                                 public Component generateField(Datasource datasource, String propertyId) {
                                     LookupField field = componentsFactory.createComponent(LookupField.NAME);
                                     field.setFrame(RuntimePropertiesFrame.this);
-                                    CollectionDatasource fieldDs = getDsContext().get(propertyId);
-                                    if (fieldDs == null) {
-                                        DsContext parentDsContext = getDsContext().getParent();
-                                        if (parentDsContext != null) {
-                                            for (Datasource ds : parentDsContext.getAll()) {
-                                                if (ds.getId().equals(propertyId)) {
-                                                    fieldDs = (CollectionDatasource) ds;
-                                                    break;
-                                                }
-                                            }
-                                        }
+                                    CategoryAttribute categoryAttribute =
+                                            dynamicAttributes.getAttributeForMetaClass(rds.getMainDs().getMetaClass(), propertyId);
+                                    if (categoryAttribute != null) {
+                                        field.setOptionsList(categoryAttribute.getEnumerationOptions());
                                     }
-                                    field.setOptionsDatasource(fieldDs);
                                     field.setDatasource(rds, propertyId);
-                                    //field.setHeight("-1px");
                                     field.setWidth(fieldWidth);
                                     return field;
                                 }
@@ -213,7 +205,6 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                     component.addCustomField(property.getName(), new FieldGroup.CustomFieldGenerator() {
                         @Override
                         public Component generateField(Datasource datasource, String propertyId) {
-                            //todo move field generation to generator previous to this block (upper)
                             final PickerField pickerField;
                             Boolean lookup = ((DynamicAttributesEntity) datasource.getItem()).getCategoryValue(property.getName()).getCategoryAttribute().getLookup();
                             if (lookup != null && lookup) {
@@ -264,7 +255,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         java.util.List<FieldGroup.FieldConfig> fields = new ArrayList<>();
         for (MetaProperty property : metaProperties) {
             FieldGroup.FieldConfig field = new FieldGroup.FieldConfig(property.getName());
-            CategoryAttribute attribute = AppBeans.get(DynamicAttributes.class)
+            CategoryAttribute attribute = dynamicAttributes
                     .getAttributeForMetaClass(rds.getMainDs().getMetaClass(), property.getName().substring(1));
             field.setCaption(attribute != null ? attribute.getName() : property.getName());
             field.setWidth(fieldWidth);

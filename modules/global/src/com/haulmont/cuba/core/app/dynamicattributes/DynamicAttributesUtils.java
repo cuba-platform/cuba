@@ -78,8 +78,8 @@ public final class DynamicAttributesUtils {
         if (BooleanUtils.isTrue(attribute.getIsEntity())) {
             return ReflectionHelper.getClass(attribute.getDataType());
         } else {
-            String dataType = attribute.getDataType();
-            switch (PropertyType.valueOf(dataType)) {
+            PropertyType propertyType = attribute.getDataTypeAsPropertyType();
+            switch (propertyType) {
                 case STRING:
                     return String.class;
                 case INTEGER:

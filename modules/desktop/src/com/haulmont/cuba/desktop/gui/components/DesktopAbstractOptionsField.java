@@ -7,9 +7,14 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.datatypes.Enumeration;
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
@@ -130,7 +135,8 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
             return;
         }
 
-        resolveMetaPropertyPath(datasource.getMetaClass(), property);
+        MetaClass metaClass = datasource.getMetaClass();
+        resolveMetaPropertyPath(metaClass, property);
 
         datasource.addListener(
                 new DsListenerAdapter() {
@@ -167,6 +173,14 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
 
             setOptionsList(Arrays.asList(javaClass.getEnumConstants()));
             setCaptionMode(CaptionMode.ITEM);
+        }
+
+        DynamicAttributes dynamicAttributes = AppBeans.get(DynamicAttributes.NAME);
+        if (metaProperty.getRange().isClass() && DynamicAttributesUtils.isDynamicAttribute(property)) {
+            CategoryAttribute categoryAttribute = dynamicAttributes.getAttributeForMetaClass(metaClass, property);
+            if (categoryAttribute != null && categoryAttribute.getDataTypeAsPropertyType() == PropertyType.ENUMERATION) {
+                setOptionsList(categoryAttribute.getEnumerationOptions());
+            }
         }
 
         if ((datasource.getState() == Datasource.State.VALID) && (datasource.getItem() != null)) {

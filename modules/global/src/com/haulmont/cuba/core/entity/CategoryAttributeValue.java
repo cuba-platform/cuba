@@ -7,10 +7,12 @@ package com.haulmont.cuba.core.entity;
 
 import com.google.common.base.Preconditions;
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.sys.SetValueEntity;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.persistence.Persistent;
 
@@ -153,6 +155,8 @@ public class CategoryAttributeValue extends StandardEntity {
             setBooleanValue((Boolean) value);
         } else if (value instanceof UUID) {
             setEntityValue((UUID) value);
+        } else if (value instanceof SetValueEntity) {
+            setStringValue(((SetValueEntity) value).getValue());
         } else if (value instanceof Entity) {
             setEntityValue(((Entity) value).getUuid());
         } else if (value instanceof String) {
@@ -163,17 +167,20 @@ public class CategoryAttributeValue extends StandardEntity {
     }
 
     public Object getValue() {
-        if (stringValue != null)
+        if (stringValue != null) {
+            if (categoryAttribute.getDataTypeAsPropertyType() == PropertyType.ENUMERATION) {
+                return new SetValueEntity(stringValue);
+            }
             return stringValue;
-        else if (intValue != null)
+        } else if (intValue != null) {
             return intValue;
-        else if (doubleValue != null)
+        } else if (doubleValue != null) {
             return doubleValue;
-        else if (dateValue != null)
+        } else if (dateValue != null) {
             return dateValue;
-        else if (booleanValue != null)
+        } else if (booleanValue != null) {
             return booleanValue;
-        else if (entityValue != null) {
+        } else if (entityValue != null) {
             Preconditions.checkState(categoryAttribute != null, "Could not resolve entity value, " +
                     "because categoryAttribute is not loaded for attribute value " + id);
             Preconditions.checkState(StringUtils.isNotBlank(categoryAttribute.getDataType()),

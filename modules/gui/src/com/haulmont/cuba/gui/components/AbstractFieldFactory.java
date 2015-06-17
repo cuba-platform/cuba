@@ -11,7 +11,10 @@ import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
@@ -73,6 +76,14 @@ public abstract class AbstractFieldFactory implements FieldFactory {
                     return createNumberField(datasource, property);
                 }
             } else if (mpp.getRange().isClass()) {
+                if (DynamicAttributesUtils.isDynamicAttribute(property)) {
+                    DynamicAttributes dynamicAttributes = AppBeans.get(DynamicAttributes.NAME);
+                    CategoryAttribute categoryAttribute = dynamicAttributes.getAttributeForMetaClass(metaClass, property);
+                    if (categoryAttribute != null && categoryAttribute.getDataTypeAsPropertyType() == PropertyType.ENUMERATION) {
+                        return createEnumField(datasource, property);
+                    }
+                }
+
                 return createEntityField(datasource, property, xmlDescriptor);
             } else if (mpp.getRange().isEnum()) {
                 return createEnumField(datasource, property);

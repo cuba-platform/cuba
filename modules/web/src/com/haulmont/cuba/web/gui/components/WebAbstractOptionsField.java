@@ -6,6 +6,10 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Enumeration;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.components.CaptionMode;
@@ -27,9 +31,9 @@ import java.util.*;
  * @version $Id$
  */
 public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSelect>
-    extends
+        extends
         WebAbstractField<T>
-    implements
+        implements
         OptionsField {
 
     protected List optionsList;
@@ -72,7 +76,15 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
 
             setCaptionMode(CaptionMode.ITEM);
         }
-        
+
+        DynamicAttributes dynamicAttributes = AppBeans.get(DynamicAttributes.NAME);
+        if (metaProperty.getRange().isClass() && DynamicAttributesUtils.isDynamicAttribute(property)) {
+            CategoryAttribute categoryAttribute = dynamicAttributes.getAttributeForMetaClass(metaClass, property);
+            if (categoryAttribute != null && categoryAttribute.getDataTypeAsPropertyType() == PropertyType.ENUMERATION) {
+                setOptionsList(categoryAttribute.getEnumerationOptions());
+            }
+        }
+
         component.setPropertyDataSource(itemProperty);
 
         if (metaProperty.isReadOnly()) {
@@ -244,7 +256,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
     protected <T> T wrapAsCollection(Object o) {
         if (isMultiSelect()) {
             if (o instanceof Collection) {
-                return (T) Collections.unmodifiableCollection((Collection)o);
+                return (T) Collections.unmodifiableCollection((Collection) o);
             } else if (o != null) {
                 return (T) Collections.singleton(o);
             } else {

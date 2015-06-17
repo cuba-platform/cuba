@@ -21,7 +21,7 @@ import java.util.Map;
 public class DynamicAttributesConditionEditor extends AbstractWindow {
 
     @Inject
-    protected DynamicAttributesConditionFrame dynamicAttributeConditionFrame;
+    protected DynamicAttributesConditionFrame dynamicAttributesConditionFrame;
 
     @Inject
     protected ThemeConstants theme;
@@ -38,14 +38,14 @@ public class DynamicAttributesConditionEditor extends AbstractWindow {
     }
 
     protected void hideUnnecessaryFields() {
-        hideComponent(dynamicAttributeConditionFrame, "width");
-        hideComponent(dynamicAttributeConditionFrame, "widthLabel");
-        hideComponent(dynamicAttributeConditionFrame, "hidden");
-        hideComponent(dynamicAttributeConditionFrame, "hiddenLabel");
-        hideComponent(dynamicAttributeConditionFrame, "required");
-        hideComponent(dynamicAttributeConditionFrame, "requiredLabel");
-        hideComponent(dynamicAttributeConditionFrame, "defaultValueLayout");
-        hideComponent(dynamicAttributeConditionFrame, "defaultValueLayoutLabel");
+        hideComponent(dynamicAttributesConditionFrame, "width");
+        hideComponent(dynamicAttributesConditionFrame, "widthLabel");
+        hideComponent(dynamicAttributesConditionFrame, "hidden");
+        hideComponent(dynamicAttributesConditionFrame, "hiddenLabel");
+        hideComponent(dynamicAttributesConditionFrame, "required");
+        hideComponent(dynamicAttributesConditionFrame, "requiredLabel");
+        hideComponent(dynamicAttributesConditionFrame, "defaultValueLayout");
+        hideComponent(dynamicAttributesConditionFrame, "defaultValueLayoutLabel");
     }
 
     protected void hideComponent(AbstractFrame parentFrame, String componentId) {
@@ -55,7 +55,7 @@ public class DynamicAttributesConditionEditor extends AbstractWindow {
     }
 
     public void commit() {
-        if (dynamicAttributeConditionFrame.commit()) {
+        if (dynamicAttributesConditionFrame.commit()) {
             close(COMMIT_ACTION_ID);
         }
     }
