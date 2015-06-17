@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -37,6 +38,8 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  * @version $Id$
  */
 public class FieldGroupLoader extends AbstractFieldLoader {
+    protected DynamicAttributes dynamicAttributes = AppBeans.get(DynamicAttributes.NAME);
+
     public FieldGroupLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
@@ -187,7 +190,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                     field.setCaption(attribute.getName());
                     field.setDatasource(ds);
                     field.setRequired(attribute.getRequired());
-                    field.setRequiredError( messages.formatMessage(
+                    field.setRequiredError(messages.formatMessage(
                             messages.getMainMessagePack(),
                             "validation.required.defaultMsg",
                             attribute.getName()));
@@ -296,7 +299,14 @@ public class FieldGroupLoader extends AbstractFieldLoader {
             field.setDatasource(datasource);
         }
 
-        loadCaption(field, element);
+        String propertyName = metaPropertyPath != null ? metaPropertyPath.getMetaProperty().getName() : null;
+        if (propertyName != null && DynamicAttributesUtils.isDynamicAttribute(propertyName)) {
+            CategoryAttribute categoryAttribute =
+                    dynamicAttributes.getAttributeForMetaClass(ds.getMetaClass(), propertyName);
+            field.setCaption(categoryAttribute != null ? categoryAttribute.getName() : propertyName);
+        } else {
+            loadCaption(field, element);
+        }
         loadDescription(field, element);
 
         field.setXmlDescriptor(element);

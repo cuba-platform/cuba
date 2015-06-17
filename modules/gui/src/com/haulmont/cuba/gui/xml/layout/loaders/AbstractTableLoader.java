@@ -6,6 +6,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -47,6 +48,8 @@ public abstract class AbstractTableLoader extends ComponentLoader {
     protected LayoutLoaderConfig config;
 
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+    protected DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.NAME);
+    protected DynamicAttributes dynamicAttributes = AppBeans.get(DynamicAttributes.NAME);
 
     public AbstractTableLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context);
@@ -156,8 +159,6 @@ public abstract class AbstractTableLoader extends ComponentLoader {
 
     protected void addDynamicAttributes(Table component, Datasource ds, List<Table.Column> availableColumns) {
         if (metadataTools.isPersistent(ds.getMetaClass())) {
-            DynamicAttributesGuiTools dynamicAttributesGuiTools =
-                    AppBeans.get(DynamicAttributesGuiTools.NAME, DynamicAttributesGuiTools.class);
             Set<CategoryAttribute> attributesToShow =
                     dynamicAttributesGuiTools.getAttributesToShowOnTheScreen(ds.getMetaClass(), context.getFullFrameId(), component.getId());
             if (CollectionUtils.isNotEmpty(attributesToShow)) {
@@ -291,7 +292,7 @@ public abstract class AbstractTableLoader extends ComponentLoader {
         final String id = element.attributeValue("id");
 
         final MetaPropertyPath metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
-                        .resolveMetaPropertyPath(ds.getMetaClass(), id);
+                .resolveMetaPropertyPath(ds.getMetaClass(), id);
 
         final Table.Column column = new Table.Column(metaPropertyPath != null ? metaPropertyPath : id);
 
@@ -329,9 +330,15 @@ public abstract class AbstractTableLoader extends ComponentLoader {
             if (column.getId() instanceof MetaPropertyPath) {
                 MetaPropertyPath mpp = (MetaPropertyPath) column.getId();
                 String propertyName = mpp.getMetaProperty().getName();
-                MetaClass propertyMetaClass = metadataTools.getPropertyEnclosingMetaClass(mpp);
 
-                columnCaption = messageTools.getPropertyCaption(propertyMetaClass, propertyName);
+                if (DynamicAttributesUtils.isDynamicAttribute(propertyName)) {
+                    CategoryAttribute categoryAttribute =
+                            dynamicAttributes.getAttributeForMetaClass(ds.getMetaClass(), propertyName);
+                    columnCaption = categoryAttribute != null ? categoryAttribute.getName() : propertyName;
+                } else {
+                    MetaClass propertyMetaClass = metadataTools.getPropertyEnclosingMetaClass(mpp);
+                    columnCaption = messageTools.getPropertyCaption(propertyMetaClass, propertyName);
+                }
             } else {
                 Class<?> declaringClass = ds.getMetaClass().getJavaClass();
                 String className = declaringClass.getName();

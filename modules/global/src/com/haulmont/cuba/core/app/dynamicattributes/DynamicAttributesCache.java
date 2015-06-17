@@ -60,6 +60,7 @@ public class DynamicAttributesCache implements Serializable {
 
     @Nullable
     public CategoryAttribute getAttributeForMetaClass(MetaClass metaClass, String code) {
+        code = DynamicAttributesUtils.decodeAttributeCode(code);
         MetaClass targetMetaClass = resolveTargetMetaClass(metaClass);
         Map<String, CategoryAttribute> attributes = attributesCache.get(targetMetaClass.getName());
         if (attributes != null) {
