@@ -1299,12 +1299,16 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 new CustomColumnGenerator(generator, associatedRuntimeColumn) {
                     @SuppressWarnings("unchecked")
                     @Override
-                    public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
+                    public Object generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
                         Entity entity = getDatasource().getItem(itemId);
 
                         com.haulmont.cuba.gui.components.Component component = getColumnGenerator().generateCell(entity);
                         if (component == null) {
                             return null;
+                        }
+
+                        if (component instanceof PlainTextCell) {
+                            return ((PlainTextCell) component).getText();
                         }
 
                         if (component instanceof BelongToFrame) {
@@ -2075,6 +2079,23 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         if (columnCollapseListeners != null) {
             columnCollapseListeners.remove(columnCollapseListener);
         }
+    }
+
+    @Override
+    public void setClickListener(String columnId, final CellClickListener clickListener) {
+        component.setClickListener(getColumn(columnId).getId(), new CubaEnhancedTable.CellClickListener() {
+            @Override
+            public void onClick(Object itemId, Object columnId, int mouseX, int mouseY) {
+                ItemWrapper wrapper = (ItemWrapper) component.getItem(itemId);
+                Entity entity = wrapper.getItem();
+                clickListener.onClick(entity, columnId.toString(), mouseX, mouseY);
+            }
+        });
+    }
+
+    @Override
+    public void removeClickListener(String columnId) {
+        component.removeClickListener(getColumn(columnId).getId());
     }
 
     protected class StyleGeneratorAdapter implements com.vaadin.ui.Table.CellStyleGenerator {

@@ -7,7 +7,6 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.aggregation.Aggregation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -340,6 +339,13 @@ public interface Table
     @Nullable
     Printable getPrintable(String columnId);
 
+    void setClickListener(String columnId, CellClickListener clickListener);
+    void removeClickListener(String columnId);
+
+    interface CellClickListener {
+        void onClick(Entity item, String columnId, int mouseX, int mouseY);
+    }
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public static class Column implements HasXmlDescriptor, HasCaption, HasFormatter {
@@ -524,6 +530,128 @@ public interface Table
         @Override
         public String toString() {
             return id == null ? super.toString() : id.toString();
+        }
+    }
+
+    /**
+     * Special component for generated columns which will be rendered as simple text cell.
+     * Very usefull for heavy tables to decrease rendering time in browser.
+     */
+    public static class PlainTextCell implements Component {
+        
+        protected Component parent;
+        protected String text;
+
+        public PlainTextCell(String text) {
+            this.text = text;
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        @Override
+        public String getId() {
+            return null;
+        }
+
+        @Override
+        public void setId(String id) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Component getParent() {
+            return parent;
+        }
+
+        @Override
+        public void setParent(Component parent) {
+            this.parent = parent;
+        }
+
+        @Override
+        public String getDebugId() {
+            return null;
+        }
+
+        @Override
+        public void setDebugId(String id) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return true;
+        }
+
+        @Override
+        public void setEnabled(boolean enabled) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isVisible() {
+            return true;
+        }
+
+        @Override
+        public void setVisible(boolean visible) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void requestFocus() {
+        }
+
+        @Override
+        public float getHeight() {
+            return -1;
+        }
+
+        @Override
+        public int getHeightUnits() {
+            return UNITS_PIXELS;
+        }
+
+        @Override
+        public void setHeight(String height) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public float getWidth() {
+            return -1;
+        }
+
+        @Override
+        public int getWidthUnits() {
+            return UNITS_PIXELS;
+        }
+
+        @Override
+        public void setWidth(String width) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Alignment getAlignment() {
+            return Alignment.TOP_LEFT;
+        }
+
+        @Override
+        public void setAlignment(Alignment alignment) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String getStyleName() {
+            return null;
+        }
+
+        @Override
+        public void setStyleName(String styleName) {
+            throw new UnsupportedOperationException();
         }
     }
 }

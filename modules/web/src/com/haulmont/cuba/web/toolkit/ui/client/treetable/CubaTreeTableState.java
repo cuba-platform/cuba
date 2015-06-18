@@ -20,4 +20,6 @@ public class CubaTreeTableState extends TreeTableState {
 
     public Connector presentations;
     public Connector contextMenu;
+
+    public String[] clickableColumnKeys;
 }

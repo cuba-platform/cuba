@@ -9,6 +9,7 @@ import com.google.gwt.dom.client.Element;
 import com.haulmont.cuba.web.toolkit.ui.CubaTreeTable;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.TableAggregationRow;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableClientRpc;
+import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableServerRpc;
 import com.vaadin.client.*;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.FocusableScrollPanel;
@@ -24,7 +25,6 @@ import com.vaadin.shared.ui.Connect;
 public class CubaTreeTableConnector extends TreeTableConnector {
 
     public CubaTreeTableConnector() {
-
         registerRpc(CubaTableClientRpc.class, new CubaTableClientRpc() {
             @Override
             public void hidePresentationsPopup() {
@@ -143,5 +143,17 @@ public class CubaTreeTableConnector extends TreeTableConnector {
         if (arow != null) {
             getWidget().updateAggregationRow(arow);
         }
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+
+        getWidget().cellClickListener = new CubaTreeTableWidget.CellClickListener() {
+            @Override
+            public void onClick(String columnKey, int rowKey, int clientX, int clientY) {
+                getRpcProxy(CubaTableServerRpc.class).onClick(columnKey, String.valueOf(rowKey), clientX, clientY);
+            }
+        };
     }
 }

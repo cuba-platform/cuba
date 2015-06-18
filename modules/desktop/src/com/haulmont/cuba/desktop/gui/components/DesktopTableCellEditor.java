@@ -125,6 +125,8 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
         Component comp;
         if (component == null) {
             comp = new JLabel("");
+        } else if (component instanceof Table.PlainTextCell) {
+            comp = new JLabel(((Table.PlainTextCell) component).getText());
         } else {
             if (component instanceof BelongToFrame) {
                 BelongToFrame belongToFrame = (BelongToFrame) component;

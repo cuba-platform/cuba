@@ -14,6 +14,7 @@ import com.haulmont.cuba.web.toolkit.data.TableContainer;
 import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
 import com.haulmont.cuba.web.toolkit.data.util.TreeTableContainerWrapper;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableClientRpc;
+import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.treetable.CubaTreeTableState;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
@@ -51,6 +52,25 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
     protected boolean aggregatable = false;
 
     protected List<ColumnCollapseListener> columnCollapseListeners; // lazily initialized List
+
+    protected Map<Object, CellClickListener> cellClickListeners; // lazily initialized map
+
+    public CubaTreeTable() {
+        registerRpc(new CubaTableServerRpc() {
+            @Override
+            public void onClick(String columnKey, String rowKey, int clientX, int clientY) {
+                Object columnId = columnIdMap.get(columnKey);
+                Object itemId = itemIdMapper.get(rowKey);
+
+                if (cellClickListeners != null) {
+                    CellClickListener cellClickListener = cellClickListeners.get(columnId);
+                    if (cellClickListener != null) {
+                        cellClickListener.onClick(itemId, columnId, clientX, clientY);
+                    }
+                }
+            }
+        });
+    }
 
     @Override
     protected CubaTreeTableState getState() {
@@ -531,5 +551,35 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
             target.addText(value);
         }
         target.endTag("arow");
+    }
+
+    @Override
+    public void setClickListener(Object propertyId, CellClickListener clickListener) {
+        if (cellClickListeners == null) {
+            cellClickListeners = new HashMap<>();
+        }
+        cellClickListeners.put(propertyId, clickListener);
+
+        updateClickableColumnKeys();
+    }
+
+    @Override
+    public void removeClickListener(Object propertyId) {
+        if (cellClickListeners != null) {
+            cellClickListeners.remove(propertyId);
+
+            updateClickableColumnKeys();
+        }
+    }
+
+    protected void updateClickableColumnKeys() {
+        String[] clickableColumnKeys = new String[cellClickListeners.size()];
+        int i = 0;
+        for (Object columnId : cellClickListeners.keySet()) {
+            clickableColumnKeys[i] = columnIdMap.key(columnId);
+            i++;
+        }
+
+        getState().clickableColumnKeys = clickableColumnKeys;
     }
 }

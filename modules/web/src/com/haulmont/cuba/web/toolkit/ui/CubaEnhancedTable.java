@@ -8,7 +8,6 @@ package com.haulmont.cuba.web.toolkit.ui;
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.vaadin.ui.Layout;
-import com.vaadin.ui.Table;
 
 /**
  * Interface to generalize additional functionality in {@link CubaTable}, {@link CubaGroupTable} and {@link CubaTreeTable}
@@ -53,10 +52,16 @@ public interface CubaEnhancedTable extends AggregationContainer {
     void setShowTotalAggregation(boolean showTotalAggregation);
 
     void addColumnCollapseListener(ColumnCollapseListener listener);
-
     void removeColumnCollapseListener(ColumnCollapseListener listener);
+
+    void setClickListener(Object propertyId, CellClickListener clickListener);
+    void removeClickListener(Object propertyId);
 
     interface ColumnCollapseListener {
         void columnCollapsed(Object columnId, boolean collapsed);
+    }
+
+    interface CellClickListener {
+        void onClick(Object itemId, Object columnId, int mouseX, int mouseY);
     }
 }

@@ -13,6 +13,9 @@ import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.table.TableConnector;
 import com.vaadin.shared.ui.Connect;
 
+import java.util.Arrays;
+import java.util.HashSet;
+
 /**
  * @author devyatkin
  * @version $Id$
@@ -81,6 +84,13 @@ public class CubaScrollTableConnector extends TableConnector {
         if (stateChangeEvent.hasPropertyChanged("multiLineCells")) {
             getWidget().multiLineCells = getState().multiLineCells;
         }
+        if (stateChangeEvent.hasPropertyChanged("clickableColumnKeys")) {
+            if (getState().clickableColumnKeys != null) {
+                getWidget().clickableColumns = new HashSet<String>(Arrays.asList(getState().clickableColumnKeys));
+            } else {
+                getWidget().clickableColumns = null;
+            }
+        }
     }
 
     @Override
@@ -129,5 +139,17 @@ public class CubaScrollTableConnector extends TableConnector {
         if (arow != null) {
             getWidget().updateAggregationRow(arow);
         }
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+
+        getWidget().cellClickListener = new CubaScrollTableWidget.CellClickListener() {
+            @Override
+            public void onClick(String columnKey, int rowKey, int clientX, int clientY) {
+                getRpcProxy(CubaTableServerRpc.class).onClick(columnKey, String.valueOf(rowKey), clientX, clientY);
+            }
+        };
     }
 }

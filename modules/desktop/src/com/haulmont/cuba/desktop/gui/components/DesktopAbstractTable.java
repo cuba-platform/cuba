@@ -2021,6 +2021,14 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     public void removeColumnCollapseListener(ColumnCollapseListener columnCollapseListener) {
     }
 
+    @Override
+    public void setClickListener(String columnId, CellClickListener clickListener) {
+    }
+
+    @Override
+    public void removeClickListener(String columnId) {
+    }
+
     public AnyTableModelAdapter getTableModel() {
         return tableModel;
     }

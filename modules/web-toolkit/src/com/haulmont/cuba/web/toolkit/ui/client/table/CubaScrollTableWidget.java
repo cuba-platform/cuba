@@ -14,6 +14,7 @@ import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.EventListener;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
@@ -22,6 +23,8 @@ import com.haulmont.cuba.web.toolkit.ui.client.aggregation.TableAggregationRow;
 import com.vaadin.client.*;
 import com.vaadin.client.Focusable;
 import com.vaadin.client.ui.*;
+
+import java.util.Set;
 
 /**
  * @author devyatkin
@@ -45,6 +48,13 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     protected boolean multiLineCells = false;
 
     protected TableAggregationRow aggregationRow;
+
+    protected Set<String> clickableColumns;
+    protected CellClickListener cellClickListener;
+
+    public interface CellClickListener {
+        void onClick(String columnKey, int rowKey, int clientX, int clientY);
+    }
 
     protected CubaScrollTableWidget() {
         // handle shortcuts
@@ -418,6 +428,8 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
         protected class CubaScrollTableRow extends VScrollTableRow {
 
+            protected String currentColumnKey = null;
+
             public CubaScrollTableRow(UIDL uidl, char[] aligns) {
                 super(uidl, aligns);
             }
@@ -529,12 +541,44 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
             }
 
             @Override
+            protected void beforeAddCell(String columnKey) {
+                currentColumnKey = columnKey;
+            }
+
+            @Override
+            protected void afterAddCell(String columnKey) {
+                currentColumnKey = null;
+            }
+
+            @Override
             protected void initCellWithText(String text, char align, String style, boolean textIsHTML,
                                             boolean sorted, String description, TableCellElement td) {
                 super.initCellWithText(text, align, style, textIsHTML, sorted, description, td);
 
                 Element tdElement = td.cast();
                 Tools.textSelectionEnable(tdElement, textSelectionEnabled);
+
+                if (clickableColumns != null && clickableColumns.contains(currentColumnKey)) {
+                    Element wrapperElement = tdElement.getFirstChildElement();
+                    Element clickableSpan = DOM.createSpan().cast();
+                    clickableSpan.setClassName("cuba-table-clickable-cell");
+
+                    clickableSpan.setInnerText(wrapperElement.getInnerText());
+                    Event.sinkEvents(clickableSpan, Event.ONCLICK);
+
+                    final String columnId = currentColumnKey;
+                    Event.setEventListener(clickableSpan, new EventListener() {
+                        @Override
+                        public void onBrowserEvent(Event event) {
+                            if (cellClickListener != null) {
+                                cellClickListener.onClick(columnId, rowKey, event.getClientX(), event.getClientY());
+                            }
+                        }
+                    });
+
+                    wrapperElement.removeAllChildren();
+                    DOM.appendChild(wrapperElement, clickableSpan);
+                }
 
                 if (multiLineCells) {
                     Style wrapperStyle = tdElement.getFirstChildElement().getStyle();
