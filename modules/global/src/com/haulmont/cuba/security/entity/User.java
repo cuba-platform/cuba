@@ -64,16 +64,6 @@ public class User extends StandardEntity {
     @Column(name = "LANGUAGE_", length = 20)
     protected String language;
 
-    @Lob
-    @Column(name = "SUMMARY")
-    protected String summary;
-
-    @Column(name = "STAR")
-    protected Boolean star;
-
-    @Column(name = "STATE")
-    protected String state;
-
     @Column(name = "TIME_ZONE")
     protected String timeZone;
 
@@ -268,29 +258,5 @@ public class User extends StandardEntity {
     @Transient
     public String getSalt() {
         return id != null ? id.toString() : "";
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public void setSummary(String summary) {
-        this.summary = summary;
-    }
-
-    public Boolean getStar() {
-        return star;
-    }
-
-    public void setStar(Boolean star) {
-        this.star = star;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
     }
 }
