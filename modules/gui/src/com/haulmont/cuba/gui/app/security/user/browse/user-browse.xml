@@ -58,13 +58,19 @@
             <rowsCount/>
             <columns>
                 <column id="login"/>
+                <!-- -->
+                <column id="star" width="20px" caption="Star"/>
+                <column id="userRoles" caption="Attachments" width="20px"/>
+                <column id="summary" caption="Summary"/>
+                <column id="state" caption="State"/>
+                <!--  -->
                 <column id="name"/>
                 <column id="position"/>
                 <column id="group"/>
                 <column id="email"/>
                 <column id="timeZone"/>
                 <column id="active"/>
-                <column id="changePasswordAtNextLogon"/>
+                <column id="changePasswordAtNextLogon" caption="RePass"/>
             </columns>
             <rows datasource="usersDs"/>
         </groupTable>

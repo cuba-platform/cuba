@@ -214,6 +214,9 @@ create table SEC_USER (
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
     --
+    SUMMARY text,
+    STAR boolean,
+    STATE varchar(255),
     LOGIN varchar(50) not null,
     LOGIN_LC varchar(50) not null,
     PASSWORD varchar(255),

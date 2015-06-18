@@ -45,6 +45,7 @@
                                     <validator class="com.haulmont.cuba.gui.components.validators.EmailValidator"
                                                message="msg://email.alert"/>
                                 </field>
+                                <field id="summary" rows="4"/>
                             </column>
                         </fieldGroup>
 
@@ -56,6 +57,8 @@
                                 <field id="timeZone" custom="true"/>
                                 <field id="ipMask"/>
                                 <field id="active"/>
+                                <field id="state"/>
+                                <field id="star"/>
                             </column>
                         </fieldGroup>
                     </row>
