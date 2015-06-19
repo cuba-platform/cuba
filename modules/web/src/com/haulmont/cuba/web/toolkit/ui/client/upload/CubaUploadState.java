@@ -6,6 +6,7 @@
 package com.haulmont.cuba.web.toolkit.ui.client.upload;
 
 import com.vaadin.shared.AbstractComponentState;
+import com.vaadin.shared.annotations.NoLayout;
 
 /**
  * @author artamonov
@@ -14,5 +15,6 @@ import com.vaadin.shared.AbstractComponentState;
 public class CubaUploadState extends AbstractComponentState {
 
     // permitted mime types, comma separated
+    @NoLayout
     public String accept = null;
 }

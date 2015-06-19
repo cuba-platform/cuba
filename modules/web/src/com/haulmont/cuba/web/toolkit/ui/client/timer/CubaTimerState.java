@@ -6,6 +6,7 @@
 package com.haulmont.cuba.web.toolkit.ui.client.timer;
 
 import com.vaadin.shared.AbstractComponentState;
+import com.vaadin.shared.annotations.NoLayout;
 
 /**
  * @author artamonov
@@ -13,13 +14,18 @@ import com.vaadin.shared.AbstractComponentState;
  */
 public class CubaTimerState extends AbstractComponentState {
 
+    @NoLayout
     public boolean repeating = false;
 
+    @NoLayout
     public int delay = -1;
 
+    @NoLayout
     public boolean listeners = false;
 
+    @NoLayout
     public String timerId = "";
 
+    @NoLayout
     public boolean running = false;
 }

@@ -6,6 +6,7 @@
 package com.haulmont.cuba.web.toolkit.ui.client.tree;
 
 import com.vaadin.shared.Connector;
+import com.vaadin.shared.annotations.NoLayout;
 import com.vaadin.shared.ui.tree.TreeState;
 
 /**
@@ -14,7 +15,9 @@ import com.vaadin.shared.ui.tree.TreeState;
  */
 public class CubaTreeState extends TreeState {
 
+    @NoLayout
     public boolean doubleClickMode = false;
 
+    @NoLayout
     public Connector contextMenu;
 }

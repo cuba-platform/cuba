@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.clientmanager;
 
+import com.vaadin.shared.annotations.NoLayout;
 import com.vaadin.shared.communication.ClientRpc;
 
 import java.util.Map;
@@ -27,5 +28,6 @@ public interface CubaClientManagerClientRpc extends ClientRpc {
 
     public String SESSION_EXPIRED_ERROR_MESSAGE_KEY = "sessionExpiredErrorMessage";
 
+    @NoLayout
     public void updateSystemMessagesLocale(Map<String, String> localeMap);
 }

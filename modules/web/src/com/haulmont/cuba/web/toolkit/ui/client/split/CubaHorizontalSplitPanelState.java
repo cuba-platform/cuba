@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.split;
 
+import com.vaadin.shared.annotations.NoLayout;
 import com.vaadin.shared.ui.splitpanel.HorizontalSplitPanelState;
 
 /**
@@ -13,9 +14,12 @@ import com.vaadin.shared.ui.splitpanel.HorizontalSplitPanelState;
  */
 public class CubaHorizontalSplitPanelState extends HorizontalSplitPanelState {
 
+    @NoLayout
     public boolean dockable = false;
 
+    @NoLayout
     public SplitPanelDockMode dockMode = SplitPanelDockMode.LEFT;
 
+    @NoLayout
     public String defaultPosition = null;
 }

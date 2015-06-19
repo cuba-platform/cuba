@@ -6,6 +6,7 @@
 package com.haulmont.cuba.web.toolkit.ui.client.table;
 
 import com.vaadin.shared.Connector;
+import com.vaadin.shared.annotations.NoLayout;
 import com.vaadin.shared.ui.table.TableState;
 
 /**
@@ -14,13 +15,22 @@ import com.vaadin.shared.ui.table.TableState;
  */
 public class CubaTableState extends TableState {
 
+    @NoLayout
     public boolean multiLineCells = false;
+
+    @NoLayout
     public boolean textSelectionEnabled = false;
+
+    @NoLayout
     public boolean contextMenuEnabled = true;
 
+    @NoLayout
     public Connector presentations;
+
+    @NoLayout
     public Connector contextMenu;
 
+    @NoLayout
     public Connector customPopup;
 
     public String[] clickableColumnKeys;

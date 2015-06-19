@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.window;
 
+import com.vaadin.shared.annotations.NoLayout;
 import com.vaadin.shared.ui.window.WindowState;
 
 /**
@@ -15,5 +16,6 @@ public class CubaWindowState extends WindowState {
 
     private static final long serialVersionUID = -7872216845678261860L;
 
+    @NoLayout
     public boolean hasContextActionHandlers = false;
 }
