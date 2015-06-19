@@ -21,5 +21,7 @@ public class CubaTableState extends TableState {
     public Connector presentations;
     public Connector contextMenu;
 
+    public Connector customPopup;
+
     public String[] clickableColumnKeys;
 }

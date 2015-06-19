@@ -20,6 +20,7 @@ import com.vaadin.event.ActionManager;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Layout;
@@ -54,14 +55,14 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
     public CubaTable() {
         registerRpc(new CubaTableServerRpc() {
             @Override
-            public void onClick(String columnKey, String rowKey, int clientX, int clientY) {
+            public void onClick(String columnKey, String rowKey) {
                 Object columnId = columnIdMap.get(columnKey);
                 Object itemId = itemIdMapper.get(rowKey);
 
                 if (cellClickListeners != null) {
                     CellClickListener cellClickListener = cellClickListeners.get(columnId);
                     if (cellClickListener != null) {
-                        cellClickListener.onClick(itemId, columnId, clientX, clientY);
+                        cellClickListener.onClick(itemId, columnId);
                     }
                 }
             }
@@ -348,15 +349,22 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
     public Iterator<Component> iterator() {
         List<Component> additionalConnectors = null;
 
-        if (getState(false).presentations != null) {
+        CubaTableState tableState = getState(false);
+        if (tableState.presentations != null) {
             additionalConnectors = new LinkedList<>();
-            additionalConnectors.add((Component) getState().presentations);
+            additionalConnectors.add((Component) tableState.presentations);
         }
-        if (getState(false).contextMenu != null) {
+        if (tableState.contextMenu != null) {
             if (additionalConnectors == null) {
                 additionalConnectors = new LinkedList<>();
             }
-            additionalConnectors.add((Component) getState().contextMenu);
+            additionalConnectors.add((Component) tableState.contextMenu);
+        }
+        if (tableState.customPopup != null) {
+            if (additionalConnectors == null) {
+                additionalConnectors = new LinkedList<>();
+            }
+            additionalConnectors.add((Component) tableState.customPopup);
         }
 
         if (additionalConnectors == null) {
@@ -526,5 +534,17 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
         }
 
         getState().clickableColumnKeys = clickableColumnKeys;
+    }
+
+    @Override
+    public void showCustomPopup(Component popupComponent) {
+        if (getState().customPopup != null) {
+            ((AbstractComponent) getState().customPopup).setParent(null);
+        }
+
+        getState().customPopup = popupComponent;
+        getRpcProxy(CubaTableClientRpc.class).showCustomPopup();
+
+        popupComponent.setParent(this);
     }
 }

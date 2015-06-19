@@ -343,8 +343,11 @@ public interface Table
     void removeClickListener(String columnId);
 
     interface CellClickListener {
-        void onClick(Entity item, String columnId, int mouseX, int mouseY);
+        void onClick(Entity item, String columnId);
     }
+
+    void showCustomPopup(Component popupComponent);
+    void showCustomPopupActions(List<Action> actions);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

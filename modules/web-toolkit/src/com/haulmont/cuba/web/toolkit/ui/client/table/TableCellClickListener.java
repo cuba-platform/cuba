@@ -5,13 +5,10 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.table;
 
-import com.vaadin.shared.communication.ServerRpc;
-
 /**
  * @author artamonov
  * @version $Id$
  */
-public interface CubaTableServerRpc extends ServerRpc {
-
-    void onClick(String columnKey, String rowKey);
+public interface TableCellClickListener {
+    void onClick(String columnKey, int rowKey);
 }

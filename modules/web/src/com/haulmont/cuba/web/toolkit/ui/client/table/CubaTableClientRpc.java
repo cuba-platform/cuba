@@ -16,4 +16,6 @@ public interface CubaTableClientRpc extends ClientRpc {
     void hidePresentationsPopup();
 
     void hideContextMenuPopup();
+
+    void showCustomPopup();
 }

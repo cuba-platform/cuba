@@ -10,6 +10,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaTreeTable;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.TableAggregationRow;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableClientRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableServerRpc;
+import com.haulmont.cuba.web.toolkit.ui.client.table.TableCellClickListener;
 import com.vaadin.client.*;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.FocusableScrollPanel;
@@ -38,6 +39,11 @@ public class CubaTreeTableConnector extends TreeTableConnector {
                 if (getWidget().customContextMenuPopup != null) {
                     getWidget().customContextMenuPopup.hide();
                 }
+            }
+
+            @Override
+            public void showCustomPopup() {
+                getWidget().showCustomPopup();
             }
         });
     }
@@ -83,6 +89,14 @@ public class CubaTreeTableConnector extends TreeTableConnector {
         }
         if (stateChangeEvent.hasPropertyChanged("multiLineCells")) {
             getWidget().multiLineCells = getState().multiLineCells;
+        }
+        if (stateChangeEvent.hasPropertyChanged("customPopup")) {
+            if (getState().customPopup != null) {
+                ComponentConnector customPopup = (ComponentConnector) getState().customPopup;
+                getWidget().customPopupWidget = customPopup.getWidget();
+            } else {
+                getWidget().customPopupWidget = null;
+            }
         }
     }
 
@@ -149,10 +163,10 @@ public class CubaTreeTableConnector extends TreeTableConnector {
     protected void init() {
         super.init();
 
-        getWidget().cellClickListener = new CubaTreeTableWidget.CellClickListener() {
+        getWidget().cellClickListener = new TableCellClickListener() {
             @Override
-            public void onClick(String columnKey, int rowKey, int clientX, int clientY) {
-                getRpcProxy(CubaTableServerRpc.class).onClick(columnKey, String.valueOf(rowKey), clientX, clientY);
+            public void onClick(String columnKey, int rowKey) {
+                getRpcProxy(CubaTableServerRpc.class).onClick(columnKey, String.valueOf(rowKey));
             }
         };
     }

@@ -237,6 +237,6 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
             }
         });
 
-        Tools.showContextPopup(customContextMenuPopup, left, top);
+        Tools.showPopup(customContextMenuPopup, left, top);
     }
 }

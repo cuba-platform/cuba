@@ -38,6 +38,11 @@ public class CubaScrollTableConnector extends TableConnector {
                     getWidget().customContextMenuPopup.hide();
                 }
             }
+
+            @Override
+            public void showCustomPopup() {
+                getWidget().showCustomPopup();
+            }
         });
     }
 
@@ -89,6 +94,14 @@ public class CubaScrollTableConnector extends TableConnector {
                 getWidget().clickableColumns = new HashSet<String>(Arrays.asList(getState().clickableColumnKeys));
             } else {
                 getWidget().clickableColumns = null;
+            }
+        }
+        if (stateChangeEvent.hasPropertyChanged("customPopup")) {
+            if (getState().customPopup != null) {
+                ComponentConnector customPopup = (ComponentConnector) getState().customPopup;
+                getWidget().customPopupWidget = customPopup.getWidget();
+            } else {
+                getWidget().customPopupWidget = null;
             }
         }
     }
@@ -145,10 +158,10 @@ public class CubaScrollTableConnector extends TableConnector {
     protected void init() {
         super.init();
 
-        getWidget().cellClickListener = new CubaScrollTableWidget.CellClickListener() {
+        getWidget().cellClickListener = new TableCellClickListener() {
             @Override
-            public void onClick(String columnKey, int rowKey, int clientX, int clientY) {
-                getRpcProxy(CubaTableServerRpc.class).onClick(columnKey, String.valueOf(rowKey), clientX, clientY);
+            public void onClick(String columnKey, int rowKey) {
+                getRpcProxy(CubaTableServerRpc.class).onClick(columnKey, String.valueOf(rowKey));
             }
         };
     }

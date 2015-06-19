@@ -2176,6 +2176,14 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         return getClass().getSimpleName();
     }
 
+    @Override
+    public void showCustomPopup(com.haulmont.cuba.gui.components.Component popupComponent) {
+    }
+
+    @Override
+    public void showCustomPopupActions(List<Action> actions) {
+    }
+
     /**
      * Uses delegate renderer to create cell component.
      * Then applies desktop styles to cell component.

@@ -34,7 +34,7 @@
 }
 
 @mixin havana-cuba-contextmenu($primary-stylename: cuba-context-menu) {
-  .#{$primary-stylename} {
+  .#{$primary-stylename}-container {
     background: $cuba-contextmenu-background-color;
     overflow: auto;
     padding: 3px;

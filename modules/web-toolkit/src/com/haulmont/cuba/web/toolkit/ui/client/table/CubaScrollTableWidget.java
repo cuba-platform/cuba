@@ -50,11 +50,12 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     protected TableAggregationRow aggregationRow;
 
     protected Set<String> clickableColumns;
-    protected CellClickListener cellClickListener;
+    protected TableCellClickListener cellClickListener;
 
-    public interface CellClickListener {
-        void onClick(String columnKey, int rowKey, int clientX, int clientY);
-    }
+    protected VOverlay customPopupOverlay;
+    protected Widget customPopupWidget;
+    protected int lastClickClientX;
+    protected int lastClickClientY;
 
     protected CubaScrollTableWidget() {
         // handle shortcuts
@@ -560,7 +561,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
                 if (clickableColumns != null && clickableColumns.contains(currentColumnKey)) {
                     Element wrapperElement = tdElement.getFirstChildElement();
-                    Element clickableSpan = DOM.createSpan().cast();
+                    final Element clickableSpan = DOM.createSpan().cast();
                     clickableSpan.setClassName("cuba-table-clickable-cell");
 
                     clickableSpan.setInnerText(wrapperElement.getInnerText());
@@ -570,8 +571,12 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
                     Event.setEventListener(clickableSpan, new EventListener() {
                         @Override
                         public void onBrowserEvent(Event event) {
+                            WidgetUtil.TextRectangle rect = WidgetUtil.getBoundingClientRect(clickableSpan);
+                            lastClickClientX = (int) Math.ceil(rect.getLeft());
+                            lastClickClientY = (int) Math.ceil(rect.getBottom());
+
                             if (cellClickListener != null) {
-                                cellClickListener.onClick(columnId, rowKey, event.getClientX(), event.getClientY());
+                                cellClickListener.onClick(columnId, rowKey);
                             }
                         }
                     });
@@ -680,6 +685,30 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
             }
         });
 
-        Tools.showContextPopup(customContextMenuPopup, left, top);
+        Tools.showPopup(customContextMenuPopup, left, top);
+    }
+
+    public void showCustomPopup() {
+        if (customPopupWidget != null) {
+            if (customPopupWidget instanceof HasWidgets) {
+                if (!((HasWidgets) customPopupWidget).iterator().hasNext()) {
+                    // there are no component to show
+                    return;
+                }
+            }
+
+            customPopupOverlay = Tools.createCubaTablePopup();
+            customPopupOverlay.setOwner(this);
+            customPopupOverlay.setWidget(customPopupWidget);
+
+            customPopupOverlay.addCloseHandler(new CloseHandler<PopupPanel>() {
+                @Override
+                public void onClose(CloseEvent<PopupPanel> event) {
+                    customPopupOverlay = null;
+                }
+            });
+
+            Tools.showPopup(customPopupOverlay, lastClickClientX, lastClickClientY);
+        }
     }
 }

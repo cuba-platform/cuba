@@ -52,8 +52,24 @@ public class Tools {
         }
     }
 
+    public static VOverlay createCubaTablePopup() {
+        final VOverlay tableCustomPopup = createAutoCloseablePoup();
+
+        tableCustomPopup.setStyleName("cuba-table-popup");
+
+        return tableCustomPopup;
+    }
+
     public static VOverlay createCubaContextMenu() {
-        final VOverlay customContextMenuPopup = new VOverlay() {
+        final VOverlay customContextMenuPopup = createAutoCloseablePoup();
+
+        customContextMenuPopup.setStyleName("cuba-context-menu");
+
+        return customContextMenuPopup;
+    }
+
+    protected static VOverlay createAutoCloseablePoup() {
+        return new VOverlay() {
             @Override
             protected void onPreviewNativeEvent(Event.NativePreviewEvent event) {
                 super.onPreviewNativeEvent(event);
@@ -73,21 +89,17 @@ public class Tools {
                 }
             }
         };
-
-        customContextMenuPopup.setStyleName("cuba-context-menu");
-
-        return customContextMenuPopup;
     }
 
-    public static void showContextPopup(VOverlay customContextMenuPopup, int left, int top) {
-        customContextMenuPopup.setAutoHideEnabled(true);
-        customContextMenuPopup.setVisible(false);
-        customContextMenuPopup.show();
+    public static void showPopup(VOverlay overlay, int left, int top) {
+        overlay.setAutoHideEnabled(true);
+        overlay.setVisible(false);
+        overlay.show();
 
         // mac FF gets bad width due GWT popups overflow hacks,
         // re-determine width
-        int offsetWidth = customContextMenuPopup.getOffsetWidth();
-        int offsetHeight = customContextMenuPopup.getOffsetHeight();
+        int offsetWidth = overlay.getOffsetWidth();
+        int offsetHeight = overlay.getOffsetHeight();
         if (offsetWidth + left > Window.getClientWidth()) {
             left = left - offsetWidth;
             if (left < 0) {
@@ -101,7 +113,7 @@ public class Tools {
             }
         }
 
-        customContextMenuPopup.setPopupPosition(left, top);
-        customContextMenuPopup.setVisible(true);
+        overlay.setPopupPosition(left, top);
+        overlay.setVisible(true);
     }
 }

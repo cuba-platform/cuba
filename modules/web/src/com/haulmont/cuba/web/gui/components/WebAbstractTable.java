@@ -2085,10 +2085,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     public void setClickListener(String columnId, final CellClickListener clickListener) {
         component.setClickListener(getColumn(columnId).getId(), new CubaEnhancedTable.CellClickListener() {
             @Override
-            public void onClick(Object itemId, Object columnId, int mouseX, int mouseY) {
+            public void onClick(Object itemId, Object columnId) {
                 ItemWrapper wrapper = (ItemWrapper) component.getItem(itemId);
                 Entity entity = wrapper.getItem();
-                clickListener.onClick(entity, columnId.toString(), mouseX, mouseY);
+                clickListener.onClick(entity, columnId.toString());
             }
         });
     }
@@ -2096,6 +2096,32 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     @Override
     public void removeClickListener(String columnId) {
         component.removeClickListener(getColumn(columnId).getId());
+    }
+
+    @Override
+    public void showCustomPopup(com.haulmont.cuba.gui.components.Component popupComponent) {
+        Component vComponent = WebComponentsHelper.unwrap(popupComponent);
+        component.showCustomPopup(vComponent);
+    }
+
+    @Override
+    public void showCustomPopupActions(List<Action> actions) {
+        VerticalLayout customContextMenu = new VerticalLayout();
+        customContextMenu.setWidthUndefined();
+        customContextMenu.setStyleName("cuba-context-menu-container");
+
+        for (Action action : actions) {
+            ContextMenuButton contextMenuButton = createContextMenuButton();
+            contextMenuButton.setStyleName("cuba-context-menu-button");
+            contextMenuButton.setAction(action);
+
+            Component vButton = WebComponentsHelper.unwrap(contextMenuButton);
+            customContextMenu.addComponent(vButton);
+        }
+
+        if (customContextMenu.getComponentCount() > 0) {
+            component.showCustomPopup(customContextMenu);
+        }
     }
 
     protected class StyleGeneratorAdapter implements com.vaadin.ui.Table.CellStyleGenerator {
