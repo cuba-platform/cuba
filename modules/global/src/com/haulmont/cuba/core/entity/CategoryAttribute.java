@@ -263,7 +263,7 @@ public class CategoryAttribute extends StandardEntity {
     }
 
     public PropertyType getDataTypeAsPropertyType() {
-        if (isEntity) {
+        if (Boolean.TRUE.equals(isEntity)) {
             return PropertyType.ENTITY;
         }
 
