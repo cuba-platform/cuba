@@ -129,7 +129,7 @@ public class WebFileUploadField extends WebAbstractComponent<CubaUpload> impleme
                     }
                     log.warn(String.format("Error while delete temp file %s", tempFileId));
                 }
-                final Listener.Event e = new Listener.Event(event.getFilename());
+                final Listener.Event e = new Listener.Event(event.getFilename(), event.getReason());
                 for (Listener listener : listeners) {
                     listener.uploadFailed(e);
                 }

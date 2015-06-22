@@ -100,7 +100,7 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
                 } catch (FileStorageException e) {
                     throw new RuntimeException(ex);
                 }
-                notifyListenersFail(file);
+                notifyListenersFail(file, ex);
             } finally {
                 notifyListenersFinish(file);
             }
@@ -117,8 +117,8 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
         }
     }
 
-    protected void notifyListenersFail(File file) {
-        final Listener.Event failedEvent = new Listener.Event(file.getName());
+    protected void notifyListenersFail(File file, Exception ex) {
+        final Listener.Event failedEvent = new Listener.Event(file.getName(), ex);
         for (Listener listener : listeners) {
             listener.uploadFailed(failedEvent);
         }

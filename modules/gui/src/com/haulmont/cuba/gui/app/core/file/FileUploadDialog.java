@@ -8,6 +8,8 @@ package com.haulmont.cuba.gui.app.core.file;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.Window;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -20,6 +22,7 @@ import java.util.UUID;
  * @version $Id$
  */
 public class FileUploadDialog extends AbstractWindow {
+    private static Log log = LogFactory.getLog(FileUploadDialog.class);
 
     @Inject
     private FileUploadField fileUpload;
@@ -45,6 +48,14 @@ public class FileUploadDialog extends AbstractWindow {
                 fileId = fileUpload.getFileId();
                 fileName = fileUpload.getFileName();
                 close(Window.COMMIT_ACTION_ID);
+            }
+
+            @Override
+            public void uploadFailed(Event event) {
+                showNotification(getMessage("notification.uploadUnsuccessful"), NotificationType.WARNING);
+                if (event.getException() != null) {
+                    log.error("An error occurred while uploading", event.getException());
+                }
             }
         });
     }

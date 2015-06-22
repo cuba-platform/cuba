@@ -20,13 +20,23 @@ public interface FileUploadField
     interface Listener {
         class Event {
             String filename;
+            Exception exception;
 
             public Event(String filename) {
                 this.filename = filename;
             }
 
+            public Event(String filename, Exception exception) {
+                this.filename = filename;
+                this.exception = exception;
+            }
+
             public String getFilename() {
                 return filename;
+            }
+
+            public Exception getException() {
+                return exception;
             }
         }
 
