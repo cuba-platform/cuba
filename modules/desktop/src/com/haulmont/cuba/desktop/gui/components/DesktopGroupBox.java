@@ -28,7 +28,7 @@ public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayou
 
     protected List<ExpandListener> expandListeners = null;
     protected List<CollapseListener> collapseListeners = null;
-    protected boolean settigsEnabled = true;
+    protected boolean settingsEnabled = true;
 
     public DesktopGroupBox() {
         collapsiblePanel = new CollapsiblePanel(super.getComposition());
@@ -189,12 +189,12 @@ public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayou
 
     @Override
     public boolean isSettingsEnabled() {
-        return settigsEnabled;
+        return settingsEnabled;
     }
 
     @Override
     public void setSettingsEnabled(boolean settingsEnabled) {
-        this.settigsEnabled = settingsEnabled;
+        this.settingsEnabled = settingsEnabled;
     }
 
     @Override

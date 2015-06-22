@@ -36,7 +36,7 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
 
     protected List<ExpandListener> expandListeners = null;
     protected List<CollapseListener> collapseListeners = null;
-    protected boolean settigsEnabled = true;
+    protected boolean settingsEnabled = true;
 
     public WebGroupBox() {
         component = new CubaGroupBox();
@@ -307,12 +307,12 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
 
     @Override
     public boolean isSettingsEnabled() {
-        return settigsEnabled;
+        return settingsEnabled;
     }
 
     @Override
     public void setSettingsEnabled(boolean settingsEnabled) {
-        this.settigsEnabled = settingsEnabled;
+        this.settingsEnabled = settingsEnabled;
     }
 
     @Override

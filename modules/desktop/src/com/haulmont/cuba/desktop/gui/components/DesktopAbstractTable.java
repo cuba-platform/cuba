@@ -127,7 +127,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     protected Document defaultSettings;
     protected boolean multiLineCells;
-    protected boolean settigsEnabled = true;
+    protected boolean settingsEnabled = true;
 
     protected DesktopAbstractTable() {
         shortcutsDelegate.setAllowEnterShortcut(false);
@@ -1726,12 +1726,12 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     @Override
     public boolean isSettingsEnabled() {
-        return settigsEnabled;
+        return settingsEnabled;
     }
 
     @Override
     public void setSettingsEnabled(boolean settingsEnabled) {
-        this.settigsEnabled = settingsEnabled;
+        this.settingsEnabled = settingsEnabled;
     }
 
     @Override

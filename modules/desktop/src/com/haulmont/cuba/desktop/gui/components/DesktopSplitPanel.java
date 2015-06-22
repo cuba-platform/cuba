@@ -33,7 +33,7 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
 
     protected Map<String, Component> componentByIds = new HashMap<>();
     protected Collection<Component> ownComponents = new LinkedHashSet<>();
-    protected boolean settigsEnabled = true;
+    protected boolean settingsEnabled = true;
 
     public DesktopSplitPanel() {
         impl = new JSplitPane() {
@@ -273,12 +273,12 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
 
     @Override
     public boolean isSettingsEnabled() {
-        return settigsEnabled;
+        return settingsEnabled;
     }
 
     @Override
     public void setSettingsEnabled(boolean settingsEnabled) {
-        this.settigsEnabled = settingsEnabled;
+        this.settingsEnabled = settingsEnabled;
     }
 
     @Override

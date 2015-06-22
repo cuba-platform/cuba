@@ -32,7 +32,7 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     protected SplitPanel.PositionUpdateListener positionListener;
 
     protected int orientation;
-    protected boolean settigsEnabled = true;
+    protected boolean settingsEnabled = true;
 
     @Override
     public void add(Component childComponent) {
@@ -212,12 +212,12 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
 
     @Override
     public boolean isSettingsEnabled() {
-        return settigsEnabled;
+        return settingsEnabled;
     }
 
     @Override
     public void setSettingsEnabled(boolean settingsEnabled) {
-        this.settigsEnabled = settingsEnabled;
+        this.settingsEnabled = settingsEnabled;
     }
 
     @Override

@@ -27,7 +27,7 @@ import java.util.List;
 public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> implements Filter, FilterImplementation {
 
     protected FilterDelegate delegate;
-    protected boolean settigsEnabled = true;
+    protected boolean settingsEnabled = true;
 
     public WebFilter() {
         delegate = AppBeans.get(FilterDelegate.class);
@@ -128,12 +128,12 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
     @Override
     public boolean isSettingsEnabled() {
-        return settigsEnabled;
+        return settingsEnabled;
     }
 
     @Override
     public void setSettingsEnabled(boolean settingsEnabled) {
-        this.settigsEnabled = settingsEnabled;
+        this.settingsEnabled = settingsEnabled;
     }
 
     @Override

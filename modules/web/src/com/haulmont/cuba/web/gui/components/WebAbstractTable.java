@@ -111,7 +111,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     protected static final int MAX_TEXT_LENGTH_GAP = 10;
 
     protected Security security = AppBeans.get(Security.NAME);
-    protected boolean settigsEnabled = true;
+    protected boolean settingsEnabled = true;
 
     @Override
     public java.util.List<Table.Column> getColumns() {
@@ -1194,12 +1194,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public boolean isSettingsEnabled() {
-        return settigsEnabled;
+        return settingsEnabled;
     }
 
     @Override
     public void setSettingsEnabled(boolean settingsEnabled) {
-        this.settigsEnabled = settingsEnabled;
+        this.settingsEnabled = settingsEnabled;
     }
 
     @Override
