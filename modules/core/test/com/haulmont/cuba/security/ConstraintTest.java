@@ -13,9 +13,7 @@ import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.app.LoginWorker;
-import com.haulmont.cuba.security.entity.Constraint;
-import com.haulmont.cuba.security.entity.Group;
-import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.testsupport.TestUserSessionSource;
@@ -32,7 +30,8 @@ public class ConstraintTest extends CubaTestCase {
     private static final String USER_LOGIN = "testUser";
     private static final String USER_PASSW = "testUser";
 
-    private UUID constraintId, parentConstraintId, groupId, parentGroupId, userId;
+    private UUID serverConstraintId, userRoleConstraintId,  parentConstraintId, groupId, parentGroupId,
+            userId, user2Id, userRoleId, roleId;
     private UUID serverId;
 
     @Override
@@ -70,12 +69,19 @@ public class ConstraintTest extends CubaTestCase {
             group.setParent(parentGroup);
             em.persist(group);
 
-            Constraint constraint = new Constraint();
-            constraintId = constraint.getId();
-            constraint.setEntityName("sys$Server");
-            constraint.setWhereClause("{E}.name = 'localhost'");
-            constraint.setGroup(group);
-            em.persist(constraint);
+            Constraint serverConstraint = new Constraint();
+            serverConstraintId = serverConstraint.getId();
+            serverConstraint.setEntityName("sys$Server");
+            serverConstraint.setWhereClause("{E}.name = 'localhost'");
+            serverConstraint.setGroup(group);
+            em.persist(serverConstraint);
+
+            Constraint userRoleConstraint = new Constraint();
+            userRoleConstraintId = userRoleConstraint.getId();
+            userRoleConstraint.setEntityName("sec$UserRole");
+            userRoleConstraint.setWhereClause("{E}.user.id = :session$userId");
+            userRoleConstraint.setGroup(group);
+            em.persist(userRoleConstraint);
 
             User user = new User();
             userId = user.getId();
@@ -87,6 +93,21 @@ public class ConstraintTest extends CubaTestCase {
             user.setGroup(group);
             em.persist(user);
 
+            User user2 = new User();
+            user2Id = user2.getId();
+            user2.setLogin("someOtherUser");
+            em.persist(user2);
+
+            UserRole userRole = new UserRole();
+            userRoleId = userRole.getId();
+            userRole.setUser(user2);
+            Role role = new Role();
+            roleId = role.getId();
+            em.persist(role);
+            userRole.setRole(role);
+
+            em.persist(userRole);
+
             tx.commit();
         } finally {
             tx.end();
@@ -96,8 +117,10 @@ public class ConstraintTest extends CubaTestCase {
     @Override
     protected void tearDown() throws Exception {
         deleteRecord("SYS_SERVER", serverId);
-        deleteRecord("SEC_USER", userId);
-        deleteRecord("SEC_CONSTRAINT", "ID", parentConstraintId, constraintId);
+        deleteRecord("SEC_USER_ROLE", userRoleId);
+        deleteRecord("SEC_ROLE", roleId);
+        deleteRecord("SEC_USER", userId, user2Id);
+        deleteRecord("SEC_CONSTRAINT", "ID", parentConstraintId, serverConstraintId, userRoleConstraintId);
         deleteRecord("SEC_GROUP_HIERARCHY", "GROUP_ID", groupId);
         deleteRecord("SEC_GROUP", groupId);
         deleteRecord("SEC_GROUP", parentGroupId);
@@ -114,6 +137,9 @@ public class ConstraintTest extends CubaTestCase {
         List<String[]> constraints = userSession.getConstraints("sys$Server");
         assertEquals(2, constraints.size());
 
+        List<String[]> roleConstraints = userSession.getConstraints("sec$UserRole");
+        assertEquals(1, roleConstraints.size());
+
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
         UserSession savedUserSession = uss.getUserSession();
         ((TestUserSessionSource) uss).setUserSession(userSession);
@@ -125,6 +151,14 @@ public class ConstraintTest extends CubaTestCase {
             for (Server server : list) {
                 if (server.getId().equals(serverId))
                     fail("Constraints have not taken effect for some reason");
+            }
+
+            //test constraint that contains session parameter
+            loadContext = new LoadContext(UserRole.class)
+                    .setQuery(new LoadContext.Query("select ur from sec$UserRole ur"));
+            List<UserRole> userRoles = dm.loadList(loadContext);
+            if (!userRoles.isEmpty()) {
+                fail("Constraint with session attribute failed");
             }
         } finally {
             ((TestUserSessionSource) uss).setUserSession(savedUserSession);

@@ -82,13 +82,13 @@ public class DataServiceQueryBuilder {
     public Query getQuery(EntityManager em) {
         Query query = em.createQuery(queryString);
 
-        if (useSecurityConstraints) {
-            applyConstraints(query);
-        }
-
         //we have to replace parameter names in macros because for {@link com.haulmont.cuba.core.sys.querymacro.TimeBetweenQueryMacroHandler}
         //we need to replace a parameter with number of days with its value before macros is expanded to JPQL expression
         replaceParamsInMacros(query);
+
+        if (useSecurityConstraints) {
+            applyConstraints(query);
+        }
 
         QueryParser parser = QueryTransformerFactory.createParser(queryString);
         Set<String> paramNames = parser.getParamNames();
