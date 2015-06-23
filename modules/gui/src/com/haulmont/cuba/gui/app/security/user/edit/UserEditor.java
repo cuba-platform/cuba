@@ -149,6 +149,9 @@ public class UserEditor extends AbstractEditor<User> {
 
     @Override
     protected void postInit() {
+        setCaption(PersistenceHelper.isNew(getItem()) ?
+                getMessage("createCaption") : formatMessage("editCaption", getItem().getLogin()));
+
         timeZoneLookup.setEnabled(!Boolean.TRUE.equals(getItem().getTimeZoneAuto()));
 
         // Do not show roles which are not allowed by security constraints
