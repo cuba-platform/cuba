@@ -6,12 +6,10 @@
 package com.haulmont.cuba.desktop.app.security.user;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.security.entity.User;
 
 import java.util.Collections;
 
@@ -23,15 +21,12 @@ public class ChangePasswordLauncher implements Runnable {
 
     @Override
     public void run() {
-        UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
-        User user = userSessionSource.getUserSession().getCurrentOrSubstitutedUser();
-
-        WindowManager windowManager = App.getInstance().getMainFrame().getWindowManager();
+        WindowManager wm = App.getInstance().getMainFrame().getWindowManager();
 
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
-        WindowInfo windowInfo = windowConfig.getWindowInfo("sec$User.changePassw");
+        WindowInfo windowInfo = windowConfig.getWindowInfo("sec$User.changePassword");
 
-        windowManager.openEditor(windowInfo, user, WindowManager.OpenType.DIALOG,
+        wm.openWindow(windowInfo, WindowManager.OpenType.DIALOG,
                 Collections.<String, Object>singletonMap("currentPasswordRequired", true));
     }
 }

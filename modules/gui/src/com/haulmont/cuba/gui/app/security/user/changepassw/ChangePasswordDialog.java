@@ -6,15 +6,15 @@ package com.haulmont.cuba.gui.app.security.user.changepassw;
 
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.PasswordEncryption;
+import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 
@@ -22,7 +22,8 @@ import java.util.UUID;
  * @author krivopustov
  * @version $Id$
  */
-public class UserChangePassw extends AbstractEditor {
+public class ChangePasswordDialog extends AbstractWindow {
+
     @Inject
     protected PasswordField passwField;
 
@@ -35,11 +36,8 @@ public class UserChangePassw extends AbstractEditor {
     @Inject
     protected Label currentPasswordLabel;
 
-    @Named("windowActions.windowClose")
+    @Named("windowClose")
     protected Button closeBtn;
-
-    @Inject
-    protected Datasource<User> userDs;
 
     @Inject
     protected ClientConfig clientConfig;
@@ -50,15 +48,14 @@ public class UserChangePassw extends AbstractEditor {
     @Inject
     protected UserManagementService userManagementService;
 
+    @Inject
+    protected UserSession userSession;
+
+    @WindowParam
+    protected User user;
+
     protected boolean cancelEnabled = true;
     protected boolean currentPasswordRequired = false;
-
-    @Override
-    protected void postInit() {
-        if (!cancelEnabled) {
-            closeBtn.setVisible(false);
-        }
-    }
 
     @Override
     public void init(Map<String, Object> params) {
@@ -78,6 +75,13 @@ public class UserChangePassw extends AbstractEditor {
 
             this.currentPasswordRequired = true;
         }
+
+        addAction(new AbstractAction("windowCommit", clientConfig.getCommitShortcut()) {
+            @Override
+            public void actionPerform(Component component) {
+                changePassword();
+            }
+        });
     }
 
     @Override
@@ -86,6 +90,10 @@ public class UserChangePassw extends AbstractEditor {
 
         if (currentPasswordField.isVisible() && currentPasswordField.isEnabled()) {
             currentPasswordField.requestFocus();
+        }
+
+        if (!cancelEnabled) {
+            closeBtn.setVisible(false);
         }
     }
 
@@ -99,13 +107,18 @@ public class UserChangePassw extends AbstractEditor {
             String currentPassword = currentPasswordField.getValue();
             String passwordConfirmation = confirmPasswField.getValue();
 
-            UUID userId = userDs.getItem().getId();
+            UUID targetUserId;
+            if (user == null) {
+                targetUserId = userSession.getUser().getId();
+            } else {
+                targetUserId = user.getId();
+            }
 
             if (currentPasswordRequired
-                    && !userManagementService.checkPassword(userId, passwordEncryption.getPlainHash(currentPassword))) {
+                    && !userManagementService.checkPassword(targetUserId, passwordEncryption.getPlainHash(currentPassword))) {
                 errors.add(currentPasswordField, getMessage("wrongCurrentPassword"));
 
-            } else if (userManagementService.checkPassword(userId, passwordEncryption.getPlainHash(password))) {
+            } else if (userManagementService.checkPassword(targetUserId, passwordEncryption.getPlainHash(password))) {
                 errors.add(passwField, getMessage("currentPasswordWarning"));
 
             } else if (!ObjectUtils.equals(password, passwordConfirmation)) {
@@ -120,29 +133,27 @@ public class UserChangePassw extends AbstractEditor {
                 }
             }
         }
-
-        if (errors.isEmpty()) {
-            assignPasswordToUser(password);
-        }
     }
 
-    @Override
-    protected boolean postCommit(boolean committed, boolean close) {
-        if (committed) {
-            UUID userId = userDs.getItem().getId();
-            userManagementService.resetRememberMeTokens(Collections.singletonList(userId));
+    public void windowClose() {
+        close(CLOSE_ACTION_ID);
+    }
+
+    public void changePassword() {
+        if (validateAll()) {
+            UUID targetUserId;
+            if (user == null) {
+                targetUserId = userSession.getUser().getId();
+            } else {
+                targetUserId = user.getId();
+            }
+
+            String passwordHash = passwordEncryption.getPasswordHash(targetUserId, passwField.<String>getValue());
+            userManagementService.changeUserPassword(targetUserId, passwordHash);
 
             showNotification(getMessage("passwordChanged"), NotificationType.HUMANIZED);
+
+            close(COMMIT_ACTION_ID);
         }
-
-        return super.postCommit(committed, close);
-    }
-
-    protected void assignPasswordToUser(String passw) {
-        User user = userDs.getItem();
-        String passwordHash = passwordEncryption.getPasswordHash(user.getId(), passw);
-
-        user.setPassword(passwordHash);
-        user.setChangePasswordAtNextLogon(false);
     }
 }

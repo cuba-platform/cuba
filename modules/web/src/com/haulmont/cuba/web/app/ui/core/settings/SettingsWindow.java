@@ -112,7 +112,7 @@ public class SettingsWindow extends AbstractWindow {
                 new AbstractAction("changePassw") {
                     @Override
                     public void actionPerform(Component component) {
-                        Window passwordDialog = openEditor("sec$User.changePassw", user, WindowManager.OpenType.DIALOG,
+                        Window passwordDialog = openWindow("sec$User.changePassword", WindowManager.OpenType.DIALOG,
                                 Collections.<String, Object>singletonMap("currentPasswordRequired", true));
                         passwordDialog.addListener(new CloseListener() {
                             @Override

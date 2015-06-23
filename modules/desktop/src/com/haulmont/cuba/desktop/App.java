@@ -693,7 +693,7 @@ public class App implements ConnectionListener {
                 window.setEnabled(false);
 
             WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
-            WindowInfo changePasswordDialog = windowConfig.getWindowInfo("sec$User.changePassw");
+            WindowInfo changePasswordDialog = windowConfig.getWindowInfo("sec$User.changePassword");
             wm.getDialogParams().setCloseable(false);
             Map<String, Object> params = Collections.singletonMap("cancelEnabled", (Object) Boolean.FALSE);
             Window changePasswordWindow = wm.openEditor(changePasswordDialog, user, WindowManager.OpenType.DIALOG, params);

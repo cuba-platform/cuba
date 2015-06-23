@@ -17,8 +17,8 @@
     <screen id="sec$User.edit"
             template="/com/haulmont/cuba/gui/app/security/user/edit/user-edit.xml"/>
 
-    <screen id="sec$User.changePassw"
-            template="/com/haulmont/cuba/gui/app/security/user/changepassw/user-changepassw.xml"/>
+    <screen id="sec$User.changePassword"
+            template="/com/haulmont/cuba/gui/app/security/user/changepassw/change-password-dialog.xml"/>
 
     <screen id="sec$User.resetPasswords"
             template="/com/haulmont/cuba/gui/app/security/user/resetpasswords/reset-passwords.xml"/>

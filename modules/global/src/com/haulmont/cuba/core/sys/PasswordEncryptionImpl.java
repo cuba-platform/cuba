@@ -17,6 +17,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.UUID;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+
 /**
  * @author artamonov
  * @version $Id$
@@ -36,7 +38,7 @@ public class PasswordEncryptionImpl implements PasswordEncryption {
         try {
             random = SecureRandom.getInstance("SHA1PRNG");
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to load SHA1PRNG", e);
         }
         byte[] passwordBytes = new byte[6];
         random.nextBytes(passwordBytes);
@@ -50,26 +52,39 @@ public class PasswordEncryptionImpl implements PasswordEncryption {
 
     @Override
     public HashDescriptor getHash(String content) {
+        checkNotNullArgument(content);
+
         return encryptionModule.getHash(content);
     }
 
     @Override
     public String getPasswordHash(UUID userId, String password) {
+        checkNotNullArgument(userId);
+        checkNotNullArgument(password);
+
         return encryptionModule.getPasswordHash(userId, password);
     }
 
     @Override
     public String getHash(String content, String salt) {
+        checkNotNullArgument(content);
+        checkNotNullArgument(salt);
+
         return encryptionModule.getHash(content, salt);
     }
 
     @Override
     public String getPlainHash(String content) {
+        checkNotNullArgument(content);
+
         return encryptionModule.getPlainHash(content);
     }
 
     @Override
     public boolean checkPassword(User user, String password) {
+        checkNotNullArgument(user);
+        checkNotNullArgument(password);
+
         return encryptionModule.checkPassword(user, password);
     }
 }

@@ -311,6 +311,28 @@ public class UserManagementServiceBean implements UserManagementService {
         }
     }
 
+    @Override
+    public void changeUserPassword(UUID userId, String newPasswordHash) {
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            User user = em.find(User.class, userId, "user.timeZone");
+            if (user == null)
+                throw new EntityAccessException();
+
+            user.setPassword(newPasswordHash);
+
+            // reset remember me for user
+            Query query = em.createQuery("delete from sec$RememberMeToken rt where rt.user.id=:userId");
+            query.setParameter("userId", userId);
+            query.executeUpdate();
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
     protected EmailTemplate getResetPasswordTemplate(User user,
                                                    SimpleTemplateEngine templateEngine,
                                                    String resetPasswordSubjectTemplate,

@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.gui.app.security.user.browse;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
@@ -79,7 +80,7 @@ public class UserBrowser extends AbstractLookup {
     protected UserManagementService userManagementService;
 
     @Inject
-    private ComponentsFactory componentsFactory;
+    protected ComponentsFactory componentsFactory;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -222,19 +223,17 @@ public class UserBrowser extends AbstractLookup {
     }
 
     public void changePassword() {
-        if (!usersTable.getSelected().isEmpty()) {
-            final Editor changePasswordDialog = openEditor(
-                    "sec$User.changePassw",
-                    usersTable.getSelected().iterator().next(),
-                    WindowManager.OpenType.DIALOG
-            );
+        final User selectedUser = usersTable.getSingleSelected();
+        if (selectedUser != null) {
+            Window changePasswordDialog = openWindow("sec$User.changePassword",
+                    WindowManager.OpenType.DIALOG,
+                    ParamsMap.of("user", selectedUser));
 
             changePasswordDialog.addListener(new CloseListener() {
                 @Override
                 public void windowClosed(String actionId) {
                     if (COMMIT_ACTION_ID.equals(actionId)) {
-                        User item = (User) changePasswordDialog.getItem();
-                        usersDs.updateItem(dataSupplier.reload(item, "user.browse"));
+                        usersDs.updateItem(dataSupplier.reload(selectedUser, "user.browse"));
                     }
                     usersTable.requestFocus();
                 }

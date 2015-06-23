@@ -93,4 +93,11 @@ public interface UserManagementService {
      */
     void saveOwnTimeZone(UserTimeZone timeZone);
 
+    /**
+     * Change password for user
+     *
+     * @param userId user id
+     * @param newPasswordHash password hash
+     */
+    void changeUserPassword(UUID userId, String newPasswordHash);
 }
