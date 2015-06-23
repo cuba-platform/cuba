@@ -19,7 +19,11 @@ public class WebFoldersPane extends WebAbstractComponent<CubaFoldersPane> implem
     protected String styleName;
 
     public WebFoldersPane() {
-        component = new CubaFoldersPane();
+        component = createComponent();
+    }
+
+    protected CubaFoldersPane createComponent() {
+        return new CubaFoldersPane();
     }
 
     @Override
