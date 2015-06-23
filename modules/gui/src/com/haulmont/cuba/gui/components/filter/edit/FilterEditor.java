@@ -27,10 +27,7 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Window for generic filter edit
@@ -166,7 +163,9 @@ public class FilterEditor extends AbstractWindow {
 
                 //commit previously selected condition
                 if (activeConditionFrame != null) {
-                    if (validateAll()) {
+                    List<Validatable> validatables = new ArrayList<>();
+                    validatables.add(activeConditionFrame);
+                    if (validate(validatables)) {
                         activeConditionFrame.commit();
                     } else {
                         treeItemChangeListenerEnabled = false;
