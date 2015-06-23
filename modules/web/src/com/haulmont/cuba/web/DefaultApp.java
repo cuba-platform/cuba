@@ -44,13 +44,15 @@ public class DefaultApp extends App implements ConnectionListener, UserSubstitut
     protected Connection createConnection() {
         Connection connection = new DefaultConnection();
         connection.addConnectionListener(this);
-        connection.addSubstitutionListener(this);
         return connection;
     }
 
     @Override
     public void connectionStateChanged(Connection connection) throws LoginException {
         if (connection.isConnected()) {
+            // substitution listeners are cleared by connection on logout
+            connection.addSubstitutionListener(this);
+
             ClientCacheManager clientCacheManager = AppBeans.get(ClientCacheManager.NAME);
             clientCacheManager.initialize();
 
@@ -125,10 +127,10 @@ public class DefaultApp extends App implements ConnectionListener, UserSubstitut
                     window.setEnabled(false);
 
                 WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
-                WindowInfo changePasswordDialog = windowConfig.getWindowInfo("sec$User.changePassw");
+                WindowInfo changePasswordDialog = windowConfig.getWindowInfo("sec$User.changePassword");
                 wm.getDialogParams().setCloseable(false);
                 Map<String, Object> params = Collections.singletonMap("cancelEnabled", (Object) Boolean.FALSE);
-                com.haulmont.cuba.gui.components.Window changePasswordWindow = wm.openEditor(changePasswordDialog, user,
+                com.haulmont.cuba.gui.components.Window changePasswordWindow = wm.openWindow(changePasswordDialog,
                         WindowManager.OpenType.DIALOG, params);
 
                 changePasswordWindow.addListener(new com.haulmont.cuba.gui.components.Window.CloseListener() {
