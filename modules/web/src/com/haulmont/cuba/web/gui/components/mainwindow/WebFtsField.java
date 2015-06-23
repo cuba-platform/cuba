@@ -17,7 +17,6 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Sizeable;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
@@ -32,10 +31,14 @@ import java.util.Map;
  */
 public class WebFtsField extends WebAbstractComponent<HorizontalLayout> implements FtsField {
 
-    private final TextField searchField;
+    public static final String FTS_FIELD_STYLENAME = "cuba-fts-field-wrap";
+
+    protected TextField searchField;
+    protected Button searchBtn;
 
     public WebFtsField() {
         component = new HorizontalLayout();
+        component.addStyleName(FTS_FIELD_STYLENAME);
 
         ComponentsFactory cf = AppBeans.get(ComponentsFactory.NAME);
         com.haulmont.cuba.gui.components.TextField searchFieldComponent =
@@ -55,7 +58,7 @@ public class WebFtsField extends WebAbstractComponent<HorizontalLayout> implemen
             }
         });
 
-        Button searchBtn = new CubaButton();
+        searchBtn = new CubaButton();
         searchBtn.setStyleName("cuba-fts-button");
         searchBtn.setIcon(WebComponentsHelper.getIcon("app/images/fts-button.png"));
         searchBtn.addClickListener(
@@ -116,5 +119,12 @@ public class WebFtsField extends WebAbstractComponent<HorizontalLayout> implemen
         } else {
             searchField.setHeight(100, Sizeable.Unit.PERCENTAGE);
         }
+    }
+
+    @Override
+    public void setStyleName(String name) {
+        super.setStyleName(name);
+
+        component.addStyleName(FTS_FIELD_STYLENAME);
     }
 }
