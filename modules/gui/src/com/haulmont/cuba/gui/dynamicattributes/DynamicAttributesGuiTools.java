@@ -22,10 +22,7 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author degtyarjov
@@ -80,13 +77,14 @@ public class DynamicAttributesGuiTools {
         Collection<CategoryAttribute> attributes =
                 dynamicAttributes.getAttributesForMetaClass(item.getMetaClass());
         item.setDynamicAttributes(new HashMap<String, CategoryAttributeValue>());
+        Date currentTimestamp = AppBeans.get(TimeSource.NAME, TimeSource.class).currentTimestamp();
 
         for (CategoryAttribute categoryAttribute : attributes) {
             String code = DynamicAttributesUtils.encodeAttributeCode(categoryAttribute.getCode());
             if (categoryAttribute.getDefaultValue() != null) {
                 item.setValue(code, categoryAttribute.getDefaultValue());
             } else if (Boolean.TRUE.equals(categoryAttribute.getDefaultDateIsCurrent())) {
-                item.setValue(code, AppBeans.get(TimeSource.NAME, TimeSource.class).currentTimestamp());
+                item.setValue(code, currentTimestamp);
             }
         }
     }
