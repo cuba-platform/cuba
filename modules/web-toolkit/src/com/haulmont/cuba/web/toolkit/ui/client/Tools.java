@@ -52,8 +52,8 @@ public class Tools {
         }
     }
 
-    public static VOverlay createCubaTablePopup() {
-        final VOverlay tableCustomPopup = createAutoCloseablePoup();
+    public static VOverlay createCubaTablePopup(boolean autClose) {
+        final VOverlay tableCustomPopup = autClose ? createAutoCloseablePoup() : new VOverlay();
 
         tableCustomPopup.setStyleName("cuba-table-popup");
 

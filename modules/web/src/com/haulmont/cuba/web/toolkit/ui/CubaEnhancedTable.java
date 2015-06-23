@@ -60,6 +60,9 @@ public interface CubaEnhancedTable extends AggregationContainer {
 
     void showCustomPopup(Component popupComponent);
 
+    boolean getCustomPopupAutoClose();
+    void setCustomPopupAutoClose(boolean popupAutoClose);
+
     interface ColumnCollapseListener {
         void columnCollapsed(Object columnId, boolean collapsed);
     }

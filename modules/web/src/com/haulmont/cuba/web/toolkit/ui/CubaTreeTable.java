@@ -602,4 +602,16 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
 
         popupComponent.setParent(this);
     }
+
+    @Override
+    public boolean getCustomPopupAutoClose() {
+        return getState(false).customPopupAutoClose;
+    }
+
+    @Override
+    public void setCustomPopupAutoClose(boolean popupAutoClose) {
+        if (getState(false).customPopupAutoClose != popupAutoClose) {
+            getState().customPopupAutoClose = popupAutoClose;
+        }
+    }
 }

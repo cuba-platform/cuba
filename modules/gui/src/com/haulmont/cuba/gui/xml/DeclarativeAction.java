@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.gui.xml;
 
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import org.apache.commons.lang.StringUtils;
@@ -64,14 +65,7 @@ public class DeclarativeAction extends BaseAction {
             return;
         }
 
-        Object controller;
-        if (frame instanceof WrappedFrame) {
-            controller = ((WrappedFrame) frame).getWrapper();
-        } else if (frame instanceof WrappedWindow) {
-            controller = ((WrappedWindow) frame).getWrapper();
-        } else {
-            controller = frame;
-        }
+        Object controller = ComponentsHelper.getFrameController(frame);
         Method method;
         try {
             method = controller.getClass().getMethod(methodName, Component.class);

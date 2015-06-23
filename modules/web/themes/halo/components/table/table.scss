@@ -122,7 +122,12 @@
     }
   }
 
+  .cuba-table-cell-link .cuba-table-clickable-cell {
+    @include valo-link-style;
+  }
+
   .#{$primary-stylename} {
+    .cuba-table-cell-link .cuba-table-clickable-cell,
     .v-button-link,
     .v-link {
       -webkit-transition: none;
@@ -131,12 +136,29 @@
     }
   }
 
+  .cuba-table-cell-textcut .cuba-table-clickable-cell {
+    cursor: $v-link-cursor;
+    color: $v-link-font-color;
+    border-bottom: 1px dashed $v-link-font-color;
+  }
+
   .#{$primary-stylename} [class*="-row"].v-selected {
     $font-color: valo-font-color($v-selection-color, 0.9);
+
+    .cuba-table-cell-link .cuba-table-clickable-cell,
+    .cuba-table-cell-textcut .cuba-table-clickable-cell,
     .v-popupview,
     .v-button-link,
     .v-link {
       color: $font-color;
     }
+
+    .cuba-table-cell-textcut .cuba-table-clickable-cell {
+      border-bottom-color: $font-color;
+    }
+  }
+
+  .cuba-table-view-textcut {
+    @include valo-selection-overlay-style;
   }
 }

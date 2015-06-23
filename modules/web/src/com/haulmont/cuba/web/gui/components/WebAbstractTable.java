@@ -13,17 +13,21 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
+import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
@@ -50,13 +54,13 @@ import com.vaadin.ui.Label;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Method;
 import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -304,11 +308,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                             if (component.getColumnGenerator(column.getId()) == null) {
                                 if (propertyId.getRange().isClass()) {
                                     if (!isLookup && StringUtils.isNotEmpty(isLink)) {
-                                        addGeneratedColumn(propertyId, new ReadOnlyAssociationGenerator(column));
+                                        setClickListener(propertyId.toString(), new LinkCellClickListener());
                                     }
                                 } else if (propertyId.getRange().isDatatype()) {
                                     if (!isLookup && !StringUtils.isEmpty(isLink)) {
-                                        addGeneratedColumn(propertyId, new CodePropertyGenerator(column));
+                                        setClickListener(propertyId.toString(), new LinkCellClickListener());
                                     } else {
                                         if (column.getMaxTextLength() != null) {
                                             addGeneratedColumn(propertyId, new AbbreviatedColumnGenerator(column));
@@ -653,16 +657,17 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
                 if (propertyPath.getRange().isClass()) {
                     if (!isLookup && StringUtils.isNotEmpty(isLink)) {
-                        addGeneratedColumn(propertyPath, new ReadOnlyAssociationGenerator(column));
+                        setClickListener(propertyPath.toString(), new LinkCellClickListener());
                     }
                 } else if (propertyPath.getRange().isDatatype()) {
                     if (!isLookup && !StringUtils.isEmpty(isLink)) {
-                        addGeneratedColumn(propertyPath, new CodePropertyGenerator(column));
+                        setClickListener(propertyPath.toString(), new LinkCellClickListener());
                     } else if (editable && BooleanUtils.isTrue(column.isCalculatable())) {
                         addGeneratedColumn(propertyPath, new CalculatableColumnGenerator());
                     } else {
                         if (column.getMaxTextLength() != null) {
                             addGeneratedColumn(propertyPath, new AbbreviatedColumnGenerator(column));
+                            setClickListener(propertyPath.toString(), new AbbreviatedCellClickListener());
                         }
                     }
                 } /*else if (propertyPath.getRange().isEnum()) {
@@ -1615,100 +1620,137 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         }
     }
 
-    protected abstract class LinkGenerator implements SystemTableColumnGenerator {
-        protected Table.Column column;
+    protected class LinkCellClickListener implements CellClickListener {
 
-        public LinkGenerator(Table.Column column) {
-            this.column = column;
-        }
+        @Override
+        public void onClick(final Entity rowItem, final String columnId) {
+            Column column = getColumn(columnId);
+            if (column.getXmlDescriptor() != null) {
+                String invokeMethodName = column.getXmlDescriptor().attributeValue("linkInvoke");
+                if (StringUtils.isNotEmpty(invokeMethodName)) {
+                    callControllerInvoke(rowItem, columnId, invokeMethodName);
 
-        public com.vaadin.ui.Component generateCell(final Object itemId, Object columnId) {
-            String fieldPropertyId = String.valueOf(columnId);
-            Column columnConf = columns.get(columnId);
-
-            Item item = component.getItem(itemId);
-            Entity entity = ((ItemWrapper) item).getItem();
-            Datasource fieldDatasource = getItemDatasource(entity);
-
-            AbstractFieldFactory factory = (AbstractFieldFactory) component.getTableFieldFactory();
-            com.haulmont.cuba.gui.components.Component columnComponent =
-                    factory.createField(fieldDatasource, fieldPropertyId, columnConf.getXmlDescriptor());
-            if (columnComponent instanceof Field) {
-                Field cubaField = (Field) columnComponent;
-
-                if (columnConf.getDescription() != null) {
-                    cubaField.setDescription(columnConf.getDescription());
+                    return;
                 }
             }
 
-            if (columnConf.getWidth() != null) {
-                columnComponent.setWidth(columnConf.getWidth() + "px");
-            } else if (!(columnComponent instanceof CheckBox)) {
-                columnComponent.setWidth("100%");
+            Entity entity;
+            Object value = rowItem.getValue(columnId);
+            if (value instanceof Entity) {
+                entity = (Entity) value;
+            } else {
+                entity = rowItem;
             }
 
-            if (columnComponent instanceof BelongToFrame) {
-                BelongToFrame belongToFrame = (BelongToFrame) columnComponent;
-                if (belongToFrame.getFrame() == null) {
-                    belongToFrame.setFrame(getFrame());
+            WindowManager wm;
+            Window window = ComponentsHelper.getWindow(WebAbstractTable.this);
+            if (window == null) {
+                throw new IllegalStateException("Please specify Frame for Table");
+            } else {
+                wm = window.getWindowManager();
+            }
+
+            if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {
+                Messages messages = AppBeans.get(Messages.NAME);
+                wm.showNotification(messages.getMessage(EntityLinkField.class, "OpenAction.objectIsDeleted"),
+                        IFrame.NotificationType.HUMANIZED);
+                return;
+            }
+
+            DataSupplier dataSupplier = window.getDsContext().getDataSupplier();
+            entity = dataSupplier.reload(entity, View.MINIMAL);
+
+            WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
+
+            String windowAlias = null;
+            if (column.getXmlDescriptor() != null) {
+                windowAlias = column.getXmlDescriptor().attributeValue("linkScreen");
+            }
+            if (StringUtils.isEmpty(windowAlias)) {
+                windowAlias = windowConfig.getEditorScreenId(entity.getMetaClass());
+            }
+
+            WindowManager.OpenType screenOpenType = WindowManager.OpenType.THIS_TAB;
+            if (column.getXmlDescriptor()!= null) {
+                String openTypeAttribute = column.getXmlDescriptor().attributeValue("linkScreenOpenType");
+                if (StringUtils.isNotEmpty(openTypeAttribute)) {
+                    screenOpenType = WindowManager.OpenType.valueOf(openTypeAttribute);
                 }
             }
 
-            if (columnComponent instanceof EntityLinkField) {
-                ((EntityLinkField) columnComponent).setOwner(WebAbstractTable.this);
-            }
+            final Window.Editor editor = wm.openEditor(
+                    windowConfig.getWindowInfo(windowAlias),
+                    entity,
+                    screenOpenType
+            );
+            editor.addListener(new Window.CloseListener() {
+                @Override
+                public void windowClosed(String actionId) {
+                    // move focus to component
+                    requestFocus();
 
-            applyPermissions(columnComponent);
+                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                        Entity editorItem = editor.getItem();
 
-            columnComponent.setParent(WebAbstractTable.this);
-
-            return WebComponentsHelper.getComposition(columnComponent);
+                        handleEditorCommit(editorItem, rowItem, columnId);
+                    }
+                }
+            });
         }
 
-        protected void applyPermissions(com.haulmont.cuba.gui.components.Component columnComponent) {
-            if (columnComponent instanceof DatasourceComponent) {
-                DatasourceComponent dsComponent = (DatasourceComponent) columnComponent;
-                MetaPropertyPath propertyPath = dsComponent.getMetaPropertyPath();
+        protected void handleEditorCommit(Entity editorItem, Entity rowItem, String columnId) {
+            MetaPropertyPath mpp = rowItem.getMetaClass().getPropertyPath(columnId);
+            if (mpp == null) {
+                throw new IllegalStateException(String.format("Unable to find metaproperty %s for class %s",
+                        columnId, rowItem.getMetaClass()));
+            }
 
-                if (propertyPath != null) {
-                    MetaClass metaClass = dsComponent.getDatasource().getMetaClass();
-                    dsComponent.setEditable(security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString())
-                            && dsComponent.isEditable());
+            if (mpp.getRange().isClass()) {
+                DatasourceImpl ds = ((DatasourceImpl) getDatasource());
+                boolean modifiedInTable = ds.getItemsToUpdate().contains(rowItem);
+                boolean ownerDsModified = ds.isModified();
+
+                rowItem.setValueEx(columnId, null);
+                rowItem.setValueEx(columnId, editorItem);
+
+                // restore modified for owner datasource
+                // remove from items to update if it was not modified before setValue
+                if (!modifiedInTable) {
+                    ds.getItemsToUpdate().remove(rowItem);
+                }
+                ds.setModified(ownerDsModified);
+            } else {
+                //noinspection unchecked
+                getDatasource().updateItem(editorItem);
+            }
+        }
+
+        protected void callControllerInvoke(Entity rowItem, String columnId, String invokeMethodName) {
+            Object controller = ComponentsHelper.getFrameController(frame);
+            Method method;
+            try {
+                method = controller.getClass().getMethod(invokeMethodName, Entity.class, String.class);
+                try {
+                    method.invoke(controller, rowItem, columnId);
+                } catch (Exception e) {
+                    throw new RuntimeException("Unable to cal linkInvoke method for table column", e);
+                }
+            } catch (NoSuchMethodException e) {
+                try {
+                    method = controller.getClass().getMethod(invokeMethodName);
+                    try {
+                        method.invoke(controller);
+                    } catch (Exception e1) {
+                        throw new RuntimeException("Unable to cal linkInvoke method for table column", e1);
+                    }
+                } catch (NoSuchMethodException e1) {
+                    throw new IllegalStateException("No suitable methods named " + invokeMethodName + " for invoke");
                 }
             }
         }
-
-        @Override
-        public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
-            return generateCell(itemId, columnId);
-        }
-
-        protected abstract Entity getItem(Item item, Property property);
     }
 
-    protected class ReadOnlyAssociationGenerator extends LinkGenerator {
-        public ReadOnlyAssociationGenerator(Table.Column column) {
-            super(column);
-        }
-
-        @Override
-        protected Entity getItem(Item item, Property property) {
-            return (Entity) property.getValue();
-        }
-    }
-
-    protected class CodePropertyGenerator extends LinkGenerator {
-        public CodePropertyGenerator(Table.Column column) {
-            super(column);
-        }
-
-        @Override
-        protected Entity getItem(Item item, Property property) {
-            return ((ItemWrapper) item).getItem();
-        }
-    }
-
-    protected class AbbreviatedColumnGenerator implements SystemTableColumnGenerator {
+    protected static class AbbreviatedColumnGenerator implements SystemTableColumnGenerator {
 
         protected Table.Column column;
 
@@ -1734,32 +1776,49 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
             int maxTextLength = column.getMaxTextLength();
             if (stringValue.length() > maxTextLength + MAX_TEXT_LENGTH_GAP || isMultiLineCell) {
-                CubaResizableTextArea content = new CubaResizableTextArea();
-                content.setResizable(true);
-                content.setValue(stringValue);
-
-                ThemeConstants theme = App.getInstance().getThemeConstants();
-                if (theme != null) {
-                    content.setWidth(theme.get("cuba.web.Table.abbreviatedPopupWidth"));
-                    content.setHeight(theme.get("cuba.web.Table.abbreviatedPopupHeight"));
-                } else {
-                    content.setWidth("320px");
-                    content.setHeight("200px");
-                }
-
-                content.setReadOnly(true);
-                CssLayout cssLayout = new CssLayout();
-                cssLayout.setSizeUndefined();
-                cssLayout.addComponent(content);
-                PopupView view = new PopupView(StringEscapeUtils.escapeHtml(StringUtils.abbreviate(cellValue, maxTextLength)),
-                        cssLayout);
-                view.setHideOnMouseOut(false);
-                view.addStyleName("abbreviated");
-
-                return view;
+                return stringValue;
             } else {
                 return cellValue;
             }
+        }
+    }
+
+    protected class AbbreviatedCellClickListener implements CellClickListener {
+        @Override
+        public void onClick(Entity item, String columnId) {
+            Column column = getColumn(columnId);
+            String value = item.getValue(columnId);
+            if (column.getMaxTextLength() != null) {
+                boolean isMultiLineCell = StringUtils.contains(value, "\n");
+                if (value == null || (value.length() <= column.getMaxTextLength() + MAX_TEXT_LENGTH_GAP
+                        && !isMultiLineCell)) {
+                    // do not show popup view
+                    return;
+                }
+            }
+
+            VerticalLayout layout = new VerticalLayout();
+            layout.setWidthUndefined();
+            layout.setStyleName("cuba-table-view-textcut");
+
+            CubaResizableTextArea content = new CubaResizableTextArea();
+            content.setResizable(true);
+            content.setValue(value);
+
+            ThemeConstants theme = App.getInstance().getThemeConstants();
+            if (theme != null) {
+                content.setWidth(theme.get("cuba.web.Table.abbreviatedPopupWidth"));
+                content.setHeight(theme.get("cuba.web.Table.abbreviatedPopupHeight"));
+            } else {
+                content.setWidth("320px");
+                content.setHeight("200px");
+            }
+
+            content.setReadOnly(true);
+            layout.addComponent(content);
+
+            component.showCustomPopup(layout);
+            component.setCustomPopupAutoClose(false);
         }
     }
 
@@ -2102,6 +2161,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     public void showCustomPopup(com.haulmont.cuba.gui.components.Component popupComponent) {
         Component vComponent = WebComponentsHelper.unwrap(popupComponent);
         component.showCustomPopup(vComponent);
+        component.setCustomPopupAutoClose(false);
     }
 
     @Override
@@ -2121,26 +2181,60 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
         if (customContextMenu.getComponentCount() > 0) {
             component.showCustomPopup(customContextMenu);
+            component.setCustomPopupAutoClose(true);
         }
     }
 
     protected class StyleGeneratorAdapter implements com.vaadin.ui.Table.CellStyleGenerator {
+
+        public static final String CUSTOM_STYLE_NAME_PREFIX = "cs ";
+
         @SuppressWarnings({"unchecked"})
         @Override
         public String getStyle(com.vaadin.ui.Table source, Object itemId, Object propertyId) {
             String style = null;
             if (propertyId != null && itemId != null
                     && !component.isColumnEditable(propertyId)
-                    && component.getColumnGenerator(propertyId) == null) {
-                MetaPropertyPath property = datasource.getMetaClass().getPropertyPath(propertyId.toString());
-                if (property != null && property.getRangeJavaClass() == Boolean.class) {
-                    Entity item = datasource.getItem(itemId);
-                    if (item != null) {
-                        Boolean value = item.getValueEx(propertyId.toString());
-                        if (BooleanUtils.isTrue(value)) {
-                            style = "boolean-cell boolean-cell-true";
-                        } else {
-                            style = "boolean-cell boolean-cell-false";
+                    && (component.getColumnGenerator(propertyId) == null
+                        || component.getColumnGenerator(propertyId) instanceof AbbreviatedColumnGenerator)) {
+
+                MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(propertyId.toString());
+                Column column = getColumn(propertyId.toString());
+                if (propertyPath != null) {
+                    if (column != null) {
+                        final String isLink = column.getXmlDescriptor() == null ?
+                                null : column.getXmlDescriptor().attributeValue("link");
+
+                        if (propertyPath.getRange().isClass()) {
+                            if (StringUtils.isNotEmpty(isLink)) {
+                                style = "cuba-table-cell-link";
+                            }
+                        } else if (propertyPath.getRange().isDatatype()) {
+                            if (!StringUtils.isEmpty(isLink)) {
+                                style = "cuba-table-cell-link";
+                            } else if (column.getMaxTextLength() != null) {
+                                Entity item = getDatasource().getItemNN(itemId);
+                                String value = item.getValue(propertyId.toString());
+                                if (column.getMaxTextLength() != null) {
+                                    boolean isMultiLineCell = StringUtils.contains(value, "\n");
+                                    if ((value != null && value.length() > column.getMaxTextLength() + MAX_TEXT_LENGTH_GAP)
+                                            || isMultiLineCell) {
+                                        style = "cuba-table-cell-textcut";
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (propertyPath.getRangeJavaClass() == Boolean.class) {
+                        Entity item = datasource.getItem(itemId);
+                        if (item != null) {
+                            Boolean value = item.getValueEx(propertyId.toString());
+                            if (BooleanUtils.isTrue(value)) {
+                                style = "boolean-cell boolean-cell-true";
+                            } else {
+                                style = "boolean-cell boolean-cell-false";
+                            }
                         }
                     }
                 }
@@ -2148,15 +2242,17 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
             if (styleProvider != null) {
                 String generatedStyle = getGeneratedCellStyle(itemId, propertyId);
+                // we use style names without v-table-cell-content prefix, so we add cs prefix
+                // all cells with custom styles will have v-table-cell-content-cs style name in class
                 if (style != null) {
                     if (generatedStyle != null) {
-                        style = generatedStyle + " " + style;
+                        style = CUSTOM_STYLE_NAME_PREFIX + generatedStyle + " " + style;
                     }
                 } else {
-                    style = generatedStyle;
+                    style = CUSTOM_STYLE_NAME_PREFIX + generatedStyle;
                 }
             }
-            return style;
+            return CUSTOM_STYLE_NAME_PREFIX + style;
         }
     }
 

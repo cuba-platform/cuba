@@ -54,6 +54,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
     protected VOverlay customPopupOverlay;
     protected Widget customPopupWidget;
+    protected boolean customPopupAutoClose = false;
     protected int lastClickClientX;
     protected int lastClickClientY;
 
@@ -697,7 +698,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
                 }
             }
 
-            customPopupOverlay = Tools.createCubaTablePopup();
+            customPopupOverlay = Tools.createCubaTablePopup(customPopupAutoClose);
             customPopupOverlay.setOwner(this);
             customPopupOverlay.setWidget(customPopupWidget);
 

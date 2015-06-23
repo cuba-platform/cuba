@@ -24,10 +24,8 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
@@ -316,36 +314,34 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
         DataSupplier dataSupplier = window.getDsContext().getDataSupplier();
         entity = dataSupplier.reload(entity, View.MINIMAL);
 
-        if (entity != null) {
-            String windowAlias = screen;
-            WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
-            if (windowAlias == null) {
-                windowAlias = windowConfig.getEditorScreenId(entity.getMetaClass());
-            }
-
-            final Window.Editor editor = wm.openEditor(
-                    windowConfig.getWindowInfo(windowAlias),
-                    entity,
-                    screenOpenType,
-                    screenParams != null ? screenParams : Collections.<String, Object>emptyMap()
-            );
-            editor.addListener(new Window.CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    // move focus to component
-                    component.focus();
-
-                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                        Entity item = editor.getItem();
-                        afterCommitOpenedEntity(item);
-                    }
-
-                    if (screenCloseListener != null) {
-                        screenCloseListener.windowClosed(editor, actionId);
-                    }
-                }
-            });
+        String windowAlias = screen;
+        WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
+        if (windowAlias == null) {
+            windowAlias = windowConfig.getEditorScreenId(entity.getMetaClass());
         }
+
+        final Window.Editor editor = wm.openEditor(
+                windowConfig.getWindowInfo(windowAlias),
+                entity,
+                screenOpenType,
+                screenParams != null ? screenParams : Collections.<String, Object>emptyMap()
+        );
+        editor.addListener(new Window.CloseListener() {
+            @Override
+            public void windowClosed(String actionId) {
+                // move focus to component
+                component.focus();
+
+                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                    Entity item = editor.getItem();
+                    afterCommitOpenedEntity(item);
+                }
+
+                if (screenCloseListener != null) {
+                    screenCloseListener.windowClosed(editor, actionId);
+                }
+            }
+        });
     }
 
     protected void afterCommitOpenedEntity(Entity item) {

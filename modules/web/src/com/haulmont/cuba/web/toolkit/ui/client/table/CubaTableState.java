@@ -33,5 +33,7 @@ public class CubaTableState extends TableState {
     @NoLayout
     public Connector customPopup;
 
+    public boolean customPopupAutoClose = false;
+
     public String[] clickableColumnKeys;
 }

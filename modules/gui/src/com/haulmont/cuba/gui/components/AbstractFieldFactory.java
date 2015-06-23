@@ -336,14 +336,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
                 throw new IllegalStateException("Please specify Frame for EntityLinkField");
             }
 
-            Object controller;
-            if (frame instanceof WrappedFrame) {
-                controller = ((WrappedFrame) frame).getWrapper();
-            } else if (frame instanceof WrappedWindow) {
-                controller = ((WrappedWindow) frame).getWrapper();
-            } else {
-                controller = frame;
-            }
+            Object controller = ComponentsHelper.getFrameController(frame);
             Method method;
             try {
                 method = controller.getClass().getMethod(invokeMethodName, EntityLinkField.class);

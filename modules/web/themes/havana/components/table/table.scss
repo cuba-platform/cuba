@@ -282,4 +282,23 @@
   .#{$primary-stylename}.#{$primary-stylename}-body-focus .#{$primary-stylename}-body.#{$primary-stylename}-body-wrapper {
     border-color: $cuba-field-focused-border-color;
   }
+
+  .cuba-table-cell-link .cuba-table-clickable-cell {
+    color: $cuba-field-selection-color;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  .cuba-table-cell-textcut .cuba-table-clickable-cell {
+    cursor: pointer;
+    color: $cuba-field-selection-color;
+    border-bottom: 1px dashed $cuba-field-selection-color;
+  }
+
+  .cuba-table-view-textcut {
+    background: $cuba-contextmenu-background-color;
+    overflow: auto;
+    padding: 3px;
+    border: 1px solid $cuba-field-focused-border-color;
+  }
 }

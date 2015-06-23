@@ -98,6 +98,9 @@ public class CubaTreeTableConnector extends TreeTableConnector {
                 getWidget().customPopupWidget = null;
             }
         }
+        if (stateChangeEvent.hasPropertyChanged("customPopupAutoClose")) {
+            getWidget().customPopupAutoClose = getState().customPopupAutoClose;
+        }
     }
 
     @Override

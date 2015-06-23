@@ -33,5 +33,7 @@ public class CubaTreeTableState extends TreeTableState {
     @NoLayout
     public Connector customPopup;
 
+    public boolean customPopupAutoClose = false;
+
     public String[] clickableColumnKeys;
 }

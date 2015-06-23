@@ -339,14 +339,49 @@ public interface Table
     @Nullable
     Printable getPrintable(String columnId);
 
+    /**
+     * Add lightweight click handler for column cells.<br/>
+     * Web specific: cell value will be wrapped in span with cuba-table-clickable-cell style name.<br/>
+     * You can use .cuba-table-clickable-cell for CSS rules to specify custom representation of cell value.
+     *
+     * @param columnId id of column
+     * @param clickListener click listener
+     */
     void setClickListener(String columnId, CellClickListener clickListener);
+
+    /**
+     * Remove click listener.
+     *
+     * @param columnId id of column
+     */
     void removeClickListener(String columnId);
 
+    /**
+     * Lightweight click listener for table cells.
+     */
     interface CellClickListener {
+        /**
+         * @param item row item
+         * @param columnId id of column
+         */
         void onClick(Entity item, String columnId);
     }
 
+    /**
+     * Show popup inside of Table, relative to last cell click event.<br/>
+     * Call this method from {@link com.haulmont.cuba.gui.components.Table.CellClickListener} implementation.
+     *
+     * @param popupComponent popup content
+     */
     void showCustomPopup(Component popupComponent);
+
+    /**
+     * Show autocloseable popup view with actions, relative to last cell click event.<br/>
+     * Call this method from {@link com.haulmont.cuba.gui.components.Table.CellClickListener} implementation.<br/>
+     * Autocloseable means that after any click on action popup will be closed.
+     *
+     * @param actions actions
+     */
     void showCustomPopupActions(List<Action> actions);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

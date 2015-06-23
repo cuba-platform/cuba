@@ -54,6 +54,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
     protected VOverlay customPopupOverlay;
     protected Widget customPopupWidget;
+    protected boolean customPopupAutoClose = false;
     protected int lastClickClientX;
     protected int lastClickClientY;
 
@@ -692,7 +693,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
                 }
             }
 
-            customPopupOverlay = Tools.createCubaTablePopup();
+            customPopupOverlay = Tools.createCubaTablePopup(customPopupAutoClose);
             customPopupOverlay.setOwner(this);
             customPopupOverlay.setWidget(customPopupWidget);
 

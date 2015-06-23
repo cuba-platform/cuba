@@ -312,6 +312,16 @@ public abstract class ComponentsHelper {
         return null;
     }
 
+    public static IFrame getFrameController(IFrame frame) {
+        if (frame instanceof WrappedFrame) {
+            return  ((WrappedFrame) frame).getWrapper();
+        } else if (frame instanceof WrappedWindow) {
+            return ((WrappedWindow) frame).getWrapper();
+        } else {
+            return frame;
+        }
+    }
+
     public static String getFullFrameId(IFrame frame) {
         LinkedList<String> frameIds = new LinkedList<>();
         frameIds.addFirst(frame.getId());

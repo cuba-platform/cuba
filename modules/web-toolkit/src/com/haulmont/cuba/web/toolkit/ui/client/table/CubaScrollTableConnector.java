@@ -104,6 +104,9 @@ public class CubaScrollTableConnector extends TableConnector {
                 getWidget().customPopupWidget = null;
             }
         }
+        if (stateChangeEvent.hasPropertyChanged("customPopupAutoClose")) {
+            getWidget().customPopupAutoClose = getState().customPopupAutoClose;
+        }
     }
 
     @Override
