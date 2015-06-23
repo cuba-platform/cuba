@@ -13,8 +13,8 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.app.queryresults.QueryResultsManagerAPI;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesManagerAPI;
+import com.haulmont.cuba.core.app.queryresults.QueryResultsManagerAPI;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.CategoryAttributeValue;
@@ -74,6 +74,7 @@ public class DataManagerBean implements DataManager {
 
     @Nullable
     @Override
+    @SuppressWarnings("unchecked")
     public <A extends Entity> A load(LoadContext context) {
         if (log.isDebugEnabled())
             log.debug("load: metaClass=" + context.getMetaClass() + ", id=" + context.getId() + ", view=" + context.getView());
@@ -113,10 +114,11 @@ public class DataManagerBean implements DataManager {
             tx.end();
         }
 
-        return (A) result;
+        return result;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <A extends Entity> List<A> loadList(LoadContext context) {
         if (log.isDebugEnabled())
             log.debug("loadList: metaClass=" + context.getMetaClass() + ", view=" + context.getView()
@@ -217,6 +219,7 @@ public class DataManagerBean implements DataManager {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Set<Entity> commit(CommitContext context) {
         if (log.isDebugEnabled())
             log.debug("commit: commitInstances=" + context.getCommitInstances()
@@ -238,37 +241,38 @@ public class DataManagerBean implements DataManager {
             if (context instanceof NotDetachedCommitContext) {
                 persistOrMergeNotDetached((NotDetachedCommitContext) context, em, res);
             } else {
+                List<BaseGenericIdEntity> entitiesToStoreDynamicAttributes = new ArrayList<>();
+
                 // persist new
                 for (Entity entity : context.getCommitInstances()) {
                     if (PersistenceHelper.isNew(entity)) {
                         em.persist(entity);
                         res.add(entity);
                         persisted.add(entity);
-                    }
-                }
 
-
-                // merge detached
-                List<BaseGenericIdEntity> entitiesToFetchDynamicAttributes = new ArrayList<>();
-                for (Entity entity : context.getCommitInstances()) {
-                    if (PersistenceHelper.isDetached(entity)) {
-                        Entity e = em.merge(entity);
-                        res.add(e);
-                        if (entity instanceof BaseGenericIdEntity) {
-                            if (((BaseGenericIdEntity) entity).getDynamicAttributes() != null) {
-                                entitiesToFetchDynamicAttributes.add((BaseGenericIdEntity) e);
-                            }
+                        if (entityHasDynamicAttributes(entity)) {
+                            entitiesToStoreDynamicAttributes.add((BaseGenericIdEntity) entity);
                         }
                     }
                 }
 
+                // merge detached
                 for (Entity entity : context.getCommitInstances()) {
-                    if (entity instanceof BaseGenericIdEntity) {
-                        storeDynamicAttributes((BaseGenericIdEntity) entity);
+                    if (PersistenceHelper.isDetached(entity)) {
+                        Entity merged = em.merge(entity);
+                        res.add(merged);
+                        if (entityHasDynamicAttributes(entity)) {
+                            BaseGenericIdEntity originalBaseGenericIdEntity = (BaseGenericIdEntity) entity;
+                            BaseGenericIdEntity mergedBaseGenericIdEntity = (BaseGenericIdEntity) merged;
+                            mergedBaseGenericIdEntity.setDynamicAttributes(originalBaseGenericIdEntity.getDynamicAttributes());
+                            entitiesToStoreDynamicAttributes.add(mergedBaseGenericIdEntity);
+                        }
                     }
                 }
 
-                fetchDynamicAttributes(entitiesToFetchDynamicAttributes);
+                for (BaseGenericIdEntity entity : entitiesToStoreDynamicAttributes) {
+                    storeDynamicAttributes(entity);
+                }
             }
 
             // remove
@@ -277,14 +281,12 @@ public class DataManagerBean implements DataManager {
                 em.remove(e);
                 res.add(e);
 
-                if (entity instanceof BaseGenericIdEntity) {
+                if (entityHasDynamicAttributes(entity)) {
                     Map<String, CategoryAttributeValue> dynamicAttributes = ((BaseGenericIdEntity) entity).getDynamicAttributes();
-                    if (dynamicAttributes != null) {
-                        for (CategoryAttributeValue categoryAttributeValue : dynamicAttributes.values()) {
-                            if (!PersistenceHelper.isNew(categoryAttributeValue)) {
-                                em.remove(categoryAttributeValue);
-                                res.add(categoryAttributeValue);
-                            }
+                    for (CategoryAttributeValue categoryAttributeValue : dynamicAttributes.values()) {
+                        if (!PersistenceHelper.isNew(categoryAttributeValue)) {
+                            em.remove(categoryAttributeValue);
+                            res.add(categoryAttributeValue);
                         }
                     }
                 }
@@ -307,10 +309,17 @@ public class DataManagerBean implements DataManager {
         return res;
     }
 
+    protected boolean entityHasDynamicAttributes(Entity entity) {
+        return entity instanceof BaseGenericIdEntity
+                && ((BaseGenericIdEntity) entity).getDynamicAttributes() != null;
+    }
+
+    @SuppressWarnings("unchecked")
     protected void storeDynamicAttributes(BaseGenericIdEntity entity) {
         final EntityManager em = persistence.getEntityManager();
         Map<String, CategoryAttributeValue> dynamicAttributes = entity.getDynamicAttributes();
         if (dynamicAttributes != null) {
+            Map<String, CategoryAttributeValue> mergedDynamicAttributes = new HashMap<>();
             for (Map.Entry<String, CategoryAttributeValue> entry : dynamicAttributes.entrySet()) {
                 CategoryAttributeValue categoryAttributeValue = entry.getValue();
                 if (categoryAttributeValue.getCategoryAttribute() == null
@@ -322,11 +331,15 @@ public class DataManagerBean implements DataManager {
 
                 //remove deleted and empty attributes
                 if (categoryAttributeValue.getDeleteTs() == null && categoryAttributeValue.getValue() != null) {
-                    em.merge(categoryAttributeValue);
+                    CategoryAttributeValue mergedCategoryAttributeValue = em.merge(categoryAttributeValue);
+                    mergedCategoryAttributeValue.setCategoryAttribute(categoryAttributeValue.getCategoryAttribute());
+                    mergedDynamicAttributes.put(entry.getKey(), mergedCategoryAttributeValue);
                 } else {
                     em.remove(categoryAttributeValue);
                 }
             }
+
+            entity.setDynamicAttributes(mergedDynamicAttributes);
         }
     }
 
