@@ -1244,6 +1244,8 @@ public class FilterDelegateImpl implements FilterDelegate {
             if ((applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
                 filterHelper.initTableFtsTooltips((Table) applyTo, ftsSearchResult.getHitInfos());
             }
+        } else if ((applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
+            filterHelper.initTableFtsTooltips((Table) applyTo, Collections.<UUID, String>emptyMap());
         }
 
         applyDatasourceFilter();
