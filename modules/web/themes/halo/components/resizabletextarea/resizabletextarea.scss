@@ -6,7 +6,7 @@
 // Version: $Id$
 
 @mixin halo-cuba-resizabletextarea($primary-stylename: cuba-resizabletextarea) {
-  $textarea-corner-color: valo-border-color($color: $v-overlay-background-color, $strength: 0.5);
+  $textarea-corner-color: valo-border-color($color: $v-overlay-background-color, $strength: 1.0);
 
   .#{$primary-stylename}-resize-corner {
     z-index: 1001;
