@@ -133,7 +133,7 @@ public class CubaTooltip extends VTooltip {
                 connector = (ComponentConnector) connector.getParent();
             }
 
-            if (connector != null && info != null) {
+            if (connector != null) {
                 assert connector.hasTooltip() : "getTooltipInfo for "
                         + Util.getConnectorString(connector)
                         + " returned a tooltip even though hasTooltip claims there are no tooltips for the connector.";
@@ -191,7 +191,7 @@ public class CubaTooltip extends VTooltip {
             TooltipInfo info = getTooltipFor(element);
             if (info == null) {
                 // close tooltip only if it is from button or checkbox
-                if (currentConnector instanceof ButtonConnector || currentConnector instanceof CheckBoxConnector) {
+                if (isStandardTooltip(currentConnector)) {
                     if (isTooltipOpen()) {
                         handleHideEvent();
                     } else {

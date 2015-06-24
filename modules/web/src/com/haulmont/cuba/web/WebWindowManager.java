@@ -153,7 +153,13 @@ public class WebWindowManager extends WindowManager {
                 }
 
                 tab.setCaption(formattedCaption);
-                tab.setDescription(formatTabDescription(caption, description));
+
+                String formattedDescription = formatTabDescription(caption, description);
+                if (!StringUtils.equals(formattedDescription, formattedCaption)) {
+                    tab.setDescription(formattedDescription);
+                } else {
+                    tab.setDescription(null);
+                }
             }
         }
     }
@@ -449,8 +455,15 @@ public class WebWindowManager extends WindowManager {
                     tabSheet.setCubaId(newTab, "tab_" + window.getId());
                 }
             }
-            newTab.setCaption(formatTabCaption(window.getCaption(), window.getDescription()));
-            newTab.setDescription(formatTabDescription(window.getCaption(), window.getDescription()));
+            String formattedCaption = formatTabCaption(window.getCaption(), window.getDescription());
+            newTab.setCaption(formattedCaption);
+            String formattedDescription = formatTabDescription(window.getCaption(), window.getDescription());
+            if (!StringUtils.equals(formattedCaption, formattedDescription)) {
+                newTab.setDescription(formattedDescription);
+            } else {
+                newTab.setDescription(null);
+            }
+
             newTab.setClosable(true);
             tabSheet.setTabCloseHandler(layout,
                     new CubaTabSheet.TabCloseHandler() {
@@ -557,8 +570,15 @@ public class WebWindowManager extends WindowManager {
         if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
             TabSheet tabSheet = workArea.getTabbedWindowContainer();
             TabSheet.Tab tab = tabSheet.getTab(layout);
-            tab.setCaption(formatTabCaption(caption, description));
-            tab.setDescription(formatTabDescription(caption, description));
+            String formattedCaption = formatTabCaption(caption, description);
+            tab.setCaption(formattedCaption);
+            String formattedDescription = formatTabDescription(caption, description);
+
+            if (!StringUtils.equals(formattedCaption, formattedDescription)) {
+                tab.setDescription(formattedDescription);
+            } else {
+                tab.setDescription(null);
+            }
         } else {
             layout.markAsDirtyRecursive();
         }
@@ -868,8 +888,15 @@ public class WebWindowManager extends WindowManager {
                     if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
                         TabSheet tabSheet = workArea.getTabbedWindowContainer();
                         TabSheet.Tab tab = tabSheet.getTab(layout);
-                        tab.setCaption(formatTabCaption(currentWindow.getCaption(), currentWindow.getDescription()));
-                        tab.setDescription(formatTabDescription(currentWindow.getCaption(), currentWindow.getDescription()));
+                        String formattedCaption = formatTabCaption(currentWindow.getCaption(), currentWindow.getDescription());
+                        tab.setCaption(formattedCaption);
+                        String formattedDescription = formatTabDescription(currentWindow.getCaption(), currentWindow.getDescription());
+
+                        if (!StringUtils.equals(formattedCaption, formattedDescription)) {
+                            tab.setDescription(formattedDescription);
+                        } else {
+                            tab.setDescription(null);
+                        }
                     }
                 }
                 fireListeners(window, !tabs.isEmpty());
