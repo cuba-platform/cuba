@@ -44,7 +44,7 @@ public class CubaOrderedLayoutSlot extends Slot {
         final Element focusedElement = WidgetUtil.getFocusedElement();
         // By default focus will not be lost
         boolean focusLost = false;
-        if (captionText != null || icon != null || error != null || required) {
+        if (captionText != null || icon != null || error != null || required || descriptionText != null) {
             if (caption == null) {
                 caption = DOM.createDiv();
                 captionWrap = DOM.createDiv();

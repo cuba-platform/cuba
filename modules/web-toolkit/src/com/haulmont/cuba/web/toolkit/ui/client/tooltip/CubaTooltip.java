@@ -8,19 +8,21 @@ package com.haulmont.cuba.web.toolkit.ui.client.tooltip;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
 import com.haulmont.cuba.web.toolkit.ui.client.resizabletextarea.CubaResizableTextAreaWidget;
 import com.vaadin.client.*;
-import com.vaadin.client.ui.button.ButtonConnector;
-import com.vaadin.client.ui.checkbox.CheckBoxConnector;
-import com.vaadin.client.ui.table.TableConnector;
-import com.vaadin.client.ui.tabsheet.TabsheetConnector;
+import com.vaadin.client.ui.VGridLayout;
+import com.vaadin.client.ui.gridlayout.GridLayoutConnector;
+import com.vaadin.client.ui.layout.ComponentConnectorLayoutSlot;
+import com.vaadin.client.ui.orderedlayout.Slot;
 
 /**
  * @author devyatkin
@@ -197,8 +199,10 @@ public class CubaTooltip extends VTooltip {
                     currentConnector = null;
                 }
             } else {
-                if ((domEvent instanceof MouseDownEvent && !isStandardTooltip(currentConnector))
-                        || (!(domEvent instanceof MouseDownEvent) && isStandardTooltip(currentConnector))) {
+                boolean hasTooltipIndicator = hasIndicators(currentConnector);
+                boolean elementIsIndicator = elementIsIndicator(element);
+
+                if ((hasTooltipIndicator && elementIsIndicator) || (!hasTooltipIndicator)) {
                     if (closing) {
                         closeTimer.cancel();
                         closing = false;
@@ -215,11 +219,7 @@ public class CubaTooltip extends VTooltip {
                         element.focus();
                     }
 
-                    if (isStandardTooltip(currentConnector)) {
-                        showTooltip(false);
-                    } else {
-                        showTooltip(true);
-                    }
+                    showTooltip(domEvent instanceof MouseDownEvent && elementIsIndicator);
                 }
             }
 
@@ -227,11 +227,61 @@ public class CubaTooltip extends VTooltip {
             currentElement = element;
         }
 
-        protected boolean isStandardTooltip(ComponentConnector connector) {
-            return (connector instanceof ButtonConnector
-                    || connector instanceof CheckBoxConnector
-                    || connector instanceof TabsheetConnector
-                    || connector instanceof TableConnector);
+        protected boolean elementIsIndicator(Element relativeElement) {
+            return relativeElement != null
+                    && ("v-required-field-indicator".equals(relativeElement.getClassName())
+                    || "cuba-tooltip-button".equals(relativeElement.getClassName()));
+        }
+
+        protected boolean hasIndicators(ComponentConnector connector) {
+            if (connector == null || connector.getWidget() == null) {
+                return false;
+            }
+
+            Widget parentWidget = connector.getWidget().getParent();
+
+            if (parentWidget instanceof Slot) {
+                Slot slot = (Slot) parentWidget;
+                if (slot.getCaptionElement() != null) {
+                    com.google.gwt.user.client.Element captionElement = slot.getCaptionElement();
+                    for (int i = 0; i < captionElement.getChildCount(); i++) {
+                        Node child = captionElement.getChild(i);
+                        if (child instanceof Element
+                                && (elementIsIndicator(((Element) child)))) {
+                            return true;
+                        }
+                    }
+                }
+            } else if (connector.getParent() instanceof GridLayoutConnector) {
+                GridLayoutConnector gridLayoutConnector = (GridLayoutConnector) connector.getParent();
+                VGridLayout gridWidget = gridLayoutConnector.getWidget();
+                VGridLayout.Cell cell = gridWidget.widgetToCell.get(connector.getWidget());
+
+                ComponentConnectorLayoutSlot slot = cell.slot;
+                if (slot != null) {
+                    VCaption caption = slot.getCaption();
+                    if (caption != null) {
+                        com.google.gwt.user.client.Element captionElement = caption.getElement();
+                        for (int i = 0; i < captionElement.getChildCount(); i++) {
+                            Node child = captionElement.getChild(i);
+                            if (child instanceof Element
+                                    && (elementIsIndicator(((Element) child)))) {
+                                return true;
+                            }
+                        }
+                    }
+
+                    if (caption instanceof CubaCaptionWidget) {
+                        CubaCaptionWidget cubaCaptionWidget = (CubaCaptionWidget) caption;
+                        if (cubaCaptionWidget.getRequiredIndicatorElement() != null
+                                || cubaCaptionWidget.getTooltipElement() != null) {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }
