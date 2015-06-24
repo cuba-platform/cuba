@@ -6,6 +6,7 @@ package com.haulmont.cuba.web.gui;
 
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
+import com.vaadin.ui.Label;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,62 +15,68 @@ import java.util.Map;
  * @author gorodnov
  * @version $Id$
  */
-public class WebTimer extends WebAbstractComponent<CubaTimer> implements com.haulmont.cuba.gui.components.Timer {
+public class WebTimer extends WebAbstractComponent<Label> implements com.haulmont.cuba.gui.components.Timer {
 
     protected final Map<TimerListener, CubaTimer.TimerListener> listeners = new HashMap<>();
+    protected CubaTimer timerImpl;
 
     public WebTimer() {
-        component = new CubaTimer();
+        component = new Label();
+        timerImpl = new CubaTimer();
     }
 
     @Override
     public void start() {
-        component.start();
+        timerImpl.start();
     }
 
     @Override
     public void stop() {
-        component.stop();
+        timerImpl.stop();
     }
 
     @Override
     public boolean isRepeating() {
-        return component.isRepeating();
+        return timerImpl.isRepeating();
     }
 
     @Override
     public void setRepeating(boolean repeating) {
-        component.setRepeating(repeating);
+        timerImpl.setRepeating(repeating);
     }
 
     @Override
     public int getDelay() {
-        return component.getDelay();
+        return timerImpl.getDelay();
     }
 
     @Override
     public void setDelay(int delay) {
-        component.setDelay(delay);
+        timerImpl.setDelay(delay);
     }
 
     @Override
     public void addTimerListener(TimerListener listener) {
         TimerListenerWrapper componentListener = new TimerListenerWrapper(listener);
         listeners.put(listener, componentListener);
-        component.addTimerListener(componentListener);
+        timerImpl.addTimerListener(componentListener);
     }
 
     @Override
     public void removeTimerListener(TimerListener listener) {
         CubaTimer.TimerListener componentListener = listeners.remove(listener);
-        component.removeTimerListener(componentListener);
+        timerImpl.removeTimerListener(componentListener);
     }
 
     @Override
     public void setId(String id) {
         super.setId(id);
 
-        component.setTimerId(id);
+        timerImpl.setTimerId(id);
+    }
+
+    public CubaTimer getTimerImpl() {
+        return timerImpl;
     }
 
     protected class TimerListenerWrapper implements CubaTimer.TimerListener {

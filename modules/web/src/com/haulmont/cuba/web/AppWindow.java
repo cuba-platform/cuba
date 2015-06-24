@@ -117,11 +117,7 @@ public class AppWindow extends UIView implements CubaHistoryControl.HistoryBackH
         workerTimer = new CubaTimer();
         workerTimer.setTimerId("backgroundWorkerTimer");
 
-        if (ui.isTestMode()) {
-            workerTimer.setCubaId("backgroundWorkerTimer");
-            workerTimer.setId(ui.getTestIdManager().reserveId("backgroundWorkerTimer"));
-        }
-        addComponent(workerTimer);
+        workerTimer.extend(this);
 
         workerTimer.setRepeating(true);
         workerTimer.setDelay(webConfig.getUiCheckInterval());
@@ -217,11 +213,13 @@ public class AppWindow extends UIView implements CubaHistoryControl.HistoryBackH
     }
 
     public void addTimer(CubaTimer timer) {
-        addComponent(timer);
+        if (!getExtensions().contains(timer)) {
+            timer.extend(this);
+        }
     }
 
     public void removeTimer(CubaTimer timer) {
-        removeComponent(timer);
+        removeExtension(timer);
     }
 
     protected void beforeInitLayout() {

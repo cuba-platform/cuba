@@ -7,10 +7,11 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
+import com.haulmont.cuba.web.UIView;
 import com.haulmont.cuba.web.toolkit.ui.client.timer.CubaTimerClientRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.timer.CubaTimerServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.timer.CubaTimerState;
-import com.vaadin.ui.AbstractComponent;
+import com.vaadin.server.AbstractExtension;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,7 +24,7 @@ import java.util.List;
  * @author artamonov
  * @version $Id$
  */
-public class CubaTimer extends AbstractComponent implements CubaTimerServerRpc {
+public class CubaTimer extends AbstractExtension implements CubaTimerServerRpc {
 
     private static final Log log = LogFactory.getLog(CubaTimer.class);
 
@@ -31,9 +32,10 @@ public class CubaTimer extends AbstractComponent implements CubaTimerServerRpc {
 
     public CubaTimer() {
         registerRpc(this);
-        // hide on client
-        setWidth("0px");
-        setHeight("0px");
+    }
+
+    public void extend(UIView view) {
+        super.extend(view);
     }
 
     @Override

@@ -548,7 +548,7 @@ public class WebWindow implements Window, Component.Wrapper,
     @Override
     public void addTimer(Timer timer) {
         AppWindow appWindow = AppUI.getCurrent().getAppWindow();
-        appWindow.addTimer((CubaTimer) WebComponentsHelper.unwrap(timer));
+        appWindow.addTimer(((WebTimer) timer).getTimerImpl());
 
         if (timers == null) {
             timers = new LinkedList<>();

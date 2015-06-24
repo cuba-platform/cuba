@@ -5,14 +5,12 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.timer;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.Hidden;
-import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
+import com.vaadin.client.ServerConnector;
 import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.communication.StateChangeEvent;
-import com.vaadin.client.ui.AbstractComponentConnector;
+import com.vaadin.client.extensions.AbstractExtensionConnector;
 import com.vaadin.shared.ui.Connect;
 
 /**
@@ -20,7 +18,7 @@ import com.vaadin.shared.ui.Connect;
  * @version $Id$
  */
 @Connect(CubaTimer.class)
-public class CubaTimerConnector extends AbstractComponentConnector {
+public class CubaTimerConnector extends AbstractExtensionConnector {
 
     protected static int DEFFERED_DELAY_MS = 1000;
 
@@ -42,6 +40,10 @@ public class CubaTimerConnector extends AbstractComponentConnector {
                 CubaTimerConnector.this.requestCompleted();
             }
         });
+    }
+
+    @Override
+    protected void extend(ServerConnector target) {
     }
 
     public void setRunning(boolean running) {
@@ -90,11 +92,6 @@ public class CubaTimerConnector extends AbstractComponentConnector {
     @Override
     public CubaTimerState getState() {
         return (CubaTimerState) super.getState();
-    }
-
-    @Override
-    protected Widget createWidget() {
-        return GWT.create(Hidden.class);
     }
 
     protected class CubaTimerSource extends Timer {
