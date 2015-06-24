@@ -191,12 +191,10 @@ public class CubaTooltip extends VTooltip {
             TooltipInfo info = getTooltipFor(element);
             if (info == null) {
                 // close tooltip only if it is from button or checkbox
-                if (isStandardTooltip(currentConnector)) {
-                    if (isTooltipOpen()) {
-                        handleHideEvent();
-                    } else {
-                        currentConnector = null;
-                    }
+                if (isTooltipOpen()) {
+                    handleHideEvent();
+                } else {
+                    currentConnector = null;
                 }
             } else {
                 if ((domEvent instanceof MouseDownEvent && !isStandardTooltip(currentConnector))
@@ -212,6 +210,10 @@ public class CubaTooltip extends VTooltip {
 
                     setTooltipText(info);
                     updatePosition(event, isFocused);
+
+                    if (BrowserInfo.get().isIOS()) {
+                        element.focus();
+                    }
 
                     if (isStandardTooltip(currentConnector)) {
                         showTooltip(false);
