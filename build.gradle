@@ -478,7 +478,7 @@ configure(webToolkitModule) {
         widgetSetClass = 'com.haulmont.cuba.web.toolkit.ui.WidgetSet'
         // Debug flags:
         // draft = true
-//        compilerArgs = ['-style': 'DETAILED']
+        // compilerArgs = ['-style': 'DETAILED']
 
         // Performance and widgetset size:
         // disableCastChecking = true
@@ -505,6 +505,9 @@ configure(webToolkitModule) {
             from "$buildDir/web"
             into "$tomcatDir/webapps/cuba"
         }
+    }
+
+    task cleanWidgetSet(dependsOn: clean) {
     }
 }
 
