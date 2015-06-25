@@ -2248,11 +2248,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                     if (generatedStyle != null) {
                         style = CUSTOM_STYLE_NAME_PREFIX + generatedStyle + " " + style;
                     }
-                } else {
+                } else if (generatedStyle != null) {
                     style = CUSTOM_STYLE_NAME_PREFIX + generatedStyle;
                 }
             }
-            return CUSTOM_STYLE_NAME_PREFIX + style;
+
+            return style == null ? null : CUSTOM_STYLE_NAME_PREFIX + style;
         }
     }
 
