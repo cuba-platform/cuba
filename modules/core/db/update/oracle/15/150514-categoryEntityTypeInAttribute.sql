@@ -1,4 +1,5 @@
 -- $Id$
+alter table SYS_CATEGORY_ATTR MODIFY  CODE varchar2(100);
 alter table SYS_CATEGORY_ATTR add CATEGORY_ENTITY_TYPE varchar2(4000)^
 update SYS_CATEGORY_ATTR set CODE = substr(NAME || CAST (CATEGORY_ID as varchar2(32)), 1, 100) where CODE is null^
 update SYS_CATEGORY_ATTR attr set CATEGORY_ENTITY_TYPE = (select cat.ENTITY_TYPE from SYS_CATEGORY cat where cat.ID = attr.CATEGORY_ID)^
