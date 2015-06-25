@@ -16,6 +16,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaClientManager;
 import com.haulmont.cuba.web.toolkit.ui.CubaFileDownloader;
 import com.haulmont.cuba.web.toolkit.ui.CubaHistoryControl;
 import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
+import com.vaadin.server.Extension;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Notification;
 import org.apache.commons.logging.Log;
@@ -204,9 +205,9 @@ public class AppWindow extends UIView implements CubaHistoryControl.HistoryBackH
 
     public List<CubaTimer> getTimers() {
         List<CubaTimer> timers = new LinkedList<>();
-        for (Component component : this) {
-            if (component instanceof CubaTimer) {
-                timers.add((CubaTimer) component);
+        for (Extension extension : this.getExtensions()) {
+            if (extension instanceof CubaTimer) {
+                timers.add((CubaTimer) extension);
             }
         }
         return timers;

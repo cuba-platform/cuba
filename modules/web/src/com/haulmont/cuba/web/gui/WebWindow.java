@@ -575,7 +575,8 @@ public class WebWindow implements Window, Component.Wrapper,
         if (timers != null) {
             for (Timer timer : timers) {
                 timer.stop();
-                appWindow.removeTimer((CubaTimer) WebComponentsHelper.unwrap(timer));
+                WebTimer webTimer = (WebTimer) timer;
+                appWindow.removeTimer(webTimer.getTimerImpl());
             }
         }
     }
