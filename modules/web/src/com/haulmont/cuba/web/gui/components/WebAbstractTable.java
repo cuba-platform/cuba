@@ -2253,7 +2253,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 }
             }
 
-            return style == null ? null : CUSTOM_STYLE_NAME_PREFIX + style;
+            return style == null ? null : (CUSTOM_STYLE_NAME_PREFIX + style);
         }
     }
 
