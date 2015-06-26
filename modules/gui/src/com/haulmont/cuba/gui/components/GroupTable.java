@@ -36,6 +36,16 @@ public interface GroupTable extends Table {
     void setFixedGrouping(boolean fixedGrouping);
 
     /**
+     * @return true if GroupTable shows items count for group
+     */
+    boolean isShowItemsCountForGroup();
+    /**
+     * Show or hide items count for GroupTable groups. <br/>
+     * Default value is true.
+     */
+    void setShowItemsCountForGroup(boolean showItemsCountForGroup);
+
+    /**
      * Allows to define different styles for table cells.
      */
     interface GroupStyleProvider<E extends Entity> extends StyleProvider<E> {

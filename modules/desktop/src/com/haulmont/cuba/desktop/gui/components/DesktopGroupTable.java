@@ -15,6 +15,8 @@ import com.haulmont.cuba.gui.data.GroupInfo;
  */
 public class DesktopGroupTable extends DesktopTable implements GroupTable {
 
+    protected boolean showItemsCountForGroup = true;
+
     @Override
     public void groupBy(Object[] properties) {
     }
@@ -51,5 +53,15 @@ public class DesktopGroupTable extends DesktopTable implements GroupTable {
 
     @Override
     public void setFixedGrouping(boolean groupingByUserEnabled) {
+    }
+
+    @Override
+    public boolean isShowItemsCountForGroup() {
+        return showItemsCountForGroup;
+    }
+
+    @Override
+    public void setShowItemsCountForGroup(boolean showItemsCountForGroup) {
+        this.showItemsCountForGroup = showItemsCountForGroup;
     }
 }

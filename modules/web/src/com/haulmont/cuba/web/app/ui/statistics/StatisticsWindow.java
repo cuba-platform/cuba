@@ -66,6 +66,8 @@ public class StatisticsWindow extends AbstractWindow {
         initJMXTable();
         setNode(jmxConnectionField.<JmxInstance>getValue());
         valuesTimer.setDelay(timerDelay);
+
+        paramsTable.setShowItemsCountForGroup(false);
     }
 
     protected void initJMXTable() {

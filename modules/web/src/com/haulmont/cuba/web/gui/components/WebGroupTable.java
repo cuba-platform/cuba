@@ -38,6 +38,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
     protected Map<Table.Column, GroupAggregationCells> groupAggregationCells = null;
 
     protected boolean rerender = true;
+    protected boolean showItemsCountForGroup = true;
 
     public WebGroupTable() {
         component = new CubaGroupTable() {
@@ -219,6 +220,16 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
     @Override
     public void setFixedGrouping(boolean fixedGrouping) {
         component.setFixedGrouping(fixedGrouping);
+    }
+
+    @Override
+    public boolean isShowItemsCountForGroup() {
+        return showItemsCountForGroup;
+    }
+
+    @Override
+    public void setShowItemsCountForGroup(boolean showItemsCountForGroup) {
+        this.showItemsCountForGroup = showItemsCountForGroup;
     }
 
     @Override
@@ -680,8 +691,13 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
         @Override
         public String format(Object groupId, @Nullable Object value) {
             String formattedValue = super.format(groupId, value);
-            int count = WebGroupTable.this.component.getGroupItemsCount(groupId);
-            return String.format("%s (%d)", formattedValue == null ? "" : formattedValue, count);
+
+            if (showItemsCountForGroup) {
+                int count = WebGroupTable.this.component.getGroupItemsCount(groupId);
+                return String.format("%s (%d)", formattedValue == null ? "" : formattedValue, count);
+            } else {
+                return formattedValue == null ? "" : formattedValue;
+            }
         }
     }
 
