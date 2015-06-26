@@ -192,12 +192,8 @@ public class CubaTooltip extends VTooltip {
 
             TooltipInfo info = getTooltipFor(element);
             if (info == null) {
-                // close tooltip only if it is from button or checkbox
-                if (isTooltipOpen()) {
-                    handleHideEvent();
-                } else {
-                    currentConnector = null;
-                }
+                handleHideEvent();
+                currentConnector = null;
             } else {
                 boolean hasTooltipIndicator = hasIndicators(currentConnector);
                 boolean elementIsIndicator = elementIsIndicator(element);
