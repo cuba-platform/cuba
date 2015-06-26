@@ -1776,7 +1776,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
             int maxTextLength = column.getMaxTextLength();
             if (stringValue.length() > maxTextLength + MAX_TEXT_LENGTH_GAP || isMultiLineCell) {
-                return stringValue;
+                return StringUtils.abbreviate(cellValue, maxTextLength);
             } else {
                 return cellValue;
             }
