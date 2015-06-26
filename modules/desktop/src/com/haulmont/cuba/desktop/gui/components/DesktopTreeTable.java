@@ -11,6 +11,7 @@ import com.haulmont.cuba.desktop.sys.vcl.JXTreeTableExt;
 import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
 import org.jdesktop.swingx.JXTree;
 import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.decorator.AbstractHighlighter;
@@ -87,12 +88,17 @@ public class DesktopTreeTable extends DesktopAbstractTable<JXTreeTableExt> imple
                 setTableRowSorter(sorter);
             }
 
-            /* Default implementation uses row sorter to return rows count,
+            /**
+             * Default implementation uses row sorter to return rows count,
              * but there is nonconformity in how RowSorterImpl and tree table wrapper counts rows.
              * Absence of this method will lead to nontrivial NPE with obscure stack trace.
              */
             @Override
             public int getRowCount() {
+                if (datasource != null) {
+                    CollectionDsHelper.autoRefreshInvalid(datasource, true);
+                }
+
                 return getModel().getRowCount();
             }
 
