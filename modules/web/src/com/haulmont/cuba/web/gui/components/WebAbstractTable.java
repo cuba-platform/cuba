@@ -35,6 +35,7 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.CompositionLayout;
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
@@ -474,7 +475,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         component.setImmediate(true);
         component.setValidationVisible(false);
         component.setShowBufferedSourceException(false);
-        component.setPageLength(15);
+
+        setClientCaching(component);
 
         int defaultRowHeaderWidth = 16;
         ThemeConstants theme = App.getInstance().getThemeConstants();
@@ -562,6 +564,20 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         componentComposition.setExpandRatio(component, 1);
 
         component.setCellStyleGenerator(createStyleGenerator());
+    }
+
+    protected void setClientCaching(T component) {
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        WebConfig webConfig = configuration.getConfig(WebConfig.class);
+
+        double cacheRate = webConfig.getTableCacheRate();
+        if (cacheRate >= 0) {
+            component.setCacheRate(cacheRate);
+        }
+        int pageLength = webConfig.getTablePageLength();
+        if (pageLength >= 0) {
+            component.setPageLength(pageLength);
+        }
     }
 
     protected void refreshActionsState() {

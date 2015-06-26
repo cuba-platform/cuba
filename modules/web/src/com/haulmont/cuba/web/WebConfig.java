@@ -220,4 +220,32 @@ public interface WebConfig extends Config {
     @Property("cuba.web.useFontIcons")
     @DefaultBoolean(true)
     boolean getUseFontIcons();
+
+    /**
+     * Sets the page length for Table implementation - count of rows for first rendering of Table.
+     * After first partial rendering Table will request rest of rows from the server.<br/>
+     *
+     * Setting page length 0 disables paging. <br/>
+     *
+     * If Table has fixed height the client side may update the page length automatically the correct value.
+     */
+    @Property("cuba.web.table.pageLength")
+    @DefaultInt(15)
+    int getTablePageLength();
+
+    /**
+     * This method adjusts a possible caching mechanism of table implementation. <br/>
+     *
+     * Table component may fetch and render some rows outside visible area. With
+     * complex tables (for example containing layouts and components), the
+     * client side may become unresponsive. Setting the value lower, UI will
+     * become more responsive. With higher values scrolling in client will hit
+     * server less frequently. <br/>
+     *
+     * The amount of cached rows will be cacheRate multiplied with pageLength
+     * {@link #getTablePageLength()} both below and above visible area.
+     */
+    @Property("cuba.web.table.cacheRate")
+    @DefaultDouble(2)
+    double getTableCacheRate();
 }
