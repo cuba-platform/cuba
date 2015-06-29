@@ -86,20 +86,32 @@ public class DeletePolicyProcessor {
     protected void processOnDeleteInverse(List<MetaProperty> properties) {
         for (MetaProperty property : properties) {
             MetaClass metaClass = property.getDomain();
-            OnDeleteInverse annotation = property.getAnnotatedElement().getAnnotation(OnDeleteInverse.class);
-            DeletePolicy deletePolicy = annotation.value();
-            switch (deletePolicy) {
-                case DENY:
-                    if (referenceExists(property))
-                        throw new DeletePolicyException(this.metaClass.getName(), metaClass.getName());
-                    break;
-                case CASCADE:
-                    cascade(property);
-                    break;
-                case UNLINK:
-                    unlink(property);
-                    break;
+
+            List<MetaClass> persistentEntities = new ArrayList<>();
+            if (isPersistent(metaClass))
+                persistentEntities.add(metaClass);
+            for (MetaClass descendant : metaClass.getDescendants()) {
+                if (isPersistent(descendant))
+                    persistentEntities.add(descendant);
             }
+
+            for (MetaClass persistentEntity : persistentEntities) {
+                OnDeleteInverse annotation = property.getAnnotatedElement().getAnnotation(OnDeleteInverse.class);
+                DeletePolicy deletePolicy = annotation.value();
+                switch (deletePolicy) {
+                    case DENY:
+                        if (referenceExists(persistentEntity.getName(), property))
+                            throw new DeletePolicyException(this.metaClass.getName(), persistentEntity.getName());
+                        break;
+                    case CASCADE:
+                        cascade(persistentEntity.getName(), property);
+                        break;
+                    case UNLINK:
+                        unlink(persistentEntity.getName(), property);
+                        break;
+                }
+            }
+
         }
     }
 
@@ -204,37 +216,21 @@ public class DeletePolicyProcessor {
         return result;
     }
 
-    protected boolean referenceExists(MetaProperty property) {
-        MetaClass metaClass = property.getDomain();
-        List<MetaClass> classes = new ArrayList<MetaClass>();
-        if (isPersistent(metaClass))
-            classes.add(metaClass);
-        for (MetaClass descendant : metaClass.getDescendants()) {
-            if (isPersistent(descendant))
-                classes.add(descendant);
-        }
-
-        for (MetaClass persistentMetaClass : classes) {
-            String qstr = String.format("select e.id from %s e where e.%s.id = ?1",
-                    persistentMetaClass.getName(), property.getName());
-            Query query = entityManager.createQuery(qstr);
-            query.setParameter(1, entity.getId());
-            query.setMaxResults(1);
-            List list = query.getResultList();
-            if (!list.isEmpty())
-                return true;
-        }
-        return false;
+    protected boolean referenceExists(String entityName, MetaProperty property) {
+        String qstr = String.format("select e.id from %s e where e.%s.id = ?1", entityName, property.getName());
+        Query query = entityManager.createQuery(qstr);
+        query.setParameter(1, entity.getId());
+        query.setMaxResults(1);
+        List list = query.getResultList();
+        return !list.isEmpty();
     }
 
     protected boolean isPersistent(MetaClass metaClass) {
         return metaClass.getJavaClass().isAnnotationPresent(javax.persistence.Entity.class);
     }
 
-    protected void cascade(MetaProperty property) {
-        MetaClass metaClass = property.getDomain();
-        String qstr = String.format("select e from %s e where e.%s.id = ?1",
-                metaClass.getName(), property.getName());
+    protected void cascade(String entityName, MetaProperty property) {
+        String qstr = String.format("select e from %s e where e.%s.id = ?1", entityName, property.getName());
         Query query = entityManager.createQuery(qstr);
         query.setParameter(1, entity.getId());
         List<BaseEntity> list = query.getResultList();
@@ -243,10 +239,8 @@ public class DeletePolicyProcessor {
         }
     }
 
-    protected void unlink(MetaProperty property) {
-        MetaClass metaClass = property.getDomain();
-        String qstr = String.format("select e from %s e where e.%s.id = ?1",
-                metaClass.getName(), property.getName());
+    protected void unlink(String entityName, MetaProperty property) {
+        String qstr = String.format("select e from %s e where e.%s.id = ?1", entityName, property.getName());
         Query query = entityManager.createQuery(qstr);
         query.setParameter(1, entity.getId());
         List<BaseEntity> list = query.getResultList();
