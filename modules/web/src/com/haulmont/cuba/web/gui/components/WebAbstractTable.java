@@ -82,7 +82,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     protected Action itemClickAction;
     protected Action enterPressAction;
 
-    protected Table.StyleProvider styleProvider;
+    protected List<Table.StyleProvider> styleProviders; // lazily initialized List
     protected Table.IconProvider iconProvider;
 
     protected Map<Table.Column, String> requiredColumns; // lazily initialized Map
@@ -592,9 +592,24 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @SuppressWarnings("unchecked")
     protected String getGeneratedCellStyle(Object itemId, Object propertyId) {
-        final Entity item = datasource.getItem(itemId);
+        if (styleProviders == null) {
+            return null;
+        }
 
-        return styleProvider.getStyleName(item, propertyId == null ? null : propertyId.toString());
+        Entity item = datasource.getItem(itemId);
+        String joinedStyle = null;
+        for (StyleProvider styleProvider : styleProviders) {
+            String styleName = styleProvider.getStyleName(item, propertyId == null ? null : propertyId.toString());
+            if (styleName != null) {
+                if (joinedStyle == null) {
+                    joinedStyle = styleName;
+                } else {
+                    joinedStyle += " " + styleName;
+                }
+            }
+        }
+
+        return joinedStyle;
     }
 
     @Override
@@ -1012,10 +1027,42 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
-    public void setStyleProvider(final Table.StyleProvider styleProvider) {
-        this.styleProvider = styleProvider;
+    public void setStyleProvider(@Nullable Table.StyleProvider styleProvider) {
+        if (styleProvider != null) {
+            if (this.styleProviders == null) {
+                this.styleProviders = new LinkedList<>();
+            } else {
+                this.styleProviders.clear();
+            }
+
+            this.styleProviders.add(styleProvider);
+        } else {
+            this.styleProviders = null;
+        }
 
         component.refreshCellStyles();
+    }
+
+    @Override
+    public void addStyleProvider(StyleProvider styleProvider) {
+        if (this.styleProviders == null) {
+            this.styleProviders = new LinkedList<>();
+        }
+
+        if (!this.styleProviders.contains(styleProvider)) {
+            this.styleProviders.add(styleProvider);
+
+            component.refreshCellStyles();
+        }
+    }
+
+    @Override
+    public void removeStyleProvider(StyleProvider styleProvider) {
+        if (this.styleProviders != null) {
+            if (this.styleProviders.remove(styleProvider)) {
+                component.refreshCellStyles();
+            }
+        }
     }
 
     @Override
@@ -2256,7 +2303,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 }
             }
 
-            if (styleProvider != null) {
+            if (styleProviders != null) {
                 String generatedStyle = getGeneratedCellStyle(itemId, propertyId);
                 // we use style names without v-table-cell-content prefix, so we add cs prefix
                 // all cells with custom styles will have v-table-cell-content-cs style name in class

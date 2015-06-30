@@ -213,9 +213,20 @@ public interface Table
     }
 
     /**
-     * Set the cell style provider for the table.
+     * Set the cell style provider for the table. <br/>
+     * All style providers added before this call will be removed.
      */
-    void setStyleProvider(StyleProvider styleProvider);
+    void setStyleProvider(@Nullable StyleProvider styleProvider);
+
+    /**
+     * Add style provider for the table. <br/>
+     * Table can use several providers to obtain many style names for cells and rows.
+     */
+    void addStyleProvider(StyleProvider styleProvider);
+    /**
+     * Remove style provider for the table.
+     */
+    void removeStyleProvider(StyleProvider styleProvider);
 
     /**
      * Set the row icon provider for the table.

@@ -89,7 +89,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     protected boolean sortable = true;
     protected TableSettings tableSettings;
     protected boolean editable;
-    protected StyleProvider styleProvider;
+    protected List<StyleProvider> styleProviders; // lazy initialized list
     protected IconProvider iconProvider;
 
     protected Action itemClickAction;
@@ -1271,16 +1271,54 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     @Override
     public void setStyleProvider(StyleProvider styleProvider) {
-        this.styleProvider = styleProvider;
+        if (styleProvider != null) {
+            if (this.styleProviders == null) {
+                this.styleProviders = new LinkedList<>();
+            } else {
+                this.styleProviders.clear();
+            }
 
-        for (Table.Column col : columnsOrder) {
+            this.styleProviders.add(styleProvider);
+        } else {
+            this.styleProviders = null;
+        }
+
+        refreshCellStyles();
+    }
+
+    @Override
+    public void addStyleProvider(StyleProvider styleProvider) {
+        if (this.styleProviders == null) {
+            this.styleProviders = new LinkedList<>();
+        }
+
+        if (!this.styleProviders.contains(styleProvider)) {
+            this.styleProviders.add(styleProvider);
+
+            refreshCellStyles();
+        }
+    }
+
+    @Override
+    public void removeStyleProvider(StyleProvider styleProvider) {
+        if (this.styleProviders != null) {
+            if (this.styleProviders.remove(styleProvider)) {
+                refreshCellStyles();
+            }
+        }
+    }
+
+    protected void refreshCellStyles() {
+        for (Column col : columnsOrder) {
             // generated column handles styles himself
             if (!tableModel.isGeneratedColumn(col)) {
                 TableColumn tableColumn = getColumn(col);
 
                 // If column is not hidden by security
+                boolean useStyledCells = styleProviders != null && styleProviders.isEmpty();
+
                 if (tableColumn != null) {
-                    tableColumn.setCellRenderer(styleProvider != null ? new StylingCellRenderer() : null);
+                    tableColumn.setCellRenderer(useStyledCells ? new StylingCellRenderer() : null);
                 }
             }
         }
@@ -2067,14 +2105,28 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     }
 
     protected String getStylename(JTable table, int row, int column) {
-        if (styleProvider == null) {
+        if (styleProviders == null) {
             return null;
         }
+
         Entity item = tableModel.getItem(row);
         int modelColumn = table.convertColumnIndexToModel(column);
         Object property = columnsOrder.get(modelColumn).getId();
 
-        return styleProvider.getStyleName(item, property.toString());
+        String joinedStyle = null;
+        for (StyleProvider styleProvider : styleProviders) {
+            //noinspection unchecked
+            String styleName = styleProvider.getStyleName(item, property.toString());
+            if (styleName != null) {
+                if (joinedStyle == null) {
+                    joinedStyle = styleName;
+                } else {
+                    joinedStyle += " " + styleName;
+                }
+            }
+        }
+
+        return joinedStyle;
     }
 
     protected TableCellEditor getColumnEditor(int column) {

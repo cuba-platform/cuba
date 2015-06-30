@@ -74,7 +74,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
                     return super.getStyle(source, itemId, propertyId);
                 }
 
-                if (styleProvider != null) {
+                if (styleProviders != null) {
                     return getGeneratedCellStyle(itemId, propertyId);
                 }
                 return null;
@@ -235,8 +235,32 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
     @Override
     protected String getGeneratedCellStyle(Object itemId, Object propertyId) {
         if (itemId instanceof GroupInfo) {
-            if (styleProvider instanceof GroupStyleProvider) {
-                return  ((GroupStyleProvider) styleProvider).getStyleName((GroupInfo) itemId);
+            List<GroupStyleProvider> groupStyleProviders = null;
+
+            for (StyleProvider styleProvider : styleProviders) {
+                if (styleProvider instanceof GroupStyleProvider) {
+                    if (groupStyleProviders == null) {
+                        groupStyleProviders = new LinkedList<>();
+                    }
+
+                    groupStyleProviders.add((GroupStyleProvider) styleProvider);
+                }
+            }
+
+            if (groupStyleProviders != null) {
+                String joinedStyle = null;
+                for (GroupStyleProvider groupStyleProvider : groupStyleProviders) {
+                    String styleName = groupStyleProvider.getStyleName((GroupInfo) itemId);
+                    if (styleName != null) {
+                        if (joinedStyle == null) {
+                            joinedStyle = styleName;
+                        } else {
+                            joinedStyle += " " + styleName;
+                        }
+                    }
+                }
+
+                return joinedStyle;
             }
         } else {
             return super.getGeneratedCellStyle(itemId, propertyId);
