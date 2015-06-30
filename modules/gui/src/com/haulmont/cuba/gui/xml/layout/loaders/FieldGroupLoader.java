@@ -300,9 +300,8 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         }
 
         String propertyName = metaPropertyPath != null ? metaPropertyPath.getMetaProperty().getName() : null;
-        if (propertyName != null && DynamicAttributesUtils.isDynamicAttribute(propertyName)) {
-            CategoryAttribute categoryAttribute =
-                    dynamicAttributes.getAttributeForMetaClass(ds.getMetaClass(), propertyName);
+        if (metaPropertyPath != null && DynamicAttributesUtils.isDynamicAttribute(metaPropertyPath.getMetaProperty())) {
+            CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaPropertyPath.getMetaProperty());
             field.setCaption(categoryAttribute != null ? categoryAttribute.getName() : propertyName);
         } else {
             loadCaption(field, element);
@@ -461,7 +460,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                     boolean visible = security.isEntityAttrReadPermitted(metaClass, propertyPath.toString());
 
                     component.setVisible(field, visible);
-                } else if (!DynamicAttributesUtils.isDynamicAttribute(propertyPath.toString())) {
+                } else if (!DynamicAttributesUtils.isDynamicAttribute(propertyPath.getMetaProperty())) {
                     Element element = field.getXmlDescriptor();
                     final String editable = element.attributeValue("editable");
                     if (!StringUtils.isEmpty(editable)) {

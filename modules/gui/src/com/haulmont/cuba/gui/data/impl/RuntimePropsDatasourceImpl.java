@@ -14,7 +14,6 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.SetValueEntity;
 import com.haulmont.cuba.gui.data.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -98,6 +97,7 @@ public class RuntimePropsDatasourceImpl
         if (PersistenceHelper.isNew(baseGenericIdEntity)) {
             baseGenericIdEntity.setDynamicAttributes(new HashMap<String, CategoryAttributeValue>());
         }
+        @SuppressWarnings("unchecked")
         Map<String, CategoryAttributeValue> dynamicAttributes = baseGenericIdEntity.getDynamicAttributes();
         Preconditions.checkNotNullArgument(dynamicAttributes, "Dynamic attributes should be loaded explicitly");
 
@@ -190,43 +190,16 @@ public class RuntimePropsDatasourceImpl
 
             switch (PropertyType.valueOf(dataType)) {
                 case STRING:
-                    if (attrValue != null)
-                        return attrValue.getStringValue();
-                    else return attribute.getDefaultString();
-                case INTEGER:
-                    if (attrValue != null)
-                        return attrValue.getIntValue();
-                    else return attribute.getDefaultInt();
-                case DOUBLE:
-                    if (attrValue != null)
-                        return attrValue.getDoubleValue();
-                    else
-                        return attribute.getDefaultDouble();
-                case BOOLEAN:
-                    if (attrValue != null)
-                        return attrValue.getBooleanValue();
-                    else
-                        return attribute.getDefaultBoolean();
-                case DATE:
-                    if (attrValue != null)
-                        return attrValue.getDateValue();
-                    else
-                        return attribute.getDefaultDate();
                 case ENUMERATION:
-
-                    if (attrValue != null) {
-                        String stringValue = attrValue.getStringValue();
-                        if (stringValue != null && !StringUtils.isBlank(stringValue))
-                            return new SetValueEntity(stringValue);
-                        else
-                            return null;
-                    } else {
-                        String eValue = attribute.getDefaultString();
-                        if (eValue != null)
-                            return new SetValueEntity(eValue);
-                        else
-                            return null;
-                    }
+                    return attrValue != null ? attrValue.getStringValue() : attribute.getDefaultString();
+                case INTEGER:
+                    return attrValue != null ? attrValue.getIntValue() : attribute.getDefaultInt();
+                case DOUBLE:
+                    return attrValue != null ? attrValue.getDoubleValue() : attribute.getDefaultDouble();
+                case BOOLEAN:
+                    return attrValue != null ? attrValue.getBooleanValue() : attribute.getDefaultBoolean();
+                case DATE:
+                    return attrValue != null ? attrValue.getDateValue() : attribute.getDefaultDate();
             }
 
         }

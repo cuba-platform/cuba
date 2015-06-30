@@ -10,7 +10,6 @@ import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.sys.SetValueEntity;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.persistence.Persistent;
 
@@ -270,15 +269,10 @@ public class CategoryAttribute extends StandardEntity {
         return PropertyType.valueOf(dataType);
     }
 
-    public List<SetValueEntity> getEnumerationOptions() {
+    public List<String> getEnumerationOptions() {
         Preconditions.checkState(getDataTypeAsPropertyType() == PropertyType.ENUMERATION, "Only enumeration attributes have options");
         String enumeration = getEnumeration();
         String[] values = StringUtils.split(enumeration, ',');
-        List<SetValueEntity> options = new LinkedList<>();
-        for (String value : values) {
-            String trimmedValue = StringUtils.trimToNull(value);
-            options.add(new SetValueEntity(trimmedValue));
-        }
-        return options;
+        return Arrays.asList(values);
     }
 }

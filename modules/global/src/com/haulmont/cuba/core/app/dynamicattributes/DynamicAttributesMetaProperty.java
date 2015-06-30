@@ -7,7 +7,6 @@ package com.haulmont.cuba.core.app.dynamicattributes;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.*;
-import com.haulmont.chile.core.model.impl.AbstractRange;
 import com.haulmont.chile.core.model.impl.ClassRange;
 import com.haulmont.chile.core.model.impl.DatatypeRange;
 import com.haulmont.chile.core.model.impl.MetadataObjectImpl;
@@ -15,7 +14,6 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.sys.SetValueEntity;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -28,24 +26,23 @@ import java.lang.reflect.AnnotatedElement;
  * @version $Id$
  */
 public class DynamicAttributesMetaProperty extends MetadataObjectImpl implements MetaProperty {
-    private MetaClass metaClass;
-    private transient Range range;
-    private Class javaClass;
-    private Boolean mandatory;
-
-    private AnnotatedElement annotatedElement = new FakeAnnotatedElement();
+    protected final MetaClass metaClass;
+    protected final transient Range range;
+    protected final Class javaClass;
+    protected final Boolean mandatory;
+    protected final AnnotatedElement annotatedElement = new FakeAnnotatedElement();
+    protected final CategoryAttribute attribute;
 
     public DynamicAttributesMetaProperty(MetaClass metaClass, CategoryAttribute attribute) {
+        this.attribute = attribute;
         this.javaClass = DynamicAttributesUtils.getAttributeClass(attribute);
         this.metaClass = metaClass;
         this.name = DynamicAttributesUtils.encodeAttributeCode(attribute.getCode());
         this.mandatory = attribute.getRequired();
+
         Metadata metadata = AppBeans.get(Metadata.NAME);
         Session metadataSession = metadata.getSession();
-        if (SetValueEntity.class.isAssignableFrom(javaClass)) {
-            range = new ClassRange(metadataSession.getClass(SetValueEntity.class));
-            ((AbstractRange) range).setCardinality(Range.Cardinality.ONE_TO_ONE);
-        } else if (Entity.class.isAssignableFrom(javaClass)) {
+        if (Entity.class.isAssignableFrom(javaClass)) {
             range = new ClassRange(metadataSession.getClass(javaClass));
         } else {
             this.range = new DatatypeRange(Datatypes.getNN(javaClass));
@@ -139,5 +136,9 @@ public class DynamicAttributesMetaProperty extends MetadataObjectImpl implements
     @Override
     public int hashCode() {
         return 31 * metaClass.hashCode() + name.hashCode();
+    }
+
+    public CategoryAttribute getAttribute() {
+        return attribute;
     }
 }

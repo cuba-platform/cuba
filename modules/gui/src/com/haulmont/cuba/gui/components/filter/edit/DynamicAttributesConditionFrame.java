@@ -5,15 +5,18 @@
 
 package com.haulmont.cuba.gui.components.filter.edit;
 
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.DataService;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.SetValueEntity;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Label;
+import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.filter.Op;
 import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondition;
@@ -123,9 +126,7 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
         Class javaClass = DynamicAttributesUtils.getAttributeClass(attribute);
         String valueFieldName = "stringValue";
 
-        if (SetValueEntity.class.isAssignableFrom(javaClass)) {
-            valueFieldName = "stringValue";
-        } else if (Entity.class.isAssignableFrom(javaClass))
+        if (Entity.class.isAssignableFrom(javaClass))
             valueFieldName = "entityValue";
         else if (String.class.isAssignableFrom(javaClass))
             valueFieldName = "stringValue";
@@ -160,17 +161,11 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
         condition.setEntityParamWhere(null);
         condition.setInExpr(Op.IN.equals(op) || Op.NOT_IN.equals(op));
         condition.setOperator(operationLookup.<Op>getValue());
-        Param param;
         Class paramJavaClass = op.isUnary() ? Boolean.class : javaClass;
-        if (SetValueEntity.class.isAssignableFrom(javaClass)) {
-            condition.setJavaClass(String.class);
-            param = new Param(paramName, paramJavaClass, null, null, condition.getDatasource(),
-                    condition.getInExpr(), attribute.getId(), condition.getRequired());
-        } else {
-            condition.setJavaClass(javaClass);
-            param = new Param(paramName, paramJavaClass, null, null, condition.getDatasource(),
-                    condition.getInExpr(), condition.getRequired());
-        }
+        condition.setJavaClass(javaClass);
+        Param param = new Param(paramName, paramJavaClass, null, null, condition.getDatasource(),
+                DynamicAttributesUtils.getMetaPropertyPath(null, attribute).getMetaProperty(),
+                condition.getInExpr(), condition.getRequired(), attribute.getId());
 
         Object defaultValue = condition.getParam().getDefaultValue();
         param.setDefaultValue(defaultValue);
@@ -184,24 +179,20 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
     }
 
     protected void fillCategorySelect() {
-        List<String> metaClassName = getMetaClassNames();
-        LoadContext context = new LoadContext(Category.class);
-        context.setView("_minimal")
-                .setQueryString("select c from sys$Category c where c.entityType in :entityType")
-                .setParameter("entityType", metaClassName);
-        List<Category> categories = dataService.loadList(context);
+        DynamicAttributes dynamicAttributes = AppBeans.get(DynamicAttributes.NAME);
+        Collection<Category> categories = dynamicAttributes.getCategoriesForMetaClass(condition.getDatasource().getMetaClass());
         UUID catId = condition.getCategoryId();
         Category selectedCategory = null;
-        Map<String, Object> categoriesMap = new TreeMap<String, Object>();
-        if (categories.size() == 1 && (catId == null || ObjectUtils.equals(catId, categories.get(0).getId()))) {
-            Category category = categories.get(0);
+        Map<String, Object> categoriesMap = new TreeMap<>();
+        if (categories.size() == 1 && (catId == null || ObjectUtils.equals(catId, categories.iterator().next().getId()))) {
+            Category category = categories.iterator().next();
             categoryLookup.setVisible(false);
             categoryLabel.setVisible(false);
             attributeLookup.requestFocus();
             categoriesMap.put(category.getName(), category);
             categoryLookup.setOptionsMap(categoriesMap);
             categoryLookup.setValue(category);
-            fillAttributeSelect(categories.get(0));
+            fillAttributeSelect(category);
         } else {
             categoryLookup.setVisible(true);
             categoryLabel.setVisible(true);
@@ -216,30 +207,11 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
         }
     }
 
-    protected List<String> getMetaClassNames() {
-        String metaClassName = condition.getDatasource().getMetaClass().getName();
-        List<String> metaClassNames = new ArrayList<>();
-        metaClassNames.add(metaClassName);
-        MetaClass currentMetaClass = metadata.getClass(metaClassName);
-        if (currentMetaClass == null)
-            return metaClassNames;
-        Collection<MetaClass> descendants = currentMetaClass.getDescendants();
-        for (MetaClass metaClass : descendants) {
-            metaClassNames.add(metaClass.getName());
-        }
-        return metaClassNames;
-    }
-
     protected void fillAttributeSelect(Category category) {
-        LoadContext context = new LoadContext(CategoryAttribute.class);
-        LoadContext.Query query = context.setQueryString("select ca from sys$CategoryAttribute ca where ca.category.id = :id ");
-        query.setParameter("id", category.getId());
-        context.setView("_local");
-        List<CategoryAttribute> attributes = dataService.loadList(context);
         UUID attrId = condition.getCategoryAttributeId();
         CategoryAttribute selectedAttribute = null;
         Map<String, Object> attributesMap = new TreeMap<>();
-        for (CategoryAttribute attribute : attributes) {
+        for (CategoryAttribute attribute : category.getCategoryAttrs()) {
             attributesMap.put(attribute.getName(), attribute);
             if (attribute.getId().equals(attrId)) {
                 selectedAttribute = attribute;
@@ -250,7 +222,7 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
     }
 
     protected void fillOperationSelect(Class clazz) {
-        List ops = new LinkedList(Op.availableOps(clazz));
+        List<Op> ops = new LinkedList<>(Op.availableOps(clazz));
         operationLookup.setOptionsList(ops);
         Op operator = condition.getOperator();
         if (operator != null) {

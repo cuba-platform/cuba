@@ -11,7 +11,6 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
@@ -175,9 +174,8 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
             setCaptionMode(CaptionMode.ITEM);
         }
 
-        DynamicAttributes dynamicAttributes = AppBeans.get(DynamicAttributes.NAME);
-        if (metaProperty.getRange().isClass() && DynamicAttributesUtils.isDynamicAttribute(property)) {
-            CategoryAttribute categoryAttribute = dynamicAttributes.getAttributeForMetaClass(metaClass, property);
+        if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
+            CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
             if (categoryAttribute != null && categoryAttribute.getDataTypeAsPropertyType() == PropertyType.ENUMERATION) {
                 setOptionsList(categoryAttribute.getEnumerationOptions());
             }

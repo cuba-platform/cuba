@@ -14,18 +14,16 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Scripting;
-import com.haulmont.cuba.core.sys.SetValueEntity;
 import com.haulmont.cuba.gui.components.filter.Op;
+import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
-import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.*;
 import org.dom4j.Element;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
@@ -37,7 +35,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  */
 @MetaClass(name = "sec$AbstractCondition")
 @SystemLevel
-public abstract class AbstractCondition extends AbstractNotPersistentEntity{
+public abstract class AbstractCondition extends AbstractNotPersistentEntity {
 
     public interface Listener {
 
@@ -50,7 +48,8 @@ public abstract class AbstractCondition extends AbstractNotPersistentEntity{
     protected String paramName;
     protected String caption;
     protected String messagesPack;
-    @MetaProperty protected String locCaption;
+    @MetaProperty
+    protected String locCaption;
     protected String filterComponentName;
     protected String text;
     protected Boolean group = false;
@@ -65,7 +64,6 @@ public abstract class AbstractCondition extends AbstractNotPersistentEntity{
     protected String entityParamWhere;
     protected String entityParamView;
     protected Datasource datasource;
-    protected UUID categoryAttrId;
     protected Integer width = 1;
     protected Op operator;
 
@@ -92,7 +90,6 @@ public abstract class AbstractCondition extends AbstractNotPersistentEntity{
         this.entityParamWhere = other.entityParamWhere;
         this.entityParamView = other.entityParamView;
         this.datasource = other.datasource;
-        this.categoryAttrId = other.categoryAttrId;
         this.width = other.width;
         this.param = other.param;
         this.text = other.text;
@@ -120,45 +117,7 @@ public abstract class AbstractCondition extends AbstractNotPersistentEntity{
         width = Strings.isNullOrEmpty(element.attributeValue("width")) ? 1 : Integer.valueOf(element.attributeValue("width"));
         this.datasource = datasource;
 
-        Scripting scripting = AppBeans.get(Scripting.NAME);
-
-        String aclass = element.attributeValue("class");
-        if (!isBlank(aclass))
-            javaClass = scripting.loadClass(aclass);
-
-        List<Element> paramElements = Dom4j.elements(element, "param");
-        if (!paramElements.isEmpty()) {
-            Element paramElem = paramElements.iterator().next();
-
-            if (BooleanUtils.toBoolean(paramElem.attributeValue("hidden", "false"), "true", "false")) {
-                paramElem = paramElements.iterator().next();
-            }
-            paramName = paramElem.attributeValue("name");
-
-            if (!isBlank(paramElem.attributeValue("javaClass"))) {
-                paramClass = scripting.loadClass(paramElem.attributeValue("javaClass"));
-                if (SetValueEntity.class.isAssignableFrom(paramClass)) {
-                    categoryAttrId = UUID.fromString(paramElem.attributeValue("categoryAttrId"));
-                }
-            }
-
-            param = createParam();
-            param.parseValue(paramElem.getText());
-            param.setDefaultValue(param.getValue());
-        }
-
-        String operatorName = element.attributeValue("operatorType", null);
-        if (operatorName != null) {
-            //for backward compatibility with old filters that still use EMPTY operator
-            if ("EMPTY".equals(operatorName)) {
-                operatorName = "NOT_EMPTY";
-                if (BooleanUtils.isTrue((Boolean) param.getValue()))
-                    param.setValue(false);
-                    param.setDefaultValue(false);
-            }
-
-            operator = Op.valueOf(operatorName);
-        }
+        resolveParam(element);
     }
 
     protected AbstractCondition(AbstractConditionDescriptor descriptor) {
@@ -179,6 +138,45 @@ public abstract class AbstractCondition extends AbstractNotPersistentEntity{
         }
     }
 
+    protected void resolveParam(Element element) {
+        Scripting scripting = AppBeans.get(Scripting.NAME);
+        String aclass = element.attributeValue("class");
+        if (!isBlank(aclass)) {
+            javaClass = scripting.loadClass(aclass);
+        }
+
+        List<Element> paramElements = Dom4j.elements(element, "param");
+        if (!paramElements.isEmpty()) {
+            Element paramElem = paramElements.iterator().next();
+
+            if (BooleanUtils.toBoolean(paramElem.attributeValue("hidden", "false"), "true", "false")) {
+                paramElem = paramElements.iterator().next();
+            }
+            paramName = paramElem.attributeValue("name");
+
+            if (!isBlank(paramElem.attributeValue("javaClass"))) {
+                paramClass = scripting.loadClass(paramElem.attributeValue("javaClass"));
+            }
+
+            param = createParam();
+            param.parseValue(paramElem.getText());
+            param.setDefaultValue(param.getValue());
+        }
+
+        String operatorName = element.attributeValue("operatorType", null);
+        if (operatorName != null) {
+            //for backward compatibility with old filters that still use EMPTY operator
+            if ("EMPTY".equals(operatorName)) {
+                operatorName = "NOT_EMPTY";
+                if (BooleanUtils.isTrue((Boolean) param.getValue()))
+                    param.setValue(false);
+                param.setDefaultValue(false);
+            }
+
+            operator = Op.valueOf(operatorName);
+        }
+    }
+
     protected Param createParam() {
         if (Strings.isNullOrEmpty(paramName)) {
             paramName = createParamName();
@@ -187,12 +185,8 @@ public abstract class AbstractCondition extends AbstractNotPersistentEntity{
         if (unary)
             return new Param(paramName, null, null, null, null, false, required);
 
-        if (categoryAttrId != null) {
-            return new Param(paramName, paramClass, entityParamWhere,
-                    entityParamView, datasource, inExpr, categoryAttrId, required);
-        } else
-            return new Param(paramName, paramClass == null ? javaClass : paramClass,
-                    entityParamWhere, entityParamView, datasource, inExpr, required);
+        return new Param(paramName, paramClass == null ? javaClass : paramClass,
+                entityParamWhere, entityParamView, datasource, inExpr, required);
     }
 
     public void addListener(Listener listener) {
@@ -395,7 +389,9 @@ public abstract class AbstractCondition extends AbstractNotPersistentEntity{
 
     public AbstractOperationEditor getOperationEditor() {
         return operationEditor;
-    };
+    }
+
+    ;
 
     public abstract AbstractCondition createCopy();
 

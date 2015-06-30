@@ -5,6 +5,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
@@ -329,11 +330,11 @@ public abstract class AbstractTableLoader extends ComponentLoader {
             String columnCaption;
             if (column.getId() instanceof MetaPropertyPath) {
                 MetaPropertyPath mpp = (MetaPropertyPath) column.getId();
-                String propertyName = mpp.getMetaProperty().getName();
+                MetaProperty metaProperty = mpp.getMetaProperty();
+                String propertyName = metaProperty.getName();
 
-                if (DynamicAttributesUtils.isDynamicAttribute(propertyName)) {
-                    CategoryAttribute categoryAttribute =
-                            dynamicAttributes.getAttributeForMetaClass(ds.getMetaClass(), propertyName);
+                if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
+                    CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
                     columnCaption = categoryAttribute != null ? categoryAttribute.getName() : propertyName;
                 } else {
                     MetaClass propertyMetaClass = metadataTools.getPropertyEnclosingMetaClass(mpp);

@@ -14,7 +14,6 @@
         <class>com.haulmont.cuba.core.entity.diff.EntityDiff</class>
         <class>com.haulmont.cuba.core.entity.diff.EntityPropertyDiff</class>
         <class>com.haulmont.cuba.core.global.LockInfo</class>
-        <class>com.haulmont.cuba.core.sys.SetValueEntity</class>
         <class>com.haulmont.cuba.security.entity.EntityLogAttr</class>
         <class>com.haulmont.cuba.security.entity.UserSessionEntity</class>
     </metadata-model>

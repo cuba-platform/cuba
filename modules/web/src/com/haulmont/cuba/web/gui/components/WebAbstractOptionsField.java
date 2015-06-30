@@ -6,7 +6,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Enumeration;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
@@ -77,9 +76,8 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
             setCaptionMode(CaptionMode.ITEM);
         }
 
-        DynamicAttributes dynamicAttributes = AppBeans.get(DynamicAttributes.NAME);
-        if (metaProperty.getRange().isClass() && DynamicAttributesUtils.isDynamicAttribute(property)) {
-            CategoryAttribute categoryAttribute = dynamicAttributes.getAttributeForMetaClass(metaClass, property);
+        if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
+            CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
             if (categoryAttribute != null && categoryAttribute.getDataTypeAsPropertyType() == PropertyType.ENUMERATION) {
                 setOptionsList(categoryAttribute.getEnumerationOptions());
             }

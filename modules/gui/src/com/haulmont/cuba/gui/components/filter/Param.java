@@ -14,10 +14,11 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.SetValueEntity;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.WindowParams;
@@ -91,8 +92,8 @@ public class Param {
     }
 
     public Param(String name, Class javaClass, String entityWhere, String entityView,
-                 Datasource datasource, boolean inExpr, UUID categoryAttrId, boolean required) {
-        this(name, javaClass, entityWhere, entityView, datasource, null, inExpr, required);
+                 Datasource datasource, MetaProperty property, boolean inExpr, boolean required, UUID categoryAttrId) {
+        this(name, javaClass, entityWhere, entityView, datasource, property, inExpr, required);
         this.categoryAttrId = categoryAttrId;
     }
 
@@ -106,6 +107,12 @@ public class Param {
         this.property = property;
         this.inExpr = inExpr;
         this.required = required;
+        if (DynamicAttributesUtils.isDynamicAttribute(property)) {
+            CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(property);
+            if (categoryAttribute.getDataTypeAsPropertyType() == PropertyType.ENUMERATION) {
+                type = Type.RUNTIME_ENUM;
+            }
+        }
     }
 
     public String getName() {
@@ -119,9 +126,7 @@ public class Param {
     public void setJavaClass(Class javaClass) {
         if (javaClass != null) {
             this.javaClass = javaClass;
-            if (SetValueEntity.class.isAssignableFrom(javaClass)) {
-                type = Type.RUNTIME_ENUM;
-            } else if (Entity.class.isAssignableFrom(javaClass)) {
+            if (Entity.class.isAssignableFrom(javaClass)) {
                 type = Type.ENTITY;
             } else if (Enum.class.isAssignableFrom(javaClass)) {
                 type = Type.ENUM;
@@ -153,7 +158,7 @@ public class Param {
             for (ValueListener listener : listeners) {
                 listener.valueChanged(this, "value", prevValue, value);
             }
-            if ( updateEditComponent && this.editComponent instanceof Component.HasValue) {
+            if (updateEditComponent && this.editComponent instanceof Component.HasValue) {
                 ((Component.HasValue) editComponent).setValue(value);
             }
         }
@@ -245,7 +250,7 @@ public class Param {
 
         if (value instanceof Collection) {
             StringBuilder sb = new StringBuilder();
-            for (Iterator iterator = ((Collection) value).iterator(); iterator.hasNext();) {
+            for (Iterator iterator = ((Collection) value).iterator(); iterator.hasNext(); ) {
                 Object v = iterator.next();
                 sb.append(formatSingleValue(v));
                 if (iterator.hasNext())
@@ -309,6 +314,7 @@ public class Param {
 
     /**
      * Creates an GUI component for condition parameter.
+     *
      * @param valueProperty What value the editor will be connected with: current filter value or default one.
      * @return GUI component for condition parameter.
      */
@@ -621,7 +627,6 @@ public class Param {
     }
 
 
-
     private Component createEntityLookup(final ValueProperty valueProperty) {
         Metadata metadata = AppBeans.get(Metadata.NAME);
         MetaClass metaClass = metadata.getSession().getClass(javaClass);
@@ -804,7 +809,7 @@ public class Param {
         Element paramElem = element.addElement("param");
         paramElem.addAttribute("name", getName());
         paramElem.addAttribute("javaClass", getJavaClass().getName());
-        if (SetValueEntity.class.isAssignableFrom(javaClass) && runtimeEnum != null) {
+        if (runtimeEnum != null) {
             paramElem.addAttribute("categoryAttrId", categoryAttrId.toString());
         }
 

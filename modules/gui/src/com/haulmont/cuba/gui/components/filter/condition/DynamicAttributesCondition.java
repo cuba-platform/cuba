@@ -8,14 +8,16 @@ package com.haulmont.cuba.gui.components.filter.condition;
 import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.annotations.MetaClass;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.filter.Op;
-import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
 import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor;
+import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
 import com.haulmont.cuba.gui.components.filter.operationedit.DynamicAttributesOperationEditor;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.BooleanUtils;
@@ -84,6 +86,8 @@ public class DynamicAttributesCondition extends AbstractCondition {
                 }
             }
         }
+
+        resolveParam(element);
     }
 
     @Override
@@ -149,10 +153,17 @@ public class DynamicAttributesCondition extends AbstractCondition {
 
     @Override
     protected Param createParam() {
-        if (unary)
-            return new Param(paramName, Boolean.class, null, null, null, false, required);
+        if (categoryAttributeId != null) {
+            Class paramJavaClass = unary ? Boolean.class : javaClass;
 
-        return super.createParam();
+            MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(datasource.getMetaClass(), categoryAttributeId);
+            Param param = new Param(paramName, paramJavaClass, null, null, datasource,
+                    metaPropertyPath != null ? metaPropertyPath.getMetaProperty() : null,
+                    inExpr, required, categoryAttributeId);
+            return param;
+        } else {
+            return super.createParam();
+        }
     }
 
     @Override
