@@ -134,6 +134,11 @@ public abstract class DesktopAbstractBox
         requestRepaint();
     }
 
+    @Override
+    public int indexOf(Component component) {
+        return new ArrayList<>(ownComponents).indexOf(component);
+    }
+
     protected void attachToFrame(Component component) {
         frame.registerComponent(component);
     }

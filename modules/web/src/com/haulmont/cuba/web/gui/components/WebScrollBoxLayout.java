@@ -127,6 +127,11 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
     }
 
     @Override
+    public int indexOf(Component component) {
+        return new ArrayList<>(ownComponents).indexOf(component);
+    }
+
+    @Override
     public void setStyleName(String styleName) {
         if (StringUtils.isNotEmpty(this.styleName)) {
             getComposition().removeStyleName(this.styleName);
@@ -250,13 +255,13 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
     protected void applyScrollBarsPolicy(ScrollBarPolicy scrollBarPolicy) {
         switch (scrollBarPolicy) {
             case VERTICAL:
-                getContent().setHeight(Sizeable.SIZE_UNDEFINED, Sizeable.Unit.PIXELS);
+                getContent().setHeightUndefined();
                 getContent().setWidth(100, Sizeable.Unit.PERCENTAGE);
                 break;
 
             case HORIZONTAL:
                 getContent().setHeight(100, Sizeable.Unit.PERCENTAGE);
-                getContent().setWidth(Sizeable.SIZE_UNDEFINED, Sizeable.Unit.PIXELS);
+                getContent().setWidthUndefined();
                 break;
 
             case BOTH:

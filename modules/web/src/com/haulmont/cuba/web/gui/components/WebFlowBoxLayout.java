@@ -78,6 +78,11 @@ public class WebFlowBoxLayout extends WebAbstractComponent<CubaFlowLayout> imple
     }
 
     @Override
+    public int indexOf(Component component) {
+        return new ArrayList<>(ownComponents).indexOf(component);
+    }
+
+    @Override
     public void remove(Component childComponent) {
         component.removeComponent(WebComponentsHelper.getComposition(childComponent));
         if (childComponent.getId() != null) {

@@ -9,7 +9,7 @@ package com.haulmont.cuba.gui.components;
  * @version $Id$
  */
 public interface ScrollBoxLayout
-        extends Component.Container, Component.BelongToFrame, Component.Margin, Component.Spacing {
+        extends Component.OrderedContainer, Component.BelongToFrame, Component.Margin, Component.Spacing {
 
     String NAME = "scrollBox";
 
@@ -30,6 +30,4 @@ public interface ScrollBoxLayout
 
     ScrollBarPolicy getScrollBarPolicy();
     void setScrollBarPolicy(ScrollBarPolicy scrollBarPolicy);
-
-    void add(Component childComponent, int index);
 }

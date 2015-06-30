@@ -111,6 +111,11 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
     }
 
     @Override
+    public int indexOf(Component component) {
+        return new ArrayList<>(ownComponents).indexOf(component);
+    }
+
+    @Override
     public void remove(Component childComponent) {
         getComponentContent().removeComponent(WebComponentsHelper.getComposition(childComponent));
         if (childComponent.getId() != null) {

@@ -25,6 +25,7 @@ import java.util.Map;
  */
 public interface IFrame
         extends ExpandingLayout,
+                Component.OrderedContainer,
                 Component.BelongToFrame,
                 Component.Spacing,
                 Component.Margin,
@@ -86,8 +87,6 @@ public interface IFrame
      * screen itself.
      */
     DialogParams getDialogParams();
-
-    void add(Component childComponent, int index);
 
     /**
      * Open a simple screen.

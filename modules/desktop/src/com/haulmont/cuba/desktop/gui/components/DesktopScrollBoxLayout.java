@@ -157,6 +157,11 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
     }
 
     @Override
+    public int indexOf(Component component) {
+        return new ArrayList<>(components).indexOf(component);
+    }
+
+    @Override
     public void remove(Component component) {
         components.remove(component);
         content.remove(component);

@@ -27,7 +27,7 @@ import java.util.Map;
  * @author abramov
  * @version $Id$
  */
-public class AbstractFrame implements IFrame, Component.Wrapper {
+public class AbstractFrame implements IFrame, Component.Wrapper, Component.OrderedContainer {
 
     protected IFrame frame;
     private String styleName;
@@ -318,6 +318,11 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     @Override
     public void add(Component childComponent, int index) {
         frame.add(childComponent, index);
+    }
+
+    @Override
+    public int indexOf(Component component) {
+        return frame.indexOf(component);
     }
 
     /**

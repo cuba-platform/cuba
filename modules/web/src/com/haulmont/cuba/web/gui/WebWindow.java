@@ -647,6 +647,11 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     @Override
+    public int indexOf(Component component) {
+        return new ArrayList<>(ownComponents).indexOf(component);
+    }
+
+    @Override
     public void remove(Component childComponent) {
         getContainer().removeComponent(WebComponentsHelper.getComposition(childComponent));
         ownComponents.remove(childComponent);

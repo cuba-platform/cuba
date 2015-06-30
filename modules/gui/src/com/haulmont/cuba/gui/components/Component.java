@@ -138,6 +138,11 @@ public interface Component {
         Collection<Component> getComponents();
     }
 
+    interface OrderedContainer extends Container {
+        void add(Component childComponent, int index);
+        int indexOf(Component component);
+    }
+
     interface HasNamedComponents {
         /**
          * Get subcomponent by name.

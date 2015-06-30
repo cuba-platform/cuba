@@ -751,6 +751,11 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     @Override
+    public int indexOf(Component component) {
+        return new ArrayList<>(ownComponents).indexOf(component);
+    }
+
+    @Override
     public void remove(Component component) {
         if (wrappers.containsKey(component)) {
             getContainer().remove(wrappers.get(component).getFirst());
