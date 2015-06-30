@@ -648,7 +648,7 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public int indexOf(Component component) {
-        return new ArrayList<>(ownComponents).indexOf(component);
+        return ComponentsHelper.indexOf(ownComponents, component);
     }
 
     @Override

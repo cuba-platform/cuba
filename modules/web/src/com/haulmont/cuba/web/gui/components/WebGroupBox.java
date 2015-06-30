@@ -112,7 +112,7 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
 
     @Override
     public int indexOf(Component component) {
-        return new ArrayList<>(ownComponents).indexOf(component);
+        return ComponentsHelper.indexOf(ownComponents, component);
     }
 
     @Override

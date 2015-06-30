@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.gui;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.*;
 import org.apache.commons.lang.ArrayUtils;
@@ -467,5 +468,18 @@ public abstract class ComponentsHelper {
         } else {
             errors.add((Component) component, e.getMessage());
         }
+    }
+
+    public static int indexOf(Iterable<Component> components, Component component) {
+        Preconditions.checkNotNullArgument(components);
+
+        Iterator<Component> iterator = components.iterator();
+        for (int i = 0; iterator.hasNext(); i++) {
+            Component current = iterator.next();
+            if (current == component) {
+                return i;
+            }
+        }
+        return -1;
     }
 }

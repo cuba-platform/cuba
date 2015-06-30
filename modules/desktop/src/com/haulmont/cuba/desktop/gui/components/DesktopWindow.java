@@ -752,7 +752,7 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     @Override
     public int indexOf(Component component) {
-        return new ArrayList<>(ownComponents).indexOf(component);
+        return ComponentsHelper.indexOf(ownComponents, component);
     }
 
     @Override

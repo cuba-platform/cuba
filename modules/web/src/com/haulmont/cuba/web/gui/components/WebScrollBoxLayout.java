@@ -128,7 +128,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
 
     @Override
     public int indexOf(Component component) {
-        return new ArrayList<>(ownComponents).indexOf(component);
+        return ComponentsHelper.indexOf(ownComponents, component);
     }
 
     @Override

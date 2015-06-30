@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ScrollBoxLayout;
@@ -158,7 +159,7 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
 
     @Override
     public int indexOf(Component component) {
-        return new ArrayList<>(components).indexOf(component);
+        return ComponentsHelper.indexOf(components, component);
     }
 
     @Override

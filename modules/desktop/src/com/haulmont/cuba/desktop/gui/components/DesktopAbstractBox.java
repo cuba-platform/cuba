@@ -5,6 +5,8 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.google.common.base.Predicates;
+import com.google.common.collect.Iterables;
 import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
@@ -136,7 +138,7 @@ public abstract class DesktopAbstractBox
 
     @Override
     public int indexOf(Component component) {
-        return new ArrayList<>(ownComponents).indexOf(component);
+        return ComponentsHelper.indexOf(ownComponents, component);
     }
 
     protected void attachToFrame(Component component) {

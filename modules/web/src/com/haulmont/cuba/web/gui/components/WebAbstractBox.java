@@ -78,7 +78,7 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
 
     @Override
     public int indexOf(Component component) {
-        return new ArrayList<>(ownComponents).indexOf(component);
+        return ComponentsHelper.indexOf(ownComponents, component);
     }
 
     protected void attachToFrame(Component childComponent) {
