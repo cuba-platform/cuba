@@ -41,7 +41,7 @@ public class DesktopTreeTable extends DesktopAbstractTable<JXTreeTableExt> imple
                     return columnRenderer;
                 }
 
-                if (styleProvider != null) {
+                if (styleProviders != null) {
                     TableCellRenderer defaultRenderer = super.getCellRenderer(row, column);
                     return new StylingCellRenderer(defaultRenderer);
                 } else {
