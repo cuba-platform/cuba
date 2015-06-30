@@ -89,8 +89,10 @@ public class AppMainWindow extends AbstractMainWindow {
 
             foldersSplit.remove(workArea);
 
+            int foldersSplitIndex = indexOf(foldersSplit);
+
             remove(foldersSplit);
-            add(workArea);
+            add(workArea, foldersSplitIndex);
 
             expand(workArea);
         }
