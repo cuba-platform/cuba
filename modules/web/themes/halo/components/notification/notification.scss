@@ -22,10 +22,12 @@
 
     h1 {
       display: block;
+      color: #2980B9
     }
 
     p {
       display: block;
+      color: #2C3E50;
     }
   }
 
@@ -38,5 +40,13 @@
 
   .#{$primary-stylename}.humanized {
     background: #C0DBF7;
+
+    h1 {
+      color: #2980B9
+    }
+
+    p {
+      color: #2C3E50;
+    }
   }
 }
