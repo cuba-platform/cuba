@@ -7,6 +7,7 @@ package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
 import org.apache.commons.io.IOUtils;
@@ -54,8 +55,8 @@ public class PersistenceConfigProcessor {
         if (StringUtils.isBlank(outFileName))
             throw new IllegalStateException("Output file not set");
 
-        Map<String, String> classes = new LinkedHashMap<String, String>();
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> classes = new LinkedHashMap<>();
+        Map<String, String> properties = new HashMap<>();
 
         properties.putAll(DbmsSpecificFactory.getDbmsFeatures().getJpaParameters());
 
@@ -68,6 +69,12 @@ public class PersistenceConfigProcessor {
             addProperties(puElem, properties);
         }
 
+        for (String name : AppContext.getPropertyNames()) {
+            if (name.startsWith("eclipselink.")) {
+                properties.put(name, AppContext.getProperty(name));
+            }
+        }
+
         File outFile;
         try {
             outFile = new File(outFileName).getCanonicalFile();
@@ -76,10 +83,11 @@ public class PersistenceConfigProcessor {
         }
         outFile.getParentFile().mkdirs();
 
+        boolean ormXmlCreated = true;
         String disableOrmGenProp = AppContext.getProperty("cuba.disableOrmXmlGeneration");
         if (!Boolean.parseBoolean(disableOrmGenProp)) {
             MappingFileCreator mappingFileCreator = new MappingFileCreator(classes.values(), properties, outFile.getParentFile());
-            mappingFileCreator.create();
+            ormXmlCreated = mappingFileCreator.create();
         }
 
         String fileName = sourceFileNames.get(sourceFileNames.size() - 1);
@@ -90,15 +98,23 @@ public class PersistenceConfigProcessor {
         if (puElem == null)
             throw new IllegalStateException("No persistence unit named 'cuba' found among multiple units inside " + fileName);
 
-        for (Element element : new ArrayList<Element>(Dom4j.elements(puElem, "class"))) {
+        for (Element element : new ArrayList<>(Dom4j.elements(puElem, "class"))) {
             puElem.remove(element);
         }
 
-        puElem.addElement("provider").setText("org.apache.openjpa.persistence.PersistenceProviderImpl");
+        puElem.addElement("provider").setText("org.eclipse.persistence.jpa.PersistenceProvider");
+
+        if (ormXmlCreated) {
+            puElem.addElement("mapping-file").setText("orm.xml");
+        }
 
         for (String className : classes.values()) {
             puElem.addElement("class").setText(className);
         }
+
+        puElem.addElement("exclude-unlisted-classes");
+
+        puElem.addElement("shared-cache-mode").setText(AppContext.getProperty("cuba.sharedCacheMode"));
 
         Element propertiesEl = puElem.element("properties");
         if (propertiesEl != null)

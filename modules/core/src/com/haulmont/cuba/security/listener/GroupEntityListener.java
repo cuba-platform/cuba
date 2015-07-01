@@ -7,12 +7,11 @@ package com.haulmont.cuba.security.listener;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
 import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.GroupHierarchy;
-import org.apache.openjpa.enhance.PersistenceCapable;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -42,8 +41,7 @@ public class GroupEntityListener implements
             return;
         }
 
-        PersistenceCapable parentPc = (PersistenceCapable) parent;
-        if (parentPc.pcIsNew() && !parentPc.pcIsPersistent())
+        if (!PersistenceHelper.isManaged(parent) && !PersistenceHelper.isDetached(parent))
             throw new IllegalStateException("Unable to create GroupHierarchy. Commit parent group first.");
 
         EntityManager em = persistence.getEntityManager();
@@ -54,7 +52,7 @@ public class GroupEntityListener implements
             entity.getHierarchyList().clear();
         }
 
-        if (parentPc.pcIsDetached())
+        if (PersistenceHelper.isDetached(parent))
             parent = em.find(Group.class, parent.getId()); // refresh parent in case of detached
 
         int level = 0;

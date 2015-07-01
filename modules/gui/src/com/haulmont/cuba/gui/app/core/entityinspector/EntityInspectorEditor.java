@@ -26,7 +26,6 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
-import org.apache.openjpa.persistence.jdbc.EmbeddedMapping;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
@@ -274,22 +273,22 @@ public class EntityInspectorEditor extends AbstractWindow {
      * @return property of the referred entity
      */
     private MetaProperty getNullIndicatorProperty(MetaProperty embeddedMetaProperty) {
-        EmbeddedMapping embeddedMapping = embeddedMetaProperty.getAnnotatedElement().getAnnotation(EmbeddedMapping.class);
+//        EmbeddedMapping embeddedMapping = embeddedMetaProperty.getAnnotatedElement().getAnnotation(EmbeddedMapping.class);
 
-        if (embeddedMapping == null)
+//        if (embeddedMapping == null)
             return null;
 
-        MetaClass meta = embeddedMetaProperty.getRange().asClass();
-
-        String attributeName = embeddedMapping.nullIndicatorAttributeName();
-        String columnName = embeddedMapping.nullIndicatorColumnName();
-
-        if (!isEmpty(attributeName))
-            return meta.getProperty(attributeName);
-        else if (!isEmpty(columnName))
-            return findPropertyByMappedColumn(meta, columnName);
-        else
-            return null;
+//        MetaClass meta = embeddedMetaProperty.getRange().asClass();
+//
+//        String attributeName = embeddedMapping.nullIndicatorAttributeName();
+//        String columnName = embeddedMapping.nullIndicatorColumnName();
+//
+//        if (!isEmpty(attributeName))
+//            return meta.getProperty(attributeName);
+//        else if (!isEmpty(columnName))
+//            return findPropertyByMappedColumn(meta, columnName);
+//        else
+//            return null;
     }
 
     private boolean isEmpty(String str) {

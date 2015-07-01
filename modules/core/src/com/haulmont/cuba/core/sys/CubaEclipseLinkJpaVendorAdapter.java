@@ -5,8 +5,8 @@
 package com.haulmont.cuba.core.sys;
 
 import org.springframework.orm.jpa.JpaDialect;
-import org.springframework.orm.jpa.vendor.OpenJpaDialect;
-import org.springframework.orm.jpa.vendor.OpenJpaVendorAdapter;
+import org.springframework.orm.jpa.vendor.EclipseLinkJpaDialect;
+import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter;
 
 import java.util.Map;
 
@@ -14,15 +14,15 @@ import java.util.Map;
  * @author krivopustov
  * @version $Id$
  */
-public class CubaOpenJpaVendorAdapter extends OpenJpaVendorAdapter {
+public class CubaEclipseLinkJpaVendorAdapter extends EclipseLinkJpaVendorAdapter {
 
-    private final OpenJpaDialect jpaDialect = new CubaOpenJpaDialect();
+    private final EclipseLinkJpaDialect jpaDialect = new CubaEclipseLinkJpaDialect();
 
     @Override
     public Map<String, Object> getJpaPropertyMap() {
         Map<String, Object> map = super.getJpaPropertyMap();
         for (String name : AppContext.getPropertyNames()) {
-            if (name.startsWith("openjpa.")) {
+            if (name.startsWith("eclipselink.")) {
                 map.put(name, AppContext.getProperty(name));
             }
         }

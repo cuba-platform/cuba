@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
@@ -25,11 +26,9 @@ import javax.annotation.ManagedBean;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.persistence.CascadeType;
-import javax.persistence.Embedded;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -232,6 +231,27 @@ public class MetadataTools {
     public boolean isEmbedded(MetaProperty metaProperty) {
         Objects.requireNonNull(metaProperty, "metaProperty is null");
         return metaProperty.getAnnotatedElement().isAnnotationPresent(Embedded.class);
+    }
+
+    /**
+     * Determine whether the given property is on the owning side of an association.
+     */
+    public boolean isOwningSide(MetaProperty metaProperty) {
+        Preconditions.checkNotNullArgument(metaProperty, "metaProperty is null");
+        if (!metaProperty.getRange().isClass())
+            return false;
+
+        AnnotatedElement el = metaProperty.getAnnotatedElement();
+        for (Annotation annotation : el.getAnnotations()) {
+            if (annotation instanceof ManyToOne)
+                return true;
+            if (annotation instanceof OneToMany || annotation instanceof OneToOne)
+                return el.isAnnotationPresent(JoinColumn.class) || el.isAnnotationPresent(JoinTable.class);
+            if (annotation instanceof ManyToMany)
+                return el.isAnnotationPresent(JoinTable.class);
+        }
+
+        return false;
     }
 
     /**

@@ -11,6 +11,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.persistence.annotations.TransientCompatibleAnnotations;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import javax.persistence.Temporal;
 
 /**
  * {@link AppContext} loader of the middleware web application.
@@ -26,6 +30,8 @@ public class AppContextLoader extends AbstractWebAppContextLoader {
 
     @Override
     protected void beforeInitAppContext() {
+        super.beforeInitAppContext();
+
         log.info("DbmsType is set to " + DbmsType.getType() + DbmsType.getVersion());
 
         // Init persistence.xml
@@ -42,6 +48,11 @@ public class AppContextLoader extends AbstractWebAppContextLoader {
         processor.setOutputFile(dataDir + "/persistence.xml");
 
         processor.create();
+    }
+
+    @Override
+    protected ClassPathXmlApplicationContext createClassPathXmlApplicationContext(String[] locations) {
+        return new CubaCoreApplicationContext(locations);
     }
 
     @Override

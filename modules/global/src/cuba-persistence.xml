@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~ Copyright (c) 2008-2013 Haulmont. All rights reserved.
-  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
-  -->
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
 
-<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
     <persistence-unit name="cuba" transaction-type="RESOURCE_LOCAL">
-        <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-
         <class>com.haulmont.cuba.core.entity.BaseGenericIdEntity</class>
         <class>com.haulmont.cuba.core.entity.BaseUuidEntity</class>
         <class>com.haulmont.cuba.core.entity.BaseLongIdEntity</class>
@@ -58,24 +54,21 @@
         <class>com.haulmont.cuba.core.entity.JmxInstance</class>
         <class>com.haulmont.cuba.security.entity.RememberMeToken</class>
 
+        <!-- todo EL: get rid of this -->
+        <class>com.haulmont.cuba.core.entity.dummy.DummyStringIdEntity</class>
+        <class>com.haulmont.cuba.core.entity.dummy.DummyIntegerIdEntity</class>
+        <class>com.haulmont.cuba.core.entity.dummy.DummyLongIdEntity</class>
+        <class>com.haulmont.cuba.core.entity.dummy.DummyCategorizedEntity</class>
+
         <properties>
-            <property name="openjpa.Log" value="log4j"/>
+            <property name="eclipselink.weaving"
+                      value="static"/>
 
-            <property name="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true"/>
+            <property name="eclipselink.logging.logger"
+                      value="com.haulmont.cuba.core.sys.logging.EclipseLinkLog"/>
 
-            <property name="openjpa.jdbc.SchemaFactory" value="native(ForeignKeys=true)"/>
-
-            <property name="openjpa.DetachState" value="loaded(DetachedStateField=true, DetachedStateManager=true)"/>
-
-            <property name="openjpa.IgnoreChanges" value="true"/>
-
-            <property name="openjpa.jdbc.SubclassFetchMode" value="none"/>
-
-            <property name="openjpa.Compatibility" value="SuperclassDiscriminatorStrategyByDefault=false, IgnoreDetachedStateFieldForProxySerialization=true"/>
-
-            <!-- OpenJPA-2.1.1: have to switch it off because these caches don't work properly with FetchPlans -->
-            <property name="openjpa.jdbc.QuerySQLCache"
-                      value="false"/>
+            <property name="eclipselink.session-event-listener"
+                            value="com.haulmont.cuba.core.sys.persistence.EclipseLinkSessionEventListener"/>
         </properties>
     </persistence-unit>
 </persistence>

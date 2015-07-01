@@ -10,6 +10,8 @@ import com.haulmont.cuba.core.entity.Server;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author krivopustov
@@ -24,24 +26,26 @@ public class TestListenerBean implements
     @Inject
     private Persistence persistence;
 
+    public final List<String> events = new ArrayList<>();
+
     @Override
     public void onAfterDelete(Server entity) {
         if (persistence == null)
             throw new IllegalStateException("Injected value is null");
-        System.out.println("TestListenerBean: onAfterDelete " + entity);
+        events.add("onAfterDelete: " + entity.getId());
     }
 
     @Override
     public void onAfterInsert(Server entity) {
         if (persistence == null)
             throw new IllegalStateException("Injected value is null");
-        System.out.println("TestListenerBean: onAfterInsert " + entity);
+        events.add("onAfterInsert: " + entity.getId());
     }
 
     @Override
     public void onAfterUpdate(Server entity) {
         if (persistence == null)
             throw new IllegalStateException("Injected value is null");
-        System.out.println("TestListenerBean: onAfterUpdate " + entity);
+        events.add("onAfterUpdate: " + entity.getId());
     }
 }

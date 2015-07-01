@@ -13,8 +13,9 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.jpa.JpaQuery;
 
 import javax.annotation.Nullable;
 import javax.persistence.FlushModeType;
@@ -32,38 +33,43 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
     private Log log = LogFactory.getLog(QueryImpl.class);
 
-    private EntityManagerImpl em;
+//    private EntityManagerImpl em;
     private Metadata metadata;
-    private OpenJPAEntityManager emDelegate;
-    private OpenJPAQuery query;
+    private javax.persistence.EntityManager emDelegate;
+    private JpaQuery query;
     private boolean isNative;
     private String queryString;
     private Class<? extends Entity> resultClass;
-    private FetchPlanManager fetchPlanMgr;
+    private FetchGroupManager fetchGroupMgr;
+    private Set<Param> params = new HashSet<>();
+    private LockModeType lockMode;
+    private List<View> views = new ArrayList<>();
+    private Integer maxResults;
+    private Integer firstResult;
 
     private Collection<QueryMacroHandler> macroHandlers;
 
     public QueryImpl(EntityManagerImpl entityManager, boolean isNative, @Nullable Class resultClass,
-                     Metadata metadata, FetchPlanManager fetchPlanMgr) {
-        this.em = entityManager;
+                     Metadata metadata, FetchGroupManager fetchGroupMgr) {
+//        this.em = entityManager;
         this.metadata = metadata;
         this.emDelegate = entityManager.getDelegate();
         this.isNative = isNative;
         this.macroHandlers = AppBeans.getAll(QueryMacroHandler.class).values();
         //noinspection unchecked
         this.resultClass = resultClass;
-        this.fetchPlanMgr = fetchPlanMgr;
+        this.fetchGroupMgr = fetchGroupMgr;
     }
 
-    private OpenJPAQuery<T> getQuery() {
+    private JpaQuery<T> getQuery() {
         if (query == null) {
             if (isNative) {
                 log.trace("Creating SQL query: " + queryString);
                 if (resultClass == null)
-                    query = emDelegate.createNativeQuery(queryString);
+                    query = (JpaQuery) emDelegate.createNativeQuery(queryString);
                 else {
                     Class effectiveClass = metadata.getExtendedEntities().getEffectiveClass(resultClass);
-                    query = emDelegate.createNativeQuery(queryString, effectiveClass);
+                    query = (JpaQuery) emDelegate.createNativeQuery(queryString, effectiveClass);
                 }
                 query.setFlushMode(FlushModeType.COMMIT);
             } else {
@@ -71,15 +77,47 @@ public class QueryImpl<T> implements TypedQuery<T> {
                 String s = transformQueryString();
                 log.trace("Transformed JPQL query: " + s);
                 if (resultClass != null) {
-                    query = (OpenJPAQuery) emDelegate.createQuery(s, resultClass);
+                    query = (JpaQuery) emDelegate.createQuery(s, resultClass);
                 } else {
-                    query = emDelegate.createQuery(s);
+                    query = (JpaQuery) emDelegate.createQuery(s);
                 }
                 query.setFlushMode(FlushModeType.COMMIT);
             }
+
+            boolean nullParam = false;
+            for (Param param : params) {
+                param.apply(query);
+                if (param.value == null)
+                    nullParam = true;
+            }
+            // disable SQL caching to support "is null" generation
+            if (nullParam)
+                query.setHint(QueryHints.PREPARE, HintValues.FALSE);
+
+            if (maxResults != null)
+                query.setMaxResults(maxResults);
+            if (firstResult != null)
+                query.setFirstResult(firstResult);
+            if (lockMode != null)
+                query.setLockMode(lockMode);
+
+            for (int i = 0; i < views.size(); i++) {
+                if (i == 0)
+                    fetchGroupMgr.setView(query, queryString, views.get(i));
+                else
+                    fetchGroupMgr.addView(query, queryString, views.get(i));
+            }
+
+            addMacroParams(query);
+
         }
         //noinspection unchecked
         return query;
+    }
+
+    private void checkState() {
+        if (query != null)
+            throw new IllegalStateException("Query delegate has already been created");
     }
 
     private String transformQueryString() {
@@ -89,17 +127,16 @@ public class QueryImpl<T> implements TypedQuery<T> {
         Class effectiveClass = metadata.getExtendedEntities().getEffectiveClass(entityName);
         String effectiveEntityName = metadata.getSession().getClassNN(effectiveClass).getName();
         if (!effectiveEntityName.equals(entityName)) {
-            QueryTransformer transformer = QueryTransformerFactory.createTransformer(result, entityName);
+            QueryTransformer transformer = QueryTransformerFactory.createTransformer(result);
             transformer.replaceEntityName(effectiveEntityName);
             result = transformer.getResult();
         }
 
-        if (em.isSoftDeletion()
-                && PersistenceHelper.isSoftDeleted(effectiveClass)) {
-            QueryTransformer transformer = QueryTransformerFactory.createTransformer(result, effectiveEntityName);
-            transformer.addWhere("{E}.deleteTs is null");
-            result = transformer.getResult();
+        for (Param param : params) {
+            if (param.value instanceof String && ((String) param.value).startsWith("(?i)"))
+                result = replaceCaseInsensitiveParam(result, param);
         }
+
 
         return result;
     }
@@ -114,10 +151,29 @@ public class QueryImpl<T> implements TypedQuery<T> {
         return result;
     }
 
-    private void addMacroParams(OpenJPAQuery jpaQuery) {
+    private String replaceCaseInsensitiveParam(String queryStr, Param param) {
+        if (!(param.name instanceof String)) // case insensitive search is supported only for named parameters
+            return queryStr;
+
+        QueryTransformer transformer = QueryTransformerFactory.createTransformer(queryStr);
+        transformer.handleCaseInsensitiveParam((String) param.name);
+        String result = transformer.getResult();
+
+        param.value = ((String) param.value).substring(4).toLowerCase();
+        return result;
+    }
+
+    private void addMacroParams(javax.persistence.TypedQuery jpaQuery) {
         if (macroHandlers != null) {
             for (QueryMacroHandler handler : macroHandlers) {
-                handler.setQueryParams(getQuery().getNamedParameters());
+
+                Map<String, Object> namedParams = new HashMap<>();
+                for (Param param : params) {
+                    if (param.name instanceof String)
+                        namedParams.put((String) param.name, param.value);
+                }
+                handler.setQueryParams(namedParams);
+
                 for (Map.Entry<String, Object> entry : handler.getParams().entrySet()) {
                     jpaQuery.setParameter(entry.getKey(), entry.getValue());
                 }
@@ -127,50 +183,49 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
     @Override
     public List<T> getResultList() {
-        if (!isNative && log.isTraceEnabled())
-            log.trace("JPQL query result class: " + getQuery().getResultClass());
-        OpenJPAQuery<T> jpaQuery = getQuery();
-        addMacroParams(jpaQuery);
-        return jpaQuery.getResultList();
+//        if (!isNative && log.isTraceEnabled())
+//            log.trace("JPQL query result class: " + getQuery().getResultClass());
+
+        return getQuery().getResultList();
     }
 
     @Override
     public T getSingleResult() {
-        if (!isNative && log.isTraceEnabled())
-            log.trace("JPQL query result class: " + getQuery().getResultClass());
+//        if (!isNative && log.isTraceEnabled())
+//            log.trace("JPQL query result class: " + getQuery().getResultClass());
 
-        OpenJPAQuery<T> jpaQuery = getQuery();
-        addMacroParams(jpaQuery);
-        return jpaQuery.getSingleResult();
+        return getQuery().getSingleResult();
     }
 
     @Override
     @Nullable
     public T getFirstResult() {
-        if (!isNative && log.isTraceEnabled())
-            log.trace("JPQL query result class: " + getQuery().getResultClass());
-        OpenJPAQuery<T> jpaQuery = getQuery();
-        addMacroParams(jpaQuery);
-        List<T> resultList = jpaQuery.getResultList();
+//        if (!isNative && log.isTraceEnabled())
+//            log.trace("JPQL query result class: " + getQuery().getResultClass());
+        List<T> resultList = getQuery().getResultList();
         return Iterables.getFirst(resultList, null);
     }
 
     @Override
     public int executeUpdate() {
-        OpenJPAQuery jpaQuery = getQuery();
-        addMacroParams(jpaQuery);
-        return jpaQuery.executeUpdate();
+        return getQuery().executeUpdate();
     }
 
     @Override
-    public TypedQuery<T> setMaxResults(int maxResult) {
-        getQuery().setMaxResults(maxResult);
+    public TypedQuery<T> setMaxResults(int maxResults) {
+        this.maxResults = maxResults;
+//        getQuery().setMaxResults(maxResults);
+        if (query != null)
+            query.setMaxResults(maxResults);
         return this;
     }
 
     @Override
-    public TypedQuery<T> setFirstResult(int startPosition) {
-        getQuery().setFirstResult(startPosition);
+    public TypedQuery<T> setFirstResult(int firstResult) {
+        this.firstResult = firstResult;
+//        getQuery().setFirstResult(firstResult);
+        if (query != null)
+            query.setFirstResult(firstResult);
         return this;
     }
 
@@ -181,15 +236,21 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
     @Override
     public TypedQuery<T> setParameter(String name, Object value, boolean implicitConversions) {
+        checkState();
+
         if (implicitConversions && value instanceof Entity)
             value = ((BaseEntity) value).getId();
-        getQuery().setParameter(name, value);
+
+        params.add(new Param(name, value));
+//        getQuery().setParameter(name, value);
         return this;
     }
 
     @Override
     public TypedQuery<T> setParameter(String name, Date value, TemporalType temporalType) {
-        getQuery().setParameter(name, value, temporalType);
+        checkState();
+        params.add(new Param(name, value, temporalType));
+//        getQuery().setParameter(name, value, temporalType);
         return this;
     }
 
@@ -200,6 +261,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
     @Override
     public TypedQuery<T> setParameter(int position, Object value, boolean implicitConversions) {
+        checkState();
         if (isNative && (value instanceof UUID) && (DbmsSpecificFactory.getDbmsFeatures().getUuidTypeClassName() != null)) {
             Class c = ReflectionHelper.getClass(DbmsSpecificFactory.getDbmsFeatures().getUuidTypeClassName());
             try {
@@ -210,25 +272,33 @@ public class QueryImpl<T> implements TypedQuery<T> {
         } else if (implicitConversions && value instanceof Entity)
             value = ((BaseEntity) value).getId();
 
-        getQuery().setParameter(position, value);
+        params.add(new Param(position, value));
+//        getQuery().setParameter(position, value);
         return this;
     }
 
     @Override
     public TypedQuery<T> setParameter(int position, Date value, TemporalType temporalType) {
-        getQuery().setParameter(position, value, temporalType);
+        checkState();
+        params.add(new Param(position, value, temporalType));
+//        getQuery().setParameter(position, value, temporalType);
         return this;
     }
 
     @Override
     public TypedQuery<T> setLockMode(LockModeType lockMode) {
-        getQuery().setLockMode(lockMode);
+        checkState();
+        this.lockMode = lockMode;
+//        getQuery().setLockMode(lockMode);
         return this;
     }
 
     @Override
     public TypedQuery<T> setView(View view) {
-        fetchPlanMgr.setView(getQuery().getFetchPlan(), view);
+        checkState();
+        views.clear();
+        views.add(view);
+//        fetchGroupMgr.setView(getQuery(), queryString, view);
         return this;
     }
 
@@ -249,7 +319,9 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
     @Override
     public TypedQuery<T> addView(View view) {
-        fetchPlanMgr.addView(getQuery().getFetchPlan(), view);
+        checkState();
+        views.add(view);
+//        fetchGroupMgr.addView(getQuery(), queryString, view);
         return this;
     }
 
@@ -279,9 +351,53 @@ public class QueryImpl<T> implements TypedQuery<T> {
     }
 
     @Override
-    public void setQueryString(String queryString) {
-        if (query != null)
-            throw new IllegalStateException("Unable to set query string: query is already created");
+    public TypedQuery<T> setQueryString(String queryString) {
+        checkState();
         this.queryString = queryString;
+        return this;
+    }
+
+    protected static class Param {
+        private Object name;
+        private Object value;
+        private TemporalType temporalType;
+
+        public Param(Object name, Object value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public Param(Object name, Date value, TemporalType temporalType) {
+            this.name = name;
+            this.value = value;
+            this.temporalType = temporalType;
+        }
+
+        public void apply(JpaQuery query) {
+            if (temporalType != null) {
+                if (name instanceof Integer)
+                    query.setParameter((int) name, (Date) value, temporalType);
+                else
+                    query.setParameter((String) name, (Date) value, temporalType);
+            } else {
+                if (name instanceof Integer)
+                    query.setParameter((int) name, value);
+                else
+                    query.setParameter((String) name, value);
+            }
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Param param = (Param) o;
+            return name.equals(param.name);
+        }
+
+        @Override
+        public int hashCode() {
+            return name.hashCode();
+        }
     }
 }

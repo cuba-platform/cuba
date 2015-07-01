@@ -79,8 +79,7 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
             EntityManager em = persistence.getEntityManager();
             em.setSoftDeletion(loadContext.isSoftDeletion());
 
-            QueryTransformer transformer = QueryTransformerFactory.createTransformer(
-                    contextQuery.getQueryString(), entityName);
+            QueryTransformer transformer = QueryTransformerFactory.createTransformer(contextQuery.getQueryString());
             transformer.replaceWithSelectId();
             transformer.removeOrderBy();
             String queryString = transformer.getResult();

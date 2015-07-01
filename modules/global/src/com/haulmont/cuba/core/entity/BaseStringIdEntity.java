@@ -6,7 +6,6 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.cuba.core.global.UuidProvider;
-import org.apache.openjpa.persistence.Persistent;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
@@ -32,7 +31,6 @@ public abstract class BaseStringIdEntity extends BaseGenericIdEntity<String> {
     private static final long serialVersionUID = -1887225952123433245L;
 
     @Column(name = "UUID", nullable = false)
-    @Persistent
     protected UUID uuid;
 
     protected BaseStringIdEntity() {

@@ -14,7 +14,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.lang.StringUtils;
-import org.apache.openjpa.persistence.Persistent;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
@@ -51,7 +50,6 @@ public class EntitySnapshot extends BaseUuidEntity {
     private User author;
 
     @Column(name = "ENTITY_ID")
-    @Persistent
     private UUID entityId;
 
     public String getViewXml() {

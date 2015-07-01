@@ -8,12 +8,11 @@ import junit.framework.TestCase;
 
 import java.util.Set;
 
-public class QueryTransformerRegexTest extends TestCase
-{
+public class QueryTransformerRegexTest extends TestCase {
+
     public void test() {
         QueryTransformerRegex transformer = new QueryTransformerRegex(
-                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par",
-                "sec$GroupHierarchy");
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par");
 
         transformer.addWhere("{E}.createdBy = :par1");
         String res = transformer.getResult();
@@ -23,8 +22,7 @@ public class QueryTransformerRegexTest extends TestCase
 
         transformer = new QueryTransformerRegex(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
-                        "group by c.level having c.level > 0 order by c.level",
-                "sec$GroupHierarchy");
+                        "group by c.level having c.level > 0 order by c.level");
 
         transformer.addWhere("{E}.createdBy = :par1");
         res = transformer.getResult();
@@ -58,8 +56,7 @@ public class QueryTransformerRegexTest extends TestCase
 
     public void testAliasPlaceholder() {
         QueryTransformerRegex transformer = new QueryTransformerRegex(
-                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par",
-                "sec$GroupHierarchy");
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par");
 
         transformer.addWhere("{E}.createdBy = :par1 and {E}.updatedBy = :par2");
         String res = transformer.getResult();
@@ -71,8 +68,7 @@ public class QueryTransformerRegexTest extends TestCase
         ////////////////////////////////////
 
         transformer = new QueryTransformerRegex(
-                "select c from sec$GroupHierarchy h where h.group = :par",
-                "sec$GroupHierarchy");
+                "select c from sec$GroupHierarchy h where h.group = :par");
 
         transformer.addJoinAndWhere("join h.parent.constraints c", "{E}.createdBy = :par1 and {E}.updatedBy = :par2 and c.createTs = :par3");
         res = transformer.getResult();
@@ -84,8 +80,7 @@ public class QueryTransformerRegexTest extends TestCase
         ////////////////////////////////////
 
         transformer = new QueryTransformerRegex(
-                "select c from sec$GroupHierarchy h where h.group = :par",
-                "sec$GroupHierarchy");
+                "select c from sec$GroupHierarchy h where h.group = :par");
 
         transformer.addJoinAndWhere("join {E}.parent.constraints c", "{E}.createdBy = :par1 and {E}.updatedBy = :par2 and c.createTs = :par3");
         res = transformer.getResult();
@@ -99,8 +94,7 @@ public class QueryTransformerRegexTest extends TestCase
     public void testInvalidEntity() {
         QueryTransformerRegex transformer = new QueryTransformerRegex(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
-                        "group by c.level having c.level > 0 order by c.level",
-                "sec$Group");
+                        "group by c.level having c.level > 0 order by c.level");
         // commented out, because since 3.4 we don't check equality of targetEntity and an entity in the query
 //        try {
             transformer.addWhere("a.createdBy = :par1");
@@ -112,8 +106,7 @@ public class QueryTransformerRegexTest extends TestCase
 
     public void testJoin() {
         QueryTransformerRegex transformer = new QueryTransformerRegex(
-                "select c from sec$GroupHierarchy h where h.group = :par",
-                "sec$GroupHierarchy");
+                "select c from sec$GroupHierarchy h where h.group = :par");
 
         transformer.addJoinAndWhere("join h.parent.constraints c", "c.createdBy = :par2");
         String res = transformer.getResult();
@@ -125,8 +118,7 @@ public class QueryTransformerRegexTest extends TestCase
     public void testReplaceWithCount() {
         QueryTransformerRegex transformer = new QueryTransformerRegex(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
-                        "group by c.level having c.level > 0 order by c.level",
-                "sec$GroupHierarchy");
+                        "group by c.level having c.level > 0 order by c.level");
         transformer.replaceWithCount();
         String res = transformer.getResult();
         assertEquals(
@@ -138,8 +130,7 @@ public class QueryTransformerRegexTest extends TestCase
     public void testOrderBy() {
         QueryTransformerRegex transformer = new QueryTransformerRegex(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
-                        "group by c.level having c.level > 0 order by c.level",
-                "sec$GroupHierarchy");
+                        "group by c.level having c.level > 0 order by c.level");
         transformer.replaceOrderBy(false, "group");
         String res = transformer.getResult();
         assertEquals(
@@ -159,8 +150,7 @@ public class QueryTransformerRegexTest extends TestCase
     public void testOrderByAscDesc() {
         QueryTransformerRegex transformer = new QueryTransformerRegex(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
-                        "group by c.level having c.level > 0 order by h.group asc",
-                "sec$GroupHierarchy");
+                        "group by c.level having c.level > 0 order by h.group asc");
         transformer.replaceOrderBy(true, "group");
         String res = transformer.getResult();
         assertEquals(
@@ -170,8 +160,7 @@ public class QueryTransformerRegexTest extends TestCase
 
         transformer = new QueryTransformerRegex(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
-                        "group by c.level having c.level > 0 order by h.group desc",
-                "sec$GroupHierarchy");
+                        "group by c.level having c.level > 0 order by h.group desc");
         transformer.replaceOrderBy(false, "group");
         res = transformer.getResult();
         assertEquals(
@@ -181,8 +170,7 @@ public class QueryTransformerRegexTest extends TestCase
 
         transformer = new QueryTransformerRegex(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
-                        "group by c.level having c.level > 0 order by h.group desc",
-                "sec$GroupHierarchy");
+                        "group by c.level having c.level > 0 order by h.group desc");
         transformer.replaceOrderBy(true, "group");
         res = transformer.getResult();
         assertEquals(
@@ -194,8 +182,7 @@ public class QueryTransformerRegexTest extends TestCase
     public void testOrderByAssociatedProperty() {
         // first level of association
         QueryTransformerRegex transformer = new QueryTransformerRegex(
-                "select c from ref$Car c where c.deleteTs is null",
-                "ref$Car");
+                "select c from ref$Car c where c.deleteTs is null");
         transformer.replaceOrderBy(false, "model.numberOfSeats");
         String res = transformer.getResult();
         assertEquals(
@@ -209,8 +196,7 @@ public class QueryTransformerRegexTest extends TestCase
 
         // second level of association
         transformer = new QueryTransformerRegex(
-                "select c from ref$Car c where c.deleteTs is null",
-                "ref$Car");
+                "select c from ref$Car c where c.deleteTs is null");
         transformer.replaceOrderBy(false, "model.manufacturer.name");
         res = transformer.getResult();
         assertEquals(
@@ -225,8 +211,7 @@ public class QueryTransformerRegexTest extends TestCase
 
     public void testOrderBySeveralProperties() throws Exception {
         QueryTransformerRegex transformer = new QueryTransformerRegex(
-                "select c from ref$Car c where c.deleteTs is null",
-                "ref$Car");
+                "select c from ref$Car c where c.deleteTs is null");
 
 
         transformer.replaceOrderBy(false, "createTs", "vin");
@@ -259,8 +244,7 @@ public class QueryTransformerRegexTest extends TestCase
         String res;
 
         transformer = new QueryTransformerRegex(
-                "select c from ref$Car c where c.deleteTs is null",
-                "ref$Car");
+                "select c from ref$Car c where c.deleteTs is null");
         transformer.removeDistinct();
         res = transformer.getResult();
         assertEquals(
@@ -268,8 +252,7 @@ public class QueryTransformerRegexTest extends TestCase
                 res);
 
         transformer = new QueryTransformerRegex(
-                "select distinct c from ref$Car c where c.deleteTs is null",
-                "ref$Car");
+                "select distinct c from ref$Car c where c.deleteTs is null");
         transformer.removeDistinct();
         res = transformer.getResult();
         assertEquals(
@@ -277,9 +260,7 @@ public class QueryTransformerRegexTest extends TestCase
                 res);
 
         transformer = new QueryTransformerRegex(
-                "select " +
-                        " distinct c from ref$Car c where c.deleteTs is null",
-                "ref$Car");
+                "select distinct c from ref$Car c where c.deleteTs is null");
         transformer.removeDistinct();
         res = transformer.getResult();
         assertEquals(
@@ -292,8 +273,7 @@ public class QueryTransformerRegexTest extends TestCase
         String res;
 
         transformer = new QueryTransformerRegex(
-                "select c from ref$Car c where c.deleteTs is null",
-                "ref$Car");
+                "select c from ref$Car c where c.deleteTs is null");
         transformer.replaceEntityName("ref$ExtCar");
         res = transformer.getResult();
         assertEquals(
@@ -306,8 +286,7 @@ public class QueryTransformerRegexTest extends TestCase
         String res;
 
         transformer = new QueryTransformerRegex(
-                "select h from sec$GroupHierarchy h where h.group = :par",
-                "sec$GroupHierarchy");
+                "select h from sec$GroupHierarchy h where h.group = :par");
 
         transformer.addWhere("{E}.createdBy = :par1 and {E}.updatedBy = (select u.login from sec$User u where u.login = :par2) and {E}.createTs = :par3");
         res = transformer.getResult();
@@ -322,8 +301,7 @@ public class QueryTransformerRegexTest extends TestCase
         String res;
 
         transformer = new QueryTransformerRegex(
-                "select c from sec$GroupHierarchy h where h.group = :par",
-                "sec$GroupHierarchy");
+                "select c from sec$GroupHierarchy h where h.group = :par");
 
         transformer.addJoinAndWhere("join {E}.parent.constraints c", "{E}.createdBy = :par1 and {E}.updatedBy = " +
                 "(select u.login from sec$User u where u.login = {E}.param) and c.createTs = :par3");
@@ -331,6 +309,27 @@ public class QueryTransformerRegexTest extends TestCase
         assertEquals(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par and (h.createdBy = :par1" +
                         " and h.updatedBy = (select u.login from sec$User u where u.login = h.param) and c.createTs = :par3)",
+                res);
+    }
+
+    public void testHandleCaseInsensitiveParam() throws Exception {
+        QueryTransformerRegex transformer;
+        String res;
+
+        transformer = new QueryTransformerRegex("select u from sec$User u where u.name like :name");
+
+        transformer.handleCaseInsensitiveParam("name");
+        res = transformer.getResult();
+        assertEquals(
+                "select u from sec$User u where lower(u.name) like :name",
+                res);
+
+        transformer = new QueryTransformerRegex("select u from sec$User u where u.name=:name");
+
+        transformer.handleCaseInsensitiveParam("name");
+        res = transformer.getResult();
+        assertEquals(
+                "select u from sec$User u where lower(u.name)=:name",
                 res);
     }
 }

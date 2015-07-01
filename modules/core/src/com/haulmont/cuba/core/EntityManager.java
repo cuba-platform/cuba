@@ -70,7 +70,6 @@ public interface EntityManager {
     /**
      * Find by primary key.
      * <p/> All non-lazy view properties contained in a combined view are eagerly fetched.
-     * A view specified by {@link #setView(View)} method is not taken into account.
      *
      * @param entityClass   entity class
      * @param primaryKey    entity id
@@ -85,7 +84,6 @@ public interface EntityManager {
     /**
      * Find by primary key.
      * <p/> All non-lazy view properties contained in a combined view are eagerly fetched.
-     * A view specified by {@link #setView(View)} method is not taken into account.
      *
      * @param entityClass   entity class
      * @param primaryKey    entity id
@@ -172,35 +170,12 @@ public interface EntityManager {
     <T> TypedQuery<T> createNativeQuery(String sqlString, Class<T> resultClass);
 
     /**
-     * Set View for this EntityManager instance and all created {@link Query}s.
-     * All non-lazy view properties contained in a combination of all added views are eagerly fetched.
-     *
-     * <p> DEPRECATED! Will be removed in 6.0. Specify view explicitly in <code>find()</code> methods or in
-     * <code>Query</code> instances.
-     *
-     * @param view view instance. If null, eager fetching is performed according to JPA mappings.
-     */
-    @Deprecated
-    void setView(@Nullable View view);
-
-    /**
-     * Adds View for this EntityManager instance and all created {@link Query}s.
-     * All non-lazy view properties contained in a combination of all added views are eagerly fetched.
-     *
-     * <p> DEPRECATED! Will be removed in 6.0. Specify view explicitly in <code>find()</code> methods or in
-     * <code>Query</code> instances.
-     *
-     * @param view non-null view instance
-     */
-    @Deprecated
-    void addView(View view);
-
-    /**
      * Ensure all view fields, including lazy, are fetched.
      * @param entity    entity instance
      * @param view      view instance that may be different from views currently set on this EntityManager
      * @throws IllegalArgumentException if the entity is in detached state
      */
+    @Deprecated
     void fetch(Entity entity, View view);
 
     /**

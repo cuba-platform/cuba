@@ -4,20 +4,28 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.bali.db.QueryRunner;
+import com.haulmont.bali.db.ResultSetHandler;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.Config;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.io.Serializable;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Supports configuration parameters framework functionality.
@@ -29,13 +37,17 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ConfigStorage implements ConfigStorageAPI {
 
     @Inject
-    private Persistence persistence;
+    protected Persistence persistence;
 
-    private ClusterManagerAPI clusterManager;
+    protected ClusterManagerAPI clusterManager;
 
-    private Map<String, String> cache = new ConcurrentHashMap<String, String>();
-    
-    private volatile boolean cacheLoaded;
+    protected Map<String, String> cache;
+
+    protected ReadWriteLock lock = new ReentrantReadWriteLock();
+    protected Lock readLock = lock.readLock();
+    protected Lock writeLock = lock.writeLock();
+
+    private Log log = LogFactory.getLog(ConfigStorage.class);
 
     private static class InvalidateCacheMsg implements Serializable {
         private static final long serialVersionUID = -3116358584797500962L;
@@ -59,43 +71,64 @@ public class ConfigStorage implements ConfigStorageAPI {
     }
 
     private void internalClearCache() {
-        cache.clear();
-        cacheLoaded = false;
+        writeLock.lock();
+        try {
+            cache = null;
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     @Override
     public Map<String, String> getDbProperties() {
-        loadCache();
-        return new HashMap<>(cache);
+        readLock.lock();
+        try {
+            loadCache();
+            return new HashMap<>(cache);
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public String getDbProperty(String name) {
-        loadCache();
-        return cache.get(name);
+        readLock.lock();
+        try {
+            loadCache();
+            return cache.get(name);
+        } finally {
+            readLock.unlock();
+        }
     }
 
-    private void loadCache() {
-        if (!cacheLoaded) {
-            List<Config> list;
-            Transaction tx = persistence.createTransaction();
+    protected void loadCache() {
+        if (cache == null) {
+            lock.readLock().unlock();
+            lock.writeLock().lock();
             try {
-                EntityManager em = persistence.getEntityManager();
-                String s = "select c from sys$Config c";
-                Query query = em.createQuery(s);
-                list = query.getResultList();
-                tx.commit();
-            } finally {
-                tx.end();
-            }
-            synchronized (this) {
-                if (!cacheLoaded) {
-                    cache.clear();
-                    for (Config config : list) {
-                        cache.put(config.getName(), config.getValue() == null ? null : config.getValue().trim());
+                if (cache == null) {
+                    log.info("Loading DB-stored app properties cache");
+                    // Don't use transactions here because of loop possibility from EntityLog
+                    QueryRunner queryRunner = new QueryRunner(persistence.getDataSource());
+                    try {
+                        cache = queryRunner.query("select NAME, VALUE from SYS_CONFIG",
+                                new ResultSetHandler<Map<String, String>>() {
+                                    @Override
+                                    public Map<String, String> handle(ResultSet rs) throws SQLException {
+                                        HashMap<String, String> map = new HashMap<>();
+                                        while (rs.next()) {
+                                            map.put(rs.getString(1), rs.getString(2));
+                                        }
+                                        return map;
+                                    }
+                                });
+                    } catch (SQLException e) {
+                        throw new RuntimeException("Error loading DB-stored app properties cache", e);
                     }
-                    cacheLoaded = true;
                 }
+            } finally {
+                lock.readLock().lock();
+                lock.writeLock().unlock();
             }
         }
     }

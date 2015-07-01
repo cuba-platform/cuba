@@ -11,7 +11,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserFormatTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.openjpa.persistence.Persistent;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.*;
@@ -52,7 +51,6 @@ public class ScreenHistoryEntity extends BaseUuidEntity {
     protected String url;
 
     @Column(name = "ENTITY_ID")
-    @Persistent
     protected UUID entityId;
 
     public User getUser() {

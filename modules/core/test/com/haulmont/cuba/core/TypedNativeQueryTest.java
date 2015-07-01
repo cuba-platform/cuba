@@ -46,7 +46,7 @@ public class TypedNativeQueryTest extends CubaTestCase {
         }
 
         // load with native query, change attribute
-        String nativeQuery = "select ID, CREATE_TS, CREATED_BY, UPDATE_TS, UPDATED_BY, NAME from SEC_GROUP where ID = ?";
+        String nativeQuery = "select ID, VERSION, CREATE_TS, CREATED_BY, UPDATE_TS, UPDATED_BY, NAME from SEC_GROUP where ID = ?";
         tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();

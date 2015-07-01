@@ -23,6 +23,8 @@ public interface QueryParser {
     /** Main entity alias */
     String getEntityAlias(String targetEntity);
 
+    String getEntityAlias();
+
     /** Returns true if this is a standard select from an entity - not count() and not fields (e.id, etc.) */
     boolean isEntitySelect(String targetEntity);
 }

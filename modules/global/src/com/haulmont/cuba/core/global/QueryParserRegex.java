@@ -43,6 +43,8 @@ public class QueryParserRegex implements QueryParser {
     public static final String PARAM_PATTERN_REGEX = ":([a-zA-Z_0-9$\\.]+)";
     public static final Pattern PARAM_PATTERN = Pattern.compile(PARAM_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
 
+    public static final String COND_PATTERN_REGEX = "([a-zA-Z_0-9$\\.]+)\\s*([=<>]+|like)\\s*";
+
     public static final String OR_PATTERN_REGEX = "\\bOR\\b";
     public static final Pattern OR_PATTERN = Pattern.compile(OR_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
 
@@ -75,6 +77,11 @@ public class QueryParserRegex implements QueryParser {
 
     @Override
     public String getEntityAlias(String targetEntity) {
+        return getEntityAlias();
+    }
+
+    @Override
+    public String getEntityAlias() {
         String alias = null;
         Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(source);
         if (entityMatcher.find()) {

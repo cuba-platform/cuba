@@ -22,7 +22,7 @@ public class SendingAttachment extends StandardEntity {
     private static final long serialVersionUID = -8253918579521701435L;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "MESSAGE_ID")
+    @JoinColumn(name = "MESSAGE_ID")
     protected SendingMessage message;
 
     /**

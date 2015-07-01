@@ -5,7 +5,10 @@
 
 package com.haulmont.cuba.core.sys;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
@@ -13,6 +16,16 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @version $Id$
 */
 public class CubaClassPathXmlApplicationContext extends ClassPathXmlApplicationContext {
+
+    public CubaClassPathXmlApplicationContext(String[] locations) {
+        super(locations);
+    }
+
+    @Override
+    protected void initBeanDefinitionReader(XmlBeanDefinitionReader reader) {
+        setValidating(false);
+        super.initBeanDefinitionReader(reader);
+    }
 
     @Override
     protected DefaultListableBeanFactory createBeanFactory() {

@@ -5,12 +5,12 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.chile.core.model.Instance;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.SoftDelete;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.kernel.StateManagerImpl;
+import org.eclipse.persistence.queries.FetchGroup;
+import org.eclipse.persistence.queries.FetchGroupTracker;
 
 import javax.annotation.Nullable;
 import javax.persistence.Table;
@@ -34,13 +34,13 @@ public class PersistenceHelper {
      */
     public static boolean isNew(Object entity) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
-        if (entity instanceof BaseEntity && ((BaseEntity) entity).isDetached()) {
+        if (entity instanceof BaseGenericIdEntity && !((BaseGenericIdEntity) entity).__new()) {
             return false;
         }
-        if (entity instanceof PersistenceCapable) {
-            return ((PersistenceCapable) entity).pcGetStateManager() == null
-                    || ((PersistenceCapable) entity).pcGetStateManager().isNew();
-        }
+//        if (entity instanceof PersistenceCapable) {
+//            return ((PersistenceCapable) entity).pcGetStateManager() == null
+//                    || ((PersistenceCapable) entity).pcGetStateManager().isNew();
+//        }
         return true;
     }
 
@@ -53,10 +53,13 @@ public class PersistenceHelper {
      */
     public static boolean isManaged(Object entity) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
-        if (entity instanceof PersistenceCapable) {
-            return ((PersistenceCapable) entity).pcGetStateManager() != null
-                    && !((PersistenceCapable) entity).pcGetStateManager().isDetached();
+        if (entity instanceof BaseGenericIdEntity) {
+            return ((BaseGenericIdEntity) entity).__managed();
         }
+//        if (entity instanceof PersistenceCapable) {
+//            return ((PersistenceCapable) entity).pcGetStateManager() != null
+//                    && !((PersistenceCapable) entity).pcGetStateManager().isDetached();
+//        }
         return false;
     }
 
@@ -70,13 +73,13 @@ public class PersistenceHelper {
      */
     public static boolean isDetached(Object entity) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
-        if (entity instanceof BaseEntity && ((BaseEntity) entity).isDetached()) {
+        if (entity instanceof BaseGenericIdEntity && ((BaseGenericIdEntity) entity).__detached()) {
             return true;
         }
-        if (entity instanceof PersistenceCapable) {
-            return ((PersistenceCapable) entity).pcGetStateManager() != null
-                    && ((PersistenceCapable) entity).pcGetStateManager().isDetached();
-        }
+//        if (entity instanceof PersistenceCapable) {
+//            return ((PersistenceCapable) entity).pcGetStateManager() != null
+//                    && ((PersistenceCapable) entity).pcGetStateManager().isDetached();
+//        }
         return false;
     }
 
@@ -102,6 +105,31 @@ public class PersistenceHelper {
      */
     public static boolean isSoftDeleted(Class entityClass) {
         return SoftDelete.class.isAssignableFrom(entityClass);
+    }
+
+    /**
+     * Checks if the property is loaded from DB.
+     *
+     * @param entity   entity
+     * @param property name of the property. Only immediate attributes of the entity are supported.
+     * @return true if loaded
+     */
+    public static boolean isLoaded(Object entity, String property) {
+        if (entity instanceof FetchGroupTracker) {
+            FetchGroup fetchGroup = ((FetchGroupTracker) entity)._persistence_getFetchGroup();
+            if (fetchGroup != null)
+                return fetchGroup.getAttributeNames().contains(property);
+        }
+        if (entity instanceof Instance) {
+            try {
+                ((Instance) entity).getValue(property);
+                return true;
+            } catch (Exception ignored) {
+                return false;
+            }
+        } else {
+            throw new IllegalArgumentException("Unable to check if the attribute is loaded: the entity is of unknown type");
+        }
     }
 
     /**

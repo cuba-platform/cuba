@@ -12,12 +12,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
+import org.dom4j.*;
 
 import javax.annotation.Nullable;
 import javax.persistence.*;
+import javax.persistence.Entity;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -36,8 +35,9 @@ import java.util.*;
 */
 class MappingFileCreator {
 
-    private static final String XMLNS = "http://java.sun.com/xml/ns/persistence/orm";
-    private static final String PERSISTENCE_VER = "2.0";
+    private static final String XMLNS = "http://xmlns.jcp.org/xml/ns/persistence/orm";
+    private static final String SCHEMA_LOCATION = XMLNS + " http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd";
+    private static final String PERSISTENCE_VER = "2.1";
 
     private Collection<String> classNames;
     private Map<String, String> properties;
@@ -51,7 +51,7 @@ class MappingFileCreator {
         this.dir = dir;
     }
 
-    public void create() {
+    public boolean create() {
         Map<Class, Class> extendedClasses = new HashMap<>();
         List<Class> persistentClasses = new ArrayList<>();
         for (String className : classNames) {
@@ -67,7 +67,7 @@ class MappingFileCreator {
         }
 
         if (extendedClasses.isEmpty())
-            return;
+            return false;
 
         // search for higher order extensions
         Map<Class, Class> classes = new HashMap<>();
@@ -93,20 +93,12 @@ class MappingFileCreator {
         }
 
         if (mappings.isEmpty())
-            return;
+            return false;
         log.debug("Found " + mappings.size() + " entities containing extended associations");
 
         Document doc = createDocument(mappings);
-        File file = writeDocument(doc);
-
-        String filePath = file.getAbsolutePath().replace("\\", "/");
-        if (!filePath.startsWith("/"))
-            filePath = "/" + filePath;
-
-        String prop = properties.get("openjpa.MetaDataFactory");
-        if (prop != null)
-            log.warn("Please don't set openjpa.MetaDataFactory in your persistence.xml, it is overridden anyway");
-        properties.put("openjpa.MetaDataFactory", "jpa(URLs=file://" + filePath + ")");
+        writeDocument(doc);
+        return true;
     }
 
     private List<Attr> processClass(Class aClass, Map<Class, Class> extendedClasses) {
@@ -154,6 +146,9 @@ class MappingFileCreator {
     private Document createDocument(Map<Class<?>, List<Attr>> mappings) {
         Document doc = DocumentHelper.createDocument();
         Element rootEl = doc.addElement("entity-mappings", XMLNS);
+        Namespace xsi = new Namespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        rootEl.add(xsi);
+        rootEl.addAttribute(new QName("schemaLocation", xsi), SCHEMA_LOCATION);
         rootEl.addAttribute("version", PERSISTENCE_VER);
 
         for (Map.Entry<Class<?>, List<Attr>> entry : mappings.entrySet()) {

@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.core;
 
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.logging.Log;
@@ -12,15 +13,17 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.UUID;
 
+import static com.haulmont.cuba.testsupport.TestSupport.reserialize;
+
 /**
  * @author Alexander Budarov
  * @version $Id$
  */
-public class OpenJpaBehaviorTest extends CubaTestCase {
+public class OrmBehaviorTest extends CubaTestCase {
 
     private UUID userId, groupId;
 
-    private Log log = LogFactory.getLog(OpenJpaBehaviorTest.class);
+    private Log log = LogFactory.getLog(OrmBehaviorTest.class);
 
     protected void tearDown() throws Exception {
         deleteRecord("SEC_USER", userId);
@@ -29,9 +32,9 @@ public class OpenJpaBehaviorTest extends CubaTestCase {
     }
 
     /*
-     * Test that persist with un-managed attribute doesn't work (it worked in OpenJPA pre-2.2)
+     * Test that persist with un-managed attribute works (it didn't work in OpenJPA 2.2+ and worked in OpenJPA pre-2.2)
      */
-    public void testPersistWithUnManagedAttribute() {
+    public void testPersistWithUnManagedAttribute() throws Exception {
         Group group = new Group();
         groupId = group.getId();
         group.setName("Old Name");
@@ -48,27 +51,25 @@ public class OpenJpaBehaviorTest extends CubaTestCase {
         g.setId(groupId);
         g.setName("Old Name");
 
-
         User user = new User();
         userId = user.getId();
         user.setLogin("typednativesqlquery");
         user.setGroup(g);
         user.setName("Test");
 
+        tx = persistence.createTransaction();
         try {
-            tx = persistence.createTransaction();
-            try {
-                EntityManager em = persistence.getEntityManager();
-                em.persist(user);
-                tx.commit();
-            } finally {
-                tx.end();
-            }
-            fail("This was expected to throw exception");
-        } catch (Exception e) {
-            log.info("Just as planned", e);
+            persistence.getEntityManager().persist(user);
+            tx.commitRetaining();
+
+            user = persistence.getEntityManager().find(User.class, userId,
+                    new View(User.class).addProperty("group"));
+            tx.commit();
+        } finally {
+            tx.end();
         }
+
+        user = reserialize(user);
+        assertEquals(groupId, user.getGroup().getId());
     }
-
-
 }

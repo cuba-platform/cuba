@@ -70,7 +70,7 @@ public class DataServiceQueryBuilder {
     }
 
     public void restrictByPreviousResults(UUID sessionId, int queryKey) {
-        QueryTransformer transformer = QueryTransformerFactory.createTransformer(queryString, entityName);
+        QueryTransformer transformer = QueryTransformerFactory.createTransformer(queryString);
         transformer.addJoinAndWhere(
                 ", sys$QueryResult _qr",
                 "_qr.entityId = {E}.id and _qr.sessionId = :_qr_sessionId and _qr.queryKey = " + queryKey

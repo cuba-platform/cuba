@@ -6,19 +6,20 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.TypedQuery;
-import com.haulmont.cuba.core.entity.EmbeddableEntity;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.SoftDelete;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
+import com.haulmont.cuba.core.sys.listener.EntityListenerType;
+import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 import javax.annotation.Nullable;
 import java.sql.Connection;
@@ -30,28 +31,31 @@ import java.util.*;
  */
 public class EntityManagerImpl implements EntityManager {
 
-    private OpenJPAEntityManager delegate;
+    private javax.persistence.EntityManager delegate;
 
     private UserSession userSession;
     private Metadata metadata;
-    private FetchPlanManager fetchPlanMgr;
+    private FetchGroupManager fetchGroupMgr;
+    private EntityListenerManager entityListenerMgr;
+    private PersistenceImplSupport support;
 
     private boolean softDeletion = true;
 
-    private List<View> views = new ArrayList<>(1);
+    private Log log = LogFactory.getLog(EntityManagerImpl.class);
 
-    private Log log = LogFactory.getLog(getClass());
-
-    EntityManagerImpl(OpenJPAEntityManager jpaEntityManager, UserSession userSession, Metadata metadata,
-                      FetchPlanManager fetchPlanMgr) {
+    EntityManagerImpl(javax.persistence.EntityManager jpaEntityManager, UserSession userSession, Metadata metadata,
+                      FetchGroupManager fetchGroupMgr, EntityListenerManager entityListenerMgr,
+                      PersistenceImplSupport support) {
         this.delegate = jpaEntityManager;
         this.userSession = userSession;
         this.metadata = metadata;
-        this.fetchPlanMgr = fetchPlanMgr;
+        this.fetchGroupMgr = fetchGroupMgr;
+        this.entityListenerMgr = entityListenerMgr;
+        this.support = support;
     }
 
     @Override
-    public OpenJPAEntityManager getDelegate() {
+    public javax.persistence.EntityManager getDelegate() {
         return delegate;
     }
 
@@ -63,21 +67,35 @@ public class EntityManagerImpl implements EntityManager {
     @Override
     public void setSoftDeletion(boolean softDeletion) {
         this.softDeletion = softDeletion;
+        delegate.setProperty("disableSoftDelete", softDeletion ? 0 : 1);
     }
 
     @Override
     public void persist(Entity entity) {
         delegate.persist(entity);
+        support.registerInstance(entity, this);
     }
 
     @Override
     public <T extends Entity> T merge(T entity) {
-        // Don't use PersistenceHelper.isDetached here, as we have to merge not-detached instances too.
-        if (entity instanceof PersistenceCapable
-                && BooleanUtils.isFalse(((PersistenceCapable) entity).pcIsDetached()))
+        if (PersistenceHelper.isManaged(entity))
             return entity;
-        else
-            return delegate.merge(entity);
+
+        if (entity instanceof BaseEntity) {
+            entityListenerMgr.fireListener((BaseEntity) entity, EntityListenerType.BEFORE_ATTACH);
+        }
+
+        if (PersistenceHelper.isNew(entity)) {
+            // if a new instance is passed to merge(), we suppose it is persistent but "not detached"
+            Entity destEntity = findOrCreate(entity.getClass(), entity.getId());
+            deepCopyIgnoringNulls(entity, destEntity);
+            //noinspection unchecked
+            return (T) destEntity;
+        }
+
+        T merged = delegate.merge(entity);
+        support.registerInstance(merged, this);
+        return merged;
     }
 
     @Override
@@ -91,30 +109,25 @@ public class EntityManagerImpl implements EntityManager {
             ((SoftDelete) entity).setDeletedBy(userSession != null ? userSession.getUser().getLogin() : "<unknown>");
         } else {
             delegate.remove(entity);
+            if (entity instanceof BaseGenericIdEntity)
+                ((BaseGenericIdEntity) entity).__removed(true);
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <T extends Entity<K>, K> T find(Class<T> clazz, K key) {
-        //noinspection unchecked
-        Class<T> effectiveClass = metadata.getExtendedEntities().getEffectiveClass(clazz);
+    public <T extends Entity<K>, K> T find(Class<T> entityClass, K key) {
+        MetaClass metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(entityClass);
+        Class<T> javaClass = metaClass.getJavaClass();
 
-        T entity = delegate.find(effectiveClass, key);
-        if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted() && softDeletion)
-            return null;
-        else
-            return entity;
+        return delegate.find(javaClass, key);
     }
 
     @Nullable
     @Override
     public <T extends Entity<K>, K> T find(Class<T> entityClass, K primaryKey, View... views) {
-        setFetchPlan(Arrays.asList(views));
-        try {
-            return find(entityClass, primaryKey);
-        } finally {
-            setFetchPlan(this.views);
-        }
+        MetaClass metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(entityClass);
+        return findWithViews(metaClass, primaryKey, Arrays.asList(views));
     }
 
     @Nullable
@@ -127,6 +140,15 @@ public class EntityManagerImpl implements EntityManager {
         return find(entityClass, primaryKey, viewArray);
     }
 
+    private <T extends Entity> T findWithViews(MetaClass metaClass, Object key, List<View> views) {
+        Query query = createQuery("select e from " + metaClass.getName() + " e where e.id = ?1");
+        query.setParameter(1, key);
+        for (View view : views) {
+            query.addView(view);
+        }
+        return (T) query.getFirstResult();
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Entity<K>, K> T getReference(Class<T> clazz, K key) {
@@ -137,31 +159,31 @@ public class EntityManagerImpl implements EntityManager {
 
     @Override
     public Query createQuery() {
-        return new QueryImpl(this, false, null, metadata, fetchPlanMgr);
+        return new QueryImpl(this, false, null, metadata, fetchGroupMgr);
     }
 
     @Override
     public Query createQuery(String qlStr) {
-        QueryImpl query = new QueryImpl(this, false, null, metadata, fetchPlanMgr);
+        QueryImpl query = new QueryImpl(this, false, null, metadata, fetchGroupMgr);
         query.setQueryString(qlStr);
         return query;
     }
 
     @Override
     public <T> TypedQuery<T> createQuery(String qlString, Class<T> resultClass) {
-        QueryImpl<T> query = new QueryImpl<>(this, false, resultClass, metadata, fetchPlanMgr);
+        QueryImpl<T> query = new QueryImpl<>(this, false, resultClass, metadata, fetchGroupMgr);
         query.setQueryString(qlString);
         return query;
     }
 
     @Override
     public Query createNativeQuery() {
-        return new QueryImpl(this, true, null, metadata, fetchPlanMgr);
+        return new QueryImpl(this, true, null, metadata, fetchGroupMgr);
     }
 
     @Override
     public Query createNativeQuery(String sql) {
-        QueryImpl query = new QueryImpl(this, true, null, metadata, fetchPlanMgr);
+        QueryImpl query = new QueryImpl(this, true, null, metadata, fetchGroupMgr);
         query.setQueryString(sql);
         return query;
     }
@@ -169,39 +191,14 @@ public class EntityManagerImpl implements EntityManager {
     @SuppressWarnings("unchecked")
     @Override
     public <T> TypedQuery<T> createNativeQuery(String sql, Class<T> resultClass) {
-        QueryImpl query = new QueryImpl(this, true, resultClass, metadata, fetchPlanMgr);
+        QueryImpl query = new QueryImpl(this, true, resultClass, metadata, fetchGroupMgr);
         query.setQueryString(sql);
         return query;
     }
 
     @Override
-    public void setView(View view) {
-        fetchPlanMgr.setView(delegate.getFetchPlan(), view);
-        views.clear();
-        views.add(view);
-    }
-
-    @Override
-    public void addView(View view) {
-        fetchPlanMgr.addView(delegate.getFetchPlan(), view);
-        views.add(view);
-    }
-
-    @Override
+    @Deprecated
     public void fetch(Entity entity, View view) {
-        Preconditions.checkNotNullArgument(view, "View is null");
-        Preconditions.checkNotNullArgument(entity, "Entity instance is null");
-        if (!PersistenceHelper.isManaged(entity))
-            throw new IllegalArgumentException("Can not fetch detached entity. Merge first.");
-
-        // Set default fetch plan
-        fetchPlanMgr.setView(delegate.getFetchPlan(), null);
-        try {
-            fetchInstance(entity, view, new HashMap<Instance, Set<View>>());
-        } finally {
-            // Restore fetch plan
-            setFetchPlan(this.views);
-        }
     }
 
     @Nullable
@@ -233,78 +230,82 @@ public class EntityManagerImpl implements EntityManager {
         return (T) resultEntity;
     }
 
-    private void setFetchPlan(List<View> views) {
-        if (views == null || views.isEmpty()) {
-            fetchPlanMgr.setView(delegate.getFetchPlan(), null);
-        } else {
-            fetchPlanMgr.setView(delegate.getFetchPlan(), views.get(0));
-            for (int i = 1; i < views.size(); i++) {
-                fetchPlanMgr.addView(delegate.getFetchPlan(), views.get(i));
-            }
-        }
-    }
-
-    private void fetchInstance(Instance instance, View view, Map<Instance, Set<View>> visited) {
-        Set<View> views = visited.get(instance);
-        if (views == null) {
-            views = new HashSet<>();
-            visited.put(instance, views);
-        } else if (views.contains(view)) {
-            return;
-        }
-        views.add(view);
-
-        if (log.isTraceEnabled()) log.trace("Fetching instance " + instance);
-        for (ViewProperty property : view.getProperties()) {
-            if (log.isTraceEnabled()) log.trace("Fetching property " + property.getName());
-
-            View propertyView = property.getView();
-
-            Object value;
-            if (!property.isLazy() || propertyView == null) {
-                value = instance.getValue(property.getName());
-            } else {
-                if (log.isTraceEnabled()) log.trace("Use property view for lazy load " + propertyView.toString());
-                fetchPlanMgr.setView(delegate.getFetchPlan(), propertyView);
-
-                try {
-                    value = instance.getValue(property.getName());
-                } finally {
-                    // Restore fetch plan
-                    setFetchPlan(this.views);
-                }
-            }
-
-            if (value != null && propertyView != null) {
-                if (value instanceof Collection) {
-                    for (Object item : ((Collection) value)) {
-                        if (item instanceof Instance)
-                            fetchInstance((Instance) item, propertyView, visited);
-                    }
-                } else if (value instanceof Instance) {
-                    if (PersistenceHelper.isDetached(value) && !(value instanceof EmbeddableEntity)) {
-                        log.trace("Object " + value + " is detached, loading it");
-                        Entity entity = (Entity) value;
-                        value = find(entity.getClass(), entity.getId());
-                        if (value == null) {
-                            // the instance is most probably deleted
-                            continue;
-                        }
-                        instance.setValue(property.getName(), value);
-                    }
-                    fetchInstance((Instance) value, propertyView, visited);
-                }
-            }
-        }
-    }
-
     @Override
     public void flush() {
+        support.fireEntityListeners();
         delegate.flush();
     }
 
     @Override
     public Connection getConnection() {
-        return (Connection) delegate.getConnection();
+        return delegate.unwrap(Connection.class);
+    }
+
+    private void deepCopyIgnoringNulls(Entity source, Entity dest) {
+        for (MetaProperty srcProperty : source.getMetaClass().getProperties()) {
+            String name = srcProperty.getName();
+            Object value = source.getValue(name);
+            if (value == null)
+                continue;
+
+            if (srcProperty.getRange().isClass()) {
+                MetadataTools metadataTools = metadata.getTools();
+
+                if (!metadataTools.isOwningSide(srcProperty))
+                    continue;
+
+                Class refClass = srcProperty.getRange().asClass().getJavaClass();
+                if (!metadataTools.isPersistent(refClass))
+                    continue;
+
+                if (srcProperty.getRange().getCardinality().isMany()) {
+                    if (!metadataTools.isOwningSide(srcProperty))
+                        continue;
+                    //noinspection unchecked
+                    Collection<Entity> srcCollection = (Collection) value;
+                    Collection<Entity> dstCollection = dest.getValue(name);
+                    if (dstCollection == null)
+                        throw new RuntimeException("Collection is null: " + srcProperty);
+                    boolean equal = srcCollection.size() == dstCollection.size();
+                    if (equal) {
+                        if (srcProperty.getRange().isOrdered()) {
+                            equal = Arrays.equals(srcCollection.toArray(), dstCollection.toArray());
+                        } else {
+                            equal = CollectionUtils.isEqualCollection(srcCollection, dstCollection);
+                        }
+                    }
+                    if (!equal) {
+                        dstCollection.clear();
+                        for (Entity srcRef : srcCollection) {
+                            Entity reloadedRef = findOrCreate(refClass, srcRef.getId());
+                            dstCollection.add(reloadedRef);
+                            deepCopyIgnoringNulls(srcRef, reloadedRef);
+                        }
+                    }
+                } else {
+                    Entity srcRef = (Entity) value;
+                    Entity destRef = dest.getValue(name);
+                    if (srcRef.equals(destRef)) {
+                        deepCopyIgnoringNulls(srcRef, destRef);
+                    } else {
+                        Entity reloadedRef = findOrCreate(refClass, srcRef.getId());
+                        dest.setValue(name, reloadedRef);
+                        deepCopyIgnoringNulls(srcRef, reloadedRef);
+                    }
+                }
+            } else {
+                dest.setValue(name, value);
+            }
+        }
+    }
+
+    protected <T extends Entity> T findOrCreate(Class<T> entityClass, Object id) {
+        Entity reloadedRef = find(entityClass, id);
+        if (reloadedRef == null) {
+            reloadedRef = metadata.create(entityClass);
+            persist(reloadedRef);
+        }
+        //noinspection unchecked
+        return (T) reloadedRef;
     }
 }

@@ -149,17 +149,15 @@ public class SoftDeleteTest extends CubaTestCase
         try {
             EntityManager em = persistence.getEntityManager();
 
-            em.setView(
-                    new View(User.class, "testView")
+            View view = new View(User.class, "testView")
                             .addProperty("name")
                             .addProperty("login")
                             .addProperty("userRoles",
                                     new View(UserRole.class, "testView")
                                             .addProperty("role",
                                                     new View(Role.class, "testView")
-                                                            .addProperty("name")))
-            );
-            User user = em.find(User.class, userId);
+                                                            .addProperty("name")));
+            User user = em.find(User.class, userId, view);
 
             List<UserRole> userRoles = user.getUserRoles();
             assertEquals(1, userRoles.size());
@@ -203,17 +201,15 @@ public class SoftDeleteTest extends CubaTestCase
             EntityManager em = persistence.getEntityManager();
             em.setSoftDeletion(false);
 
-            em.setView(
-                    new View(User.class, "testView")
+            View view =  new View(User.class, "testView")
                             .addProperty("name")
                             .addProperty("login")
                             .addProperty("userRoles",
                                 new View(UserRole.class, "testView")
                                     .addProperty("role",
                                         new View(Role.class, "testView")
-                                            .addProperty("name")))
-            );
-            User user = em.find(User.class, userId);
+                                            .addProperty("name")));
+            User user = em.find(User.class, userId, view);
 
             List<UserRole> userRoles = user.getUserRoles();
             assertEquals(2, userRoles.size());

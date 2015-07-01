@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Implementation of {@link QueryTransformer} based on regular expressions.
@@ -22,7 +23,7 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
     private StringBuffer buffer;
     private Set<String> addedParams;
 
-    QueryTransformerRegex(String source, String targetEntity) {
+    QueryTransformerRegex(String source) {
         super(source);
         buffer = new StringBuffer(source);
         addedParams = new HashSet<>();
@@ -330,6 +331,16 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
     @Override
     public Set<String> getAddedParams() {
         return Collections.unmodifiableSet(addedParams);
+    }
+
+    @Override
+    public void handleCaseInsensitiveParam(String paramName) {
+        Pattern pattern = Pattern.compile(COND_PATTERN_REGEX + ":" + paramName, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(buffer);
+        if (matcher.find()) {
+            String field = matcher.group(1);
+            buffer.replace(matcher.start(1), matcher.end(1), "lower(" + field + ")");
+        }
     }
 
     private String findAlias(Matcher entityMatcher) {

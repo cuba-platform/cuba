@@ -18,11 +18,8 @@ public class PostgresDbmsFeatures implements DbmsFeatures {
 
     @Override
     public Map<String, String> getJpaParameters() {
-        Map<String, String> params = new HashMap<>();
-        params.put("openjpa.jdbc.DBDictionary",
-                "com.haulmont.cuba.core.sys.persistence.CubaPostgresDictionary(RequiresCastForComparisons=true)");
-        params.put("openjpa.jdbc.MappingDefaults",
-                "FieldStrategies='java.util.UUID=com.haulmont.cuba.core.sys.persistence.UuidPostgresValueHandler'");
+        HashMap<String, String> params = new HashMap<>();
+        params.put("eclipselink.target-database", "com.haulmont.cuba.core.sys.persistence.CubaPostgreSQLPlatform");
         return params;
     }
 

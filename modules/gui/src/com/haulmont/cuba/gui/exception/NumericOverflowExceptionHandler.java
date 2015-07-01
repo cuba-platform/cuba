@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.IFrame;
 import org.apache.commons.lang.StringUtils;
-import org.apache.openjpa.lib.jdbc.ReportingSQLException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
@@ -25,7 +25,8 @@ import javax.annotation.Nullable;
 public class NumericOverflowExceptionHandler extends AbstractGenericExceptionHandler {
 
     public NumericOverflowExceptionHandler() {
-        super(ReportingSQLException.class.getName());
+        // todo EL
+        super(EclipseLinkException.class.getName());
     }
 
     @Override

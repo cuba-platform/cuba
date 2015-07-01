@@ -508,7 +508,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         if (q == null)
             return 0;
 
-        QueryTransformer transformer = QueryTransformerFactory.createTransformer(q.getQueryString(), metaClass.getName());
+        QueryTransformer transformer = QueryTransformerFactory.createTransformer(q.getQueryString());
         transformer.replaceWithCount();
         String jpqlQuery = transformer.getResult();
         q.setQueryString(jpqlQuery);
@@ -585,7 +585,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         }
 
         if (sortProperties != null) {
-            QueryTransformer transformer = QueryTransformerFactory.createTransformer(q.getQueryString(), metaClass.getName());
+            QueryTransformer transformer = QueryTransformerFactory.createTransformer(q.getQueryString());
             transformer.replaceOrderBy(!asc, sortProperties);
             String jpqlQuery = transformer.getResult();
             q.setQueryString(jpqlQuery);

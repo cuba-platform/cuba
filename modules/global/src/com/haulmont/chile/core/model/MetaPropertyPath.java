@@ -29,10 +29,21 @@ public class MetaPropertyPath implements Serializable {
         this.metaProperties = metaProperties;
 
         this.path = new String[metaProperties.length];
-        int i = 0;
-        for (MetaProperty metaProperty : metaProperties) {
-            path[i] = metaProperty.getName();
-            i++;
+        for (int i = 0; i < metaProperties.length; i++) {
+            path[i] = metaProperties[i].getName();
+        }
+    }
+
+    public MetaPropertyPath(MetaPropertyPath parentPath, MetaProperty... addProperties) {
+        this.metaClass = parentPath.getMetaClass();
+
+        this.metaProperties = new MetaProperty[parentPath.metaProperties.length + addProperties.length];
+        System.arraycopy(parentPath.metaProperties, 0, this.metaProperties, 0, parentPath.metaProperties.length);
+        System.arraycopy(addProperties, 0, this.metaProperties, parentPath.metaProperties.length, addProperties.length);
+
+        this.path = new String[this.metaProperties.length];
+        for (int i = 0; i < this.metaProperties.length; i++) {
+            this.path[i] = this.metaProperties[i].getName();
         }
     }
 
@@ -95,14 +106,6 @@ public class MetaPropertyPath implements Serializable {
     }
 
     /**
-     * DEPRECATED: use {@link #getMetaProperties()}
-     */
-    @Deprecated
-    public MetaProperty[] get() {
-        return metaProperties;
-    }
-
-    /**
      * Target MetaProperty
      */
     public MetaProperty getMetaProperty() {
@@ -111,8 +114,7 @@ public class MetaPropertyPath implements Serializable {
 
     @Override
     public String toString() {
-        StrBuilder sb = new StrBuilder();
-        return sb.appendWithSeparators(path, ".").toString();
+        return new StrBuilder().appendWithSeparators(path, ".").toString();
     }
 
     private Class getTypeClass(MetaProperty metaProperty) {

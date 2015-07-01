@@ -17,18 +17,6 @@ public interface BaseEntity<T> extends Entity<T> {
 
     int LOGIN_FIELD_LEN = 50;
 
-    /**
-     * For internal use.
-     * If you need to check instance state, use {@link com.haulmont.cuba.core.global.PersistenceHelper} methods.
-     * @return true if the entity is detached from persistence context
-     */
-    boolean isDetached();
-
-    /**
-     * Called by the framework when the entity is detached or attached to a persistence context.
-     */
-    void setDetached(boolean detached);
-
     Date getCreateTs();
 
     void setCreateTs(Date date);

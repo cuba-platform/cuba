@@ -53,15 +53,6 @@ public class DynamicAttributesEntity implements BaseEntity {
     }
 
     @Override
-    public boolean isDetached() {
-        return false;
-    }
-
-    @Override
-    public void setDetached(boolean detached) {
-    }
-
-    @Override
     public UUID getUuid() {
         return id;
     }

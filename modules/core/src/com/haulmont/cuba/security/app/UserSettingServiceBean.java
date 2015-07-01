@@ -193,12 +193,10 @@ public class UserSettingServiceBean implements UserSettingService {
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            Query delete = em.createQuery();
-            delete.setQueryString("delete from sec$Presentation p where p.user.id=?1");
+            Query delete = em.createQuery("delete from sec$Presentation p where p.user.id=?1");
             delete.setParameter(1, toUser);
             delete.executeUpdate();
-            Query selectQuery = em.createQuery();
-            selectQuery.setQueryString("select p from sec$Presentation p where p.user.id=?1");
+            Query selectQuery = em.createQuery("select p from sec$Presentation p where p.user.id=?1");
             selectQuery.setParameter(1, fromUser);
             List<Presentation> presentations = selectQuery.getResultList();
             for (Presentation presentation : presentations) {

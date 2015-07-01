@@ -16,7 +16,6 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.lang.StringUtils;
-import org.apache.openjpa.persistence.OpenJPAQuery;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -90,9 +89,9 @@ public class QueryResultTest extends CubaTestCase {
         UUID sessionId = UUID.randomUUID();
         int queryKey = 1;
 
-        tx = PersistenceProvider.createTransaction();
+        tx = persistence.createTransaction();
         try {
-            emDelegate = PersistenceProvider.getEntityManager().getDelegate();
+            emDelegate = persistence.getEntityManager().getDelegate();
 
             QueryResult queryResult = new QueryResult();
             queryResult.setSessionId(sessionId);
@@ -103,7 +102,7 @@ public class QueryResultTest extends CubaTestCase {
 
             tx.commitRetaining();
 
-            em = PersistenceProvider.getEntityManager();
+            em = persistence.getEntityManager();
             query = em.createQuery(
                     "select u from sec$User u, sys$QueryResult qr " +
                             "where qr.entityId = u.id and qr.sessionId = ?1 and qr.queryKey = ?2"
@@ -117,49 +116,19 @@ public class QueryResultTest extends CubaTestCase {
                             .addProperty("group", new View(Group.class).addProperty("name"))
             );
 
-            OpenJPAQuery openJPAQuery = (OpenJPAQuery) query.getDelegate();
-            Map params = new HashMap();
-            params.put(1, sessionId);
-            params.put(2, queryKey);
-            String[] dataStoreActions = openJPAQuery.getDataStoreActions(params);
-
-            System.out.println(dataStoreActions);
+//            OpenJPAQuery openJPAQuery = (OpenJPAQuery) query.getDelegate();
+//            Map params = new HashMap();
+//            params.put(1, sessionId);
+//            params.put(2, queryKey);
+//            String[] dataStoreActions = openJPAQuery.getDataStoreActions(params);
+//
+//            System.out.println(dataStoreActions);
 
 
             List<User> list = query.getResultList();
             assertEquals(1, list.size());
             User user = list.get(0);
             assertEquals("admin", user.getLogin());
-
-            /*
-            tx.commitRetaining();
-
-            // Add an incidental QueryResult
-
-            emDelegate = PersistenceProvider.getEntityManager().getDelegate();
-
-            queryResult = new QueryResult();
-            queryResult.setSessionId(sessionId);
-            queryResult.setQueryKey(queryKey);
-            queryResult.setEntityId(UUID.randomUUID());
-
-            emDelegate.persist(queryResult);
-
-            tx.commitRetaining();
-
-            // Delete all but in the last query (must delete the incidental result)
-
-            em = PersistenceProvider.getEntityManager();
-            query = em.createQuery(
-                    "delete from sys$QueryResult queryResult " +
-                    "where queryResult.sessionId = ?1 and queryResult.queryKey = ?2 and queryResult.entityId not in (" +
-                        "select u.id from sec$User u, sys$QueryResult qr " +
-                        "where qr.entityId = u.id and qr.sessionId = ?1 and qr.queryKey = ?2)"
-            );
-            query.setParameter(1, sessionId);
-            query.setParameter(2, queryKey);
-            query.executeUpdate();
-            */
 
             tx.commit();
         } finally {

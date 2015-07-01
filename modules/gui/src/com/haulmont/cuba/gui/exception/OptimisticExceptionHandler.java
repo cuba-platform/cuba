@@ -28,7 +28,8 @@ public class OptimisticExceptionHandler extends AbstractGenericExceptionHandler 
     protected Messages messages;
 
     public OptimisticExceptionHandler() {
-        super("org.springframework.orm.jpa.JpaOptimisticLockingFailureException", "org.apache.openjpa.persistence.OptimisticLockException");
+        // todo EL
+        super("org.springframework.orm.jpa.JpaOptimisticLockingFailureException"/*, "org.apache.openjpa.persistence.OptimisticLockException"*/);
     }
 
     @Override

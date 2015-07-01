@@ -5,23 +5,36 @@
 
 package com.haulmont.cuba.core;
 
-import com.haulmont.chile.core.model.Instance;
+import com.haulmont.bali.util.Preconditions;
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.impl.UUIDDatatype;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.UuidProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.kernel.OpenJPAStateManager;
-import org.apache.openjpa.kernel.StateManagerImpl;
-import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.meta.FieldMetaData;
-import org.apache.openjpa.util.ObjectId;
-import org.apache.openjpa.util.OpenJPAId;
+import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
+import org.eclipse.persistence.internal.indirection.DatabaseValueHolder;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.queries.FetchGroup;
+import org.eclipse.persistence.queries.FetchGroupTracker;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.*;
+import javax.persistence.JoinColumn;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Utility class to provide common functionality related to persistence.
@@ -47,27 +60,31 @@ public class PersistenceTools {
 
     /**
      * Returns the set of dirty fields (fields changed since a last load from DB).
+     * <p> If the entity is new, returns all its fields.
+     * <p> If the entity is not persistent or not in the Managed state, returns empty set.
      *
      * @param entity entity instance
      * @return dirty field names
      */
     public Set<String> getDirtyFields(Entity entity) {
-        if (!(entity instanceof PersistenceCapable))
+        Preconditions.checkNotNullArgument(entity, "entity is null");
+
+        if (!(entity instanceof ChangeTracker) || !PersistenceHelper.isManaged(entity))
             return Collections.emptySet();
 
-        OpenJPAStateManager stateManager = (OpenJPAStateManager) ((PersistenceCapable) entity).pcGetStateManager();
-        if (stateManager == null)
-            return Collections.emptySet();
-
-        Set<String> set = new HashSet<>();
-        BitSet dirtySet = stateManager.getDirty();
-        for (int i = 0; i < dirtySet.size(); i++) {
-            if (dirtySet.get(i)) {
-                FieldMetaData field = stateManager.getMetaData().getField(i);
-                set.add(field.getName());
+        HashSet<String> result = new HashSet<>();
+        if (PersistenceHelper.isNew(entity)) {
+            for (MetaProperty property : metadata.getClassNN(entity.getClass()).getProperties()) {
+                if (metadata.getTools().isPersistent(property))
+                    result.add(property.getName());
             }
+        } else {
+            ObjectChangeSet objectChanges =
+                    ((AttributeChangeListener)((ChangeTracker) entity)._persistence_getPropertyChangeListener()).getObjectChangeSet();
+            if (objectChanges != null) // can be null for example in AFTER_DELETE entity listener
+                result.addAll(objectChanges.getChangedAttributeNames());
         }
-        return set;
+        return result;
     }
 
     /**
@@ -76,28 +93,9 @@ public class PersistenceTools {
      * @param entity   entity
      * @param property name of the property
      * @return true if loaded
-     * @throws IllegalStateException if the entity is not in Managed state
      */
     public boolean isLoaded(Object entity, String property) {
-        if (entity instanceof PersistenceCapable) {
-            final PersistenceCapable persistenceCapable = (PersistenceCapable) entity;
-            final OpenJPAStateManager stateManager = (OpenJPAStateManager) persistenceCapable.pcGetStateManager();
-
-            if (!(stateManager instanceof StateManagerImpl))
-                throw new IllegalStateException("Entity must be in managed state");
-
-            final BitSet loaded = stateManager.getLoaded();
-            final ClassMetaData metaData = stateManager.getMetaData();
-
-            final FieldMetaData fieldMetaData = metaData.getField(property);
-            if (fieldMetaData == null) throw new IllegalStateException();
-
-            final int index = fieldMetaData.getIndex();
-
-            return loaded.get(index);
-        } else {
-            return true;
-        }
+        return PersistenceHelper.isLoaded(entity, property);
     }
 
     /**
@@ -106,36 +104,30 @@ public class PersistenceTools {
      * @param entity   master entity
      * @param property name of reference property
      * @return UUID of the referenced entity or null if the reference is null
+     * @throws IllegalArgumentException if the entity is not persistent or if the specified property is not a reference
      * @throws IllegalStateException if the entity is not in Managed state
-     * @throws IllegalArgumentException if the specified property is not a reference
+     * @throws RuntimeException if anything goes wrong when retrieving the ID
      */
     @Nullable @SuppressWarnings("unchecked")
     public <T> T getReferenceId(Object entity, String property) {
-        OpenJPAStateManager stateManager = (OpenJPAStateManager) ((PersistenceCapable) entity).pcGetStateManager();
-        if (!(stateManager instanceof StateManagerImpl))
+        if (!(entity instanceof BaseGenericIdEntity))
+            throw new IllegalArgumentException("Not a persistent entity");
+
+        MetaProperty metaProperty = metadata.getClassNN(entity.getClass()).getPropertyNN(property);
+        if (!metaProperty.getRange().isClass() || metaProperty.getRange().getCardinality().isMany())
+            throw new IllegalArgumentException("Property is not a reference");
+
+        if (!PersistenceHelper.isManaged(entity))
             throw new IllegalStateException("Entity must be in managed state");
 
-        ClassMetaData metaData = stateManager.getMetaData();
-        int index = metaData.getField(property).getIndex();
+        // todo EL
+        Object value = ((BaseGenericIdEntity) entity).getValue(property);
+        return value == null ? null : (T) ((BaseGenericIdEntity) value).getId();
+    }
 
-        T id;
-        BitSet loaded = stateManager.getLoaded();
-        if (loaded.get(index)) {
-            Object reference = ((Instance) entity).getValue(property);
-            if (reference == null)
-                return null;
-            if (!(reference instanceof Instance))
-                throw new IllegalArgumentException("Property " + property + " is not a reference");
-            id = (T) ((Entity) reference).getId();
-        } else {
-            Object implData = stateManager.getIntermediate(index);
-            if (implData == null)
-                return null;
-            if (!(implData instanceof OpenJPAId))
-                throw new IllegalArgumentException("Property " + property + " is not a reference");
-            OpenJPAId idImpl = (OpenJPAId) implData;
-            id = (T) idImpl.getIdObject();
-        }
-        return id;
+    protected RuntimeException getReferenceIdError(Object entity, String property, String message, @Nullable Throwable cause) {
+        return new RuntimeException(
+                "Error retrieving reference ID from " + entity.getClass().getSimpleName() + "." + property + ": " + message,
+                cause);
     }
 }

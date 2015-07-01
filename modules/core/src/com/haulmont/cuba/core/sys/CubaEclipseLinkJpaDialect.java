@@ -9,8 +9,7 @@ import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.springframework.orm.jpa.vendor.OpenJpaDialect;
+import org.springframework.orm.jpa.vendor.EclipseLinkJpaDialect;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
 
@@ -24,11 +23,11 @@ import java.sql.Statement;
  * @author krivopustov
  * @version $Id$
  */
-public class CubaOpenJpaDialect extends OpenJpaDialect {
+public class CubaEclipseLinkJpaDialect extends EclipseLinkJpaDialect {
 
     private static final long serialVersionUID = 7560990917358283944L;
 
-    private static final Log log = LogFactory.getLog(CubaOpenJpaDialect.class);
+    private static final Log log = LogFactory.getLog(CubaEclipseLinkJpaDialect.class);
 
     @Override
     public Object beginTransaction(EntityManager entityManager, TransactionDefinition definition) throws PersistenceException, SQLException, TransactionException {
@@ -57,7 +56,7 @@ public class CubaOpenJpaDialect extends OpenJpaDialect {
 
             String s = DbmsSpecificFactory.getDbmsFeatures().getTransactionTimeoutStatement();
             if (s != null) {
-                Connection connection = (Connection) ((OpenJPAEntityManager) entityManager).getConnection();
+                Connection connection = entityManager.unwrap(Connection.class);
                 try (Statement statement = connection.createStatement()) {
                     statement.execute(String.format(s, timeoutMs));
                 }

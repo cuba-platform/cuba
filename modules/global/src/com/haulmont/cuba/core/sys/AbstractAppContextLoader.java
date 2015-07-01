@@ -5,11 +5,14 @@
 
 package com.haulmont.cuba.core.sys;
 
-import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.sys.persistence.EclipseLinkCustomizer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
+import org.eclipse.persistence.annotations.TransientCompatibleAnnotations;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.ResourceUtils;
 
+import javax.persistence.Temporal;
 import java.io.File;
 
 /**
@@ -23,11 +26,10 @@ public class AbstractAppContextLoader {
     public static final String SPRING_CONTEXT_CONFIG = "cuba.springContextConfig";
 
     protected void afterInitAppProperties() {
-        BaseUuidEntity.allowSetNotLoadedAttributes =
-                Boolean.valueOf(AppContext.getProperty("cuba.allowSetNotLoadedAttributes"));
     }
 
     protected void beforeInitAppContext() {
+        EclipseLinkCustomizer.initTransientCompatibleAnnotations();
     }
 
     protected void initAppContext() {
@@ -40,12 +42,7 @@ public class AbstractAppContextLoader {
         String[] locations = tokenizer.getTokenArray();
         replaceLocationsFromConf(locations);
 
-        CubaClassPathXmlApplicationContext appContext = new CubaClassPathXmlApplicationContext();
-
-        appContext.setConfigLocations(locations);
-        appContext.setValidating(false);
-        appContext.refresh();
-
+        ClassPathXmlApplicationContext appContext = createClassPathXmlApplicationContext(locations);
         AppContext.setApplicationContext(appContext);
     }
 
@@ -65,6 +62,10 @@ public class AbstractAppContextLoader {
                 locations[i] = file.toURI().toString();
             }
         }
+    }
+
+    protected ClassPathXmlApplicationContext createClassPathXmlApplicationContext(String[] locations) {
+        return new CubaClassPathXmlApplicationContext(locations);
     }
 
     protected void afterInitAppContext() {

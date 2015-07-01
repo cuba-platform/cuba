@@ -33,7 +33,7 @@ public interface Query {
      * Set the query string.
      * @param queryString   query string
      */
-    void setQueryString(String queryString);
+    Query setQueryString(String queryString);
 
     /**
      * Execute a SELECT query and return the query results as a List.

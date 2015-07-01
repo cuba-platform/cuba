@@ -12,7 +12,6 @@ import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.commons.lang.StringUtils;
-import org.apache.openjpa.persistence.Persistent;
 
 import javax.annotation.Nullable;
 import javax.persistence.*;
@@ -53,6 +52,9 @@ public class CategoryAttribute extends StandardEntity {
     @Column(name = "ENTITY_CLASS")
     private String entityClass;
 
+    @Column(name = "DEFAULT_ENTITY_VALUE")
+    private UUID defaultEntityId;
+
     @Column(name = "ORDER_NO")
     private Integer orderNo;
 
@@ -82,10 +84,6 @@ public class CategoryAttribute extends StandardEntity {
 
     @Column(name = "DEFAULT_DATE")
     private Date defaultDate;
-
-    @Column(name = "DEFAULT_ENTITY_VALUE")
-    @Persistent
-    private UUID defaultEntityId;
 
     @Column(name = "DEFAULT_DATE_IS_CURRENT")
     private Boolean defaultDateIsCurrent;

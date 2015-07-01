@@ -54,16 +54,16 @@
         <priority value="INFO"/>
     </category>
 
+    <logger name="eclipselink">
+        <level value="INFO"/>
+    </logger>
+
+    <logger name="eclipselink.sql">
+        <level value="DEBUG"/>
+    </logger>
+
     <category name="openjpa">
         <priority value="INFO"/>
-    </category>
-
-    <category name="openjpa.jdbc.SQL">
-        <priority value="DEBUG"/>
-    </category>
-
-    <category name="openjpa.jdbc.SQLDiag">
-        <priority value="DEBUG"/>
     </category>
 
     <category name="freemarker">

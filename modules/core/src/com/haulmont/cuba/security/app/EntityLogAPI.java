@@ -69,9 +69,4 @@ public interface EntityLogAPI {
      * @param enabled entity logging disabled if false, enabled otherwise.
      */
     void processLoggingForCurrentThread(boolean enabled);
-
-    /**
-     * For internal use only. Called by the framework to actually save log records to the database.
-     */
-    void flush();
 }

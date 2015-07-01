@@ -8,6 +8,7 @@ package com.haulmont.chile.core.model;
 import com.haulmont.chile.core.common.ValueListener;
 
 import javax.annotation.Nullable;
+import java.io.Serializable;
 import java.util.UUID;
 
 /**
@@ -16,7 +17,7 @@ import java.util.UUID;
  * @author abramov
  * @version $Id$
  */
-public interface Instance {
+public interface Instance extends Serializable {
 
     /**
      * @return globally unique identifier of this instance

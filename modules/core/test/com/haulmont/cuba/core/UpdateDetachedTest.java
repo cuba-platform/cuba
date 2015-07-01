@@ -6,25 +6,23 @@ package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
-import org.apache.openjpa.enhance.PersistenceCapable;
 
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
+import static com.haulmont.cuba.testsupport.TestSupport.reserialize;
+
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class UpdateDetachedTest extends CubaTestCase
-{
+public class UpdateDetachedTest extends CubaTestCase {
+
     private UUID roleId, role2Id, permissionId;
 
     protected void setUp() throws Exception {
@@ -78,23 +76,23 @@ public class UpdateDetachedTest extends CubaTestCase
         super.tearDown();
     }
 
-    public void test() {
+    public void test() throws Exception {
         Permission p;
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
 
-            em.setView(new View(Permission.class)
+            View view = new View(Permission.class)
                     .addProperty("target")
                     .addProperty("role",
-                        new View(Role.class)
-                            .addProperty("name")
-                    )
-            );
+                            new View(Role.class)
+                                    .addProperty("name")
+                    );
 
-            p = em.find(Permission.class, permissionId);
+            p = em.find(Permission.class, permissionId, view);
             tx.commitRetaining();
 
+            assertNotNull(p);
             p.setTarget("newTarget");
 
             em = persistence.getEntityManager();
@@ -104,10 +102,11 @@ public class UpdateDetachedTest extends CubaTestCase
         } finally {
             tx.end();
         }
-
-        assertNotNull(((PersistenceCapable) p).pcGetDetachedState());
+        p = reserialize(p);
+        assertTrue(PersistenceHelper.isDetached(p));
         assertNotNull(p.getRole());
-        assertNotNull(((PersistenceCapable) p.getRole()).pcGetDetachedState());
+        assertTrue(PersistenceHelper.isDetached(p.getRole()));
+        assertTrue(PersistenceHelper.isLoaded(p, "role"));
     }
 
     public void testRollback() {
@@ -116,15 +115,14 @@ public class UpdateDetachedTest extends CubaTestCase
         try {
             EntityManager em = persistence.getEntityManager();
 
-            em.setView(new View(Permission.class)
+            View view = new View(Permission.class)
                     .addProperty("target")
                     .addProperty("role",
-                        new View(Role.class)
-                            .addProperty("name")
-                    )
-            );
+                            new View(Role.class)
+                                    .addProperty("name")
+                    );
 
-            p = em.find(Permission.class, permissionId);
+            p = em.find(Permission.class, permissionId, view);
             tx.commitRetaining();
 
             p.setTarget("newTarget");
@@ -147,7 +145,7 @@ public class UpdateDetachedTest extends CubaTestCase
         throw new RuntimeException();
     }
 
-    public void testDataService() {
+    public void testDataService() throws Exception {
         Permission p;
         DataService ds = AppBeans.get(DataService.NAME);
 
@@ -162,6 +160,7 @@ public class UpdateDetachedTest extends CubaTestCase
         );
         p = ds.load(ctx);
 
+        assertNotNull(p);
         p.setTarget("newTarget");
 
         CommitContext commitCtx = new CommitContext(Collections.singleton(p));
@@ -172,38 +171,32 @@ public class UpdateDetachedTest extends CubaTestCase
             if (entity.equals(p))
                 result = (Permission) entity;
         }
-        assertNotNull(((PersistenceCapable) result).pcGetDetachedState());
+        result = reserialize(result);
+        assertTrue(PersistenceHelper.isDetached(result));
         assertNotNull(result.getRole());
-        assertNotNull(((PersistenceCapable) result.getRole()).pcGetDetachedState());
+        assertTrue(PersistenceHelper.isDetached(result.getRole()));
+        assertTrue(PersistenceHelper.isLoaded(result, "role"));
     }
 
-    public void testUpdateNotLoaded() {
+    public void testUpdateNotLoaded() throws Exception {
         Permission p;
+        Role role;
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
 
-            em.setView(new View(Permission.class)
-                    .addProperty("target")
-            );
-
-            p = em.find(Permission.class, permissionId);
+            p = em.find(Permission.class, permissionId, new View(Permission.class).addProperty("target"));
             tx.commitRetaining();
 
             em = persistence.getEntityManager();
-            Role role = em.find(Role.class, role2Id);
+            role = em.find(Role.class, role2Id);
             tx.commit();
-
-            assertNull(p.getRole());
-            try {
-                p.setRole(role); // try to change Role in detached object
-                fail();
-            } catch (Exception e) {
-                // ok
-            }
-
         } finally {
             tx.end();
         }
+        p = reserialize(p);
+
+        assertFalse(PersistenceHelper.isLoaded(p, "role"));
+        assertFalse(PersistenceHelper.isLoaded(p, "value"));
     }
 }

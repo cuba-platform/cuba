@@ -19,8 +19,7 @@ public class QueryTransformerSoftDeleteBugsTest extends TestCase {
         String res;
 
         transformer = new QueryTransformerRegex(
-                "select u from sec$User u where u.active = true or u.active = true",
-                "sec$User");
+                "select u from sec$User u where u.active = true or u.active = true");
         transformer.addWhere("{E}.deleteTs is null");
         res = transformer.getResult();
         assertEquals(
@@ -30,8 +29,7 @@ public class QueryTransformerSoftDeleteBugsTest extends TestCase {
         // other cases
 
         transformer = new QueryTransformerRegex(
-                "select u from sec$User u where u.active = true",
-                "sec$User");
+                "select u from sec$User u where u.active = true");
         transformer.addWhere("{E}.deleteTs is null");
         res = transformer.getResult();
         assertEquals(
@@ -39,8 +37,7 @@ public class QueryTransformerSoftDeleteBugsTest extends TestCase {
                 res);
 
         transformer = new QueryTransformerRegex(
-                "select u from sec$User u where (u.active = true)",
-                "sec$User");
+                "select u from sec$User u where (u.active = true)");
         transformer.addWhere("{E}.deleteTs is null");
         res = transformer.getResult();
         assertEquals(
@@ -48,8 +45,7 @@ public class QueryTransformerSoftDeleteBugsTest extends TestCase {
                 res);
 
         transformer = new QueryTransformerRegex(
-                "select u from sec$User u where u.active = true and u.active = true",
-                "sec$User");
+                "select u from sec$User u where u.active = true and u.active = true");
         transformer.addWhere("{E}.deleteTs is null");
         res = transformer.getResult();
         assertEquals(
@@ -57,8 +53,7 @@ public class QueryTransformerSoftDeleteBugsTest extends TestCase {
                 res);
 
         transformer = new QueryTransformerRegex(
-                "select u from sec$User u",
-                "sec$User");
+                "select u from sec$User u");
         transformer.addWhere("{E}.deleteTs is null");
         res = transformer.getResult();
         assertEquals(
@@ -68,8 +63,7 @@ public class QueryTransformerSoftDeleteBugsTest extends TestCase {
         // addJoinAndWhere
 
         transformer = new QueryTransformerRegex(
-                "select u from sec$User u where u.active = true or u.active = true",
-                "sec$User");
+                "select u from sec$User u where u.active = true or u.active = true");
         transformer.addJoinAndWhere("join u.group g", "{E}.deleteTs is null");
         res = transformer.getResult();
         assertEquals(
@@ -77,8 +71,7 @@ public class QueryTransformerSoftDeleteBugsTest extends TestCase {
                 res);
 
         transformer = new QueryTransformerRegex(
-                "select u from sec$User u where (u.active = true)",
-                "sec$User");
+                "select u from sec$User u where (u.active = true)");
         transformer.addJoinAndWhere("join u.group g", "{E}.deleteTs is null");
         res = transformer.getResult();
         assertEquals(
@@ -95,8 +88,7 @@ public class QueryTransformerSoftDeleteBugsTest extends TestCase {
                         "    where so1.debtor.id = a.debtor.id and\n" +
                         "          so1.bailiffDaySchedule.day >= :today and\n" +
                         "          so1.bailiffDaySchedule.agent.id = a.agent.id\n" +
-                        ")",
-                "sec$User");
+                        ")");
 
         transformer.addWhere("{E}.deleteTs is null");
         String res = transformer.getResult();
@@ -116,8 +108,7 @@ public class QueryTransformerSoftDeleteBugsTest extends TestCase {
         QueryTransformerRegex transformer = new QueryTransformerRegex(
                 "select j from taxi$IndividualTelephone it, taxi$Job j\n" +
                         "where it.telephone like :phoneNumber and it.individual.id = j.caller.id\n" +
-                        "and j.executionStatus not in (:notActiveStatuses)",
-                "taxi$Job");
+                        "and j.executionStatus not in (:notActiveStatuses)");
 
         transformer.addWhere("{E}.deleteTs is null");
         String res = transformer.getResult();

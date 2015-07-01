@@ -18,11 +18,8 @@ public class HsqlDbmsFeatures implements DbmsFeatures {
 
     @Override
     public Map<String, String> getJpaParameters() {
-        Map<String, String> params = new HashMap<>();
-        params.put("openjpa.jdbc.DBDictionary",
-                "com.haulmont.cuba.core.sys.persistence.CubaHSQLDictionary(RequiresCastForComparisons=true,SupportsSelectForUpdate=true)");
-        params.put("openjpa.jdbc.MappingDefaults",
-                "FieldStrategies='java.util.UUID=com.haulmont.cuba.core.sys.persistence.UuidStringValueHandler'");
+        HashMap<String, String> params = new HashMap<>();
+        params.put("eclipselink.target-database", "org.eclipse.persistence.platform.database.HSQLPlatform");
         return params;
     }
 

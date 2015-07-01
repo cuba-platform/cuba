@@ -65,4 +65,6 @@ public interface QueryTransformer {
 
     /** Get parameter names found during transformation */
     Set<String> getAddedParams();
+
+    void handleCaseInsensitiveParam(String paramName);
 }

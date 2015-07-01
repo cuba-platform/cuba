@@ -22,7 +22,7 @@ public class QueryTransformerFactory {
 
     private static volatile DomainModel domainModel;
 
-    public static QueryTransformer createTransformer(String query, String targetEntity) {
+    public static QueryTransformer createTransformer(String query) {
         if (useAst) {
             try {
                 if (domainModel == null) {
@@ -31,12 +31,12 @@ public class QueryTransformerFactory {
                     DomainModelBuilder builder = new DomainModelBuilder(metadataTools, messageTools);
                     domainModel = builder.produce();
                 }
-                return new QueryTransformerAstBased(domainModel, query, targetEntity);
+                return new QueryTransformerAstBased(domainModel, query, "");
             } catch (RecognitionException e) {
                 throw new RuntimeException(e);
             }
         } else {
-            return new QueryTransformerRegex(query, targetEntity);
+            return new QueryTransformerRegex(query);
         }
     }
 

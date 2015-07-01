@@ -12,7 +12,6 @@ import javax.persistence.Entity;
 
 @Entity(name = "sys$AppFolder")
 @Table(name = "SYS_APP_FOLDER")
-@PrimaryKeyJoinColumn(name = "FOLDER_ID", referencedColumnName = "ID")
 @DiscriminatorValue("A")
 @SystemLevel
 public class AppFolder extends AbstractSearchFolder {

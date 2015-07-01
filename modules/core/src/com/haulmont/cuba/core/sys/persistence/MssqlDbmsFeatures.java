@@ -18,11 +18,8 @@ public class MssqlDbmsFeatures implements DbmsFeatures {
 
     @Override
     public Map<String, String> getJpaParameters() {
-        Map<String, String> params = new HashMap<>();
-        params.put("openjpa.jdbc.DBDictionary",
-                "com.haulmont.cuba.core.sys.persistence.CubaMssqlDictionary(RequiresCastForComparisons=true)");
-        params.put("openjpa.jdbc.MappingDefaults",
-                "FieldStrategies='java.util.UUID=com.haulmont.cuba.core.sys.persistence.UuidMssqlValueHandler'");
+        HashMap<String, String> params = new HashMap<>();
+        params.put("eclipselink.target-database", "org.eclipse.persistence.platform.database.SQLServerPlatform");
         return params;
     }
 

@@ -6,7 +6,6 @@ package com.haulmont.cuba.core;
 
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.entity.Server;
-import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
@@ -47,214 +46,8 @@ public class PersistenceTest extends CubaTestCase {
         super.tearDown();
     }
 
-    public void testPersistenceHelper() {
-        try {
-            PersistenceHelper.isNew(null);
-            fail("isNew() should not accept null");
-        } catch (Exception e) {
-           //
-        }
-        try {
-            PersistenceHelper.isManaged(null);
-            fail("isManaged() should not accept null");
-        } catch (Exception e) {
-            //
-        }
-        try {
-            PersistenceHelper.isDetached(null);
-            fail("isDetached() should not accept null");
-        } catch (Exception e) {
-            //
-        }
-
-        UUID id;
-        Server server;
-        Transaction tx = persistence.createTransaction();
-        try {
-            EntityManager em = persistence.getEntityManager();
-            assertNotNull(em);
-            server = new Server();
-
-            assertTrue(PersistenceHelper.isNew(server));
-            assertFalse(PersistenceHelper.isManaged(server));
-            assertFalse(PersistenceHelper.isDetached(server));
-
-            id = server.getId();
-            server.setName("localhost");
-            server.setRunning(true);
-            em.persist(server);
-            assertTrue(PersistenceHelper.isNew(server));
-            assertTrue(PersistenceHelper.isManaged(server));
-            assertFalse(PersistenceHelper.isDetached(server));
-
-            tx.commit();
-        } finally {
-            tx.end();
-        }
-        assertFalse(PersistenceHelper.isNew(server));
-        assertFalse(PersistenceHelper.isManaged(server));
-        assertTrue(PersistenceHelper.isDetached(server));
-
-
-        tx = persistence.createTransaction();
-        try {
-            EntityManager em = persistence.getEntityManager();
-            server = em.find(Server.class, id);
-            assertNotNull(server);
-            assertEquals(id, server.getId());
-
-            assertFalse(PersistenceHelper.isNew(server));
-            assertTrue(PersistenceHelper.isManaged(server));
-            assertFalse(PersistenceHelper.isDetached(server));
-
-            server.setRunning(false);
-
-            tx.commit();
-        } finally {
-            tx.end();
-        }
-        assertFalse(PersistenceHelper.isNew(server));
-        assertFalse(PersistenceHelper.isManaged(server));
-        assertTrue(PersistenceHelper.isDetached(server));
-
-        tx = persistence.createTransaction();
-        try {
-            EntityManager em = persistence.getEntityManager();
-            server = em.merge(server);
-
-            assertFalse(PersistenceHelper.isNew(server));
-            assertTrue(PersistenceHelper.isManaged(server));
-            assertFalse(PersistenceHelper.isDetached(server));
-
-            tx.commit();
-        } finally {
-            tx.end();
-        }
-
-
-        tx = persistence.createTransaction();
-        try {
-            EntityManager em = persistence.getEntityManager();
-            server = em.find(Server.class, id);
-            assertNotNull(server);
-            assertEquals(id, server.getId());
-
-            em.remove(server);
-            
-            assertFalse(PersistenceHelper.isNew(server));
-            assertTrue(PersistenceHelper.isManaged(server));  // is it correct?
-            assertFalse(PersistenceHelper.isDetached(server));
-
-            tx.commit();
-        } finally {
-            tx.end();
-        }
-
-        assertFalse(PersistenceHelper.isNew(server));
-        assertFalse(PersistenceHelper.isManaged(server));
-        assertTrue(PersistenceHelper.isDetached(server)); // is it correct?
-    }
-
     private void raiseException() {
         throw new RuntimeException("test_ex");
-    }
-
-    public void testLoadReferencedEntity() throws Exception {
-        User user = null;
-
-        Transaction tx = persistence.createTransaction();
-        try {
-            EntityManager em = persistence.getEntityManager();
-
-            em.setView(
-                    new View(User.class, false)
-                            .addProperty("login")
-            );
-            Query q = em.createQuery("select u from sec$User u where u.id = ?1");
-            q.setParameter(1, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
-            List<User> list = q.getResultList();
-            if (!list.isEmpty()) {
-                user = list.get(0);
-
-                UUID id = persistence.getTools().getReferenceId(user, "group");
-                System.out.println(id);
-            }
-
-            tx.commit();
-        } finally {
-            tx.end();
-        }
-
-        try {
-            persistence.getTools().getReferenceId(user, "group");
-            fail();
-        } catch (Exception e) {
-            // ok
-        }
-
-        tx = persistence.createTransaction();
-        try {
-            EntityManager em = persistence.getEntityManager();
-
-            em.setView(
-                    new View(User.class, false)
-                            .addProperty("login")
-                            .addProperty("group",
-                                    new View(Group.class, false).addProperty("id")
-                            )
-            );
-            Query q = em.createQuery("select u from sec$User u where u.id = ?1");
-            q.setParameter(1, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
-            List<User> list = q.getResultList();
-            if (!list.isEmpty()) {
-                user = list.get(0);
-
-                UUID id = persistence.getTools().getReferenceId(user, "group");
-                System.out.println(id);
-            }
-
-            tx.commit();
-        } finally {
-            tx.end();
-        }
-
-        /*
-         * test Persistence.getReferenceId() when field value is NULL
-         * (ticket XXX)
-         */
-        // create user without group
-        User userWithoutGroup = new User();
-        userWithoutGroup.setLogin("ForeverAlone");
-
-        // save to DB
-        tx = persistence.createTransaction();
-        try {
-            EntityManager em = persistence.getEntityManager();
-            em.persist(userWithoutGroup);
-            tx.commit();
-        } finally {
-            tx.end();
-        }
-
-        // test method
-        try {
-            tx = persistence.createTransaction();
-            try {
-                EntityManager em = persistence.getEntityManager();
-                em.setView(new View(User.class).addProperty("login"));
-                User reloadedUser = em.find(User.class, userWithoutGroup.getId());
-
-                UUID groupId = persistence.getTools().getReferenceId(reloadedUser, "group");
-
-                assertNull(groupId);
-
-                tx.commit();
-            } finally {
-                tx.end();
-            }
-        } catch (IllegalArgumentException e) {
-            fail(e.getMessage());
-        }
     }
 
     public void testLoadByCombinedView() throws Exception {
@@ -265,11 +58,8 @@ public class PersistenceTest extends CubaTestCase {
 
             EntityManager em = persistence.getEntityManager();
 
-            em.setView(
-                    new View(User.class, false)
-                            .addProperty("login")
-            );
-            user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
+            user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"),
+                    new View(User.class, false).addProperty("login"));
 
             assertTrue(persistence.getTools().isLoaded(user, "login"));
             assertFalse(persistence.getTools().isLoaded(user, "name"));
@@ -280,15 +70,10 @@ public class PersistenceTest extends CubaTestCase {
 
             em = persistence.getEntityManager();
 
-            em.setView(
-                    new View(User.class, false)
-                            .addProperty("login")
+            user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"),
+                    new View(User.class, false).addProperty("login"),
+                    new View(User.class, false).addProperty("name")
             );
-            em.addView(
-                    new View(User.class, false)
-                            .addProperty("name")
-            );
-            user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
 
             assertTrue(persistence.getTools().isLoaded(user, "login"));
             assertTrue(persistence.getTools().isLoaded(user, "name"));
@@ -299,15 +84,10 @@ public class PersistenceTest extends CubaTestCase {
 
             em = persistence.getEntityManager();
 
-            em.setView(
-                    new View(User.class, false)
-                            .addProperty("login")
+            user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"),
+                    new View(User.class, false).addProperty("login"),
+                    new View(User.class, false).addProperty("group", new View(Group.class).addProperty("name"))
             );
-            em.addView(
-                    new View(User.class, false)
-                            .addProperty("group", new View(Group.class).addProperty("name"))
-            );
-            user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
 
             assertTrue(persistence.getTools().isLoaded(user, "login"));
             assertFalse(persistence.getTools().isLoaded(user, "name"));
@@ -388,14 +168,18 @@ public class PersistenceTest extends CubaTestCase {
             user.setLogin(null);
             user.setName(null);
             tx.commitRetaining();
+            fail();
 
-            em = persistence.getEntityManager();
-            user = em.find(User.class, userId);
-            assertNotNull(user);
-            assertNotNull(user.getLogin()); // null was not saved
-            assertNull(user.getName());     // null was saved
+// Old OpenJPA behaviour
+//            em = persistence.getEntityManager();
+//            user = em.find(User.class, userId);
+//            assertNotNull(user);
+//            assertNotNull(user.getLogin()); // null was not saved
+//            assertNull(user.getName());     // null was saved
 
             tx.commit();
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("NOT NULL check constraint"));
         } finally {
             tx.end();
         }

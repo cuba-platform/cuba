@@ -33,10 +33,10 @@ public interface TypedQuery<T> extends Query {
     T getFirstResult();
 
     @Override
-    TypedQuery<T> setMaxResults(int maxResult);
+    TypedQuery<T> setMaxResults(int maxResults);
 
     @Override
-    TypedQuery<T> setFirstResult(int startPosition);
+    TypedQuery<T> setFirstResult(int firstResult);
 
     @Override
     TypedQuery<T> setParameter(String name, Object value);

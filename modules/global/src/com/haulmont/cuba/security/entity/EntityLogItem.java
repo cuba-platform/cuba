@@ -5,17 +5,15 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.chile.core.annotations.MetaProperty;
-import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.annotation.Listeners;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.UUID;
 import java.util.Set;
-
-import com.haulmont.cuba.core.entity.annotation.Listeners;
-import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import org.apache.openjpa.persistence.Persistent;
+import java.util.UUID;
 
 /**
  * Record containing information about entity lifecycle event.
@@ -74,7 +72,6 @@ public class EntityLogItem extends BaseUuidEntity {
     private String entity;
 
     @Column(name = "ENTITY_ID")
-    @Persistent
     private UUID entityId;
 
     @Transient

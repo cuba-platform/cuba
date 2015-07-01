@@ -32,12 +32,8 @@ public class OracleDbmsFeatures implements DbmsFeatures {
     @Override
     public Map<String, String> getJpaParameters() {
         Map<String, String> params = new HashMap<>();
+        params.put("eclipselink.target-database", "org.eclipse.persistence.platform.database.OraclePlatform");
         putDbSchema(params);
-        params.put("openjpa.jdbc.DBDictionary",
-                "com.haulmont.cuba.core.sys.persistence.CubaOracleDictionary(RequiresCastForComparisons=true)");
-        params.put("openjpa.jdbc.MappingDefaults",
-                "FieldStrategies='java.util.UUID=com.haulmont.cuba.core.sys.persistence.UuidStringValueHandler(Compact=true)," +
-                        "java.lang.Boolean=com.haulmont.cuba.core.sys.persistence.BooleanCharValueHandler'");
         return params;
     }
 
@@ -54,12 +50,13 @@ public class OracleDbmsFeatures implements DbmsFeatures {
         try {
             connection = ds.getConnection();
             String userName = connection.getMetaData().getUserName();
-            if (!StringUtils.isEmpty(userName)) {
-                params.put("openjpa.jdbc.Schema", userName.toUpperCase());
-                log.info("Set openjpa.jdbc.Schema=" + userName.toUpperCase());
-            } else {
-                log.warn("Unable to set openjpa.jdbc.Schema: DatabaseMetaData.getUserName() returns nothing");
-            }
+            // todo EL: Oracle schema name
+//            if (!StringUtils.isEmpty(userName)) {
+//                params.put("openjpa.jdbc.Schema", userName.toUpperCase());
+//                log.info("Set openjpa.jdbc.Schema=" + userName.toUpperCase());
+//            } else {
+//                log.warn("Unable to set openjpa.jdbc.Schema: DatabaseMetaData.getUserName() returns nothing");
+//            }
         } catch (SQLException e) {
             throw new RuntimeException("Unable to set openjpa.jdbc.Schema", e);
         } finally {

@@ -5,7 +5,6 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.cuba.core.global.UuidProvider;
-import org.apache.openjpa.persistence.Persistent;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -26,7 +25,6 @@ public abstract class BaseUuidEntity extends BaseGenericIdEntity<UUID> {
 
     @Id
     @Column(name = "ID")
-    @Persistent
     protected UUID id;
 
     public BaseUuidEntity() {

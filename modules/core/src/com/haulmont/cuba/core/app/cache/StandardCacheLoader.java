@@ -96,8 +96,8 @@ public class StandardCacheLoader implements CacheLoader {
 
         try {
             EntityManager em = persistence.getEntityManager();
-            em.setView(view);
             Query query = em.createQuery(dbQuery);
+            query.setView(view);
             query.setMaxResults(getMaxQueryResults());
             List<Object> resultList = query.getResultList();
             cacheSet = new CacheSet(resultList);
@@ -128,11 +128,10 @@ public class StandardCacheLoader implements CacheLoader {
 
             try {
                 EntityManager em = persistence.getEntityManager();
-                em.setView(view);
 
                 for (Object item : updateItems) {
                     Entity entity = (Entity) item;
-                    entity = em.find(entity.getClass(), entity.getId());
+                    entity = em.find(entity.getClass(), entity.getId(), view);
 
                     items.remove(item);
                     if(entity != null)

@@ -36,8 +36,7 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
         if (constraints.isEmpty())
             return false;
 
-        QueryTransformer transformer = QueryTransformerFactory.createTransformer(
-                query.getQueryString(), entityName);
+        QueryTransformer transformer = QueryTransformerFactory.createTransformer(query.getQueryString());
 
         for (String[] constraint : constraints) {
             String join = constraint[0];

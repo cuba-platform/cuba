@@ -140,10 +140,6 @@
         <priority value="INFO"/>
     </category>
 
-    <category name="openjpa">
-        <priority value="INFO"/>
-    </category>
-
     <category name="freemarker">
         <priority value="INFO"/>
     </category>

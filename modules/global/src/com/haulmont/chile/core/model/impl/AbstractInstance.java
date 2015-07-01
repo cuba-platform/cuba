@@ -12,10 +12,7 @@ import com.haulmont.chile.core.model.utils.MethodsCache;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -28,7 +25,7 @@ public abstract class AbstractInstance implements Instance {
 
     private static transient Map<Class, MethodsCache> methodCacheMap = new ConcurrentHashMap<>();
 
-    protected void propertyChanged(String s, Object obj, Object obj1) {
+    protected void propertyChanged(String s, Object prev, Object curr) {
         if (__valueListeners != null) {
             Collection<WeakReference<ValueListener>> listenersCopy = new ArrayList<>(__valueListeners);
             Collection<WeakReference<ValueListener>> listenersToRemove = new ArrayList<>();
@@ -37,7 +34,7 @@ public abstract class AbstractInstance implements Instance {
                 if (listener == null)
                     listenersToRemove.add(reference);
                 else
-                    listener.propertyChanged(this, s, obj, obj1);
+                    listener.propertyChanged(this, s, prev, curr);
             }
             __valueListeners.removeAll(listenersToRemove);
         }

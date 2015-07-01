@@ -12,7 +12,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
 import org.apache.commons.lang.StringUtils;
-import org.apache.openjpa.persistence.Persistent;
 
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
@@ -55,11 +54,9 @@ public class CategoryAttributeValue extends StandardEntity {
     private Date dateValue;
 
     @Column(name = "ENTITY_ID")
-    @Persistent
     private UUID entityId;
 
     @Column(name = "ENTITY_VALUE")
-    @Persistent
     private UUID entityValue;
 
     public void setCategoryAttribute(CategoryAttribute categoryAttribute) {

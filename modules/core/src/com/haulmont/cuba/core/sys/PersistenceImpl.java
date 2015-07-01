@@ -9,15 +9,13 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
-import com.haulmont.cuba.core.sys.persistence.EntityLifecycleListener;
-import com.haulmont.cuba.core.sys.persistence.EntityTransactionListener;
+import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -25,6 +23,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import javax.annotation.ManagedBean;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -48,10 +47,12 @@ public class PersistenceImpl implements Persistence {
     private Metadata metadata;
 
     @Inject
-    private FetchPlanManager fetchPlanMgr;
+    private FetchGroupManager fetchGroupMgr;
 
     @Inject
-    private OpenJPAEntityManagerFactory jpaEmf;
+    private EntityListenerManager entityListenerMgr;
+
+    private EntityManagerFactory jpaEmf;
 
     @Inject
     private PlatformTransactionManager transactionManager;
@@ -60,21 +61,16 @@ public class PersistenceImpl implements Persistence {
     private UserSessionSource userSessionSource;
 
     @Inject
-    private EntityLifecycleListener entityLifecycleListener;
+    private PersistenceImplSupport support;
 
     @Inject
-    public void setFactory(OpenJPAEntityManagerFactory jpaEmf,
-                           EntityLifecycleListener entityLifecycleListener,
-                           EntityTransactionListener entityTransactionListener)
-    {
-        this.jpaEmf = jpaEmf;
-        ((OpenJPAEntityManagerFactorySPI) jpaEmf).addLifecycleListener(entityLifecycleListener, null);
-        ((OpenJPAEntityManagerFactorySPI) jpaEmf).addTransactionListener(entityTransactionListener);
+    public void setFactory(LocalContainerEntityManagerFactoryBean factoryBean) {
+        this.jpaEmf = factoryBean.getObject();
     }
 
     @Override
-    public PersistenceTools getTools() {
-        return tools;
+    public <T extends PersistenceTools> T getTools() {
+        return (T) tools;
     }
 
     @Override
@@ -107,11 +103,13 @@ public class PersistenceImpl implements Persistence {
         if (!TransactionSynchronizationManager.isActualTransactionActive())
             throw new IllegalStateException("No active transaction");
 
-        OpenJPAEntityManager jpaEm = (OpenJPAEntityManager)
-                EntityManagerFactoryUtils.doGetTransactionalEntityManager(jpaEmf, null);
+        javax.persistence.EntityManager jpaEm = EntityManagerFactoryUtils.doGetTransactionalEntityManager(jpaEmf, null);
 
         UserSession userSession = userSessionSource.checkCurrentUserSession() ? userSessionSource.getUserSession() : null;
-        EntityManagerImpl impl = new EntityManagerImpl(jpaEm, userSession, metadata, fetchPlanMgr);
+
+        EntityManagerImpl impl = new EntityManagerImpl(
+                jpaEm, userSession, metadata, fetchGroupMgr, entityListenerMgr, support);
+
         EntityManagerContext ctx = contextHolder.get();
         if (ctx != null) {
             impl.setSoftDeletion(ctx.isSoftDeletion());

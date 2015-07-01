@@ -38,6 +38,7 @@ public class UniqueConstraintViolationHandler implements GenericExceptionHandler
         Throwable t = exception;
         try {
             while (t != null) {
+                // todo EL
                 if (t.toString().contains("org.apache.openjpa.persistence.EntityExistsException")) {
                     doHandle(t, windowManager);
                     return true;

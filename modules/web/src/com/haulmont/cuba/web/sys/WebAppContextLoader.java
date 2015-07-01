@@ -19,6 +19,8 @@ public class WebAppContextLoader extends AbstractWebAppContextLoader {
 
     @Override
     protected void beforeInitAppContext() {
+        super.beforeInitAppContext();
+
         AppContext.setProperty(AppConfig.CLIENT_TYPE_PROP, ClientType.WEB.toString());
     }
 }

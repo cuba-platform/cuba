@@ -5,14 +5,14 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.bali.db.QueryRunner;
-import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.sys.AbstractAppContextLoader;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.AppContextLoader;
-import com.haulmont.cuba.core.sys.CubaDefaultListableBeanFactory;
+import com.haulmont.cuba.core.sys.CubaCoreApplicationContext;
+import com.haulmont.cuba.core.sys.persistence.EclipseLinkCustomizer;
 import com.haulmont.cuba.core.sys.persistence.PersistenceConfigProcessor;
 import com.haulmont.cuba.testsupport.TestContext;
 import com.haulmont.cuba.testsupport.TestDataSource;
@@ -24,7 +24,6 @@ import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
@@ -96,9 +95,6 @@ public abstract class CubaTestCase extends TestCase {
     }
 
     protected void initPersistenceConfig() {
-        BaseUuidEntity.allowSetNotLoadedAttributes =
-                Boolean.valueOf(AppContext.getProperty("cuba.allowSetNotLoadedAttributes"));
-
         String configProperty = AppContext.getProperty(AppContextLoader.PERSISTENCE_CONFIG);
         StrTokenizer tokenizer = new StrTokenizer(configProperty);
 
@@ -165,23 +161,15 @@ public abstract class CubaTestCase extends TestCase {
     }
 
     protected void initAppContext() {
+        EclipseLinkCustomizer.initTransientCompatibleAnnotations();
+
         String configProperty = AppContext.getProperty(AbstractAppContextLoader.SPRING_CONTEXT_CONFIG);
 
         StrTokenizer tokenizer = new StrTokenizer(configProperty);
         List<String> locations = tokenizer.getTokenList();
         locations.add(getTestSpringConfig());
 
-        ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext() {
-            @Override
-            protected DefaultListableBeanFactory createBeanFactory() {
-                return new CubaDefaultListableBeanFactory(getInternalParentBeanFactory());
-            }
-        };
-
-        appContext.setConfigLocations(locations.toArray(new String[locations.size()]));
-        appContext.setValidating(false);
-        appContext.refresh();
-
+        ClassPathXmlApplicationContext appContext = new CubaCoreApplicationContext(locations.toArray(new String[locations.size()])); //CubaTestClassPathXmlApplicationContext(locations);
         AppContext.setApplicationContext(appContext);
     }
 

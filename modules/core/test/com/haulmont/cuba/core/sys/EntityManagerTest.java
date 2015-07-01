@@ -9,11 +9,15 @@ import com.haulmont.cuba.core.CubaTestCase;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.TypedQuery;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.testsupport.TestSupport;
 
 import java.util.UUID;
+
+import static com.haulmont.cuba.testsupport.TestSupport.reserialize;
 
 /**
  * @author krivopustov
@@ -61,6 +65,8 @@ public class EntityManagerTest extends CubaTestCase {
         } finally {
             tx.end();
         }
+
+        metadata.getViewRepository().getView(User.class, View.MINIMAL);
     }
 
     @Override
@@ -71,33 +77,34 @@ public class EntityManagerTest extends CubaTestCase {
         super.tearDown();
     }
 
-    public void testViewPropagation() throws Exception {
-
-        View view = new View(User.class, false)
-                .addProperty("name")
-                .addProperty("login")
-                .addProperty("group", new View(Group.class)
-                        .addProperty("name"));
-
-        User user;
-
-        Transaction tx = persistence.createTransaction();
-        try {
-            EntityManager em = persistence.getEntityManager();
-            em.setView(view);
-
-            TypedQuery<User> query = em.createQuery("select u from sec$User u where u.id = ?1", User.class);
-            query.setParameter(1, userId);
-            user = query.getSingleResult();
-
-            tx.commit();
-        } finally {
-            tx.end();
-        }
-
-        assertNull(user.getCreatedBy());
-        assertNotNull(user.getGroup());
-    }
+    // Commented in EL: EntityManager has no setView() method anymore
+//    public void testViewPropagation() throws Exception {
+//
+//        View view = new View(User.class, false)
+//                .addProperty("name")
+//                .addProperty("login")
+//                .addProperty("group", new View(Group.class)
+//                        .addProperty("name"));
+//
+//        User user;
+//
+//        Transaction tx = persistence.createTransaction();
+//        try {
+//            EntityManager em = persistence.getEntityManager();
+//            em.setView(view);
+//
+//            TypedQuery<User> query = em.createQuery("select u from sec$User u where u.id = ?1", User.class);
+//            query.setParameter(1, userId);
+//            user = query.getSingleResult();
+//
+//            tx.commit();
+//        } finally {
+//            tx.end();
+//        }
+//
+//        assertNull(user.getCreatedBy());
+//        assertNotNull(user.getGroup());
+//    }
 
     public void testFind() throws Exception {
 
@@ -118,8 +125,14 @@ public class EntityManagerTest extends CubaTestCase {
         } finally {
             tx.end();
         }
+        user = reserialize(user);
+
         assertNotNull(user);
-        assertNull(user.getCreatedBy());
+        try {
+            user.getCreatedBy();
+            fail();
+        } catch (Exception ignored) {
+        }
         assertNotNull(user.getGroup());
     }
 
@@ -140,19 +153,39 @@ public class EntityManagerTest extends CubaTestCase {
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            em.setView(view1);
-            user1 = em.find(User.class, userId);
+            user1 = em.find(User.class, userId, view1);
             user2 = em.find(User.class, user2Id, view2);
 
             tx.commit();
         } finally {
             tx.end();
         }
+        user1 = reserialize(user1);
+        user2 = reserialize(user2);
+
         assertNotNull(user1);
-        assertNull(user1.getCreatedBy());
-        assertNull(user1.getGroup());
+        try {
+            user1.getCreatedBy();
+            fail();
+        } catch (Exception ignored) {
+        }
+        try {
+            user1.getGroup();
+            fail();
+        } catch (Exception ignored) {
+        }
         assertNotNull(user2);
-        assertNull(user2.getCreatedBy());
+
+        try {
+            user2.getCreatedBy();
+            fail();
+        } catch (Exception ignored) {
+        }
+        try {
+            user2.getCreatedBy();
+            fail();
+        } catch (Exception ignored) {
+        }
         assertNotNull(user2.getGroup());
     }
 
@@ -179,8 +212,14 @@ public class EntityManagerTest extends CubaTestCase {
         } finally {
             tx.end();
         }
+        user1 = reserialize(user1);
+
         assertNotNull(user1);
-        assertNull(user1.getCreatedBy());
+        try {
+            user1.getCreatedBy();
+            fail();
+        } catch (Exception ignored) {
+        }
         assertNotNull(user1.getGroup());
     }
 
@@ -209,36 +248,44 @@ public class EntityManagerTest extends CubaTestCase {
         } finally {
             tx.end();
         }
+        user = reserialize(user);
 
-        assertNull(user.getCreatedBy());
+        try {
+            user.getCreatedBy();
+            fail();
+        } catch (Exception ignored) {
+        }
         assertNotNull(user.getGroup());
     }
 
     public void testReload() throws Exception {
-        final User originalUser = persistence.createTransaction().execute(new Transaction.Callable<User>() {
-            @Override
-            public User call(EntityManager em) {
-                return em.find(User.class, userId, "user.browse");
-            }
-        });
-
+        User originalUser, reloadedUser;
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            originalUser = em.find(User.class, userId, "user.browse");
+            tx.commit();
+        } finally {
+            tx.end();
+        }
         assertNotNull(originalUser);
-        assertNull(originalUser.getUserRoles());
+        assertFalse(PersistenceHelper.isLoaded(originalUser, "userRoles"));
 
-        User reloadedUser = persistence.createTransaction().execute(new Transaction.Callable<User>() {
-            @Override
-            public User call(EntityManager em) {
-                return em.reload(originalUser, "user.edit");
-            }
-        });
+        tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            reloadedUser = em.reload(originalUser, "user.edit");
+            tx.commit();
+        } finally {
+            tx.end();
+        }
         assertNotNull(reloadedUser);
-        assertNotNull(reloadedUser.getUserRoles());
+        assertTrue(PersistenceHelper.isLoaded(reloadedUser, "userRoles"));
         assertTrue(originalUser != reloadedUser);
     }
 
-    public void testReloadSameTx() {
-        User originalUser;
-        User reloadedUser;
+    public void testReloadSameTx() throws Exception {
+        User originalUser, reloadedUser;
 
         View view = new View(User.class, false)
                 .addProperty("name");
@@ -255,9 +302,10 @@ public class EntityManagerTest extends CubaTestCase {
         } finally {
             tx.end();
         }
+        assertTrue(originalUser == reloadedUser);
+        reloadedUser = reserialize(reloadedUser);
         assertNotNull(reloadedUser);
         assertNotNull(reloadedUser.getLogin());
-        assertNotNull(reloadedUser.getUserRoles());
-        assertTrue(originalUser == reloadedUser);
+        assertTrue(PersistenceHelper.isLoaded(reloadedUser, "userRoles"));
     }
 }

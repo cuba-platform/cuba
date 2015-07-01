@@ -672,8 +672,7 @@ public class Param {
 
             if (!StringUtils.isBlank(entityWhere)) {
                 QueryTransformer transformer = QueryTransformerFactory.createTransformer(
-                        "select e from " + metaClass.getName() + " e",
-                        metaClass.getName());
+                        "select e from " + metaClass.getName() + " e");
                 transformer.addWhere(entityWhere);
                 String q = transformer.getResult();
                 ds.setQuery(q);

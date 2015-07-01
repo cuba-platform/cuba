@@ -9,15 +9,16 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
-import com.haulmont.cuba.core.global.*;
-import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.kernel.DetachedStateManager;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.TimeSource;
 
 import javax.annotation.Nullable;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
-import java.util.BitSet;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +44,15 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
     private static final long serialVersionUID = -8400641366148656528L;
 
     @Transient
-    protected boolean detached;
+    protected boolean __new = true;
+
+    @Transient
+    protected boolean __detached;
+
+    protected transient boolean __managed;
+
+    @Transient
+    protected boolean __removed;
 
     @Column(name = "CREATE_TS")
     protected Date createTs;
@@ -56,14 +65,50 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
 
     public abstract void setId(T id);
 
-    @Override
-    public boolean isDetached() {
-        return detached;
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+        if (__managed)
+            __detached = true;
+        out.defaultWriteObject();
     }
 
-    @Override
-    public void setDetached(boolean detached) {
-        this.detached = detached;
+    /** For internal use. */
+    public boolean __new() {
+        return __new;
+    }
+
+    /** For internal use. */
+    public void __new(boolean cubaNew) {
+        this.__new = cubaNew;
+    }
+
+    /** For internal use. */
+    public boolean __managed() {
+        return __managed;
+    }
+
+    /** For internal use. */
+    public void __managed(boolean cubaManaged) {
+        this.__managed = cubaManaged;
+    }
+
+    /** For internal use. */
+    public boolean __detached() {
+        return __detached;
+    }
+
+    /** For internal use. */
+    public void __detached(boolean detached) {
+        this.__detached = detached;
+    }
+
+    /** For internal use. */
+    public boolean __removed() {
+        return __removed;
+    }
+
+    /** For internal use. */
+    public void __removed(boolean removed) {
+        this.__removed = removed;
     }
 
     @Override
@@ -91,32 +136,6 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
     }
-
-    /**
-     * Called from enhanced setters before property is changed.
-     *
-     * @param name       property name
-     * @param fieldIndex corresponding OpenJPA field index
-     * @param value      new value
-     */
-    @SuppressWarnings("UnusedDeclaration")
-    protected void propertyChanging(String name, int fieldIndex, Object value) {
-        if (!allowSetNotLoadedAttributes
-                && fieldIndex > -1
-                && this instanceof PersistenceCapable
-                && ((PersistenceCapable) this).pcGetStateManager() instanceof DetachedStateManager) {
-            BitSet loaded = ((DetachedStateManager) ((PersistenceCapable) this).pcGetStateManager()).getLoaded();
-            if (!loaded.get(fieldIndex)) {
-                throw new IllegalEntityStateException("Property '" +
-                        getClass().getCanonicalName() + "." + name + "' is not loaded");
-            }
-        }
-    }
-
-    /**
-     * For internal use only.
-     */
-    public static boolean allowSetNotLoadedAttributes;
 
     @Override
     public void setValue(String property, Object obj, boolean checkEquals) {

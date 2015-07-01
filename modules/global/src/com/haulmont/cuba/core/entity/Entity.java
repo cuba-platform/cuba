@@ -6,8 +6,6 @@ package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.model.Instance;
 
-import java.io.Serializable;
-
 /**
  * Interface to be implemented by domain model objects with identifiers.
  * @param <T> identifier type
@@ -15,6 +13,6 @@ import java.io.Serializable;
  * @author abramov
  * @version $Id$
  */
-public interface Entity<T> extends Instance, Serializable {
+public interface Entity<T> extends Instance {
     T getId();
 }

@@ -7,7 +7,6 @@ package com.haulmont.cuba.core.entity;
 
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.sys.CubaEnhanced;
-import org.apache.openjpa.persistence.Persistent;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
@@ -27,7 +26,6 @@ public class QueryResult implements CubaEnhanced { // Marker interface added her
     @Column(name = "ID")
     private Long id;
 
-    @Persistent
     @Column(name = "SESSION_ID")
     private UUID sessionId;
 
@@ -35,7 +33,6 @@ public class QueryResult implements CubaEnhanced { // Marker interface added her
     private Integer queryKey;
 
     @Column(name = "ENTITY_ID")
-    @Persistent
     private UUID entityId;
 
     public Long getId() {

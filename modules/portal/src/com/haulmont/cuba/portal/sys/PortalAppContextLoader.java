@@ -19,6 +19,8 @@ public class PortalAppContextLoader extends AbstractWebAppContextLoader {
 
     @Override
     protected void beforeInitAppContext() {
+        super.beforeInitAppContext();
+
         AppContext.setProperty("cuba.clientType", ClientType.PORTAL.toString());
     }
 }

@@ -475,15 +475,15 @@ create table SYS_FOLDER (
 ------------------------------------------------------------------------------------------------------------
 
 create table SYS_APP_FOLDER (
-    FOLDER_ID varchar(36) not null,
+    ID varchar(36) not null,
     FILTER_COMPONENT varchar(200),
     FILTER_XML varchar(7000),
     VISIBILITY_SCRIPT longvarchar,
     QUANTITY_SCRIPT longvarchar,
     APPLY_DEFAULT boolean,
     --
-    primary key (FOLDER_ID),
-    constraint FK_SYS_APP_FOLDER_FOLDER foreign key (FOLDER_ID) references SYS_FOLDER(ID)
+    primary key (ID),
+    constraint FK_SYS_APP_FOLDER_FOLDER foreign key (ID) references SYS_FOLDER(ID)
 )^
 
 ------------------------------------------------------------------------------------------------------------
@@ -508,7 +508,7 @@ create table SEC_PRESENTATION (
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_SEARCH_FOLDER (
-    FOLDER_ID varchar(36) not null,
+    ID varchar(36) not null,
     FILTER_COMPONENT varchar(200),
     FILTER_XML varchar(7000),
     USER_ID varchar(36),
@@ -517,8 +517,8 @@ create table SEC_SEARCH_FOLDER (
     IS_SET boolean,
     ENTITY_TYPE varchar(50),
     --
-    primary key (FOLDER_ID),
-    constraint FK_SEC_SEARCH_FOLDER_FOLDER foreign key (FOLDER_ID) references SYS_FOLDER(ID),
+    primary key (ID),
+    constraint FK_SEC_SEARCH_FOLDER_FOLDER foreign key (ID) references SYS_FOLDER(ID),
     constraint FK_SEC_SEARCH_FOLDER_USER foreign key (USER_ID) references SEC_USER(ID),
     constraint FK_SEC_SEARCH_FOLDER_PRESENTATION foreign key (PRESENTATION_ID)
         references SEC_PRESENTATION(ID)

@@ -24,11 +24,10 @@ import java.util.UUID;
  */
 public class EntityLogTest extends CubaTestCase {
 
-    private List<UUID> leId = new ArrayList<>();
-    private List<UUID> laId = new ArrayList<>();
-
     private UUID userId;
     private UUID roleId;
+
+    private EntityLogAPI entityLog;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -46,25 +45,21 @@ public class EntityLogTest extends CubaTestCase {
             q.executeUpdate();
 
             LoggedEntity le = new LoggedEntity();
-            leId.add(le.getId());
             le.setName("sec$User");
             le.setAuto(true);
             em.persist(le);
 
             LoggedAttribute la = new LoggedAttribute();
-            laId.add(la.getId());
             la.setEntity(le);
             la.setName("email");
             em.persist(la);
 
             le = new LoggedEntity();
-            leId.add(le.getId());
             le.setName("sec$Role");
             le.setAuto(true);
             em.persist(le);
 
             la = new LoggedAttribute();
-            laId.add(la.getId());
             la.setEntity(le);
             la.setName("type");
             em.persist(la);
@@ -74,7 +69,7 @@ public class EntityLogTest extends CubaTestCase {
             tx.end();
         }
 
-        EntityLogAPI entityLog = AppBeans.get(EntityLogAPI.NAME);
+        entityLog = AppBeans.get(EntityLogAPI.NAME);
         entityLog.invalidateCache();
     }
 

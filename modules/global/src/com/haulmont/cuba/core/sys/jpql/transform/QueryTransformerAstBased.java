@@ -73,6 +73,11 @@ public class QueryTransformerAstBased implements QueryTransformer {
         return addedParams;
     }
 
+    @Override
+    public void handleCaseInsensitiveParam(String paramName) {
+
+    }
+
     /**
      * @param where - "{E}" may be used as a replaceable entity placeholder. No such value
      *              should be used as a string constant

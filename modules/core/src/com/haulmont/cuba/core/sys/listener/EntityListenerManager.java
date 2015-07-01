@@ -99,6 +99,26 @@ public class EntityListenerManager {
     }
 
     /**
+     * Unregister an entity listener.
+     *
+     * @param entityClass   entity
+     * @param listenerClass listener class
+     */
+    public void removeListener(Class<? extends BaseEntity> entityClass, Class<?> listenerClass) {
+        lock.writeLock().lock();
+        try {
+            Set<String> set = dynamicListeners.get(entityClass);
+            if (set != null) {
+                set.remove(listenerClass.getName());
+            }
+
+            cache.clear();
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    /**
      * Register an entity listener which is a ManagedBean.
      *
      * @param entityClass      entity
@@ -113,6 +133,26 @@ public class EntityListenerManager {
                 dynamicListeners.put(entityClass, set);
             }
             set.add(listenerBeanName);
+
+            cache.clear();
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    /**
+     * Unregister an entity listener.
+     *
+     * @param entityClass      entity
+     * @param listenerBeanName listener bean name
+     */
+    public void removeListener(Class<? extends BaseEntity> entityClass, String listenerBeanName) {
+        lock.writeLock().lock();
+        try {
+            Set<String> set = dynamicListeners.get(entityClass);
+            if (set != null) {
+                set.remove(listenerBeanName);
+            }
 
             cache.clear();
         } finally {

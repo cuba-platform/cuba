@@ -184,8 +184,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
         <item name="MyBatis" web="http://www.mybatis.org/" license="apache-2.0"/>
 
-        <item name="OpenJPA" web="http://openjpa.apache.org/" license="apache-2.0"/>
-
         <item name="Apache XBean" web="http://geronimo.apache.org/xbean" license="apache-2.0"/>
 
         <item name="Perf4J" web="http://perf4j.codehaus.org/" license="apache-2.0"/>

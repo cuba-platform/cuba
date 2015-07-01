@@ -142,11 +142,6 @@ public class User extends StandardEntity {
         this.userRoles = userRoles;
     }
 
-    @Override
-    public String toString() {
-        return login;
-    }
-
     public String getEmail() {
         return email;
     }

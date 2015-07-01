@@ -5,10 +5,6 @@
 package com.haulmont.cuba.core.jmx;
 
 import com.haulmont.cuba.core.app.DataCacheAPI;
-import org.apache.openjpa.datacache.ConcurrentDataCache;
-import org.apache.openjpa.datacache.ConcurrentQueryCache;
-import org.apache.openjpa.datacache.QueryCache;
-import org.apache.openjpa.persistence.*;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -25,20 +21,20 @@ public class DataCache implements DataCacheMBean {
     @Inject
     protected DataCacheAPI dataCache;
 
-    protected OpenJPAEntityManagerFactorySPI jpaEmf;
+//    protected OpenJPAEntityManagerFactorySPI jpaEmf;
 
-    @Inject
-    public void setJpaEmf(OpenJPAEntityManagerFactory jpaEmf) {
-        this.jpaEmf = (OpenJPAEntityManagerFactorySPI) jpaEmf;
-    }
-
-    private StoreCache getStoreCache() {
-        return jpaEmf.getStoreCache();
-    }
-
-    private QueryResultCache getQueryCache() {
-        return jpaEmf.getQueryResultCache();
-    }
+//    @Inject
+//    public void setJpaEmf(OpenJPAEntityManagerFactory jpaEmf) {
+//        this.jpaEmf = (OpenJPAEntityManagerFactorySPI) jpaEmf;
+//    }
+//
+//    private StoreCache getStoreCache() {
+//        return jpaEmf.getStoreCache();
+//    }
+//
+//    private QueryResultCache getQueryCache() {
+//        return jpaEmf.getQueryResultCache();
+//    }
 
     @Override
     public boolean isStoreCacheEnabled() {
@@ -52,54 +48,54 @@ public class DataCache implements DataCacheMBean {
 
     @Override
     public int getStoreCacheSize() {
-        if (!isStoreCacheEnabled())
+//        if (!isStoreCacheEnabled())
             return 0;
 
-        org.apache.openjpa.datacache.DataCache cache = ((StoreCacheImpl) jpaEmf.getStoreCache()).getDelegate();
-        if (cache instanceof ConcurrentDataCache) {
-            return ((ConcurrentDataCache) cache).getCacheMap().size();
-        } else {
-            return -1;
-        }
+//        org.apache.openjpa.datacache.DataCache cache = ((StoreCacheImpl) jpaEmf.getStoreCache()).getDelegate();
+//        if (cache instanceof ConcurrentDataCache) {
+//            return ((ConcurrentDataCache) cache).getCacheMap().size();
+//        } else {
+//            return -1;
+//        }
     }
 
     @Override
     public int getStoreCacheMaxSize() {
-        if (!isStoreCacheEnabled())
+//        if (!isStoreCacheEnabled())
             return 0;
 
-        org.apache.openjpa.datacache.DataCache cache = ((StoreCacheImpl) jpaEmf.getStoreCache()).getDelegate();
-        if (cache instanceof ConcurrentDataCache) {
-            return ((ConcurrentDataCache) cache).getCacheSize();
-        } else {
-            return -1;
-        }
+//        org.apache.openjpa.datacache.DataCache cache = ((StoreCacheImpl) jpaEmf.getStoreCache()).getDelegate();
+//        if (cache instanceof ConcurrentDataCache) {
+//            return ((ConcurrentDataCache) cache).getCacheSize();
+//        } else {
+//            return -1;
+//        }
     }
 
     @Override
     public int getQueryCacheSize() {
-        if (!isQueryCacheEnabled())
+//        if (!isQueryCacheEnabled())
             return 0;
 
-        QueryCache cache = ((QueryResultCacheImpl) jpaEmf.getQueryResultCache()).getDelegate();
-        if (cache instanceof ConcurrentQueryCache) {
-            return ((ConcurrentQueryCache) cache).getCacheMap().size();
-        } else {
-            return -1;
-        }
+//        QueryCache cache = ((QueryResultCacheImpl) jpaEmf.getQueryResultCache()).getDelegate();
+//        if (cache instanceof ConcurrentQueryCache) {
+//            return ((ConcurrentQueryCache) cache).getCacheMap().size();
+//        } else {
+//            return -1;
+//        }
     }
 
     @Override
     public int getQueryCacheMaxSize() {
-        if (!isQueryCacheEnabled())
+//        if (!isQueryCacheEnabled())
             return 0;
 
-        QueryCache cache = ((QueryResultCacheImpl) jpaEmf.getQueryResultCache()).getDelegate();
-        if (cache instanceof ConcurrentQueryCache) {
-            return ((ConcurrentQueryCache) cache).getCacheSize();
-        } else {
-            return -1;
-        }
+//        QueryCache cache = ((QueryResultCacheImpl) jpaEmf.getQueryResultCache()).getDelegate();
+//        if (cache instanceof ConcurrentQueryCache) {
+//            return ((ConcurrentQueryCache) cache).getCacheSize();
+//        } else {
+//            return -1;
+//        }
     }
 
     @Override

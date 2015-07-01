@@ -131,7 +131,7 @@ public class QueryFilter {
         }
 
         query = TemplateHelper.processTemplate(query, paramValues);
-        QueryTransformer transformer = QueryTransformerFactory.createTransformer(query, targetEntity);
+        QueryTransformer transformer = QueryTransformerFactory.createTransformer(query);
 
         if (isActual(root, params)) {
             Condition refined = refine(root, params);

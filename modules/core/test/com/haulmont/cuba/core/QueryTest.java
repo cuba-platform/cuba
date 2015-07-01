@@ -4,14 +4,16 @@
  */
 package com.haulmont.cuba.core;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 
 import java.util.List;
 import java.util.UUID;
 
-public class QueryTest extends CubaTestCase
-{
+public class QueryTest extends CubaTestCase {
+
     private UUID userId;
     private UUID groupId;
 
@@ -265,5 +267,26 @@ public class QueryTest extends CubaTestCase
         } finally {
             tx.end();
         }
+    }
+
+    public void testCaseInsensitiveSearch() throws Exception {
+        Transaction tx = persistence.createTransaction();
+        try {
+            TypedQuery<User> query = persistence.getEntityManager().createQuery(
+                    "select u from sec$User u where u.name like :name", User.class);
+            query.setParameter("name", "(?i)%user%");
+            List<User> list = query.getResultList();
+            tx.commit();
+
+            Iterables.find(list, new Predicate<User>() {
+                @Override
+                public boolean apply(User input) {
+                    return input.getId().equals(userId);
+                }
+            });
+        } finally {
+            tx.end();
+        }
+
     }
 }
