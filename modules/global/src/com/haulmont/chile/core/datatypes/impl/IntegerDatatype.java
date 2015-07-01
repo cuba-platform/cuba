@@ -93,6 +93,33 @@ public class IntegerDatatype extends NumberDatatype implements Datatype<Integer>
     }
 
     @Override
+    protected Number parse(String value, NumberFormat format) throws ParseException {
+        format.setParseIntegerOnly(true);
+
+        Number result = super.parse(value, format);
+        if (!hasValidIntegerRange(result)) {
+            throw new ParseException(String.format("Integer range exceeded: \"%s\"", value), 0);
+        }
+        return result;
+    }
+
+    protected boolean hasValidIntegerRange(Number result) throws ParseException {
+        if (result instanceof Long) {
+            Long longResult = (Long) result;
+
+            if (longResult > Integer.MAX_VALUE || longResult < Integer.MIN_VALUE) {
+                return false;
+            }
+        } else {
+            Double doubleResult = (Double) result;
+            if (doubleResult > Integer.MAX_VALUE || doubleResult < Integer.MIN_VALUE) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
     public Integer read(ResultSet resultSet, int index) throws SQLException {
         Integer value = resultSet.getInt(index);
         return resultSet.wasNull() ? null : value;

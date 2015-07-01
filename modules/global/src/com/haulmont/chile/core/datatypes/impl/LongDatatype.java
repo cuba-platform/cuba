@@ -92,7 +92,29 @@ public class LongDatatype extends NumberDatatype implements Datatype<Long> {
 
         DecimalFormatSymbols formatSymbols = formatStrings.getFormatSymbols();
         NumberFormat format = new DecimalFormat(formatStrings.getIntegerFormat(), formatSymbols);
+
         return parse(value, format).longValue();
+    }
+
+    @Override
+    protected Number parse(String value, NumberFormat format) throws ParseException {
+        format.setParseIntegerOnly(true);
+
+        Number result = super.parse(value, format);
+        if (!hasValidLongRange(result)) {
+            throw new ParseException(String.format("Integer range exceeded: \"%s\"", value), 0);
+        }
+        return result;
+    }
+
+    protected boolean hasValidLongRange(Number result) throws ParseException {
+        if (result instanceof Double) {
+            Double doubleResult = (Double) result;
+            if (doubleResult > Long.MAX_VALUE || doubleResult < Long.MIN_VALUE) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
