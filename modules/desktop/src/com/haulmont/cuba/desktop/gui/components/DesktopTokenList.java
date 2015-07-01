@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
+import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.AbstractAction;
@@ -62,11 +63,13 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
 
     private Map<String, Object> lookupScreenParams;
 
-    private boolean lookup;
+    private DialogParams lookupScreenDialogParams;
 
-    private boolean editable;
+    private boolean lookup = false;
 
-    private boolean simple;
+    private boolean editable = true;
+
+    private boolean simple = false;
 
     private boolean multiselect;
 
@@ -149,6 +152,7 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
 
                         lookupAction.setLookupScreenOpenType(lookupOpenMode);
                         lookupAction.setLookupScreenParams(lookupScreenParams);
+                        lookupAction.setLookupScreenDialogParams(lookupScreenDialogParams);
                     }
                 }
                 impl.refreshComponent();
@@ -233,6 +237,7 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
                 }
                 lookupAction.setLookupScreenOpenType(lookupOpenMode);
                 lookupAction.setLookupScreenParams(lookupScreenParams);
+                lookupAction.setLookupScreenDialogParams(lookupScreenDialogParams);
             } else {
                 lookupPickerField.removeAction(lookupAction);
             }
@@ -259,6 +264,17 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
     @Override
     public Map<String, Object> getLookupScreenParams() {
         return lookupScreenParams;
+    }
+
+    @Override
+    public void setLookupScreenDialogParams(DialogParams dialogparams) {
+        this.lookupScreenDialogParams = dialogparams;
+    }
+
+    @Nullable
+    @Override
+    public DialogParams getLookupScreenDialogParams() {
+        return lookupScreenDialogParams;
     }
 
     @Override
@@ -642,8 +658,13 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
             WindowManager wm = DesktopComponentsHelper.getTopLevelFrame(DesktopTokenList.this).getWindowManager();
             if (lookupOpenMode == WindowManager.OpenType.DIALOG) {
                 wm.getDialogParams().setResizable(true);
-                wm.getDialogParams().setWidth(800);
-                wm.getDialogParams().setHeight(600);
+                if (lookupScreenDialogParams != null) {
+                    wm.getDialogParams().setWidth(lookupScreenDialogParams.getWidth());
+                    wm.getDialogParams().setHeight(lookupScreenDialogParams.getHeight());
+                } else {
+                    wm.getDialogParams().setWidth(800);
+                    wm.getDialogParams().setHeight(600);
+                }
             }
 
             wm.openLookup(windowInfo, new Window.Lookup.Handler() {
