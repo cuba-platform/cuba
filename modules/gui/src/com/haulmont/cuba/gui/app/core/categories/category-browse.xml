@@ -21,7 +21,7 @@
     </dsContext>
 
     <layout expand="categoryTable" spacing="true">
-        <filter id="categoriesFilter" datasource="categoriesDs" margin="false,false,true,false">
+        <filter id="categoriesFilter" datasource="categoriesDs" margin="false,false,true,false" applyTo="categoryTable">
             <properties include=".*"/>
         </filter>
 

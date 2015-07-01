@@ -18,7 +18,7 @@
     </dsContext>
 
     <layout expand="tasksTable" spacing="true">
-        <filter id="tasksFilter" datasource="tasksDs">
+        <filter id="tasksFilter" datasource="tasksDs" applyTo="tasksTable">
             <properties include=".*"/>
         </filter>
 
