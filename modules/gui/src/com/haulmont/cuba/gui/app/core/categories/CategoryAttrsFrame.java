@@ -111,7 +111,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
                 return "";
             }
         };
-        ((Button)getComponentNN("moveUp")).setAction(moveUpAction);
+        ((Button) getComponentNN("moveUp")).setAction(moveUpAction);
 
         AbstractAction moveDownAction = new ItemTrackingAction("moveDown") {
             @Override
@@ -138,7 +138,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
                 return "";
             }
         };
-        ((Button)getComponentNN("moveDown")).setAction(moveDownAction);
+        ((Button) getComponentNN("moveDown")).setAction(moveDownAction);
 
         categoryAttrsTable.addAction(moveUpAction);
         categoryAttrsTable.addAction(moveDownAction);
@@ -155,11 +155,12 @@ public class CategoryAttrsFrame extends AbstractFrame {
                 Label dataTypeLabel = factory.createComponent(Label.NAME);
                 String labelContent;
                 if (BooleanUtils.isTrue(attribute.getIsEntity())) {
-                    try {
-                        Class clazz = Class.forName(attribute.getEntityClass());
+                    Class clazz = attribute.getJavaClassForEntity();
+
+                    if (clazz != null) {
                         MetaClass metaClass = metadata.getSession().getClass(clazz);
                         labelContent = messageTools.getEntityCaption(metaClass);
-                    } catch (ClassNotFoundException ex) {
+                    } else {
                         labelContent = "classNotFound";
                     }
                 } else {
@@ -201,8 +202,8 @@ public class CategoryAttrsFrame extends AbstractFrame {
                                 defaultValue = attribute.getDefaultValue().toString();
                     }
                 } else {
-                    try {
-                        Class clazz = Class.forName(attribute.getEntityClass());
+                    Class clazz = attribute.getJavaClassForEntity();
+                    if (clazz != null) {
                         LoadContext entitiesContext = new LoadContext(clazz);
                         String entityClassName = metadata.getClassNN(clazz).getName();
                         if (attribute.getDefaultEntityId() != null) {
@@ -212,7 +213,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
                             Entity entity = dataSupplier.load(entitiesContext);
                             defaultValue = InstanceUtils.getInstanceName(entity);
                         } else defaultValue = "";
-                    } catch (ClassNotFoundException ex) {
+                    } else {
                         defaultValue = getMessage("entityNotFound");
                     }
                 }
@@ -222,7 +223,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
                 return defaultValueLabel;
             }
         });
-   }
+    }
 
     protected void assignNextOrderNo(CategoryAttribute attr) {
         UUID lastId = categoryAttrsDs.lastItemId();

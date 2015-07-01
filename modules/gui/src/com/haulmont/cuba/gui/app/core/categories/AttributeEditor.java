@@ -244,7 +244,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
         if (attribute.getDataType() == PropertyType.ENTITY) {
             if (StringUtils.isNotBlank(attribute.getEntityClass())) {
-                Class<Object> entityClass = ReflectionHelper.getClass(attribute.getEntityClass());
+                Class entityClass = attribute.getJavaClassForEntity();
                 defaultEntityField.setMetaClass(metadata.getClass(entityClass));
                 fillDefaultEntities(entityClass);
                 fillSelectEntityScreens(entityClass);

@@ -122,7 +122,7 @@ public final class DynamicAttributesUtils {
             case ENUMERATION:
                 return String.class;
             case ENTITY:
-                return ReflectionHelper.getClass(attribute.getEntityClass());
+                return attribute.getJavaClassForEntity();
         }
         return String.class;
     }

@@ -178,8 +178,8 @@ public class CategoryAttributeValue extends StandardEntity {
                     "because categoryAttribute is not loaded for attribute value " + id);
             Preconditions.checkState(StringUtils.isNotBlank(categoryAttribute.getEntityClass()),
                     "Could not resolve class by empty dataType. Attribute value " + id);
-            Class<?> aClass = ReflectionHelper.getClass(categoryAttribute.getEntityClass());
-            return AppBeans.get(DataManager.class).load(new LoadContext(aClass).setId(entityValue));
+            return AppBeans.get(DataManager.class)
+                    .load(new LoadContext(categoryAttribute.getJavaClassForEntity()).setId(entityValue));
         }
 
         return null;

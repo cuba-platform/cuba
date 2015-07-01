@@ -6,6 +6,7 @@
 package com.haulmont.cuba.core.entity;
 
 import com.google.common.base.Preconditions;
+import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
@@ -13,6 +14,7 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.persistence.Persistent;
 
+import javax.annotation.Nullable;
 import javax.persistence.*;
 import javax.persistence.Entity;
 import java.util.*;
@@ -272,5 +274,14 @@ public class CategoryAttribute extends StandardEntity {
 
     public void setEntityClass(String entityClass) {
         this.entityClass = entityClass;
+    }
+
+    @Nullable
+    public Class getJavaClassForEntity(){
+        if (StringUtils.isNotBlank(entityClass)) {
+            return ReflectionHelper.getClass(entityClass);
+        } else {
+            return null;
+        }
     }
 }
