@@ -70,6 +70,16 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     }
 
     @Override
+    public void setTextMaxResults(boolean textMaxResults) {
+        delegate.setTextMaxResults(textMaxResults);
+    }
+
+    @Override
+    public boolean getTextMaxResults() {
+        return delegate.getTextMaxResults();
+    }
+
+    @Override
     public boolean getUseMaxResults() {
         return delegate.getUseMaxResults();
     }

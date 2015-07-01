@@ -86,6 +86,16 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     }
 
     @Override
+    public void setTextMaxResults(boolean textMaxResults) {
+        delegate.setTextMaxResults(textMaxResults);
+    }
+
+    @Override
+    public boolean getTextMaxResults() {
+        return delegate.getTextMaxResults();
+    }
+
+    @Override
     public void setApplyTo(Component component) {
         delegate.setApplyTo(component);
     }

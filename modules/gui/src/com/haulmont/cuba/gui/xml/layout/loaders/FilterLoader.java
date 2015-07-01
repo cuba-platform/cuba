@@ -46,6 +46,9 @@ public class FilterLoader extends ComponentLoader {
         String useMaxResults = element.attributeValue("useMaxResults");
         filter.setUseMaxResults(useMaxResults == null || Boolean.valueOf(useMaxResults));
 
+        String textMaxResults = element.attributeValue("textMaxResults");
+        filter.setTextMaxResults(Boolean.valueOf(textMaxResults));
+
         final String manualApplyRequired = element.attributeValue("manualApplyRequired");
         filter.setManualApplyRequired(BooleanUtils.toBooleanObject(manualApplyRequired));
 

@@ -46,6 +46,10 @@ public interface FilterDelegate {
 
     boolean getUseMaxResults();
 
+    void setTextMaxResults(boolean textMaxResults);
+
+    boolean getTextMaxResults();
+
     void setManualApplyRequired(Boolean manualApplyRequired);
 
     Boolean getManualApplyRequired();

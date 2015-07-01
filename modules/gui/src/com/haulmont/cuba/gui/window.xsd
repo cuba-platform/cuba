@@ -1013,6 +1013,7 @@
 
         <xs:attribute name="applyTo" type="xs:string"/>
         <xs:attribute name="useMaxResults" type="xs:boolean"/>
+        <xs:attribute name="textMaxResults" type="xs:boolean"/>
         <xs:attribute name="manualApplyRequired" type="xs:boolean"/>
         <xs:attribute name="editable" type="xs:boolean"/>
         <xs:attribute name="folderActionsEnabled" type="xs:boolean"/>

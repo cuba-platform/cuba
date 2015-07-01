@@ -129,7 +129,9 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected PopupButton filtersPopupButton;
     protected Component.Container conditionsLayout;
     protected BoxLayout maxResultsLayout;
-    protected TextField maxResultsField;
+    protected Field maxResultsField;
+    protected TextField maxResultsTextField;
+    protected LookupField maxResultsLookupField;
     protected BoxLayout controlsLayout;
     protected Component.Container appliedFiltersLayout;
     protected PopupButton settingsBtn;
@@ -144,6 +146,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected String caption;
     protected boolean useMaxResults;
+    protected boolean textMaxResults;
     protected Boolean manualApplyRequired;
     protected boolean folderActionsEnabled = true;
     protected boolean conditionsRemoveEnabled = false;
@@ -360,11 +363,21 @@ public class FilterDelegateImpl implements FilterDelegate {
         maxResultsLabel1.setAlignment(Component.Alignment.MIDDLE_RIGHT);
         maxResultsLayout.add(maxResultsLabel1);
 
-        maxResultsField = componentsFactory.createComponent(TextField.NAME);
+        maxResultsTextField = componentsFactory.createComponent(TextField.NAME);
+        maxResultsField = maxResultsTextField;
         maxResultsField.setAlignment(Component.Alignment.MIDDLE_RIGHT);
-        maxResultsField.setMaxLength(4);
+        ((TextField) maxResultsField).setMaxLength(4);
         maxResultsField.setWidth(theme.get("cuba.gui.Filter.maxResults.width"));
-        maxResultsField.setDatatype(Datatypes.get("int"));
+        ((TextField) maxResultsField).setDatatype(Datatypes.get("int"));
+
+        maxResultsLookupField = componentsFactory.createComponent(LookupField.class);
+        maxResultsField = maxResultsLookupField;
+        maxResultsField.setAlignment(Component.Alignment.MIDDLE_RIGHT);
+        maxResultsField.setWidth(theme.get("cuba.gui.Filter.maxResults.lookup.width"));
+        List<Integer> options = Arrays.asList(20, 50, 100, 500, 1000, 5000);
+        ((LookupField) maxResultsField).setOptionsList(options);
+
+        maxResultsField = textMaxResults ? maxResultsTextField : maxResultsLookupField;
         maxResultsLayout.add(maxResultsField);
     }
 
@@ -377,12 +390,12 @@ public class FilterDelegateImpl implements FilterDelegate {
         initAdHocFilter();
         loadFilterEntities();
         FilterEntity defaultFilter = getDefaultFilter(filterEntities);
-        initFilterSelectComponents();
+            initFilterSelectComponents();
 
         if (defaultFilter == null) {
             defaultFilter = adHocFilter;
         }
-        setFilterEntity(defaultFilter);
+            setFilterEntity(defaultFilter);
 
         if (defaultFilter != adHocFilter) {
             Window window = ComponentsHelper.getWindow(filter);
@@ -433,7 +446,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             }
         }
 
-        saveInitialFilterState();
+            saveInitialFilterState();
 
         if (filtersLookupDisplayed) {
             filtersLookupListenerEnabled = false;
@@ -1151,6 +1164,15 @@ public class FilterDelegateImpl implements FilterDelegate {
         int maxResults = datasource.getMaxResults();
         if (maxResults == 0 || maxResults == persistenceManager.getMaxFetchUI(datasource.getMetaClass().getName()))
             maxResults = persistenceManager.getFetchUI(datasource.getMetaClass().getName());
+        if (!textMaxResults) {
+            List<Integer> optionsList = ((LookupField) maxResultsField).getOptionsList();
+            if (!optionsList.contains(maxResults)) {
+                ArrayList<Integer> newOptions = new ArrayList<>(optionsList);
+                newOptions.add(maxResults);
+                Collections.sort(newOptions);
+                ((LookupField) maxResultsField).setOptionsList(newOptions);
+            }
+        }
         maxResultsField.setValue(maxResults);
 
         datasource.setMaxResults(maxResults);
@@ -1174,6 +1196,22 @@ public class FilterDelegateImpl implements FilterDelegate {
     @Override
     public boolean getUseMaxResults() {
         return useMaxResults;
+    }
+
+    @Override
+    public void setTextMaxResults(boolean textMaxResults) {
+        boolean valueChanged = this.textMaxResults != textMaxResults;
+        this.textMaxResults = textMaxResults;
+        if (valueChanged) {
+            maxResultsLayout.remove(maxResultsField);
+            maxResultsField = textMaxResults ? maxResultsTextField : maxResultsLookupField;
+            maxResultsLayout.add(maxResultsField);
+        }
+    }
+
+    @Override
+    public boolean getTextMaxResults() {
+        return textMaxResults;
     }
 
     @Override

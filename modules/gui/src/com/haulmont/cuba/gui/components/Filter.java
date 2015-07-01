@@ -46,6 +46,14 @@ public interface Filter extends Component.Margin, Component.BelongToFrame, Compo
     void setUseMaxResults(boolean useMaxResults);
     boolean getUseMaxResults();
 
+    /**
+     * Whether to use a text field for entering a max results value.
+     * LookupField is used by default.
+     * @param textMaxResults true if use TextField
+     */
+    void setTextMaxResults(boolean textMaxResults);
+    boolean getTextMaxResults();
+
     void setApplyTo(Component component);
     Component getApplyTo();
     
