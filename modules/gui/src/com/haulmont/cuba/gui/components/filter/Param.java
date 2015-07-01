@@ -691,8 +691,8 @@ public class Param {
                 initListEdit(inListParamComponent, valueProperty);
                 return inListParamComponent.getComponent();
             } else {
-                final LookupField lookup = componentsFactory.createComponent(LookupField.NAME);
-
+                final LookupPickerField lookup = componentsFactory.createComponent(LookupPickerField.NAME);
+                lookup.addClearAction();
                 lookup.setWidth(theme.get("cuba.gui.filter.Param.textComponent.width"));
                 lookup.setOptionsDatasource(ds);
 
