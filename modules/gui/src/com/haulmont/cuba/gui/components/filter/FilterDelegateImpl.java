@@ -364,18 +364,17 @@ public class FilterDelegateImpl implements FilterDelegate {
         maxResultsLayout.add(maxResultsLabel1);
 
         maxResultsTextField = componentsFactory.createComponent(TextField.NAME);
-        maxResultsField = maxResultsTextField;
-        maxResultsField.setAlignment(Component.Alignment.MIDDLE_RIGHT);
-        ((TextField) maxResultsField).setMaxLength(4);
-        maxResultsField.setWidth(theme.get("cuba.gui.Filter.maxResults.width"));
-        ((TextField) maxResultsField).setDatatype(Datatypes.get("int"));
+        maxResultsTextField.setAlignment(Component.Alignment.MIDDLE_RIGHT);
+        maxResultsTextField.setMaxLength(4);
+        maxResultsTextField.setWidth(theme.get("cuba.gui.Filter.maxResults.width"));
+        maxResultsTextField.setDatatype(Datatypes.get("int"));
 
         maxResultsLookupField = componentsFactory.createComponent(LookupField.class);
-        maxResultsField = maxResultsLookupField;
-        maxResultsField.setAlignment(Component.Alignment.MIDDLE_RIGHT);
-        maxResultsField.setWidth(theme.get("cuba.gui.Filter.maxResults.lookup.width"));
+        maxResultsLookupField.setAlignment(Component.Alignment.MIDDLE_RIGHT);
+        maxResultsLookupField.setWidth(theme.get("cuba.gui.Filter.maxResults.lookup.width"));
+        filterHelper.setLookupTextInputAllowed(maxResultsLookupField, false);
         List<Integer> options = Arrays.asList(20, 50, 100, 500, 1000, 5000);
-        ((LookupField) maxResultsField).setOptionsList(options);
+        maxResultsLookupField.setOptionsList(options);
 
         maxResultsField = textMaxResults ? maxResultsTextField : maxResultsLookupField;
         maxResultsLayout.add(maxResultsField);
