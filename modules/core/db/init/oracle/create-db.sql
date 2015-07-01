@@ -60,7 +60,7 @@ create table SYS_CATEGORY_ATTR (
     NAME varchar2(255),
     CODE varchar2(100) not null,
     CATEGORY_ID varchar2(32),
-    IS_ENTITY char(1),
+    ENTITY_CLASS varchar2(500),
     DATA_TYPE varchar2(200),
     DEFAULT_STRING varchar2(4000),
     DEFAULT_INT integer,

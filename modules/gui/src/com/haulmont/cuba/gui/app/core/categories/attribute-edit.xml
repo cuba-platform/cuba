@@ -20,9 +20,28 @@
     </dsContext>
     <layout spacing="true" expand="buttons">
         <tabSheet id="tabsheet">
-            <tab id="main" caption="msg://caption.mainTab" expand="attributeProperties" spacing="true" margin="true">
-                <vbox id="attributeProperties" spacing="true" width="100%">
-                </vbox>
+            <tab id="main" caption="msg://caption.mainTab" spacing="true" margin="true">
+                <fieldGroup id="attributeFieldGroup" datasource="attributeDs">
+                    <column>
+                        <field id="name" required="true"/>
+                        <field id="code" required="true"/>
+                        <field id="required"/>
+                        <field id="dataType" custom="true" required="true"/>
+
+                        <field id="entityClass" custom="true" required="true"/>
+                        <field id="screen" custom="true"/>
+                        <field id="lookup"/>
+                        <field id="defaultEntityId" custom="true"/>
+
+                        <field id="enumeration"/>
+                        <field id="defaultString"/>
+                        <field id="defaultInt"/>
+                        <field id="defaultDouble"/>
+                        <field id="defaultBoolean"/>
+                        <field id="defaultDate"/>
+                        <field id="defaultDateIsCurrent"/>
+                    </column>
+                </fieldGroup>
             </tab>
             <tab id="visibility" caption="msg://caption.targetScreensTab" spacing="true"  margin="true">
                 <table id="targetScreensTable" width="100%" height="250px" editable="true">

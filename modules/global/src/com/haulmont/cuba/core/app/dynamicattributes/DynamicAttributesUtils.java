@@ -11,7 +11,6 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.AppBeans;
-import org.apache.commons.lang.BooleanUtils;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -101,32 +100,29 @@ public final class DynamicAttributesUtils {
     }
 
     public static CategoryAttribute getCategoryAttribute(MetaProperty metaProperty) {
-        return  ((DynamicAttributesMetaProperty) metaProperty).getAttribute();
+        return ((DynamicAttributesMetaProperty) metaProperty).getAttribute();
     }
 
     /**
      * Resolve attribute value's Java class
      */
     public static Class getAttributeClass(CategoryAttribute attribute) {
-
-        if (BooleanUtils.isTrue(attribute.getIsEntity())) {
-            return ReflectionHelper.getClass(attribute.getDataType());
-        } else {
-            PropertyType propertyType = attribute.getDataTypeAsPropertyType();
-            switch (propertyType) {
-                case STRING:
-                    return String.class;
-                case INTEGER:
-                    return Integer.class;
-                case DOUBLE:
-                    return Double.class;
-                case BOOLEAN:
-                    return Boolean.class;
-                case DATE:
-                    return Date.class;
-                case ENUMERATION:
-                    return String.class;
-            }
+        PropertyType propertyType = attribute.getDataType();
+        switch (propertyType) {
+            case STRING:
+                return String.class;
+            case INTEGER:
+                return Integer.class;
+            case DOUBLE:
+                return Double.class;
+            case BOOLEAN:
+                return Boolean.class;
+            case DATE:
+                return Date.class;
+            case ENUMERATION:
+                return String.class;
+            case ENTITY:
+                return ReflectionHelper.getClass(attribute.getEntityClass());
         }
         return String.class;
     }

@@ -176,19 +176,18 @@ public class RuntimePropsDatasourceImpl
     }
 
     protected Object parseValue(CategoryAttribute attribute, CategoryAttributeValue attrValue) {
-        String dataType = attribute.getDataType();
+        PropertyType dataType = attribute.getDataType();
 
         if (BooleanUtils.isTrue(attribute.getIsEntity())) {
             if (attrValue != null) {
                 UUID entityId = attrValue.getEntityValue();
-                return parseEntity(dataType, entityId);
+                return parseEntity(attribute.getEntityClass(), entityId);
             } else {
                 UUID entityId = attribute.getDefaultEntityId();
-                return parseEntity(dataType, entityId);
+                return parseEntity(attribute.getEntityClass(), entityId);
             }
         } else {
-
-            switch (PropertyType.valueOf(dataType)) {
+            switch (dataType) {
                 case STRING:
                 case ENUMERATION:
                     return attrValue != null ? attrValue.getStringValue() : attribute.getDefaultString();

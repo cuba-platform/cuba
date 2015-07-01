@@ -173,7 +173,7 @@ public class DynamicAttributesEntity implements BaseEntity {
         if (attrValue.getCategoryAttribute().getIsEntity()) {
             attrValue.setEntityValue((UUID) value);
         } else {
-            PropertyType propertyType = attrValue.getCategoryAttribute().getDataTypeAsPropertyType();
+            PropertyType propertyType = attrValue.getCategoryAttribute().getDataType();
             switch (propertyType) {
                 case INTEGER:
                     attrValue.setIntValue((Integer) value);

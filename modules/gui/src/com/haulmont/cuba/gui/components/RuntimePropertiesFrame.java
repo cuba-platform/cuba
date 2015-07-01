@@ -219,7 +219,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                         Boolean lookup = ((DynamicAttributesEntity) datasource.getItem())
                                 .getCategoryValue(metaProperty.getName()).getCategoryAttribute().getLookup();
                         if (lookup != null && lookup) {
-                            pickerField = AppConfig.getFactory().createComponent(LookupPickerField.NAME);
+                            pickerField = componentsFactory.createComponent(LookupPickerField.NAME);
 
                             CollectionDatasource optionsDs = new DsBuilder(datasource.getDsContext())
                                     .setMetaClass(metaProperty.getRange().asClass())
@@ -259,7 +259,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
             } else {
                 if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
                     final CategoryAttribute attribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
-                    if (attribute.getDataTypeAsPropertyType() == PropertyType.ENUMERATION) {
+                    if (attribute.getDataType() == PropertyType.ENUMERATION) {
                         for (FieldGroup.FieldConfig field : fields) {
                             if (field.getId().equals(metaProperty.getName())) {
                                 field.setCustom(true);

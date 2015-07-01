@@ -11,15 +11,18 @@ import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesMetaProperty;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -56,7 +59,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
                 MetaProperty metaProperty = mpp.getMetaProperty();
                 if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
                     CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
-                    if (categoryAttribute != null && categoryAttribute.getDataTypeAsPropertyType() == PropertyType.ENUMERATION) {
+                    if (categoryAttribute != null && categoryAttribute.getDataType() == PropertyType.ENUMERATION) {
                         return createEnumField(datasource, property);
                     }
                 }
@@ -83,7 +86,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
                     return createNumberField(datasource, property);
                 }
             } else if (mpp.getRange().isClass()) {
-                return createEntityField(datasource, property, xmlDescriptor);
+                return createEntityField(datasource, property,mpp, xmlDescriptor);
             } else if (mpp.getRange().isEnum()) {
                 return createEnumField(datasource, property);
             }
@@ -244,16 +247,28 @@ public abstract class AbstractFieldFactory implements FieldFactory {
         return timeField;
     }
 
-    protected Component createEntityField(Datasource datasource, String property, Element xmlDescriptor) {
+    protected Component createEntityField(Datasource datasource, String property, MetaPropertyPath mpp, Element xmlDescriptor) {
         String linkAttribute = null;
         if (xmlDescriptor != null) {
             linkAttribute = xmlDescriptor.attributeValue("link");
         }
 
         if (!Boolean.valueOf(linkAttribute)) {
-            PickerField pickerField;
             CollectionDatasource optionsDatasource = getOptionsDatasource(datasource, property);
 
+            if (DynamicAttributesUtils.isDynamicAttribute(mpp.getMetaProperty())) {
+                DynamicAttributesMetaProperty metaProperty = (DynamicAttributesMetaProperty) mpp.getMetaProperty();
+                CategoryAttribute attribute = metaProperty.getAttribute();
+                if (Boolean.TRUE.equals(attribute.getLookup())) {
+                    optionsDatasource = new DsBuilder(datasource.getDsContext())
+                            .setMetaClass(metaProperty.getRange().asClass())
+                            .setViewName(View.MINIMAL)
+                            .buildCollectionDatasource();
+                    optionsDatasource.refresh();
+                }
+            }
+
+            PickerField pickerField;
             if (optionsDatasource == null) {
                 pickerField = componentsFactory.createComponent(PickerField.NAME);
                 pickerField.addLookupAction();

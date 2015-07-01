@@ -78,7 +78,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
 
         if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
             CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
-            if (categoryAttribute != null && categoryAttribute.getDataTypeAsPropertyType() == PropertyType.ENUMERATION) {
+            if (categoryAttribute != null && categoryAttribute.getDataType() == PropertyType.ENUMERATION) {
                 setOptionsList(categoryAttribute.getEnumerationOptions());
             }
         }

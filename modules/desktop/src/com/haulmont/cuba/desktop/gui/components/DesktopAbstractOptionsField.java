@@ -176,7 +176,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
 
         if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
             CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
-            if (categoryAttribute != null && categoryAttribute.getDataTypeAsPropertyType() == PropertyType.ENUMERATION) {
+            if (categoryAttribute != null && categoryAttribute.getDataType() == PropertyType.ENUMERATION) {
                 setOptionsList(categoryAttribute.getEnumerationOptions());
             }
         }

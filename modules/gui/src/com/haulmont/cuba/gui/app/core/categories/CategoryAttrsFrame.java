@@ -27,7 +27,6 @@ import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
@@ -157,14 +156,14 @@ public class CategoryAttrsFrame extends AbstractFrame {
                 String labelContent;
                 if (BooleanUtils.isTrue(attribute.getIsEntity())) {
                     try {
-                        Class clazz = Class.forName(attribute.getDataType());
+                        Class clazz = Class.forName(attribute.getEntityClass());
                         MetaClass metaClass = metadata.getSession().getClass(clazz);
                         labelContent = messageTools.getEntityCaption(metaClass);
                     } catch (ClassNotFoundException ex) {
                         labelContent = "classNotFound";
                     }
                 } else {
-                    labelContent = getMessage(attribute.getDataType());
+                    labelContent = getMessage(attribute.getDataType().name());
                 }
 
                 dataTypeLabel.setValue(labelContent);
@@ -180,7 +179,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
                 String defaultValue = "";
 
                 if (BooleanUtils.isNotTrue(attribute.getIsEntity())) {
-                    PropertyType dataType = attribute.getDataTypeAsPropertyType();
+                    PropertyType dataType = attribute.getDataType();
                     switch (dataType) {
                         case DATE:
                             Date date = attribute.getDefaultDate();
@@ -203,7 +202,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
                     }
                 } else {
                     try {
-                        Class clazz = Class.forName(attribute.getDataType());
+                        Class clazz = Class.forName(attribute.getEntityClass());
                         LoadContext entitiesContext = new LoadContext(clazz);
                         String entityClassName = metadata.getClassNN(clazz).getName();
                         if (attribute.getDefaultEntityId() != null) {

@@ -728,7 +728,7 @@ create table SYS_CATEGORY_ATTR (
     NAME varchar(255),
     CODE varchar(100) not null,
     CATEGORY_ID uniqueidentifier,
-    IS_ENTITY tinyint,
+    ENTITY_CLASS varchar(500),
     DATA_TYPE varchar(200),
     DEFAULT_STRING varchar(max),
     DEFAULT_INT integer,

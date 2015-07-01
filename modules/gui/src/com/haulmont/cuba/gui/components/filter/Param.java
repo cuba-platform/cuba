@@ -109,7 +109,7 @@ public class Param {
         this.required = required;
         if (DynamicAttributesUtils.isDynamicAttribute(property)) {
             CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(property);
-            if (categoryAttribute.getDataTypeAsPropertyType() == PropertyType.ENUMERATION) {
+            if (categoryAttribute.getDataType() == PropertyType.ENUMERATION) {
                 type = Type.RUNTIME_ENUM;
             }
         }
