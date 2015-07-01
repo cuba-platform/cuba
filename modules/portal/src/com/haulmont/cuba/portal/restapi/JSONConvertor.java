@@ -586,7 +586,7 @@ public class JSONConvertor implements Convertor {
                     if (!readPermitted(meta))
                         break;
 
-                    View propertyView = (view == null ? null : view.getProperty(property.getName()).getView());
+                    View propertyView = (view == null || view.getProperty(property.getName()) == null ? null : view.getProperty(property.getName()).getView());
 
                     if (!property.getRange().getCardinality().isMany()) {
                         if (value == null) {

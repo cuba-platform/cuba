@@ -323,7 +323,8 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                 "validation.required.defaultMsg",
                 categoryAttributeValue.getCategoryAttribute().getName()
         );
-        fieldGroup.setRequired(field, categoryAttributeValue.getCategoryAttribute().getRequired() && requiredControlEnabled, requiredMessage);
+        fieldGroup.setRequired(field,
+                Boolean.TRUE.equals(categoryAttributeValue.getCategoryAttribute().getRequired()) && requiredControlEnabled, requiredMessage);
     }
 
     public void setCategoryFieldVisible(boolean visible) {

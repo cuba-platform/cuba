@@ -32,6 +32,7 @@ public class DynamicAttributesMetaProperty extends MetadataObjectImpl implements
     protected final Boolean mandatory;
     protected final AnnotatedElement annotatedElement = new FakeAnnotatedElement();
     protected final CategoryAttribute attribute;
+    protected final Type type;
 
     public DynamicAttributesMetaProperty(MetaClass metaClass, CategoryAttribute attribute) {
         this.attribute = attribute;
@@ -44,8 +45,10 @@ public class DynamicAttributesMetaProperty extends MetadataObjectImpl implements
         Session metadataSession = metadata.getSession();
         if (Entity.class.isAssignableFrom(javaClass)) {
             range = new ClassRange(metadataSession.getClass(javaClass));
+            this.type = Type.ASSOCIATION;
         } else {
             this.range = new DatatypeRange(Datatypes.getNN(javaClass));
+            this.type = Type.DATATYPE;
         }
     }
 
@@ -66,7 +69,7 @@ public class DynamicAttributesMetaProperty extends MetadataObjectImpl implements
 
     @Override
     public Type getType() {
-        return Type.DATATYPE;
+        return type;
     }
 
     @Override
