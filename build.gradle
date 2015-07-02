@@ -58,7 +58,7 @@ def springSecurityVersion = '3.2.7.RELEASE'
 
 def servletApi = [group: 'org.apache.tomcat', name: 'tomcat-servlet-api', version: '7.0.53']
 def groovyArtifact = [group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.1.6']
-def asm = [group: 'org.ow2.asm', name: 'asm', version: '5.0.3']
+//def asm = [group: 'org.ow2.asm', name: 'asm', version: '5.0.3']
 def poi = [group: 'com.haulmont.thirdparty', name: 'poi', version: '3.9.20130515']
 def postgres = [group: 'postgresql', name: 'postgresql', version: '9.1-901.jdbc4']
 def hsqldb = [group: 'org.hsqldb', name: 'hsqldb', version: '2.2.9']
@@ -92,11 +92,9 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
         compile(group: 'com.haulmont.thirdparty', name: 'javaee-api', version: '6.0.20091228')
         compile(groovyArtifact)
         compile(group: 'antlr', name: 'antlr', version: '2.7.7')
-        compile(asm)
+//        compile(asm)
         compile(group: 'com.google.guava', name: 'guava', version: '16.0.1')
-        compile(group: 'org.apache.openjpa', name: 'openjpa', version: '2.3.0') {
-            exclude(group: 'junit', module: 'junit')
-        }
+        compile(group: 'org.eclipse.persistence', name: 'eclipselink', version: '2.6.0')
         compile(group: 'org.antlr', name: 'antlr-runtime', version: '3.2')
         compile(group: 'org.freemarker', name: 'freemarker', version: '2.3.16')
         compile(group: 'aopalliance', name: 'aopalliance', version: '1.0')
@@ -188,10 +186,7 @@ configure(globalModule) {
     }
 
     task enhance(type: CubaEnhancing) {
-        persistenceXml = "$globalModule.projectDir/src/cuba-persistence.xml"
-    }
-
-    task enhanceTransient(type: CubaEnhanceTransient) {
+        persistenceConfig = 'cuba-persistence.xml'
         metadataXml = "$globalModule.projectDir/src/cuba-metadata.xml"
     }
 }
@@ -328,12 +323,12 @@ configure(guiModule) {
         compile(clientModule)
         compile(poi)
         compile(groovyArtifact)
-        compile(asm)
+//        compile(asm)
 
         testCompile(clientModule.sourceSets.test.output)
     }
 
-    task enhanceTransient(type: CubaEnhanceTransient) {
+    task enhance(type: CubaEnhancing) {
         metadataXml = "$guiModule.projectDir/src/cuba-gui-metadata.xml"
     }
 
@@ -375,7 +370,7 @@ configure(webModule) {
         testRuntime(servletApi)
     }
 
-    task enhanceTransient(type: CubaEnhanceTransient) {
+    task enhance(type: CubaEnhancing) {
         metadataXml = "$webModule.projectDir/src/cuba-web-metadata.xml"
     }
 
@@ -465,7 +460,9 @@ configure(webAuthModule) {
 
 configure(webToolkitModule) {
     dependencies {
-        compile(webModule)
+        compile(webModule) {
+            exclude(group: 'org.eclipse.persistence', module: 'eclipselink')
+        }
 
         compile(vaadinClient)
         compile(vaadinCompiler)
@@ -561,7 +558,7 @@ configure(portalModule) {
         compile(group: 'org.springframework.security', name: 'spring-security-taglibs', version: springSecurityVersion)
         compile(group: 'org.json', name: 'json', version: '20140107')
         compile(groovyArtifact)
-        compile(asm)
+//        compile(asm)
 
         compile(group: 'org.springframework', name: 'spring-tx', version: springVersion)
         compile(group: 'org.springframework', name: 'spring-jdbc', version: springVersion)
