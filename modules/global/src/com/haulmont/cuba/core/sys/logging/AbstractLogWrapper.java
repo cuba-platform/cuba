@@ -10,7 +10,7 @@ import org.apache.commons.logging.Log;
 
 /**
  * @author krivopustov
- * @version $id$
+ * @version $Id$
  */
 public abstract class AbstractLogWrapper implements Log {
 

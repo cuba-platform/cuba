@@ -21,7 +21,7 @@ import javax.swing.*;
 
 /**
  * @author artamonov
- * @version $id$
+ * @version $Id$
  */
 public class EntityPermissionsFrameCompanion implements EntityPermissionsFrame.Companion {
 
