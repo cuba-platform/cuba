@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
 import com.haulmont.cuba.core.sys.AppContext;
 import mockit.NonStrictExpectations;
+import org.junit.Ignore;
 
 import java.util.Locale;
 
@@ -16,6 +17,7 @@ import java.util.Locale;
  * @author artamonov
  * @version $Id$
  */
+@Ignore
 public abstract class AbstractDatatypeTest extends CubaClientTestCase {
 
     protected Locale ruLocale;
