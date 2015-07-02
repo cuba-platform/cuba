@@ -83,7 +83,12 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
     protected void doUpdate() {
         postUpdate = new PostUpdateScripts();
 
-        super.doUpdate();
+        try {
+            super.doUpdate();
+        } catch (RuntimeException e) {
+            postUpdateScripts.clear();
+            throw new RuntimeException(e);
+        }
 
         if (!postUpdate.getUpdates().isEmpty()) {
             log.info(String.format("Execute '%s' post update actions", postUpdate.getUpdates().size()));
