@@ -16,6 +16,12 @@ import com.vaadin.ui.themes.BaseTheme;
 public class WebLinkButton extends WebButton implements LinkButton {
 
     public WebLinkButton() {
-        setStyleName(BaseTheme.BUTTON_LINK);
+        component.addStyleName(BaseTheme.BUTTON_LINK);
+    }
+
+    @Override
+    public void setStyleName(String name) {
+        super.setStyleName(name);
+        component.addStyleName(BaseTheme.BUTTON_LINK);
     }
 }
