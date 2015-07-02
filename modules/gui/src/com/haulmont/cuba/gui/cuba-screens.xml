@@ -139,6 +139,9 @@
     <screen id="sys$SendingMessage.browse"
             template="/com/haulmont/cuba/gui/app/core/sendingmessage/browse/sending-message-browse.xml"/>
 
+    <screen id="sys$SendingMessage.attachments"
+            template="/com/haulmont/cuba/gui/app/core/sendingmessage/attachments/sending-message-attachments.xml"/>
+
     <screen id="bulkEditor"
             template="/com/haulmont/cuba/gui/app/core/bulk/bulk-edit.xml"/>
 

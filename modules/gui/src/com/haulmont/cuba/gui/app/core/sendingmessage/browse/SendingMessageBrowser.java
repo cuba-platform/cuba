@@ -5,19 +5,28 @@
 
 package com.haulmont.cuba.gui.app.core.sendingmessage.browse;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.app.EmailService;
+import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
-import com.haulmont.cuba.gui.components.AbstractWindow;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.FieldGroup;
-import com.haulmont.cuba.gui.components.TextArea;
+import com.haulmont.cuba.core.global.DataManager;
+import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import org.apache.commons.collections.CollectionUtils;
 
 import javax.inject.Inject;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -43,6 +52,15 @@ public class SendingMessageBrowser extends AbstractWindow {
 
     @Inject
     protected ThemeConstants themeConstants;
+
+    @Inject
+    protected Table table;
+
+    @Inject
+    protected DataManager dataManager;
+
+    @Inject
+    protected FileUploadingAPI fileUploadingAPI;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -72,5 +90,51 @@ public class SendingMessageBrowser extends AbstractWindow {
         fg.setEditable(CONTENT_TEXT, true);
         fg.setFieldValue(CONTENT_TEXT, contentText);
         fg.setEditable(CONTENT_TEXT, false);
+    }
+
+    public void download() {
+        SendingMessage message = table.getSingleSelected();
+        if (message != null) {
+            List<SendingAttachment> attachments = message.getAttachments();
+            if (CollectionUtils.isNotEmpty(attachments)) {
+                if (attachments.size() == 1) {
+                    exportFile(attachments.get(0));
+                } else {
+                    selectAttachmentDialog(message);
+                }
+            } else {
+                showNotification(messages.getMessage(getClass(), "sendingMessage.noAttachments"), NotificationType.HUMANIZED);
+            }
+        }
+    }
+
+    protected void selectAttachmentDialog(SendingMessage message) {
+        openLookup("sys$SendingMessage.attachments",
+                new Lookup.Handler() {
+                    @Override
+                    public void handleLookup(Collection items) {
+                        if (items.size() == 1) {
+                            exportFile((SendingAttachment) CollectionUtils.get(items, 0));
+                        }
+                    }
+                },
+                WindowManager.OpenType.DIALOG,
+                ParamsMap.of("message", message));
+    }
+
+    protected FileDescriptor getFileDescriptor(SendingAttachment attachment) throws FileStorageException {
+        UUID uuid = fileUploadingAPI.saveFile(attachment.getContent());
+        FileDescriptor fileDescriptor = fileUploadingAPI.getFileDescriptor(uuid, attachment.getName());
+        fileUploadingAPI.putFileIntoStorage(uuid, fileDescriptor);
+        return dataManager.commit(fileDescriptor);
+    }
+
+    protected void exportFile(SendingAttachment attachment) {
+        try {
+            FileDescriptor fileDescriptor = getFileDescriptor(attachment);
+            AppConfig.createExportDisplay(this).show(fileDescriptor, ExportFormat.OCTET_STREAM);
+        } catch (FileStorageException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

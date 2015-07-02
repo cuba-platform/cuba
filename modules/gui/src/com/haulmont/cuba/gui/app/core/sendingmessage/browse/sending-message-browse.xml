@@ -12,7 +12,7 @@
         <collectionDatasource
                 id="sendingMessageDs"
                 class="com.haulmont.cuba.core.entity.SendingMessage"
-                view="sendingMessage.browse">
+                view="sendingMessage.loadFromQueue">
             <query>
                 <![CDATA[select sm from sys$SendingMessage sm]]>
             </query>
@@ -25,6 +25,9 @@
                     <properties include=".*"/>
                 </filter>
                 <table id="table" width="100%">
+                    <actions>
+                        <action id="downloadAttachment" caption="msg://sendingMessage.downloadAttachments" invoke="download" trackSelection="true"/>
+                    </actions>
                     <rowsCount/>
                     <columns>
                         <column id="address"/>
@@ -39,6 +42,9 @@
                         <column id="attemptsMade"/>
                     </columns>
                     <rows datasource="sendingMessageDs"/>
+                    <buttonsPanel id="buttonsPanel">
+                        <button id="downloadAttachmentBtn" action="table.downloadAttachment"/>
+                    </buttonsPanel>
                 </table>
             </vbox>
 
