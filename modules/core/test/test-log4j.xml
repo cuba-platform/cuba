@@ -78,6 +78,10 @@
         <priority value="INFO"/>
     </category>
 
+    <category name="org.perf4j.TimingLogger">
+        <priority value="ERROR"/>
+    </category>
+
     <!-- ======================= -->
     <!-- Setup the Root category -->
     <!-- ======================= -->
