@@ -18,6 +18,9 @@ import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.treetable.TreeTableConnector;
 import com.vaadin.shared.ui.Connect;
 
+import java.util.Arrays;
+import java.util.HashSet;
+
 /**
  * @author artamonov
  * @version $Id$
@@ -74,7 +77,8 @@ public class CubaTreeTableConnector extends TreeTableConnector {
         }
         if (stateChangeEvent.hasPropertyChanged("presentations")) {
             if (getState().presentations != null) {
-                getWidget().setPresentationsMenu(((ComponentConnector) getState().presentations).getWidget());
+                ComponentConnector presentations = (ComponentConnector) getState().presentations;
+                getWidget().setPresentationsMenu(presentations.getWidget());
             } else {
                 getWidget().setPresentationsMenu(null);
             }
@@ -89,6 +93,13 @@ public class CubaTreeTableConnector extends TreeTableConnector {
         }
         if (stateChangeEvent.hasPropertyChanged("multiLineCells")) {
             getWidget().multiLineCells = getState().multiLineCells;
+        }
+        if (stateChangeEvent.hasPropertyChanged("clickableColumnKeys")) {
+            if (getState().clickableColumnKeys != null) {
+                getWidget().clickableColumns = new HashSet<String>(Arrays.asList(getState().clickableColumnKeys));
+            } else {
+                getWidget().clickableColumns = null;
+            }
         }
         if (stateChangeEvent.hasPropertyChanged("customPopup")) {
             if (getState().customPopup != null) {

@@ -58,7 +58,10 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
     protected int lastClickClientX;
     protected int lastClickClientY;
 
-    public CubaTreeTableWidget() {
+    protected CubaTreeTableWidget() {
+        // handle shortcuts
+        DOM.sinkEvents(getElement(), Event.ONKEYDOWN);
+
         hideColumnControlAfterClick = false;
     }
 
@@ -322,7 +325,6 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
         protected HeaderCell createHeaderCell(String cid, String caption) {
             return new CubaTreeTableHeaderCell(cid, caption);
         }
-
     }
 
     protected class CubaTreeTableHeaderCell extends HeaderCell {
