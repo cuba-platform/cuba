@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xs:schema
-        targetNamespace="http://schemas.haulmont.com/cuba/5.5/restapi-commit-v2.xsd"
-        xmlns="http://schemas.haulmont.com/cuba/5.5/restapi-commit-v2.xsd"
+<xs:schema targetNamespace="http://schemas.haulmont.com/cuba/restapi-commit-v2.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/restapi-commit-v2.xsd"
         xmlns:xs="http://www.w3.org/2001/XMLSchema"
         attributeFormDefault="unqualified"
         elementFormDefault="qualified">

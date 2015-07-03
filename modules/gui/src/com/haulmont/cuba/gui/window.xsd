@@ -4,15 +4,15 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<xs:schema targetNamespace="http://schemas.haulmont.com/cuba/5.5/window.xsd"
+<xs:schema targetNamespace="http://schemas.haulmont.com/cuba/window.xsd"
         xmlns:xs="http://www.w3.org/2001/XMLSchema"
-        xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
-        xmlns:views="http://schemas.haulmont.com/cuba/5.5/view.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+        xmlns:views="http://schemas.haulmont.com/cuba/view.xsd"
         elementFormDefault="qualified"
         attributeFormDefault="unqualified">
 
-    <xs:import namespace="http://schemas.haulmont.com/cuba/5.5/view.xsd"
-               schemaLocation="http://schemas.haulmont.com/cuba/5.5/view.xsd"/>
+    <xs:import namespace="http://schemas.haulmont.com/cuba/view.xsd"
+               schemaLocation="http://schemas.haulmont.com/cuba/view.xsd"/>
 
     <!-- Enums -->
 

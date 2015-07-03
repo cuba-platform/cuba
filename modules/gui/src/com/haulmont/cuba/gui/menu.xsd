@@ -4,13 +4,11 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<xs:schema
-        targetNamespace="http://schemas.haulmont.com/cuba/5.5/menu.xsd"
+<xs:schema targetNamespace="http://schemas.haulmont.com/cuba/menu.xsd"
         xmlns:xs="http://www.w3.org/2001/XMLSchema"
-        xmlns="http://schemas.haulmont.com/cuba/5.5/menu.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/menu.xsd"
         elementFormDefault="qualified"
-        attributeFormDefault="unqualified"
-        >
+        attributeFormDefault="unqualified">
 
     <xs:element name="menu-config" type="menuOrItem"/>
 
