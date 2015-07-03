@@ -59,6 +59,7 @@ import static com.vaadin.server.Sizeable.Unit;
 public class WebWindowManager extends WindowManager {
 
     public static final int HUMANIZED_NOTIFICATION_DELAY_MSEC = 3000;
+    public static final int WARNING_NOTIFICATION_DELAY_MSEC = -1;
 
     private static final Log log = LogFactory.getLog(WebWindowManager.class);
 
@@ -938,22 +939,28 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     public void showNotification(String caption, IFrame.NotificationType type) {
-        Notification notification = new Notification(caption, convertNotificationType(type));
-        notification.setHtmlContentAllowed(NotificationType.isHTML(type));
-        if (type.equals(IFrame.NotificationType.HUMANIZED)) {
-            notification.setDelayMsec(HUMANIZED_NOTIFICATION_DELAY_MSEC);
-        }
-        notification.show(Page.getCurrent());
+        showNotification(caption, null, type);
     }
 
     @Override
     public void showNotification(String caption, String description, IFrame.NotificationType type) {
         Notification notification = new Notification(caption, description, convertNotificationType(type));
         notification.setHtmlContentAllowed(NotificationType.isHTML(type));
-        if (type.equals(IFrame.NotificationType.HUMANIZED)) {
-            notification.setDelayMsec(HUMANIZED_NOTIFICATION_DELAY_MSEC);
-        }
+        setNotificationDelayMsec(notification, type);
         notification.show(Page.getCurrent());
+    }
+
+    protected void setNotificationDelayMsec(Notification notification, IFrame.NotificationType type) {
+        switch (type) {
+            case HUMANIZED:
+            case HUMANIZED_HTML:
+                notification.setDelayMsec(HUMANIZED_NOTIFICATION_DELAY_MSEC);
+                break;
+            case WARNING:
+            case WARNING_HTML:
+                notification.setDelayMsec(WARNING_NOTIFICATION_DELAY_MSEC);
+                break;
+        }
     }
 
     @Override
