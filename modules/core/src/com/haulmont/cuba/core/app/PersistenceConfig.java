@@ -43,7 +43,7 @@ public interface PersistenceConfig extends Config {
      * components working with datasources to show entity lists.
      */
     @Property("cuba.defaultFetchUI")
-    @DefaultInt(100)
+    @DefaultInt(50)
     int getDefaultFetchUI();
     void setDefaultFetchUI(int value);
 
