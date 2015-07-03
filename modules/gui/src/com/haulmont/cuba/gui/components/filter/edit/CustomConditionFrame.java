@@ -413,4 +413,18 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
         return JpqlSuggestionFactory.requestHint(query, queryPosition, sender.getAutoCompleteSupport(), senderCursorPosition);
     }
 
+    public void getJoinClauseHelp() {
+        getDialogParams().setModal(false).setWidth(600);
+        showMessageDialog(getMessage("CustomConditionFrame.join"), getMessage("CustomConditionFrame.joinClauseHelp"), MessageType.CONFIRMATION_HTML);
+    }
+
+    public void getWhereClauseHelp() {
+        getDialogParams().setModal(false).setWidth(600);
+        showMessageDialog(getMessage("CustomConditionFrame.where"), getMessage("CustomConditionFrame.whereClauseHelp"), MessageType.CONFIRMATION_HTML);
+    }
+
+    public void getParamWhereClauseHelp() {
+        getDialogParams().setModal(false).setWidth(600);
+        showMessageDialog(getMessage("CustomConditionFrame.entityParamWhere"), getMessage("CustomConditionFrame.paramWhereClauseHelp"), MessageType.CONFIRMATION_HTML);
+    }
 }

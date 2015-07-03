@@ -35,7 +35,7 @@
                     <row>
                         <label id="methodNameLabel"
                                value="msg://com.haulmont.cuba.core.entity/ScheduledTask.methodName" align="MIDDLE_LEFT"/>
-                        <hbox id="methodNameHbox">
+                        <hbox id="methodNameHbox" spacing="true">
                             <lookupField id="methodNameField" width="${fieldWidth}" captionProperty="methodSignature"
                                          required="true" align="MIDDLE_LEFT"
                                          requiredMessage="msg://validation.methodNameMissing"/>
@@ -78,7 +78,7 @@
                                 <validator class="com.haulmont.cuba.gui.app.core.scheduled.CronValidator"
                                            message="msg://validation.cronInvalid"/>
                             </textField>
-                            <linkButton id="cronHelpButton" caption="[?]" invoke="getCronHelp" align="MIDDLE_LEFT"/>
+                            <linkButton id="cronHelpButton" icon="font-icon:QUESTION_CIRCLE" invoke="getCronHelp" align="MIDDLE_LEFT"/>
                         </hbox>
                     </row>
                     <row>

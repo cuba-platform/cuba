@@ -114,4 +114,14 @@ public class ConstraintEditor extends AbstractEditor {
 
         return JpqlSuggestionFactory.requestHint(query, position, sender.getAutoCompleteSupport(), cursorPosition);
     }
+
+    public void getJoinClauseHelp() {
+        getDialogParams().setModal(false).setWidth(600);
+        showMessageDialog(getMessage("joinClause"), getMessage("joinClauseHelp"), MessageType.CONFIRMATION_HTML);
+    }
+
+    public void getWhereClauseHelp() {
+        getDialogParams().setModal(false).setWidth(600);
+        showMessageDialog(getMessage("whereClause"), getMessage("whereClauseHelp"), MessageType.CONFIRMATION_HTML);
+    }
 }

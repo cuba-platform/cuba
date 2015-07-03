@@ -13,6 +13,7 @@
             <columns>
                 <column/>
                 <column flex="1"/>
+                <column/>
             </columns>
             <rows>
                 <row>
@@ -32,19 +33,18 @@
                     <hbox id="defaultValueLayout" width="100%"/>
                 </row>
                 <row>
-                    <label value="msg://CustomConditionFrame.hintLabel" htmlEnabled="true" colspan="2"/>
-                </row>
-                <row>
                     <label id="nameLab" value="msg://CustomConditionFrame.name" align="MIDDLE_LEFT"/>
                     <textField id="nameField" width="theme://cuba.gui.customConditionFrame.field.width" required="true" requiredMessage="msg://CustomConditionFrame.fillName"/>
                 </row>
                 <row>
-                    <label value="msg://CustomConditionFrame.join" align="MIDDLE_LEFT"/>
+                    <label value="msg://CustomConditionFrame.join"/>
                     <sourceCodeEditor id="joinField" height="theme://cuba.gui.customConditionFrame.joinField.height" width="theme://cuba.gui.customConditionFrame.field.width"/>
+                    <linkButton icon="font-icon:QUESTION_CIRCLE" invoke="getJoinClauseHelp"/>
                 </row>
                 <row>
-                    <label value="msg://CustomConditionFrame.where" align="MIDDLE_LEFT"/>
+                    <label value="msg://CustomConditionFrame.where"/>
                     <sourceCodeEditor id="whereField" height="theme://cuba.gui.customConditionFrame.whereField.height" width="theme://cuba.gui.customConditionFrame.field.width"/>
+                    <linkButton icon="font-icon:QUESTION_CIRCLE" invoke="getWhereClauseHelp"/>
                 </row>
                 <row>
                     <label value="msg://CustomConditionFrame.type" align="MIDDLE_LEFT"/>
@@ -58,8 +58,9 @@
                     <lookupField id="entitySelect" width="theme://cuba.gui.customConditionFrame.field.width" requiredMessage="msg://CustomConditionFrame.fillEntity"/>
                 </row>
                 <row>
-                    <label id="paramWhereLab" value="msg://CustomConditionFrame.entityParamWhere" align="MIDDLE_LEFT"/>
+                    <label id="paramWhereLab" value="msg://CustomConditionFrame.entityParamWhere"/>
                     <textArea id="entityParamWhereField" height="theme://cuba.gui.customConditionFrame.entityParamWhereField.height" width="theme://cuba.gui.customConditionFrame.field.width"/>
+                    <linkButton icon="font-icon:QUESTION_CIRCLE" invoke="getParamWhereClauseHelp"/>
                 </row>
                 <row>
                     <label id="paramViewLab" value="msg://CustomConditionFrame.entityParamView" align="MIDDLE_LEFT"/>

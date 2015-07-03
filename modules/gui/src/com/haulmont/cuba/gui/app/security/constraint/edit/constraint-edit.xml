@@ -17,10 +17,10 @@
 
     <layout expand="windowActions" spacing="true">
         <grid id="grid" spacing="true">
-            <columns count="2"/>
+            <columns count="3"/>
             <rows>
                 <row id="nameRow">
-                    <label value="msg://entityName"/>
+                    <label value="msg://entityName" align="MIDDLE_LEFT"/>
                     <lookupField id="entityName" datasource="constraint" property="entityName" required="true"
                                  width="${width}"/>
                 </row>
@@ -29,12 +29,14 @@
                     <sourceCodeEditor id="joinClause" datasource="constraint" property="joinClause"
                                            width="${width}"
                                            height="theme://cuba.gui.constraint-edit.joinClause.height"/>
+                    <linkButton icon="font-icon:QUESTION_CIRCLE" invoke="getJoinClauseHelp"/>
                 </row>
                 <row id="whereRow">
                     <label value="msg://whereClause"/>
                     <sourceCodeEditor id="whereClause" datasource="constraint" property="whereClause"
                                            width="${width}"
                                            height="theme://cuba.gui.constraint-edit.whereClause.height"/>
+                    <linkButton icon="font-icon:QUESTION_CIRCLE" invoke="getWhereClauseHelp"/>
                 </row>
             </rows>
         </grid>
