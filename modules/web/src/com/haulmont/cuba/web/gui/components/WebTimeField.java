@@ -136,7 +136,7 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
         int separatorWidth = theme.getInt("cuba.web.WebTimeField.separatorWidth");
 
         int partsCount = isAmPmUsed() ? 1 : 0;
-        int newWidth = isAmPmUsed() ? digitWidth + digitPadding: digitPadding;
+        int newWidth = isAmPmUsed() ? digitWidth + digitPadding : digitPadding;
         if (showSeconds) {
             newWidth = newWidth + digitWidth;
             partsCount += 1;
@@ -207,7 +207,9 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
     @Override
     public void setFormat(String format) {
         timeFormat = format;
+        showSeconds = timeFormat.contains("ss");
         updateTimeFormat();
+        updateWidth();
     }
 
     @Override
@@ -223,9 +225,11 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
             setShowSeconds(false);
         } else if (resolution.ordinal() <= DateField.Resolution.HOUR.ordinal()) {
             StringBuilder builder = new StringBuilder(timeFormat);
-            int minutesIndex = builder.indexOf(":mm");
-            builder.delete(minutesIndex, minutesIndex + 3);
-            timeFormat = builder.toString();
+            if (timeFormat.contains("mm")) {
+                int minutesIndex = builder.indexOf("mm");
+                builder.delete(minutesIndex > 0 ? --minutesIndex : minutesIndex, minutesIndex + 3);
+                timeFormat = builder.toString();
+            }
             setShowSeconds(false);
         }
     }
@@ -234,17 +238,17 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
     public void setShowSeconds(boolean showSeconds) {
         this.showSeconds = showSeconds;
         if (showSeconds) {
-            if (!timeFormat.contains(":ss")) {
+            if (!timeFormat.contains("ss")) {
                 int minutesIndex = timeFormat.indexOf("mm");
                 StringBuilder builder = new StringBuilder(timeFormat);
                 builder.insert(minutesIndex + 2, ":ss");
                 timeFormat = builder.toString();
             }
         } else {
-            if (timeFormat.contains(":ss")) {
-                int secondsIndex = timeFormat.indexOf(":ss");
+            if (timeFormat.contains("ss")) {
+                int secondsIndex = timeFormat.indexOf("ss");
                 StringBuilder builder = new StringBuilder(timeFormat);
-                builder.delete(secondsIndex, secondsIndex + 3);
+                builder.delete(secondsIndex > 0 ? --secondsIndex : secondsIndex, secondsIndex + 3);
                 timeFormat = builder.toString();
             }
         }

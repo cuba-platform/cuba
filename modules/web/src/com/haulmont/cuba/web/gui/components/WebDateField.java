@@ -34,12 +34,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.sql.Time;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
-
-import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import java.util.*;
 
 /**
  * @author abramov
@@ -179,10 +174,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         dateTimeFormat = dateFormat;
         StringBuilder date = new StringBuilder(dateFormat);
         StringBuilder time = new StringBuilder(dateFormat);
-        int timeStartPos = dateFormat.indexOf('h');
-        if (timeStartPos < 0) {
-            timeStartPos = dateFormat.indexOf('H');
-        }
+        int timeStartPos = findTimeStartPos(dateFormat);
         if (timeStartPos >= 0) {
             time.delete(0, timeStartPos);
             date.delete(timeStartPos, dateFormat.length());
@@ -195,6 +187,19 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
         this.dateFormat = StringUtils.trimToEmpty(date.toString());
         dateField.setDateFormat(this.dateFormat);
+    }
+
+    protected int findTimeStartPos(String dateTimeFormat) {
+        List<Integer> positions = new ArrayList<>();
+
+        char[] signs = new char[]{'H', 'h', 'm', 's'};
+        for (char sign : signs) {
+            int pos = dateTimeFormat.indexOf(sign);
+            if (pos > -1) {
+                positions.add(pos);
+            }
+        }
+        return positions.isEmpty() ? -1 : Collections.min(positions);
     }
 
     protected void __setResolution(Resolution resolution) {

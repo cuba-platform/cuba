@@ -8,7 +8,6 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
@@ -41,12 +40,8 @@ import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
-
-import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import java.util.*;
+import java.util.List;
 
 /**
  * @author krivopustov
@@ -167,10 +162,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         dateTimeFormat = dateFormat;
         StringBuilder date = new StringBuilder(dateFormat);
         StringBuilder time = new StringBuilder(dateFormat);
-        int timeStartPos = dateFormat.indexOf('h');
-        if (timeStartPos < 0) {
-            timeStartPos = dateFormat.indexOf('H');
-        }
+        int timeStartPos = findTimeStartPos(dateFormat);
         if (timeStartPos >= 0) {
             time.delete(0, timeStartPos);
             timeFormat = StringUtils.trimToEmpty(time.toString());
@@ -185,6 +177,19 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         datePicker.setFormats(this.dateFormat);
 
         updateLayout();
+    }
+
+    protected int findTimeStartPos(String dateTimeFormat) {
+        List<Integer> positions = new ArrayList<>();
+
+        char[] signs = new char[]{'H', 'h', 'm', 's'};
+        for (char sign : signs) {
+            int pos = dateTimeFormat.indexOf(sign);
+            if (pos > -1) {
+                positions.add(pos);
+            }
+        }
+        return positions.isEmpty() ? -1 : Collections.min(positions);
     }
 
     @Override
