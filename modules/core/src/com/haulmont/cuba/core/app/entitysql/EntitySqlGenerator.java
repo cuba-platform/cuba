@@ -12,6 +12,7 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.datatypes.impl.TimeDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
@@ -153,13 +154,18 @@ public class EntitySqlGenerator {
             if (value == null) {
                 valueStr = null;
             } else if (value instanceof Date) {
-                MetaProperty property = metaClass.getPropertyNN(fieldName);
-                Datatype datatype = property.getRange().asDatatype();
+                MetaPropertyPath propertyPath = metaClass.getPropertyPath(fieldName);
+                if (propertyPath != null) {
+                    MetaProperty property = propertyPath.getMetaProperty();
+                    Datatype datatype = property.getRange().asDatatype();
 
-                if (datatype instanceof DateDatatype) {
-                    valueStr = dateFormat.format((Date) value);
-                } else if (datatype instanceof TimeDatatype) {
-                    valueStr = timeFormat.format((Date) value);
+                    if (datatype instanceof DateDatatype) {
+                        valueStr = dateFormat.format((Date) value);
+                    } else if (datatype instanceof TimeDatatype) {
+                        valueStr = timeFormat.format((Date) value);
+                    } else {
+                        valueStr = dateTimeFormat.format((Date) value);
+                    }
                 } else {
                     valueStr = dateTimeFormat.format((Date) value);
                 }
