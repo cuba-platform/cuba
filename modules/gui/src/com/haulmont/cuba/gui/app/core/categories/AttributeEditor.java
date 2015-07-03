@@ -220,7 +220,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                 if ("dataType".equalsIgnoreCase(property)
                         || "lookup".equalsIgnoreCase(property)
                         || "defaultDateIsCurrent".equalsIgnoreCase(property)
-                        || "entityMetaClass".equalsIgnoreCase(property)) {
+                        || "entityClass".equalsIgnoreCase(property)) {
                     setupVisibility();
                 }
             }
