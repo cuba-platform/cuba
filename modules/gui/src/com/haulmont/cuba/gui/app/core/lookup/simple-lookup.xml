@@ -4,7 +4,7 @@
   -->
 
 <window
-    xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
+    xmlns="http://schemas.haulmont.com/cuba/window.xsd"
     class="com.haulmont.cuba.gui.app.core.lookup.SimpleLookup">
 
     <dsContext/>

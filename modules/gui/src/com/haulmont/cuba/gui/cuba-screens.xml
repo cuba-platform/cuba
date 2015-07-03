@@ -3,7 +3,7 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<screen-config xmlns="http://schemas.haulmont.com/cuba/5.5/screens.xsd">
+<screen-config xmlns="http://schemas.haulmont.com/cuba/screens.xsd">
 
     <screen id="editWindowActions" template="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
 

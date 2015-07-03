@@ -3,7 +3,7 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
         class="com.haulmont.cuba.gui.app.core.restore.EntityRestore"
         messagesPack="com.haulmont.cuba.gui.app.core.restore"
         caption="msg://entityRestore.caption"

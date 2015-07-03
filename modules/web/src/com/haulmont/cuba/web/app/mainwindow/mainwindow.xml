@@ -3,8 +3,8 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
-        xmlns:main="http://schemas.haulmont.com/cuba/5.5/mainwindow.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+        xmlns:main="http://schemas.haulmont.com/cuba/mainwindow.xsd"
         class="com.haulmont.cuba.web.app.mainwindow.AppMainWindow">
 
     <layout expand="foldersSplit">

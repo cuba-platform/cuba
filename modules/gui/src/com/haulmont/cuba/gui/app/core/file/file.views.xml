@@ -3,7 +3,7 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<views xmlns="http://schemas.haulmont.com/cuba/5.5/view.xsd">
+<views xmlns="http://schemas.haulmont.com/cuba/view.xsd">
 
     <view class="com.haulmont.cuba.core.entity.FileDescriptor" name="browse">
         <property name="name"/>
