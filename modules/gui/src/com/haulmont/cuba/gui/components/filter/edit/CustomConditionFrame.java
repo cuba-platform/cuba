@@ -139,6 +139,7 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
 
         FilterHelper filterHelper = AppBeans.get(FilterHelper.class);
         filterHelper.setLookupNullSelectionAllowed(typeSelect, false);
+        filterHelper.setLookupFieldPageLength(typeSelect, 12);
 
         joinField.setSuggester(new Suggester() {
             @Override

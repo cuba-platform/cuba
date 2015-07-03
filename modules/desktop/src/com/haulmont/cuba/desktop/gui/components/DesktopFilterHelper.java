@@ -145,4 +145,8 @@ public class DesktopFilterHelper implements FilterHelper {
             return captions.get(value);
         }
     }
+
+    @Override
+    public void setLookupFieldPageLength(LookupField lookupField, int pageLength) {
+    }
 }

@@ -292,4 +292,10 @@ public class WebFilterHelper implements FilterHelper {
             }
         });
     }
+
+    @Override
+    public void setLookupFieldPageLength(LookupField lookupField, int pageLength) {
+        ComboBox vComboBox = WebComponentsHelper.unwrap(lookupField);
+        vComboBox.setPageLength(pageLength);
+    }
 }

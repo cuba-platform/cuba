@@ -81,4 +81,6 @@ public interface FilterHelper {
     void addTextChangeListener(TextField textField, TextChangeListener listener);
 
     void addShortcutListener(TextField textField, ShortcutListener listener);
+
+    void setLookupFieldPageLength(LookupField lookupField, int pageLength);
 }
