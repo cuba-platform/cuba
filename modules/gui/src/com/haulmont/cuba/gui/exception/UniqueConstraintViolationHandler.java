@@ -38,10 +38,9 @@ public class UniqueConstraintViolationHandler implements GenericExceptionHandler
         Throwable t = exception;
         try {
             while (t != null) {
-                // todo EL
-                if (t.toString().contains("org.apache.openjpa.persistence.EntityExistsException")) {
-                    doHandle(t, windowManager);
-                    return true;
+                if (t.toString().contains("org.springframework.dao.DataIntegrityViolationException")
+                        || t.toString().contains("org.springframework.orm.jpa.JpaSystemException")) {
+                    return doHandle(t, windowManager);
                 }
                 t = t.getCause();
             }
@@ -51,7 +50,7 @@ public class UniqueConstraintViolationHandler implements GenericExceptionHandler
         }
     }
 
-    protected void doHandle(Throwable throwable, WindowManager windowManager) {
+    protected boolean doHandle(Throwable throwable, WindowManager windowManager) {
         Pattern pattern = exceptionHandlersConfig.getUniqueConstraintViolationPattern();
         String constraintName = "";
 
@@ -62,21 +61,23 @@ public class UniqueConstraintViolationHandler implements GenericExceptionHandler
             } else if (matcher.groupCount() == 1) {
                 constraintName = matcher.group(1);
             }
-        }
 
-        String msg = "";
-        if (StringUtils.isNotBlank(constraintName)) {
-            msg = messages.getMainMessage(constraintName.toUpperCase());
-        }
-
-        if (msg.equalsIgnoreCase(constraintName)) {
-            msg = messages.getMainMessage("uniqueConstraintViolation.message");
+            String msg = "";
             if (StringUtils.isNotBlank(constraintName)) {
-                msg = msg + " (" + constraintName + ")";
+                msg = messages.getMainMessage(constraintName.toUpperCase());
             }
-        }
 
-        windowManager.showNotification(msg, IFrame.NotificationType.ERROR);
+            if (msg.equalsIgnoreCase(constraintName)) {
+                msg = messages.getMainMessage("uniqueConstraintViolation.message");
+                if (StringUtils.isNotBlank(constraintName)) {
+                    msg = msg + " (" + constraintName + ")";
+                }
+            }
+
+            windowManager.showNotification(msg, IFrame.NotificationType.ERROR);
+            return true;
+        }
+        return false;
     }
 
     @Override
