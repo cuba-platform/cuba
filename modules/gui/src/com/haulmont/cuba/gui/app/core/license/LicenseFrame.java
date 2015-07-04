@@ -29,7 +29,11 @@ public class LicenseFrame extends AbstractFrame {
 
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<String, Object> entry : info.entrySet()) {
-            sb.append(getMessage(entry.getKey())).append(": ").append(entry.getValue()).append("\n");
+            Object val = entry.getValue();
+            if (entry.getKey().equals("licensedSessions") || entry.getKey().equals("licensedEntities")) {
+                val = ((val instanceof Integer) && ((Integer) val == 0)) ? "Not restricted" : val;
+            }
+            sb.append(getMessage(entry.getKey())).append(": ").append(val).append("\n");
         }
 
         licenseTxtField.setValue(sb.toString());
