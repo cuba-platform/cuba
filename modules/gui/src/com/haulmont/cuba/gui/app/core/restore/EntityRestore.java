@@ -8,6 +8,7 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
+import com.haulmont.cuba.core.app.EntityRestoreService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.annotation.EnableRestore;
@@ -54,6 +55,9 @@ public class EntityRestore extends AbstractWindow {
 
     @Inject
     protected MessageTools messageTools;
+
+    @Inject
+    protected EntityRestoreService restoreService;
 
     protected GroupDatasource entitiesDs;
 
@@ -229,9 +233,9 @@ public class EntityRestore extends AbstractWindow {
     }
 
     protected void showRestoreDialog() {
-        final Set<Entity> listEntity = entitiesTable.getSelected();
+        final Set<Entity> entityList = entitiesTable.getSelected();
         Entity entity = entitiesDs.getItem();
-        if (listEntity != null && entity != null && listEntity.size() > 0) {
+        if (entityList != null && entity != null && entityList.size() > 0) {
             if (entity instanceof SoftDelete) {
                 showOptionDialog(
                         getMessage("dialogs.Confirmation"),
@@ -241,13 +245,8 @@ public class EntityRestore extends AbstractWindow {
                                 new DialogAction(DialogAction.Type.OK) {
                                     @Override
                                     public void actionPerform(Component component) {
-                                        for (Entity ent : listEntity) {
-                                            SoftDelete d = (SoftDelete) ent;
-                                            d.setDeleteTs(null);
-                                        }
-                                        entitiesDs.commit();
+                                        restoreService.restoreEntities(entityList);
                                         entitiesTable.refresh();
-
                                         entitiesTable.requestFocus();
                                     }
                                 },
