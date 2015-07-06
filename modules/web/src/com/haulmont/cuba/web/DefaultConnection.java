@@ -34,7 +34,22 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
             throw new IllegalArgumentException("Locale is null");
         }
 
-        update(loginService.login(login, password, locale, getLoginParams()));
+        update(doLogin(login, password, locale, getLoginParams()));
+    }
+
+    /**
+     * Forward login logic to {@link com.haulmont.cuba.security.app.LoginService}.
+     * Can be overridden to change login logic.
+     *
+     * @param login         login name
+     * @param password      encrypted password
+     * @param locale        client locale
+     * @param loginParams   login params
+     * @return created user session
+     * @throws LoginException in case of unsuccessful login
+     */
+    protected UserSession doLogin(String login, String password, Locale locale, Map<String, Object> loginParams) throws LoginException {
+        return loginService.login(login, password, locale, loginParams);
     }
 
     @Override
@@ -43,7 +58,22 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
             throw new IllegalArgumentException("Locale is null");
         }
 
-        update(loginService.loginByRememberMe(login, rememberMeToken, locale, getLoginParams()));
+        update(doLoginByRememberMe(login, rememberMeToken, locale, getLoginParams()));
+    }
+
+    /**
+     * Forward login logic to {@link com.haulmont.cuba.security.app.LoginService}.
+     * Can be overridden to change login logic.
+     *
+     * @param login         login name
+     * @param password      encrypted password
+     * @param locale        client locale
+     * @param loginParams   login params
+     * @return created user session
+     * @throws LoginException in case of unsuccessful login
+     */
+    protected UserSession doLoginByRememberMe(String login, String password, Locale locale, Map<String, Object> loginParams) throws LoginException {
+        return loginService.loginByRememberMe(login, password, locale, loginParams);
     }
 
     @Override
@@ -53,13 +83,28 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
         }
 
         String password = configuration.getConfig(WebAuthConfig.class).getTrustedClientPassword();
-        update(loginService.loginTrusted(login, password, locale, getLoginParams()));
+        update(doLoginTrusted(login, password, locale, getLoginParams()));
 
         UserSession session = getSession();
         if (session == null) {
             throw new IllegalStateException("Null session after login");
         }
         session.setAttribute(ACTIVE_DIRECTORY_USER_SESSION_ATTRIBUTE, true);
+    }
+
+    /**
+     * Forward login logic to {@link com.haulmont.cuba.security.app.LoginService}.
+     * Can be overridden to change login logic.
+     *
+     * @param login         login name
+     * @param password      encrypted password
+     * @param locale        client locale
+     * @param loginParams   login params
+     * @return created user session
+     * @throws LoginException in case of unsuccessful login
+     */
+    protected UserSession doLoginTrusted(String login, String password, Locale locale, Map<String, Object> loginParams) throws LoginException {
+        return loginService.loginTrusted(login, password, locale, loginParams);
     }
 
     protected Map<String, Object> getLoginParams() {

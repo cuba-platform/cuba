@@ -53,7 +53,7 @@ public class PortalConnection implements Connection {
     @Override
     public synchronized void login(String login, String password, Locale locale,
                                    @Nullable String ipAddress, @Nullable String clientInfo) throws LoginException {
-        UserSession userSession = loginService.login(login, password, locale);
+        UserSession userSession = doLogin(login, password, locale);
         session = portalSessionFactory.createPortalSession(userSession, locale);
 
         // replace security context
@@ -75,6 +75,20 @@ public class PortalConnection implements Connection {
 
         connected = true;
         fireConnectionListeners();
+    }
+
+    /**
+     * Forward login logic to {@link com.haulmont.cuba.security.app.LoginService}.
+     * Can be overridden to change login logic.
+     *
+     * @param login     login name
+     * @param password  encrypted password
+     * @param locale    client locale
+     * @return created user session
+     * @throws LoginException in case of unsuccessful login
+     */
+    protected UserSession doLogin(String login, String password, Locale locale) throws LoginException {
+        return loginService.login(login, password, locale);
     }
 
     @Override

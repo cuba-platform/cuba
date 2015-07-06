@@ -36,8 +36,7 @@ public class Connection {
     protected Log log = LogFactory.getLog(getClass());
 
     public void login(String login, String password, Locale locale) throws LoginException {
-        LoginService loginService = AppBeans.get(LoginService.NAME);
-        UserSession userSession = loginService.login(login, password, locale, getLoginParams());
+        UserSession userSession = doLogin(login, password, locale);
         session = new ClientUserSession(userSession);
         AppContext.setSecurityContext(new SecurityContext(session));
         log.info("Logged in: " + session);
@@ -46,6 +45,21 @@ public class Connection {
 
         connected = true;
         fireConnectionListeners();
+    }
+
+    /**
+     * Forward login logic to {@link com.haulmont.cuba.security.app.LoginService}.
+     * Can be overridden to change login logic.
+     *
+     * @param login     login name
+     * @param password  encrypted password
+     * @param locale    client locale
+     * @return created user session
+     * @throws LoginException in case of unsuccessful login
+     */
+    protected UserSession doLogin(String login, String password, Locale locale) throws LoginException {
+        LoginService loginService = AppBeans.get(LoginService.NAME);
+        return loginService.login(login, password, locale);
     }
 
     protected Map<String, Object> getLoginParams() {
