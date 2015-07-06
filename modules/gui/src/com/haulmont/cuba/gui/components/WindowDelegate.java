@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.settings.Settings;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -122,7 +123,10 @@ public class WindowDelegate {
                                         && ((Component.HasPresentations) component).isUsePresentations()) {
                                     Object def = ((Component.HasPresentations) component).getDefaultPresentationId();
                                     e.addAttribute("presentation", def != null ? def.toString() : "");
-                                    ((Component.HasPresentations) component).getPresentations().commit();
+                                    Presentations presentations = ((Component.HasPresentations) component).getPresentations();
+                                    if (presentations != null) {
+                                        presentations.commit();
+                                    }
                                 }
                                 WindowDelegate.this.settings.setModified(modified);
                             }
