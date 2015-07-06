@@ -341,7 +341,7 @@ public class FilterEditor extends AbstractWindow {
     }
 
     public void addCondition() {
-        addConditionHelper.addCondition();
+        addConditionHelper.addCondition(conditions);
     }
 
     public void showComponentName() {

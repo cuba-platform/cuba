@@ -9,17 +9,26 @@ import com.google.common.base.Strings;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.jpql.DomainModel;
+import com.haulmont.cuba.core.sys.jpql.DomainModelBuilder;
 import com.haulmont.cuba.gui.components.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.gui.components.autocomplete.JpqlSuggestionFactory;
 import com.haulmont.cuba.gui.components.autocomplete.Suggester;
 import com.haulmont.cuba.gui.components.autocomplete.Suggestion;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.autocomplete.impl.HintProvider;
+import com.haulmont.cuba.gui.components.autocomplete.impl.HintRequest;
+import com.haulmont.cuba.gui.components.autocomplete.impl.HintResponse;
+import com.haulmont.cuba.gui.components.autocomplete.impl.Option;
+import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.ParamType;
+import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
+import org.antlr.runtime.RecognitionException;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -73,11 +82,20 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
     @Inject
     protected Label nameLab;
 
+    @Inject
+    protected MetadataTools metadataTools;
+
+    @Inject
+    protected MessageTools messageTools;
+
     protected boolean initializing;
+
+    protected ConditionsTree conditionsTree;
 
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
+        conditionsTree = (ConditionsTree) params.get("conditionsTree");
     }
 
     @Override
@@ -444,7 +462,12 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
         String query = queryBuilder.toString();
         query = query.replace("{E}", entityAlias);
 
-        return JpqlSuggestionFactory.requestHint(query, queryPosition, sender.getAutoCompleteSupport(), senderCursorPosition);
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+        MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+        DomainModelBuilder builder = new DomainModelBuilder(metadataTools, messageTools);
+        DomainModel domainModel = builder.produce();
+
+        return JpqlSuggestionFactory.requestHint(query, queryPosition, sender.getAutoCompleteSupport(), senderCursorPosition, new ExtHintProvider(domainModel));
     }
 
     public void getJoinClauseHelp() {
@@ -460,5 +483,39 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
     public void getParamWhereClauseHelp() {
         getDialogParams().setModal(false).setWidth(600);
         showMessageDialog(getMessage("CustomConditionFrame.entityParamWhere"), getMessage("CustomConditionFrame.paramWhereClauseHelp"), MessageType.CONFIRMATION_HTML);
+    }
+
+
+    /**
+     * Extended hint provider is used for displaying other filter component names.
+     * If last word in JPQL query is ':' then parameter names are suggested. They
+     * are taken from {@code conditionsTree} screen parameter.
+     */
+    protected class ExtHintProvider extends HintProvider {
+
+        public ExtHintProvider(DomainModel domainModel) {
+            super(domainModel);
+        }
+
+        @Override
+        public HintResponse requestHint(HintRequest hintRequest) throws RecognitionException {
+            String input = hintRequest.getQuery();
+            int cursorPos = hintRequest.getPosition();
+            String lastWord = getLastWord(input, cursorPos);
+            return (":".equals(lastWord)) ?
+                    hintParameterNames(lastWord):
+                    super.requestHint(hintRequest);
+        }
+
+        protected HintResponse hintParameterNames(String lastWord) {
+            List<Option> options = new ArrayList<>();
+            for (AbstractCondition _condition : conditionsTree.toConditionsList()) {
+                Param param = _condition.getParam();
+                if (param != null) {
+                    options.add(new Option(param.getName(), _condition.getLocCaption()));
+                }
+            }
+            return new HintResponse(options, lastWord);
+        }
     }
 }

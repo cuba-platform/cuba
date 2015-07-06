@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.components.autocomplete.impl.HintRequest;
 import com.haulmont.cuba.gui.components.autocomplete.impl.HintResponse;
 import com.haulmont.cuba.gui.components.autocomplete.impl.Option;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,18 +23,14 @@ import java.util.List;
  */
 public class JpqlSuggestionFactory {
 
-    private int prefixLength;
-    private int startPosition;
-    private int endPosition;
+//    public JpqlSuggestionFactory(int senderCursorPosition, int prefixLength) {
+//        this.prefixLength = prefixLength;
+//
+//        startPosition = senderCursorPosition - prefixLength;
+//        endPosition = senderCursorPosition;
+//    }
 
-    public JpqlSuggestionFactory(int senderCursorPosition, int prefixLength) {
-        this.prefixLength = prefixLength;
-
-        startPosition = senderCursorPosition - prefixLength;
-        endPosition = senderCursorPosition;
-    }
-
-    public Suggestion produce(AutoCompleteSupport sender, String value, String description) {
+    protected static Suggestion produce(AutoCompleteSupport sender, String value, String description, int senderCursorPosition, int prefixLength) {
         String valueSuffix = value.substring(prefixLength);
         String displayedValue;
         if (description == null) {
@@ -41,17 +38,25 @@ public class JpqlSuggestionFactory {
         } else {
             displayedValue = value + " (" + description + ")";
         }
-        return new Suggestion(sender, displayedValue, value, valueSuffix, startPosition, endPosition);
+        int startPosition = senderCursorPosition - prefixLength;
+
+        return new Suggestion(sender, displayedValue, value, valueSuffix, startPosition, senderCursorPosition);
     }
 
     public static List<Suggestion> requestHint(String query, int queryPosition, AutoCompleteSupport sender,
                                                int senderCursorPosition) {
+        return requestHint(query, queryPosition, sender, senderCursorPosition, null);
+    }
+
+    public static List<Suggestion> requestHint(String query, int queryPosition, AutoCompleteSupport sender,
+                                               int senderCursorPosition, @Nullable HintProvider provider) {
         MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
         MessageTools messageTools = AppBeans.get(MessageTools.NAME);
         DomainModelBuilder builder = new DomainModelBuilder(metadataTools, messageTools);
         DomainModel domainModel = builder.produce();
-
-        HintProvider provider = new HintProvider(domainModel);
+        if (provider == null) {
+            provider = new HintProvider(domainModel);
+        }
         try {
             HintRequest request = new HintRequest();
             request.setQuery(query);
@@ -61,10 +66,8 @@ public class JpqlSuggestionFactory {
             List<Option> options = response.getOptionObjects();
 
             List<Suggestion> result = new ArrayList<Suggestion>();
-            JpqlSuggestionFactory suggestionFactory = new JpqlSuggestionFactory(senderCursorPosition, prefix == null ? 0 : prefix.length());
-
             for (Option option : options) {
-                Suggestion suggestion = suggestionFactory.produce(sender, option.getValue(), option.getDescription());
+                Suggestion suggestion = JpqlSuggestionFactory.produce(sender, option.getValue(), option.getDescription(), senderCursorPosition, prefix == null ? 0 : prefix.length());
                 result.add(suggestion);
             }
             return result;

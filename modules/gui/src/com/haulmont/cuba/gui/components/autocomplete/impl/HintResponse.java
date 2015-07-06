@@ -23,7 +23,7 @@ public class HintResponse {
         options = Collections.emptyList();
     }
 
-    HintResponse(List<Option> options, String lastWord) {
+    public HintResponse(List<Option> options, String lastWord) {
         this.lastWord = lastWord;
         this.options = (options == null) ? Collections.<Option>emptyList() : options;
         errorMessage = null;

@@ -54,14 +54,16 @@ public class AddConditionHelper {
     }
 
     public interface Handler {
-        public void handle(AbstractCondition condition);
+        void handle(AbstractCondition condition);
     }
 
     /**
      * Opens AddCondition window. When condition is selected/created a {@code Handler#handle} method
      * will be called
+     * @param conditionsTree conditions tree is necessary for custom condition editing. It is used
+     *                       for suggestion of other component names in 'param where' field.
      */
-    public void addCondition() {
+    public void addCondition(final ConditionsTree conditionsTree) {
         Map<String, Object> params = new HashMap<>();
         if (descriptorsTree == null) {
             descriptorsTree = new ConditionDescriptorsTreeBuilder(filter, PROPERTIES_HIERARCHY_DEPTH).build();
@@ -76,7 +78,7 @@ public class AddConditionHelper {
                     Collection<AbstractConditionDescriptor> descriptors = window.getDescriptors();
                     if (descriptors != null) {
                         for (AbstractConditionDescriptor descriptor : descriptors) {
-                            _addCondition(descriptor);
+                            _addCondition(descriptor, conditionsTree);
                         }
                     }
                 }
@@ -84,13 +86,14 @@ public class AddConditionHelper {
         });
     }
 
-    protected void _addCondition(AbstractConditionDescriptor descriptor) {
+    protected void _addCondition(AbstractConditionDescriptor descriptor, ConditionsTree conditionsTree) {
         final AbstractCondition condition = descriptor.createCondition();
 
         if (descriptor instanceof CustomConditionCreator) {
             WindowInfo windowInfo = windowConfig.getWindowInfo("customConditionEditor");
             Map<String, Object> params = new HashMap<>();
             params.put("condition", condition);
+            params.put("conditionsTree", conditionsTree);
             final CustomConditionEditor window = windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
             window.addListener(new Window.CloseListener() {
                 @Override

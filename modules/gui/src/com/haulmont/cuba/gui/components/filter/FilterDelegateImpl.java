@@ -263,7 +263,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         addConditionBtn.setAction(new AbstractAction("openAddConditionDlg") {
             @Override
             public void actionPerform(Component component) {
-                addConditionHelper.addCondition();
+                addConditionHelper.addCondition(conditions);
             }
         });
 
