@@ -44,13 +44,13 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
     protected LookupField entitySelect;
 
     @Inject
-    private CheckBox inExprCb;
+    protected CheckBox inExprCb;
 
     @Inject
-    private TextField nameField;
+    protected TextField nameField;
 
     @Inject
-    private TextField entityParamViewField;
+    protected TextField entityParamViewField;
 
     @Inject
     protected SourceCodeEditor joinField;
@@ -59,21 +59,21 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
     protected SourceCodeEditor whereField;
 
     @Inject
-    protected TextArea entityParamWhereField;
+    protected SourceCodeEditor entityParamWhereField;
 
     @Inject
-    private Label paramViewLab;
+    protected Label paramViewLab;
 
     @Inject
-    private Label paramWhereLab;
+    protected Label paramWhereLab;
 
     @Inject
-    private Label entityLab;
+    protected Label entityLab;
 
     @Inject
-    private Label nameLab;
+    protected Label nameLab;
 
-    private boolean initializing;
+    protected boolean initializing;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -158,6 +158,15 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
         });
         whereField.setHighlightActiveLine(false);
         whereField.setShowGutter(false);
+
+        entityParamWhereField.setSuggester(new Suggester() {
+            @Override
+            public List<Suggestion> getSuggestions(AutoCompleteSupport source, String text, int cursorPosition) {
+                return requestHintParamWhere(entityParamWhereField, text, cursorPosition);
+            }
+        });
+        entityParamWhereField.setHighlightActiveLine(false);
+        entityParamWhereField.setShowGutter(false);
 
     }
 
@@ -406,6 +415,30 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
             if (sender == whereField) {
                 queryPosition = queryBuilder.length() + WHERE.length() + senderCursorPosition - 1;
             }
+            queryBuilder.append(WHERE).append(whereStr);
+        }
+        String query = queryBuilder.toString();
+        query = query.replace("{E}", entityAlias);
+
+        return JpqlSuggestionFactory.requestHint(query, queryPosition, sender.getAutoCompleteSupport(), senderCursorPosition);
+    }
+
+    protected List<Suggestion> requestHintParamWhere(SourceCodeEditor sender, String text, int senderCursorPosition) {
+        String whereStr = entityParamWhereField.getValue();
+        MetaClass metaClass = entitySelect.getValue();
+        if (metaClass == null) {
+            return new ArrayList<>();
+        }
+
+        // CAUTION: the magic entity name!  The length is three character to match "{E}" length in query
+        String entityAlias = "a39";
+
+        int queryPosition = -1;
+        String queryStart = "select " + entityAlias + " from " + metaClass.getName() + " " + entityAlias + " ";
+
+        StringBuilder queryBuilder = new StringBuilder(queryStart);
+        if (whereStr != null && !whereStr.equals("")) {
+            queryPosition = queryBuilder.length() + WHERE.length() + senderCursorPosition - 1;
             queryBuilder.append(WHERE).append(whereStr);
         }
         String query = queryBuilder.toString();

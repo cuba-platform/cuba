@@ -59,7 +59,7 @@
                 </row>
                 <row>
                     <label id="paramWhereLab" value="msg://CustomConditionFrame.entityParamWhere"/>
-                    <textArea id="entityParamWhereField" height="theme://cuba.gui.customConditionFrame.entityParamWhereField.height" width="theme://cuba.gui.customConditionFrame.field.width"/>
+                    <sourceCodeEditor id="entityParamWhereField" height="theme://cuba.gui.customConditionFrame.entityParamWhereField.height" width="theme://cuba.gui.customConditionFrame.field.width"/>
                     <linkButton icon="font-icon:QUESTION_CIRCLE" invoke="getParamWhereClauseHelp"/>
                 </row>
                 <row>
