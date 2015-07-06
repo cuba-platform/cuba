@@ -21,22 +21,29 @@ public class AliasRemover {
         result.setPosition(input.getPosition());
         result.setExpectedTypes(input.getExpectedTypes());
 
-        int summaryPositionShift = 0;
+        int indexOfFrom = input.getQuery().indexOf("from");
         Matcher matcher = aliasPattern.matcher(input.getQuery());
+        String resultQuery = result.getQuery();
         while (matcher.find()) {
             String alias = matcher.group();
             int regionStart = matcher.start();
             int regionEnd = matcher.end();
 
-            if (result.getPosition() > regionEnd) {
-                summaryPositionShift += alias.length();
-            } else if (result.getPosition() > regionStart) {
-                summaryPositionShift += result.getPosition() - regionStart + 1;
+            if (regionEnd <= indexOfFrom || indexOfFrom == -1) {
+                if (result.getPosition() > regionEnd) {
+                    result.setPosition(result.getPosition() - alias.length());
+                    resultQuery = matcher.replaceFirst("");
+                    matcher.reset(resultQuery);
+                } else if (result.getPosition() > regionStart) {
+                    result.setPosition(regionStart - 1);
+                    resultQuery = matcher.replaceFirst("");
+                    matcher.reset(resultQuery);
+                }
+                indexOfFrom = resultQuery.indexOf("from");
             }
         }
 
-        result.setQuery(result.getQuery().replaceAll(aliasPattern.pattern(), ""));
-        result.setPosition(result.getPosition() - summaryPositionShift);
+        result.setQuery(resultQuery);
 
         return result;
     }
