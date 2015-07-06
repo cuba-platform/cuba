@@ -2105,6 +2105,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     @Override
     public void usePresentations(boolean use) {
         usePresentations = use;
+        if (use) {
+            loadPresentations();
+        }
     }
 
     @Override
