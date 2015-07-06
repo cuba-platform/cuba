@@ -2064,7 +2064,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     protected boolean handleSpecificVariables(Map<String, Object> variables) {
         boolean needReload = false;
 
-        if (isUsePresentations()) {
+        if (isUsePresentations() && presentations != null) {
 
             final Presentations p = getPresentations();
 
@@ -2105,9 +2105,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     @Override
     public void usePresentations(boolean use) {
         usePresentations = use;
-        if (use) {
-            loadPresentations();
-        }
     }
 
     @Override
@@ -2176,6 +2173,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public Object getDefaultPresentationId() {
+        if (presentations == null) {
+            return null;
+        }
         Presentation def = presentations.getDefault();
         return def == null ? null : def.getId();
     }
