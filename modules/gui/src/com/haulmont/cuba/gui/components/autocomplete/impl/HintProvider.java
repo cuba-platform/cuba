@@ -77,10 +77,16 @@ public class HintProvider {
 
         MacroProcessor macroProcessor = new MacroProcessor();
         HintRequest hintRequest = macroProcessor.inlineFake(queryString, caretPosition);
+        AliasRemover aliasRemover = new AliasRemover();
+        hintRequest = aliasRemover.replaceAliases(hintRequest);
+
         return requestHint(hintRequest);
     }
 
     public HintResponse requestHint(HintRequest hintRequest) throws RecognitionException {
+        AliasRemover aliasRemover = new AliasRemover();
+        hintRequest = aliasRemover.replaceAliases(hintRequest);
+
         String input = hintRequest.getQuery();
         int cursorPos = hintRequest.getPosition();
         Set<InferredType> expectedTypes = hintRequest.getExpectedTypes() == null ?
