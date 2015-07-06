@@ -2116,8 +2116,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     public void resetPresentation() {
         if (defaultSettings != null) {
             applySettings(defaultSettings.getRootElement());
-
-            presentations.setCurrent(null);
+            if (presentations != null) {
+                presentations.setCurrent(null);
+            }
         }
     }
 
@@ -2143,7 +2144,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public void applyPresentation(Object id) {
-        if (isUsePresentations()) {
+        if (isUsePresentations() && presentations != null) {
             Presentation p = presentations.getPresentation(id);
             applyPresentation(p);
         } else {
@@ -2153,7 +2154,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public void applyPresentationAsDefault(Object id) {
-        if (isUsePresentations()) {
+        if (isUsePresentations() && presentations != null) {
             Presentation p = presentations.getPresentation(id);
             if (p != null) {
                 presentations.setDefault(p);
@@ -2165,10 +2166,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     protected void applyPresentation(Presentation p) {
-        Element settingsElement = presentations.getSettings(p);
-        applySettings(settingsElement);
-        presentations.setCurrent(p);
-        component.markAsDirty();
+        if (presentations != null) {
+            Element settingsElement = presentations.getSettings(p);
+            applySettings(settingsElement);
+            presentations.setCurrent(p);
+            component.markAsDirty();
+        }
     }
 
     @Override
