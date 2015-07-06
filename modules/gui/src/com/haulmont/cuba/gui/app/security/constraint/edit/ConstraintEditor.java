@@ -7,13 +7,13 @@ package com.haulmont.cuba.gui.app.security.constraint.edit;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.gui.components.AbstractEditor;
+import com.haulmont.cuba.gui.components.LookupField;
+import com.haulmont.cuba.gui.components.SourceCodeEditor;
 import com.haulmont.cuba.gui.components.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.gui.components.autocomplete.JpqlSuggestionFactory;
 import com.haulmont.cuba.gui.components.autocomplete.Suggester;
 import com.haulmont.cuba.gui.components.autocomplete.Suggestion;
-import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.components.LookupField;
-import com.haulmont.cuba.gui.components.SourceCodeEditor;
 
 import javax.inject.Inject;
 import java.util.HashMap;
@@ -112,7 +112,21 @@ public class ConstraintEditor extends AbstractEditor {
         String query = queryBuilder.toString();
         query = query.replace("{E}", entityNameAlias);
 
-        return JpqlSuggestionFactory.requestHint(query, position, sender.getAutoCompleteSupport(), cursorPosition);
+        List<Suggestion> suggestions
+                = JpqlSuggestionFactory.requestHint(query, position, sender.getAutoCompleteSupport(), cursorPosition);
+        addSpecificSuggestions(sender, text, cursorPosition, suggestions);
+        return suggestions;
+    }
+
+    protected void addSpecificSuggestions(SourceCodeEditor sender, String text, int cursorPosition, List<Suggestion> suggestions) {
+        if (cursorPosition >= 1 && ":".equals(text.substring(cursorPosition - 1, cursorPosition))) {
+            suggestions.add(new Suggestion(sender.getAutoCompleteSupport(), "session$userLogin", "session$userLogin",
+                    "", cursorPosition, cursorPosition));
+            suggestions.add(new Suggestion(sender.getAutoCompleteSupport(), "session$userId", "session$userId",
+                    "", cursorPosition, cursorPosition));
+            suggestions.add(new Suggestion(sender.getAutoCompleteSupport(), "session$userGroupId", "session$userGroupId",
+                    "", cursorPosition, cursorPosition));
+        }
     }
 
     public void getJoinClauseHelp() {
