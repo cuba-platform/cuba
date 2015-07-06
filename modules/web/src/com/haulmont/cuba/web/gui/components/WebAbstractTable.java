@@ -1855,7 +1855,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 boolean isMultiLineCell = StringUtils.contains(value, "\n");
                 if (value == null || (value.length() <= column.getMaxTextLength() + MAX_TEXT_LENGTH_GAP
                         && !isMultiLineCell)) {
-                    // todo artamonov if we click with CTRL and Table is multiselect then we loose previous selected items
+                    // todo artamonov if we click with CTRL and Table is multiselect then we lose previous selected items
                     if (!getSelected().contains(item)) {
                         setSelected(item);
                     }
