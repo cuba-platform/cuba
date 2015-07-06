@@ -57,9 +57,15 @@ public class CubaComboBoxWidget extends VFilterSelect implements ShortcutActionH
                     // NOP
                     break;
                 default:
-                    // do not show options popup if we handle shortcut action
-                    if (!event.isControlKeyDown() && !event.isAltKeyDown()) {
-                        super.onKeyUp(event);
+                    // special case for "clear" shortcut action
+                    if (event.isShiftKeyDown() && event.getNativeKeyCode() == KeyCodes.KEY_DELETE) {
+                        suggestionPopup.hide();
+                    } else {
+                        // do not show options popup if we handle shortcut action
+                        if (!event.isControlKeyDown()
+                                && !event.isAltKeyDown()) {
+                            super.onKeyUp(event);
+                        }
                     }
                     break;
             }

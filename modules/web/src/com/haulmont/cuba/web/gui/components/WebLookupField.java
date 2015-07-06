@@ -19,6 +19,7 @@ import com.haulmont.cuba.web.gui.data.OptionsDsWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaComboBox;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.AbstractSelect;
 import org.apache.commons.lang.ObjectUtils;
@@ -29,6 +30,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+
+import static com.vaadin.event.ShortcutAction.KeyCode;
+import static com.vaadin.event.ShortcutAction.ModifierKey;
+import static com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 
 /**
  * @author abramov
@@ -53,9 +58,7 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
 
         attachListener(component);
         component.setImmediate(true);
-        component.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ITEM);
-//        vaadin7
-//        component.setFixedTextBoxWidth(true);
+        component.setItemCaptionMode(ItemCaptionMode.ITEM);
         component.setInvalidAllowed(false);
         component.setInvalidCommitted(true);
 
@@ -69,6 +72,15 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
                     throw new IllegalStateException("New item handler cannot be NULL");
                 }
                 newOptionHandler.addNewOption(newItemCaption);
+            }
+        });
+
+        component.addShortcutListener(new ShortcutListener("clear", KeyCode.DELETE, new int[]{ModifierKey.SHIFT}) {
+            @Override
+            public void handleAction(Object sender, Object target) {
+                if (!isRequired()) {
+                    setValue(null);
+                }
             }
         });
     }
