@@ -19,6 +19,10 @@ import com.vaadin.client.BrowserInfo;
  */
 public class CubaWidgetsTreeWidget extends CubaTreeWidget {
 
+    public CubaWidgetsTreeWidget() {
+        this.allowTextSelection = true;
+    }
+
     public class WidgetTreeNode extends TreeNode {
         protected Widget nodeWidget;
         protected SimplePanel nodeWidgetRoot;
