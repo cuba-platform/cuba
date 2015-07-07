@@ -32,9 +32,9 @@ public class CustomConditionEditor extends AbstractWindow {
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
-        getDialogParams()
-                .setWidth(theme.getInt("cuba.gui.customConditionEditor.dialog.width"))
-                .setResizable(true);
+
+        getDialogParams().setWidth(theme.getInt("cuba.gui.customConditionEditor.dialog.width"));
+
         hideUnnecessaryFields();
     }
 
