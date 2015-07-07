@@ -14,6 +14,7 @@
   .#{$primary-stylename} select {
     border: 1px solid #a5c4e0;
     background: #fff none;
+    font-size: 12px;
   }
 
   .#{$primary-stylename} select:focus {
@@ -32,8 +33,12 @@
     text-align: center;
   }
 
+  .#{$primary-stylename}-selections {
+    font-weight: normal;
+  }
+
   .#{$primary-stylename}-buttons .v-button {
     margin-bottom: 5px;
-    width: 30px;
+    width: 33px;
   }
 }

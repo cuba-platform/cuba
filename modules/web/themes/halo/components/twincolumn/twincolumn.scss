@@ -16,4 +16,20 @@
   .#{$primary-stylename} select:focus {
     @include valo-textfield-focus-style;
   }
+
+  .#{$primary-stylename}-buttons .v-button {
+    display: block;
+    width: 33px;
+    position: relative;
+    border-radius: 0px;
+    top: 0px;
+  }
+
+  .#{$primary-stylename}-buttons .addAll .v-button-wrap:before {
+    content: "\f054\f054";
+  }
+
+  .#{$primary-stylename}-buttons .removeAll .v-button-wrap:before {
+    content: "\f053\f053";
+  }
 }
