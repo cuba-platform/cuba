@@ -29,4 +29,8 @@
   .#{$primary-stylename}:focus {
     outline: none;
   }
+
+  .aceeditor-suggestpopup-list {
+    width: 400px !important;
+  }
 }
