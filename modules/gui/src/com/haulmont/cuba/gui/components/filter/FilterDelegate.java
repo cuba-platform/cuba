@@ -86,4 +86,16 @@ public interface FilterDelegate {
     void setColumnsCount(int columnsCount);
 
     void applySettings(Element element);
+
+    boolean isExpanded();
+    void setExpanded(boolean expanded);
+
+    boolean isCollapsable();
+    void setCollapsable(boolean collapsable);
+
+    void addListener(Component.Collapsable.ExpandListener listener);
+    void removeListener(Component.Collapsable.ExpandListener listener);
+
+    void addListener(Component.Collapsable.CollapseListener listener);
+    void removeListener(Component.Collapsable.CollapseListener listener);
 }

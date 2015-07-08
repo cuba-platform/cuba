@@ -194,7 +194,6 @@ public class FilterDelegateImpl implements FilterDelegate {
             groupBoxLayout.setOrientation(GroupBoxLayout.Orientation.VERTICAL);
             groupBoxLayout.setStyleName("cuba-generic-filter");
             groupBoxLayout.setWidth("100%");
-            groupBoxLayout.setCollapsable(true);
             layout = componentsFactory.createComponent(VBoxLayout.NAME);
             layout.setWidth("100%");
             groupBoxLayout.add(layout);
@@ -1639,6 +1638,46 @@ public class FilterDelegateImpl implements FilterDelegate {
     @Override
     public void setColumnsCount(int columnsCount) {
         this.columnsCount = columnsCount;
+    }
+
+    @Override
+    public boolean isExpanded() {
+        return groupBoxLayout.isExpanded();
+    }
+
+    @Override
+    public void setExpanded(boolean expanded) {
+        groupBoxLayout.setExpanded(expanded);
+    }
+
+    @Override
+    public boolean isCollapsable() {
+        return groupBoxLayout.isCollapsable();
+    }
+
+    @Override
+    public void setCollapsable(boolean collapsable) {
+        groupBoxLayout.setCollapsable(collapsable);
+    }
+
+    @Override
+    public void addListener(Component.Collapsable.ExpandListener listener) {
+        groupBoxLayout.addListener(listener);
+    }
+
+    @Override
+    public void removeListener(Component.Collapsable.ExpandListener listener) {
+        groupBoxLayout.removeListener(listener);
+    }
+
+    @Override
+    public void addListener(Component.Collapsable.CollapseListener listener) {
+        groupBoxLayout.addListener(listener);
+    }
+
+    @Override
+    public void removeListener(Component.Collapsable.CollapseListener listener) {
+        groupBoxLayout.removeListener(listener);
     }
 
     @Override

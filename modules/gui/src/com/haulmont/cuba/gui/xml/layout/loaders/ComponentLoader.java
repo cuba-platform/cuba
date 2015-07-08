@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.datatypes.Datatype;
@@ -247,16 +248,14 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         }
     }
 
-    protected void loadCollapsible(Component.Collapsable component, Element element) {
+    protected void loadCollapsible(Component.Collapsable component, Element element, boolean defaultCollapsable) {
         String collapsable = element.attributeValue("collapsable");
-        if (!StringUtils.isEmpty(collapsable)) {
-            boolean b = BooleanUtils.toBoolean(collapsable);
-            component.setCollapsable(b);
-            if (b) {
-                String collapsed = element.attributeValue("collapsed");
-                if (!StringUtils.isBlank(collapsed)) {
-                    component.setExpanded(!BooleanUtils.toBoolean(collapsed));
-                }
+        boolean b = Strings.isNullOrEmpty(collapsable) ? defaultCollapsable : BooleanUtils.toBoolean(collapsable);
+        component.setCollapsable(b);
+        if (b) {
+            String collapsed = element.attributeValue("collapsed");
+            if (!StringUtils.isBlank(collapsed)) {
+                component.setExpanded(!BooleanUtils.toBoolean(collapsed));
             }
         }
     }

@@ -14,7 +14,7 @@ import java.util.List;
  * @version $Id$
  */
 public interface Filter extends Component.Margin, Component.BelongToFrame, Component.HasNamedComponents,
-                                Component.HasXmlDescriptor, Component.HasSettings, Component.HasCaption {
+                                Component.HasXmlDescriptor, Component.HasSettings, Component.HasCaption, Component.Collapsable {
 
     String NAME = "filter";
 

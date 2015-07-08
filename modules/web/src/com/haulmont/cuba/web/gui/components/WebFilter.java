@@ -206,6 +206,46 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         return delegate.getColumnsCount();
     }
 
+    @Override
+    public boolean isExpanded() {
+        return delegate.isExpanded();
+    }
+
+    @Override
+    public void setExpanded(boolean expanded) {
+        delegate.setExpanded(expanded);
+    }
+
+    @Override
+    public boolean isCollapsable() {
+        return delegate.isCollapsable();
+    }
+
+    @Override
+    public void setCollapsable(boolean collapsable) {
+        delegate.setCollapsable(collapsable);
+    }
+
+    @Override
+    public void addListener(ExpandListener listener) {
+        delegate.addListener(listener);
+    }
+
+    @Override
+    public void removeListener(ExpandListener listener) {
+        delegate.removeListener(listener);
+    }
+
+    @Override
+    public void addListener(CollapseListener listener) {
+        delegate.addListener(listener);
+    }
+
+    @Override
+    public void removeListener(CollapseListener listener) {
+        delegate.removeListener(listener);
+    }
+
     @Nullable
     @Override
     public <T extends Component> T getComponent(String id) {

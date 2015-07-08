@@ -42,6 +42,7 @@ public class FilterLoader extends ComponentLoader {
         loadMargin(filter, element);
         loadCaption(filter, element);
         loadWidth(filter, element, "100%");
+        loadCollapsible(filter, element, true);
 
         String useMaxResults = element.attributeValue("useMaxResults");
         filter.setUseMaxResults(useMaxResults == null || Boolean.valueOf(useMaxResults));

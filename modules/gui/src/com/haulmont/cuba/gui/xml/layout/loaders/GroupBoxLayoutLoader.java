@@ -69,7 +69,7 @@ public class GroupBoxLayoutLoader extends ContainerLoader implements com.haulmon
 
         loadSubComponentsAndExpand(component, element, "caption", "description", "visible");
 
-        loadCollapsible(component, element);
+        loadCollapsible(component, element, false);
 
         loadStyleName(component, element);
 

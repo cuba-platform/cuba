@@ -1018,6 +1018,8 @@
         <xs:attribute name="editable" type="xs:boolean"/>
         <xs:attribute name="folderActionsEnabled" type="xs:boolean"/>
         <xs:attribute name="columnsQty" type="xs:int"/>
+        <xs:attribute name="collapsable" type="xs:boolean"/>
+        <xs:attribute name="collapsed" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- FieldGroup.FieldConfig -->
