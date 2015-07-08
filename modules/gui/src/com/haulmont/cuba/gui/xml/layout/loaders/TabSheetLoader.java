@@ -76,10 +76,16 @@ public class TabSheetLoader extends ContainerLoader {
                 tab.setCaption(caption);
             }
 
+            String visible = tabElement.attributeValue("visible");
+            if (StringUtils.isNotEmpty(visible)) {
+                tab.setVisible(Boolean.valueOf(visible));
+            }
+
             String enable = tabElement.attributeValue("enable");
             if (enable == null) {
                 final Element e = tabElement.element("enable");
                 if (e != null) {
+                    // todo remove obsolete way
                     enable = e.getText();
                 }
             }

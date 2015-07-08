@@ -1262,6 +1262,7 @@
                     <xs:attribute name="spacing" type="xs:boolean"/>
                     <xs:attribute name="expand" type="xs:string"/>
                     <xs:attribute name="detachable" type="xs:boolean"/>
+                    <xs:attribute name="visible" type="xs:boolean"/>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
