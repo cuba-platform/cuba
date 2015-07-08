@@ -43,7 +43,8 @@
                 </row>
                 <row>
                     <label value="msg://CustomConditionFrame.where"/>
-                    <sourceCodeEditor id="whereField" height="theme://cuba.gui.customConditionFrame.whereField.height" width="theme://cuba.gui.customConditionFrame.field.width"/>
+                    <sourceCodeEditor id="whereField" height="theme://cuba.gui.customConditionFrame.whereField.height" width="theme://cuba.gui.customConditionFrame.field.width"
+                                      required="true" requiredMessage="msg://CustomConditionFrame.fillWhere"/>
                     <linkButton icon="font-icon:QUESTION_CIRCLE" invoke="getWhereClauseHelp"/>
                 </row>
                 <row>

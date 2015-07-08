@@ -10,6 +10,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.AddConditionHelper;
@@ -164,7 +165,11 @@ public class FilterEditor extends AbstractWindow {
                 //commit previously selected condition
                 if (activeConditionFrame != null) {
                     List<Validatable> validatables = new ArrayList<>();
-                    validatables.add(activeConditionFrame);
+                    Collection<Component> frameComponents = ComponentsHelper.getComponents(activeConditionFrame);
+                    for (Component frameComponent : frameComponents) {
+                        if (frameComponent instanceof Validatable)
+                            validatables.add((Validatable) frameComponent);
+                    }
                     if (validate(validatables)) {
                         activeConditionFrame.commit();
                     } else {

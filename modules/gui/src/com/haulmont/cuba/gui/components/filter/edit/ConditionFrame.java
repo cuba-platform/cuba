@@ -17,7 +17,7 @@ import java.util.Map;
  * @author gorbunkov
  * @version $Id$
  */
-public abstract class ConditionFrame<T extends AbstractCondition> extends AbstractFrame implements Component.Validatable {
+public abstract class ConditionFrame<T extends AbstractCondition> extends AbstractFrame {
 
     @Inject
     protected ClientConfig clientConfig;
