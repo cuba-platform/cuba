@@ -57,7 +57,7 @@
 
       // after selected tab
       // hide separator
-      .#{$primary-stylename}-tabitemcell-selected + .#{$primary-stylename}-tabitemcell .#{$primary-stylename}-tabitem {
+      .#{$primary-stylename}-tabitemcell.cuba-tab-sibling-visible .#{$primary-stylename}-tabitem {
         border-left: 1px transparent;
         padding-left: 0;
       }
@@ -78,7 +78,6 @@
 }
 
 @mixin havana-tabsheet-second($primary-stylename) {
-
   .#{$primary-stylename} {
     // inner tabsheet
     // Second level
@@ -147,7 +146,7 @@
 
       // after selected tab
       // hide separator
-      .#{$primary-stylename}-tabitemcell-selected + .#{$primary-stylename}-tabitemcell .#{$primary-stylename}-tabitem {
+      .#{$primary-stylename}-tabitemcell.cuba-tab-sibling-visible .#{$primary-stylename}-tabitem {
         border-left: 1px transparent;
         padding-left: 0;
       }
