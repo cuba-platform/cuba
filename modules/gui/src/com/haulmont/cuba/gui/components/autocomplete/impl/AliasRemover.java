@@ -38,6 +38,9 @@ public class AliasRemover {
                     result.setPosition(regionStart - 1);
                     resultQuery = matcher.replaceFirst("");
                     matcher.reset(resultQuery);
+                } else {
+                    resultQuery = matcher.replaceFirst("");
+                    matcher.reset(resultQuery);
                 }
                 indexOfFrom = resultQuery.indexOf("from");
             }

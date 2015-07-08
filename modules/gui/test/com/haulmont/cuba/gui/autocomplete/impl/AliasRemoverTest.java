@@ -29,17 +29,31 @@ public class AliasRemoverTest {
         input.setExpectedTypes(EnumSet.of(InferredType.Any));
         HintRequest result = aliasRemover.replaceAliases(input);
         Assert.assertEquals('!', result.getQuery().charAt(result.getPosition()));
+        Assert.assertTrue(!result.getQuery().contains("as \""));
+        System.out.println(result.getQuery());
 
         input.setQuery("select queryEntity.vin as \"vin\", queryEntity.!version as \"version\" from ref$Car queryEntity");
         input.setPosition(input.getQuery().indexOf("!"));
         input.setExpectedTypes(EnumSet.of(InferredType.Any));
         result = aliasRemover.replaceAliases(input);
         Assert.assertEquals('!', result.getQuery().charAt(result.getPosition()));
+        Assert.assertTrue(!result.getQuery().contains("as \""));
+        System.out.println(result.getQuery());
+
+        input.setQuery("select queryEntity.!vin as \"vin\", queryEntity.version as \"version\" from ref$Car queryEntity");
+        input.setPosition(input.getQuery().indexOf("!"));
+        input.setExpectedTypes(EnumSet.of(InferredType.Any));
+        result = aliasRemover.replaceAliases(input);
+        Assert.assertEquals('!', result.getQuery().charAt(result.getPosition()));
+        Assert.assertTrue(!result.getQuery().contains("as \""));
+        System.out.println(result.getQuery());
 
         input.setQuery("select queryEntity.vin as \"vin\", queryEntity.version as \"version\" from ref$Car queryEntity");
         input.setPosition(input.getQuery().indexOf("\"ver"));
         input.setExpectedTypes(EnumSet.of(InferredType.Any));
         result = aliasRemover.replaceAliases(input);
         Assert.assertEquals(' ', result.getQuery().charAt(result.getPosition()));
+        Assert.assertTrue(!result.getQuery().contains("as \""));
+        System.out.println(result.getQuery());
     }
 }
