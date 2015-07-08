@@ -22,12 +22,14 @@ import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.GroupDatasource;
+import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.lang.reflect.AnnotatedElement;
 import java.util.*;
@@ -40,9 +42,6 @@ public class EntityRestore extends AbstractWindow {
 
     @Inject
     protected LookupField entities;
-
-    @Inject
-    protected Button refreshButton;
 
     @Inject
     protected BoxLayout tablePanel;
@@ -69,15 +68,10 @@ public class EntityRestore extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
-        refreshButton.setAction(new AbstractAction("refresh") {
+        entities.addListener(new ValueListener() {
             @Override
-            public void actionPerform(Component component) {
+            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
                 buildLayout();
-            }
-
-            @Override
-            public String getCaption() {
-                return getMessage("actions.Refresh");
             }
         });
         entities.setOptionsMap(getEntitiesLookupFieldOptions());
