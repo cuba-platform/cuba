@@ -356,12 +356,11 @@ configure(webModule) {
         compile(vaadinServer) {
             exclude(group: 'com.vaadin', module: 'vaadin-sass-compiler')
         }
-        provided(vaadinThemes)
-        // provided(group: 'com.vaadin', name: 'vaadin-themes', version: vaadinVersion)
+
         /* Vaadin addons */
         compile(group: 'com.haulmont.thirdparty', name: 'appletintegration', version: '1.2.10')
         compile(group: 'com.haulmont.thirdparty', name: 'popupbutton', version: '2.5.2.cuba.3')
-        compile(group: 'org.vaadin.addons', name: 'aceeditor', version: '0.8.11')
+        compile(group: 'com.haulmont.thirdparty', name: 'aceeditor', version: '0.8.15')
 
         provided(servletApi)
 

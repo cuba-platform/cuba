@@ -33,6 +33,8 @@ public class CubaSourceCodeEditor extends AceEditor implements AutoCompleteSuppo
 
         setValidationVisible(false);
         setShowBufferedSourceException(false);
+
+        setFontSize("auto");
     }
 
     @Override

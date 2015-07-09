@@ -15,6 +15,12 @@
       visibility: hidden;
       border-left-width: 1px;
     }
+
+    .ace_text-input,
+    .ace_editor {
+      font-size: $v-font-size;
+      color: $v-font-color;
+    }
   }
 
   .#{$primary-stylename} .ace_focus {
@@ -34,5 +40,13 @@
 
   .aceeditor-suggestpopup-list {
     width: 400px !important;
+  }
+
+  .#{$primary-stylename}-error {
+    @include valo-textfield-error-style;
+  }
+
+  .#{$primary-stylename}-error.#{$primary-stylename}-focus {
+    @include valo-error-focus-style;
   }
 }
