@@ -965,7 +965,7 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     public void showMessageDialog(String title, String message, MessageType messageType) {
-        final com.vaadin.ui.Window vWindow = new com.vaadin.ui.Window(title);
+        final com.vaadin.ui.Window vWindow = new CubaWindow(title);
 
         if (ui.isTestMode()) {
             vWindow.setCubaId("messageDialog");
@@ -1053,7 +1053,7 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     public void showOptionDialog(String title, String message, MessageType messageType, Action[] actions) {
-        final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
+        final com.vaadin.ui.Window window = new CubaWindow(title);
 
         if (ui.isTestMode()) {
             window.setCubaId("optionDialog");
