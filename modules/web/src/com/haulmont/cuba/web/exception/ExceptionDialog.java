@@ -8,21 +8,23 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.EmailService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
+import com.haulmont.cuba.gui.components.AbstractAction;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.DialogAction;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.Connection;
+import com.haulmont.cuba.web.WebWindowManager;
+import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.*;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.Window;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -65,13 +67,9 @@ public class ExceptionDialog extends CubaWindow {
     }
 
     public ExceptionDialog(Throwable throwable, @Nullable String caption, @Nullable String message) {
-        AppUI ui = AppUI.getCurrent();
-        if (ui.isTestMode()) {
-            setId(ui.getTestIdManager().getTestId("exceptionDialog"));
-            setCubaId("exceptionDialog");
-        }
+        final AppUI ui = AppUI.getCurrent();
 
-        setCaption(caption != null ? caption : messages.getMessage(getClass(), "exceptionDialog.caption"));
+        setCaption(caption != null ? caption : messages.getMessage(ExceptionDialog.class, "exceptionDialog.caption"));
 
         ThemeConstants theme = ui.getApp().getThemeConstants();
         setWidth(theme.get("cuba.web.ExceptionDialog.width"));
@@ -98,40 +96,57 @@ public class ExceptionDialog extends CubaWindow {
         buttonsLayout.setWidth("100%");
         mainLayout.addComponent(buttonsLayout);
 
-        HorizontalLayout leftButtonsLayout = new HorizontalLayout();
-        leftButtonsLayout.setSpacing(true);
-        buttonsLayout.addComponent(leftButtonsLayout);
-        buttonsLayout.setComponentAlignment(leftButtonsLayout, Alignment.MIDDLE_LEFT);
-
-        Button closeButton = new CubaButton(messages.getMessage(getClass(), "exceptionDialog.closeBtn"));
+        Button closeButton = new CubaButton(messages.getMessage(ExceptionDialog.class, "exceptionDialog.closeBtn"));
         closeButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 ExceptionDialog.this.close();
             }
         });
-        leftButtonsLayout.addComponent(closeButton);
+        buttonsLayout.addComponent(closeButton);
 
-        showStackTraceButton = new CubaButton(messages.getMessage(getClass(), "exceptionDialog.showStackTrace"));
+        showStackTraceButton = new CubaButton(messages.getMessage(ExceptionDialog.class, "exceptionDialog.showStackTrace"));
         showStackTraceButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 setStackTraceVisible(!isStackTraceVisible);
             }
         });
-        leftButtonsLayout.addComponent(showStackTraceButton);
+        buttonsLayout.addComponent(showStackTraceButton);
 
-        if (!StringUtils.isBlank(clientConfig.getSupportEmail()) && userSessionSource.getUserSession() != null) {
-            final Button reportButton = new CubaButton(messages.getMessage(getClass(), "exceptionDialog.reportBtn"));
-            reportButton.addClickListener(new Button.ClickListener() {
+        Label spacer = new Label();
+        buttonsLayout.addComponent(spacer);
+        buttonsLayout.setExpandRatio(spacer, 1);
+
+        if (userSessionSource.getUserSession() != null) {
+            if (!StringUtils.isBlank(clientConfig.getSupportEmail())) {
+                final Button reportButton = new CubaButton(messages.getMessage(ExceptionDialog.class, "exceptionDialog.reportBtn"));
+                reportButton.addClickListener(new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(Button.ClickEvent event) {
+                        sendSupportEmail(text, htmlStackTrace);
+                        reportButton.setEnabled(false);
+                    }
+                });
+                buttonsLayout.addComponent(reportButton);
+
+                if (ui.isTestMode()) {
+                    reportButton.setCubaId("reportButton");
+                }
+            }
+
+            Button logoutButton = new CubaButton(messages.getMessage(ExceptionDialog.class, "exceptionDialog.logout"));
+            logoutButton.addClickListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
-                    sendSupportEmail(text, htmlStackTrace);
-                    reportButton.setEnabled(false);
+                    logoutPrompt();
                 }
             });
-            buttonsLayout.addComponent(reportButton);
-            buttonsLayout.setComponentAlignment(reportButton, Alignment.MIDDLE_RIGHT);
+            buttonsLayout.addComponent(logoutButton);
+
+            if (ui.isTestMode()) {
+                logoutButton.setCubaId("logoutButton");
+            }
         }
 
         VerticalLayout scrollContent = new VerticalLayout();
@@ -142,7 +157,7 @@ public class ExceptionDialog extends CubaWindow {
         stackTraceScrollablePanel.setHeight("100%");
         stackTraceScrollablePanel.setContent(scrollContent);
 
-        final Label stackTraceLabel = new Label();
+        Label stackTraceLabel = new Label();
         stackTraceLabel.setContentMode(ContentMode.HTML);
 
         stackTraceLabel.setValue(htmlStackTrace);
@@ -152,6 +167,15 @@ public class ExceptionDialog extends CubaWindow {
 
         setContent(mainLayout);
         setResizable(false);
+
+        if (ui.isTestMode()) {
+            setId(ui.getTestIdManager().getTestId("exceptionDialog"));
+            setCubaId("exceptionDialog");
+
+            closeButton.setCubaId("closeButton");
+            showStackTraceButton.setCubaId("showStackTraceButton");
+            stackTraceLabel.setCubaId("stackTraceLabel");
+        }
     }
 
     protected String getStackTrace(Throwable throwable) {
@@ -171,6 +195,7 @@ public class ExceptionDialog extends CubaWindow {
         if (throwable instanceof RemoteException) {
             RemoteException re = (RemoteException) throwable;
             for (int i = re.getCauses().size() - 1; i >= 0; i--) {
+                //noinspection ThrowableResultOfMethodCallIgnored
                 if (re.getCauses().get(i).getThrowable() != null) {
                     return re.getCauses().get(i).getThrowable();
                 }
@@ -186,9 +211,9 @@ public class ExceptionDialog extends CubaWindow {
             if (!re.getCauses().isEmpty()) {
                 RemoteException.Cause cause = re.getCauses().get(re.getCauses().size() - 1);
                 //noinspection ThrowableResultOfMethodCallIgnored
-                if (cause.getThrowable() != null)
+                if (cause.getThrowable() != null) {
                     rootCause = cause.getThrowable();
-                else {
+                } else {
                     // root cause is not supported by client
                     String className = cause.getClassName();
                     if (className != null && className.indexOf('.') > 0) {
@@ -201,8 +226,9 @@ public class ExceptionDialog extends CubaWindow {
 
         if (msg.length() == 0) {
             msg.append(rootCause.getClass().getSimpleName());
-            if (!StringUtils.isBlank(rootCause.getMessage()))
+            if (!StringUtils.isBlank(rootCause.getMessage())) {
                 msg.append(": ").append(rootCause.getMessage());
+            }
 
             if (rootCause instanceof DevelopmentException) {
                 Map<String, Object> params = new LinkedHashMap<>();
@@ -237,7 +263,7 @@ public class ExceptionDialog extends CubaWindow {
 
         ThemeConstants theme = App.getInstance().getThemeConstants();
         if (visible) {
-            showStackTraceButton.setCaption(messages.getMessage(getClass(), "exceptionDialog.hideStackTrace"));
+            showStackTraceButton.setCaption(messages.getMessage(ExceptionDialog.class, "exceptionDialog.hideStackTrace"));
 
             mainLayout.addComponent(stackTraceScrollablePanel);
             mainLayout.setExpandRatio(stackTraceScrollablePanel, 1.0f);
@@ -249,7 +275,7 @@ public class ExceptionDialog extends CubaWindow {
             setResizable(true);
             center();
         } else {
-            showStackTraceButton.setCaption(messages.getMessage(getClass(), "exceptionDialog.showStackTrace"));
+            showStackTraceButton.setCaption(messages.getMessage(ExceptionDialog.class, "exceptionDialog.showStackTrace"));
 
             mainLayout.setHeight(-1, Unit.PIXELS);
             mainLayout.removeComponent(stackTraceScrollablePanel);
@@ -270,6 +296,7 @@ public class ExceptionDialog extends CubaWindow {
             TimeSource timeSource = AppBeans.get(TimeSource.NAME);
             String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(timeSource.currentTimestamp());
 
+            //noinspection StringBufferReplaceableByString
             StringBuilder sb = new StringBuilder("<html><body>");
             sb.append("<p>").append(date).append("</p>");
             sb.append("<p>").append(message.replace("\n", "<br/>")).append("</p>");
@@ -280,15 +307,41 @@ public class ExceptionDialog extends CubaWindow {
                     clientConfig.getSupportEmail(),
                     "[" + clientConfig.getSystemID() + "] [" + user.getLogin() + "] Exception Report",
                     sb.toString());
-            if (user.getEmail() != null)
+            if (user.getEmail() != null) {
                 info.setFrom(user.getEmail());
+            }
 
             EmailService emailService = AppBeans.get(EmailService.NAME);
             emailService.sendEmail(info);
-            Notification.show(messages.getMessage(getClass(), "exceptionDialog.emailSent"));
+            Notification.show(messages.getMessage(ExceptionDialog.class, "exceptionDialog.emailSent"));
         } catch (Throwable e) {
             log.error("Error sending exception report", e);
-            Notification.show(messages.getMessage(getClass(), "exceptionDialog.emailSendingErr"));
+            Notification.show(messages.getMessage(ExceptionDialog.class, "exceptionDialog.emailSendingErr"));
         }
+    }
+
+    protected void logoutPrompt() {
+        App app = AppUI.getCurrent().getApp();
+        final WebWindowManager wm = app.getWindowManager();
+        wm.showOptionDialog(
+                messages.getMessage(ExceptionDialog.class, "exceptionDialog.logoutCaption"),
+                messages.getMessage(ExceptionDialog.class, "exceptionDialog.logoutMessage"),
+                IFrame.MessageType.WARNING,
+                new Action[]{
+                        new AbstractAction(messages.getMessage(WebWindow.class, "closeApplication")) {
+                            @Override
+                            public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                                Connection connection = wm.getApp().getConnection();
+                                connection.logout();
+                            }
+
+                            @Override
+                            public String getIcon() {
+                                return "icons/ok.png";
+                            }
+                        },
+                        new DialogAction(DialogAction.Type.CANCEL)
+                }
+        );
     }
 }
