@@ -27,15 +27,15 @@
                 <row id="joinRow">
                     <label value="msg://joinClause"/>
                     <sourceCodeEditor id="joinClause" datasource="constraint" property="joinClause"
-                                           width="${width}"
-                                           height="theme://cuba.gui.constraint-edit.joinClause.height"/>
+                                      width="${width}"
+                                      height="theme://cuba.gui.constraint-edit.joinClause.height"/>
                     <linkButton icon="font-icon:QUESTION_CIRCLE" invoke="getJoinClauseHelp"/>
                 </row>
                 <row id="whereRow">
                     <label value="msg://whereClause"/>
                     <sourceCodeEditor id="whereClause" datasource="constraint" property="whereClause"
-                                           width="${width}"
-                                           height="theme://cuba.gui.constraint-edit.whereClause.height"/>
+                                      width="${width}" required="true"
+                                      height="theme://cuba.gui.constraint-edit.whereClause.height"/>
                     <linkButton icon="font-icon:QUESTION_CIRCLE" invoke="getWhereClauseHelp"/>
                 </row>
             </rows>
