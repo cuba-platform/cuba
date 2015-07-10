@@ -106,19 +106,8 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
 
     @Override
     public void addJoinAsIs(String join) {
-        Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(buffer);
-        findAlias(entityMatcher);
-
-        int insertPos = buffer.length();
-
-        Matcher whereMatcher = WHERE_PATTERN.matcher(buffer);
-        if (whereMatcher.find(entityMatcher.end())) {
-            insertPos = whereMatcher.start() - 1;
-        } else {
-            Matcher lastClauseMatcher = LAST_CLAUSE_PATTERN.matcher(buffer);
-            if (lastClauseMatcher.find(entityMatcher.end()))
-                insertPos = lastClauseMatcher.start() - 1;
-        }
+        Matcher matcher = findReturnedEntityDeclaration();
+        int insertPos = matcher.end();
 
         buffer.insert(insertPos, " ");
         insertPos++;
@@ -351,6 +340,30 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         if (StringUtils.isBlank(alias))
             error("Unable to find entity alias");
         return alias;
+    }
+
+    private Matcher findReturnedEntityDeclaration() {
+        Matcher firstAliasMatcher = QUERY_START_PATTERN.matcher(buffer);
+        String firstAlias = null;
+        if (firstAliasMatcher.find()) {
+            firstAlias = firstAliasMatcher.group(QS_ALIAS);
+        }
+
+        Matcher entityMatcher = ENTITY_PATTERN.matcher(buffer);
+        String alias = null;
+        while (entityMatcher.find()) {
+            String matchedAlias = entityMatcher.group(EP_ALIAS);
+            if (matchedAlias.equalsIgnoreCase(firstAlias)) {
+                alias = matchedAlias;
+                break;
+            }
+        }
+
+        if (StringUtils.isBlank(alias)) {
+            error("Unable to find entity alias");
+        }
+
+        return entityMatcher;
     }
 
     private void error(String message) {
