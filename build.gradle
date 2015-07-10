@@ -412,9 +412,7 @@ configure(webModule) {
 
     task deploy(dependsOn: assemble, type: CubaDeployment) {
         appName = 'cuba'
-        appJars('cuba-global', 'cuba-client', 'cuba-gui', 'cuba-web', 'cuba-web-auth',
-                'vaadin-server', 'vaadin-shared-deps', 'vaadin-shared', 'vaadin-themes',
-                'aceeditor', 'popupbutton', 'appletintegration')
+        appJars('cuba-global', 'cuba-client', 'cuba-gui', 'cuba-web', 'cuba-web-auth')
     }
 
     deploy << {
