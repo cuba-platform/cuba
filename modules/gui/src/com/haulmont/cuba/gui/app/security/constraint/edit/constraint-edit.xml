@@ -23,20 +23,21 @@
                     <label value="msg://entityName" align="MIDDLE_LEFT"/>
                     <lookupField id="entityName" datasource="constraint" property="entityName" required="true"
                                  width="${width}"/>
+                    <label value=""/>
                 </row>
                 <row id="joinRow">
-                    <label value="msg://joinClause"/>
+                    <label value="msg://joinClause" align="TOP_LEFT"/>
                     <sourceCodeEditor id="joinClause" datasource="constraint" property="joinClause"
                                       width="${width}"
                                       height="theme://cuba.gui.constraint-edit.joinClause.height"/>
-                    <linkButton icon="font-icon:QUESTION_CIRCLE" invoke="getJoinClauseHelp"/>
+                    <linkButton icon="icons/question-white.png" invoke="getJoinClauseHelp"/>
                 </row>
                 <row id="whereRow">
-                    <label value="msg://whereClause"/>
+                    <label value="msg://whereClause" align="TOP_LEFT"/>
                     <sourceCodeEditor id="whereClause" datasource="constraint" property="whereClause"
                                       width="${width}" required="true"
                                       height="theme://cuba.gui.constraint-edit.whereClause.height"/>
-                    <linkButton icon="font-icon:QUESTION_CIRCLE" invoke="getWhereClauseHelp"/>
+                    <linkButton icon="icons/question-white.png" invoke="getWhereClauseHelp"/>
                 </row>
             </rows>
         </grid>

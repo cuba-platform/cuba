@@ -19,33 +19,38 @@
                 <row>
                     <label id="hiddenLabel" value="msg://hidden" align="MIDDLE_LEFT"/>
                     <checkBox id="hidden"/>
+                    <label value=""/>
                 </row>
                 <row>
                     <label id="requiredLabel" value="msg://required" align="MIDDLE_LEFT"/>
                     <checkBox id="required"/>
+                    <label value=""/>
                 </row>
                 <row>
                     <label id="widthLabel" value="msg://width" align="MIDDLE_LEFT"/>
                     <lookupField id="width" width="theme://cuba.gui.filterEditor.widthLookup.width"/>
+                    <label value=""/>
                 </row>
                 <row>
                     <label id="defaultValueLayoutLabel" htmlEnabled="true" value="msg://defaultValue" align="MIDDLE_LEFT"/>
                     <hbox id="defaultValueLayout" width="100%"/>
+                    <label value=""/>
                 </row>
                 <row>
                     <label id="nameLab" value="msg://CustomConditionFrame.name" align="MIDDLE_LEFT"/>
                     <textField id="nameField" width="theme://cuba.gui.customConditionFrame.field.width" required="true" requiredMessage="msg://CustomConditionFrame.fillName"/>
+                    <label value=""/>
                 </row>
                 <row>
                     <label value="msg://CustomConditionFrame.join"/>
                     <sourceCodeEditor id="joinField" height="theme://cuba.gui.customConditionFrame.joinField.height" width="theme://cuba.gui.customConditionFrame.field.width"/>
-                    <linkButton icon="font-icon:QUESTION_CIRCLE" invoke="getJoinClauseHelp"/>
+                    <linkButton icon="icons/question-white.png" invoke="getJoinClauseHelp"/>
                 </row>
                 <row>
                     <label value="msg://CustomConditionFrame.where"/>
                     <sourceCodeEditor id="whereField" height="theme://cuba.gui.customConditionFrame.whereField.height" width="theme://cuba.gui.customConditionFrame.field.width"
                                       required="true" requiredMessage="msg://CustomConditionFrame.fillWhere"/>
-                    <linkButton icon="font-icon:QUESTION_CIRCLE" invoke="getWhereClauseHelp"/>
+                    <linkButton icon="icons/question-white.png" invoke="getWhereClauseHelp"/>
                 </row>
                 <row>
                     <label value="msg://CustomConditionFrame.type" align="MIDDLE_LEFT"/>
@@ -53,19 +58,22 @@
                         <lookupField id="typeSelect" required="true" requiredMessage="msg://CustomConditionFrame.fillType"/>
                         <checkBox id="inExprCb" caption="msg://CustomConditionFrame.inExpr" align="MIDDLE_LEFT"/>
                     </hbox>
+                    <label value=""/>
                 </row>
                 <row>
                     <label id="entityLab" value="msg://CustomConditionFrame.entity" align="MIDDLE_LEFT"/>
                     <lookupField id="entitySelect" width="theme://cuba.gui.customConditionFrame.field.width" requiredMessage="msg://CustomConditionFrame.fillEntity"/>
+                    <label value=""/>
                 </row>
                 <row>
                     <label id="paramWhereLab" value="msg://CustomConditionFrame.entityParamWhere"/>
                     <sourceCodeEditor id="entityParamWhereField" height="theme://cuba.gui.customConditionFrame.entityParamWhereField.height" width="theme://cuba.gui.customConditionFrame.field.width"/>
-                    <linkButton icon="font-icon:QUESTION_CIRCLE" invoke="getParamWhereClauseHelp"/>
+                    <linkButton icon="icons/question-white.png" invoke="getParamWhereClauseHelp"/>
                 </row>
                 <row>
                     <label id="paramViewLab" value="msg://CustomConditionFrame.entityParamView" align="MIDDLE_LEFT"/>
                     <textField id="entityParamViewField" width="theme://cuba.gui.customConditionFrame.field.width"/>
+                    <label value=""/>
                 </row>
             </rows>
         </grid>
