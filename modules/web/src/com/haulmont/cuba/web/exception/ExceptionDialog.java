@@ -19,9 +19,11 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.Connection;
 import com.haulmont.cuba.web.WebWindowManager;
+import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
+import com.vaadin.server.Page;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.*;
@@ -134,20 +136,16 @@ public class ExceptionDialog extends CubaWindow {
                     reportButton.setCubaId("reportButton");
                 }
             }
-
-            Button logoutButton = new CubaButton(messages.getMessage(ExceptionDialog.class, "exceptionDialog.logout"));
-            logoutButton.addClickListener(new Button.ClickListener() {
-                @Override
-                public void buttonClick(Button.ClickEvent event) {
-                    logoutPrompt();
-                }
-            });
-            buttonsLayout.addComponent(logoutButton);
-
-            if (ui.isTestMode()) {
-                logoutButton.setCubaId("logoutButton");
-            }
         }
+
+        Button logoutButton = new CubaButton(messages.getMessage(ExceptionDialog.class, "exceptionDialog.logout"));
+        logoutButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                logoutPrompt();
+            }
+        });
+        buttonsLayout.addComponent(logoutButton);
 
         VerticalLayout scrollContent = new VerticalLayout();
         scrollContent.setSizeUndefined();
@@ -175,6 +173,7 @@ public class ExceptionDialog extends CubaWindow {
             closeButton.setCubaId("closeButton");
             showStackTraceButton.setCubaId("showStackTraceButton");
             stackTraceLabel.setCubaId("stackTraceLabel");
+            logoutButton.setCubaId("logoutButton");
         }
     }
 
@@ -331,8 +330,7 @@ public class ExceptionDialog extends CubaWindow {
                         new AbstractAction(messages.getMessage(WebWindow.class, "closeApplication")) {
                             @Override
                             public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                                Connection connection = wm.getApp().getConnection();
-                                connection.logout();
+                                forceLogout();
                             }
 
                             @Override
@@ -343,5 +341,23 @@ public class ExceptionDialog extends CubaWindow {
                         new DialogAction(DialogAction.Type.CANCEL)
                 }
         );
+    }
+
+    protected void forceLogout() {
+        App app = AppUI.getCurrent().getApp();
+        final WebWindowManager wm = app.getWindowManager();
+        try {
+            Connection connection = wm.getApp().getConnection();
+            if (connection.isConnected()) {
+                connection.logout();
+            }
+        } catch (Exception e) {
+            log.warn("Exception on forced logout", e);
+        } finally {
+            // always restart UI
+            String url = ControllerUtils.getLocationWithoutParams() + "?restartApp";
+
+            Page.getCurrent().open(url, "_self");
+        }
     }
 }
