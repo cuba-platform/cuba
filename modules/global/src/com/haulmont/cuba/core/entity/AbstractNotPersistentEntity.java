@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UuidProvider;
 import com.haulmont.cuba.core.sys.CubaEnhanced;
+import com.haulmont.cuba.core.sys.CubaEnhancingDisabled;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.UUID;
@@ -22,7 +23,7 @@ import java.util.UUID;
  * @version $Id$
  */
 @com.haulmont.chile.core.annotations.MetaClass(name = "AbstractNotPersistentEntity")
-public abstract class AbstractNotPersistentEntity extends AbstractInstance implements Entity<UUID>, CubaEnhanced {
+public abstract class AbstractNotPersistentEntity extends AbstractInstance implements Entity<UUID>, CubaEnhancingDisabled {
 
     private static final long serialVersionUID = -2846020822531467401L;
 
