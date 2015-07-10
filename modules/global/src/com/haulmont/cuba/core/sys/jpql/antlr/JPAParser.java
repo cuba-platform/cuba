@@ -13531,4 +13531,8 @@ public class JPAParser extends Parser {
     public static final BitSet FOLLOW_entity_expression_in_synpred115_JPA2548 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_all_or_any_expression_in_synpred115_JPA2552 = new BitSet(new long[]{0x0000000000000002L});
 
+    @Override
+    public void emitErrorMessage(String msg) {
+        //do nothing
+    }
 }

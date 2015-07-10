@@ -3855,6 +3855,9 @@ public class JPALexer extends Lexer {
             throw nvae;
         }
     }
- 
 
+    @Override
+    public void emitErrorMessage(String msg) {
+        //do nothing
+    }
 }

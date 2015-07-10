@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.core.sys.jpql;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -37,6 +38,11 @@ public class EntityPathTest {
         assertEquals("p", path.topEntityVariableName);
         assertEquals("na", path.lastEntityFieldPattern);
         assertArrayEquals(new String[]{"team", "owner"}, path.traversedFields);
+
+        path = EntityPath.parseEntityPath(".");
+        Assert.assertNull(path.topEntityVariableName);
+        assertEquals(null, path.lastEntityFieldPattern);
+        assertArrayEquals(new String[0], path.traversedFields);
     }
 
 }
