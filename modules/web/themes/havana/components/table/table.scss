@@ -151,7 +151,13 @@
 
     .#{$primary-stylename}-row:hover,
     .#{$primary-stylename}-row-odd:hover {
-      background-color: $cuba-table-row-hover-background-color;
+      // In IE, if We change background then outline disappear
+      .v-sa & {
+        background-color: $cuba-table-row-hover-background-color;
+      }
+      .v-ff & {
+        background-color: $cuba-table-row-hover-background-color;
+      }
       .on-hover-visible-layout {
         visibility: visible;
       }
@@ -172,10 +178,17 @@
     .#{$primary-stylename}-row-odd.v-selected,
     .#{$primary-stylename}-caption-row.v-selected {
       background-color: $cuba-table-row-selection-background-color;
+      outline-color: transparent;
 
       .#{$primary-stylename}-cell-content {
         color: $cuba-table-text-color;
       }
+    }
+
+    .#{$primary-stylename}-focus {
+      $outline-width: 1px;
+      outline: $outline-width solid lighten($cuba-field-focused-border-color, 20%);
+      outline-offset: -$outline-width;
     }
 
     .#{$primary-stylename}-focus .#{$primary-stylename}-cell-content {

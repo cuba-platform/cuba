@@ -69,7 +69,12 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     protected VScrollTableBody.VScrollTableRow getNextRowToFocus(VScrollTableBody.VScrollTableRow currentRow, int offset) {
         // Support select first N rows by Shift+Click #PL-3267
         if (focusedRow == currentRow && !focusedRow.isSelected()) {
-            return focusedRow;
+            if (currentRow instanceof CubaScrollTableBody.CubaScrollTableRow) {
+                CubaScrollTableBody.CubaScrollTableRow row = (CubaScrollTableBody.CubaScrollTableRow) currentRow;
+                if (row.isSelectable()) {
+                    return focusedRow;
+                }
+            }
         }
 
         return super.getNextRowToFocus(currentRow, offset);
@@ -431,6 +436,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
         protected class CubaScrollTableRow extends VScrollTableRow {
 
             protected String currentColumnKey = null;
+            protected boolean selectable = true;
 
             public CubaScrollTableRow(UIDL uidl, char[] aligns) {
                 super(uidl, aligns);
@@ -663,6 +669,21 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
                 if (immediate || clickEventSent) {
                     client.sendPendingVariableChanges();
                 }
+            }
+
+            @Override
+            public void toggleSelection() {
+                if (selectable) {
+                    super.toggleSelection();
+                }
+            }
+
+            public boolean isSelectable() {
+                return selectable;
+            }
+
+            public void setSelectable(boolean selectable) {
+                this.selectable = selectable;
             }
         }
     }

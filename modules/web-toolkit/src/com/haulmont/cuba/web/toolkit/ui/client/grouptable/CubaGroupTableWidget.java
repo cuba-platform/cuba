@@ -15,6 +15,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.TableAggregationRow;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaScrollTableWidget;
 import com.vaadin.client.*;
+import com.vaadin.client.ui.VScrollTable;
 import com.vaadin.shared.ui.table.TableConstants;
 
 import java.util.HashSet;
@@ -264,6 +265,44 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
         };
     }
 
+    @Override
+    protected boolean handleNavigation(int keycode, boolean ctrl, boolean shift) {
+        if (focusedRow instanceof CubaGroupTableBody.CubaGroupTableGroupRow) {
+            CubaGroupTableBody.CubaGroupTableGroupRow groupRow = (CubaGroupTableBody.CubaGroupTableGroupRow) focusedRow;
+
+            if (keycode == getNavigationLeftKey()) {
+                if (groupRow.expanded) {
+                    client.updateVariable(paintableId, "collapse", groupRow.getGroupKey(), true);
+                }
+                return true;
+            }
+            if (keycode == getNavigationRightKey()) {
+                if (!groupRow.expanded) {
+                    client.updateVariable(paintableId, "expand", groupRow.getGroupKey(), true);
+                }
+                return true;
+            }
+        }
+        return super.handleNavigation(keycode, ctrl, shift);
+    }
+
+    public CubaGroupTableBody.CubaGroupTableGroupRow getRenderedGroupRowByKey(String key) {
+        if (scrollBody != null) {
+            final Iterator<Widget> it = scrollBody.iterator();
+            CubaGroupTableBody.CubaGroupTableGroupRow row;
+            while (it.hasNext()) {
+                Widget widget = it.next();
+                if (widget instanceof CubaGroupTableBody.CubaGroupTableGroupRow) {
+                    row = (CubaGroupTableBody.CubaGroupTableGroupRow) widget;
+                    if (row.getGroupKey().equals(key)) {
+                        return row;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     protected class GroupTableHead extends CubaScrollTableHead {
         public GroupTableHead() {
             availableCells.put(GROUP_DIVIDER_COLUMN_KEY, new GroupDividerHeaderCell());
@@ -352,6 +391,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
 
             public CubaGroupTableGroupRow(UIDL uidl, char[] aligns) {
                 super(uidl, aligns);
+                selectable = false;
             }
 
             @Override
