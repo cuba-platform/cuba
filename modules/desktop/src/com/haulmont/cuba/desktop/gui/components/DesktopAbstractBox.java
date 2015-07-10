@@ -5,8 +5,6 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.google.common.base.Predicates;
-import com.google.common.collect.Iterables;
 import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
@@ -236,6 +234,10 @@ public abstract class DesktopAbstractBox
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
+                    if (expandedComponent != null) {
+                        updateComponentInternal(expandedComponent);
+                    }
+
                     impl.revalidate();
                     impl.repaint();
 
@@ -249,6 +251,14 @@ public abstract class DesktopAbstractBox
 
     @Override
     public void updateComponent(Component child) {
+        updateComponentInternal(child);
+
+        requestRepaint();
+
+        requestContainerUpdate();
+    }
+
+    protected void updateComponentInternal(Component child) {
         JComponent composition;
         if (wrappers.containsKey(child)) {
             composition = wrappers.get(child).getFirst();
@@ -265,10 +275,6 @@ public abstract class DesktopAbstractBox
             }
             adapterForCaption.updateConstraints(caption, adapterForCaption.getCaptionConstraints(child));
         }
-
-        requestRepaint();
-
-        requestContainerUpdate();
     }
 
     @SuppressWarnings("unchecked")
