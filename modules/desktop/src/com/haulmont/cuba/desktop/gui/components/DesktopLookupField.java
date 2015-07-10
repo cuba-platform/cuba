@@ -29,10 +29,7 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
+import java.awt.event.*;
 import java.util.List;
 import java.util.Map;
 
@@ -159,6 +156,22 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
         DesktopComponentsHelper.adjustSize(textField);
 
         textField.setMinimumSize(new Dimension(comboBox.getMinimumSize().width, textField.getPreferredSize().height));
+
+        initClearShortcut();
+    }
+
+    protected void initClearShortcut() {
+        JComponent editor = (JComponent) comboBox.getEditor().getEditorComponent();
+        KeyStroke clearKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, InputEvent.SHIFT_DOWN_MASK, false);
+        editor.getInputMap(JComponent.WHEN_FOCUSED).put(clearKeyStroke, "clearShortcut");
+        editor.getActionMap().put("clearShortcut", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!isRequired()) {
+                    setValue(null);
+                }
+            }
+        });
     }
 
     protected void restorePreviousItemText() {
@@ -482,6 +495,8 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
         } finally {
             settingValue = false;
         }
+
+        comboBox.hidePopup();
     }
 
     @SuppressWarnings("unchecked")
