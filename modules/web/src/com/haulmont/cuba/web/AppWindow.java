@@ -4,7 +4,16 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.app.core.dev.LayoutAnalyzer;
+import com.haulmont.cuba.gui.app.core.dev.LayoutTip;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -12,15 +21,17 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.web.app.UserSettingsTools;
-import com.haulmont.cuba.web.toolkit.ui.CubaClientManager;
-import com.haulmont.cuba.web.toolkit.ui.CubaFileDownloader;
-import com.haulmont.cuba.web.toolkit.ui.CubaHistoryControl;
-import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
+import com.haulmont.cuba.web.gui.components.mainwindow.WebAppWorkArea;
+import com.haulmont.cuba.web.toolkit.ui.*;
+import com.vaadin.event.LayoutEvents;
 import com.vaadin.server.Extension;
+import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vaadin.peter.contextmenu.ContextMenu;
 
 import java.util.*;
 
@@ -52,7 +63,6 @@ public class AppWindow extends UIView implements CubaHistoryControl.HistoryBackH
 
     protected CubaTimer workerTimer;
 
-    protected GlobalConfig globalConfig;
     protected WebConfig webConfig;
 
     protected Window.MainWindow mainWindow;
@@ -68,12 +78,63 @@ public class AppWindow extends UIView implements CubaHistoryControl.HistoryBackH
         this.windowManager = createWindowManager();
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
-        globalConfig = configuration.getConfig(GlobalConfig.class);
         webConfig = configuration.getConfig(WebConfig.class);
 
         setSizeFull();
 
         initInternalComponents();
+
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+        if (clientConfig.getLayoutAnalyzerEnabled()) {
+            final ContextMenu contextMenu = new ContextMenu();
+            contextMenu.setOpenAutomatically(true);
+            ContextMenu.ContextMenuItem analyzeLayout = contextMenu.addItem(messages.getMainMessage("actions.analyzeLayout"));
+            analyzeLayout.addItemClickListener(new ContextMenu.ContextMenuItemClickListener() {
+                @Override
+                public void contextMenuItemClicked(ContextMenu.ContextMenuItemClickEvent event) {
+                    Window window = getMainWindow();
+                    if (window != null) {
+                        LayoutAnalyzer analyzer = new LayoutAnalyzer();
+                        List<LayoutTip> tipsList = analyzer.analyze(window);
+
+                        if (tipsList.isEmpty()) {
+                            window.showNotification("No layout problems found", IFrame.NotificationType.HUMANIZED);
+                        } else {
+                            window.openWindow("layoutAnalyzer", WindowManager.OpenType.DIALOG, ParamsMap.of("tipsList", tipsList));
+                        }
+                    }
+                }
+            });
+            contextMenu.setAsContextMenuOf(this);
+
+            addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
+                @Override
+                public void layoutClick(LayoutEvents.LayoutClickEvent event) {
+                    if (event.getButton() == MouseEventDetails.MouseButton.RIGHT) {
+                        Component targetComponent = event.getClickedComponent();
+
+                        if (targetComponent != null) {
+                            if (getMainWindow().getWorkArea() != null) {
+                                WebAppWorkArea workArea = (WebAppWorkArea) getMainWindow().getWorkArea();
+                                CubaTabSheet tabbedWindowContainer = workArea.getTabbedWindowContainer();
+                                VerticalLayout singleWindowContainer = workArea.getSingleWindowContainer();
+
+                                Component parent = targetComponent.getParent();
+                                while (parent != null) {
+                                    if (parent == tabbedWindowContainer
+                                            || parent == singleWindowContainer) {
+                                        return;
+                                    }
+                                    parent = parent.getParent();
+                                }
+                            }
+
+                            contextMenu.open(event.getClientX(), event.getClientY());
+                        }
+                    }
+                }
+            });
+        }
     }
 
     @Override

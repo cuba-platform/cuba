@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.*;
+import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -224,6 +225,13 @@ public abstract class ComponentsHelper {
                         path + id + "." :
                         path;
                 __walkComponents(((com.haulmont.cuba.gui.components.Component.Container) component), visitor, p);
+            } else if (component instanceof AppWorkArea) {
+                AppWorkArea workArea = (AppWorkArea) component;
+                if (workArea.getState() == AppWorkArea.State.INITIAL_LAYOUT) {
+                    VBoxLayout initialLayout = workArea.getInitialLayout();
+
+                    __walkComponents(initialLayout, visitor, path);
+                }
             }
         }
     }

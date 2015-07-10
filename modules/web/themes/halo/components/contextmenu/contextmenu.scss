@@ -24,3 +24,32 @@
     }
   }
 }
+
+// styles for context-menu add-on
+@mixin halo-contextmenu-addon($primary-stylename: v-context-menu) {
+  .#{$primary-stylename}-container {
+    @include valo-selection-overlay-style;
+  }
+
+  .#{$primary-stylename}-item-basic {
+    @include box-defaults;
+    @include valo-button-borderless-style;
+    @include valo-selection-item-style;
+    height: $v-selection-item-height;
+    cursor: pointer;
+
+    text-decoration: none;
+    text-align: left;
+
+    &:focus {
+      @include valo-selection-item-selected-style;
+    }
+
+    outline: 0;
+  }
+
+//  .#{$primary-stylename}-item-basic-icon-container,
+//  .#{$primary-stylename}-item-basic-text {
+//    display: inline-block;
+//  }
+}

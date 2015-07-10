@@ -10,9 +10,11 @@
 
     <!-- Inherit DefaultWidgetSet -->
     <inherits name="com.vaadin.DefaultWidgetSet"/>
+    <!-- Add-ons -->
     <inherits name="org.vaadin.aceeditor.AceEditorWidgetSet"/>
     <inherits name="org.vaadin.applet.AppletintegrationWidgetset"/>
     <inherits name="org.vaadin.hene.popupbutton.widgetset.PopupbuttonWidgetset"/>
+    <inherits name="org.vaadin.peter.contextmenu.ContextmenuWidgetset"/>
 
     <replace-with class="com.haulmont.cuba.web.toolkit.ui.client.tooltip.CubaTooltip">
         <when-type-is class="com.vaadin.client.VTooltip"/>

@@ -5,6 +5,7 @@
 
 // Version: $Id$
 
+// default vaadin context menu
 @mixin havana-contextmenu($primary-stylename: v-contextmenu) {
   .#{$primary-stylename} {
     font-family: $cuba-havana-fonts;
@@ -33,6 +34,7 @@
   }
 }
 
+// custom cuba context menu with normal buttons
 @mixin havana-cuba-contextmenu($primary-stylename: cuba-context-menu) {
   .#{$primary-stylename}-container {
     background: $cuba-contextmenu-background-color;
@@ -46,18 +48,18 @@
       width: 100%;
       border: 1px solid transparent;
       padding: 0 2px;
+    }
 
-      .v-button-wrap {
-        text-align: left;
-        margin-top: 0px;
+    .v-button-wrap {
+      text-align: left;
+      margin-top: 0px;
+    }
 
-        .v-button-caption {
-          vertical-align: text-top;
-          color: #000;
-          padding: 1px 3px;
-          text-decoration: none;
-        }
-      }
+    .v-button-caption {
+      vertical-align: text-top;
+      color: #000;
+      padding: 1px 3px;
+      text-decoration: none;
     }
 
     .v-button:hover {
@@ -79,5 +81,41 @@
     .v-button-link:focus {
       border: 1px solid transparent;
     }
+  }
+}
+
+// styles for context-menu add-on
+@mixin havana-contextmenu-addon($primary-stylename: v-context-menu) {
+  .#{$primary-stylename}-container {
+    font-family: $cuba-havana-fonts;
+    font-size: 0;
+
+    color: $cuba-contextmenu-font-color;
+
+    background: $cuba-contextmenu-background-color;
+    border: 1px solid $cuba-field-focused-border-color;
+
+    .popupContent {
+      padding: 3px;
+    }
+  }
+
+  .#{$primary-stylename}-item-basic {
+    @include box-defaults;
+    cursor: pointer;
+    font-size: 12px;
+
+    border: 1px solid transparent;
+    padding: 3px 7px;
+
+    &:focus {
+      outline: 0;
+      background: $cuba-field-selection-color;
+      color: white;
+    }
+  }
+
+  .#{$primary-stylename}-item-basic-text {
+    @include box-defaults;
   }
 }
