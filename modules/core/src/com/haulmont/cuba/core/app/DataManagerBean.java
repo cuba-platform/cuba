@@ -157,13 +157,12 @@ public class DataManagerBean implements DataManager {
             resultList = getResultList(context, query, ensureDistinct);
 
             // Fetch if StoreCache is enabled or there are lazy properties in the view
-            if (context.getView() != null && (dataCacheAPI.isStoreCacheEnabled()
-                    || context.getView().hasLazyProperties()
-                    || hasEmbeddedProperties(context.getView()))) { // todo EL: fetch for embedded too because FetchGroups don’t work inside Embedded properties
-                for (Entity entity : resultList) {
-                    em.fetch(entity, context.getView());
-                }
-            }
+//            if (context.getView() != null && (dataCacheAPI.isStoreCacheEnabled()
+//                    || context.getView().hasLazyProperties()) {
+//                for (Entity entity : resultList) {
+//                    em.fetch(entity, context.getView());
+//                }
+//            }
 
             // Fetch dynamic attributes
             if (context.getView() != null
@@ -178,18 +177,6 @@ public class DataManagerBean implements DataManager {
         }
 
         return resultList;
-    }
-
-    protected boolean hasEmbeddedProperties(View view) {
-        MetaClass metaClass = metadata.getClassNN(view.getEntityClass());
-        for (ViewProperty property : view.getProperties()) {
-            MetaProperty metaProperty = metaClass.getPropertyNN(property.getName());
-            if (metadata.getTools().isEmbedded(metaProperty))
-                return true;
-            if (property.getView() != null && hasEmbeddedProperties(property.getView()))
-                return true;
-        }
-        return false;
     }
 
     @Override

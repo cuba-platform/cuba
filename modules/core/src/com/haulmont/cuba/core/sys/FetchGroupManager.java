@@ -135,7 +135,7 @@ public class FetchGroupManager {
             if (metadataTools.isPersistent(metaProperty)) {
                 FetchGroupField field = createFetchPlanField(entityClass, parentField, propertyName);
                 fetchGroupFields.add(field);
-                if (property.getView() != null && !metadataTools.isEmbedded(metaProperty)) { // todo EL: FetchGroups don’t work inside Embedded properties
+                if (property.getView() != null) {
                     processView(property.getView(), field, fetchGroupFields);
                 }
             }
