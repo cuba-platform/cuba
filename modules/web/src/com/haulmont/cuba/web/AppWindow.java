@@ -119,7 +119,7 @@ public class AppWindow extends UIView implements CubaHistoryControl.HistoryBackH
                                 CubaTabSheet tabbedWindowContainer = workArea.getTabbedWindowContainer();
                                 VerticalLayout singleWindowContainer = workArea.getSingleWindowContainer();
 
-                                Component parent = targetComponent.getParent();
+                                Component parent = targetComponent;
                                 while (parent != null) {
                                     if (parent == tabbedWindowContainer
                                             || parent == singleWindowContainer) {
