@@ -63,6 +63,26 @@ public abstract class DateFieldTest extends AbstractComponentTest {
     }
 
     @Test
+    public void testSetToReadonlyFromValueListener() throws ParseException {
+        final DateField component = factory.createComponent(DateField.NAME);
+
+        assertTrue(component.isEditable());
+
+        component.addListener(new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
+                component.setEditable(false);
+            }
+        });
+
+        Date value = new SimpleDateFormat("dd.MM.yyyy").parse("12.12.2000");
+        component.setValue(value);
+
+        assertEquals(value, component.getValue());
+        assertFalse(component.isEditable());
+    }
+
+    @Test
     public void testDatasource() throws ParseException {
         DateField component = factory.createComponent(DateField.NAME);
 

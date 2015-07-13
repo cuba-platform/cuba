@@ -87,6 +87,25 @@ public abstract class LookupFieldTest extends AbstractComponentTest {
     }
 
     @Test
+    public void testSetToReadonlyFromValueListener() {
+        final LookupField component = factory.createComponent(LookupField.NAME);
+
+        assertTrue(component.isEditable());
+
+        component.setOptionsList(new ArrayList<>(Arrays.asList("One", "Two", "Three")));
+        component.addListener(new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
+                component.setEditable(false);
+            }
+        });
+        component.setValue("One");
+
+        assertEquals("One", component.getValue());
+        assertFalse(component.isEditable());
+    }
+
+    @Test
     public void testDatasource() {
         LookupField component = factory.createComponent(LookupField.NAME);
 

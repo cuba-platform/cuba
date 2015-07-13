@@ -88,6 +88,28 @@ public abstract class PickerFieldTest extends AbstractComponentTest {
     }
 
     @Test
+    public void testSetToReadonlyFromValueListener() {
+        final PickerField component = factory.createComponent(PickerField.NAME);
+
+        component.setMetaClass(metadata.getClass(User.class));
+        assertTrue(component.isEditable());
+
+        component.addListener(new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
+                component.setEditable(false);
+            }
+        });
+
+        User user = new User();
+        user.setLogin("admin");
+        component.setValue(user);
+
+        assertEquals(user, component.getValue());
+        assertFalse(component.isEditable());
+    }
+
+    @Test
     public void testDatasource() {
         PickerField component = factory.createComponent(PickerField.NAME);
 

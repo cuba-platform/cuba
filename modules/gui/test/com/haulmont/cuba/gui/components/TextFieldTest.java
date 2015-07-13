@@ -74,6 +74,25 @@ public abstract class TextFieldTest extends AbstractComponentTest {
     }
 
     @Test
+    public void testSetToReadonlyFromValueListener() {
+        final TextField component = factory.createComponent(TextField.NAME);
+
+        assertTrue(component.isEditable());
+
+        component.addListener(new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
+                component.setEditable(false);
+            }
+        });
+
+        component.setValue("OK");
+
+        assertEquals("OK", component.getValue());
+        assertFalse(component.isEditable());
+    }
+
+    @Test
     public void testDatasource() {
         TextField component = factory.createComponent(TextField.NAME);
 
