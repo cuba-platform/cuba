@@ -12,6 +12,7 @@ import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.TooltipInfo;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.WidgetUtil;
+import com.vaadin.client.ui.VScrollTable;
 import com.vaadin.shared.ui.Connect;
 
 /**
@@ -34,8 +35,16 @@ public class CubaGroupTableConnector extends CubaScrollTableConnector {
             getWidget().updateGroupColumns(null);
         }
 
+        VScrollTable.VScrollTableBody.VScrollTableRow row = getWidget().focusedRow;
+
         super.updateFromUIDL(uidl, client);
 
+        if (row instanceof CubaGroupTableWidget.CubaGroupTableBody.CubaGroupTableGroupRow) {
+            getWidget().setRowFocus(row);
+            if (uidl.hasVariable("selected")) {
+                getWidget().deselectAll();
+            }
+        }
         if (uidl.hasAttribute("focusedGroupRow")) {
             getWidget().setRowFocus(
                     getWidget().getRenderedGroupRowByKey(
