@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.timer;
 
+import com.vaadin.shared.annotations.NoLoadingIndicator;
 import com.vaadin.shared.communication.ServerRpc;
 
 /**
@@ -13,5 +14,6 @@ import com.vaadin.shared.communication.ServerRpc;
  */
 public interface CubaTimerServerRpc extends ServerRpc {
 
+    @NoLoadingIndicator
     void onTimer();
 }
