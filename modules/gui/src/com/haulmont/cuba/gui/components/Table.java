@@ -53,6 +53,12 @@ public interface Table
     void setColumnCaption(Table.Column column, String caption);
 
     /**
+     * Assign description for column in runtime.
+     */
+    void setColumnDescription(String columnId, String description);
+    void setColumnDescription(Table.Column column, String description);
+
+    /**
      * Show/hide column in runtime. Hidden column will be available in column control.
      */
     void setColumnCollapsed(String columnId, boolean collapsed);
@@ -452,6 +458,9 @@ public interface Table
         @Override
         public void setDescription(String description) {
             this.description = description;
+            if (owner != null) {
+                owner.setColumnDescription(this, caption);
+            }
         }
 
         public Boolean isEditable() {

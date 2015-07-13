@@ -1505,6 +1505,26 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     }
 
     @Override
+    public void setColumnDescription(String columnId, String description) {
+        Column column = getColumn(columnId);
+        if (column == null) {
+            throw new IllegalStateException(String.format("Column with id '%s' not found", columnId));
+        }
+
+        setColumnDescription(column, description);
+    }
+
+    @Override
+    public void setColumnDescription(Column column, String description) {
+        checkNotNullArgument(column, "column must be non null");
+
+        if (!StringUtils.equals(column.getDescription(), description)) {
+            column.setDescription(description);
+        }
+        // not supported for desktop
+    }
+
+    @Override
     public void setColumnCollapsed(String columnId, boolean collapsed) {
         Column column = getColumn(columnId);
         if (column == null) {

@@ -63,6 +63,9 @@ public interface CubaEnhancedTable extends AggregationContainer {
     boolean getCustomPopupAutoClose();
     void setCustomPopupAutoClose(boolean popupAutoClose);
 
+    String getColumnDescription(Object columnId);
+    void setColumnDescription(Object columnId, String description);
+
     interface ColumnCollapseListener {
         void columnCollapsed(Object columnId, boolean collapsed);
     }

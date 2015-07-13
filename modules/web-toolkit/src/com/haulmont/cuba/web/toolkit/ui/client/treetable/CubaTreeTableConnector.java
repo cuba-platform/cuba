@@ -6,6 +6,10 @@
 package com.haulmont.cuba.web.toolkit.ui.client.treetable;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.DomEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
 import com.haulmont.cuba.web.toolkit.ui.CubaTreeTable;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.TableAggregationRow;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableClientRpc;
@@ -21,12 +25,16 @@ import com.vaadin.shared.ui.Connect;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import static com.haulmont.cuba.web.toolkit.ui.client.Tools.findCurrentOrParentTd;
+
 /**
  * @author artamonov
  * @version $Id$
  */
 @Connect(CubaTreeTable.class)
 public class CubaTreeTableConnector extends TreeTableConnector {
+
+    protected HandlerRegistration tooltipHandlerRegistration;
 
     public CubaTreeTableConnector() {
         registerRpc(CubaTableClientRpc.class, new CubaTableClientRpc() {
@@ -116,6 +124,23 @@ public class CubaTreeTableConnector extends TreeTableConnector {
 
     @Override
     public TooltipInfo getTooltipInfo(Element element) {
+        if (getState().columnDescriptions != null) {
+            Element targetHeaderElement = findCurrentOrParentTd(element);
+            if (targetHeaderElement != null) {
+                // if column has description
+                int childIndex = DOM.getChildIndex(targetHeaderElement.getParentElement(), targetHeaderElement);
+
+                String columnKey = getWidget().tHead.getHeaderCell(childIndex).getColKey();
+
+                if (columnKey != null) {
+                    String columnDescription = getState().columnDescriptions.get(columnKey);
+                    if (columnDescription != null && !columnDescription.isEmpty()) {
+                        return new TooltipInfo(columnDescription);
+                    }
+                }
+            }
+        }
+
         if (element != getWidget().getElement()) {
             Object node = WidgetUtil.findWidget(
                     element,
@@ -183,5 +208,29 @@ public class CubaTreeTableConnector extends TreeTableConnector {
                 getRpcProxy(CubaTableServerRpc.class).onClick(columnKey, String.valueOf(rowKey));
             }
         };
+        tooltipHandlerRegistration = Event.addNativePreviewHandler(new Event.NativePreviewHandler() {
+            @Override
+            public void onPreviewNativeEvent(Event.NativePreviewEvent event) {
+                if (event.getTypeInt() != Event.ONMOUSEMOVE
+                        || !Element.is(event.getNativeEvent().getEventTarget())) {
+                    return;
+                }
+
+                if (Element.as(event.getNativeEvent().getEventTarget())
+                        .getClassName().contains("v-table-caption-container")) {
+                    DomEvent.fireNativeEvent(event.getNativeEvent(),
+                            getWidget());
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onUnregister() {
+        if (tooltipHandlerRegistration != null) {
+            tooltipHandlerRegistration.removeHandler();
+            tooltipHandlerRegistration = null;
+        }
+        super.onUnregister();
     }
 }

@@ -9,6 +9,8 @@ import com.vaadin.shared.Connector;
 import com.vaadin.shared.annotations.NoLayout;
 import com.vaadin.shared.ui.table.TableState;
 
+import java.util.Map;
+
 /**
  * @author artamonov
  * @version $Id$
@@ -33,7 +35,11 @@ public class CubaTableState extends TableState {
     @NoLayout
     public Connector customPopup;
 
+    @NoLayout
     public boolean customPopupAutoClose = false;
 
     public String[] clickableColumnKeys;
+
+    @NoLayout
+    public Map<String, String> columnDescriptions;
 }

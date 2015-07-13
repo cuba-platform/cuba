@@ -137,6 +137,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         checkNotNullArgument(column, "Column must be non null");
 
         component.addContainerProperty(column.getId(), column.getType(), null);
+        if (StringUtils.isNotBlank(column.getDescription())) {
+            component.setColumnDescription(column.getId(), column.getDescription());
+        }
+
         columns.put(column.getId(), column);
         columnsOrder.add(column);
         if (column.getWidth() != null) {
@@ -1457,6 +1461,26 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
+    public void setColumnDescription(String columnId, String description) {
+        Column column = getColumn(columnId);
+        if (column == null) {
+            throw new IllegalStateException(String.format("Column with id '%s' not found", columnId));
+        }
+
+        setColumnDescription(column, description);
+    }
+
+    @Override
+    public void setColumnDescription(Column column, String description) {
+        checkNotNullArgument(column, "column must be non null");
+
+        if (!StringUtils.equals(column.getDescription(), description)) {
+            column.setDescription(description);
+        }
+        component.setColumnDescription(column.getId(), description);
+    }
+
+    @Override
     public void setColumnCollapsed(String columnId, boolean collapsed) {
         Column column = getColumn(columnId);
         if (column == null) {
@@ -1975,9 +1999,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             if (columnComponent instanceof Field) {
                 Field cubaField = (Field) columnComponent;
 
-                if (columnConf.getDescription() != null) {
-                    cubaField.setDescription(columnConf.getDescription());
-                }
                 if (requiredColumns != null && requiredColumns.containsKey(columnConf)) {
                     cubaField.setRequired(true);
                     cubaField.setRequiredMessage(requiredColumns.get(columnConf));

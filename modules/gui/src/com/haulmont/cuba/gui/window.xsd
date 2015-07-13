@@ -914,7 +914,7 @@
 
         <xs:attributeGroup ref="requiresId"/>
         <xs:attributeGroup ref="hasWidthProp"/>
-        <xs:attributeGroup ref="hasCaptionProp"/>
+        <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasVisibility"/>
 
         <xs:attribute name="collapsed" type="xs:boolean"/>

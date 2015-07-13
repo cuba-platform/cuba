@@ -123,4 +123,18 @@ public class Tools {
                 || event.getCtrlKey()
                 || event.getMetaKey());
     }
+
+    public static Element findCurrentOrParentTd(Element target) {
+        if (target == null) {
+            return null;
+        }
+
+        // Iterate upwards until we find the TR element
+        Element element = target;
+        while (element != null
+                && !"td".equalsIgnoreCase(element.getTagName())) {
+            element = element.getParentElement();
+        }
+        return element;
+    }
 }

@@ -52,6 +52,8 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
 
     protected Map<Object, CellClickListener> cellClickListeners; // lazily initialized map
 
+    protected Map<Object, String> columnDescriptions; // lazily initialized map
+
     public CubaTable() {
         registerRpc(new CubaTableServerRpc() {
             @Override
@@ -512,28 +514,34 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
             cellClickListeners = new HashMap<>();
         }
         cellClickListeners.put(propertyId, clickListener);
-
-        updateClickableColumnKeys();
     }
 
     @Override
     public void removeClickListener(Object propertyId) {
         if (cellClickListeners != null) {
             cellClickListeners.remove(propertyId);
-
-            updateClickableColumnKeys();
         }
     }
 
-    protected void updateClickableColumnKeys() {
-        String[] clickableColumnKeys = new String[cellClickListeners.size()];
-        int i = 0;
-        for (Object columnId : cellClickListeners.keySet()) {
-            clickableColumnKeys[i] = columnIdMap.key(columnId);
-            i++;
-        }
+    @Override
+    public void beforeClientResponse(boolean initial) {
+        super.beforeClientResponse(initial);
 
-        getState().clickableColumnKeys = clickableColumnKeys;
+        updateClickableColumnKeys();
+        updateColumnDescriptions();
+    }
+
+    protected void updateClickableColumnKeys() {
+        if (cellClickListeners != null) {
+            String[] clickableColumnKeys = new String[cellClickListeners.size()];
+            int i = 0;
+            for (Object columnId : cellClickListeners.keySet()) {
+                clickableColumnKeys[i] = columnIdMap.key(columnId);
+                i++;
+            }
+
+            getState().clickableColumnKeys = clickableColumnKeys;
+        }
     }
 
     @Override
@@ -557,6 +565,36 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
     public void setCustomPopupAutoClose(boolean popupAutoClose) {
         if (getState(false).customPopupAutoClose != popupAutoClose) {
             getState().customPopupAutoClose = popupAutoClose;
+        }
+    }
+
+    @Override
+    public void setColumnDescription(Object columnId, String description) {
+        if (description != null) {
+            if (columnDescriptions == null) {
+                columnDescriptions = new HashMap<>();
+            }
+            columnDescriptions.put(columnId, description);
+        } else if (columnDescriptions != null) {
+            columnDescriptions.remove(columnId);
+        }
+    }
+
+    @Override
+    public String getColumnDescription(Object columnId) {
+        if (columnDescriptions != null) {
+            return columnDescriptions.get(columnId);
+        }
+        return null;
+    }
+
+    protected void updateColumnDescriptions() {
+        if (columnDescriptions != null) {
+            Map<String, String> columnDescriptionsByKey = new HashMap<>();
+            for (Map.Entry<Object, String> columnEntry : columnDescriptions.entrySet()) {
+                columnDescriptionsByKey.put(columnIdMap.key(columnEntry.getKey()), columnEntry.getValue());
+            }
+            getState().columnDescriptions = columnDescriptionsByKey;
         }
     }
 }
