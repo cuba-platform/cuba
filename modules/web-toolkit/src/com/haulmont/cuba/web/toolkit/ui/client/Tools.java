@@ -116,4 +116,11 @@ public class Tools {
         overlay.setPopupPosition(left, top);
         overlay.setVisible(true);
     }
+
+    public static boolean isAnyModifierKeyPressed(Event event) {
+        return (event.getShiftKey()
+                || event.getAltKey()
+                || event.getCtrlKey()
+                || event.getMetaKey());
+    }
 }

@@ -2293,6 +2293,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                                     if ((value != null && value.length() > column.getMaxTextLength() + MAX_TEXT_LENGTH_GAP)
                                             || isMultiLineCell) {
                                         style = "cuba-table-cell-textcut";
+                                    } else {
+                                        // use special marker stylename
+                                        style = "cuba-table-clickable-text";
                                     }
                                 }
                             }
