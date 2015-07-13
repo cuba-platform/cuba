@@ -121,7 +121,8 @@ public class CubaScrollTableConnector extends TableConnector {
     public TooltipInfo getTooltipInfo(Element element) {
         if (getState().columnDescriptions != null) {
             Element targetHeaderElement = findCurrentOrParentTd(element);
-            if (targetHeaderElement != null) {
+            if (targetHeaderElement != null
+                    && targetHeaderElement.hasClassName("v-table-header-cell")) {
                 // if column has description
                 int childIndex = DOM.getChildIndex(targetHeaderElement.getParentElement(), targetHeaderElement);
 
