@@ -151,15 +151,30 @@
 
     .#{$primary-stylename}-row:hover,
     .#{$primary-stylename}-row-odd:hover {
-      // In IE, if We change background then outline disappear
-      .v-sa & {
-        background-color: $cuba-table-row-hover-background-color;
-      }
-      .v-ff & {
-        background-color: $cuba-table-row-hover-background-color;
-      }
+      background-color: $cuba-table-row-hover-background-color;
       .on-hover-visible-layout {
         visibility: visible;
+      }
+    }
+
+    // In IE, if We change background then outline disappear, so disable hover color
+    .#{$primary-stylename}-row:hover {
+      .v-ie & {
+        background-color: $cuba-table-row-background-color;
+      }
+    }
+
+    .#{$primary-stylename}-row-odd:hover {
+      .v-ie & {
+        background-color: $cuba-table-row-odd-background-color;
+      }
+    }
+
+    .#{$primary-stylename}-row.v-selected:hover,
+    .#{$primary-stylename}-row-odd.v-selected:hover,
+    .#{$primary-stylename}-caption-row.v-selected:hover {
+      .v-ie & {
+        background-color: $cuba-table-row-selection-background-color;
       }
     }
 
