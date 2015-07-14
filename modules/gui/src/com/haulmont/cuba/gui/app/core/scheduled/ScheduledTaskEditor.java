@@ -33,6 +33,9 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
     protected LookupField beanNameField;
 
     @Inject
+    protected BoxLayout beanNameBox;
+
+    @Inject
     protected LookupField methodNameField;
 
     @Inject
@@ -40,6 +43,9 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
 
     @Inject
     protected OptionsGroup definedByField;
+
+    @Inject
+    protected BoxLayout definedByBox;
 
     @Inject
     protected TextField classNameField;
@@ -74,14 +80,14 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
     @Inject
     protected OptionsGroup schedulingTypeField;
 
-    //List holds an information about methods of selected bean
-    List<MethodInfo> availableMethods = new ArrayList<>();
-
     @Inject
     protected TextField cronField;
 
     @Inject
     protected TextField periodField;
+
+    @Inject
+    protected BoxLayout periodBox;
 
     @Inject
     protected DateField startDateField;
@@ -99,13 +105,16 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
     protected ThemeConstants themeConstants;
 
     @Inject
-    private LinkButton cronHelpButton;
+    protected LinkButton cronHelpButton;
 
     @Inject
-    private BoxLayout cronHbox;
+    protected BoxLayout cronHbox;
 
     @Inject
-    private BoxLayout methodNameHbox;
+    protected BoxLayout methodNameHbox;
+
+    //List holds an information about methods of selected bean
+    protected List<MethodInfo> availableMethods = new ArrayList<>();
 
     private void show(Component... components) {
         for (Component component : components) {
@@ -142,7 +151,7 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
                 if (ScheduledTaskDefinedBy.BEAN == value) {
                     clear(classNameField, scriptNameField);
                     hideAll();
-                    show(beanNameField, beanNameLabel, methodNameField, methodNameLabel, methodNameHbox, methodParamsBox);
+                    show(beanNameBox, beanNameLabel, methodNameField, methodNameLabel, methodNameHbox, methodParamsBox);
                 } else if (ScheduledTaskDefinedBy.CLASS == value) {
                     clear(beanNameField, methodNameField, scriptNameField);
                     hideAll();
@@ -158,7 +167,7 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
             }
 
             private void hideAll() {
-                hide(classNameField, classNameLabel, scriptNameField, scriptNameLabel, beanNameField, beanNameLabel,
+                hide(classNameField, classNameLabel, scriptNameField, scriptNameLabel, beanNameBox, beanNameLabel,
                         methodNameField, methodNameLabel, methodNameHbox, methodParamsBox);
             }
         });
@@ -206,13 +215,13 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
 
     private void setSchedulingTypeField(SchedulingType value) {
         if (SchedulingType.CRON == value) {
-            hide(periodField, periodLabel, startDateField, startDateLabel);
+            hide(periodBox, periodLabel, startDateField, startDateLabel);
             clear(periodField, startDateField);
             show(cronField, cronLabel, cronHelpButton, cronHbox);
         } else {
             hide(cronField, cronLabel, cronHelpButton, cronHbox);
             clear(cronField);
-            show(periodField, periodLabel, startDateField, startDateLabel);
+            show(periodBox, periodLabel, startDateField, startDateLabel);
         }
     }
 
