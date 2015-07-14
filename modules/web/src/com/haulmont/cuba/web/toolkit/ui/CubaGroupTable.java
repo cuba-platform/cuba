@@ -81,6 +81,8 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
         if (variables.containsKey("columnorder") && !variables.containsKey("groupedcolumns")) {
             newGroupProperties = new Object[0];
         } else if (variables.containsKey("groupedcolumns")) {
+            focus();
+
             final Object[] ids = (Object[]) variables.get("groupedcolumns");
             final Object[] groupProperties = new Object[ids.length];
             for (int i = 0; i < ids.length; i++) {
@@ -168,6 +170,8 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
         boolean needsResetPageBuffer = false;
 
         if (variables.containsKey("expand")) {
+            focus();
+
             Object groupId = groupIdMap.get((String) variables.get("expand"));
             expand(groupId, false);
             clientNeedsContentRefresh = true;
@@ -175,6 +179,8 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
         }
 
         if (variables.containsKey("collapse")) {
+            focus();
+
             Object groupId = groupIdMap.get((String) variables.get("collapse"));
             collapse(groupId, false);
             clientNeedsContentRefresh = true;

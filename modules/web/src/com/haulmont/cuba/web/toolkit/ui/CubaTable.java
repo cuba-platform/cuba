@@ -18,6 +18,7 @@ import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.event.ActionManager;
 import com.vaadin.event.ShortcutListener;
+import com.vaadin.server.Page;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
@@ -193,6 +194,11 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
 
     @Override
     public void changeVariables(Object source, Map<String, Object> variables) {
+
+        if (Page.getCurrent().getWebBrowser().isIE()) {
+            focus();
+        }
+
         super.changeVariables(source, variables);
 
         if (shortcutActionManager != null) {
