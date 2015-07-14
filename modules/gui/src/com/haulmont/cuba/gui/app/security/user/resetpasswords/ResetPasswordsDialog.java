@@ -7,9 +7,12 @@ package com.haulmont.cuba.gui.app.security.user.resetpasswords;
 
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.CheckBox;
+import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Map;
 
@@ -25,23 +28,50 @@ public class ResetPasswordsDialog extends AbstractWindow {
     @Inject
     protected CheckBox generatePasswordsCheckBox;
 
+    @Inject
+    protected Label expectedResultLabel;
+
+    @Inject
+    protected ThemeConstants theme;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        getDialogParams().setResizable(false).setWidthAuto();
+        getDialogParams()
+                .setWidth(theme.getInt("cuba.gui.ResetPasswordsDialog.width"))
+                .setResizable(false);
 
         generatePasswordsCheckBox.addListener(new ValueListener<CheckBox>() {
             @Override
             public void valueChanged(CheckBox source, String property, Object prevValue, Object value) {
                 if (Boolean.TRUE.equals(generatePasswordsCheckBox.getValue())) {
                     sendEmailsCheckBox.setEnabled(true);
+
+                    updateExpectedResultLabel();
                 } else {
                     sendEmailsCheckBox.setValue(false);
                     sendEmailsCheckBox.setEnabled(false);
                 }
+
+                expectedResultLabel.setVisible(getGeneratePasswords());
             }
         });
+
+        sendEmailsCheckBox.addListener(new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
+                updateExpectedResultLabel();
+            }
+        });
+    }
+
+    protected void updateExpectedResultLabel() {
+        if (Boolean.TRUE.equals(sendEmailsCheckBox.getValue())) {
+            expectedResultLabel.setValue(getMessage("sendPasswords"));
+        } else {
+            expectedResultLabel.setValue(getMessage("printPasswords"));
+        }
     }
 
     @SuppressWarnings("unused")
