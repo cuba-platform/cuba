@@ -268,7 +268,7 @@ public class AbstractViewRepository implements ViewRepository {
                     name, metaClass.getName()));
         }
 
-        View view = new View(javaClass, name, false);
+        View view = new View(javaClass, name, true); // standard views include system attributes since v6 to avoid problems with assigning them automatically on saving
         if (View.LOCAL.equals(name)) {
             for (MetaProperty property : metaClass.getProperties()) {
                 if (!property.getRange().isClass()

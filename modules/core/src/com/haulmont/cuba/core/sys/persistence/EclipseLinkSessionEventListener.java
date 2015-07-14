@@ -9,12 +9,14 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.SoftDelete;
+import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.sys.UuidConverter;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEventListener;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
@@ -58,6 +60,7 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
 
             List<DatabaseMapping> mappings = desc.getMappings();
             for (DatabaseMapping mapping : mappings) {
+                // support UUID
                 String attributeName = mapping.getAttributeName();
                 MetaProperty metaProperty = metaClass.getPropertyNN(attributeName);
                 if (metaProperty.getRange().isDatatype()) {
@@ -73,6 +76,13 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
                             setDatabaseFieldParameters(session, field);
                         }
                     }
+                }
+                // embedded attributes
+                if (mapping instanceof AggregateObjectMapping) {
+                    EmbeddedParameters embeddedParameters =
+                            metaProperty.getAnnotatedElement().getAnnotation(EmbeddedParameters.class);
+                    if (embeddedParameters != null && !embeddedParameters.nullAllowed())
+                        ((AggregateObjectMapping) mapping).setIsNullAllowed(false);
                 }
             }
         }
