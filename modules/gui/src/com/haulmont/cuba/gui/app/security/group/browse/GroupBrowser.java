@@ -91,7 +91,16 @@ public class GroupBrowser extends AbstractWindow {
         createAction.setCaption(getMessage("action.create"));
 
         createAction.setOpenType(WindowManager.OpenType.DIALOG);
+
+        groupEditAction = new EditAction(groupsTree) {
+            @Override
+            protected void afterCommit(Entity entity) {
+                groupsTree.expandTree();
+            }
+        };
         groupEditAction.setOpenType(WindowManager.OpenType.DIALOG);
+        groupEditAction.setWindowParams(ParamsMap.of("edit", true));
+        groupsTree.addAction(groupEditAction);
 
         groupCreateButton.addAction(createAction);
         groupCreateButton.addAction(groupCopyAction);

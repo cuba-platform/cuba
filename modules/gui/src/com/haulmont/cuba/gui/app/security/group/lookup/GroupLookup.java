@@ -39,6 +39,10 @@ public class GroupLookup extends AbstractLookup {
         groupsDs.refresh();
         groups.expandTree();
 
+        if (params.containsKey("exclude")) {
+            groupsDs.excludeItem((Group) params.get("exclude"));
+        }
+
         Collection<UUID> rootItemIds = groupsDs.getRootItemIds();
         if ((rootItemIds != null) && (!rootItemIds.isEmpty())) {
             UUID firstId = rootItemIds.iterator().next();

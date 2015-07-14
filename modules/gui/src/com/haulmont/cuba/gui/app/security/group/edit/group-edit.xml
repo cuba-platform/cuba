@@ -16,6 +16,8 @@
 
     <layout spacing="true">
         <fieldGroup id="fieldGroup" datasource="group">
+            <field id="parent" visible="false"
+                   width="theme://cuba.gui.group-edit.parentField.width"/>
             <field id="name" required="true" requiredMessage="msg://nameMsg"
                    width="theme://cuba.gui.group-edit.nameField.width"/>
         </fieldGroup>
