@@ -195,10 +195,6 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
     @Override
     public void changeVariables(Object source, Map<String, Object> variables) {
 
-        if (Page.getCurrent().getWebBrowser().isIE()) {
-            focus();
-        }
-
         super.changeVariables(source, variables);
 
         if (shortcutActionManager != null) {
