@@ -40,15 +40,9 @@ public class CubaGroupTableConnector extends CubaScrollTableConnector {
         super.updateFromUIDL(uidl, client);
 
         if (row instanceof CubaGroupTableWidget.CubaGroupTableBody.CubaGroupTableGroupRow) {
-            getWidget().setRowFocus(row);
-            if (uidl.hasVariable("selected")) {
-                getWidget().deselectAll();
-            }
-        }
-        if (uidl.hasAttribute("focusedGroupRow")) {
             getWidget().setRowFocus(
                     getWidget().getRenderedGroupRowByKey(
-                            uidl.getStringAttribute("focusedGroupRow")
+                            ((CubaGroupTableWidget.CubaGroupTableBody.CubaGroupTableGroupRow) row).getGroupKey()
                     )
             );
         }

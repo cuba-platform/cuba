@@ -36,8 +36,6 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
 
     protected boolean requestColumnReorderingAllowed = true;
 
-    protected String focusedGroupRow = null;
-
     @Override
     public void setContainerDataSource(Container newDataSource) {
         if (newDataSource == null) {
@@ -68,10 +66,6 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
                 groupColumns[index++] = columnIdMap.key(groupColumnId);
             }
             target.addVariable(this, "groupColumns", groupColumns);
-            if (focusedGroupRow != null) {
-                target.addAttribute("focusedGroupRow", focusedGroupRow);
-                focusedGroupRow = null;
-            }
         }
     }
 
@@ -175,7 +169,6 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
 
         if (variables.containsKey("expand")) {
             Object groupId = groupIdMap.get((String) variables.get("expand"));
-            focusedGroupRow = groupIdMap.key(groupId);
             expand(groupId, false);
             clientNeedsContentRefresh = true;
             needsResetPageBuffer = true;
@@ -183,7 +176,6 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
 
         if (variables.containsKey("collapse")) {
             Object groupId = groupIdMap.get((String) variables.get("collapse"));
-            focusedGroupRow = groupIdMap.key(groupId);
             collapse(groupId, false);
             clientNeedsContentRefresh = true;
             needsResetPageBuffer = true;

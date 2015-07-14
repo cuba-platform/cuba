@@ -582,6 +582,13 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                                 && targetElement.getPropertyBoolean("__cell")) {
                             scrollBodyPanel.setFocus(true);
                         }
+                        setRowFocus(this);
+
+                        if (!isSingleSelectMode()) {
+                            deselectAll();
+                            sendSelectedRows(false);
+                        }
+
                         handleRowClick(event);
                         break;
                     default:
