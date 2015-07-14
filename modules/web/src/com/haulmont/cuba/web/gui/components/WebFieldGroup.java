@@ -13,7 +13,6 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
@@ -590,9 +589,11 @@ public class WebFieldGroup
             cubaField.setRequiredMessage(message);
         } else {
             com.vaadin.ui.Field f = component.getField(field.getId());
-            f.setRequired(required);
-            if (required) {
-                f.setRequiredError(message);
+            if (f != null) {
+                f.setRequired(required);
+                if (required) {
+                    f.setRequiredError(message);
+                }
             }
         }
     }
@@ -623,12 +624,14 @@ public class WebFieldGroup
     @Override
     public void setEditable(FieldConfig field, boolean editable) {
         Component fieldComponent = fieldComponents.get(field);
-        if (fieldComponent instanceof Field) {
-            Field cubaField = (Field) fieldComponent;
+        if (fieldComponent instanceof Editable) {
+            Editable cubaField = (Editable) fieldComponent;
             cubaField.setEditable(editable);
         } else {
             com.vaadin.ui.Field f = component.getField(field.getId());
-            f.setReadOnly(!editable);
+            if (f != null) {
+                f.setReadOnly(!editable);
+            }
         }
 
         if (editable) {
@@ -665,7 +668,9 @@ public class WebFieldGroup
     @Override
     public void setEnabled(FieldConfig field, boolean enabled) {
         com.vaadin.ui.Field f = component.getField(field.getId());
-        f.setEnabled(enabled);
+        if (f != null) {
+            f.setEnabled(enabled);
+        }
     }
 
     @Override
