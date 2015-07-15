@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityOp;
+import org.apache.commons.lang.BooleanUtils;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -75,7 +76,9 @@ public class EntityInspectorBrowse extends AbstractLookup {
     @Inject
     protected LookupField entitiesLookup;
 
-    protected Button showButton;
+    @Inject
+    protected CheckBox removedRecords;
+
     protected Table entitiesTable;
 
     /**
@@ -104,6 +107,12 @@ public class EntityInspectorBrowse extends AbstractLookup {
         } else {
             entitiesLookup.setOptionsMap(getEntitiesLookupFieldOptions());
             entitiesLookup.addListener(new ValueListener() {
+                @Override
+                public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
+                    showEntities();
+                }
+            });
+            removedRecords.addListener(new ValueListener() {
                 @Override
                 public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
                     showEntities();
@@ -188,6 +197,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
                 .buildCollectionDatasource();
 
         entitiesDs.setLoadDynamicAttributes(true);
+        entitiesDs.setSoftDeletion(BooleanUtils.isFalse(removedRecords.<Boolean>getValue()));
         entitiesDs.setQuery(String.format("select e from %s e", meta.getName()));
 
         entitiesTable.setDatasource(entitiesDs);
