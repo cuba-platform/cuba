@@ -916,7 +916,8 @@ public class EntityInspectorEditor extends AbstractWindow {
                     break;
                 case ASSOCIATION:
                 case COMPOSITION:
-                    View propView = viewRepository.getView(metaProperty.getRange().asClass(), View.LOCAL);
+                    String viewName = metaProperty.getRange().getCardinality().isMany() ? View.LOCAL : View.MINIMAL;
+                    View propView = viewRepository.getView(metaProperty.getRange().asClass(), viewName);
                     //in some cases JPA loads extended entities as instance of base class which leads to ClassCastException
                     //loading property lazy prevents this from happening
                     view.addProperty(metaProperty.getName(), propView, true);
