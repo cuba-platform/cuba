@@ -22,6 +22,7 @@ import java.text.ParseException;
  */
 public class NameBuilderListener<T extends Entity> extends DsListenerAdapter<T> {
 
+    public static final String DEFAULT_NAME_PATTERN = "{FF| }{LL}";
     protected Window window;
     protected FieldGroup fieldGroup;
     protected Datasource datasource;
@@ -74,7 +75,7 @@ public class NameBuilderListener<T extends Entity> extends DsListenerAdapter<T> 
             if (this.pattern == null) {
                 pattern = AppContext.getProperty("cuba.user.fullNamePattern");
                 if (StringUtils.isBlank(pattern))
-                    pattern = "{LL| }{F|. }{M|. }";
+                    pattern = DEFAULT_NAME_PATTERN;
             }
 
             displayedName = UserUtils.formatName(pattern, firstName, lastName, middleName);
