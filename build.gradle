@@ -474,12 +474,24 @@ configure(webToolkitModule) {
 
     task buildWidgetSet(type: CubaWidgetSetBuilding) {
         widgetSetClass = 'com.haulmont.cuba.web.toolkit.ui.WidgetSet'
+        // Strict
+        strict = true
         // Debug flags:
-        // draft = true
-        // compilerArgs = ['-style': 'DETAILED']
+        printCompilerClassPath = false
+        logLevel = 'INFO'
+        // Parallel thread count
+        workers = 2
 
         // Performance and widgetset size:
-        // disableCastChecking = true
+        style = 'OBF' // 'OBF' or 'PRETTY' or 'DETAILED'
+        disableCastChecking = false
+        optimize = 9
+        draft = false
+
+        // Compiler JVM
+        xmx = '-Xmx512m'
+        xss = '-Xss8m'
+        String xxMPS = '-XX:MaxPermSize=256m'
     }
 
     jar {
