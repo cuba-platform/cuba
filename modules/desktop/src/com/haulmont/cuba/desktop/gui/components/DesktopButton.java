@@ -82,6 +82,9 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
                 }
 
                 String description = action.getDescription();
+                if (StringUtils.isEmpty(description) && action.getShortcut() != null) {
+                    description = action.getShortcut().format();
+                }
                 if (!StringUtils.isEmpty(description) && StringUtils.isEmpty(getDescription())) {
                     setDescription(description);
                 }
