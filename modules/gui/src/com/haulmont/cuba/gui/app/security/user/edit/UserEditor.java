@@ -175,6 +175,17 @@ public class UserEditor extends AbstractEditor<User> {
     protected void initNewItem(User item) {
         addDefaultRoles(item);
         item.setLanguage(messages.getTools().localeToString(userSession.getLocale()));
+        initUserGroup(item);
+    }
+
+    protected void initUserGroup(User user) {
+        LoadContext ctx = new LoadContext(Group.class);
+        ctx.setQueryString("select g from sec$Group g");
+        ctx.setView(View.MINIMAL);
+        List<Group> groups = dataSupplier.loadList(ctx);
+        if (groups.size() == 1) {
+            user.setGroup(groups.get(0));
+        }
     }
 
     private void addDefaultRoles(User user) {
