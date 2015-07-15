@@ -121,82 +121,16 @@ public class CubaFoldersPane extends VerticalLayout {
         if (show) {
             Component appFoldersPane = createAppFoldersPane();
             if (appFoldersPane != null) {
-                appFoldersPane.setHeight("100%");
-                appFoldersPane.setWidth("100%");
-                if (isNeedFoldersTitle()) {
-                    appFoldersLabel = new Label(messages.getMainMessage("folders.appFoldersRoot"));
-                    appFoldersLabel.setStyleName("cuba-folders-pane-caption");
-                } else {
-                    appFoldersLabel = null;
-                }
-
-                int period = webConfig.getAppFoldersRefreshPeriodSec() * 1000;
-
-                AppWindow appWindow = App.getInstance().getAppWindow();
-                for (CubaTimer t : appWindow.getTimers()) {
-                    if (t instanceof CubaFoldersPane.FoldersPaneTimer) {
-                        t.stop();
-                    }
-                }
-
-                timer = new FoldersPaneTimer();
-                timer.setRepeating(true);
-                timer.setDelay(period);
-                timer.addTimerListener(createAppFolderUpdater());
-                timer.start();
-
-                appWindow.addTimer(timer);
+                setupAppFoldersPane(appFoldersPane);
+                setupUpdateTimer();
             }
 
             Component searchFoldersPane = createSearchFoldersPane();
             if (searchFoldersPane != null) {
-                searchFoldersPane.setHeight("100%");
-                searchFoldersPane.setWidth("100%");
-                if (isNeedFoldersTitle()) {
-                    searchFoldersLabel = new Label(messages.getMainMessage("folders.searchFoldersRoot"));
-                    searchFoldersLabel.setStyleName("cuba-folders-pane-caption");
-                } else {
-                    searchFoldersLabel = null;
-                }
+                setupSearchFoldersPane(searchFoldersPane);
             }
 
-            if (appFoldersPane != null && searchFoldersPane != null) {
-                vertSplit = new VerticalSplitPanel();
-                vertSplit.setSplitPosition(verticalSplitPos);
-
-                VerticalLayout afLayout = new VerticalLayout();
-                afLayout.setSpacing(true);
-                afLayout.setSizeFull();
-                if (appFoldersLabel != null)
-                    addFoldersLabel(afLayout, appFoldersLabel);
-                afLayout.addComponent(appFoldersPane);
-                afLayout.setExpandRatio(appFoldersPane, 1);
-                vertSplit.setFirstComponent(afLayout);
-
-                VerticalLayout sfLayout = new VerticalLayout();
-                sfLayout.setSpacing(true);
-                sfLayout.setSizeFull();
-                if (searchFoldersLabel != null)
-                    addFoldersLabel(sfLayout, searchFoldersLabel);
-                sfLayout.addComponent(searchFoldersPane);
-                sfLayout.setExpandRatio(searchFoldersPane, 1);
-                vertSplit.setSecondComponent(sfLayout);
-
-                addComponent(vertSplit);
-            } else {
-                if (appFoldersPane != null) {
-                    if (appFoldersLabel != null)
-                        addFoldersLabel(this, appFoldersLabel);
-                    addComponent(appFoldersPane);
-                    setExpandRatio(appFoldersPane, 1);
-                }
-                if (searchFoldersPane != null) {
-                    if (searchFoldersLabel != null)
-                        addFoldersLabel(this, searchFoldersLabel);
-                    addComponent(searchFoldersPane);
-                    setExpandRatio(searchFoldersPane, 1);
-                }
-            }
+            createFoldersPaneLayout(appFoldersPane, searchFoldersPane);
             adjustLayout();
 
             if (getParent() != null)
@@ -223,6 +157,87 @@ public class CubaFoldersPane extends VerticalLayout {
         }
 
         visible = show;
+    }
+
+    protected void createFoldersPaneLayout(Component appFoldersPane, Component searchFoldersPane) {
+        if (appFoldersPane != null && searchFoldersPane != null) {
+            vertSplit = new VerticalSplitPanel();
+            vertSplit.setSplitPosition(verticalSplitPos);
+
+            VerticalLayout afLayout = new VerticalLayout();
+            afLayout.setSpacing(true);
+            afLayout.setSizeFull();
+            if (appFoldersLabel != null)
+                addFoldersLabel(afLayout, appFoldersLabel);
+            afLayout.addComponent(appFoldersPane);
+            afLayout.setExpandRatio(appFoldersPane, 1);
+            vertSplit.setFirstComponent(afLayout);
+
+            VerticalLayout sfLayout = new VerticalLayout();
+            sfLayout.setSpacing(true);
+            sfLayout.setSizeFull();
+            if (searchFoldersLabel != null)
+                addFoldersLabel(sfLayout, searchFoldersLabel);
+            sfLayout.addComponent(searchFoldersPane);
+            sfLayout.setExpandRatio(searchFoldersPane, 1);
+            vertSplit.setSecondComponent(sfLayout);
+
+            addComponent(vertSplit);
+        } else {
+            if (appFoldersPane != null) {
+                if (appFoldersLabel != null)
+                    addFoldersLabel(this, appFoldersLabel);
+                addComponent(appFoldersPane);
+                setExpandRatio(appFoldersPane, 1);
+            }
+            if (searchFoldersPane != null) {
+                if (searchFoldersLabel != null)
+                    addFoldersLabel(this, searchFoldersLabel);
+                addComponent(searchFoldersPane);
+                setExpandRatio(searchFoldersPane, 1);
+            }
+        }
+    }
+
+    protected void setupSearchFoldersPane(Component searchFoldersPane) {
+        searchFoldersPane.setHeight("100%");
+        searchFoldersPane.setWidth("100%");
+        if (isNeedFoldersTitle()) {
+            searchFoldersLabel = new Label(messages.getMainMessage("folders.searchFoldersRoot"));
+            searchFoldersLabel.setStyleName("cuba-folders-pane-caption");
+        } else {
+            searchFoldersLabel = null;
+        }
+    }
+
+    protected void setupUpdateTimer() {
+        int period = webConfig.getAppFoldersRefreshPeriodSec() * 1000;
+
+        AppWindow appWindow = App.getInstance().getAppWindow();
+        for (CubaTimer t : appWindow.getTimers()) {
+            if (t instanceof FoldersPaneTimer) {
+                t.stop();
+            }
+        }
+
+        timer = new FoldersPaneTimer();
+        timer.setRepeating(true);
+        timer.setDelay(period);
+        timer.addTimerListener(createAppFolderUpdater());
+        timer.start();
+
+        appWindow.addTimer(timer);
+    }
+
+    protected void setupAppFoldersPane(Component appFoldersPane) {
+        appFoldersPane.setHeight("100%");
+        appFoldersPane.setWidth("100%");
+        if (isNeedFoldersTitle()) {
+            appFoldersLabel = new Label(messages.getMainMessage("folders.appFoldersRoot"));
+            appFoldersLabel.setStyleName("cuba-folders-pane-caption");
+        } else {
+            appFoldersLabel = null;
+        }
     }
 
     protected void collapseItemInTree(Tree tree, final String foldersCollapse) {
