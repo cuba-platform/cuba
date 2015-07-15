@@ -31,7 +31,7 @@ import java.util.UUID;
  */
 public class DiffTreeDatasource extends AbstractTreeDatasource<EntityPropertyDiff, UUID> {
 
-    private EntityDiff entityDiff;
+    protected EntityDiff entityDiff;
 
     @Override
     protected Tree<EntityPropertyDiff> loadTree(Map params) {
@@ -49,7 +49,7 @@ public class DiffTreeDatasource extends AbstractTreeDatasource<EntityPropertyDif
         return diffTree;
     }
 
-    private Node<EntityPropertyDiff> loadPropertyDiff(EntityPropertyDiff propertyDiff) {
+    protected Node<EntityPropertyDiff> loadPropertyDiff(EntityPropertyDiff propertyDiff) {
         Node<EntityPropertyDiff> diffNode = null;
         if (propertyDiff != null) {
             // check security
