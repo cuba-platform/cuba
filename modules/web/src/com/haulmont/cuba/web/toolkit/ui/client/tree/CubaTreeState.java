@@ -19,5 +19,8 @@ public class CubaTreeState extends TreeState {
     public boolean doubleClickMode = false;
 
     @NoLayout
+    public boolean nodeCaptionsAsHtml = false;
+
+    @NoLayout
     public Connector contextMenu;
 }

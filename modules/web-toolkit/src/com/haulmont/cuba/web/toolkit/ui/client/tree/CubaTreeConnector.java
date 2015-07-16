@@ -57,6 +57,8 @@ public class CubaTreeConnector extends TreeConnector implements HasComponentsCon
 
         getWidget().setDoubleClickHandling(false);
 
+        getWidget().nodeCaptionsAsHtml = uidl.getBooleanAttribute("nodeCaptionsAsHtml");
+
         // We may have actions attached to this tree
         if (uidl.getChildCount() > 1) {
             final int cnt = uidl.getChildCount();
@@ -78,6 +80,9 @@ public class CubaTreeConnector extends TreeConnector implements HasComponentsCon
 
         if (stateChangeEvent.hasPropertyChanged("doubleClickMode")) {
             getWidget().doubleClickMode = getState().doubleClickMode;
+        }
+        if (stateChangeEvent.hasPropertyChanged("nodeCaptionsAsHtml")) {
+            getWidget().nodeCaptionsAsHtml = getState().nodeCaptionsAsHtml;
         }
         if (stateChangeEvent.hasPropertyChanged("contextMenu")) {
             if (getState().contextMenu != null) {

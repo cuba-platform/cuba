@@ -67,6 +67,16 @@ public class CubaTree extends Tree implements HasComponents {
         return getState(false).doubleClickMode;
     }
 
+    public void setNodeCaptionsAsHtml(boolean nodeCaptionsAsHtml) {
+        if (getState(false).nodeCaptionsAsHtml != nodeCaptionsAsHtml) {
+            getState().nodeCaptionsAsHtml = nodeCaptionsAsHtml;
+        }
+    }
+
+    public boolean isNodeCaptionsAsHtml() {
+        return getState(false).nodeCaptionsAsHtml;
+    }
+
     @Override
     public void changeVariables(Object source, Map<String, Object> variables) {
         super.changeVariables(source, variables);
@@ -99,6 +109,14 @@ public class CubaTree extends Tree implements HasComponents {
         if (shortcutActionManager != null) {
             shortcutActionManager.paintActions(null, target);
         }
+    }
+
+    @Override
+    public void paintContent(PaintTarget target) throws PaintException {
+        if (isNodeCaptionsAsHtml()) {
+            target.addAttribute("nodeCaptionsAsHtml", true);
+        }
+        super.paintContent(target);
     }
 
     @Override

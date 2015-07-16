@@ -37,6 +37,8 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
 
     protected boolean doubleClickMode = false;
 
+    protected boolean nodeCaptionsAsHtml = false;
+
     protected VOverlay customContextMenuPopup;
     protected Widget customContextMenu;
 
@@ -168,6 +170,17 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
                 return super.isNeedToSendDoubleClick(eventType, sendClickEventNow);
             } else {
                 return doubleClickHandling;
+            }
+        }
+
+        @Override
+        public void setText(String text) {
+            if (!nodeCaptionsAsHtml) {
+                super.setText(text);
+            } else {
+                if (nodeCaptionSpan != null) {
+                    nodeCaptionSpan.setInnerHTML(text);
+                }
             }
         }
     }
