@@ -145,6 +145,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected Component controlsLayoutGap;
 
     protected String caption;
+    protected int maxResults = -1;
     protected boolean useMaxResults;
     protected boolean textMaxResults;
     protected Boolean manualApplyRequired;
@@ -153,6 +154,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected boolean filtersLookupListenerEnabled = true;
     protected boolean filtersPopupDisplayed = false;
     protected boolean filtersLookupDisplayed = false;
+    protected boolean maxResultsDisplayed = false;
     protected boolean editable;
     protected FilterMode filterMode;
     protected boolean filterSavingPossible = true;
@@ -275,7 +277,9 @@ public class FilterDelegateImpl implements FilterDelegate {
         createFilterActions();
 
         createMaxResultsLayout();
-        controlsLayout.add(maxResultsLayout);
+        if (maxResultsDisplayed) {
+            controlsLayout.add(maxResultsLayout);
+        }
 
         createFtsSwitch();
         ftsSwitch.setAlignment(Component.Alignment.MIDDLE_RIGHT);
@@ -319,7 +323,9 @@ public class FilterDelegateImpl implements FilterDelegate {
         controlsLayout.expand(gap);
 
         createMaxResultsLayout();
-        controlsLayout.add(maxResultsLayout);
+        if (maxResultsDisplayed) {
+            controlsLayout.add(maxResultsLayout);
+        }
 
         createFtsSwitch();
         ftsSwitch.setAlignment(Component.Alignment.MIDDLE_RIGHT);
@@ -678,13 +684,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                                                      List<Node<AbstractCondition>> nodes,
                                                      Component.Container parentContainer,
                                                      int level) {
-
-        List<Node<AbstractCondition>> visibleConditionNodes = new ArrayList<>();
-        for (Node<AbstractCondition> node : nodes) {
-            AbstractCondition condition = node.getData();
-            if (!condition.getHidden())
-                visibleConditionNodes.add(node);
-        }
+        List<Node<AbstractCondition>> visibleConditionNodes = fetchVisibleNodes(nodes);
 
         if (visibleConditionNodes.isEmpty()) {
             if (level == 0)
@@ -715,28 +715,11 @@ public class FilterDelegateImpl implements FilterDelegate {
             Component paramEditComponentCellContent = null;
             Component groupCellContent = null;
             if (condition.isGroup()) {
-                GroupBoxLayout groupBox = componentsFactory.createComponent(GroupBoxLayout.NAME);
-                groupBox.setWidth("100%");
-                groupBox.setCaption(condition.getLocCaption());
-
-                if (!node.getChildren().isEmpty()) {
-                    recursivelyCreateConditionsLayout(
-                            focusOnConditions && !focusSet, node.getChildren(), groupBox, level++);
-                }
-                groupCellContent = groupBox;
+                groupCellContent = createGroupConditionBox(condition, node, focusOnConditions, focusSet, level);
+                level++;
             } else {
                 if (condition.getParam().getJavaClass() != null) {
-                    ParamEditor paramEditor = new ParamEditor(condition, conditionsRemoveEnabled, isEditable() && userCanEditFilers());
-                    AbstractAction removeConditionAction = new AbstractAction("") {
-                        @Override
-                        public void actionPerform(Component component) {
-                            conditions.removeCondition(condition);
-                            fillConditionsLayout(false);
-                            updateFilterModifiedIndicator();
-                        }
-                    };
-                    removeConditionAction.setVisible(conditionsRemoveEnabled);
-                    paramEditor.setRemoveButtonAction(removeConditionAction);
+                    ParamEditor paramEditor = createParamEditor(condition);
 
                     if (focusOnConditions && !focusSet) {
                         paramEditor.requestFocus();
@@ -801,6 +784,44 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         if (level == 0)
             controlsLayout.setStyleName(getControlsLayoutStyleName());
+    }
+
+    protected List<Node<AbstractCondition>> fetchVisibleNodes(List<Node<AbstractCondition>> nodes) {
+        List<Node<AbstractCondition>> visibleConditionNodes = new ArrayList<>();
+        for (Node<AbstractCondition> node : nodes) {
+            AbstractCondition condition = node.getData();
+            if (!condition.getHidden())
+                visibleConditionNodes.add(node);
+        }
+        return visibleConditionNodes;
+    }
+
+    protected Component createGroupConditionBox(AbstractCondition condition, Node<AbstractCondition> node, boolean focusOnConditions, boolean focusSet, int level) {
+        Component groupCellContent;GroupBoxLayout groupBox = componentsFactory.createComponent(GroupBoxLayout.NAME);
+        groupBox.setWidth("100%");
+        groupBox.setCaption(condition.getLocCaption());
+
+        if (!node.getChildren().isEmpty()) {
+            recursivelyCreateConditionsLayout(
+                    focusOnConditions && !focusSet, node.getChildren(), groupBox, level);
+        }
+        groupCellContent = groupBox;
+        return groupCellContent;
+    }
+
+    protected ParamEditor createParamEditor(final AbstractCondition condition) {
+        ParamEditor paramEditor = new ParamEditor(condition, conditionsRemoveEnabled, isEditable() && userCanEditFilers());
+        AbstractAction removeConditionAction = new AbstractAction("") {
+            @Override
+            public void actionPerform(Component component) {
+                conditions.removeCondition(condition);
+                fillConditionsLayout(false);
+                updateFilterModifiedIndicator();
+            }
+        };
+        removeConditionAction.setVisible(conditionsRemoveEnabled);
+        paramEditor.setRemoveButtonAction(removeConditionAction);
+        return paramEditor;
     }
 
     /**
@@ -1159,19 +1180,29 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected void initMaxResults() {
-        int maxResults = datasource.getMaxResults();
-        if (maxResults == 0 || maxResults == persistenceManager.getMaxFetchUI(datasource.getMetaClass().getName()))
-            maxResults = persistenceManager.getFetchUI(datasource.getMetaClass().getName());
-        if (!textMaxResults) {
-            List<Integer> optionsList = ((LookupField) maxResultsField).getOptionsList();
-            if (!optionsList.contains(maxResults)) {
-                ArrayList<Integer> newOptions = new ArrayList<>(optionsList);
-                newOptions.add(maxResults);
-                Collections.sort(newOptions);
-                ((LookupField) maxResultsField).setOptionsList(newOptions);
-            }
+        int maxResults;
+        if (this.maxResults != -1) {
+            maxResults = this.maxResults;
+        } else {
+            maxResults = datasource.getMaxResults();
         }
-        maxResultsField.setValue(maxResults);
+
+        if (maxResults == 0 || maxResults == persistenceManager.getMaxFetchUI(datasource.getMetaClass().getName())) {
+            maxResults = persistenceManager.getFetchUI(datasource.getMetaClass().getName());
+        }
+
+        if (maxResultsDisplayed) {
+            if (!textMaxResults) {
+                List<Integer> optionsList = ((LookupField) maxResultsField).getOptionsList();
+                if (!optionsList.contains(maxResults)) {
+                    ArrayList<Integer> newOptions = new ArrayList<>(optionsList);
+                    newOptions.add(maxResults);
+                    Collections.sort(newOptions);
+                    ((LookupField) maxResultsField).setOptionsList(newOptions);
+                }
+            }
+            maxResultsField.setValue(maxResults);
+        }
 
         datasource.setMaxResults(maxResults);
     }
@@ -1184,11 +1215,24 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     @Override
+    public int getMaxResults() {
+        return maxResults;
+    }
+
+    @Override
+    public void setMaxResults(int maxResults) {
+        this.maxResults = maxResults;
+        initMaxResults();
+    }
+
+    @Override
     public void setUseMaxResults(boolean useMaxResults) {
         this.useMaxResults = useMaxResults;
 
-        Security security = AppBeans.get(Security.NAME);
-        maxResultsLayout.setVisible(useMaxResults && security.isSpecificPermitted("cuba.gui.filter.maxResults"));
+        if (maxResultsDisplayed) {
+            Security security = AppBeans.get(Security.NAME);
+            maxResultsLayout.setVisible(useMaxResults && security.isSpecificPermitted("cuba.gui.filter.maxResults"));
+        }
     }
 
     @Override
@@ -1200,7 +1244,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     public void setTextMaxResults(boolean textMaxResults) {
         boolean valueChanged = this.textMaxResults != textMaxResults;
         this.textMaxResults = textMaxResults;
-        if (valueChanged) {
+        if (maxResultsDisplayed && valueChanged) {
             maxResultsLayout.remove(maxResultsField);
             maxResultsField = textMaxResults ? maxResultsTextField : maxResultsLookupField;
             maxResultsLayout.add(maxResultsField);
@@ -1290,7 +1334,9 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected void initDatasourceMaxResults() {
-        if (useMaxResults) {
+        if (this.maxResults != -1) {
+            datasource.setMaxResults(maxResults);
+        } else if (maxResultsDisplayed && useMaxResults) {
             Integer maxResults = maxResultsField.getValue();
             if (maxResults != null && maxResults > 0) {
                 datasource.setMaxResults(maxResults);
@@ -2225,6 +2271,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                     fillSettingsBtn(options);
                     return settingsBtn;
                 case "max_results":
+                    maxResultsDisplayed = true;
                     return maxResultsLayout;
                 case "fts_switch":
                     return ftsSwitch;

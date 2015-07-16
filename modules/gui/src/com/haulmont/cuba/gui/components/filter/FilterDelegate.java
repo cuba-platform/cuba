@@ -42,6 +42,10 @@ public interface FilterDelegate {
 
     void setCaption(String caption);
 
+    void setMaxResults(int maxResults);
+
+    int getMaxResults();
+
     void setUseMaxResults(boolean useMaxResults);
 
     boolean getUseMaxResults();

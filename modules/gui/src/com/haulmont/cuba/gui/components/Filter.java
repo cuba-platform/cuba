@@ -40,6 +40,14 @@ public interface Filter extends Component.Margin, Component.BelongToFrame, Compo
     boolean apply(boolean isNewWindow);
 
     /**
+     * Sets rows count restriction. Particularly useful when maxResults field is hidden.
+     * 0 in case of no limits.
+     * @param maxResults restriction on number of rows
+     */
+    void setMaxResults(int maxResults);
+    int getMaxResults();
+
+    /**
      * Whether to show field for rows count restriction.
      * <p>Automatically set to false for {@code HierarchicalDatasource}.
      */

@@ -251,4 +251,14 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     public <T extends Component> T getComponent(String id) {
         return delegate.getComponent(id);
     }
+
+    @Override
+    public int getMaxResults() {
+        return delegate.getMaxResults();
+    }
+
+    @Override
+    public void setMaxResults(int maxResults) {
+        delegate.setMaxResults(maxResults);
+    }
 }
