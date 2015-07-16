@@ -347,6 +347,7 @@ public class CubaFoldersPane extends VerticalLayout {
             return;
 
         List<AppFolder> reloadedFolders = getReloadedFolders();
+        reloadParentFolders(reloadedFolders);
         updateFolders(reloadedFolders);
     }
 
@@ -356,20 +357,33 @@ public class CubaFoldersPane extends VerticalLayout {
         folderUpdateBackgroundTaskWrapper.restart();
     }
 
-    protected Collection<AppFolder> getRecursivelyChildAppFolders(AppFolder parentFolder) {
+    protected void reloadParentFolders(List<AppFolder> reloadedFolders) {
+        for (AppFolder folder : reloadedFolders) {
+            if (StringUtils.isBlank(folder.getQuantityScript())) {
+                if (appFoldersTree.isExpanded(folder)) {
+                    folder.setQuantity(null);
+                    folder.setItemStyle("");
+                } else {
+                    reloadSingleParentFolder(folder, reloadedFolders);
+                }
+            }
+        }
+    }
+
+    protected Collection<AppFolder> getChildFolders(AppFolder parentFolder) {
         Collection<AppFolder> result = new LinkedList<>();
         //noinspection unchecked
         Collection<AppFolder> childFolders = (Collection<AppFolder>) appFoldersTree.getChildren(parentFolder);
         if (childFolders != null) {
             result.addAll(childFolders);
             for (AppFolder folder : childFolders)
-                result.addAll(getRecursivelyChildAppFolders(folder));
+                result.addAll(getChildFolders(folder));
         }
         return result;
     }
 
-    protected void updateQuantityAndItemStyleAppFolder(AppFolder parentFolder, @Nullable List<AppFolder> reloadedFolders) {
-        Collection<AppFolder> childFolders = getRecursivelyChildAppFolders(parentFolder);
+    protected void reloadSingleParentFolder(AppFolder parentFolder, @Nullable List<AppFolder> reloadedFolders) {
+        Collection<AppFolder> childFolders = getChildFolders(parentFolder);
         int sumOfChildQuantity = 0;
         Set<String> childFoldersStyleSet = new HashSet<>();
         for (AppFolder childFolder : childFolders) {
@@ -391,14 +405,7 @@ public class CubaFoldersPane extends VerticalLayout {
         @SuppressWarnings("unchecked")
         List<AppFolder> folders = new ArrayList(appFoldersTree.getItemIds());
         FoldersService service = AppBeans.get(FoldersService.NAME);
-        folders = service.reloadAppFolders(folders);
-
-        for (AppFolder folder : folders) {
-            if (StringUtils.isBlank(folder.getQuantityScript()) && folder.getQuantity() != null)
-                updateQuantityAndItemStyleAppFolder(folder, folders);
-        }
-
-        return folders;
+        return service.reloadAppFolders(folders);
     }
 
     protected void updateFolders(List<AppFolder> reloadedFolders) {
@@ -443,7 +450,7 @@ public class CubaFoldersPane extends VerticalLayout {
             public void nodeCollapse(Tree.CollapseEvent event) {
                 AppFolder folder = (AppFolder) event.getItemId();
                 if (StringUtils.isBlank(folder.getQuantityScript())) {
-                    updateQuantityAndItemStyleAppFolder(folder, null);
+                    reloadSingleParentFolder(folder, null);
                     appFoldersTree.setItemCaption(folder, folder.getCaption());
                 }
             }
@@ -934,6 +941,7 @@ public class CubaFoldersPane extends VerticalLayout {
 
         @Override
         public void done(List<AppFolder> reloadedFolders) {
+            reloadParentFolders(reloadedFolders);
             updateFolders(reloadedFolders);
         }
     }
