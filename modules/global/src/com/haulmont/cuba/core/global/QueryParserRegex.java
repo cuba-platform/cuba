@@ -18,9 +18,9 @@ import java.util.regex.Pattern;
  * @version $Id$
  */
 public class QueryParserRegex implements QueryParser {
-    public static final String QUERY_START_PATTERN_REGEX = "select\\s+([a-z]+[a-z0-9]*)*\\b";
-    public static final Pattern QUERY_START_PATTERN = Pattern.compile(QUERY_START_PATTERN_REGEX);
-    public static final int QS_ALIAS = 1;
+    public static final String QUERY_START_PATTERN_REGEX = "select(\\s+distinct)?\\s+([a-z]+[a-z0-9]*)*\\b";
+    public static final Pattern QUERY_START_PATTERN = Pattern.compile(QUERY_START_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
+    public static final int QS_ALIAS = 2;
 
     public static final String ENTITY_PATTERN_REGEX = "(\\b[_A-Za-z]+\\$[A-Z][_A-Za-z0-9]*)(\\s+as\\b)?\\s+([a-z]+[a-z0-9]*)*\\b";
     public static final Pattern ENTITY_PATTERN = Pattern.compile(ENTITY_PATTERN_REGEX);
