@@ -418,7 +418,7 @@ public class CubaFoldersPane extends VerticalLayout {
                 f.setItemStyle(folder.getItemStyle());
                 f.setQuantity(folder.getQuantity());
             }
-            appFoldersTree.setItemCaption(folder, folder.getCaption());
+            setFolderTreeItemCaption(appFoldersTree, folder);
         }
     }
 
@@ -441,7 +441,7 @@ public class CubaFoldersPane extends VerticalLayout {
                 if (StringUtils.isBlank(folder.getQuantityScript())) {
                     folder.setQuantity(null);
                     folder.setItemStyle(null);
-                    appFoldersTree.setItemCaption(folder, folder.getCaption());
+                    setFolderTreeItemCaption(appFoldersTree, folder);
                 }
             }
         });
@@ -451,7 +451,7 @@ public class CubaFoldersPane extends VerticalLayout {
                 AppFolder folder = (AppFolder) event.getItemId();
                 if (StringUtils.isBlank(folder.getQuantityScript())) {
                     reloadSingleParentFolder(folder, null);
-                    appFoldersTree.setItemCaption(folder, folder.getCaption());
+                    setFolderTreeItemCaption(appFoldersTree, folder);
                 }
             }
         });
@@ -466,6 +466,10 @@ public class CubaFoldersPane extends VerticalLayout {
         }
 
         return appFoldersTree;
+    }
+
+    protected <T extends Folder> void setFolderTreeItemCaption(Tree tree, T folder) {
+        tree.setItemCaption(folder, folder.getCaption());
     }
 
     protected Component createSearchFoldersPane() {
@@ -494,7 +498,7 @@ public class CubaFoldersPane extends VerticalLayout {
         }
         for (Folder folder : folders) {
             tree.addItem(folder);
-            tree.setItemCaption(folder, folder.getCaption());
+            setFolderTreeItemCaption(tree, folder);
             if (webConfig.getShowFolderIcons()) {
                 if (folder instanceof SearchFolder) {
                     if (BooleanUtils.isTrue(((SearchFolder) folder).getIsSet())) {
