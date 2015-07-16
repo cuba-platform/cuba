@@ -23,7 +23,7 @@ import java.util.UUID;
  * @author krivopustov
  * @version $Id$
  */
-public class FileBrowser extends AbstractWindow {
+public class FileBrowser extends AbstractLookup {
 
     @Inject
     protected Table filesTable;

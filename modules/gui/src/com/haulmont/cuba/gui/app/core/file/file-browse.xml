@@ -6,6 +6,7 @@
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
         class="com.haulmont.cuba.gui.app.core.file.FileBrowser"
         caption="msg://browseCaption"
+        lookupComponent="filesTable"
         focusComponent="genericFilter">
 
     <metadataContext>
