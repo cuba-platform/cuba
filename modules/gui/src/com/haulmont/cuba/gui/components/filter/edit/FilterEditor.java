@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.AddConditionHelper;
@@ -92,6 +93,9 @@ public class FilterEditor extends AbstractWindow {
     @Inject
     protected UserSessionSource userSessionSource;
 
+    @Inject
+    protected Companion companion;
+
     protected ConditionsTree conditions;
 
     protected AddConditionHelper addConditionHelper;
@@ -108,6 +112,10 @@ public class FilterEditor extends AbstractWindow {
     protected final List<String> componentsToHideInShortForm = Arrays.asList("hiddenLabel", "hidden",
             "requiredLabel", "required", "widthLabel", "width", "defaultValueLayoutLabel", "defaultValueLayout",
             "captionLabel", "caption");
+
+    public interface Companion {
+        void showComponentName(WindowManager windowManager, String title, String message);
+    }
 
     @Override
     public void init(Map<String, Object> params) {
@@ -352,9 +360,7 @@ public class FilterEditor extends AbstractWindow {
     public void showComponentName() {
         AbstractCondition item = conditionsDs.getItem();
         String message = (item != null && item.getParam() != null) ? item.getParam().getName() : getMessage("conditionIsNotSelected");
-        showMessageDialog(getMessage("showComponentName.title"),
-                message,
-                MessageType.CONFIRMATION);
+        companion.showComponentName(getWindowManager(), getMessage("showComponentName.title"), message);
     }
 
     public FilterEntity getFilterEntity() {

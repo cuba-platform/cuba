@@ -9,6 +9,11 @@
         caption="msg://caption"
         focusComponent="conditionsTree">
 
+    <companions>
+        <web class="com.haulmont.cuba.web.gui.components.filter.edit.WebFilterEditorCompanion"/>
+        <desktop class="com.haulmont.cuba.desktop.gui.components.filter.edit.DesktopFilterEditorCompanion"/>
+    </companions>
+
     <dsContext>
         <collectionDatasource id="conditionsDs"
                               class="com.haulmont.cuba.gui.components.filter.condition.AbstractCondition"
