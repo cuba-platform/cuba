@@ -99,6 +99,30 @@ public class XmlInheritanceProcessor {
             resultElem.addAttribute(attribute.getName(), attribute.getValue());
         }
 
+        String idx = extElem.attributeValue(new QName("index", extNs));
+        if (resultElem != document.getRootElement() && StringUtils.isNotBlank(idx)) {
+            int index = Integer.parseInt(idx);
+
+            Element parent = resultElem.getParent();
+            if (index < 0 || index > parent.elements().size()) {
+                String message = String.format(
+                        "Incorrect extension XML for screen. Could not move existing element %s to position %s",
+                        resultElem.getName(), index);
+
+                throw new DevelopmentException(message,
+                        ParamsMap.of("element", resultElem.getName(), "index", index));
+            }
+
+            int currentIndex = parent.elements().indexOf(resultElem);
+            if (index > currentIndex) {
+                index--;
+            }
+
+            parent.remove(resultElem);
+            //noinspection unchecked
+            parent.elements().add(index, resultElem);
+        }
+
         // add and process elements
         Set<Element> justAdded = new HashSet<>();
         for (Element element : Dom4j.elements(extElem)) {
