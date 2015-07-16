@@ -529,8 +529,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                 Style wrapperStyle = td.getFirstChildElement().getStyle();
                 WidgetUtil.setWidthExcludingPaddingAndBorder(td, totalSpannedWidth, 13, false);
 
-                String tdWidthPx = td.getStyle().getWidth().replace("px", "");
-                int wrapperWidth = Integer.parseInt(tdWidthPx);
+                int wrapperWidth = totalSpannedWidth;
                 if (BrowserInfo.get().isWebkit()
                         || BrowserInfo.get().isOpera10()) {
                             /*
