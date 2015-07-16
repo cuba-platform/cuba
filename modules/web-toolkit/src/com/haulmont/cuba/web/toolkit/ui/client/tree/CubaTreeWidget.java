@@ -6,6 +6,7 @@
 package com.haulmont.cuba.web.toolkit.ui.client.tree;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.FocusEvent;
@@ -182,6 +183,11 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
                     nodeCaptionSpan.setInnerHTML(text);
                 }
             }
+        }
+
+        @Override
+        public boolean isCaptionElement(Element target) {
+            return super.isCaptionElement(target) || nodeCaptionSpan.isOrHasChild(target);
         }
     }
 
