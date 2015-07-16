@@ -368,8 +368,7 @@ public class QueryTransformerRegexTest extends TestCase {
 
     public void testJoinAsIs4() {
         QueryTransformerRegex transformer = new QueryTransformerRegex(
-                "SELECT    distinct  h.level from sec$Constraint u, sec$GroupHierarchy h where h.userGroup = :par",
-                null);
+                "SELECT    distinct  h.level from sec$Constraint u, sec$GroupHierarchy h where h.userGroup = :par");
 
         transformer.addJoinAsIs("join h.parent.constraints c");
         String res = transformer.getResult();
