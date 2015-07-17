@@ -146,7 +146,7 @@ public class DesktopToolTipManager extends MouseAdapter {
         if (!field.isShowing())
             return;
 
-        Point fieldLocation = field.getLocationOnScreen();
+        Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
         Point location = new Point();
 
         GraphicsConfiguration gc;
@@ -160,8 +160,8 @@ public class DesktopToolTipManager extends MouseAdapter {
         sBounds.width -= (screenInsets.left + screenInsets.right);
         sBounds.height -= (screenInsets.top + screenInsets.bottom);
 
-        location.x = fieldLocation.x + 20;
-        location.y = fieldLocation.y + 20;
+        location.x = mouseLocation.x + 15;
+        location.y = mouseLocation.y + 15;
         int x = location.x;
         int y = location.y;
 
