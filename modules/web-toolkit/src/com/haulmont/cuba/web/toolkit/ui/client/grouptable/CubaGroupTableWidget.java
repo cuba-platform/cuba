@@ -142,10 +142,6 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
          * array unless on moved columnKey. On new index also put the moved key
          * i == index on columnOrder, j == index on newOrder
          */
-        final String oldKeyOnNewIndex = visibleColOrder[newIndex];
-        if (showRowHeaders) {
-            newIndex--; // columnOrder don't have rowHeader
-        }
 
         // Grouping support
         final int groupDividerIndex = getColIndexByKey(GROUP_DIVIDER_COLUMN_KEY);
@@ -161,6 +157,11 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
             if (newIndex > 0 && newIndex > groupDividerIndex) {
                 newIndex--;
             }
+        }
+
+        final String oldKeyOnNewIndex = visibleColOrder[newIndex];
+        if (showRowHeaders) {
+            newIndex--; // columnOrder don't have rowHeader
         }
 
         if (!GROUP_DIVIDER_COLUMN_KEY.equals(oldKeyOnNewIndex)) {
@@ -507,7 +508,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
 
             private void calcAndSetWidthForSpannedCell() {
                 final int cells = tHead.getVisibleCellCount();
-                for (int i = (showRowHeaders ? 1 : 0); i < groupColIndex; i++) {
+                for (int i = 0; i < groupColIndex; i++) {
                     int w = CubaGroupTableWidget.this.getColWidth(getColKeyByIndex(i));
                     if (w < 0) {
                         w = 0;
