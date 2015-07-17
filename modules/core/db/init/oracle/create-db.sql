@@ -194,6 +194,9 @@ create table SYS_LOCK_CONFIG (
     primary key(ID)
 )^
 
+create sequence SYS_QUERY_RESULT_SEQ
+^
+
 create table SYS_QUERY_RESULT (
     ID number not null,
     SESSION_ID varchar2(32) not null,
@@ -203,6 +206,16 @@ create table SYS_QUERY_RESULT (
 )^
 create index IDX_SYS_QUERY_RES_ENT_SES_KEY on SYS_QUERY_RESULT(ENTITY_ID, SESSION_ID, QUERY_KEY)^
 create index IDX_SYS_QUERY_RESULT_SES_KEY on SYS_QUERY_RESULT(SESSION_ID, QUERY_KEY)^
+
+create or replace trigger SYS_QUERY_RESULT_ID_GEN
+before insert on SYS_QUERY_RESULT
+for each row
+begin
+  select SYS_QUERY_RESULT_SEQ.nextval
+  into   :new.id
+  from   dual;
+end;
+^
 
 create table SYS_SCHEDULED_EXECUTION (
     ID varchar2(32) not null,

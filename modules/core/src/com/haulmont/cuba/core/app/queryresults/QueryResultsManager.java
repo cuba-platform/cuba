@@ -144,12 +144,13 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
             EntityManager em = persistence.getEntityManager();
             DbTypeConverter converter = persistence.getDbTypeConverter();
 
-            String sql = "insert into SYS_QUERY_RESULT (SESSION_ID, QUERY_KEY, ENTITY_ID) values ('"
-                    + userSessionId + "', " + queryKey + ", ?)";
             QueryRunner runner = new QueryRunner();
             try {
+                String userSessionIdStr = converter.getSqlObject(userSessionId).toString(); // assuming that UUID can be passed to query as string in all databases
+                String sql = "insert into SYS_QUERY_RESULT (SESSION_ID, QUERY_KEY, ENTITY_ID) values ('"
+                        + userSessionIdStr + "', " + queryKey + ", ?)";
 
-                int[] paramTypes = new int[] { Types.OTHER };
+                int[] paramTypes = new int[] { converter.getSqlType(idList.get(0).getClass()) };
                 for (int i = 0; i < idList.size(); i += BATCH_SIZE) {
                     List<UUID> sublist = idList.subList(i, Math.min(i + BATCH_SIZE, idList.size()));
                     Object[][] params = new Object[sublist.size()][1];
