@@ -1,0 +1,79 @@
+/*
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+// Version: $Id$
+
+$cuba-scrollbar-background-primary-color: $v-background-color ! default;
+$cuba-scrollbar-border-color: first-color(valo-border()) !default;
+
+@mixin cuba-scrollbar {
+
+  .v-win & {
+    @include cuba-scrollbar-body;
+  }
+  .v-lin & {
+    @include cuba-scrollbar-body;
+  }
+}
+
+@mixin cuba-scrollbar-body {
+
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  // ========== track ==========
+
+  ::-webkit-scrollbar-track {
+    @include cuba-scrollbar-secondary-background-color-style($cuba-scrollbar-background-primary-color);
+    border: 1px solid $cuba-scrollbar-border-color;
+  }
+
+  ::-webkit-scrollbar-track:vertical {
+    border-top: 0px;
+    border-bottom: 0px;
+  }
+
+  ::-webkit-scrollbar-track:horizontal {
+    border-left: 0px;
+    border-right: 0px;
+  }
+
+  // ========== thumb ==========
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 2px;
+    border: 1px solid $cuba-scrollbar-border-color;
+    background-color: $cuba-scrollbar-background-primary-color;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    border-color: $v-focus-color;
+    box-shadow: inset 0px 0px 1px 1px rgba($v-focus-color, 0.5);
+  }
+
+  ::-webkit-scrollbar-thumb:active {
+    @include cuba-scrollbar-secondary-background-color-style($cuba-scrollbar-background-primary-color);
+    border-color: $v-focus-color;
+    box-shadow: inset 0px 0px 1px 1px rgba($v-focus-color, 0.5);
+  }
+
+  // ========== corner ==========
+
+  ::-webkit-scrollbar-corner {
+    @include cuba-scrollbar-secondary-background-color-style($cuba-scrollbar-background-primary-color);
+    border-right: 1px solid $cuba-scrollbar-border-color;
+    border-bottom: 1px solid $cuba-scrollbar-border-color;
+  }
+}
+
+@mixin cuba-scrollbar-secondary-background-color-style ($background-color: $cuba-scrollbar-background-primary-color) {
+  $bg: darken($background-color, 5%);
+  @if is-dark-color($background-color) {
+    $bg: lighten($background-color, 5%);
+  }
+  background-color: $bg;
+}
