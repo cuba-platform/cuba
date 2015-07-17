@@ -128,6 +128,10 @@
       }
     }
 
+    .#{$primary-stylename}-cell-wrapper {
+      min-height: 12px;
+    }
+
     .#{$primary-stylename}-cell-wrapper.widget-container {
       padding-top: 2px;
       padding-bottom: 2px;
