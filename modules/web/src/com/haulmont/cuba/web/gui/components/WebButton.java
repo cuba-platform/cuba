@@ -87,22 +87,22 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
 
             if (action != null) {
                 String caption = action.getCaption();
-                if (!StringUtils.isEmpty(caption) && StringUtils.isEmpty(component.getCaption())) {
+                if (caption != null && component.getCaption() == null) {
                     component.setCaption(caption);
                 }
 
                 String description = action.getDescription();
-                if (StringUtils.isEmpty(description) && action.getShortcut() != null) {
+                if (description == null && action.getShortcut() != null) {
                     description = action.getShortcut().format();
                 }
-                if (!StringUtils.isEmpty(description) && StringUtils.isEmpty(component.getDescription())) {
+                if (description != null && component.getDescription() == null) {
                     component.setDescription(description);
                 }
 
                 component.setEnabled(action.isEnabled());
                 component.setVisible(action.isVisible());
 
-                if (action.getIcon() != null) {
+                if (action.getIcon() != null && getIcon() == null) {
                     setIcon(action.getIcon());
                 }
 

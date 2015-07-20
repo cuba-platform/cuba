@@ -126,18 +126,18 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     }
 
     protected void loadCaption(Component.HasCaption component, Element element) {
-        String caption = element.attributeValue("caption");
+        if (element.attribute("caption") != null) {
+            String caption = element.attributeValue("caption");
 
-        if (!StringUtils.isEmpty(caption)) {
             caption = loadResourceString(caption);
             component.setCaption(caption);
         }
     }
 
     protected void loadDescription(Component.HasCaption component, Element element) {
-        String description = element.attributeValue("description");
+        if (element.attribute("description") != null) {
+            String description = element.attributeValue("description");
 
-        if (!StringUtils.isEmpty(description)) {
             description = loadResourceString(description);
             component.setDescription(description);
         }
@@ -179,6 +179,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     protected boolean loadEnable(Component component, Element element) {
         String enable = element.attributeValue("enable");
         if (enable == null) {
+            // todo artamonov remove in 6.0
             final Element e = element.element("enable");
             if (e != null) {
                 enable = e.getText();
@@ -196,6 +197,10 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     }
 
     protected String loadResourceString(String caption) {
+        if (StringUtils.isEmpty(caption)) {
+            return caption;
+        }
+
         return messageTools.loadString(messagesPack, caption);
     }
 
@@ -316,9 +321,11 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     }
 
     protected void loadIcon(Component.HasIcon component, Element element) {
-        final String icon = element.attributeValue("icon");
-        if (!StringUtils.isEmpty(icon)) {
-            component.setIcon(loadResourceString(icon));
+        if (element.attribute("icon") != null) {
+            String icon = element.attributeValue("icon");
+
+            icon = loadResourceString(icon);
+            component.setIcon(icon);
         }
     }
 

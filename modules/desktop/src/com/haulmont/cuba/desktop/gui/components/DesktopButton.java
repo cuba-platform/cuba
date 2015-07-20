@@ -24,6 +24,7 @@ import java.beans.PropertyChangeListener;
 public class DesktopButton extends DesktopAbstractComponent<JButton> implements Button {
 
     protected Action action;
+    protected String caption;
     protected String icon;
 
     protected long responseEndTs = 0;
@@ -77,22 +78,22 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
 
             if (action != null) {
                 String caption = action.getCaption();
-                if (!StringUtils.isEmpty(caption) && StringUtils.isEmpty(impl.getText())) {
-                    impl.setText(caption);
+                if (caption != null && getCaption() == null) {
+                    setCaption(caption);
                 }
 
                 String description = action.getDescription();
-                if (StringUtils.isEmpty(description) && action.getShortcut() != null) {
+                if (description == null && action.getShortcut() != null) {
                     description = action.getShortcut().format();
                 }
-                if (!StringUtils.isEmpty(description) && StringUtils.isEmpty(getDescription())) {
+                if (description != null && getDescription() == null) {
                     setDescription(description);
                 }
 
                 setEnabled(action.isEnabled());
                 setVisible(action.isVisible());
 
-                if (action.getIcon() != null) {
+                if (action.getIcon() != null && getIcon() == null) {
                     setIcon(action.getIcon());
                 }
 
@@ -123,12 +124,13 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
 
     @Override
     public String getCaption() {
-        return impl.getText();
+        return caption;
     }
 
     @Override
     public void setCaption(String caption) {
-        impl.setText(caption);
+        this.caption = caption;
+        impl.setText(caption == null ? "" : caption);
     }
 
     @Override
