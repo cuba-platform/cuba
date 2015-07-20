@@ -73,7 +73,7 @@ public class WebLookupPickerField extends WebLookupField implements LookupPicker
 
                 updateComponentValue = true;
                 if (!ObjectUtils.equals(selectComponent.getValue(), picker.getValue())) {
-                    picker.setValue(selectComponent.getValue());
+                    picker.setValueIgnoreReadOnly(selectComponent.getValue());
                 }
                 updateComponentValue = false;
             }
@@ -87,7 +87,7 @@ public class WebLookupPickerField extends WebLookupField implements LookupPicker
 
                 updateComponentValue = true;
                 if (!ObjectUtils.equals(selectComponent.getValue(), picker.getValue())) {
-                    selectComponent.setValue(picker.getValue());
+                    selectComponent.setValueIgnoreReadOnly(picker.getValue());
                 }
                 updateComponentValue = false;
             }
