@@ -80,7 +80,7 @@ public class RemoveAction extends ItemTrackingAction {
         this.target = target;
         this.autocommit = autocommit;
         this.caption = messages.getMainMessage("actions.Remove");
-        this.icon = "icons/remove.png";
+        this.icon = messages.getMainMessage("actions.Remove.icon");
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig config = configuration.getConfig(ClientConfig.class);

@@ -94,7 +94,7 @@ public class EditAction extends BaseAction implements Action.HasOpenType {
 
         this.target = target;
         this.openType = openType;
-        this.icon = "icons/edit.png";
+        this.icon = messages.getMainMessage("actions.Edit.icon");
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig config = configuration.getConfig(ClientConfig.class);

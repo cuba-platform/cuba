@@ -43,7 +43,7 @@ public class RefreshAction extends BaseAction {
         super(id);
         this.owner = target;
         this.caption = messages.getMainMessage("actions.Refresh");
-        this.icon = "icons/refresh.png";
+        this.icon = messages.getMainMessage("actions.Refresh.icon");
     }
 
     /**

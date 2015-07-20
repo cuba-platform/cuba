@@ -56,7 +56,7 @@ public class ExcelAction extends BaseAction {
         this.table = table;
         this.display = display;
         this.caption = messages.getMainMessage("actions.Excel");
-        this.icon = "icons/excel.png";
+        this.icon = messages.getMainMessage("actions.Excel.icon");
     }
 
     /**

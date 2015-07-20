@@ -89,7 +89,7 @@ public class CreateAction extends BaseAction implements Action.HasOpenType {
         this.target = target;
         this.openType = openType;
         this.caption = messages.getMainMessage("actions.Create");
-        this.icon = "icons/create.png";
+        this.icon = messages.getMainMessage("actions.Create.icon");
         this.metadata = AppBeans.get(Metadata.NAME);
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);

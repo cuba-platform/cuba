@@ -64,6 +64,7 @@ public class ExcludeAction extends RemoveAction {
 
         this.confirm = confirm;
         this.caption = messages.getMainMessage("actions.Exclude");
+        this.icon = messages.getMainMessage("actions.Exclude.icon");
         this.metadata = AppBeans.get(Metadata.NAME);
     }
 

@@ -86,7 +86,7 @@ public class AddAction extends BaseAction implements Action.HasOpenType {
         this.handler = handler;
         this.openType = openType;
         this.caption = messages.getMainMessage("actions.Add");
-        this.icon = "icons/add.png";
+        this.icon = messages.getMainMessage("actions.Add.icon");
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
