@@ -24,11 +24,11 @@
             <columns count="2"/>
             <rows>
                 <row>
-                    <label value="msg://name"/>
+                    <label value="msg://name" align="MIDDLE_LEFT"/>
                     <lookupField width="${fieldWidth}" datasource="lockDescriptorDs" id="nameLookupField" property="name"/>
                 </row>
                 <row>
-                    <label value="msg://timeout"/>
+                    <label value="msg://timeout" align="MIDDLE_LEFT"/>
                     <textField id="timeoutField" width="${fieldWidth}" datasource="lockDescriptorDs" property="timeoutSec"/>
                 </row>
             </rows>
