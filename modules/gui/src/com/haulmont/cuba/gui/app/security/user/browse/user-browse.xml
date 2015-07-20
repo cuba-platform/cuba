@@ -48,7 +48,7 @@
                 <action id="excel"/>
             </actions>
             <buttonsPanel>
-                <button id="userTableCreateBtn" action="usersTable.create" caption=""/>
+                <button id="userTableCreateBtn" action="usersTable.create"/>
                 <button id="userTableEditBtn" action="usersTable.edit"/>
                 <button id="userTableCopyButton" action="usersTable.copy"/>
                 <button id="userTableRemoveBtn" action="usersTable.remove"/>
