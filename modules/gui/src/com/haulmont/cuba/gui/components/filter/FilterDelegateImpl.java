@@ -1732,19 +1732,23 @@ public class FilterDelegateImpl implements FilterDelegate {
         addConditionHelper = new AddConditionHelper(filter, new AddConditionHelper.Handler() {
             @Override
             public void handle(AbstractCondition condition) {
-                conditions.getRootNodes().add(new Node<>(condition));
-                fillConditionsLayout(false);
-                updateFilterModifiedIndicator();
-                condition.addListener(new AbstractCondition.Listener() {
-                    @Override
-                    public void captionChanged() {
-                    }
+                addCondition(condition);
+            }
+        });
+    }
 
-                    @Override
-                    public void paramChanged(Param oldParam, Param newParam) {
-                        updateFilterModifiedIndicator();
-                    }
-                });
+    protected void addCondition(AbstractCondition condition) {
+        conditions.getRootNodes().add(new Node<>(condition));
+        fillConditionsLayout(false);
+        updateFilterModifiedIndicator();
+        condition.addListener(new AbstractCondition.Listener() {
+            @Override
+            public void captionChanged() {
+            }
+
+            @Override
+            public void paramChanged(Param oldParam, Param newParam) {
+                updateFilterModifiedIndicator();
             }
         });
     }
