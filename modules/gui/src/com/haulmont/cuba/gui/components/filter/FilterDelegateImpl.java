@@ -1272,6 +1272,12 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         if (filterEntity != null) {
+            lastAppliedFilter = new AppliedFilter(filterEntity, conditions);
+        } else {
+            lastAppliedFilter = null;
+        }
+
+        if (filterEntity != null) {
             boolean haveRequiredConditions = haveFilledRequiredConditions();
             if (!haveRequiredConditions) {
                 if (!isNewWindow) {
@@ -1286,12 +1292,6 @@ public class FilterDelegateImpl implements FilterDelegate {
         applyDatasourceFilter();
         initDatasourceMaxResults();
         refreshDatasource();
-
-        if (filterEntity != null) {
-            lastAppliedFilter = new AppliedFilter(filterEntity, conditions);
-        } else {
-            lastAppliedFilter = null;
-        }
 
         if ((applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
             filterHelper.removeTableFtsTooltips((Table) applyTo);
