@@ -242,7 +242,9 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                         if (value instanceof String && info.isCaseInsensitive()) {
                             value = makeCaseInsensitive((String) value);
                         }
-
+                        if (java.sql.Date.class.equals(info.getJavaClass()) && value != null && value instanceof Date) {
+                            value = new java.sql.Date(((Date)value).getTime());
+                        }
                         if (refreshOnComponentValueChange) {
                             if (componentValueListener == null)
                                 componentValueListener = new ComponentValueListener();
