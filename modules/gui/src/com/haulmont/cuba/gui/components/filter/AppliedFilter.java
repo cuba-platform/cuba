@@ -15,9 +15,12 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.GroupCondition;
 import com.haulmont.cuba.security.entity.FilterEntity;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author krivopustov
@@ -88,15 +91,23 @@ public class AppliedFilter {
             sb.append(")");
         } else {
             Param param = condition.getParam();
-            sb.append(condition.getLocCaption())
-                    .append(" ")
-                    .append(condition.getOperationCaption())
-                    .append(" ")
-                    .append(formatParamValue(param.getValue()));
+            sb.append(condition.getLocCaption()).append(" ");
+            if (condition.getOperator() == Op.NOT_EMPTY) {
+                if (BooleanUtils.isTrue((Boolean) param.getValue())) {
+                    sb.append(messages.getMessage(AppliedFilter.class, "Op.NOT_EMPTY"));
+                } else {
+                    sb.append(messages.getMessage(AppliedFilter.class, "Op.EMPTY"));
+                }
+            } else {
+                sb.append(condition.getOperationCaption())
+                        .append(" ")
+                        .append(formatParamValue(param));
+            }
         }
     }
 
-    private String formatParamValue(Object value) {
+    protected String formatParamValue(Param param) {
+        Object value = param.getValue();
         if (value == null)
             return "";
 
@@ -112,16 +123,20 @@ public class AppliedFilter {
             for (Object obj : list) {
                 if (obj instanceof Instance)
                     names.add(((Instance) obj).getInstanceName());
-                else
-                    names.add(String.valueOf(obj));
+                else {
+                    names.add(_formatValue(obj, param));
+                }
             }
             return names.toString();
         }
 
-        Datatype datatype = Datatypes.get(value.getClass());
+        return _formatValue(value, param);
+    }
+
+    protected String _formatValue(Object value, Param param) {
+        Datatype datatype = Datatypes.get(param.getJavaClass());
         if (datatype != null)
             return datatype.format(value, userSessionSource.getLocale());
-
         return value.toString();
     }
 
