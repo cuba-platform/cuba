@@ -803,10 +803,11 @@ create index IDX_SEC_REMEMBER_ME_TOKEN on SEC_REMEMBER_ME(TOKEN)^
 
 --------------------------------------------------------------------------------------------------------------
 
-create or replace function newid()
-returns uuid
-as '$libdir/uuid-ossp', 'uuid_generate_v1'
-volatile strict language c^
+create extension "uuid-ossp"^
+
+create or replace function newid() returns uuid
+as 'select uuid_generate_v1();'
+language sql^
 
 --------------------------------------------------------------------------------------------------------------
 
