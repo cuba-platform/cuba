@@ -10,9 +10,11 @@
     white-space: nowrap;
   }
 
-  .v-required-field-indicator,
-  .cuba-tooltip-button {
-    display: none;
+  @if $v-show-required-indicators == false {
+    .v-required-field-indicator,
+    .cuba-tooltip-button {
+      display: none;
+    }
   }
 
   .v-widget {
