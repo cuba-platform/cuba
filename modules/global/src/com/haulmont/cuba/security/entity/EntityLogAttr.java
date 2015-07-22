@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.security.entity;
 
+import com.google.common.base.Strings;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
@@ -136,6 +137,21 @@ public class EntityLogAttr extends AbstractNotPersistentEntity {
 
     @MetaProperty
     public String getLocValue() {
+        if (Strings.isNullOrEmpty(value)) return value;
+
+        String entityName = getLogItem().getEntity();
+        com.haulmont.chile.core.model.MetaClass metaClass = getClassFromEntityName(entityName);
+        if (metaClass != null) {
+            com.haulmont.chile.core.model.MetaProperty property = metaClass.getProperty(name);
+            if (property != null && property.getRange().isEnum()) {
+                try {
+                    Enum caller = Enum.valueOf((Class<Enum>) property.getJavaType(), value);
+                    Messages messages = AppBeans.get(Messages.NAME);
+                    return messages.getMessage(caller);
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+
         if (!StringUtils.isBlank(messagesPack)) {
             Messages messages = AppBeans.get(Messages.NAME);
             return messages.getMessage(messagesPack, value);
