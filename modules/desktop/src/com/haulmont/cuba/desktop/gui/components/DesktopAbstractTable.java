@@ -1315,9 +1315,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                 TableColumn tableColumn = getColumn(col);
 
                 // If column is not hidden by security
-                boolean useStyledCells = styleProviders != null && styleProviders.isEmpty();
-
                 if (tableColumn != null) {
+                    boolean useStyledCells = styleProviders != null && !styleProviders.isEmpty();
                     tableColumn.setCellRenderer(useStyledCells ? new StylingCellRenderer() : null);
                 }
             }
