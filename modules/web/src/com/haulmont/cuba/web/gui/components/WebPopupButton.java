@@ -147,34 +147,39 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         checkNotNullArgument(action, "action must be non null");
 
         if (vPopupComponent instanceof com.vaadin.ui.Layout) {
-            WebButton button = new PopupButtonActionButton() {
-                @Override
-                protected void beforeActionPerformed() {
-                    WebPopupButton.this.requestFocus();
-                }
-            };
-            button.setAction(new PopupActionWrapper(action));
-            button.setIcon(null); // don't show icons to look the same as Table actions
-
-            com.vaadin.ui.Button vButton = (com.vaadin.ui.Button) button.getComposition();
-            vButton.setImmediate(true);            
-            vButton.setSizeFull();
-            vButton.setStyleName(BaseTheme.BUTTON_LINK);
+            Button vButton = createActionButton(action);
 
             ((com.vaadin.ui.Layout) vPopupComponent).addComponent(vButton);
             component.markAsDirty();
             actionOrder.add(action);
 
-            if (AppUI.getCurrent().isTestMode()) {
-                String debugId = getDebugId();
-                if (debugId != null) {
-                    button.setDebugId(AppUI.getCurrent().getTestIdManager().getTestId(debugId + "_" + action.getId()));
-                }
-                button.setId(action.getId());
-            }
-
             actionsPermissions.apply(action);
         }
+    }
+
+    protected Button createActionButton(Action action) {
+        WebButton button = new PopupButtonActionButton() {
+            @Override
+            protected void beforeActionPerformed() {
+                WebPopupButton.this.requestFocus();
+            }
+        };
+        button.setAction(new PopupActionWrapper(action));
+        button.setIcon(null); // don't show icons to look the same as Table actions
+
+        Button vButton = (Button) button.getComposition();
+        vButton.setImmediate(true);
+        vButton.setSizeFull();
+        vButton.setStyleName(BaseTheme.BUTTON_LINK);
+
+        if (AppUI.getCurrent().isTestMode()) {
+            String debugId = getDebugId();
+            if (debugId != null) {
+                button.setDebugId(AppUI.getCurrent().getTestIdManager().getTestId(debugId + "_" + action.getId()));
+            }
+            button.setId(action.getId());
+        }
+        return vButton;
     }
 
     @Override
