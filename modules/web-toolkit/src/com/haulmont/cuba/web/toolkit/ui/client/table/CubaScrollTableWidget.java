@@ -454,7 +454,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
                 td.getFirstChildElement().addClassName(WIDGET_CELL_CLASSNAME);
 
-                if (isSelectable()) {
+                if (CubaScrollTableWidget.this.isSelectable()) {
                     // Support for #PL-2080
                     recursiveAddFocusHandler(w, w);
                 }
@@ -663,7 +663,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
             protected void selectRowForContextMenuActions(Event event) {
                 boolean clickEventSent = handleClickEvent(event, getElement(), false);
-                if (isSelectable()) {
+                if (CubaScrollTableWidget.this.isSelectable()) {
                     boolean currentlyJustThisRowSelected = selectedRowKeys
                             .size() == 1
                             && selectedRowKeys.contains(getKey());
@@ -706,10 +706,6 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
             public boolean isSelectable() {
                 return selectable;
-            }
-
-            public void setSelectable(boolean selectable) {
-                this.selectable = selectable;
             }
         }
     }

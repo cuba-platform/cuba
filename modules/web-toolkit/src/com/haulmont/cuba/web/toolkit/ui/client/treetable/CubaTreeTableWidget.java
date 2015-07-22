@@ -445,7 +445,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
                 td.getFirstChildElement().addClassName(WIDGET_CELL_CLASSNAME);
 
-                if (isSelectable()) {
+                if (CubaTreeTableWidget.this.isSelectable()) {
                     // Support for #PL-2080
                     recursiveAddFocusHandler(w, w);
                 }
@@ -641,7 +641,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
             protected void selectRowForContextMenuActions(Event event) {
                 boolean clickEventSent = handleClickEvent(event, getElement(), false);
-                if (isSelectable()) {
+                if (CubaTreeTableWidget.this.isSelectable()) {
                     boolean currentlyJustThisRowSelected = selectedRowKeys
                             .size() == 1
                             && selectedRowKeys.contains(getKey());
