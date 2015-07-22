@@ -25,6 +25,9 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractAction;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
@@ -60,6 +63,7 @@ import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.swing.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -935,6 +939,8 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected void initFiltersPopupButton() {
         filtersPopupButton.removeAllActions();
 
+        addResetFilterAction(filtersPopupButton);
+
         Collections.sort(
                 filterEntities,
                 new Comparator<FilterEntity>() {
@@ -947,8 +953,60 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         Iterator<FilterEntity> it = filterEntities.iterator();
         int addedEntitiesCount = 0;
+        while (it.hasNext() && addedEntitiesCount < clientConfig.getGenericFilterPopupListSize()) {
+            final FilterEntity fe = it.next();
+            addSetFilterEntityAction(filtersPopupButton, fe);
+            addedEntitiesCount++;
+        }
 
-        filtersPopupButton.addAction(new AbstractAction("resetFilter") {
+        if (filterEntities.size() > clientConfig.getGenericFilterPopupListSize()) {
+            addShowMoreFilterEntitiesAction(filtersPopupButton);
+        }
+    }
+
+    protected void addSetFilterEntityAction(PopupButton popupButton, final FilterEntity fe) {
+        popupButton.addAction(new AbstractAction("setEntity" + fe.getId()) {
+            @Override
+            public void actionPerform(Component component) {
+                if (fe != filterEntity) {
+                    setFilterEntity(fe);
+                }
+            }
+
+            @Override
+            public String getCaption() {
+                return getFilterCaption(fe);
+            }
+        });
+    }
+
+    protected void addShowMoreFilterEntitiesAction(PopupButton popupButton) {
+        popupButton.addAction(new AbstractAction("showMoreFilterEntities") {
+            @Override
+            public void actionPerform(Component component) {
+                WindowInfo windowInfo = windowConfig.getWindowInfo("filterSelect");
+                final FilterSelectWindow window = windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG,
+                        Collections.<String, Object>singletonMap("filterEntities", filterEntities));
+                window.addListener(new Window.CloseListener() {
+                    @Override
+                    public void windowClosed(String actionId) {
+                        if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                            FilterEntity selectedEntity = window.getFilterEntity();
+                            setFilterEntity(selectedEntity);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public String getCaption() {
+                return formatMessage("Filter.showMore", filterEntities.size());
+            }
+        });
+    }
+
+    protected void addResetFilterAction(PopupButton popupButton) {
+        popupButton.addAction(new AbstractAction("resetFilter") {
             @Override
             public void actionPerform(Component component) {
                 conditions = new ConditionsTree();
@@ -960,49 +1018,6 @@ public class FilterDelegateImpl implements FilterDelegate {
                 return getMessage("Filter.resetFilter");
             }
         });
-
-        while (it.hasNext() && addedEntitiesCount < clientConfig.getGenericFilterPopupListSize()) {
-            final FilterEntity fe = it.next();
-            filtersPopupButton.addAction(new AbstractAction("setEntity" + fe.getId()) {
-                @Override
-                public void actionPerform(Component component) {
-                    if (fe != filterEntity) {
-                        setFilterEntity(fe);
-                    }
-                }
-
-                @Override
-                public String getCaption() {
-                    return getFilterCaption(fe);
-                }
-            });
-            addedEntitiesCount++;
-        }
-
-        if (filterEntities.size() > clientConfig.getGenericFilterPopupListSize()) {
-            filtersPopupButton.addAction(new AbstractAction("showMoreFilterEntities") {
-                @Override
-                public void actionPerform(Component component) {
-                    WindowInfo windowInfo = windowConfig.getWindowInfo("filterSelect");
-                    final FilterSelectWindow window = windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG,
-                            Collections.<String, Object>singletonMap("filterEntities", filterEntities));
-                    window.addListener(new Window.CloseListener() {
-                        @Override
-                        public void windowClosed(String actionId) {
-                            if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                                FilterEntity selectedEntity = window.getFilterEntity();
-                                setFilterEntity(selectedEntity);
-                            }
-                        }
-                    });
-                }
-
-                @Override
-                public String getCaption() {
-                    return formatMessage("Filter.showMore", filterEntities.size());
-                }
-            });
-        }
     }
 
     protected void initFiltersLookup() {
@@ -1805,6 +1820,9 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected class FiltersLookupChangeListener implements ValueListener {
+
+        public FiltersLookupChangeListener() {
+        }
 
         @Override
         public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
