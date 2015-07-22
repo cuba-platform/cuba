@@ -8,7 +8,9 @@ package com.haulmont.cuba.gui.components.filter;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.DateDatatype;
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -18,6 +20,7 @@ import com.haulmont.cuba.security.entity.FilterEntity;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
+import javax.persistence.TemporalType;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -135,6 +138,13 @@ public class AppliedFilter {
 
     protected String _formatValue(Object value, Param param) {
         Datatype datatype = Datatypes.get(param.getJavaClass());
+        MetaProperty property = param.getProperty();
+        if (property != null) {
+            TemporalType tt = (TemporalType) property.getAnnotations().get("temporal");
+            if (tt == TemporalType.DATE) {
+                datatype = Datatypes.get(DateDatatype.NAME);
+            }
+        }
         if (datatype != null)
             return datatype.format(value, userSessionSource.getLocale());
         return value.toString();
