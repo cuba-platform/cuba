@@ -466,6 +466,23 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
         markAsDirty();
     }
 
+    @Override
+    protected void updateClickableColumnKeys() {
+        if (cellClickListeners != null) {
+            Collection<?> groupProperties = getGroupProperties();
+            String[] clickableColumnKeys = new String[cellClickListeners.size()];
+            int i = 0;
+            for (Object columnId : cellClickListeners.keySet()) {
+                if (!groupProperties.contains(columnId)) {
+                    clickableColumnKeys[i] = columnIdMap.key(columnId);
+                    i++;
+                }
+            }
+
+            getState().clickableColumnKeys = clickableColumnKeys;
+        }
+    }
+
     public GroupPropertyValueFormatter getGroupPropertyValueFormatter() {
         return groupPropertyValueFormatter;
     }
