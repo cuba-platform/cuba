@@ -134,6 +134,9 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
 
     @Override
     public void insert(int queryKey, List<UUID> idList) {
+        if (idList.isEmpty())
+            return;
+
         UUID userSessionId = userSessionSource.getUserSession().getId();
         long start = System.currentTimeMillis();
         String logMsg = "Insert " + idList.size() + " query results for " + userSessionId + " / " + queryKey;
