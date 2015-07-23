@@ -4,7 +4,10 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+
+import javax.annotation.Nullable;
 
 /**
  * @author krivopustov
@@ -35,4 +38,15 @@ public interface Tree extends ListComponent, Component.Editable {
      */
     void setItemClickAction(Action action);
     Action getItemClickAction();
+
+    void setStyleProvider(@Nullable StyleProvider styleProvider);
+
+    void addStyleProvider(StyleProvider styleProvider);
+
+    void removeStyleProvider(StyleProvider styleProvider);
+
+    interface StyleProvider<E extends Entity> {
+        @Nullable
+        String getStyleName(E entity);
+    }
 }

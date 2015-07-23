@@ -11,7 +11,6 @@ import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.ShowInfoAction;
-import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
@@ -22,7 +21,6 @@ import com.vaadin.data.Property;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.AbstractSelect;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -33,7 +31,7 @@ import java.util.Set;
  * @author krivopustov
  * @version $Id$
  */
-public class WebTree extends WebAbstractList<CubaTree> implements Tree {
+public class WebTree extends WebAbstractTree<CubaTree> {
 
     protected String hierarchyProperty;
     protected CaptionMode captionMode = CaptionMode.ITEM;
@@ -149,43 +147,6 @@ public class WebTree extends WebAbstractList<CubaTree> implements Tree {
     }
 
     @Override
-    public void expandTree() {
-        com.vaadin.data.Container.Hierarchical container =
-                (com.vaadin.data.Container.Hierarchical) component.getContainerDataSource();
-        if (container != null) {
-            for (Object id : container.rootItemIds()) {
-                component.expandItemsRecursively(id);
-            }
-        }
-    }
-
-    @Override
-    public void collapse(Object itemId) {
-        component.collapseItem(itemId);
-    }
-
-    @Override
-    public void expand(Object itemId) {
-        component.expandItem(itemId);
-    }
-
-    @Override
-    public void collapseTree() {
-        com.vaadin.data.Container.Hierarchical container =
-                (com.vaadin.data.Container.Hierarchical) component.getContainerDataSource();
-        if (container != null) {
-            for (Object id : container.rootItemIds()) {
-                component.collapseItemsRecursively(id);
-            }
-        }
-    }
-
-    @Override
-    public boolean isExpanded(Object itemId) {
-        return component.isExpanded(itemId);
-    }
-
-    @Override
     public String getHierarchyProperty() {
         return hierarchyProperty;
     }
@@ -286,27 +247,5 @@ public class WebTree extends WebAbstractList<CubaTree> implements Tree {
 
             this.doubleClickAction = action;
         }
-    }
-
-    @Override
-    public boolean isEditable() {
-        return !component.isReadOnly();
-    }
-
-    @Override
-    public void setEditable(boolean editable) {
-        component.setReadOnly(!editable);
-    }
-
-    @Override
-    protected String getAlternativeDebugId() {
-        if (id != null) {
-            return id;
-        }
-        if (datasource != null && StringUtils.isNotEmpty(datasource.getId())) {
-            return getClass().getSimpleName() + "_" + datasource.getId();
-        }
-
-        return getClass().getSimpleName();
     }
 }

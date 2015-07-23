@@ -466,4 +466,19 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
         }
         return popup;
     }
+
+    @Override
+    public void setStyleProvider(@Nullable StyleProvider styleProvider) {
+        // do nothing
+    }
+
+    @Override
+    public void addStyleProvider(StyleProvider styleProvider) {
+        // do nothing
+    }
+
+    @Override
+    public void removeStyleProvider(StyleProvider styleProvider) {
+        // do nothing
+    }
 }
