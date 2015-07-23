@@ -938,7 +938,10 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected void initFiltersPopupButton() {
         filtersPopupButton.removeAllActions();
+        addFiltersPopupActions();
+    }
 
+    protected void addFiltersPopupActions() {
         addResetFilterAction(filtersPopupButton);
 
         Collections.sort(
