@@ -311,13 +311,12 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     /**
      * Search the collection using object identity.
-     * @param instance
      * @return true if the collection already contains the instance
      */
     protected boolean containsObjectInstance(T instance) {
         Collection<T> collection = __getCollection();
         if (collection != null) {
-            for (T item : __getCollection()) {
+            for (T item : collection) {
                 if (instance == item)
                     return true;
             }

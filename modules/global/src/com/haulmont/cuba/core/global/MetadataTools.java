@@ -13,10 +13,7 @@ import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
-import com.haulmont.cuba.core.entity.BaseEntity;
-import com.haulmont.cuba.core.entity.SoftDelete;
-import com.haulmont.cuba.core.entity.Updatable;
-import com.haulmont.cuba.core.entity.Versioned;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.commons.lang.BooleanUtils;
@@ -577,5 +574,41 @@ public class MetadataTools {
             metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(metaClass, property);
         }
         return metaPropertyPath;
+    }
+
+    /**
+     * Depth-first traversal of the object graph starting from the specified entity instance.
+     * Visits all attributes.
+     *
+     * @param entity    entity graph entry point
+     * @param visitor   the attribute visitor implementation
+     */
+    public void traverseAttributes(Entity entity, EntityAttributeVisitor visitor) {
+        Preconditions.checkNotNullArgument(entity, "entity is null");
+        Preconditions.checkNotNullArgument(visitor, "visitor is null");
+
+        internalTraverseAttributes(entity, visitor, new HashSet<>());
+    }
+
+    protected void internalTraverseAttributes(Entity entity, EntityAttributeVisitor visitor, HashSet<Object> visited) {
+        if (visited.contains(entity))
+            return;
+        visited.add(entity);
+
+        for (MetaProperty property : entity.getMetaClass().getProperties()) {
+            visitor.visit(entity, property);
+            if (property.getRange().isClass()) {
+                Object value = entity.getValue(property.getName());
+                if (value != null) {
+                    if (value instanceof Collection) {
+                        for (Object item : ((Collection) value)) {
+                            internalTraverseAttributes((Entity) item, visitor, visited);
+                        }
+                    } else {
+                        internalTraverseAttributes((Entity) value, visitor, visited);
+                    }
+                }
+            }
+        }
     }
 }
