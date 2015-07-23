@@ -468,8 +468,7 @@ configure(webToolkitModule) {
         compile(vaadinClient)
         compile(vaadinCompiler)
 
-//        Uncomment for SuperDevMode debug
-//        runtime(servletApi)
+        runtime(servletApi)
     }
 
     task buildWidgetSet(type: CubaWidgetSetBuilding) {
@@ -492,6 +491,10 @@ configure(webToolkitModule) {
         xmx = '-Xmx512m'
         xss = '-Xss8m'
         String xxMPS = '-XX:MaxPermSize=256m'
+    }
+
+    task debugWidgetSet(type: CubaWidgetSetDebug) {
+        widgetSetClass = 'com.haulmont.cuba.web.toolkit.ui.WidgetSet'
     }
 
     jar {
