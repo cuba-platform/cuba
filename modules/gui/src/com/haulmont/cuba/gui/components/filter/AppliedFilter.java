@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
+import com.haulmont.cuba.gui.components.filter.condition.FilterConditionUtils;
 import com.haulmont.cuba.gui.components.filter.condition.GroupCondition;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import org.apache.commons.lang.BooleanUtils;
@@ -127,27 +128,13 @@ public class AppliedFilter {
                 if (obj instanceof Instance)
                     names.add(((Instance) obj).getInstanceName());
                 else {
-                    names.add(_formatValue(obj, param));
+                    names.add(FilterConditionUtils.formatParamValue(param, obj));
                 }
             }
             return names.toString();
         }
 
-        return _formatValue(value, param);
-    }
-
-    protected String _formatValue(Object value, Param param) {
-        Datatype datatype = Datatypes.get(param.getJavaClass());
-        MetaProperty property = param.getProperty();
-        if (property != null) {
-            TemporalType tt = (TemporalType) property.getAnnotations().get("temporal");
-            if (tt == TemporalType.DATE) {
-                datatype = Datatypes.get(DateDatatype.NAME);
-            }
-        }
-        if (datatype != null)
-            return datatype.format(value, userSessionSource.getLocale());
-        return value.toString();
+        return FilterConditionUtils.formatParamValue(param, value);
     }
 
     @Override

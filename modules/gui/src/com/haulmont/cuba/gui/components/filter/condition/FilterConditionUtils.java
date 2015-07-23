@@ -5,11 +5,18 @@
 
 package com.haulmont.cuba.gui.components.filter.condition;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.DateDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.components.filter.Param;
+
+import javax.persistence.TemporalType;
 
 /**
  * @author gorbunkov
@@ -32,5 +39,22 @@ public class FilterConditionUtils {
             }
             return sb.toString();
         }
+    }
+
+    public static String formatParamValue(Param param, Object value) {
+        Datatype datatype = Datatypes.get(param.getJavaClass());
+        MetaProperty property = param.getProperty();
+        if (property != null) {
+            TemporalType tt = (TemporalType) property.getAnnotations().get("temporal");
+            if (tt == TemporalType.DATE) {
+                datatype = Datatypes.get(DateDatatype.NAME);
+            }
+        }
+        if (datatype != null) {
+            UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
+            return datatype.format(value, userSessionSource.getLocale());
+        }
+        return value.toString();
+
     }
 }
