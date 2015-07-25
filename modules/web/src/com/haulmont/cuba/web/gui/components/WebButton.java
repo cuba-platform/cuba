@@ -36,6 +36,7 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
                 afterActionPerformed();
             }
         });
+        component.setDescription(null);
     }
 
     protected void performAction(Action action) {
