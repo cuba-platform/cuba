@@ -122,9 +122,15 @@ public class CubaPopupButtonWidget extends VPopupButton {
         if ((event.getTypeInt() & Event.KEYEVENTS) != 0) {
             switch (type) {
                 case Event.ONKEYDOWN:
+                    // Button should not react on shortcuts with ENTER and SPACE
+                    if (isShortcut(event)
+                            && (event.getKeyCode() == KeyCodes.KEY_ENTER
+                            || event.getKeyCode() == KeyCodes.KEY_SPACE)) {
+                        return true;
+                    }
                     // Stop propagation when the user starts pressing a button that
                     // we are handling to prevent actions from getting triggered
-                    if (event.getKeyCode() == 32 /* space */) {
+                    if (event.getKeyCode() == KeyCodes.KEY_SPACE) {
                         isFocusing = true;
                         event.preventDefault();
                         event.stopPropagation();
@@ -139,7 +145,7 @@ public class CubaPopupButtonWidget extends VPopupButton {
                 // CAUTION IE sometimes does not generate ONKEYPRESS for ENTER, so we override default Vaadin behavior
                 case Event.ONKEYUP:
                     if (isFocusing) {
-                        if (event.getKeyCode() == 32 /* space */) {
+                        if (event.getKeyCode() == KeyCodes.KEY_SPACE) {
                             isFocusing = false;
                             onClick();
                             event.stopPropagation();
@@ -152,11 +158,27 @@ public class CubaPopupButtonWidget extends VPopupButton {
                             event.preventDefault();
                             return true;
                         }
+                    } else if (isShortcut(event)
+                            && (event.getKeyCode() == KeyCodes.KEY_ENTER
+                            || event.getKeyCode() == KeyCodes.KEY_SPACE)) {
+                        return true;
                     }
                     break;
+                case Event.ONKEYPRESS: {
+                    // Button should not react on shortcuts with ENTER and SPACE
+                    if (isShortcut(event)
+                            && (event.getKeyCode() == KeyCodes.KEY_ENTER
+                            || event.getKeyCode() == KeyCodes.KEY_SPACE)) {
+                        return true;
+                    }
+                }
             }
         }
 
         return false;
+    }
+
+    protected boolean isShortcut(Event event) {
+        return event.getShiftKey() || event.getAltKey() || event.getCtrlKey() || event.getMetaKey();
     }
 }
