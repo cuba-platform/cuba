@@ -311,7 +311,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         });
         controlsLayout.add(ftsSearchCriteriaField);
 
-        Button searchBtn = componentsFactory.createComponent(Button.NAME);
+        searchBtn = componentsFactory.createComponent(Button.NAME);
         searchBtn.setCaption(getMessage("Filter.search"));
         searchBtn.setIcon("icons/search.png");
         searchBtn.setAction(new AbstractAction("search") {
@@ -1095,9 +1095,14 @@ public class FilterDelegateImpl implements FilterDelegate {
         });
         layout.add(button);
 
+        addAppliedFilterLayoutHook(layout);
         appliedFiltersLayout.add(layout);
 
         appliedFilters.add(new AppliedFilterHolder(lastAppliedFilter, layout, button));
+    }
+
+    protected void addAppliedFilterLayoutHook(Component.Container layout) {
+        //nothing
     }
 
     protected void removeAppliedFilter() {
