@@ -136,6 +136,7 @@ public class WebFileUploadField extends WebAbstractComponent<CubaUpload> impleme
             }
         });
         component.setButtonCaption(messages.getMessage(AppConfig.getMessagesPack(), "upload.submit"));
+        component.setDescription(null);
     }
 
     protected CubaUpload createComponent() {

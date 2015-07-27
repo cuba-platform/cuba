@@ -178,6 +178,7 @@ public class WebFileMultiUploadField extends WebAbstractComponent<CubaMultiUploa
         });
 
         component = uploader;
+        component.setDescription(null);
     }
 
     @Override

@@ -35,6 +35,7 @@ public class WebLogoutButton extends WebAbstractComponent<CubaButton> implements
                 logout();
             }
         });
+        component.setDescription(null);
     }
 
     protected void logout() {

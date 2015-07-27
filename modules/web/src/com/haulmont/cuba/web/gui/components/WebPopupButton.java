@@ -51,6 +51,8 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
 
         vPopupComponent = new CubaPopupButtonLayout();
         component.setContent(vPopupComponent);
+
+        component.setDescription(null);
     }
 
     protected boolean hasVisibleActions() {

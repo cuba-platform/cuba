@@ -21,6 +21,7 @@ public class WebLink extends WebAbstractComponent<com.vaadin.ui.Link> implements
 
     public WebLink() {
         component = new com.vaadin.ui.Link();
+        component.setDescription(null);
     }
 
     @Override

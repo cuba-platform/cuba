@@ -32,6 +32,7 @@ public class WebNewWindowButton extends WebAbstractComponent<CubaButton> impleme
     public WebNewWindowButton() {
         component = new CubaButton();
         component.addStyleName(NEWWINDOW_BUTTON_STYLENAME);
+        component.setDescription(null);
 
         URL pageUrl;
         try {
