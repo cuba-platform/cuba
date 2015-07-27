@@ -129,6 +129,7 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
             if (!doubleClickMode || doubleClickHandling) {
                 super.executeEventCommand(command);
             } else {
+                setSelected();
                 Scheduler.get().scheduleFixedDelay(new Scheduler.RepeatingCommand() {
 
                     private long scheduledTimestamp = System.currentTimeMillis();
@@ -143,6 +144,19 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
                     }
                 }, 250);
             }
+        }
+
+        protected void setSelected() {
+            while (selectedIds.size() > 0) {
+                final String id = selectedIds.iterator().next();
+                final TreeNode oldSelection = getNodeByKey(id);
+                if (oldSelection != null) {
+                    oldSelection.setSelected(false);
+                }
+                selectedIds.remove(id);
+            }
+            selectedIds.add(key);
+            setSelected(true);
         }
 
         @Override
