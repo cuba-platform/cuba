@@ -8,7 +8,11 @@ package com.haulmont.cuba.web.toolkit.ui;
 import com.haulmont.cuba.web.auth.RequestContext;
 import com.haulmont.cuba.web.toolkit.ui.client.multiupload.CubaMultiUploadServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.multiupload.CubaMultiUploadState;
-import com.vaadin.server.*;
+import com.vaadin.annotations.JavaScript;
+import com.vaadin.server.PaintException;
+import com.vaadin.server.PaintTarget;
+import com.vaadin.server.Resource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.LegacyComponent;
 import org.apache.commons.lang.ObjectUtils;
@@ -23,6 +27,7 @@ import java.util.Map;
  * @author artamonov
  * @version $Id$
  */
+@JavaScript(value = "VAADIN/resources/swfobject/swfobject-2.2.js")
 public class CubaMultiUpload extends AbstractComponent implements LegacyComponent {
 
     private List<UploadListener> uploadListeners = new ArrayList<>();

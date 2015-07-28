@@ -37,9 +37,5 @@ public class CubaBootstrapListener implements BootstrapListener {
         Element jquery = response.getDocument().createElement("script");
         jquery.attr("src", "VAADIN/resources/jquery/jquery-1.10.2.min.js");
         head.appendChild(jquery);
-
-        Element swfobject = response.getDocument().createElement("script");
-        swfobject.attr("src", "VAADIN/resources/swfobject/swfobject-2.2.js");
-        head.appendChild(swfobject);
     }
 }
