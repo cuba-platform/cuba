@@ -27,7 +27,7 @@ import java.util.Map;
  * @author artamonov
  * @version $Id$
  */
-@JavaScript(value = "VAADIN/resources/swfobject/swfobject-2.2.js")
+@JavaScript(value = "resources/swfobject/swfobject-2.2.js")
 public class CubaMultiUpload extends AbstractComponent implements LegacyComponent {
 
     private List<UploadListener> uploadListeners = new ArrayList<>();
