@@ -71,6 +71,9 @@
   .cuba-table-presentations-list.v-menubar {
     border: 0;
     height: auto;
+    background: transparent;
+    border-radius: 0px;
+    box-shadow: none;
   }
 
   $menuitem-padding: 4px;
