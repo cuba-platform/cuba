@@ -9,4 +9,6 @@ public interface PresentationsChangeListener {
     void currentPresentationChanged(Presentations presentations, Object oldPresentationId);
 
     void presentationsSetChanged(Presentations presentations);
+
+    void defaultPresentationChanged(Presentations presentations, Object oldPresentationId);
 }

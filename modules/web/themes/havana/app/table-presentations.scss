@@ -48,9 +48,11 @@
       padding-right: 4px;
     }
 
+    $menuitem-padding: 4px;
+
     .cuba-table-presentations-list.v-menubar .v-menubar-menuitem {
       line-height: 18px;
-      padding: 0 2px;
+      padding: 0 2px 0 ($v-font-size + 2 * $menuitem-padding);
       display: block;
 
       .v-menubar-menuitem-caption {
@@ -68,8 +70,17 @@
       }
     }
 
-    .cuba-table-presentations-list.v-menubar .v-menubar-menuitem-current {
+    .cuba-table-presentations-list.v-menubar .cuba-table-presentations-menuitem-default {
+      background: transparent;
+      background-repeat: no-repeat;
+      background-image: url(../icons/star.png);
+    }
+
+    .cuba-table-presentations-list.v-menubar .cuba-table-presentations-menuitem-current {
       font-weight: bold;
+      background: transparent;
+      background-repeat: no-repeat;
+      background-image: url(../icons/ok.png);
     }
   }
 }

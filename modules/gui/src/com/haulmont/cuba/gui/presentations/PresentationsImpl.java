@@ -128,13 +128,17 @@ public class PresentationsImpl implements Presentations {
     public void setDefault(Presentation p) {
         checkLoad();
         if (p == null) {
+            Object old = def;
             def = null;
+            fireDefaultPresentationChanged(old);
         } else if (presentations.containsKey(p.getId())) {
+            Object old = def;
             if (def != null) {
                 def.setDefault(false);
             }
             p.setDefault(true);
             def = p;
+            fireDefaultPresentationChanged(old);
         } else {
             throw new IllegalStateException(String.format("Invalid presentation: %s", p.getId()));
         }
@@ -266,6 +270,14 @@ public class PresentationsImpl implements Presentations {
         if (listeners != null) {
             for (final PresentationsChangeListener listener : listeners) {
                 listener.presentationsSetChanged(this);
+            }
+        }
+    }
+
+    protected void fireDefaultPresentationChanged(Object oldPresentationId) {
+        if (listeners != null) {
+            for (final PresentationsChangeListener listener : listeners) {
+                listener.defaultPresentationChanged(this, oldPresentationId);
             }
         }
     }

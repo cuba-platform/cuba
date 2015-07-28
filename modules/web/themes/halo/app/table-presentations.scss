@@ -73,12 +73,29 @@
     height: auto;
   }
 
+  $menuitem-padding: 4px;
+
   .cuba-table-presentations-list.v-menubar .v-menubar-menuitem {
     display: block;
     border-right: transparent;
+    text-align: left;
+    padding-left: $v-font-size + 2 * $menuitem-padding;
   }
 
-  .cuba-table-presentations-list.v-menubar .v-menubar-menuitem-current {
+  .cuba-table-presentations-list.v-menubar .cuba-table-presentations-menuitem-current {
     font-weight: bold;
+  }
+
+  .cuba-table-presentations-list.v-menubar .cuba-table-presentations-menuitem-default:before {
+    font-family: "FontAwesome";
+    content: "\f006";
+    padding-left: $menuitem-padding;
+  }
+
+  .cuba-table-presentations-list.v-menubar .cuba-table-presentations-menuitem-current:before {
+    font-family: "FontAwesome";
+    content: "\f00c";
+    padding-left: $menuitem-padding;
+    font-weight: normal;
   }
 }

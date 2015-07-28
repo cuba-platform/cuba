@@ -21,16 +21,20 @@ import com.haulmont.cuba.web.toolkit.ui.CubaMenuBar;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.AbstractProperty;
 import com.vaadin.ui.*;
+import org.apache.commons.collections.CollectionUtils;
 import org.dom4j.Element;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author gorodnov
  * @version $Id$
  */
 public class TablePresentations extends VerticalLayout {
+
+    public static final String CUSTOM_STYLE_NAME_PREFIX = "cs";
+    protected static String MENUITEM_STYLE_CURRENT = "cuba-table-presentations-menuitem-current";
+    protected static String MENUITEM_STYLE_DEFAULT = "cuba-table-presentations-menuitem-default";
 
     protected CubaMenuBar menuBar;
     protected WebPopupButton button;
@@ -85,17 +89,78 @@ public class TablePresentations extends VerticalLayout {
             public void presentationsSetChanged(Presentations presentations) {
                 build();
             }
+
+            @Override
+            public void defaultPresentationChanged(Presentations presentations, Object oldPresentationId) {
+                if (presentationsMenuMap != null) {
+                    if (oldPresentationId != null) {
+                        if (oldPresentationId instanceof Presentation)
+                            oldPresentationId = ((Presentation) oldPresentationId).getId();
+
+                        com.vaadin.ui.MenuBar.MenuItem lastMenuItem = presentationsMenuMap.get(oldPresentationId);
+                        if (lastMenuItem != null)
+                            removeDefaultItemStyle(lastMenuItem);
+                    }
+
+                    Presentation defaultPresentation = presentations.getDefault();
+                    if (defaultPresentation != null) {
+                        com.vaadin.ui.MenuBar.MenuItem menuItem = presentationsMenuMap.get(defaultPresentation.getId());
+                        if (menuItem != null)
+                            setDefaultItemStyle(menuItem);
+                    }
+                }
+            }
         });
 
         build();
     }
 
     protected void removeCurrentItemStyle(com.vaadin.ui.MenuBar.MenuItem item) {
-        item.setStyleName("");
+        removeStyleForItem(item, MENUITEM_STYLE_CURRENT);
     }
 
     protected void setCurrentItemStyle(com.vaadin.ui.MenuBar.MenuItem item) {
-        item.setStyleName("current");
+        addStyleForItem(item, MENUITEM_STYLE_CURRENT);
+    }
+
+    protected void removeDefaultItemStyle(com.vaadin.ui.MenuBar.MenuItem item) {
+        removeStyleForItem(item, MENUITEM_STYLE_DEFAULT);
+    }
+
+    protected void setDefaultItemStyle(com.vaadin.ui.MenuBar.MenuItem item) {
+        addStyleForItem(item, MENUITEM_STYLE_DEFAULT);
+        item.setDescription(getMessage("PresentationsPopup.defaultPresentation"));
+    }
+
+    protected void addStyleForItem(com.vaadin.ui.MenuBar.MenuItem item, String styleName) {
+        List<String> styles = new ArrayList<>();
+        String style = item.getStyleName();
+        if (style != null) {
+            CollectionUtils.addAll(styles, style.split(" "));
+        }
+        if (!styles.contains(styleName)) {
+            styles.add(styleName);
+        }
+        applyStylesForItem(item, styles);
+    }
+
+    protected void removeStyleForItem(com.vaadin.ui.MenuBar.MenuItem item, String styleName) {
+        String style = item.getStyleName();
+        if (style != null) {
+            List<String> styles = new ArrayList<>();
+            CollectionUtils.addAll(styles, style.split(" "));
+            styles.remove(styleName);
+            applyStylesForItem(item, styles);
+        }
+    }
+
+    protected void applyStylesForItem(com.vaadin.ui.MenuBar.MenuItem item, List<String> styles) {
+        styles.remove(CUSTOM_STYLE_NAME_PREFIX);
+        String joinedStyle = CUSTOM_STYLE_NAME_PREFIX;
+        for (String style : styles) {
+            joinedStyle += " " + style;
+        }
+        item.setStyleName(joinedStyle);
     }
 
     protected void initLayout() {
@@ -173,6 +238,10 @@ public class TablePresentations extends VerticalLayout {
             final Presentation current = p.getCurrent();
             if (current != null && presId.equals(current.getId())) {
                 setCurrentItemStyle(item);
+            }
+            final Presentation defaultPresentation = p.getDefault();
+            if (defaultPresentation != null && presId.equals(defaultPresentation.getId())) {
+                setDefaultItemStyle(item);
             }
             presentationsMenuMap.put(presId, item);
         }
