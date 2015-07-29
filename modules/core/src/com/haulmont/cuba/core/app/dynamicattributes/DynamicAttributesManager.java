@@ -20,6 +20,8 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewRepository;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
@@ -34,6 +36,8 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 @ManagedBean(DynamicAttributesManagerAPI.NAME)
 public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
+    Log log = LogFactory.getLog(DynamicAttributesManager.class);
+
     @Inject
     protected Metadata metadata;
 
@@ -76,7 +80,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
         loadCacheLock.lock();
         Transaction tx = persistence.createTransaction();
         try {
-            if (stopIfNotNull && dynamicAttributesCache != null){
+            if (stopIfNotNull && dynamicAttributesCache != null) {
                 return;
             }
 
@@ -92,15 +96,20 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
 
             for (Category category : resultList) {
                 MetaClass metaClass = resolveTargetMetaClass(metadata.getSession().getClass(category.getEntityType()));
-                categoriesCache.put(metaClass.getName(), category);
-                Map<String, CategoryAttribute> attributes = attributesCache.get(metaClass.getName());
-                if (attributes == null) {
-                    attributes = new HashMap<>();
-                    attributesCache.put(metaClass.getName(), attributes);
-                }
+                if (metaClass != null) {
+                    categoriesCache.put(metaClass.getName(), category);
+                    Map<String, CategoryAttribute> attributes = attributesCache.get(metaClass.getName());
+                    if (attributes == null) {
+                        attributes = new HashMap<>();
+                        attributesCache.put(metaClass.getName(), attributes);
+                    }
 
-                for (CategoryAttribute categoryAttribute : category.getCategoryAttrs()) {
-                    attributes.put(categoryAttribute.getCode(), categoryAttribute);
+                    for (CategoryAttribute categoryAttribute : category.getCategoryAttrs()) {
+                        attributes.put(categoryAttribute.getCode(), categoryAttribute);
+                    }
+                } else {
+                    log.warn(String.format("Could not resolve meta class name [%s] for the category [%s].",
+                            category.getEntityType(), category.getName()));
                 }
             }
             tx.commit();
@@ -150,6 +159,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
         return this.dynamicAttributesCache;
     }
 
+    @Nullable
     protected MetaClass resolveTargetMetaClass(MetaClass metaClass) {
         if (metaClass == null) {
             return null;
