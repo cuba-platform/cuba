@@ -559,7 +559,7 @@ public class WebFieldGroup
             for (FieldConfig field : readOnlyFields) {
                 Component fieldComponent = getFieldComponent(field.getId());
                 if (fieldComponent instanceof Field) {
-                    ((Field) fieldComponent).setEditable(true);
+                    ((Field) fieldComponent).setEditable(false);
                 } else {
                     com.vaadin.ui.Field fieldImpl = component.getField(field.getId());
                     fieldImpl.setReadOnly(false);
