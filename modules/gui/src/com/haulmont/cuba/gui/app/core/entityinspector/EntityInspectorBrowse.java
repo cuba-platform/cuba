@@ -27,9 +27,12 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.lang.BooleanUtils;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.persistence.*;
 import java.util.*;
 
 /**
@@ -65,9 +68,6 @@ public class EntityInspectorBrowse extends AbstractLookup {
     protected DsContext dsContext;
 
     @Inject
-    protected Filter filter;
-
-    @Inject
     protected Configuration configuration;
 
     @Inject
@@ -79,6 +79,10 @@ public class EntityInspectorBrowse extends AbstractLookup {
     @Inject
     protected CheckBox removedRecords;
 
+    @Inject
+    protected BoxLayout filterBox;
+
+    protected Filter filter;
     protected Table entitiesTable;
 
     /**
@@ -149,6 +153,9 @@ public class EntityInspectorBrowse extends AbstractLookup {
     protected void createEntitiesTable(MetaClass meta) {
         if (entitiesTable != null)
             tableBox.remove(entitiesTable);
+        if (filter != null) {
+            filterBox.remove(filter);
+        }
 
         entitiesTable = componentsFactory.createComponent(Table.NAME);
         entitiesTable.setFrame(frame);
@@ -215,8 +222,25 @@ public class EntityInspectorBrowse extends AbstractLookup {
         entitiesTable.setEnterPressAction(entitiesTable.getAction("edit"));
         entitiesTable.setItemClickAction(entitiesTable.getAction("edit"));
         entitiesTable.setMultiSelect(true);
+
+        createFilter();
+    }
+
+    protected void createFilter() {
+        filter = componentsFactory.createComponent(Filter.NAME);
+        filter.setId("filter");
+        filter.setFrame(frame);
+
+        filterBox.add(filter);
+
+        Element xmlDescriptor = DocumentHelper.createElement("filter");
+        filter.setXmlDescriptor(xmlDescriptor);
+
+        filter.setUseMaxResults(true);
+        filter.setManualApplyRequired(true);
+        filter.setEditable(true);
+
         filter.setDatasource(entitiesDs);
-        filter.setVisible(true);
         ((FilterImplementation)filter).loadFiltersAndApplyDefault();
         filter.apply(true);
     }

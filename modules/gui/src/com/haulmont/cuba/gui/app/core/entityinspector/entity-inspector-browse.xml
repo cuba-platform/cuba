@@ -17,11 +17,7 @@
             <lookupField id="entitiesLookup" width="theme://cuba.gui.EntityInspectorBrowse.entitiesSelect.width"/>
             <checkBox id="removedRecords" caption="msg://showRemovedRecords" align="MIDDLE_LEFT"/>
         </hbox>
-        <vbox id="filterBox" spacing="true">
-            <filter id="filter" visible="false" manualApplyRequired="true">
-                <properties include=".*"/>
-            </filter>
-        </vbox>
+        <vbox id="filterBox" spacing="true"/>
         <vbox id="tableBox"/>
     </layout>
 </window>
