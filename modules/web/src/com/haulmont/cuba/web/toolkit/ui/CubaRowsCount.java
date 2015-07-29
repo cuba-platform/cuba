@@ -32,6 +32,14 @@ public class CubaRowsCount extends CustomComponent {
         layout.addComponent(expander);
         layout.setExpandRatio(expander, 1);
 
+        AbstractOrderedLayout contentLayout = createContentLayout();
+        layout.addComponent(contentLayout);
+
+        layout.setWidth("100%");
+        setWidth("100%");
+    }
+
+    protected AbstractOrderedLayout createContentLayout() {
         HorizontalLayout contentLayout = new HorizontalLayout();
         contentLayout.setSpacing(true);
         contentLayout.setHeight("-1px");
@@ -63,10 +71,7 @@ public class CubaRowsCount extends CustomComponent {
         contentLayout.addComponent(nextButton);
         contentLayout.setComponentAlignment(nextButton, Alignment.MIDDLE_CENTER);
 
-        layout.addComponent(contentLayout);
-
-        layout.setWidth("100%");
-        setWidth("100%");
+        return contentLayout;
     }
 
     public Label getLabel() {
