@@ -40,4 +40,13 @@
       @include valo-selection-item-selected-style;
     }
   }
+
+  .v-disabled.v-button.v-selected {
+    background: transparent;
+    color: inherit;
+  }
+
+  .v-disabled.v-button:active {
+    opacity: 0.5;
+  }
 }

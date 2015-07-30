@@ -62,19 +62,18 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
     @Override
     public void onPreviewNativeEvent(Event.NativePreviewEvent event) {
         NativeEvent nativeEvent = event.getNativeEvent();
-
         if (getWidget().getPopup().isVisible()) {
             Element target = Element.as(nativeEvent.getEventTarget());
             if (getWidget().popupHasChild(target)) {
                 if (event.getTypeInt() == Event.ONKEYDOWN
-                        && nativeEvent.getKeyCode() == KeyCodes.KEY_ESCAPE
+                        && (nativeEvent.getKeyCode() == KeyCodes.KEY_ESCAPE
+                        || nativeEvent.getKeyCode() == KeyCodes.KEY_TAB && isLastChild(target))
                         && !nativeEvent.getAltKey()
                         && !nativeEvent.getCtrlKey()
                         && !nativeEvent.getShiftKey()
                         && !nativeEvent.getMetaKey()) {
-
                     event.cancel();
-
+                    event.getNativeEvent().preventDefault();
                     Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
                         @Override
                         public void execute() {
@@ -162,6 +161,14 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
                     break;
             }
         }
+    }
+
+    private boolean isLastChild(Element target) {
+        Widget widget = WidgetUtil.findWidget(target, null);
+        Widget widgetParent = widget.getParent();
+        VAbstractOrderedLayout layout = (VAbstractOrderedLayout) widgetParent.getParent();
+        int widgetIndex = layout.getWidgetIndex(widgetParent);
+        return widgetIndex == layout.getWidgetCount() - 1;
     }
 
     protected Widget findPrevWidget(VAbstractOrderedLayout layout, int widgetIndex) {

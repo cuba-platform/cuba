@@ -43,9 +43,8 @@
       border: 1px solid transparent;
     }
 
-    .v-disabled.v-button:hover {
+    .v-disabled.v-button.v-selected {
       background: transparent;
-
       .v-button-caption {
         color: #000;
       }

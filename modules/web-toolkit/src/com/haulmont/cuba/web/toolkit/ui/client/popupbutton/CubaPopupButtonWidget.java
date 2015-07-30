@@ -11,6 +11,7 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.client.VConsole;
 import com.vaadin.client.ui.VButton;
 import com.vaadin.client.ui.VUpload;
 import com.vaadin.client.ui.orderedlayout.Slot;
@@ -139,6 +140,9 @@ public class CubaPopupButtonWidget extends VPopupButton {
                         isFocusing = true;
                         event.stopPropagation();
                         return true;
+                    } else if (event.getKeyCode() == KeyCodes.KEY_DOWN) {
+                        isFocusing = true;
+                        event.stopPropagation();
                     }
                     break;
 
@@ -152,6 +156,12 @@ public class CubaPopupButtonWidget extends VPopupButton {
                             event.preventDefault();
                             return true;
                         } else if (event.getKeyCode() == KeyCodes.KEY_ENTER) {
+                            isFocusing = false;
+                            onClick();
+                            event.stopPropagation();
+                            event.preventDefault();
+                            return true;
+                        } else if (event.getKeyCode() == KeyCodes.KEY_DOWN) {
                             isFocusing = false;
                             onClick();
                             event.stopPropagation();
