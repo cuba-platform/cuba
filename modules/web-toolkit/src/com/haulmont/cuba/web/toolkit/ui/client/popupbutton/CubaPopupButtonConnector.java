@@ -67,7 +67,7 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
             if (getWidget().popupHasChild(target)) {
                 if (event.getTypeInt() == Event.ONKEYDOWN
                         && (nativeEvent.getKeyCode() == KeyCodes.KEY_ESCAPE
-                        || nativeEvent.getKeyCode() == KeyCodes.KEY_TAB && isLastChild(target))
+                            || nativeEvent.getKeyCode() == KeyCodes.KEY_TAB && isLastChild(target))
                         && !nativeEvent.getAltKey()
                         && !nativeEvent.getCtrlKey()
                         && !nativeEvent.getShiftKey()
