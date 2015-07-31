@@ -18,6 +18,9 @@ import com.vaadin.client.ui.VWindow;
  */
 public class CubaWindowWidget extends VWindow {
 
+    public static final String MODAL_WINDOW_CLASSNAME = "v-window-modal";
+    public static final String NONMODAL_WINDOW_CLASSNAME = "v-window-nonmodal";
+
     public interface ContextMenuHandler {
         void onContextMenu(Event event);
     }
@@ -27,6 +30,7 @@ public class CubaWindowWidget extends VWindow {
     public CubaWindowWidget() {
         needFocusTopmostModalWindow = false;
         DOM.sinkEvents(header, DOM.getEventsSunk(header) | Event.ONCONTEXTMENU);
+        addStyleName(NONMODAL_WINDOW_CLASSNAME);
     }
 
     @Override
@@ -66,5 +70,23 @@ public class CubaWindowWidget extends VWindow {
         }
 
         super.onCloseClick();
+    }
+
+
+
+    @Override
+    public void setVaadinModality(boolean modality) {
+        super.setVaadinModality(modality);
+        if (modality) {
+            removeStyleName(NONMODAL_WINDOW_CLASSNAME);
+            if (!getStyleName().contains(MODAL_WINDOW_CLASSNAME)) {
+                addStyleName(MODAL_WINDOW_CLASSNAME);
+            }
+        } else {
+            removeStyleName(MODAL_WINDOW_CLASSNAME);
+            if (!getStyleName().contains(NONMODAL_WINDOW_CLASSNAME)) {
+                addStyleName(NONMODAL_WINDOW_CLASSNAME);
+            }
+        }
     }
 }

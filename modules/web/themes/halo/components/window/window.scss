@@ -5,6 +5,8 @@
 
 // Version: $Id$
 
+$v-window-nonmodal-shadow: 0 0 20px rgba(0,0,0,0.5) !default;
+
 @mixin halo-window($primary-stylename: v-window) {
   .#{$primary-stylename}-contents {
     padding-left: round($v-unit-size/2);
@@ -13,6 +15,10 @@
     & > .v-scrollable > .v-layout:first-child {
       padding-top: round($v-unit-size/3);
     }
+  }
+
+  .#{$primary-stylename}-nonmodal {
+    @include box-shadow($v-window-nonmodal-shadow);
   }
 
   .#{$primary-stylename}-footer {
@@ -25,6 +31,25 @@
 
   .#{$primary-stylename}-outerheader {
     border-bottom: valo-border();
+  }
+
+  $background-color: $v-table-background-color or valo-table-background-color();
+
+  .#{$primary-stylename}-outerheader {
+    .#{$primary-stylename}-closebox,
+    .#{$primary-stylename}-header {
+      color: inherit;
+      $bg-lightness: if(color-luminance($background-color) < 10, 4%, -4%);
+      background-color: scale-color($background-color, $lightness: $bg-lightness);
+    }
+    .v-mac & {
+      .#{$primary-stylename}-header {
+        border-top-left-radius: $v-window-border-radius;
+      }
+      .#{$primary-stylename}-closebox {
+        border-bottom-left-radius: 0px;
+      }
+    }
   }
 
   @if ($v-window-animations-enabled == false) {

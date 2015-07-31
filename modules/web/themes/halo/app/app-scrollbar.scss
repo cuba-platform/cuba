@@ -5,7 +5,7 @@
 
 // Version: $Id$
 
-$cuba-scrollbar-background-primary-color: $v-background-color ! default;
+$cuba-scrollbar-background-primary-color: $v-background-color !default;
 $cuba-scrollbar-border-color: first-color(valo-border()) !default;
 
 @mixin cuba-scrollbar {
