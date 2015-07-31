@@ -322,9 +322,9 @@ public class FilterDelegateImpl implements FilterDelegate {
         });
         controlsLayout.add(searchBtn);
 
-        Component gap = componentsFactory.createComponent(Label.class);
-        controlsLayout.add(gap);
-        controlsLayout.expand(gap);
+        controlsLayoutGap = componentsFactory.createComponent(Label.class);
+        controlsLayout.add(controlsLayoutGap);
+        controlsLayout.expand(controlsLayoutGap);
 
         createMaxResultsLayout();
         if (maxResultsDisplayed) {
