@@ -49,22 +49,26 @@ public class CubaResizableTextAreaWidget extends VTextArea {
         this.resizable = resizable;
         if (!composed) {
             if (resizable) {
-                Element parentDiv = DOM.createDiv();
-                Style style = parentDiv.getStyle();
+                if (getElement().getParentElement() != null) {
+                    Element parentDiv = DOM.createDiv();
+                    Style style = parentDiv.getStyle();
 
-                style.setPosition(Style.Position.RELATIVE);
-                style.setOverflow(Style.Overflow.HIDDEN);
-                style.setDisplay(Style.Display.INLINE);
-                style.setVerticalAlign(Style.VerticalAlign.BOTTOM);
+                    style.setPosition(Style.Position.RELATIVE);
+                    style.setOverflow(Style.Overflow.HIDDEN);
+                    style.setDisplay(Style.Display.INLINE);
+                    style.setVerticalAlign(Style.VerticalAlign.BOTTOM);
 
-                parentDiv.setClassName(TEXT_AREA_WRAPPER);
+                    parentDiv.setClassName(TEXT_AREA_WRAPPER);
 
-                getElement().getParentElement().replaceChild(parentDiv,getElement());
-                parentDiv.appendChild(getElement());
-                parentDiv.appendChild(resizeElement);
+                    getElement().getParentElement().replaceChild(parentDiv, getElement());
+                    parentDiv.appendChild(getElement());
+                    parentDiv.appendChild(resizeElement);
 
-                DOM.sinkEvents(resizeElement, MOUSE_EVENTS);
-                DOM.setEventListener(resizeElement, new ResizeEventListener());
+                    DOM.sinkEvents(resizeElement, MOUSE_EVENTS);
+                    DOM.setEventListener(resizeElement, new ResizeEventListener());
+                } else {
+                    getElement().getStyle().setProperty("resize", "vertical");
+                }
             }
             composed = true;
         }
