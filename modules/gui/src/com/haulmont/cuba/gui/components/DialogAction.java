@@ -47,6 +47,11 @@ public class DialogAction extends AbstractAction {
         this.type = type;
     }
 
+    public DialogAction(Type type, boolean primary) {
+        this(type);
+        this.primary = primary;
+    }
+
     @Override
     public String getCaption() {
         return messages.getMainMessage(type.msgKey);
