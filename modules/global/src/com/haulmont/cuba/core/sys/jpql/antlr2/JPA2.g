@@ -196,8 +196,8 @@ orderby_variable
     : path_expression | general_identification_variable | result_variable;
 
 subquery
-    : lp='(SELECT' simple_select_clause subquery_from_clause (where_clause)? (groupby_clause)? (having_clause)? rp=')'
-     -> ^(T_QUERY<QueryNode>[$lp,$rp] simple_select_clause subquery_from_clause (where_clause)? (groupby_clause)? (having_clause)? );
+    : lp='(' 'SELECT' simple_select_clause subquery_from_clause (where_clause)? (groupby_clause)? (having_clause)? rp=')'
+     -> ^(T_QUERY<QueryNode>[$lp,$rp] 'SELECT' simple_select_clause subquery_from_clause (where_clause)? (groupby_clause)? (having_clause)? );
 subquery_from_clause
     : fr='FROM' subselect_identification_variable_declaration (',' subselect_identification_variable_declaration)*
     -> ^(T_SOURCES<FromNode>[$fr] ^(T_SOURCE<SelectionSourceNode> subselect_identification_variable_declaration)*);

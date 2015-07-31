@@ -7,6 +7,7 @@ package com.haulmont.cuba.core.sys.jpql;
 
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Parser;
+import junit.framework.Assert;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.TokenStream;
@@ -30,19 +31,18 @@ public class Jpa2GrammarTest {
         TokenStream tstream = new CommonTokenStream(lexer);
         JPA2Parser jpa2Parser = new JPA2Parser(tstream);
         JPA2Parser.ql_statement_return aReturn = jpa2Parser.ql_statement();
-        System.out.println();
+        Assert.assertNotNull(aReturn);
     }
 
     @Test
     public void testParser2() throws Exception {
         String query = "select sm from sys$SendingMessage sm " +
-                "where sm.status = :statusQueue or (sm.status = :statusSending)" +
-                "order by sm.createTs";
+                "where sm.status=:statusQueue or (sm.status = :statusSending and sm.updateTs<:time) order by sm.createTs";
         CharStream cs = new AntlrNoCaseStringStream(query);
         JPA2Lexer lexer = new JPA2Lexer(cs);
         TokenStream tstream = new CommonTokenStream(lexer);
         JPA2Parser jpa2Parser = new JPA2Parser(tstream);
         JPA2Parser.ql_statement_return aReturn = jpa2Parser.ql_statement();
-        System.out.println(query.substring(60,90));
+        Assert.assertNotNull(aReturn);
     }
 }

@@ -1,4 +1,4 @@
-// $ANTLR 3.5.2 F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g 2015-07-31 12:23:33
+// $ANTLR 3.5.2 F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g 2015-07-31 15:53:23
 
 package com.haulmont.cuba.core.sys.jpql.antlr2;
 
@@ -97,7 +97,6 @@ public class JPA2Lexer extends Lexer {
 	public static final int T__134=134;
 	public static final int T__135=135;
 	public static final int T__136=136;
-	public static final int T__137=137;
 	public static final int AND=4;
 	public static final int ASC=5;
 	public static final int AVG=6;
@@ -627,11 +626,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__53;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:29:7: ( '(SELECT' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:29:9: '(SELECT'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:29:7: ( '*' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:29:9: '*'
 			{
-			match("(SELECT"); 
-
+			match('*'); 
 			}
 
 			state.type = _type;
@@ -648,10 +646,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__54;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:30:7: ( '*' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:30:9: '*'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:30:7: ( '+' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:30:9: '+'
 			{
-			match('*'); 
+			match('+'); 
 			}
 
 			state.type = _type;
@@ -668,10 +666,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__55;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:31:7: ( '+' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:31:9: '+'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:31:7: ( ',' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:31:9: ','
 			{
-			match('+'); 
+			match(','); 
 			}
 
 			state.type = _type;
@@ -688,10 +686,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__56;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:32:7: ( ',' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:32:9: ','
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:32:7: ( '-' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:32:9: '-'
 			{
-			match(','); 
+			match('-'); 
 			}
 
 			state.type = _type;
@@ -708,10 +706,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__57;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:33:7: ( '-' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:33:9: '-'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:33:7: ( '.' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:33:9: '.'
 			{
-			match('-'); 
+			match('.'); 
 			}
 
 			state.type = _type;
@@ -728,10 +726,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__58;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:34:7: ( '.' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:34:9: '.'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:34:7: ( '/' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:34:9: '/'
 			{
-			match('.'); 
+			match('/'); 
 			}
 
 			state.type = _type;
@@ -748,10 +746,11 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__59;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:35:7: ( '/' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:35:9: '/'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:35:7: ( '0x' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:35:9: '0x'
 			{
-			match('/'); 
+			match("0x"); 
+
 			}
 
 			state.type = _type;
@@ -768,11 +767,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__60;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:36:7: ( '0x' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:36:9: '0x'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:36:7: ( '<' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:36:9: '<'
 			{
-			match("0x"); 
-
+			match('<'); 
 			}
 
 			state.type = _type;
@@ -789,10 +787,11 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__61;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:37:7: ( '<' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:37:9: '<'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:37:7: ( '<=' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:37:9: '<='
 			{
-			match('<'); 
+			match("<="); 
+
 			}
 
 			state.type = _type;
@@ -809,10 +808,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__62;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:38:7: ( '<=' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:38:9: '<='
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:38:7: ( '<>' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:38:9: '<>'
 			{
-			match("<="); 
+			match("<>"); 
 
 			}
 
@@ -830,11 +829,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__63;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:39:7: ( '<>' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:39:9: '<>'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:39:7: ( '=' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:39:9: '='
 			{
-			match("<>"); 
-
+			match('='); 
 			}
 
 			state.type = _type;
@@ -851,10 +849,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__64;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:40:7: ( '=' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:40:9: '='
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:40:7: ( '>' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:40:9: '>'
 			{
-			match('='); 
+			match('>'); 
 			}
 
 			state.type = _type;
@@ -871,10 +869,11 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__65;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:41:7: ( '>' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:41:9: '>'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:41:7: ( '>=' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:41:9: '>='
 			{
-			match('>'); 
+			match(">="); 
+
 			}
 
 			state.type = _type;
@@ -891,11 +890,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__66;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:42:7: ( '>=' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:42:9: '>='
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:42:7: ( '?' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:42:9: '?'
 			{
-			match(">="); 
-
+			match('?'); 
 			}
 
 			state.type = _type;
@@ -912,10 +910,11 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__67;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:43:7: ( '?' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:43:9: '?'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:43:7: ( '@BETWEEN' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:43:9: '@BETWEEN'
 			{
-			match('?'); 
+			match("@BETWEEN"); 
+
 			}
 
 			state.type = _type;
@@ -932,10 +931,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__68;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:44:7: ( '@BETWEEN' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:44:9: '@BETWEEN'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:44:7: ( '@DATEAFTER' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:44:9: '@DATEAFTER'
 			{
-			match("@BETWEEN"); 
+			match("@DATEAFTER"); 
 
 			}
 
@@ -953,10 +952,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__69;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:45:7: ( '@DATEAFTER' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:45:9: '@DATEAFTER'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:45:7: ( '@DATEBEFORE' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:45:9: '@DATEBEFORE'
 			{
-			match("@DATEAFTER"); 
+			match("@DATEBEFORE"); 
 
 			}
 
@@ -974,10 +973,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__70;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:46:7: ( '@DATEBEFORE' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:46:9: '@DATEBEFORE'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:46:7: ( '@DATEEQUALS' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:46:9: '@DATEEQUALS'
 			{
-			match("@DATEBEFORE"); 
+			match("@DATEEQUALS"); 
 
 			}
 
@@ -995,10 +994,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__71;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:47:7: ( '@DATEEQUALS' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:47:9: '@DATEEQUALS'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:47:7: ( '@TODAY' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:47:9: '@TODAY'
 			{
-			match("@DATEEQUALS"); 
+			match("@TODAY"); 
 
 			}
 
@@ -1016,10 +1015,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__72;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:48:7: ( '@TODAY' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:48:9: '@TODAY'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:48:7: ( 'ABS(' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:48:9: 'ABS('
 			{
-			match("@TODAY"); 
+			match("ABS("); 
 
 			}
 
@@ -1037,10 +1036,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__73;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:49:7: ( 'ABS(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:49:9: 'ABS('
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:49:7: ( 'ALL' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:49:9: 'ALL'
 			{
-			match("ABS("); 
+			match("ALL"); 
 
 			}
 
@@ -1058,10 +1057,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__74;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:50:7: ( 'ALL' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:50:9: 'ALL'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:50:7: ( 'ANY' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:50:9: 'ANY'
 			{
-			match("ALL"); 
+			match("ANY"); 
 
 			}
 
@@ -1079,10 +1078,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__75;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:51:7: ( 'ANY' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:51:9: 'ANY'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:51:7: ( 'AS' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:51:9: 'AS'
 			{
-			match("ANY"); 
+			match("AS"); 
 
 			}
 
@@ -1100,10 +1099,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__76;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:52:7: ( 'AS' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:52:9: 'AS'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:52:7: ( 'BETWEEN' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:52:9: 'BETWEEN'
 			{
-			match("AS"); 
+			match("BETWEEN"); 
 
 			}
 
@@ -1121,10 +1120,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__77;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:53:7: ( 'BETWEEN' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:53:9: 'BETWEEN'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:53:7: ( 'BOTH' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:53:9: 'BOTH'
 			{
-			match("BETWEEN"); 
+			match("BOTH"); 
 
 			}
 
@@ -1142,10 +1141,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__78;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:54:7: ( 'BOTH' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:54:9: 'BOTH'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:54:7: ( 'CASE' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:54:9: 'CASE'
 			{
-			match("BOTH"); 
+			match("CASE"); 
 
 			}
 
@@ -1163,10 +1162,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__79;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:55:7: ( 'CASE' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:55:9: 'CASE'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:55:7: ( 'COALESCE(' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:55:9: 'COALESCE('
 			{
-			match("CASE"); 
+			match("COALESCE("); 
 
 			}
 
@@ -1184,10 +1183,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__80;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:56:7: ( 'COALESCE(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:56:9: 'COALESCE('
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:56:7: ( 'CONCAT(' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:56:9: 'CONCAT('
 			{
-			match("COALESCE("); 
+			match("CONCAT("); 
 
 			}
 
@@ -1205,10 +1204,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__81;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:57:7: ( 'CONCAT(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:57:9: 'CONCAT('
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:57:7: ( 'CURRENT_DATE' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:57:9: 'CURRENT_DATE'
 			{
-			match("CONCAT("); 
+			match("CURRENT_DATE"); 
 
 			}
 
@@ -1226,10 +1225,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__82;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:58:7: ( 'CURRENT_DATE' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:58:9: 'CURRENT_DATE'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:58:7: ( 'CURRENT_TIME' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:58:9: 'CURRENT_TIME'
 			{
-			match("CURRENT_DATE"); 
+			match("CURRENT_TIME"); 
 
 			}
 
@@ -1247,10 +1246,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__83;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:59:7: ( 'CURRENT_TIME' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:59:9: 'CURRENT_TIME'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:59:7: ( 'CURRENT_TIMESTAMP' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:59:9: 'CURRENT_TIMESTAMP'
 			{
-			match("CURRENT_TIME"); 
+			match("CURRENT_TIMESTAMP"); 
 
 			}
 
@@ -1268,10 +1267,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__84;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:60:7: ( 'CURRENT_TIMESTAMP' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:60:9: 'CURRENT_TIMESTAMP'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:60:7: ( 'DAY' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:60:9: 'DAY'
 			{
-			match("CURRENT_TIMESTAMP"); 
+			match("DAY"); 
 
 			}
 
@@ -1289,10 +1288,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__85;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:61:7: ( 'DAY' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:61:9: 'DAY'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:61:7: ( 'DELETE' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:61:9: 'DELETE'
 			{
-			match("DAY"); 
+			match("DELETE"); 
 
 			}
 
@@ -1310,10 +1309,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__86;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:62:7: ( 'DELETE' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:62:9: 'DELETE'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:62:7: ( 'ELSE' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:62:9: 'ELSE'
 			{
-			match("DELETE"); 
+			match("ELSE"); 
 
 			}
 
@@ -1331,10 +1330,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__87;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:63:7: ( 'ELSE' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:63:9: 'ELSE'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:63:7: ( 'EMPTY' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:63:9: 'EMPTY'
 			{
-			match("ELSE"); 
+			match("EMPTY"); 
 
 			}
 
@@ -1352,10 +1351,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__88;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:64:7: ( 'EMPTY' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:64:9: 'EMPTY'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:64:7: ( 'END' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:64:9: 'END'
 			{
-			match("EMPTY"); 
+			match("END"); 
 
 			}
 
@@ -1373,10 +1372,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__89;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:65:7: ( 'END' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:65:9: 'END'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:65:7: ( 'ENTRY(' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:65:9: 'ENTRY('
 			{
-			match("END"); 
+			match("ENTRY("); 
 
 			}
 
@@ -1394,10 +1393,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__90;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:66:7: ( 'ENTRY(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:66:9: 'ENTRY('
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:66:7: ( 'ESCAPE' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:66:9: 'ESCAPE'
 			{
-			match("ENTRY("); 
+			match("ESCAPE"); 
 
 			}
 
@@ -1415,10 +1414,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__91;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:67:7: ( 'ESCAPE' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:67:9: 'ESCAPE'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:67:7: ( 'EXISTS' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:67:9: 'EXISTS'
 			{
-			match("ESCAPE"); 
+			match("EXISTS"); 
 
 			}
 
@@ -1436,10 +1435,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__92;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:68:7: ( 'EXISTS' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:68:9: 'EXISTS'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:68:7: ( 'FROM' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:68:9: 'FROM'
 			{
-			match("EXISTS"); 
+			match("FROM"); 
 
 			}
 
@@ -1457,10 +1456,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__93;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:69:7: ( 'FROM' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:69:9: 'FROM'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:69:7: ( 'FUNCTION(' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:69:9: 'FUNCTION('
 			{
-			match("FROM"); 
+			match("FUNCTION("); 
 
 			}
 
@@ -1478,10 +1477,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__94;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:70:7: ( 'FUNCTION(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:70:9: 'FUNCTION('
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:70:7: ( 'HOUR' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:70:9: 'HOUR'
 			{
-			match("FUNCTION("); 
+			match("HOUR"); 
 
 			}
 
@@ -1499,10 +1498,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__95;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:71:7: ( 'HOUR' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:71:9: 'HOUR'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:71:7: ( 'IN' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:71:9: 'IN'
 			{
-			match("HOUR"); 
+			match("IN"); 
 
 			}
 
@@ -1520,10 +1519,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__96;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:72:7: ( 'IN' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:72:9: 'IN'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:72:7: ( 'INDEX(' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:72:9: 'INDEX('
 			{
-			match("IN"); 
+			match("INDEX("); 
 
 			}
 
@@ -1541,10 +1540,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__97;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:73:7: ( 'INDEX(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:73:9: 'INDEX('
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:73:7: ( 'IS' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:73:9: 'IS'
 			{
-			match("INDEX("); 
+			match("IS"); 
 
 			}
 
@@ -1562,10 +1561,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__98;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:74:7: ( 'IS' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:74:9: 'IS'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:74:7: ( 'KEY(' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:74:9: 'KEY('
 			{
-			match("IS"); 
+			match("KEY("); 
 
 			}
 
@@ -1583,10 +1582,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__99;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:75:7: ( 'KEY(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:75:9: 'KEY('
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:75:7: ( 'LEADING' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:75:9: 'LEADING'
 			{
-			match("KEY("); 
+			match("LEADING"); 
 
 			}
 
@@ -1604,10 +1603,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__100;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:76:8: ( 'LEADING' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:76:10: 'LEADING'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:76:8: ( 'LENGTH(' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:76:10: 'LENGTH('
 			{
-			match("LEADING"); 
+			match("LENGTH("); 
 
 			}
 
@@ -1625,10 +1624,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__101;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:77:8: ( 'LENGTH(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:77:10: 'LENGTH('
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:77:8: ( 'LIKE' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:77:10: 'LIKE'
 			{
-			match("LENGTH("); 
+			match("LIKE"); 
 
 			}
 
@@ -1646,10 +1645,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__102;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:78:8: ( 'LIKE' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:78:10: 'LIKE'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:78:8: ( 'LOCATE(' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:78:10: 'LOCATE('
 			{
-			match("LIKE"); 
+			match("LOCATE("); 
 
 			}
 
@@ -1667,10 +1666,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__103;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:79:8: ( 'LOCATE(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:79:10: 'LOCATE('
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:79:8: ( 'LOWER(' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:79:10: 'LOWER('
 			{
-			match("LOCATE("); 
+			match("LOWER("); 
 
 			}
 
@@ -1688,10 +1687,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__104;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:80:8: ( 'LOWER(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:80:10: 'LOWER('
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:80:8: ( 'MEMBER' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:80:10: 'MEMBER'
 			{
-			match("LOWER("); 
+			match("MEMBER"); 
 
 			}
 
@@ -1709,10 +1708,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__105;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:81:8: ( 'MEMBER' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:81:10: 'MEMBER'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:81:8: ( 'MINUTE' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:81:10: 'MINUTE'
 			{
-			match("MEMBER"); 
+			match("MINUTE"); 
 
 			}
 
@@ -1730,10 +1729,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__106;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:82:8: ( 'MINUTE' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:82:10: 'MINUTE'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:82:8: ( 'MOD(' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:82:10: 'MOD('
 			{
-			match("MINUTE"); 
+			match("MOD("); 
 
 			}
 
@@ -1751,10 +1750,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__107;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:83:8: ( 'MOD(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:83:10: 'MOD('
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:83:8: ( 'MONTH' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:83:10: 'MONTH'
 			{
-			match("MOD("); 
+			match("MONTH"); 
 
 			}
 
@@ -1772,10 +1771,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__108;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:84:8: ( 'MONTH' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:84:10: 'MONTH'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:84:8: ( 'NEW' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:84:10: 'NEW'
 			{
-			match("MONTH"); 
+			match("NEW"); 
 
 			}
 
@@ -1793,10 +1792,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__109;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:85:8: ( 'NEW' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:85:10: 'NEW'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:85:8: ( 'NOT' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:85:10: 'NOT'
 			{
-			match("NEW"); 
+			match("NOT"); 
 
 			}
 
@@ -1814,10 +1813,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__110;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:86:8: ( 'NOT' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:86:10: 'NOT'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:86:8: ( 'NOW' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:86:10: 'NOW'
 			{
-			match("NOT"); 
+			match("NOW"); 
 
 			}
 
@@ -1835,10 +1834,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__111;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:87:8: ( 'NOW' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:87:10: 'NOW'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:87:8: ( 'NULL' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:87:10: 'NULL'
 			{
-			match("NOW"); 
+			match("NULL"); 
 
 			}
 
@@ -1856,10 +1855,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__112;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:88:8: ( 'NULL' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:88:10: 'NULL'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:88:8: ( 'NULLIF(' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:88:10: 'NULLIF('
 			{
-			match("NULL"); 
+			match("NULLIF("); 
 
 			}
 
@@ -1877,10 +1876,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__113;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:89:8: ( 'NULLIF(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:89:10: 'NULLIF('
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:89:8: ( 'OBJECT' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:89:10: 'OBJECT'
 			{
-			match("NULLIF("); 
+			match("OBJECT"); 
 
 			}
 
@@ -1898,10 +1897,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__114;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:90:8: ( 'OBJECT' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:90:10: 'OBJECT'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:90:8: ( 'OF' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:90:10: 'OF'
 			{
-			match("OBJECT"); 
+			match("OF"); 
 
 			}
 
@@ -1919,10 +1918,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__115;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:91:8: ( 'OF' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:91:10: 'OF'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:91:8: ( 'ON' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:91:10: 'ON'
 			{
-			match("OF"); 
+			match("ON"); 
 
 			}
 
@@ -1940,10 +1939,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__116;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:92:8: ( 'ON' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:92:10: 'ON'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:92:8: ( 'SECOND' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:92:10: 'SECOND'
 			{
-			match("ON"); 
+			match("SECOND"); 
 
 			}
 
@@ -1961,10 +1960,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__117;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:93:8: ( 'SECOND' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:93:10: 'SECOND'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:93:8: ( 'SELECT' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:93:10: 'SELECT'
 			{
-			match("SECOND"); 
+			match("SELECT"); 
 
 			}
 
@@ -1982,10 +1981,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__118;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:94:8: ( 'SELECT' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:94:10: 'SELECT'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:94:8: ( 'SET' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:94:10: 'SET'
 			{
-			match("SELECT"); 
+			match("SET"); 
 
 			}
 
@@ -2003,10 +2002,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__119;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:95:8: ( 'SET' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:95:10: 'SET'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:95:8: ( 'SIZE(' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:95:10: 'SIZE('
 			{
-			match("SET"); 
+			match("SIZE("); 
 
 			}
 
@@ -2024,10 +2023,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__120;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:96:8: ( 'SIZE(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:96:10: 'SIZE('
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:96:8: ( 'SOME' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:96:10: 'SOME'
 			{
-			match("SIZE("); 
+			match("SOME"); 
 
 			}
 
@@ -2045,10 +2044,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__121;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:97:8: ( 'SOME' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:97:10: 'SOME'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:97:8: ( 'SQRT(' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:97:10: 'SQRT('
 			{
-			match("SOME"); 
+			match("SQRT("); 
 
 			}
 
@@ -2066,10 +2065,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__122;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:98:8: ( 'SQRT(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:98:10: 'SQRT('
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:98:8: ( 'SUBSTRING(' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:98:10: 'SUBSTRING('
 			{
-			match("SQRT("); 
+			match("SUBSTRING("); 
 
 			}
 
@@ -2087,10 +2086,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__123;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:99:8: ( 'SUBSTRING(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:99:10: 'SUBSTRING('
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:99:8: ( 'THEN' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:99:10: 'THEN'
 			{
-			match("SUBSTRING("); 
+			match("THEN"); 
 
 			}
 
@@ -2108,10 +2107,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__124;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:100:8: ( 'THEN' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:100:10: 'THEN'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:100:8: ( 'TRAILING' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:100:10: 'TRAILING'
 			{
-			match("THEN"); 
+			match("TRAILING"); 
 
 			}
 
@@ -2129,10 +2128,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__125;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:101:8: ( 'TRAILING' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:101:10: 'TRAILING'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:101:8: ( 'TREAT(' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:101:10: 'TREAT('
 			{
-			match("TRAILING"); 
+			match("TREAT("); 
 
 			}
 
@@ -2150,10 +2149,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__126;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:102:8: ( 'TREAT(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:102:10: 'TREAT('
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:102:8: ( 'TRIM(' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:102:10: 'TRIM('
 			{
-			match("TREAT("); 
+			match("TRIM("); 
 
 			}
 
@@ -2171,10 +2170,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__127;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:103:8: ( 'TRIM(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:103:10: 'TRIM('
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:103:8: ( 'TYPE' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:103:10: 'TYPE'
 			{
-			match("TRIM("); 
+			match("TYPE"); 
 
 			}
 
@@ -2192,10 +2191,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__128;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:104:8: ( 'TYPE' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:104:10: 'TYPE'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:104:8: ( 'UPDATE' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:104:10: 'UPDATE'
 			{
-			match("TYPE"); 
+			match("UPDATE"); 
 
 			}
 
@@ -2213,10 +2212,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__129;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:105:8: ( 'UPDATE' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:105:10: 'UPDATE'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:105:8: ( 'UPPER(' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:105:10: 'UPPER('
 			{
-			match("UPDATE"); 
+			match("UPPER("); 
 
 			}
 
@@ -2234,10 +2233,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__130;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:106:8: ( 'UPPER(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:106:10: 'UPPER('
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:106:8: ( 'VALUE(' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:106:10: 'VALUE('
 			{
-			match("UPPER("); 
+			match("VALUE("); 
 
 			}
 
@@ -2255,10 +2254,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__131;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:107:8: ( 'VALUE(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:107:10: 'VALUE('
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:107:8: ( 'WHEN' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:107:10: 'WHEN'
 			{
-			match("VALUE("); 
+			match("WHEN"); 
 
 			}
 
@@ -2276,10 +2275,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__132;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:108:8: ( 'WHEN' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:108:10: 'WHEN'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:108:8: ( 'WHERE' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:108:10: 'WHERE'
 			{
-			match("WHEN"); 
+			match("WHERE"); 
 
 			}
 
@@ -2297,10 +2296,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__133;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:109:8: ( 'WHERE' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:109:10: 'WHERE'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:109:8: ( 'YEAR' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:109:10: 'YEAR'
 			{
-			match("WHERE"); 
+			match("YEAR"); 
 
 			}
 
@@ -2318,10 +2317,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__134;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:110:8: ( 'YEAR' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:110:10: 'YEAR'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:110:8: ( 'false' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:110:10: 'false'
 			{
-			match("YEAR"); 
+			match("false"); 
 
 			}
 
@@ -2339,10 +2338,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__135;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:111:8: ( 'false' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:111:10: 'false'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:111:8: ( 'true' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:111:10: 'true'
 			{
-			match("false"); 
+			match("true"); 
 
 			}
 
@@ -2360,29 +2359,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__136;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:112:8: ( 'true' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:112:10: 'true'
-			{
-			match("true"); 
-
-			}
-
-			state.type = _type;
-			state.channel = _channel;
-		}
-		finally {
-			// do for sure before leaving
-		}
-	}
-	// $ANTLR end "T__136"
-
-	// $ANTLR start "T__137"
-	public final void mT__137() throws RecognitionException {
-		try {
-			int _type = T__137;
-			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:113:8: ( '}' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:113:10: '}'
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:112:8: ( '}' )
+			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:112:10: '}'
 			{
 			match('}'); 
 			}
@@ -2394,7 +2372,7 @@ public class JPA2Lexer extends Lexer {
 			// do for sure before leaving
 		}
 	}
-	// $ANTLR end "T__137"
+	// $ANTLR end "T__136"
 
 	// $ANTLR start "TRIM_CHARACTER"
 	public final void mTRIM_CHARACTER() throws RecognitionException {
@@ -2903,8 +2881,8 @@ public class JPA2Lexer extends Lexer {
 
 	@Override
 	public void mTokens() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:8: ( AND | ASC | AVG | BY | COUNT | DESC | DISTINCT | FETCH | GROUP | HAVING | INNER | JOIN | LEFT | LPAREN | MAX | MIN | OR | ORDER | OUTER | RPAREN | SUM | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | T__102 | T__103 | T__104 | T__105 | T__106 | T__107 | T__108 | T__109 | T__110 | T__111 | T__112 | T__113 | T__114 | T__115 | T__116 | T__117 | T__118 | T__119 | T__120 | T__121 | T__122 | T__123 | T__124 | T__125 | T__126 | T__127 | T__128 | T__129 | T__130 | T__131 | T__132 | T__133 | T__134 | T__135 | T__136 | T__137 | TRIM_CHARACTER | STRING_LITERAL | WORD | RUSSIAN_SYMBOLS | NAMED_PARAMETER | WS | COMMENT | LINE_COMMENT | ESCAPE_CHARACTER | INT_NUMERAL )
-		int alt10=117;
+		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:8: ( AND | ASC | AVG | BY | COUNT | DESC | DISTINCT | FETCH | GROUP | HAVING | INNER | JOIN | LEFT | LPAREN | MAX | MIN | OR | ORDER | OUTER | RPAREN | SUM | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | T__102 | T__103 | T__104 | T__105 | T__106 | T__107 | T__108 | T__109 | T__110 | T__111 | T__112 | T__113 | T__114 | T__115 | T__116 | T__117 | T__118 | T__119 | T__120 | T__121 | T__122 | T__123 | T__124 | T__125 | T__126 | T__127 | T__128 | T__129 | T__130 | T__131 | T__132 | T__133 | T__134 | T__135 | T__136 | TRIM_CHARACTER | STRING_LITERAL | WORD | RUSSIAN_SYMBOLS | NAMED_PARAMETER | WS | COMMENT | LINE_COMMENT | ESCAPE_CHARACTER | INT_NUMERAL )
+		int alt10=116;
 		alt10 = dfa10.predict(input);
 		switch (alt10) {
 			case 1 :
@@ -3650,77 +3628,70 @@ public class JPA2Lexer extends Lexer {
 				}
 				break;
 			case 107 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:668: T__137
-				{
-				mT__137(); 
-
-				}
-				break;
-			case 108 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:675: TRIM_CHARACTER
+				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:668: TRIM_CHARACTER
 				{
 				mTRIM_CHARACTER(); 
 
 				}
 				break;
-			case 109 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:690: STRING_LITERAL
+			case 108 :
+				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:683: STRING_LITERAL
 				{
 				mSTRING_LITERAL(); 
 
 				}
 				break;
-			case 110 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:705: WORD
+			case 109 :
+				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:698: WORD
 				{
 				mWORD(); 
 
 				}
 				break;
-			case 111 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:710: RUSSIAN_SYMBOLS
+			case 110 :
+				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:703: RUSSIAN_SYMBOLS
 				{
 				mRUSSIAN_SYMBOLS(); 
 
 				}
 				break;
-			case 112 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:726: NAMED_PARAMETER
+			case 111 :
+				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:719: NAMED_PARAMETER
 				{
 				mNAMED_PARAMETER(); 
 
 				}
 				break;
-			case 113 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:742: WS
+			case 112 :
+				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:735: WS
 				{
 				mWS(); 
 
 				}
 				break;
-			case 114 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:745: COMMENT
+			case 113 :
+				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:738: COMMENT
 				{
 				mCOMMENT(); 
 
 				}
 				break;
-			case 115 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:753: LINE_COMMENT
+			case 114 :
+				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:746: LINE_COMMENT
 				{
 				mLINE_COMMENT(); 
 
 				}
 				break;
-			case 116 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:766: ESCAPE_CHARACTER
+			case 115 :
+				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:759: ESCAPE_CHARACTER
 				{
 				mESCAPE_CHARACTER(); 
 
 				}
 				break;
-			case 117 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:783: INT_NUMERAL
+			case 116 :
+				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:776: INT_NUMERAL
 				{
 				mINT_NUMERAL(); 
 
@@ -3733,45 +3704,44 @@ public class JPA2Lexer extends Lexer {
 
 	protected DFA10 dfa10 = new DFA10(this);
 	static final String DFA10_eotS =
-		"\1\uffff\12\51\1\111\2\51\1\uffff\1\51\6\uffff\1\132\1\55\1\136\1\uffff"+
-		"\1\140\2\uffff\12\51\7\uffff\1\51\1\175\3\51\1\u0081\16\51\1\u0095\1\u0096"+
-		"\4\51\2\uffff\4\51\1\u00a4\2\51\1\u00a7\1\u00a8\5\51\14\uffff\22\51\4"+
-		"\uffff\1\u00cb\1\u00cc\1\u00cd\1\uffff\1\u00ce\1\51\1\u00d0\1\uffff\12"+
-		"\51\1\u00db\10\51\2\uffff\7\51\1\u00eb\1\u00ed\4\51\1\uffff\2\51\2\uffff"+
-		"\1\u00f4\3\51\1\u00f8\3\51\1\uffff\2\51\1\u00ff\4\51\1\u0104\1\u0105\1"+
-		"\u0106\15\51\10\uffff\1\51\1\u0117\3\51\1\u011b\1\51\1\u011d\2\51\1\uffff"+
-		"\1\51\1\u0121\3\51\1\u0125\2\51\1\u0128\1\u0129\2\51\1\u012c\2\51\1\uffff"+
-		"\1\51\1\uffff\1\51\1\uffff\4\51\1\uffff\3\51\1\uffff\1\51\1\u0139\1\51"+
-		"\1\uffff\1\u013c\1\51\1\uffff\3\51\4\uffff\1\u0142\1\u0143\3\51\1\u0147"+
-		"\3\51\1\u014b\1\51\1\u014d\1\51\1\u014f\1\uffff\1\51\1\uffff\1\u0151\2"+
-		"\51\1\uffff\1\51\1\uffff\2\51\1\u0157\1\uffff\1\51\1\u0159\1\51\1\uffff"+
-		"\1\u015b\1\51\2\uffff\2\51\1\uffff\4\51\1\u0163\1\u0164\1\u0165\4\51\5"+
-		"\uffff\1\u016d\4\51\2\uffff\2\51\2\uffff\3\51\1\uffff\1\u0177\1\uffff"+
-		"\1\u0178\1\uffff\1\51\1\uffff\3\51\1\u017d\1\51\1\uffff\1\51\1\uffff\1"+
-		"\u0180\2\uffff\3\51\1\uffff\1\u0184\1\u0185\3\uffff\1\u0186\1\51\1\u0188"+
-		"\1\u0189\5\uffff\1\u018a\1\u018b\2\51\1\uffff\1\u018e\4\uffff\1\u018f"+
-		"\1\51\1\uffff\1\51\1\uffff\2\51\1\uffff\1\u0194\5\uffff\1\51\5\uffff\1"+
-		"\51\2\uffff\2\51\1\u019a\1\51\1\uffff\1\51\1\u019d\1\uffff\2\51\2\uffff"+
-		"\1\51\1\uffff\2\51\1\uffff\2\51\1\u01a5\1\u01a7\1\uffff\1\51\1\uffff\3"+
-		"\51\1\u01ac\1\uffff";
+		"\1\uffff\12\51\1\uffff\2\51\1\uffff\1\51\6\uffff\1\130\1\55\1\134\1\uffff"+
+		"\1\136\2\uffff\12\51\7\uffff\1\51\1\173\3\51\1\177\16\51\1\u0093\1\u0094"+
+		"\10\51\1\u00a2\2\51\1\u00a5\1\u00a6\5\51\14\uffff\22\51\4\uffff\1\u00c9"+
+		"\1\u00ca\1\u00cb\1\uffff\1\u00cc\1\51\1\u00ce\1\uffff\12\51\1\u00d9\10"+
+		"\51\2\uffff\7\51\1\u00e9\1\u00eb\4\51\1\uffff\2\51\2\uffff\1\u00f2\3\51"+
+		"\1\u00f6\3\51\1\uffff\2\51\1\u00fd\4\51\1\u0102\1\u0103\1\u0104\15\51"+
+		"\10\uffff\1\51\1\u0115\3\51\1\u0119\1\51\1\u011b\2\51\1\uffff\1\51\1\u011f"+
+		"\3\51\1\u0123\2\51\1\u0126\1\u0127\2\51\1\u012a\2\51\1\uffff\1\51\1\uffff"+
+		"\1\51\1\uffff\4\51\1\uffff\3\51\1\uffff\1\51\1\u0137\1\51\1\uffff\1\u013a"+
+		"\1\51\1\uffff\3\51\4\uffff\1\u0140\1\u0141\3\51\1\u0145\3\51\1\u0149\1"+
+		"\51\1\u014b\1\51\1\u014d\1\uffff\1\51\1\uffff\1\u014f\2\51\1\uffff\1\51"+
+		"\1\uffff\2\51\1\u0155\1\uffff\1\51\1\u0157\1\51\1\uffff\1\u0159\1\51\2"+
+		"\uffff\2\51\1\uffff\4\51\1\u0161\1\u0162\1\u0163\4\51\5\uffff\1\u016b"+
+		"\4\51\2\uffff\2\51\2\uffff\3\51\1\uffff\1\u0175\1\uffff\1\u0176\1\uffff"+
+		"\1\51\1\uffff\3\51\1\u017b\1\51\1\uffff\1\51\1\uffff\1\u017e\2\uffff\3"+
+		"\51\1\uffff\1\u0182\1\u0183\3\uffff\1\u0184\1\51\1\u0186\1\u0187\5\uffff"+
+		"\1\u0188\1\u0189\2\51\1\uffff\1\u018c\4\uffff\1\u018d\1\51\1\uffff\1\51"+
+		"\1\uffff\2\51\1\uffff\1\u0192\5\uffff\1\51\5\uffff\1\51\2\uffff\2\51\1"+
+		"\u0198\1\51\1\uffff\1\51\1\u019b\1\uffff\2\51\2\uffff\1\51\1\uffff\2\51"+
+		"\1\uffff\2\51\1\u01a3\1\u01a5\1\uffff\1\51\1\uffff\3\51\1\u01aa\1\uffff";
 	static final String DFA10_eofS =
-		"\u01ad\uffff";
+		"\u01ab\uffff";
 	static final String DFA10_minS =
-		"\1\11\1\102\1\105\2\101\1\105\1\122\1\101\1\116\1\117\1\105\1\123\1\101"+
-		"\1\102\1\uffff\1\105\6\uffff\1\52\1\170\1\75\1\uffff\1\75\1\uffff\1\102"+
-		"\1\114\2\105\1\110\1\120\1\101\1\110\1\105\1\141\1\162\1\uffff\1\0\5\uffff"+
-		"\1\104\1\44\1\107\1\123\1\114\1\44\2\124\1\101\1\123\1\122\1\114\1\123"+
-		"\1\131\1\124\1\117\1\116\1\117\1\126\1\125\2\44\1\111\1\101\1\113\1\103"+
-		"\2\uffff\1\130\1\116\1\115\1\104\1\44\1\124\1\112\2\44\1\102\1\103\1\132"+
-		"\1\115\1\122\12\uffff\1\101\1\uffff\1\123\1\120\1\104\1\103\1\111\1\131"+
-		"\1\127\1\124\1\114\1\105\1\101\1\120\1\104\1\114\1\105\1\101\1\154\1\165"+
-		"\2\0\2\uffff\3\44\1\uffff\1\44\1\50\1\44\1\uffff\1\127\1\110\1\116\1\114"+
-		"\1\103\1\105\1\122\1\103\1\105\1\124\1\44\1\103\1\115\1\103\1\125\1\111"+
-		"\1\122\2\105\2\uffff\1\116\1\124\1\104\1\107\1\105\1\101\1\105\2\44\1"+
-		"\102\1\50\1\124\1\105\1\uffff\2\105\2\uffff\1\44\1\123\1\117\1\105\1\44"+
-		"\2\105\2\124\1\105\1\124\1\44\1\122\1\101\1\123\1\50\3\44\1\114\1\116"+
-		"\1\111\1\101\1\115\1\105\1\101\1\105\1\125\1\116\1\122\1\163\1\145\10"+
-		"\uffff\1\105\1\44\1\124\1\105\1\101\1\44\1\105\1\44\1\124\1\111\1\uffff"+
+		"\1\11\1\102\1\105\2\101\1\105\1\122\1\101\1\116\1\117\1\105\1\uffff\1"+
+		"\101\1\102\1\uffff\1\105\6\uffff\1\52\1\170\1\75\1\uffff\1\75\1\uffff"+
+		"\1\102\1\114\2\105\1\110\1\120\1\101\1\110\1\105\1\141\1\162\1\uffff\1"+
+		"\0\5\uffff\1\104\1\44\1\107\1\123\1\114\1\44\2\124\1\101\1\123\1\122\1"+
+		"\114\1\123\1\131\1\124\1\117\1\116\1\117\1\126\1\125\2\44\1\111\1\101"+
+		"\1\113\1\103\1\130\1\116\1\115\1\104\1\44\1\124\1\112\2\44\1\102\1\103"+
+		"\1\132\1\115\1\122\12\uffff\1\101\1\uffff\1\123\1\120\1\104\1\103\1\111"+
+		"\1\131\1\127\1\124\1\114\1\105\1\101\1\120\1\104\1\114\1\105\1\101\1\154"+
+		"\1\165\2\0\2\uffff\3\44\1\uffff\1\44\1\50\1\44\1\uffff\1\127\1\110\1\116"+
+		"\1\114\1\103\1\105\1\122\1\103\1\105\1\124\1\44\1\103\1\115\1\103\1\125"+
+		"\1\111\1\122\2\105\2\uffff\1\116\1\124\1\104\1\107\1\105\1\101\1\105\2"+
+		"\44\1\102\1\50\1\124\1\105\1\uffff\2\105\2\uffff\1\44\1\123\1\117\1\105"+
+		"\1\44\2\105\2\124\1\105\1\124\1\44\1\122\1\101\1\123\1\50\3\44\1\114\1"+
+		"\116\1\111\1\101\1\115\1\105\1\101\1\105\1\125\1\116\1\122\1\163\1\145"+
+		"\10\uffff\1\105\1\44\1\124\1\105\1\101\1\44\1\105\1\44\1\124\1\111\1\uffff"+
 		"\1\110\1\44\1\124\1\120\1\116\1\44\1\122\1\130\2\44\1\111\1\124\1\44\1"+
 		"\124\1\122\1\uffff\1\124\1\uffff\1\105\1\uffff\1\110\2\122\1\103\1\uffff"+
 		"\1\124\1\116\1\103\1\uffff\1\50\1\44\1\50\1\105\1\44\1\131\1\uffff\1\131"+
@@ -3788,57 +3758,57 @@ public class JPA2Lexer extends Lexer {
 		"\1\107\1\44\1\uffff\1\101\1\111\2\uffff\1\50\1\uffff\1\124\1\115\1\uffff"+
 		"\2\105\2\44\1\uffff\1\124\1\uffff\1\101\1\115\1\120\1\44\1\uffff";
 	static final String DFA10_maxS =
-		"\1\u052f\1\126\1\131\1\125\1\111\1\125\1\122\1\117\1\123\2\117\1\123\1"+
-		"\117\1\125\1\uffff\1\125\6\uffff\1\57\1\170\1\76\1\uffff\1\75\1\uffff"+
+		"\1\u052f\1\126\1\131\1\125\1\111\1\125\1\122\1\117\1\123\2\117\1\uffff"+
+		"\1\117\1\125\1\uffff\1\125\6\uffff\1\57\1\170\1\76\1\uffff\1\75\1\uffff"+
 		"\1\124\1\130\1\105\1\125\1\131\1\120\1\101\1\110\1\105\1\141\1\162\1\uffff"+
 		"\1\uffff\5\uffff\1\131\1\172\1\107\1\123\1\114\1\172\2\124\1\125\1\123"+
 		"\1\122\2\123\1\131\1\124\1\117\1\116\1\117\1\126\1\125\2\172\1\111\1\116"+
-		"\1\113\1\127\2\uffff\1\130\1\116\1\115\1\116\1\172\1\124\1\112\2\172\1"+
-		"\115\1\124\1\132\1\115\1\122\12\uffff\1\101\1\uffff\1\123\1\120\1\124"+
-		"\1\103\1\111\1\131\2\127\1\114\1\105\1\111\2\120\1\114\1\105\1\101\1\154"+
-		"\1\165\2\uffff\2\uffff\3\172\1\uffff\1\172\1\50\1\172\1\uffff\1\127\1"+
-		"\110\1\116\1\114\1\103\1\105\1\122\1\103\1\105\1\124\1\172\1\103\1\115"+
-		"\1\103\1\125\1\111\1\122\2\105\2\uffff\1\116\1\124\1\104\1\107\1\105\1"+
-		"\101\1\105\2\172\1\102\1\50\1\124\1\105\1\uffff\2\105\2\uffff\1\172\1"+
-		"\123\1\117\1\105\1\172\2\105\2\124\1\105\1\124\1\172\1\122\1\101\1\123"+
-		"\1\50\3\172\1\114\1\116\1\111\1\101\1\115\1\105\1\101\1\105\1\125\2\122"+
-		"\1\163\1\145\10\uffff\1\105\1\172\1\124\1\105\1\101\1\172\1\105\1\172"+
-		"\1\124\1\111\1\uffff\1\110\1\172\1\124\1\120\1\116\1\172\1\122\1\130\2"+
-		"\172\1\111\1\124\1\172\1\124\1\122\1\uffff\1\124\1\uffff\1\105\1\uffff"+
-		"\1\110\2\122\1\103\1\uffff\1\124\1\116\1\103\1\uffff\1\50\1\172\1\50\1"+
-		"\105\1\172\1\131\1\uffff\1\131\1\120\1\124\4\uffff\2\172\1\114\1\124\1"+
-		"\50\1\172\1\124\1\122\1\105\1\172\1\105\1\172\1\145\1\172\1\uffff\1\105"+
-		"\1\uffff\1\172\1\123\1\124\1\uffff\1\116\1\uffff\1\105\1\116\1\172\1\uffff"+
-		"\1\111\1\172\1\107\1\uffff\1\172\1\50\2\uffff\1\116\1\110\1\uffff\1\105"+
-		"\1\50\1\105\1\122\3\172\1\124\1\122\1\104\1\124\3\uffff\1\105\1\uffff"+
-		"\1\172\1\50\1\105\1\123\1\106\2\uffff\1\111\1\50\2\uffff\1\105\2\50\1"+
-		"\uffff\1\172\1\uffff\1\172\1\uffff\1\116\1\uffff\1\103\1\50\1\124\1\172"+
-		"\1\103\1\uffff\1\117\1\uffff\1\172\2\uffff\1\107\2\50\1\uffff\2\172\3"+
-		"\uffff\1\172\1\111\2\172\5\uffff\2\172\1\50\1\116\1\uffff\1\172\4\uffff"+
-		"\1\172\1\105\1\uffff\1\137\1\uffff\1\124\1\116\1\uffff\1\172\5\uffff\1"+
-		"\116\5\uffff\1\107\2\uffff\1\50\1\124\1\172\1\50\1\uffff\1\107\1\172\1"+
-		"\uffff\1\101\1\111\2\uffff\1\50\1\uffff\1\124\1\115\1\uffff\2\105\2\172"+
-		"\1\uffff\1\124\1\uffff\1\101\1\115\1\120\1\172\1\uffff";
+		"\1\113\1\127\1\130\1\116\1\115\1\116\1\172\1\124\1\112\2\172\1\115\1\124"+
+		"\1\132\1\115\1\122\12\uffff\1\101\1\uffff\1\123\1\120\1\124\1\103\1\111"+
+		"\1\131\2\127\1\114\1\105\1\111\2\120\1\114\1\105\1\101\1\154\1\165\2\uffff"+
+		"\2\uffff\3\172\1\uffff\1\172\1\50\1\172\1\uffff\1\127\1\110\1\116\1\114"+
+		"\1\103\1\105\1\122\1\103\1\105\1\124\1\172\1\103\1\115\1\103\1\125\1\111"+
+		"\1\122\2\105\2\uffff\1\116\1\124\1\104\1\107\1\105\1\101\1\105\2\172\1"+
+		"\102\1\50\1\124\1\105\1\uffff\2\105\2\uffff\1\172\1\123\1\117\1\105\1"+
+		"\172\2\105\2\124\1\105\1\124\1\172\1\122\1\101\1\123\1\50\3\172\1\114"+
+		"\1\116\1\111\1\101\1\115\1\105\1\101\1\105\1\125\2\122\1\163\1\145\10"+
+		"\uffff\1\105\1\172\1\124\1\105\1\101\1\172\1\105\1\172\1\124\1\111\1\uffff"+
+		"\1\110\1\172\1\124\1\120\1\116\1\172\1\122\1\130\2\172\1\111\1\124\1\172"+
+		"\1\124\1\122\1\uffff\1\124\1\uffff\1\105\1\uffff\1\110\2\122\1\103\1\uffff"+
+		"\1\124\1\116\1\103\1\uffff\1\50\1\172\1\50\1\105\1\172\1\131\1\uffff\1"+
+		"\131\1\120\1\124\4\uffff\2\172\1\114\1\124\1\50\1\172\1\124\1\122\1\105"+
+		"\1\172\1\105\1\172\1\145\1\172\1\uffff\1\105\1\uffff\1\172\1\123\1\124"+
+		"\1\uffff\1\116\1\uffff\1\105\1\116\1\172\1\uffff\1\111\1\172\1\107\1\uffff"+
+		"\1\172\1\50\2\uffff\1\116\1\110\1\uffff\1\105\1\50\1\105\1\122\3\172\1"+
+		"\124\1\122\1\104\1\124\3\uffff\1\105\1\uffff\1\172\1\50\1\105\1\123\1"+
+		"\106\2\uffff\1\111\1\50\2\uffff\1\105\2\50\1\uffff\1\172\1\uffff\1\172"+
+		"\1\uffff\1\116\1\uffff\1\103\1\50\1\124\1\172\1\103\1\uffff\1\117\1\uffff"+
+		"\1\172\2\uffff\1\107\2\50\1\uffff\2\172\3\uffff\1\172\1\111\2\172\5\uffff"+
+		"\2\172\1\50\1\116\1\uffff\1\172\4\uffff\1\172\1\105\1\uffff\1\137\1\uffff"+
+		"\1\124\1\116\1\uffff\1\172\5\uffff\1\116\5\uffff\1\107\2\uffff\1\50\1"+
+		"\124\1\172\1\50\1\uffff\1\107\1\172\1\uffff\1\101\1\111\2\uffff\1\50\1"+
+		"\uffff\1\124\1\115\1\uffff\2\105\2\172\1\uffff\1\124\1\uffff\1\101\1\115"+
+		"\1\120\1\172\1\uffff";
 	static final String DFA10_acceptS =
-		"\16\uffff\1\24\1\uffff\1\26\1\30\1\31\1\32\1\33\1\34\3\uffff\1\42\1\uffff"+
-		"\1\45\13\uffff\1\153\1\uffff\1\156\1\157\1\160\1\161\1\165\32\uffff\1"+
-		"\27\1\16\16\uffff\1\162\1\163\1\35\1\36\1\40\1\41\1\37\1\44\1\43\1\46"+
-		"\1\uffff\1\52\24\uffff\1\164\1\155\3\uffff\1\56\3\uffff\1\4\23\uffff\1"+
-		"\102\1\104\15\uffff\1\21\2\uffff\1\125\1\126\40\uffff\1\154\1\155\1\1"+
-		"\1\55\1\2\1\3\1\53\1\54\12\uffff\1\67\17\uffff\1\17\1\uffff\1\20\1\uffff"+
-		"\1\115\4\uffff\1\25\3\uffff\1\131\6\uffff\1\73\3\uffff\1\105\1\117\1\120"+
-		"\1\121\16\uffff\1\154\1\uffff\1\60\3\uffff\1\61\1\uffff\1\6\3\uffff\1"+
-		"\77\3\uffff\1\101\2\uffff\1\14\1\15\2\uffff\1\110\13\uffff\1\132\1\133"+
-		"\1\134\1\uffff\1\71\5\uffff\1\122\1\136\2\uffff\1\141\1\142\3\uffff\1"+
-		"\146\1\uffff\1\150\1\uffff\1\152\1\uffff\1\5\5\uffff\1\10\1\uffff\1\11"+
-		"\1\uffff\1\13\1\103\3\uffff\1\112\2\uffff\1\116\1\22\1\23\4\uffff\1\47"+
-		"\1\50\1\51\1\72\1\74\4\uffff\1\140\1\uffff\1\144\1\145\1\147\1\151\2\uffff"+
-		"\1\63\1\uffff\1\70\2\uffff\1\12\1\uffff\1\107\1\111\1\114\1\113\1\124"+
-		"\1\uffff\1\127\1\130\1\75\1\76\1\123\1\uffff\1\143\1\57\4\uffff\1\106"+
-		"\2\uffff\1\62\2\uffff\1\7\1\100\1\uffff\1\137\2\uffff\1\135\4\uffff\1"+
-		"\64\1\uffff\1\65\4\uffff\1\66";
+		"\13\uffff\1\16\2\uffff\1\24\1\uffff\1\26\1\27\1\30\1\31\1\32\1\33\3\uffff"+
+		"\1\41\1\uffff\1\44\13\uffff\1\152\1\uffff\1\155\1\156\1\157\1\160\1\164"+
+		"\50\uffff\1\161\1\162\1\34\1\35\1\37\1\40\1\36\1\43\1\42\1\45\1\uffff"+
+		"\1\51\24\uffff\1\163\1\154\3\uffff\1\55\3\uffff\1\4\23\uffff\1\101\1\103"+
+		"\15\uffff\1\21\2\uffff\1\124\1\125\40\uffff\1\153\1\154\1\1\1\54\1\2\1"+
+		"\3\1\52\1\53\12\uffff\1\66\17\uffff\1\17\1\uffff\1\20\1\uffff\1\114\4"+
+		"\uffff\1\25\3\uffff\1\130\6\uffff\1\72\3\uffff\1\104\1\116\1\117\1\120"+
+		"\16\uffff\1\153\1\uffff\1\57\3\uffff\1\60\1\uffff\1\6\3\uffff\1\76\3\uffff"+
+		"\1\100\2\uffff\1\14\1\15\2\uffff\1\107\13\uffff\1\131\1\132\1\133\1\uffff"+
+		"\1\70\5\uffff\1\121\1\135\2\uffff\1\140\1\141\3\uffff\1\145\1\uffff\1"+
+		"\147\1\uffff\1\151\1\uffff\1\5\5\uffff\1\10\1\uffff\1\11\1\uffff\1\13"+
+		"\1\102\3\uffff\1\111\2\uffff\1\115\1\22\1\23\4\uffff\1\46\1\47\1\50\1"+
+		"\71\1\73\4\uffff\1\137\1\uffff\1\143\1\144\1\146\1\150\2\uffff\1\62\1"+
+		"\uffff\1\67\2\uffff\1\12\1\uffff\1\106\1\110\1\113\1\112\1\123\1\uffff"+
+		"\1\126\1\127\1\74\1\75\1\122\1\uffff\1\142\1\56\4\uffff\1\105\2\uffff"+
+		"\1\61\2\uffff\1\7\1\77\1\uffff\1\136\2\uffff\1\134\4\uffff\1\63\1\uffff"+
+		"\1\64\4\uffff\1\65";
 	static final String DFA10_specialS =
-		"\50\uffff\1\2\115\uffff\1\1\1\0\u0135\uffff}>";
+		"\50\uffff\1\2\113\uffff\1\0\1\1\u0135\uffff}>";
 	static final String[] DFA10_transitionS = {
 			"\2\54\1\uffff\2\54\22\uffff\1\54\3\uffff\1\20\2\uffff\1\50\1\13\1\16"+
 			"\1\21\1\22\1\23\1\24\1\25\1\26\1\27\11\55\1\53\1\uffff\1\30\1\31\1\32"+
@@ -3855,118 +3825,116 @@ public class JPA2Lexer extends Lexer {
 			"\1\102\4\uffff\1\103",
 			"\1\104",
 			"\1\105\3\uffff\1\106\5\uffff\1\107",
-			"\1\110",
-			"\1\112\3\uffff\1\114\3\uffff\1\113\5\uffff\1\115",
-			"\1\120\3\uffff\1\121\7\uffff\1\122\3\uffff\1\116\2\uffff\1\117",
 			"",
-			"\1\124\3\uffff\1\125\5\uffff\1\126\1\uffff\1\127\3\uffff\1\123",
+			"\1\110\3\uffff\1\112\3\uffff\1\111\5\uffff\1\113",
+			"\1\116\3\uffff\1\117\7\uffff\1\120\3\uffff\1\114\2\uffff\1\115",
 			"",
-			"",
+			"\1\122\3\uffff\1\123\5\uffff\1\124\1\uffff\1\125\3\uffff\1\121",
 			"",
 			"",
 			"",
 			"",
-			"\1\130\4\uffff\1\131",
-			"\1\133",
-			"\1\134\1\135",
 			"",
-			"\1\137",
 			"",
-			"\1\141\1\uffff\1\142\17\uffff\1\143",
-			"\1\144\1\145\1\146\4\uffff\1\147\4\uffff\1\150",
-			"\1\151",
-			"\1\152\11\uffff\1\153\5\uffff\1\154",
-			"\1\155\11\uffff\1\156\6\uffff\1\157",
+			"\1\126\4\uffff\1\127",
+			"\1\131",
+			"\1\132\1\133",
+			"",
+			"\1\135",
+			"",
+			"\1\137\1\uffff\1\140\17\uffff\1\141",
+			"\1\142\1\143\1\144\4\uffff\1\145\4\uffff\1\146",
+			"\1\147",
+			"\1\150\11\uffff\1\151\5\uffff\1\152",
+			"\1\153\11\uffff\1\154\6\uffff\1\155",
+			"\1\156",
+			"\1\157",
 			"\1\160",
 			"\1\161",
 			"\1\162",
 			"\1\163",
-			"\1\164",
-			"\1\165",
 			"",
-			"\42\167\1\170\4\167\1\171\6\167\1\166\55\167\1\171\uffa3\167",
+			"\42\165\1\166\4\165\1\167\6\165\1\164\55\165\1\167\uffa3\165",
 			"",
 			"",
 			"",
 			"",
 			"",
-			"\1\172\24\uffff\1\173",
-			"\1\51\13\uffff\12\51\7\uffff\2\51\1\174\27\51\4\uffff\1\51\1\uffff\32"+
+			"\1\170\24\uffff\1\171",
+			"\1\51\13\uffff\12\51\7\uffff\2\51\1\172\27\51\4\uffff\1\51\1\uffff\32"+
 			"\51",
+			"\1\174",
+			"\1\175",
 			"\1\176",
-			"\1\177",
-			"\1\u0080",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
-			"\1\u0082",
-			"\1\u0083",
-			"\1\u0085\14\uffff\1\u0086\6\uffff\1\u0084",
-			"\1\u0087",
-			"\1\u0088",
-			"\1\u008a\6\uffff\1\u0089",
+			"\1\u0080",
+			"\1\u0081",
+			"\1\u0083\14\uffff\1\u0084\6\uffff\1\u0082",
+			"\1\u0085",
+			"\1\u0086",
+			"\1\u0088\6\uffff\1\u0087",
+			"\1\u0089",
+			"\1\u008a",
 			"\1\u008b",
 			"\1\u008c",
 			"\1\u008d",
 			"\1\u008e",
 			"\1\u008f",
 			"\1\u0090",
-			"\1\u0091",
-			"\1\u0092",
-			"\1\51\13\uffff\12\51\7\uffff\3\51\1\u0094\11\51\1\u0093\14\51\4\uffff"+
+			"\1\51\13\uffff\12\51\7\uffff\3\51\1\u0092\11\51\1\u0091\14\51\4\uffff"+
 			"\1\51\1\uffff\32\51",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
-			"\1\u0097",
-			"\1\u0099\4\uffff\1\u0098\7\uffff\1\u009a",
-			"\1\u009b",
-			"\1\u009c\23\uffff\1\u009d",
-			"",
-			"",
+			"\1\u0095",
+			"\1\u0097\4\uffff\1\u0096\7\uffff\1\u0098",
+			"\1\u0099",
+			"\1\u009a\23\uffff\1\u009b",
+			"\1\u009c",
+			"\1\u009d",
 			"\1\u009e",
-			"\1\u009f",
-			"\1\u00a0",
-			"\1\u00a1\11\uffff\1\u00a2",
-			"\1\51\13\uffff\12\51\7\uffff\3\51\1\u00a3\26\51\4\uffff\1\51\1\uffff"+
+			"\1\u009f\11\uffff\1\u00a0",
+			"\1\51\13\uffff\12\51\7\uffff\3\51\1\u00a1\26\51\4\uffff\1\51\1\uffff"+
 			"\32\51",
-			"\1\u00a5",
-			"\1\u00a6",
+			"\1\u00a3",
+			"\1\u00a4",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
-			"\1\u00aa\12\uffff\1\u00a9",
-			"\1\u00ab\10\uffff\1\u00ac\7\uffff\1\u00ad",
+			"\1\u00a8\12\uffff\1\u00a7",
+			"\1\u00a9\10\uffff\1\u00aa\7\uffff\1\u00ab",
+			"\1\u00ac",
+			"\1\u00ad",
 			"\1\u00ae",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
 			"\1\u00af",
+			"",
 			"\1\u00b0",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
 			"\1\u00b1",
-			"",
-			"\1\u00b2",
-			"\1\u00b3",
-			"\1\u00b4\17\uffff\1\u00b5",
+			"\1\u00b2\17\uffff\1\u00b3",
+			"\1\u00b4",
+			"\1\u00b5",
 			"\1\u00b6",
 			"\1\u00b7",
-			"\1\u00b8",
-			"\1\u00b9",
-			"\1\u00ba\2\uffff\1\u00bb",
-			"\1\u00bc",
-			"\1\u00bd",
-			"\1\u00be\3\uffff\1\u00bf\3\uffff\1\u00c0",
-			"\1\u00c1",
-			"\1\u00c2\13\uffff\1\u00c3",
+			"\1\u00b8\2\uffff\1\u00b9",
+			"\1\u00ba",
+			"\1\u00bb",
+			"\1\u00bc\3\uffff\1\u00bd\3\uffff\1\u00be",
+			"\1\u00bf",
+			"\1\u00c0\13\uffff\1\u00c1",
+			"\1\u00c2",
+			"\1\u00c3",
 			"\1\u00c4",
 			"\1\u00c5",
 			"\1\u00c6",
-			"\1\u00c7",
-			"\1\u00c8",
-			"\42\171\1\uffff\4\171\1\u00c9\uffd8\171",
-			"\42\171\1\uffff\4\171\1\u00ca\uffd8\171",
+			"\42\167\1\uffff\4\167\1\u00c7\uffd8\167",
+			"\42\167\1\uffff\4\167\1\u00c8\uffd8\167",
 			"",
 			"",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
@@ -3974,9 +3942,11 @@ public class JPA2Lexer extends Lexer {
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
+			"\1\u00cd",
+			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
+			"",
 			"\1\u00cf",
-			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
-			"",
+			"\1\u00d0",
 			"\1\u00d1",
 			"\1\u00d2",
 			"\1\u00d3",
@@ -3985,57 +3955,57 @@ public class JPA2Lexer extends Lexer {
 			"\1\u00d6",
 			"\1\u00d7",
 			"\1\u00d8",
-			"\1\u00d9",
-			"\1\u00da",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
+			"\1\u00da",
+			"\1\u00db",
 			"\1\u00dc",
 			"\1\u00dd",
 			"\1\u00de",
 			"\1\u00df",
 			"\1\u00e0",
 			"\1\u00e1",
+			"",
+			"",
 			"\1\u00e2",
 			"\1\u00e3",
-			"",
-			"",
 			"\1\u00e4",
 			"\1\u00e5",
 			"\1\u00e6",
 			"\1\u00e7",
 			"\1\u00e8",
-			"\1\u00e9",
-			"\1\u00ea",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
-			"\1\51\13\uffff\12\51\7\uffff\24\51\1\u00ec\5\51\4\uffff\1\51\1\uffff"+
+			"\1\51\13\uffff\12\51\7\uffff\24\51\1\u00ea\5\51\4\uffff\1\51\1\uffff"+
 			"\32\51",
+			"\1\u00ec",
+			"\1\u00ed",
 			"\1\u00ee",
 			"\1\u00ef",
+			"",
 			"\1\u00f0",
 			"\1\u00f1",
 			"",
-			"\1\u00f2",
+			"",
+			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"\1\u00f3",
-			"",
-			"",
-			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
+			"\1\u00f4",
 			"\1\u00f5",
-			"\1\u00f6",
-			"\1\u00f7",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
+			"\1\u00f7",
+			"\1\u00f8",
 			"\1\u00f9",
 			"\1\u00fa",
 			"\1\u00fb",
 			"\1\u00fc",
-			"\1\u00fd",
-			"\1\u00fe",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
+			"\1\u00fe",
+			"\1\u00ff",
 			"\1\u0100",
 			"\1\u0101",
-			"\1\u0102",
-			"\1\u0103",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
+			"\1\u0105",
+			"\1\u0106",
 			"\1\u0107",
 			"\1\u0108",
 			"\1\u0109",
@@ -4043,164 +4013,162 @@ public class JPA2Lexer extends Lexer {
 			"\1\u010b",
 			"\1\u010c",
 			"\1\u010d",
-			"\1\u010e",
-			"\1\u010f",
-			"\1\u0110\3\uffff\1\u0111",
+			"\1\u010e\3\uffff\1\u010f",
+			"\1\u0110",
+			"\1\u0111",
 			"\1\u0112",
-			"\1\u0113",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
 			"\1\u0114",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"\1\u0116",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
+			"\1\u0116",
+			"\1\u0117",
 			"\1\u0118",
-			"\1\u0119",
+			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"\1\u011a",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"\1\u011c",
-			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
-			"\1\u011e",
-			"\1\u011f",
+			"\1\u011d",
 			"",
+			"\1\u011e",
+			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"\1\u0120",
-			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
+			"\1\u0121",
 			"\1\u0122",
-			"\1\u0123",
+			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"\1\u0124",
-			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
-			"\1\u0126",
-			"\1\u0127",
+			"\1\u0125",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
-			"\1\u012a",
+			"\1\u0128",
+			"\1\u0129",
+			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"\1\u012b",
-			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
+			"\1\u012c",
+			"",
 			"\1\u012d",
+			"",
 			"\1\u012e",
 			"",
 			"\1\u012f",
-			"",
 			"\1\u0130",
-			"",
 			"\1\u0131",
 			"\1\u0132",
+			"",
 			"\1\u0133",
 			"\1\u0134",
-			"",
 			"\1\u0135",
+			"",
 			"\1\u0136",
-			"\1\u0137",
-			"",
+			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"\1\u0138",
+			"\1\u0139",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
-			"\1\u013a",
 			"\1\u013b",
-			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
+			"",
+			"\1\u013c",
 			"\1\u013d",
-			"",
 			"\1\u013e",
-			"\1\u013f",
-			"\1\u0140",
 			"",
 			"",
 			"",
 			"",
-			"\1\51\13\uffff\12\51\7\uffff\10\51\1\u0141\21\51\4\uffff\1\51\1\uffff"+
+			"\1\51\13\uffff\12\51\7\uffff\10\51\1\u013f\21\51\4\uffff\1\51\1\uffff"+
 			"\32\51",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
+			"\1\u0142",
+			"\1\u0143",
 			"\1\u0144",
-			"\1\u0145",
-			"\1\u0146",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
+			"\1\u0146",
+			"\1\u0147",
 			"\1\u0148",
-			"\1\u0149",
+			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"\1\u014a",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"\1\u014c",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
+			"",
 			"\1\u014e",
-			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"",
+			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"\1\u0150",
+			"\1\u0151",
 			"",
-			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"\1\u0152",
+			"",
 			"\1\u0153",
-			"",
 			"\1\u0154",
+			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"",
-			"\1\u0155",
 			"\1\u0156",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
-			"",
 			"\1\u0158",
+			"",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"\1\u015a",
 			"",
-			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
-			"\1\u015c",
 			"",
+			"\1\u015b",
+			"\1\u015c",
 			"",
 			"\1\u015d",
 			"\1\u015e",
-			"",
 			"\1\u015f",
 			"\1\u0160",
-			"\1\u0161",
-			"\1\u0162",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
+			"\1\u0164",
+			"\1\u0165",
 			"\1\u0166",
 			"\1\u0167",
-			"\1\u0168",
-			"\1\u0169",
 			"",
 			"",
 			"",
-			"\1\u016a\1\u016b\2\uffff\1\u016c",
+			"\1\u0168\1\u0169\2\uffff\1\u016a",
 			"",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
+			"\1\u016c",
+			"\1\u016d",
 			"\1\u016e",
 			"\1\u016f",
+			"",
+			"",
 			"\1\u0170",
 			"\1\u0171",
 			"",
 			"",
 			"\1\u0172",
 			"\1\u0173",
-			"",
-			"",
 			"\1\u0174",
-			"\1\u0175",
-			"\1\u0176",
 			"",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"",
+			"\1\u0177",
+			"",
+			"\1\u0178",
 			"\1\u0179",
-			"",
 			"\1\u017a",
-			"\1\u017b",
-			"\1\u017c",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
-			"\1\u017e",
+			"\1\u017c",
+			"",
+			"\1\u017d",
+			"",
+			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
+			"",
 			"",
 			"\1\u017f",
-			"",
-			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
-			"",
-			"",
+			"\1\u0180",
 			"\1\u0181",
-			"\1\u0182",
-			"\1\u0183",
 			"",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
@@ -4208,7 +4176,7 @@ public class JPA2Lexer extends Lexer {
 			"",
 			"",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
-			"\1\u0187",
+			"\1\u0185",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"",
@@ -4218,8 +4186,8 @@ public class JPA2Lexer extends Lexer {
 			"",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
-			"\1\u018c",
-			"\1\u018d",
+			"\1\u018a",
+			"\1\u018b",
 			"",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"",
@@ -4227,56 +4195,56 @@ public class JPA2Lexer extends Lexer {
 			"",
 			"",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
+			"\1\u018e",
+			"",
+			"\1\u018f",
+			"",
 			"\1\u0190",
-			"",
 			"\1\u0191",
 			"",
-			"\1\u0192",
-			"\1\u0193",
-			"",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"",
 			"",
 			"",
+			"",
+			"",
+			"\1\u0193",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"\1\u0194",
 			"",
 			"",
 			"\1\u0195",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"\1\u0196",
-			"",
-			"",
-			"\1\u0197",
-			"\1\u0198\17\uffff\1\u0199",
+			"\1\u0196\17\uffff\1\u0197",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
-			"\1\u019b",
+			"\1\u0199",
+			"",
+			"\1\u019a",
+			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			"",
 			"\1\u019c",
-			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
+			"\1\u019d",
+			"",
 			"",
 			"\1\u019e",
+			"",
 			"\1\u019f",
-			"",
-			"",
 			"\1\u01a0",
 			"",
 			"\1\u01a1",
 			"\1\u01a2",
-			"",
-			"\1\u01a3",
-			"\1\u01a4",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
-			"\1\51\13\uffff\12\51\7\uffff\22\51\1\u01a6\7\51\4\uffff\1\51\1\uffff"+
+			"\1\51\13\uffff\12\51\7\uffff\22\51\1\u01a4\7\51\4\uffff\1\51\1\uffff"+
 			"\32\51",
 			"",
-			"\1\u01a8",
+			"\1\u01a6",
 			"",
+			"\1\u01a7",
+			"\1\u01a8",
 			"\1\u01a9",
-			"\1\u01aa",
-			"\1\u01ab",
 			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
 			""
 	};
@@ -4312,7 +4280,7 @@ public class JPA2Lexer extends Lexer {
 		}
 		@Override
 		public String getDescription() {
-			return "1:1: Tokens : ( AND | ASC | AVG | BY | COUNT | DESC | DISTINCT | FETCH | GROUP | HAVING | INNER | JOIN | LEFT | LPAREN | MAX | MIN | OR | ORDER | OUTER | RPAREN | SUM | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | T__102 | T__103 | T__104 | T__105 | T__106 | T__107 | T__108 | T__109 | T__110 | T__111 | T__112 | T__113 | T__114 | T__115 | T__116 | T__117 | T__118 | T__119 | T__120 | T__121 | T__122 | T__123 | T__124 | T__125 | T__126 | T__127 | T__128 | T__129 | T__130 | T__131 | T__132 | T__133 | T__134 | T__135 | T__136 | T__137 | TRIM_CHARACTER | STRING_LITERAL | WORD | RUSSIAN_SYMBOLS | NAMED_PARAMETER | WS | COMMENT | LINE_COMMENT | ESCAPE_CHARACTER | INT_NUMERAL );";
+			return "1:1: Tokens : ( AND | ASC | AVG | BY | COUNT | DESC | DISTINCT | FETCH | GROUP | HAVING | INNER | JOIN | LEFT | LPAREN | MAX | MIN | OR | ORDER | OUTER | RPAREN | SUM | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | T__102 | T__103 | T__104 | T__105 | T__106 | T__107 | T__108 | T__109 | T__110 | T__111 | T__112 | T__113 | T__114 | T__115 | T__116 | T__117 | T__118 | T__119 | T__120 | T__121 | T__122 | T__123 | T__124 | T__125 | T__126 | T__127 | T__128 | T__129 | T__130 | T__131 | T__132 | T__133 | T__134 | T__135 | T__136 | TRIM_CHARACTER | STRING_LITERAL | WORD | RUSSIAN_SYMBOLS | NAMED_PARAMETER | WS | COMMENT | LINE_COMMENT | ESCAPE_CHARACTER | INT_NUMERAL );";
 		}
 		@Override
 		public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
@@ -4320,28 +4288,28 @@ public class JPA2Lexer extends Lexer {
 			int _s = s;
 			switch ( s ) {
 					case 0 : 
-						int LA10_119 = input.LA(1);
+						int LA10_116 = input.LA(1);
 						s = -1;
-						if ( (LA10_119=='\'') ) {s = 202;}
-						else if ( ((LA10_119 >= '\u0000' && LA10_119 <= '!')||(LA10_119 >= '#' && LA10_119 <= '&')||(LA10_119 >= '(' && LA10_119 <= '\uFFFF')) ) {s = 121;}
+						if ( (LA10_116=='\'') ) {s = 199;}
+						else if ( ((LA10_116 >= '\u0000' && LA10_116 <= '!')||(LA10_116 >= '#' && LA10_116 <= '&')||(LA10_116 >= '(' && LA10_116 <= '\uFFFF')) ) {s = 119;}
 						if ( s>=0 ) return s;
 						break;
 
 					case 1 : 
-						int LA10_118 = input.LA(1);
+						int LA10_117 = input.LA(1);
 						s = -1;
-						if ( (LA10_118=='\'') ) {s = 201;}
-						else if ( ((LA10_118 >= '\u0000' && LA10_118 <= '!')||(LA10_118 >= '#' && LA10_118 <= '&')||(LA10_118 >= '(' && LA10_118 <= '\uFFFF')) ) {s = 121;}
+						if ( (LA10_117=='\'') ) {s = 200;}
+						else if ( ((LA10_117 >= '\u0000' && LA10_117 <= '!')||(LA10_117 >= '#' && LA10_117 <= '&')||(LA10_117 >= '(' && LA10_117 <= '\uFFFF')) ) {s = 119;}
 						if ( s>=0 ) return s;
 						break;
 
 					case 2 : 
 						int LA10_40 = input.LA(1);
 						s = -1;
-						if ( (LA10_40=='.') ) {s = 118;}
-						else if ( ((LA10_40 >= '\u0000' && LA10_40 <= '!')||(LA10_40 >= '#' && LA10_40 <= '&')||(LA10_40 >= '(' && LA10_40 <= '-')||(LA10_40 >= '/' && LA10_40 <= '[')||(LA10_40 >= ']' && LA10_40 <= '\uFFFF')) ) {s = 119;}
-						else if ( (LA10_40=='\"') ) {s = 120;}
-						else if ( (LA10_40=='\''||LA10_40=='\\') ) {s = 121;}
+						if ( (LA10_40=='.') ) {s = 116;}
+						else if ( ((LA10_40 >= '\u0000' && LA10_40 <= '!')||(LA10_40 >= '#' && LA10_40 <= '&')||(LA10_40 >= '(' && LA10_40 <= '-')||(LA10_40 >= '/' && LA10_40 <= '[')||(LA10_40 >= ']' && LA10_40 <= '\uFFFF')) ) {s = 117;}
+						else if ( (LA10_40=='\"') ) {s = 118;}
+						else if ( (LA10_40=='\''||LA10_40=='\\') ) {s = 119;}
 						if ( s>=0 ) return s;
 						break;
 			}
