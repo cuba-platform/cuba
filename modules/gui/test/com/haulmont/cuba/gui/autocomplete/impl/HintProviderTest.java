@@ -223,125 +223,128 @@ public class HintProviderTest {
         assertEquals("Cannot get attribute of collection [l.teams.n]", response.getCauseErrorMessages().get(0));
     }
 
-    @Test
-    public void requestHint_fieldNameHint_subqueryEntity() throws RecognitionException {
-        EntityBuilder builder = new EntityBuilder();
-        Entity teamEntity = builder.produceImmediately("Team", "name", "owner");
+// The following functions are not supported by JPA2 JPQL (see jpql21.bnf)
+//    @Test
+//    public void requestHint_fieldNameHint_subqueryEntity() throws RecognitionException {
+//        EntityBuilder builder = new EntityBuilder();
+//        Entity teamEntity = builder.produceImmediately("Team", "name", "owner");
+//
+//        builder.startNewEntity("Player");
+//        builder.addStringAttribute("name");
+//        builder.addStringAttribute("nickname");
+//        builder.addReferenceAttribute("team", "Team");
+//        Entity playerEntity = builder.produce();
+//
+//        DomainModel model = new DomainModel();
+//        model.add(teamEntity);
+//        model.add(playerEntity);
+//
+//        HintProvider hintProvider = createTestHintProvider(model);
+//
+//        HintResponse response = hintProvider.requestHint("select p.~ from (select t from Team t) p");
+//        List<String> options = response.getOptions();
+//        assertEquals(2, options.size());
+//        assertEquals("name", options.get(0));
+//        assertEquals("owner", options.get(1));
+//
+//        response = hintProvider.requestHint("select p.~ from (select t.name from Team t) p");
+//        options = response.getOptions();
+//        assertEquals(1, options.size());
+//        assertEquals("name", options.get(0));
+//
+//        response = hintProvider.requestHint("select p.t~ from (select t.name from Team t) p");
+//        options = response.getOptions();
+//        assertEquals(0, options.size());
+//
+//        response = hintProvider.requestHint("select p.o~ from (select t.name, t.owner from Team t) p");
+//        options = response.getOptions();
+//        assertEquals(1, options.size());
+//        assertEquals("owner", options.get(0));
+//
+//        response = hintProvider.requestHint("select g.o~ from (select t.name, t.owner from Team t) p, (select t.name from Team t) g");
+//        options = response.getOptions();
+//        assertEquals(0, options.size());
+//    }
 
-        builder.startNewEntity("Player");
-        builder.addStringAttribute("name");
-        builder.addStringAttribute("nickname");
-        builder.addReferenceAttribute("team", "Team");
-        Entity playerEntity = builder.produce();
+// The following functions are not supported by JPA2 JPQL (see jpql21.bnf)
+//    @Test
+//    public void requestHint_fieldNameHint_severalLevelsOfSubquery() throws RecognitionException {
+//        EntityBuilder builder = new EntityBuilder();
+//        Entity teamEntity = builder.produceImmediately("Team", "name", "owner");
+//
+//        builder.startNewEntity("Player");
+//        builder.addStringAttribute("name");
+//        builder.addStringAttribute("nickname");
+//        builder.addReferenceAttribute("team", "Team");
+//        Entity playerEntity = builder.produce();
+//
+//        DomainModel model = new DomainModel();
+//        model.add(teamEntity);
+//        model.add(playerEntity);
+//
+//        HintProvider hintProvider = createTestHintProvider(model);
+//
+//        HintResponse response = hintProvider.requestHint(
+//                "select p.~ from " +
+//                        "(select t from Team t " +
+//                        "where t.name in " +
+//                        "   (select a.name from Player a)" +
+//                        ") p");
+//        List<String> options = response.getOptions();
+//        assertEquals(2, options.size());
+//        assertEquals("name", options.get(0));
+//        assertEquals("owner", options.get(1));
+//
+//        response = hintProvider.requestHint("select p.owner from (select t.o~ from Team t where t.name in (select a.name from Player a)) p");
+//        options = response.getOptions();
+//        assertEquals(1, options.size());
+//        assertEquals("owner", options.get(0));
+//
+//        response = hintProvider.requestHint("select p.owner from (select t from Team t where t.name in (select a.~ from Player a)) p");
+//        options = response.getOptions();
+//        assertEquals(3, options.size());
+//        assertEquals("name", options.get(0));
+//        assertEquals("nickname", options.get(1));
+//        assertEquals("team", options.get(2));
+//
+//        response = hintProvider.requestHint("select p.owner from (select t from Team t where t.~ in (select a.name from Player a)) p");
+//        options = response.getOptions();
+//        assertEquals(2, options.size());
+//        assertEquals("name", options.get(0));
+//        assertEquals("owner", options.get(1));
+//
+//        response = hintProvider.requestHint("select p.owner from (select a.ni~ from Team t where t.name in (select a.name from Player a)) p");
+//        options = response.getOptions();
+//        assertEquals(0, options.size());
+//        assertEquals("Query error", response.getErrorMessage());
+//        assertEquals(1, response.getCauseErrorMessages().size());
+//        assertEquals("Cannot parse [a.ni]", response.getCauseErrorMessages().get(0));
+//    }
 
-        DomainModel model = new DomainModel();
-        model.add(teamEntity);
-        model.add(playerEntity);
-
-        HintProvider hintProvider = createTestHintProvider(model);
-
-        HintResponse response = hintProvider.requestHint("select p.~ from (select t from Team t) p");
-        List<String> options = response.getOptions();
-        assertEquals(2, options.size());
-        assertEquals("name", options.get(0));
-        assertEquals("owner", options.get(1));
-
-        response = hintProvider.requestHint("select p.~ from (select t.name from Team t) p");
-        options = response.getOptions();
-        assertEquals(1, options.size());
-        assertEquals("name", options.get(0));
-
-        response = hintProvider.requestHint("select p.t~ from (select t.name from Team t) p");
-        options = response.getOptions();
-        assertEquals(0, options.size());
-
-        response = hintProvider.requestHint("select p.o~ from (select t.name, t.owner from Team t) p");
-        options = response.getOptions();
-        assertEquals(1, options.size());
-        assertEquals("owner", options.get(0));
-
-        response = hintProvider.requestHint("select g.o~ from (select t.name, t.owner from Team t) p, (select t.name from Team t) g");
-        options = response.getOptions();
-        assertEquals(0, options.size());
-    }
-
-    @Test
-    public void requestHint_fieldNameHint_severalLevelsOfSubquery() throws RecognitionException {
-        EntityBuilder builder = new EntityBuilder();
-        Entity teamEntity = builder.produceImmediately("Team", "name", "owner");
-
-        builder.startNewEntity("Player");
-        builder.addStringAttribute("name");
-        builder.addStringAttribute("nickname");
-        builder.addReferenceAttribute("team", "Team");
-        Entity playerEntity = builder.produce();
-
-        DomainModel model = new DomainModel();
-        model.add(teamEntity);
-        model.add(playerEntity);
-
-        HintProvider hintProvider = createTestHintProvider(model);
-
-        HintResponse response = hintProvider.requestHint(
-                "select p.~ from " +
-                        "(select t from Team t " +
-                        "where t.name in " +
-                        "   (select a.name from Player a)" +
-                        ") p");
-        List<String> options = response.getOptions();
-        assertEquals(2, options.size());
-        assertEquals("name", options.get(0));
-        assertEquals("owner", options.get(1));
-
-        response = hintProvider.requestHint("select p.owner from (select t.o~ from Team t where t.name in (select a.name from Player a)) p");
-        options = response.getOptions();
-        assertEquals(1, options.size());
-        assertEquals("owner", options.get(0));
-
-        response = hintProvider.requestHint("select p.owner from (select t from Team t where t.name in (select a.~ from Player a)) p");
-        options = response.getOptions();
-        assertEquals(3, options.size());
-        assertEquals("name", options.get(0));
-        assertEquals("nickname", options.get(1));
-        assertEquals("team", options.get(2));
-
-        response = hintProvider.requestHint("select p.owner from (select t from Team t where t.~ in (select a.name from Player a)) p");
-        options = response.getOptions();
-        assertEquals(2, options.size());
-        assertEquals("name", options.get(0));
-        assertEquals("owner", options.get(1));
-
-        response = hintProvider.requestHint("select p.owner from (select a.ni~ from Team t where t.name in (select a.name from Player a)) p");
-        options = response.getOptions();
-        assertEquals(0, options.size());
-        assertEquals("Query error", response.getErrorMessage());
-        assertEquals(1, response.getCauseErrorMessages().size());
-        assertEquals("Cannot parse [a.ni]", response.getCauseErrorMessages().get(0));
-    }
-
-    @Test
-    public void requestHint_fieldNameHint_subqueries_using_AS() throws RecognitionException {
-        EntityBuilder builder = new EntityBuilder();
-        Entity teamEntity = builder.produceImmediately("Team", "name", "owner");
-
-        builder.startNewEntity("Player");
-        builder.addStringAttribute("name");
-        builder.addStringAttribute("nickname");
-        builder.addReferenceAttribute("team", "Team");
-        Entity playerEntity = builder.produce();
-
-        DomainModel model = new DomainModel();
-        model.add(teamEntity);
-        model.add(playerEntity);
-
-        HintProvider hintProvider = createTestHintProvider(model);
-
-        HintResponse response = hintProvider.requestHint(
-                "select p.~ from (select t.owner from Team as t where t.name) p");
-        List<String> options = response.getOptions();
-        assertEquals(1, options.size());
-        assertEquals("owner", options.get(0));
-    }
+// The following functions are not supported by JPA2 JPQL (see jpql21.bnf)
+//    @Test
+//    public void requestHint_fieldNameHint_subqueries_using_AS() throws RecognitionException {
+//        EntityBuilder builder = new EntityBuilder();
+//        Entity teamEntity = builder.produceImmediately("Team", "name", "owner");
+//
+//        builder.startNewEntity("Player");
+//        builder.addStringAttribute("name");
+//        builder.addStringAttribute("nickname");
+//        builder.addReferenceAttribute("team", "Team");
+//        Entity playerEntity = builder.produce();
+//
+//        DomainModel model = new DomainModel();
+//        model.add(teamEntity);
+//        model.add(playerEntity);
+//
+//        HintProvider hintProvider = createTestHintProvider(model);
+//
+//        HintResponse response = hintProvider.requestHint(
+//                "select p.~ from (select t.owner from Team as t where t.name) p");
+//        List<String> options = response.getOptions();
+//        assertEquals(1, options.size());
+//        assertEquals("owner", options.get(0));
+//    }
 
     @Test
     public void requestHint_entityNameHint_subquery() throws RecognitionException {
@@ -468,29 +471,30 @@ public class HintProviderTest {
         assertEquals("owner", options.get(1));
     }
 
-    @Test
-    public void requestHint_fieldNameHint_wherein_subquerywhere() throws RecognitionException {
-        EntityBuilder builder = new EntityBuilder();
-        Entity teamEntity = builder.produceImmediately("Team", "name", "owner");
-        Entity playerEntity = builder.produceImmediately("Player", "nickname", "name");
-        DomainModel model = new DomainModel();
-        model.add(playerEntity);
-        model.add(teamEntity);
-
-        HintProvider hintProvider = createTestHintProvider(model);
-        HintResponse response = hintProvider.requestHint("select p.name from Player p where p.team in (select a from Team a where a.~)");
-        List<String> options = response.getOptions();
-        assertEquals(2, options.size());
-        assertEquals("name", options.get(0));
-        assertEquals("owner", options.get(1));
-
-        hintProvider = createTestHintProvider(model);
-        response = hintProvider.requestHint("select p.name from Player p where p.team in (select a from Team a where a.name = p.n~)");
-        options = response.getOptions();
-        assertEquals(2, options.size());
-        assertEquals("name", options.get(0));
-        assertEquals("nickname", options.get(1));
-    }
+// The following functions are not supported by JPA2 JPQL (see jpql21.bnf)
+//    @Test
+//    public void requestHint_fieldNameHint_wherein_subquerywhere() throws RecognitionException {
+//        EntityBuilder builder = new EntityBuilder();
+//        Entity teamEntity = builder.produceImmediately("Team", "name", "owner");
+//        Entity playerEntity = builder.produceImmediately("Player", "nickname", "name");
+//        DomainModel model = new DomainModel();
+//        model.add(playerEntity);
+//        model.add(teamEntity);
+//
+//        HintProvider hintProvider = createTestHintProvider(model);
+//        HintResponse response = hintProvider.requestHint("select p.name from Player p where p.team in (select a from Team a where a.~)");
+//        List<String> options = response.getOptions();
+//        assertEquals(2, options.size());
+//        assertEquals("name", options.get(0));
+//        assertEquals("owner", options.get(1));
+//
+//        hintProvider = createTestHintProvider(model);
+//        response = hintProvider.requestHint("select p.name from Player p where p.team in (select a from Team a where a.name = p.n~)");
+//        options = response.getOptions();
+//        assertEquals(2, options.size());
+//        assertEquals("name", options.get(0));
+//        assertEquals("nickname", options.get(1));
+//    }
 
     @Test
     public void requestHint_fieldNameHint_join() throws RecognitionException {
