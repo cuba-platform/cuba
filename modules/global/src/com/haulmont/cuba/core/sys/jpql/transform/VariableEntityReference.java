@@ -5,7 +5,7 @@
 
 package com.haulmont.cuba.core.sys.jpql.transform;
 
-import com.haulmont.cuba.core.sys.jpql.antlr.JPALexer;
+import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import com.haulmont.cuba.core.sys.jpql.tree.IdentificationVariableNode;
 import com.haulmont.cuba.core.sys.jpql.tree.PathNode;
 import org.antlr.runtime.CommonToken;
@@ -35,7 +35,7 @@ public class VariableEntityReference implements EntityReference {
     }
 
     public Tree createNode() {
-        return new CommonTree(new CommonToken(JPALexer.WORD, entityVariableName));
+        return new CommonTree(new CommonToken(JPA2Lexer.WORD, entityVariableName));
     }
 
     public boolean isJoinableTo(IdentificationVariableNode node) {
@@ -44,7 +44,7 @@ public class VariableEntityReference implements EntityReference {
 
 
     public PathEntityReference addFieldPath(String fieldPath) {
-        PathNode pathNode = new PathNode(JPALexer.T_SELECTED_FIELD, entityVariableName);
+        PathNode pathNode = new PathNode(JPA2Lexer.T_SELECTED_FIELD, entityVariableName);
         pathNode.addDefaultChildren(fieldPath);
         return new PathEntityReference(pathNode, entityName);
     }

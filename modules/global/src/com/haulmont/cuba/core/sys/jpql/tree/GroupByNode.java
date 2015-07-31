@@ -5,13 +5,9 @@
 
 package com.haulmont.cuba.core.sys.jpql.tree;
 
-import com.haulmont.cuba.core.sys.jpql.ErrorRec;
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.Token;
-import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
-
-import java.util.List;
 
 /**
  * Author: Alexander Chevelev

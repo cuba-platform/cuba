@@ -6,7 +6,7 @@
 package com.haulmont.cuba.core.sys.jpql.tree;
 
 import com.haulmont.cuba.core.sys.jpql.*;
-import com.haulmont.cuba.core.sys.jpql.antlr.JPALexer;
+import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import com.haulmont.cuba.core.sys.jpql.pointer.Pointer;
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.Token;
@@ -93,11 +93,11 @@ public class PathNode extends BaseCustomNode {
     public void addDefaultChildren(String fieldPath) {
         String[] strings = fieldPath.split("\\.");
         for (String string : strings) {
-            addChild(new CommonTree(new CommonToken(JPALexer.WORD, string)));
+            addChild(new CommonTree(new CommonToken(JPA2Lexer.WORD, string)));
         }
     }
 
     public void addDefaultChild(String field) {
-        addChild(new CommonTree(new CommonToken(JPALexer.WORD, field)));
+        addChild(new CommonTree(new CommonToken(JPA2Lexer.WORD, field)));
     }
 }

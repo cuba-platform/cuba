@@ -5,7 +5,7 @@
 
 package com.haulmont.cuba.core.sys.jpql;
 
-import com.haulmont.cuba.core.sys.jpql.antlr.JPALexer;
+import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import com.haulmont.cuba.core.sys.jpql.tree.TreeToQueryCapable;
 import org.antlr.runtime.tree.CommonErrorNode;
 import org.antlr.runtime.tree.CommonTree;
@@ -40,25 +40,25 @@ public class TreeToQuery implements TreeVisitorAction {
         if (node.token == null)
             return t;
 
-        if (node.getType() == JPALexer.HAVING ||
-                node.parent != null && node.parent.getType() == JPALexer.T_SIMPLE_CONDITION ||
-                node.parent != null && node.parent.getType() == JPALexer.T_GROUP_BY ||
-                node.parent != null && node.parent.getType() == JPALexer.T_ORDER_BY && node.getType() != JPALexer.T_ORDER_BY_FIELD ||
-                node.parent != null && node.parent.getType() == JPALexer.T_CONDITION && node.getType() == JPALexer.LPAREN && node.childIndex - 1 >= 0 && node.parent.getChild(node.childIndex - 1).getType() != JPALexer.LPAREN ||
-                node.getType() == JPALexer.AND ||
-                node.parent != null && node.parent.getType() == JPALexer.T_ORDER_BY_FIELD ||
-                node.getType() == JPALexer.OR ||
-                node.getType() == JPALexer.DISTINCT && node.childIndex == 0 ||
-                node.getType() == JPALexer.JOIN ||
-                node.getType() == JPALexer.LEFT ||
-                node.getType() == JPALexer.OUTER ||
-                node.getType() == JPALexer.INNER ||
-                node.getType() == JPALexer.FETCH
+        if (node.getType() == JPA2Lexer.HAVING ||
+                node.parent != null && node.parent.getType() == JPA2Lexer.T_SIMPLE_CONDITION ||
+                node.parent != null && node.parent.getType() == JPA2Lexer.T_GROUP_BY ||
+                node.parent != null && node.parent.getType() == JPA2Lexer.T_ORDER_BY && node.getType() != JPA2Lexer.T_ORDER_BY_FIELD ||
+                node.parent != null && node.parent.getType() == JPA2Lexer.T_CONDITION && node.getType() == JPA2Lexer.LPAREN && node.childIndex - 1 >= 0 && node.parent.getChild(node.childIndex - 1).getType() != JPA2Lexer.LPAREN ||
+                node.getType() == JPA2Lexer.AND ||
+                node.parent != null && node.parent.getType() == JPA2Lexer.T_ORDER_BY_FIELD ||
+                node.getType() == JPA2Lexer.OR ||
+                node.getType() == JPA2Lexer.DISTINCT && node.childIndex == 0 ||
+                node.getType() == JPA2Lexer.JOIN ||
+                node.getType() == JPA2Lexer.LEFT ||
+                node.getType() == JPA2Lexer.OUTER ||
+                node.getType() == JPA2Lexer.INNER ||
+                node.getType() == JPA2Lexer.FETCH
                 ) {
             sb.appendSpace();
         }
 
-        if (node.getType() == JPALexer.T_ORDER_BY_FIELD && node.childIndex - 1 >= 0 && node.parent.getChild(node.childIndex - 1).getType() == JPALexer.T_ORDER_BY_FIELD) {
+        if (node.getType() == JPA2Lexer.T_ORDER_BY_FIELD && node.childIndex - 1 >= 0 && node.parent.getChild(node.childIndex - 1).getType() == JPA2Lexer.T_ORDER_BY_FIELD) {
             sb.appendString(", ");
         }
 
@@ -66,11 +66,11 @@ public class TreeToQuery implements TreeVisitorAction {
             return ((TreeToQueryCapable) t).treeToQueryPre(sb, invalidNodes);
         }
 
-        if (node.getType() == JPALexer.T_SELECTED_ITEMS) {
+        if (node.getType() == JPA2Lexer.T_SELECTED_ITEMS) {
             return t;
         }
 
-        if (node.getType() == JPALexer.T_SOURCES) {
+        if (node.getType() == JPA2Lexer.T_SOURCES) {
             sb.appendString("FROM ");
             return t;
         }
@@ -92,7 +92,7 @@ public class TreeToQuery implements TreeVisitorAction {
         if (node.token == null)
             return t;
 
-        if (node.getType() == JPALexer.DISTINCT || node.getType() == JPALexer.FETCH)
+        if (node.getType() == JPA2Lexer.DISTINCT || node.getType() == JPA2Lexer.FETCH)
             sb.appendSpace();
 
 

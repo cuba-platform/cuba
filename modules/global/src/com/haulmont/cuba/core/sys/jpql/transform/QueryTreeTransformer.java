@@ -6,7 +6,7 @@
 package com.haulmont.cuba.core.sys.jpql.transform;
 
 import com.haulmont.cuba.core.sys.jpql.QueryTreeAnalyzer;
-import com.haulmont.cuba.core.sys.jpql.antlr.JPALexer;
+import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import com.haulmont.cuba.core.sys.jpql.tree.*;
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.tree.CommonTree;
@@ -27,9 +27,9 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
 
 
     public void mixinWhereConditionsIntoTree(CommonTree whereTreeToMixIn) {
-        CommonTree whereTreeToMixWithin = (CommonTree) tree.getFirstChildWithType(JPALexer.T_CONDITION);
+        CommonTree whereTreeToMixWithin = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_CONDITION);
         if (whereTreeToMixWithin == null) {
-            FromNode fromNode = (FromNode) tree.getFirstChildWithType(JPALexer.T_SOURCES);
+            FromNode fromNode = (FromNode) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
             List<Tree> endingNodes = new ArrayList<Tree>();
             int deletionCount = tree.getChildCount() - (fromNode.getChildIndex() + 1);
             for (int i = 0; i < deletionCount; i++) {
@@ -41,7 +41,7 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
             }
             tree.freshenParentAndChildIndexes();
         } else {
-            CommonTree and = new CommonTree(new CommonToken(JPALexer.AND, "and"));
+            CommonTree and = new CommonTree(new CommonToken(JPA2Lexer.AND, "and"));
             whereTreeToMixWithin.addChild(and);
             for (Object o : whereTreeToMixIn.getChildren()) {
                 CommonTree t = (CommonTree) o;
@@ -52,7 +52,7 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
     }
 
     public void mixinJoinIntoTree(CommonTree joinClause, EntityReference entityRef, boolean renameVariable) {
-        CommonTree from = (CommonTree) tree.getFirstChildWithType(JPALexer.T_SOURCES);
+        CommonTree from = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
         for (int i = 0; i < from.getChildCount(); i++) {
             SelectionSourceNode sourceNode = (SelectionSourceNode) from.getChild(i);
             if (sourceNode.getChild(0) instanceof IdentificationVariableNode) {
@@ -74,13 +74,13 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
     }
 
     public void addSelectionSource(CommonTree selectionSource) {
-        CommonTree from = (CommonTree) tree.getFirstChildWithType(JPALexer.T_SOURCES);
+        CommonTree from = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
         from.addChild(selectionSource);
         from.freshenParentAndChildIndexes();
     }
 
     public void replaceWithCount(EntityReference entityRef) {
-        Tree selectedItems = tree.getFirstChildWithType(JPALexer.T_SELECTED_ITEMS);
+        Tree selectedItems = tree.getFirstChildWithType(JPA2Lexer.T_SELECTED_ITEMS);
         boolean isDistinct = "DISTINCT".equalsIgnoreCase(selectedItems.getChild(0).getText());
         if (!(isDistinct && selectedItems.getChildCount() == 2 ||
                 selectedItems.getChildCount() == 1))
@@ -95,7 +95,7 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
         selectedItemNode.deleteChild(0);
         selectedItemNode.addChild(countNode);
 
-        Tree orderBy = tree.getFirstChildWithType(JPALexer.T_ORDER_BY);
+        Tree orderBy = tree.getFirstChildWithType(JPA2Lexer.T_ORDER_BY);
         if (orderBy != null) {
             tree.deleteChild(orderBy.getChildIndex());
         }
@@ -103,18 +103,18 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
     }
 
     public void replaceOrderBy(PathEntityReference orderingFieldRef, boolean desc) {
-        CommonTree orderBy = (CommonTree) tree.getFirstChildWithType(JPALexer.T_ORDER_BY);
+        CommonTree orderBy = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_ORDER_BY);
         OrderByFieldNode orderByField;
         if (orderBy == null) {
-            orderByField = new OrderByFieldNode(JPALexer.T_ORDER_BY_FIELD);
+            orderByField = new OrderByFieldNode(JPA2Lexer.T_ORDER_BY_FIELD);
 
-            orderBy = new OrderByNode(JPALexer.T_ORDER_BY);
-            orderBy.addChild(new CommonTree(new CommonToken(JPALexer.ORDER, "order")));
-            orderBy.addChild(new CommonTree(new CommonToken(JPALexer.BY, "by")));
+            orderBy = new OrderByNode(JPA2Lexer.T_ORDER_BY);
+            orderBy.addChild(new CommonTree(new CommonToken(JPA2Lexer.ORDER, "order")));
+            orderBy.addChild(new CommonTree(new CommonToken(JPA2Lexer.BY, "by")));
             orderBy.addChild(orderByField);
             tree.addChild(orderBy);
         } else {
-            orderByField = (OrderByFieldNode) orderBy.getFirstChildWithType(JPALexer.T_ORDER_BY_FIELD);
+            orderByField = (OrderByFieldNode) orderBy.getFirstChildWithType(JPA2Lexer.T_ORDER_BY_FIELD);
             if (orderByField == null)
                 throw new IllegalStateException("No ordering field found");
 
@@ -130,35 +130,35 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
             CommonTree lastNode = (CommonTree) pathNode.deleteChild(pathNode.getChildCount() - 1);
             String variableName = pathNode.asPathString('_');
 
-            PathNode orderingNode = new PathNode(JPALexer.T_SELECTED_FIELD, variableName);
+            PathNode orderingNode = new PathNode(JPA2Lexer.T_SELECTED_FIELD, variableName);
             orderingNode.addDefaultChild(lastNode.getText());
             orderByField.addChild(orderingNode);
 
-            JoinVariableNode joinNode = new JoinVariableNode(JPALexer.T_JOIN_VAR, "left join", variableName);
+            JoinVariableNode joinNode = new JoinVariableNode(JPA2Lexer.T_JOIN_VAR, "left join", variableName);
             joinNode.addChild(pathNode);
 
-            CommonTree from = (CommonTree) tree.getFirstChildWithType(JPALexer.T_SOURCES);
+            CommonTree from = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
             from.getChild(0).addChild(joinNode); // assumption
         } else {
             orderByField.addChild(orderingFieldRef.createNode());
         }
 
         if (desc) {
-            orderByField.addChild(new CommonTree(new CommonToken(JPALexer.DESC, "DESC")));
+            orderByField.addChild(new CommonTree(new CommonToken(JPA2Lexer.DESC, "DESC")));
         }
         orderByField.freshenParentAndChildIndexes();
     }
 
     private AggregateExpressionNode createCountNode(EntityReference ref, boolean distinct) {
-        AggregateExpressionNode result = new AggregateExpressionNode(JPALexer.T_AGGREGATE_EXPR);
+        AggregateExpressionNode result = new AggregateExpressionNode(JPA2Lexer.T_AGGREGATE_EXPR);
 
-        result.addChild(new CommonTree(new CommonToken(JPALexer.COUNT, "COUNT")));
-        result.addChild(new CommonTree(new CommonToken(JPALexer.LPAREN, "(")));
+        result.addChild(new CommonTree(new CommonToken(JPA2Lexer.COUNT, "COUNT")));
+        result.addChild(new CommonTree(new CommonToken(JPA2Lexer.LPAREN, "(")));
         if (distinct) {
-            result.addChild(new CommonTree(new CommonToken(JPALexer.DISTINCT, "DISTINCT")));
+            result.addChild(new CommonTree(new CommonToken(JPA2Lexer.DISTINCT, "DISTINCT")));
         }
         result.addChild(ref.createNode());
-        result.addChild(new CommonTree(new CommonToken(JPALexer.RPAREN, ")")));
+        result.addChild(new CommonTree(new CommonToken(JPA2Lexer.RPAREN, ")")));
         return result;
     }
 

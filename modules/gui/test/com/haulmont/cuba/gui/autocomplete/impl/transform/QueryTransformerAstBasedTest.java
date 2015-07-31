@@ -133,7 +133,6 @@ public class QueryTransformerAstBasedTest {
 
         QueryTransformerAstBased transformerAstBased = new QueryTransformerAstBased(model, "SELECT p FROM Player p left join p.team as t WHERE t.name = 'KS FC'", "Player");
         String result = transformerAstBased.getResult();
-        System.out.println(result);
         assertEquals("SELECT p FROM Player p left join p.team t WHERE t.name = 'KS FC'", result);
     }
 
@@ -238,8 +237,48 @@ public class QueryTransformerAstBasedTest {
         assertTransformsToSame(model, "select distinct m from Player p left join p.team.manager m");
     }
 
+// The following functions are not supported by JPA2 JPQL (see jpql21.bnf)
+//    @Test
+//    public void getResult_noChangesMade_withSubqueries() throws RecognitionException {
+//        EntityBuilder builder = new EntityBuilder();
+//        Entity teamEntity = builder.produceImmediately("Team", "name", "owner");
+//
+//        builder.startNewEntity("Player");
+//        builder.addStringAttribute("name");
+//        builder.addStringAttribute("nickname");
+//        builder.addReferenceAttribute("team", "Team");
+//        Entity playerEntity = builder.produce();
+//
+//        DomainModel model = new DomainModel(playerEntity, teamEntity);
+//
+//        assertTransformsToSame(model, "select p.name from (select t.name from Team t) p");
+//        assertTransformsToSame(model, "select p.owner from (select t.name, t.owner from Team t) p");
+//        assertTransformsToSame(model, "select g.owner from (select t.name, t.owner from Team t) p, (select t.name from Team t) g");
+//    }
+
+// The following functions are not supported by JPA2 JPQL (see jpql21.bnf)
+//    @Test
+//    public void getResult_noChangesMade_severalLevelsOfSubquery() throws RecognitionException {
+//        EntityBuilder builder = new EntityBuilder();
+//        Entity teamEntity = builder.produceImmediately("Team", "name", "owner");
+//
+//        builder.startNewEntity("Player");
+//        builder.addStringAttribute("name");
+//        builder.addStringAttribute("nickname");
+//        builder.addReferenceAttribute("team", "Team");
+//        Entity playerEntity = builder.produce();
+//
+//        DomainModel model = new DomainModel(playerEntity, teamEntity);
+//
+//        assertTransformsToSame(model, "select p.owner from (select t from Team t where t.name in (select a.name from Player a)) p");
+//        // 'as' опускается
+//        QueryTransformerAstBased transformerAstBased = new QueryTransformerAstBased(model, "select p.owner from (select t.owner from Team as t where t.name = '1') p", "AsdfAsdfAsdf");
+//        String result = transformerAstBased.getResult();
+//        assertEquals("select p.owner from (select t.owner from Team t where t.name = '1') p", result);
+//    }
+
     @Test
-    public void getResult_noChangesMade_withSubqueries() throws RecognitionException {
+    public void getResult_noChangesMade_subqueries() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
         Entity teamEntity = builder.produceImmediately("Team", "name", "owner");
 
@@ -251,29 +290,9 @@ public class QueryTransformerAstBasedTest {
 
         DomainModel model = new DomainModel(playerEntity, teamEntity);
 
-        assertTransformsToSame(model, "select p.name from (select t.name from Team t) p");
-        assertTransformsToSame(model, "select p.owner from (select t.name, t.owner from Team t) p");
-        assertTransformsToSame(model, "select g.owner from (select t.name, t.owner from Team t) p, (select t.name from Team t) g");
-    }
-
-    @Test
-    public void getResult_noChangesMade_severalLevelsOfSubquery() throws RecognitionException {
-        EntityBuilder builder = new EntityBuilder();
-        Entity teamEntity = builder.produceImmediately("Team", "name", "owner");
-
-        builder.startNewEntity("Player");
-        builder.addStringAttribute("name");
-        builder.addStringAttribute("nickname");
-        builder.addReferenceAttribute("team", "Team");
-        Entity playerEntity = builder.produce();
-
-        DomainModel model = new DomainModel(playerEntity, teamEntity);
-
-        assertTransformsToSame(model, "select p.owner from (select t from Team t where t.name in (select a.name from Player a)) p");
-        // 'as' опускается
-        QueryTransformerAstBased transformerAstBased = new QueryTransformerAstBased(model, "select p.owner from (select t.owner from Team as t where t.name = '1') p", "AsdfAsdfAsdf");
-        String result = transformerAstBased.getResult();
-        assertEquals("select p.owner from (select t.owner from Team t where t.name = '1') p", result);
+        assertTransformsToSame(model, "select p.owner from Player pl where exists (select t from Team t where t.name = 'Team1' and pl.team.id = t.id)");
+        assertTransformsToSame(model, "select p.owner from Player pl where pl.team.id in (select t.id from Team t where t.name = 'Team1')");
+        assertTransformsToSame(model, "select t.name from Team t where (select count(p) from Player p where p.team.id = t.id) > 10");
     }
 
     @Test

@@ -7,7 +7,7 @@ package com.haulmont.cuba.core.sys.jpql.transform;
 
 import com.haulmont.cuba.core.global.QueryTransformer;
 import com.haulmont.cuba.core.sys.jpql.*;
-import com.haulmont.cuba.core.sys.jpql.antlr.JPALexer;
+import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonErrorNode;
 import org.antlr.runtime.tree.CommonTree;
@@ -117,7 +117,7 @@ public class QueryTransformerAstBased implements QueryTransformer {
         EntityReference ref = inferer.infer(queryAnalyzer);
         try {
             CommonTree statementTree = Parser.parse(statement);
-            CommonTree whereClause = (CommonTree) statementTree.getFirstChildWithType(JPALexer.T_CONDITION);
+            CommonTree whereClause = (CommonTree) statementTree.getFirstChildWithType(JPA2Lexer.T_CONDITION);
             addWhere(whereClause, ref, true);
         } catch (RecognitionException e) {
             throw new RuntimeException(e);

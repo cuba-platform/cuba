@@ -117,49 +117,25 @@ join_association_path_expression
 //End : here we have simplified joins
 
 collection_member_declaration
-    : 'IN''(' collection_valued_path_expression ')' ('AS')? identification_variable
-    -> ^(T_COLLECTION_MEMBER<CollectionMemberNode>[$identification_variable.text] collection_valued_path_expression );
+    : 'IN''(' path_expression ')' ('AS')? identification_variable
+    -> ^(T_COLLECTION_MEMBER<CollectionMemberNode>[$identification_variable.text] path_expression );
 
 qualified_identification_variable
     : map_field_identification_variable
     | 'ENTRY('identification_variable')';
 map_field_identification_variable : 'KEY('identification_variable')' | 'VALUE('identification_variable')';
 
-//todo start : simplify path expression and use PathNode
+//Start : here we have simplified paths
 path_expression
     :  identification_variable '.' (field'.')* (field)?
     -> ^(T_SELECTED_FIELD<PathNode>[$identification_variable.text] (field)*)
     ;
-
-single_valued_path_expression
-    : qualified_identification_variable
-    | 'TREAT('qualified_identification_variable 'AS' subtype')'
-    | state_field_path_expression
-    | single_valued_object_path_expression;
+//todo treated path
+//End : here we have simplified paths
 
 general_identification_variable
     : identification_variable
     | map_field_identification_variable;
-general_subpath
-    : simple_subpath
-    | treated_subpath '.' (single_valued_object_field '.')*;
-simple_subpath
-    : general_identification_variable '.' (single_valued_object_field '.')*
-    ;
-treated_subpath
-    : 'TREAT('general_subpath '.' single_valued_object_field 'AS' subtype ')'
-    | 'TREAT('general_subpath '.' collection_valued_field 'AS' subtype ')';
-state_field_path_expression
-    : general_subpath state_field;
-state_valued_path_expression
-    : state_field_path_expression
-    | general_identification_variable;
-single_valued_object_path_expression
-    : general_subpath single_valued_object_field;
-collection_valued_path_expression
-    : general_subpath collection_valued_field;
-//todo end
-
 update_clause
     : entity_name (('AS')? identification_variable)? 'SET' update_item (',' update_item)*;
 update_item
@@ -176,37 +152,36 @@ select_clause
 select_item
     : select_expression (('AS')? result_variable)?;
 select_expression
-    : single_valued_path_expression
+    : path_expression
+    | identification_variable -> ^(T_SELECTED_ENTITY<PathNode>[$identification_variable.text])
     | scalar_expression
     | aggregate_expression
-    | identification_variable
     | 'OBJECT' '('identification_variable')'
     | constructor_expression;
 constructor_expression
     : 'NEW' constructor_name '(' constructor_item (',' constructor_item)* ')';
 constructor_item
-    : single_valued_path_expression
+    : path_expression
     | scalar_expression
     | aggregate_expression
     | identification_variable;
 aggregate_expression
-    : aggregate_expression_function_name '('(DISTINCT)? state_valued_path_expression')'
-    -> ^(T_AGGREGATE_EXPR<AggregateExpressionNode>[] aggregate_expression_function_name '(' ('DISTINCT')? state_valued_path_expression')')
+    : aggregate_expression_function_name '('(DISTINCT)? path_expression')'
+    -> ^(T_AGGREGATE_EXPR<AggregateExpressionNode>[] aggregate_expression_function_name '(' ('DISTINCT')? path_expression')')
     | 'COUNT' '('(DISTINCT)? count_argument ')'
     -> ^(T_AGGREGATE_EXPR<AggregateExpressionNode>[] 'COUNT' '(' ('DISTINCT')? count_argument ')')
     | function_invocation;
 aggregate_expression_function_name
     : 'AVG' | 'MAX' | 'MIN' |'SUM' | 'COUNT';
 count_argument
-    : identification_variable | state_valued_path_expression | single_valued_object_path_expression;
+    : identification_variable | path_expression;
 where_clause
     : wh='WHERE' conditional_expression-> ^(T_CONDITION<WhereNode>[$wh] conditional_expression);
 groupby_clause
-    : 'GROUP BY' groupby_item (',' groupby_item)*
+    : 'GROUP' 'BY' groupby_item (',' groupby_item)*
     -> ^(T_GROUP_BY<GroupByNode>[] 'GROUP' 'BY' groupby_item*);
 groupby_item
-    : single_valued_path_expression
-    | identification_variable;
+    : path_expression | identification_variable;
 having_clause
     : 'HAVING' conditional_expression;
 orderby_clause
@@ -218,10 +193,10 @@ orderby_item
     | orderby_variable  'DESC'
     -> ^(T_ORDER_BY_FIELD<OrderByFieldNode>[] orderby_variable 'DESC');
 orderby_variable
-    : state_field_path_expression | general_identification_variable | result_variable;
+    : path_expression | general_identification_variable | result_variable;
 
 subquery
-    : lp='(' simple_select_clause subquery_from_clause (where_clause)? (groupby_clause)? (having_clause)? rp=')'
+    : lp='(SELECT' simple_select_clause subquery_from_clause (where_clause)? (groupby_clause)? (having_clause)? rp=')'
      -> ^(T_QUERY<QueryNode>[$lp,$rp] simple_select_clause subquery_from_clause (where_clause)? (groupby_clause)? (having_clause)? );
 subquery_from_clause
     : fr='FROM' subselect_identification_variable_declaration (',' subselect_identification_variable_declaration)*
@@ -247,10 +222,10 @@ derived_collection_member_declaration
     : 'IN' superquery_identification_variable'.'(single_valued_object_field '.')*collection_valued_field;
 
 simple_select_clause
-    : 'SELECT' ('DISTINCT') simple_select_expression
+    : ('DISTINCT')? simple_select_expression
     -> ^(T_SELECTED_ITEMS ^(T_SELECTED_ITEM<SelectedItemNode>[] ('DISTINCT')? simple_select_expression));
 simple_select_expression
-    : single_valued_path_expression
+    : path_expression
     | scalar_expression
     | aggregate_expression
     | identification_variable;
@@ -280,7 +255,9 @@ simple_cond_expression
     | null_comparison_expression
     | empty_collection_comparison_expression
     | collection_member_expression
-    | exists_expression;
+    | exists_expression
+    | date_macro_expression;
+
 //Start: Here we insert our custom macroses
 date_macro_expression
     : date_between_macro_expression
@@ -310,7 +287,7 @@ between_expression
     | string_expression ('NOT')? 'BETWEEN' string_expression 'AND' string_expression
     | datetime_expression ('NOT')? 'BETWEEN' datetime_expression 'AND' datetime_expression;
 in_expression
-    : (state_valued_path_expression | type_discriminator) ('NOT')? 'IN'
+    : (path_expression | type_discriminator) ('NOT')? 'IN'
             ( '(' in_item (',' in_item)* ')'
             | subquery
             | collection_valued_input_parameter );
@@ -319,14 +296,13 @@ in_item
 like_expression
     : string_expression ('NOT')? 'LIKE' (pattern_value | input_parameter)('ESCAPE' escape_character)?;
 null_comparison_expression
-    : (single_valued_path_expression | input_parameter) 'IS' ('NOT')? 'NULL';
+    : (path_expression | input_parameter) 'IS' ('NOT')? 'NULL';
 empty_collection_comparison_expression
-    : collection_valued_path_expression 'IS' ('NOT')? 'EMPTY';
+    : path_expression 'IS' ('NOT')? 'EMPTY';
 collection_member_expression
-    : entity_or_value_expression  ('NOT')? 'MEMBER' ('OF')? collection_valued_path_expression;
+    : entity_or_value_expression  ('NOT')? 'MEMBER' ('OF')? path_expression;
 entity_or_value_expression
-    : single_valued_object_path_expression
-    | state_field_path_expression
+    : path_expression
     | simple_entity_or_value_expression;
 simple_entity_or_value_expression
     : identification_variable
@@ -342,7 +318,8 @@ comparison_expression
     | enum_expression ('='|'<>') (enum_expression | all_or_any_expression)
     | datetime_expression comparison_operator (datetime_expression | all_or_any_expression)
     | entity_expression ('=' | '<>') (entity_expression | all_or_any_expression)
-    | entity_type_expression ('=' | '<>') entity_type_expression;
+    | entity_type_expression ('=' | '<>') entity_type_expression
+    | arithmetic_expression comparison_operator (arithmetic_expression | all_or_any_expression);
 
 comparison_operator
     : '='
@@ -360,7 +337,7 @@ arithmetic_term
 arithmetic_factor
     : (( '+' | '-'))? arithmetic_primary;
 arithmetic_primary
-    : state_valued_path_expression
+    : path_expression
     | numeric_literal
     | '('arithmetic_expression')'
     | input_parameter
@@ -370,7 +347,7 @@ arithmetic_primary
     | function_invocation
     | subquery;
 string_expression
-    : state_valued_path_expression
+    : path_expression
     | string_literal
     | input_parameter
     | functions_returning_strings
@@ -379,7 +356,7 @@ string_expression
     | function_invocation
     | subquery;
 datetime_expression
-    : state_valued_path_expression
+    : path_expression
     | input_parameter
     | functions_returning_datetime
     | aggregate_expression
@@ -388,20 +365,20 @@ datetime_expression
     | date_time_timestamp_literal
     | subquery;
 boolean_expression
-    : state_valued_path_expression
+    : path_expression
     | boolean_literal
     | input_parameter
     | case_expression
     | function_invocation
     | subquery;
 enum_expression
-    : state_valued_path_expression
+    : path_expression
     | enum_literal
     | input_parameter
     | case_expression
     | subquery;
 entity_expression
-    : single_valued_object_path_expression
+    : path_expression
     | simple_entity_expression;
 simple_entity_expression
     : identification_variable
@@ -411,14 +388,14 @@ entity_type_expression
     | entity_type_literal
     | input_parameter;
 type_discriminator
-    : 'TYPE'(general_identification_variable | single_valued_object_path_expression | input_parameter);
+    : 'TYPE'(general_identification_variable | path_expression | input_parameter);
 functions_returning_numerics
     : 'LENGTH('string_expression')'
     | 'LOCATE(' string_expression',' string_expression(','arithmetic_expression)?')'
     | 'ABS('arithmetic_expression')'
     | 'SQRT('arithmetic_expression')'
     | 'MOD('arithmetic_expression',' arithmetic_expression')'
-    | 'SIZE('collection_valued_path_expression')'
+    | 'SIZE('path_expression')'
     | 'INDEX('identification_variable')';
 functions_returning_datetime
     : 'CURRENT_DATE'
@@ -436,7 +413,7 @@ function_invocation
     : 'FUNCTION('function_name (',' function_arg)* ')';
 function_arg
     : literal
-    | state_valued_path_expression
+    | path_expression
     | input_parameter
     | scalar_expression;
 case_expression
@@ -451,7 +428,7 @@ when_clause
 simple_case_expression
     : 'CASE' case_operand simple_when_clause (simple_when_clause)* 'ELSE' scalar_expression 'END';
 case_operand
-    : state_valued_path_expression
+    : path_expression
     | type_discriminator;
 simple_when_clause
     : 'WHEN' scalar_expression 'THEN' scalar_expression;

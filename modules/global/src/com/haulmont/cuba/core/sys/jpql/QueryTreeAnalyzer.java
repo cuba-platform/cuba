@@ -5,7 +5,7 @@
 
 package com.haulmont.cuba.core.sys.jpql;
 
-import com.haulmont.cuba.core.sys.jpql.antlr.JPALexer;
+import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 import com.haulmont.cuba.core.sys.jpql.pointer.EntityPointer;
 import com.haulmont.cuba.core.sys.jpql.pointer.Pointer;
@@ -63,7 +63,7 @@ public class QueryTreeAnalyzer {
     }
 
     public PathNode getSelectedPathNode() {
-        Tree selectedItems = tree.getFirstChildWithType(JPALexer.T_SELECTED_ITEMS);
+        Tree selectedItems = tree.getFirstChildWithType(JPA2Lexer.T_SELECTED_ITEMS);
         boolean isDistinct = "DISTINCT".equalsIgnoreCase(selectedItems.getChild(0).getText());
         SelectedItemNode selectedItemNode;
         if (isDistinct) {
