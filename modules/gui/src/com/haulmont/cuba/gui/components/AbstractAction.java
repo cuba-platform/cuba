@@ -46,6 +46,8 @@ public abstract class AbstractAction implements Action {
 
     protected KeyCombination shortcut;
 
+    protected boolean primary = false;
+
     protected AbstractAction(String id) {
         this.id = id;
         messages = AppBeans.get(Messages.NAME);
@@ -215,5 +217,13 @@ public abstract class AbstractAction implements Action {
 
     @Override
     public void refreshState() {
+    }
+
+    public boolean isPrimary() {
+        return primary;
+    }
+
+    public void setPrimary(boolean primary) {
+        this.primary = primary;
     }
 }

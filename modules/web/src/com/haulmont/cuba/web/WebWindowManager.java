@@ -38,6 +38,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -1120,6 +1121,11 @@ public class WebWindowManager extends WindowManager {
             if (StringUtils.isNotEmpty(action.getIcon())) {
                 button.setIcon(WebComponentsHelper.getIcon(action.getIcon()));
                 button.addStyleName(WebButton.ICON_STYLE);
+            }
+
+            if (action instanceof AbstractAction && ((AbstractAction)action).isPrimary()) {
+                button.addStyleName(ValoTheme.BUTTON_PRIMARY);
+                button.focus();
             }
 
             if (ui.isTestMode()) {

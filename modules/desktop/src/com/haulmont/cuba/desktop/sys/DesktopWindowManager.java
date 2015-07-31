@@ -24,6 +24,7 @@ import com.haulmont.cuba.desktop.sys.validation.ValidationAwareWindowClosingList
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.app.core.dev.LayoutAnalyzer;
 import com.haulmont.cuba.gui.app.core.dev.LayoutTip;
+import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.*;
@@ -1259,6 +1260,10 @@ public class DesktopWindowManager extends WindowManager {
 
             button.setPreferredSize(new Dimension(button.getPreferredSize().width, DesktopComponentsHelper.BUTTON_HEIGHT));
             button.setMaximumSize(new Dimension(Integer.MAX_VALUE, DesktopComponentsHelper.BUTTON_HEIGHT));
+
+            if (action instanceof AbstractAction && ((AbstractAction)action).isPrimary()) {
+                button.requestFocus();
+            }
 
             buttonsPanel.add(button);
         }
