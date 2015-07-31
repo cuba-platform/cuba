@@ -23,6 +23,8 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.*;
 
+import static com.haulmont.cuba.gui.upload.FileUploadingAPI.*;
+
 /**
  * @author artamonov
  * @version $Id$
@@ -71,9 +73,10 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
             try {
                 notifyStartListeners(file);
 
-                UUID tempFileId = fileUploading.createEmptyFile();
+                FileInfo fileInfo = fileUploading.createFile();
+                UUID tempFileId = fileInfo.getId();
+                File tmpFile = fileInfo.getFile();
 
-                File tmpFile = fileUploading.getFile(tempFileId);
                 FileUtils.copyFile(file, tmpFile);
 
                 filesMap.put(tempFileId, file.getName());

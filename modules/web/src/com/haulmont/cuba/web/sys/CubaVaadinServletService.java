@@ -12,10 +12,15 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.auth.RequestContext;
+import com.haulmont.cuba.web.toolkit.ui.CubaFileUpload;
 import com.vaadin.server.*;
+import com.vaadin.server.communication.FileUploadHandler;
 import com.vaadin.server.communication.HeartbeatHandler;
 import com.vaadin.server.communication.PublishedFileHandler;
 import com.vaadin.server.communication.ServletBootstrapHandler;
+import elemental.json.Json;
+import elemental.json.JsonArray;
+import elemental.json.JsonObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -147,6 +153,10 @@ public class CubaVaadinServletService extends VaadinServletService {
             } else if (handler instanceof HeartbeatHandler) {
                 // replace HeartbeatHandler with CubaHeartbeatHandler
                 cubaRequestHandlers.add(new CubaHeartbeatHandler());
+            } else if (handler instanceof FileUploadHandler) {
+                // add support for jquery file upload
+                cubaRequestHandlers.add(handler);
+                cubaRequestHandlers.add(new CubaFileUploadHandler());
             } else {
                 cubaRequestHandlers.add(handler);
             }
@@ -160,6 +170,45 @@ public class CubaVaadinServletService extends VaadinServletService {
         @Override
         protected InputStream getApplicationResourceAsStream(Class<?> contextClass, String fileName) {
             return VaadinServlet.getCurrent().getServletContext().getResourceAsStream("/VAADIN/" + fileName);
+        }
+    }
+
+    // Add suport for CubaFileUpload component with XHR upload mechanism
+    protected static class CubaFileUploadHandler extends FileUploadHandler {
+
+        private Log log = LogFactory.getLog(CubaHeartbeatHandler.class);
+
+        @Override
+        protected boolean isSuitableUploadComponent(ClientConnector source) {
+            if (!(source instanceof CubaFileUpload)) {
+                // this is not jquery upload request
+                return false;
+            }
+
+            log.trace("Uploading file using jquery file upload mechanism");
+
+            return true;
+        }
+
+        @Override
+        protected void sendUploadResponse(VaadinRequest request, VaadinResponse response,
+                                          String fileName, long contentLength) throws IOException {
+
+            JsonArray json = Json.createArray();
+            JsonObject fileInfo = Json.createObject();
+            fileInfo.put("name", fileName);
+            fileInfo.put("size", contentLength);
+
+            // just fake addresses and parameters
+            fileInfo.put("url", fileName);
+            fileInfo.put("thumbnail_url", fileName);
+            fileInfo.put("delete_url", fileName);
+            fileInfo.put("delete_type", "POST");
+            json.set(0, fileInfo);
+
+            PrintWriter writer = response.getWriter();
+            writer.write(json.toJson());
+            writer.close();
         }
     }
 
@@ -193,7 +242,9 @@ public class CubaVaadinServletService extends VaadinServletService {
                 throws IOException {
             boolean result = super.synchronizedHandleRequest(session, request, response);
 
-            log.trace("Handle heartbeat");
+            if (log.isTraceEnabled()) {
+                log.trace("Handle heartbeat " + request.getRemoteHost() + " " + request.getRemoteAddr());
+            }
 
             if (result && App.isBound()) {
                 App.getInstance().onHeartbeat();

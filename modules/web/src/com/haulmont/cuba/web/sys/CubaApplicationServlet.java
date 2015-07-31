@@ -169,6 +169,7 @@ public class CubaApplicationServlet extends VaadinServlet {
 
         long t = System.currentTimeMillis() - startTs;
         if (t > (webConfig.getLogLongRequestsThresholdSec() * 1000)) {
+            // todo artamonov ignore file uploading requests here
             log.warn(String.format("Too long request processing [%d ms]: ip=%s, url=%s",
                     t, request.getRemoteAddr(), request.getRequestURI()));
         }

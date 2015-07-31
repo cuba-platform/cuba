@@ -15,7 +15,7 @@ public interface FileMultiUploadField extends Component, Component.HasCaption, C
 
     String NAME = "multiUpload";
 
-    public abstract class UploadListener {
+    abstract class UploadListener {
 
         /**
          * File upload finished. Executed in uploading thread. <br/>

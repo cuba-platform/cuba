@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
  * @author artamonov
  * @version $Id$
  */
+@Deprecated
 public class CubaUpload extends Upload {
 
     @Override
@@ -30,6 +31,8 @@ public class CubaUpload extends Upload {
     }
 
     /**
+     * Note: this is just a hint for browser, user may select files that do not meet this property
+     *
      * @param accept mime types, comma separated
      */
     public void setAccept(String accept) {

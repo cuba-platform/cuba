@@ -30,6 +30,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author artamonov
@@ -73,7 +74,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
     @Override
     public UUID saveFile(byte[] data) throws FileStorageException {
-        checkNotNull(data, "No file content");
+        checkNotNullArgument(data, "No file content");
 
         UUID uuid = uuidSource.createUuid();
         File dir = new File(tempDir);
@@ -89,8 +90,9 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
             } catch (Exception ex) {
                 failed = true;
             } finally {
-                if (!failed)
+                if (!failed) {
                     tempFiles.put(uuid, file);
+                }
             }
         } catch (Exception e) {
             throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, file.getAbsolutePath());
@@ -102,14 +104,16 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
     @Override
     public UUID saveFile(InputStream stream, UploadProgressListener listener)
             throws FileStorageException {
-        if (stream == null)
-            throw new NullPointerException("Null input stream for save file");
+
+        checkNotNullArgument(stream, "Null input stream for save file");
+
         UUID uuid = uuidSource.createUuid();
         File dir = new File(tempDir);
         File file = new File(dir, uuid.toString());
         if (file.exists()) {
             throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
         }
+
         try {
             boolean failed = false;
             try (FileOutputStream fileOutput = new FileOutputStream(file)) {
@@ -137,6 +141,16 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
     @Override
     public UUID createEmptyFile() throws FileStorageException {
+        FileInfo fileInfo = createFileInternal();
+        return fileInfo.getId();
+    }
+
+    @Override
+    public FileInfo createFile() throws FileStorageException {
+        return createFileInternal();
+    }
+
+    protected FileInfo createFileInternal() throws FileStorageException {
         UUID uuid = uuidSource.createUuid();
         File dir = new File(tempDir);
         File file = new File(dir, uuid.toString());
@@ -154,7 +168,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
             throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, file.getAbsolutePath());
         }
 
-        return uuid;
+        return new FileInfo(file, uuid);
     }
 
     @Override
@@ -171,15 +185,15 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
     @Override
     public File getFile(UUID fileId) {
-        if (tempFiles.containsKey(fileId))
-            return tempFiles.get(fileId);
-        else
-            return null;
+        return tempFiles.get(fileId);
     }
 
     @Override
     public FileDescriptor getFileDescriptor(UUID fileId, String name) {
         File file = getFile(fileId);
+        if (file == null) {
+            return null;
+        }
 
         FileDescriptor fDesc = new FileDescriptor();
 
@@ -214,8 +228,10 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
                 forDelete = fileEntry.getKey();
             }
         }
-        if (forDelete != null)
+
+        if (forDelete != null) {
             tempFiles.remove(forDelete);
+        }
     }
 
     @Override
@@ -229,10 +245,16 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
         deleteFile(fileId);
     }
 
-    private void uploadFileIntoStorage(UUID fileId, FileDescriptor fileDescr,
-                                       @Nullable UploadToStorageProgressListener listener)
+    protected void uploadFileIntoStorage(UUID fileId, FileDescriptor fileDescr,
+                                         @Nullable UploadToStorageProgressListener listener)
             throws FileStorageException, InterruptedIOException {
+
+        checkNotNullArgument(fileDescr);
+
         File file = getFile(fileId);
+        if (file == null) {
+            throw new FileStorageException(FileStorageException.Type.FILE_NOT_FOUND, fileDescr.getName());
+        }
 
         for (Iterator<String> iterator = clusterInvocationSupport.getUrlList().iterator(); iterator.hasNext(); ) {
             String url = iterator.next()
@@ -242,10 +264,11 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
             HttpPost method = new HttpPost(url);
             FileEntity entity;
-            if (listener != null)
+            if (listener != null) {
                 entity = new FileStorageProgressEntity(file, "application/octet-stream", fileId, listener);
-            else
+            } else {
                 entity = new FileEntity(file, "application/octet-stream");
+            }
 
             method.setEntity(entity);
             HttpClient client = new DefaultHttpClient();
@@ -256,20 +279,22 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
                     break;
                 } else {
                     log.debug("Unable to upload file to " + url + "\n" + response.getStatusLine());
-                    if (statusCode == HttpStatus.SC_NOT_FOUND && iterator.hasNext())
+                    if (statusCode == HttpStatus.SC_NOT_FOUND && iterator.hasNext()) {
                         log.debug("Trying next URL");
-                    else
+                    } else {
                         throw new FileStorageException(FileStorageException.Type.fromHttpStatus(statusCode), fileDescr.getName());
+                    }
                 }
             } catch (InterruptedIOException e) {
                 log.trace("Uploading has been interrupted");
                 throw e;
             } catch (IOException e) {
                 log.debug("Unable to upload file to " + url + "\n" + e);
-                if (iterator.hasNext())
+                if (iterator.hasNext()) {
                     log.debug("Trying next URL");
-                else
+                } else {
                     throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fileDescr.getName(), e);
+                }
             } finally {
                 client.getConnectionManager().shutdown();
             }
@@ -280,7 +305,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
     public FileDescriptor putFileIntoStorage(final TaskLifeCycle<Long> taskLifeCycle)
             throws FileStorageException, InterruptedIOException {
 
-        checkNotNull(taskLifeCycle);
+        checkNotNullArgument(taskLifeCycle);
 
         UUID fileId = (UUID) taskLifeCycle.getParams().get("fileId");
         String fileName = (String) taskLifeCycle.getParams().get("fileName");

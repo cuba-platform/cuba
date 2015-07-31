@@ -404,6 +404,19 @@ configure(webModule) {
         exclude '**/web.xml'
     }
 
+    task buildHavana(type: CubaWebScssThemeCreation) {
+        themes = ['havana']
+//        compress = true
+//        sprites = true
+//        cleanup = true
+    }
+
+    task deployHavana(type: Copy, dependsOn: buildHavana) {
+        from file("$webModule.buildDir/web/VAADIN/themes/havana")
+        into "${project.tomcatDir}/webapps/cuba/VAADIN/themes/havana"
+        exclude '**/web.xml'
+    }
+
     def webOutDir = file("$buildDir/web")
     task webArchive(dependsOn: buildScssThemes, type: Zip) {
         from file('web')
@@ -482,7 +495,7 @@ configure(webToolkitModule) {
         workers = 2
 
         // Performance and widgetset size:
-        style = 'OBF' // 'OBF' or 'PRETTY' or 'DETAILED'
+        style = 'PRETTY' // 'OBF' or 'PRETTY' or 'DETAILED'
         disableCastChecking = false
         optimize = 9
         draft = false

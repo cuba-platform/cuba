@@ -76,6 +76,14 @@ public interface FileUploadingAPI {
     UUID createEmptyFile() throws FileStorageException;
 
     /**
+     * Create a new empty temporary file and cache its ID for subsequent operations.
+     *
+     * @return the new temporary file ID
+     * @throws FileStorageException
+     */
+    FileInfo createFile() throws FileStorageException;
+
+    /**
      * Create and cache a new temporary file ID. Doesn't create any real file on disk.
      *
      * @return temporary file ID
@@ -99,6 +107,7 @@ public interface FileUploadingAPI {
      * @param name      file name to set in the FileDescriptor
      * @return          the new FileDescriptor instance
      */
+    @Nullable
     FileDescriptor getFileDescriptor(UUID fileId, String name);
 
     /**
@@ -183,4 +192,22 @@ public interface FileUploadingAPI {
      */
     FileDescriptor putFileIntoStorage(TaskLifeCycle<Long> taskLifeCycle)
             throws FileStorageException, InterruptedIOException;
+
+    class FileInfo {
+        private UUID id;
+        private File file;
+
+        public FileInfo(File file, UUID id) {
+            this.file = file;
+            this.id = id;
+        }
+
+        public File getFile() {
+            return file;
+        }
+
+        public UUID getId() {
+            return id;
+        }
+    }
 }

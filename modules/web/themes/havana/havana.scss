@@ -41,6 +41,7 @@
 @import "components/gridlayout/gridlayout";
 @import "components/splitpanel/splitpanel";
 @import "components/grouptable/grouptable";
+@import "components/fileupload/fileupload";
 @import "components/widgetstree/widgetstree";
 @import "components/pickerfield/pickerfield";
 @import "components/maskedfield/maskedfield";
@@ -118,6 +119,7 @@
   @include havana-cuba-flowlayout;
   @include havana-cuba-fieldgroup;
   @include havana-cuba-grouptable;
+  @include havana-cuba-fileupload;
   @include havana-cuba-pickerfield;
   @include havana-cuba-multiupload;
   @include havana-cuba-widgetstree;

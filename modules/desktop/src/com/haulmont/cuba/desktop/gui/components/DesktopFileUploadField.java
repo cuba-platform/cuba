@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.haulmont.cuba.gui.upload.FileUploadingAPI.*;
+
 /**
  * @author budarov
  * @version $Id$
@@ -84,9 +86,10 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
                 fileName = file.getAbsolutePath();
                 notifyListenersStart(file);
 
-                tempFileId = fileUploading.createEmptyFile();
+                FileInfo fileInfo = fileUploading.createFile();
+                tempFileId = fileInfo.getId();
+                File tmpFile = fileInfo.getFile();
 
-                File tmpFile = fileUploading.getFile(tempFileId);
                 FileUtils.copyFile(file, tmpFile);
 
                 fileId = tempFileId;
@@ -98,7 +101,7 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
                     fileUploading.deleteFile(tempFileId);
                     tempFileId = null;
                 } catch (FileStorageException e) {
-                    throw new RuntimeException(ex);
+                    throw new RuntimeException("Unable to delete file from temp storage", ex);
                 }
                 notifyListenersFail(file, ex);
             } finally {
@@ -164,7 +167,7 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
                 bytes = byteOutput.toByteArray();
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to read file content from temp storage", e);
         }
 
         return bytes;

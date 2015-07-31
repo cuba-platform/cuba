@@ -34,8 +34,12 @@ public class CubaBootstrapListener implements BootstrapListener {
     public void modifyBootstrapPage(BootstrapPageResponse response) {
         Element head = response.getDocument().getElementsByTag("head").get(0);
 
-        Element jquery = response.getDocument().createElement("script");
-        jquery.attr("src", "VAADIN/resources/jquery/jquery-1.10.2.min.js");
-        head.appendChild(jquery);
+        includeScript("VAADIN/resources/jquery/jquery-1.11.3.min.js", response, head);
+    }
+
+    protected void includeScript(String src, BootstrapPageResponse response, Element head) {
+        Element script = response.getDocument().createElement("script");
+        script.attr("src", src);
+        head.appendChild(script);
     }
 }

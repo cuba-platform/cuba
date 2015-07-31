@@ -1,0 +1,156 @@
+/*
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+// Version: $Id$
+
+@mixin havana-cuba-fileupload($primary-stylename: cuba-fileupload) {
+  .#{$primary-stylename} {
+    display: inline-block;
+    overflow: hidden;
+    position: relative;
+
+    zoom: 1;
+    text-align: center;
+    text-decoration: none;
+    border: $cuba-button-border-color 1px solid;
+    background: transparent url(../button/images/button.gif) repeat-x;
+    cursor: pointer;
+    white-space: nowrap;
+    margin: 0;
+    height: 25px;
+    padding: 0 5px;
+    color: inherit;
+    line-height: normal;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    outline: 0;
+    font-size: 12px;
+
+    .#{$primary-stylename}-wrap {
+      vertical-align: middle;
+
+      .#{$primary-stylename}-caption {
+        font: inherit;
+        font-size: 12px;
+        line-height: 18px;
+        font-family: $cuba-havana-fonts;
+        vertical-align: middle;
+        white-space: nowrap;
+        color: $cuba-button-caption-color;
+      }
+    }
+  }
+
+  .#{$primary-stylename}:focus {
+    outline: none;
+    border-color: $cuba-button-focuced-border-color;
+  }
+
+  .v-disabled.#{$primary-stylename}:focus {
+    border-color: $cuba-button-border-color;
+  }
+
+  .#{$primary-stylename}-link:focus {
+    outline: none;
+    border: 1px dashed #4d7ab2;
+  }
+
+  .v-disabled.#{$primary-stylename}-link:focus {
+    border: 1px solid transparent;
+  }
+
+  .#{$primary-stylename}-empty-caption {
+    .#{$primary-stylename}-caption {
+      display: none;
+    }
+
+    .#{$primary-stylename}-wrap {
+      .v-icon {
+        margin-right: 0;
+      }
+    }
+  }
+
+  .#{$primary-stylename}:hover {
+    background: transparent url(../button/images/button-hover.gif) repeat-x;
+  }
+
+  .#{$primary-stylename}:active {
+    background: transparent url(../button/images/button-pressed.png) repeat-x;
+  }
+
+  .v-disabled.#{$primary-stylename}:hover,
+  .v-disabled.#{$primary-stylename}:active {
+    background: transparent url(../button/images/button.gif) repeat-x;
+  }
+
+  .#{$primary-stylename}-link {
+    border: 1px solid transparent;
+    text-align: left;
+    background: transparent;
+    padding: 0;
+    height: auto;
+
+    .#{$primary-stylename}-wrap {
+      background: transparent;
+      height: inherit;
+      padding: 0;
+      margin-top: 0;
+
+      .#{$primary-stylename}-caption {
+        text-decoration: underline;
+        color: $cuba-link-color;
+        text-align: left;
+      }
+    }
+  }
+
+  .v-disabled.#{$primary-stylename}.#{$primary-stylename}-link:hover {
+    background: transparent;
+  }
+
+  .v-disabled.#{$primary-stylename}.#{$primary-stylename}-link:focus {
+    outline: none;
+    border-color: transparent;
+  }
+
+  .#{$primary-stylename}-link:focus {
+    outline: none;
+    border: 1px dashed $cuba-link-color;
+  }
+
+  .#{$primary-stylename}-link:hover,
+  .#{$primary-stylename}-link:active {
+    background: transparent;
+  }
+
+  .#{$primary-stylename} input {
+    display: block;
+    cursor: pointer;
+
+    @include box-defaults;
+  }
+
+  .#{$primary-stylename}-progresswindow.v-window {
+    width: 500px;
+
+    .v-label.upload-file-label {
+      font-family: $cuba-havana-fonts;
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    .upload-progressbar,
+    .v-button.upload-cancel-button {
+      margin-top: 6px;
+    }
+
+    .upload-cancel-button {
+      float: right;
+    }
+  }
+}
