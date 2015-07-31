@@ -11,20 +11,20 @@ package com.haulmont.cuba.gui.components;
 public class DialogAction extends AbstractAction {
 
     public enum Type {
-        OK("ok", "actions.Ok", "icons/ok.png"),
-        CANCEL("cancel", "actions.Cancel", "icons/cancel.png"),
-        YES("yes", "actions.Yes", "icons/ok.png"),
-        NO("no", "actions.No", "icons/cancel.png"),
-        CLOSE("close", "actions.Close", "");
+        OK("ok", "actions.Ok", "actions.dialog.Ok.icon"),
+        CANCEL("cancel", "actions.Cancel", "actions.dialog.Cancel.icon"),
+        YES("yes", "actions.Yes", "actions.dialog.Yes.icon"),
+        NO("no", "actions.No", "actions.dialog.No.icon"),
+        CLOSE("close", "actions.Close", "actions.dialog.Close.icon");
 
         private String id;
         private String msgKey;
-        private String icon;
+        private String iconMsgKey;
 
-        Type(String id, String msgKey, String icon) {
+        Type(String id, String msgKey, String iconMsgKey) {
             this.id = id;
             this.msgKey = msgKey;
-            this.icon = icon;
+            this.iconMsgKey = iconMsgKey;
         }
 
         public String getId() {
@@ -35,8 +35,8 @@ public class DialogAction extends AbstractAction {
             return msgKey;
         }
 
-        public String getIcon() {
-            return icon;
+        public String getIconMsgKey() {
+            return iconMsgKey;
         }
     }
 
@@ -54,7 +54,7 @@ public class DialogAction extends AbstractAction {
 
     @Override
     public String getIcon() {
-        return type.icon;
+        return messages.getMainMessage(type.iconMsgKey);
     }
 
     public Type getType() {

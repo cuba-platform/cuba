@@ -1801,7 +1801,7 @@ public class DesktopWindowManager extends WindowManager {
 
         @Override
         public String getIcon() {
-            return type.getIcon();
+            return messages.getMainMessage(type.getIconMsgKey());
         }
 
         @Override
