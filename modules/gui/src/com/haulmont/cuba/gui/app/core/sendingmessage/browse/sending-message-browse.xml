@@ -12,7 +12,7 @@
         <collectionDatasource
                 id="sendingMessageDs"
                 class="com.haulmont.cuba.core.entity.SendingMessage"
-                view="sendingMessage.loadFromQueue">
+                view="sendingMessage.browse">
             <query>
                 <![CDATA[select sm from sys$SendingMessage sm]]>
             </query>

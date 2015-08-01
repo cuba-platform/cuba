@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -57,9 +58,6 @@ public class SendingMessageBrowser extends AbstractWindow {
     protected Table table;
 
     @Inject
-    protected DataManager dataManager;
-
-    @Inject
     protected FileUploadingAPI fileUploadingAPI;
 
     @Override
@@ -95,7 +93,7 @@ public class SendingMessageBrowser extends AbstractWindow {
     public void download() {
         SendingMessage message = table.getSingleSelected();
         if (message != null) {
-            List<SendingAttachment> attachments = message.getAttachments();
+            List<SendingAttachment> attachments = getAttachments(message);
             if (CollectionUtils.isNotEmpty(attachments)) {
                 if (attachments.size() == 1) {
                     exportFile(attachments.get(0));
@@ -122,11 +120,15 @@ public class SendingMessageBrowser extends AbstractWindow {
                 ParamsMap.of("message", message));
     }
 
+    protected List<SendingAttachment> getAttachments(SendingMessage message) {
+        return getDsContext().getDataSupplier().reload(message, "sendingMessage.loadFromQueue").getAttachments();
+    }
+
     protected FileDescriptor getFileDescriptor(SendingAttachment attachment) throws FileStorageException {
         UUID uuid = fileUploadingAPI.saveFile(attachment.getContent());
         FileDescriptor fileDescriptor = fileUploadingAPI.getFileDescriptor(uuid, attachment.getName());
         fileUploadingAPI.putFileIntoStorage(uuid, fileDescriptor);
-        return dataManager.commit(fileDescriptor);
+        return getDsContext().getDataSupplier().commit(fileDescriptor);
     }
 
     protected void exportFile(SendingAttachment attachment) {
