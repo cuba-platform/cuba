@@ -801,7 +801,7 @@ public class QueryTransformerAstBasedTest {
         transformer.removeDistinct();
         String res = transformer.getResult();
         assertEquals(
-                "select h from sec$GroupHierarchy h\", \"sec$GroupHierarchy",
+                "select h from sec$GroupHierarchy h",
                 res);
     }
 
