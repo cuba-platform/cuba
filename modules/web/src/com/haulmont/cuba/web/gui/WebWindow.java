@@ -915,7 +915,7 @@ public class WebWindow implements Window, Component.Wrapper,
                                     }
                                     @Override
                                     public String getIcon() {
-                                        return "icons/cancel.png";
+                                        return messages.getMainMessage("actions.dialog.Cancel.icon");
                                     }
                                     @Override
                                     public void actionPerform(Component component) {
