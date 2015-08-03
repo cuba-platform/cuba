@@ -794,6 +794,42 @@ public class QueryTransformerAstBasedTest {
     }
 
     @Test
+    public void testRemoveDistinct() throws RecognitionException {
+        DomainModel model = prepareDomainModel();
+        QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
+                "select distinct h from sec$GroupHierarchy h", "sec$GroupHierarchy");
+        transformer.removeDistinct();
+        String res = transformer.getResult();
+        assertEquals(
+                "select h from sec$GroupHierarchy h\", \"sec$GroupHierarchy",
+                res);
+    }
+
+    @Test
+    public void testRemoveOrderBy() throws RecognitionException {
+        DomainModel model = prepareDomainModel();
+        QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
+                "select h from sec$GroupHierarchy h order by h.createdBy", "sec$GroupHierarchy");
+        transformer.removeOrderBy();
+        String res = transformer.getResult();
+        assertEquals(
+                "select h from sec$GroupHierarchy h",
+                res);
+    }
+
+    @Test
+    public void testReplaceName() throws RecognitionException {
+        DomainModel model = prepareDomainModel();
+        QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
+                "select h from sec$GroupHierarchy h", "sec$GroupHierarchy");
+        transformer.replaceEntityName("sec$ExtGroupHierarchy");
+        String res = transformer.getResult();
+        assertEquals(
+                "select h from sec$ExtGroupHierarchy h",
+                res);
+    }
+
+    @Test
     public void transformationsUsingSelectedEntity() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
         builder.startNewEntity("sec$Car");
