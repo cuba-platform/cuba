@@ -18,7 +18,7 @@ import org.junit.Test;
 public class QueryTransformationTest {
     @Test
     public void testAst() throws Exception {
-        for (int i = 0; i < 10000000; i++) {
+        for (int i = 0; i < 100; i++) {
             QueryTransformerAstBased transformerAstBased = new QueryTransformerAstBased(prepareDomainModel(), "select g from sec$GroupHierarchy g", "sec$GroupHierarchy");
             transformerAstBased.addWhere("g.deleteTs is null");
         }
@@ -26,7 +26,7 @@ public class QueryTransformationTest {
 
     @Test
     public void testRegexp() throws Exception {
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 100; i++) {
             QueryTransformerRegex queryTransformerRegex = new QueryTransformerRegex("select g from sec$GroupHierarchy g");
             queryTransformerRegex.addWhere("g.deleteTs is null");
         }
