@@ -12,6 +12,8 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.data.impl.*;
 import org.apache.commons.lang.ObjectUtils;
 
+import javax.annotation.Nullable;
+
 /**
  * Datasources builder.
  * <p/>
@@ -399,10 +401,10 @@ public class DsBuilder {
         return (T) datasource;
     }
 
-    public <T extends RuntimePropsDatasource> T buildRuntimePropsDataSource(String mainDsId) {
+    public <T extends RuntimePropsDatasource> T buildRuntimePropsDataSource(String mainDsId, @Nullable MetaClass categorizedEntityClass) {
         init();
         RuntimePropsDatasourceImpl datasource;
-        datasource = new RuntimePropsDatasourceImpl(dsContext, dataSupplier, id, mainDsId);
+        datasource = new RuntimePropsDatasourceImpl(dsContext, dataSupplier, id, mainDsId, categorizedEntityClass);
         registerDatasource(datasource);
         return (T) datasource;
     }

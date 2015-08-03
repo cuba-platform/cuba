@@ -37,6 +37,7 @@ public class RuntimePropsDatasourceImpl
     protected DynamicAttributesMetaClass metaClass;
     protected View view;
     protected Datasource mainDs;
+    protected MetaClass categorizedEntityClass;
     protected boolean initializedBefore = false;
     protected boolean categoryChanged = false;
 
@@ -48,7 +49,8 @@ public class RuntimePropsDatasourceImpl
     protected final Collection<CategoryAttribute> attributes;
     protected final View attributeValueView;
 
-    public RuntimePropsDatasourceImpl(DsContext dsContext, DataSupplier dataSupplier, String id, String mainDsId) {
+    public RuntimePropsDatasourceImpl(DsContext dsContext, DataSupplier dataSupplier, String id, String mainDsId, @Nullable MetaClass categorizedEntityClass) {
+        this.categorizedEntityClass = categorizedEntityClass;
         this.id = id;
         this.dsContext = dsContext;
         this.dataSupplier = dataSupplier;
@@ -56,7 +58,7 @@ public class RuntimePropsDatasourceImpl
         this.setMainDs(mainDsId);
         this.setCommitMode(CommitMode.DATASTORE);
 
-        attributes = AppBeans.get(DynamicAttributes.class).getAttributesForMetaClass(mainDs.getMetaClass());
+        attributes = AppBeans.get(DynamicAttributes.class).getAttributesForMetaClass(resolveCategorizedEntityClass());
         for (CategoryAttribute attribute : attributes) {
             MetaProperty metaProperty = DynamicAttributesUtils.getMetaPropertyPath(mainDs.getMetaClass(), attribute).getMetaProperty();
             this.metaClass.addProperty(metaProperty, attribute);
@@ -105,8 +107,8 @@ public class RuntimePropsDatasourceImpl
             category = ((Categorized) entity).getCategory();
         }
         if (!initializedBefore && category == null) {
-            category = getDefaultCategory(entity);
-            if (mainDs.getMetaClass().getProperty("category") != null) {
+            category = getDefaultCategory();
+            if (entity.getMetaClass().getProperty("category") != null) {
                 entity.setValue("category", category);
             }
         }
@@ -165,6 +167,14 @@ public class RuntimePropsDatasourceImpl
             modified = true;
         }
         fireItemChanged(null);
+    }
+
+    public MetaClass resolveCategorizedEntityClass() {
+        if (categorizedEntityClass == null) {
+            return mainDs.getMetaClass();
+        } else {
+            return categorizedEntityClass;
+        }
     }
 
     protected CategoryAttributeValue getValue(CategoryAttribute attribute, Collection<CategoryAttributeValue> entityValues) {
@@ -372,8 +382,8 @@ public class RuntimePropsDatasourceImpl
     }
 
     @Nullable
-    public Category getDefaultCategory(Entity entity) {
-        MetaClass metaClass = metadata.getSession().getClassNN(entity.getClass());
+    public Category getDefaultCategory() {
+        MetaClass metaClass = resolveCategorizedEntityClass();
         Collection<Category> categoriesForMetaClass = AppBeans.get(DynamicAttributes.class).getCategoriesForMetaClass(metaClass);
         for (Category category : categoriesForMetaClass) {
             if (Boolean.TRUE.equals(category.getIsDefault())) {

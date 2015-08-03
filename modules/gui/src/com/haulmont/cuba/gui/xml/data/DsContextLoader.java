@@ -420,9 +420,16 @@ public class DsContextLoader {
             throw new IllegalStateException("RuntimePropsDs attributes not specified");
         }
 
+        String categorizedEntityClassName = element.attributeValue("categorizedEntityClass");
+        MetaClass categorizedEntityMetaClass = null;
+        if (StringUtils.isNotBlank(categorizedEntityClassName)) {
+            final Class<?> aClass = ReflectionHelper.getClass(categorizedEntityClassName);
+            categorizedEntityMetaClass = metadata.getSession().getClass(aClass);
+        }
+
         builder.reset().setMetaClass(metaClass).setId(id);
 
-        RuntimePropsDatasource datasource = builder.buildRuntimePropsDataSource(mainDsId);
+        RuntimePropsDatasource datasource = builder.buildRuntimePropsDataSource(mainDsId, categorizedEntityMetaClass);
 
         loadDatasources(element, datasource);
         return datasource;

@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.gui.data;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
@@ -22,4 +23,6 @@ public interface RuntimePropsDatasource<T extends Entity> extends Datasource<T> 
     Collection<MetaProperty> getPropertiesFilteredByCategory();
 
     View getAttributeValueView();
+
+    MetaClass resolveCategorizedEntityClass();
 }

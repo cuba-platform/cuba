@@ -230,7 +230,7 @@ public class EntityInspectorEditor extends AbstractWindow {
     }
 
     private void initRuntimePropertiesDatasources(View view) {
-        rDS = new RuntimePropsDatasourceImpl(dsContext, dataSupplier, "rDS", datasource.getId());
+        rDS = new RuntimePropsDatasourceImpl(dsContext, dataSupplier, "rDS", datasource.getId(), null);
         MetaClass categoriesMeta = metadata.getSession().getClass(Category.class);
         categoriesDs = new CollectionDatasourceImpl();
         ViewProperty categoryProperty = view.getProperty("category");

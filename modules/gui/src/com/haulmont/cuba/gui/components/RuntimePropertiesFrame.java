@@ -167,7 +167,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         for (MetaProperty property : metaProperties) {
             FieldGroup.FieldConfig field = new FieldGroup.FieldConfig(property.getName());
             CategoryAttribute attribute = dynamicAttributes
-                    .getAttributeForMetaClass(rds.getMainDs().getMetaClass(), property.getName().substring(1));
+                    .getAttributeForMetaClass(rds.resolveCategorizedEntityClass(), property.getName());
             field.setCaption(attribute != null ? attribute.getName() : property.getName());
             field.setWidth(fieldWidth);
             fields.add(field);

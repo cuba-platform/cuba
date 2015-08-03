@@ -1510,6 +1510,7 @@
         <xs:attributeGroup ref="requiresId"/>
 
         <xs:attribute name="mainDs" type="xs:string" use="required"/>
+        <xs:attribute name="categorizedEntityClass" type="xs:string" use="optional"/>
     </xs:complexType>
 
     <!-- PropertyDatasource -->
