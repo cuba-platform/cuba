@@ -1,4 +1,4 @@
-// $ANTLR 3.5.2 F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g 2015-07-31 15:53:23
+// $ANTLR 3.5.2 F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g 2015-08-04 11:03:42
 
 package com.haulmont.cuba.core.sys.jpql.antlr2;
 

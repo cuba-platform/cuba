@@ -1,7 +1,7 @@
 grammar JPA2;
 
 options{
-        backtrack=true;
+        backtrack=true;//todo eude this is the source of bad performance - try to get rid of it
         output=AST;
 }
 
@@ -110,7 +110,7 @@ join_condition
 
 //Start : here we have simplified joins
 join_association_path_expression
-     : identification_variable '.' (field'.')* field?
+     : identification_variable '.' (field'.')* field
          -> ^(T_SELECTED_FIELD<PathNode>[$identification_variable.text] (field)*)
      |  'TREAT(' identification_variable '.' (field'.')* field? 'AS' subtype ')'
          -> ^(T_SELECTED_FIELD<PathNode>[$identification_variable.text] (field)*);
@@ -127,10 +127,10 @@ map_field_identification_variable : 'KEY('identification_variable')' | 'VALUE('i
 
 //Start : here we have simplified paths
 path_expression
-    :  identification_variable '.' (field'.')* (field)?
+    :  identification_variable '.' (field'.')* field
     -> ^(T_SELECTED_FIELD<PathNode>[$identification_variable.text] (field)*)
     ;
-//todo treated path
+//todo eude treated path
 //End : here we have simplified paths
 
 general_identification_variable
@@ -214,7 +214,7 @@ general_derived_path
     | treated_derived_path('.'single_valued_object_field)*
     ;
 simple_derived_path
-    : superquery_identification_variable //todo ('.' single_valued_object_field)*
+    : superquery_identification_variable //todo eude ('.' single_valued_object_field)*
     ;
 treated_derived_path
     : 'TREAT('general_derived_path 'AS' subtype ')';
