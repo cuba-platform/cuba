@@ -1,4 +1,4 @@
-// $ANTLR 3.5.2 F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g 2015-08-04 11:03:41
+// $ANTLR 3.5.2 JPA2.g 2015-08-04 11:39:22
 
 package com.haulmont.cuba.core.sys.jpql.antlr2;
 
@@ -213,7 +213,7 @@ public class JPA2Parser extends Parser {
 		return adaptor;
 	}
 	@Override public String[] getTokenNames() { return JPA2Parser.tokenNames; }
-	@Override public String getGrammarFileName() { return "F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g"; }
+	@Override public String getGrammarFileName() { return "JPA2.g"; }
 
 
 	public static class ql_statement_return extends ParserRuleReturnScope {
@@ -224,7 +224,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "ql_statement"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:75:1: ql_statement : select_statement ;
+	// JPA2.g:75:1: ql_statement : select_statement ;
 	public final JPA2Parser.ql_statement_return ql_statement() throws RecognitionException {
 		JPA2Parser.ql_statement_return retval = new JPA2Parser.ql_statement_return();
 		retval.start = input.LT(1);
@@ -235,8 +235,8 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:76:5: ( select_statement )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:76:7: select_statement
+			// JPA2.g:76:5: ( select_statement )
+			// JPA2.g:76:7: select_statement
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -277,7 +277,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "select_statement"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:78:1: select_statement : sl= 'SELECT' select_clause from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? -> ^( T_QUERY[$sl] ( select_clause )? from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? ) ;
+	// JPA2.g:78:1: select_statement : sl= 'SELECT' select_clause from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? -> ^( T_QUERY[$sl] ( select_clause )? from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? ) ;
 	public final JPA2Parser.select_statement_return select_statement() throws RecognitionException {
 		JPA2Parser.select_statement_return retval = new JPA2Parser.select_statement_return();
 		retval.start = input.LT(1);
@@ -302,8 +302,8 @@ public class JPA2Parser extends Parser {
 		RewriteRuleSubtreeStream stream_orderby_clause=new RewriteRuleSubtreeStream(adaptor,"rule orderby_clause");
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:79:6: (sl= 'SELECT' select_clause from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? -> ^( T_QUERY[$sl] ( select_clause )? from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? ) )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:79:8: sl= 'SELECT' select_clause from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )?
+			// JPA2.g:79:6: (sl= 'SELECT' select_clause from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? -> ^( T_QUERY[$sl] ( select_clause )? from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? ) )
+			// JPA2.g:79:8: sl= 'SELECT' select_clause from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )?
 			{
 			sl=(Token)match(input,117,FOLLOW_117_in_select_statement431); if (state.failed) return retval; 
 			if ( state.backtracking==0 ) stream_117.add(sl);
@@ -318,7 +318,7 @@ public class JPA2Parser extends Parser {
 			state._fsp--;
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) stream_from_clause.add(from_clause3.getTree());
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:79:46: ( where_clause )?
+			// JPA2.g:79:46: ( where_clause )?
 			int alt1=2;
 			int LA1_0 = input.LA(1);
 			if ( (LA1_0==132) ) {
@@ -326,7 +326,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt1) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:79:47: where_clause
+					// JPA2.g:79:47: where_clause
 					{
 					pushFollow(FOLLOW_where_clause_in_select_statement438);
 					where_clause4=where_clause();
@@ -338,7 +338,7 @@ public class JPA2Parser extends Parser {
 
 			}
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:79:62: ( groupby_clause )?
+			// JPA2.g:79:62: ( groupby_clause )?
 			int alt2=2;
 			int LA2_0 = input.LA(1);
 			if ( (LA2_0==GROUP) ) {
@@ -346,7 +346,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt2) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:79:63: groupby_clause
+					// JPA2.g:79:63: groupby_clause
 					{
 					pushFollow(FOLLOW_groupby_clause_in_select_statement443);
 					groupby_clause5=groupby_clause();
@@ -358,7 +358,7 @@ public class JPA2Parser extends Parser {
 
 			}
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:79:80: ( having_clause )?
+			// JPA2.g:79:80: ( having_clause )?
 			int alt3=2;
 			int LA3_0 = input.LA(1);
 			if ( (LA3_0==HAVING) ) {
@@ -366,7 +366,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt3) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:79:81: having_clause
+					// JPA2.g:79:81: having_clause
 					{
 					pushFollow(FOLLOW_having_clause_in_select_statement448);
 					having_clause6=having_clause();
@@ -378,7 +378,7 @@ public class JPA2Parser extends Parser {
 
 			}
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:79:97: ( orderby_clause )?
+			// JPA2.g:79:97: ( orderby_clause )?
 			int alt4=2;
 			int LA4_0 = input.LA(1);
 			if ( (LA4_0==ORDER) ) {
@@ -386,7 +386,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt4) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:79:98: orderby_clause
+					// JPA2.g:79:98: orderby_clause
 					{
 					pushFollow(FOLLOW_orderby_clause_in_select_statement453);
 					orderby_clause7=orderby_clause();
@@ -399,7 +399,7 @@ public class JPA2Parser extends Parser {
 			}
 
 			// AST REWRITE
-			// elements: where_clause, having_clause, from_clause, select_clause, orderby_clause, groupby_clause
+			// elements: groupby_clause, select_clause, orderby_clause, where_clause, from_clause, having_clause
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -412,36 +412,36 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 			// 80:6: -> ^( T_QUERY[$sl] ( select_clause )? from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? )
 			{
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:80:9: ^( T_QUERY[$sl] ( select_clause )? from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? )
+				// JPA2.g:80:9: ^( T_QUERY[$sl] ( select_clause )? from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? )
 				{
 				Object root_1 = (Object)adaptor.nil();
 				root_1 = (Object)adaptor.becomeRoot(new QueryNode(T_QUERY, sl), root_1);
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:80:35: ( select_clause )?
+				// JPA2.g:80:35: ( select_clause )?
 				if ( stream_select_clause.hasNext() ) {
 					adaptor.addChild(root_1, stream_select_clause.nextTree());
 				}
 				stream_select_clause.reset();
 
 				adaptor.addChild(root_1, stream_from_clause.nextTree());
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:80:64: ( where_clause )?
+				// JPA2.g:80:64: ( where_clause )?
 				if ( stream_where_clause.hasNext() ) {
 					adaptor.addChild(root_1, stream_where_clause.nextTree());
 				}
 				stream_where_clause.reset();
 
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:80:80: ( groupby_clause )?
+				// JPA2.g:80:80: ( groupby_clause )?
 				if ( stream_groupby_clause.hasNext() ) {
 					adaptor.addChild(root_1, stream_groupby_clause.nextTree());
 				}
 				stream_groupby_clause.reset();
 
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:80:98: ( having_clause )?
+				// JPA2.g:80:98: ( having_clause )?
 				if ( stream_having_clause.hasNext() ) {
 					adaptor.addChild(root_1, stream_having_clause.nextTree());
 				}
 				stream_having_clause.reset();
 
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:80:115: ( orderby_clause )?
+				// JPA2.g:80:115: ( orderby_clause )?
 				if ( stream_orderby_clause.hasNext() ) {
 					adaptor.addChild(root_1, stream_orderby_clause.nextTree());
 				}
@@ -486,7 +486,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "update_statement"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:82:1: update_statement : 'UPDATE' update_clause ( where_clause )? ;
+	// JPA2.g:82:1: update_statement : 'UPDATE' update_clause ( where_clause )? ;
 	public final JPA2Parser.update_statement_return update_statement() throws RecognitionException {
 		JPA2Parser.update_statement_return retval = new JPA2Parser.update_statement_return();
 		retval.start = input.LT(1);
@@ -500,8 +500,8 @@ public class JPA2Parser extends Parser {
 		Object string_literal8_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:83:5: ( 'UPDATE' update_clause ( where_clause )? )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:83:7: 'UPDATE' update_clause ( where_clause )?
+			// JPA2.g:83:5: ( 'UPDATE' update_clause ( where_clause )? )
+			// JPA2.g:83:7: 'UPDATE' update_clause ( where_clause )?
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -518,7 +518,7 @@ public class JPA2Parser extends Parser {
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) adaptor.addChild(root_0, update_clause9.getTree());
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:83:30: ( where_clause )?
+			// JPA2.g:83:30: ( where_clause )?
 			int alt5=2;
 			int LA5_0 = input.LA(1);
 			if ( (LA5_0==132) ) {
@@ -526,7 +526,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt5) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:83:31: where_clause
+					// JPA2.g:83:31: where_clause
 					{
 					pushFollow(FOLLOW_where_clause_in_update_statement514);
 					where_clause10=where_clause();
@@ -569,7 +569,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "delete_statement"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:84:1: delete_statement : 'DELETE' 'FROM' delete_clause ( where_clause )? ;
+	// JPA2.g:84:1: delete_statement : 'DELETE' 'FROM' delete_clause ( where_clause )? ;
 	public final JPA2Parser.delete_statement_return delete_statement() throws RecognitionException {
 		JPA2Parser.delete_statement_return retval = new JPA2Parser.delete_statement_return();
 		retval.start = input.LT(1);
@@ -585,8 +585,8 @@ public class JPA2Parser extends Parser {
 		Object string_literal12_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:85:5: ( 'DELETE' 'FROM' delete_clause ( where_clause )? )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:85:7: 'DELETE' 'FROM' delete_clause ( where_clause )?
+			// JPA2.g:85:5: ( 'DELETE' 'FROM' delete_clause ( where_clause )? )
+			// JPA2.g:85:7: 'DELETE' 'FROM' delete_clause ( where_clause )?
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -609,7 +609,7 @@ public class JPA2Parser extends Parser {
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) adaptor.addChild(root_0, delete_clause13.getTree());
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:85:37: ( where_clause )?
+			// JPA2.g:85:37: ( where_clause )?
 			int alt6=2;
 			int LA6_0 = input.LA(1);
 			if ( (LA6_0==132) ) {
@@ -617,7 +617,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt6) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:85:38: where_clause
+					// JPA2.g:85:38: where_clause
 					{
 					pushFollow(FOLLOW_where_clause_in_delete_statement534);
 					where_clause14=where_clause();
@@ -660,7 +660,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "from_clause"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:87:1: from_clause : fr= 'FROM' identification_variable_declaration ( ',' identification_variable_declaration_or_collection_member_declaration )* -> ^( T_SOURCES[$fr] identification_variable_declaration ( identification_variable_declaration_or_collection_member_declaration )* ) ;
+	// JPA2.g:87:1: from_clause : fr= 'FROM' identification_variable_declaration ( ',' identification_variable_declaration_or_collection_member_declaration )* -> ^( T_SOURCES[$fr] identification_variable_declaration ( identification_variable_declaration_or_collection_member_declaration )* ) ;
 	public final JPA2Parser.from_clause_return from_clause() throws RecognitionException {
 		JPA2Parser.from_clause_return retval = new JPA2Parser.from_clause_return();
 		retval.start = input.LT(1);
@@ -680,8 +680,8 @@ public class JPA2Parser extends Parser {
 		RewriteRuleSubtreeStream stream_identification_variable_declaration_or_collection_member_declaration=new RewriteRuleSubtreeStream(adaptor,"rule identification_variable_declaration_or_collection_member_declaration");
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:88:6: (fr= 'FROM' identification_variable_declaration ( ',' identification_variable_declaration_or_collection_member_declaration )* -> ^( T_SOURCES[$fr] identification_variable_declaration ( identification_variable_declaration_or_collection_member_declaration )* ) )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:88:8: fr= 'FROM' identification_variable_declaration ( ',' identification_variable_declaration_or_collection_member_declaration )*
+			// JPA2.g:88:6: (fr= 'FROM' identification_variable_declaration ( ',' identification_variable_declaration_or_collection_member_declaration )* -> ^( T_SOURCES[$fr] identification_variable_declaration ( identification_variable_declaration_or_collection_member_declaration )* ) )
+			// JPA2.g:88:8: fr= 'FROM' identification_variable_declaration ( ',' identification_variable_declaration_or_collection_member_declaration )*
 			{
 			fr=(Token)match(input,92,FOLLOW_92_in_from_clause551); if (state.failed) return retval; 
 			if ( state.backtracking==0 ) stream_92.add(fr);
@@ -691,7 +691,7 @@ public class JPA2Parser extends Parser {
 			state._fsp--;
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) stream_identification_variable_declaration.add(identification_variable_declaration15.getTree());
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:88:54: ( ',' identification_variable_declaration_or_collection_member_declaration )*
+			// JPA2.g:88:54: ( ',' identification_variable_declaration_or_collection_member_declaration )*
 			loop7:
 			while (true) {
 				int alt7=2;
@@ -702,7 +702,7 @@ public class JPA2Parser extends Parser {
 
 				switch (alt7) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:88:55: ',' identification_variable_declaration_or_collection_member_declaration
+					// JPA2.g:88:55: ',' identification_variable_declaration_or_collection_member_declaration
 					{
 					char_literal16=(Token)match(input,55,FOLLOW_55_in_from_clause556); if (state.failed) return retval; 
 					if ( state.backtracking==0 ) stream_55.add(char_literal16);
@@ -734,12 +734,12 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 			// 89:6: -> ^( T_SOURCES[$fr] identification_variable_declaration ( identification_variable_declaration_or_collection_member_declaration )* )
 			{
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:89:9: ^( T_SOURCES[$fr] identification_variable_declaration ( identification_variable_declaration_or_collection_member_declaration )* )
+				// JPA2.g:89:9: ^( T_SOURCES[$fr] identification_variable_declaration ( identification_variable_declaration_or_collection_member_declaration )* )
 				{
 				Object root_1 = (Object)adaptor.nil();
 				root_1 = (Object)adaptor.becomeRoot(new FromNode(T_SOURCES, fr), root_1);
 				adaptor.addChild(root_1, stream_identification_variable_declaration.nextTree());
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:89:72: ( identification_variable_declaration_or_collection_member_declaration )*
+				// JPA2.g:89:72: ( identification_variable_declaration_or_collection_member_declaration )*
 				while ( stream_identification_variable_declaration_or_collection_member_declaration.hasNext() ) {
 					adaptor.addChild(root_1, stream_identification_variable_declaration_or_collection_member_declaration.nextTree());
 				}
@@ -784,7 +784,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "identification_variable_declaration_or_collection_member_declaration"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:90:1: identification_variable_declaration_or_collection_member_declaration : ( identification_variable_declaration | collection_member_declaration -> ^( T_SOURCE collection_member_declaration ) );
+	// JPA2.g:90:1: identification_variable_declaration_or_collection_member_declaration : ( identification_variable_declaration | collection_member_declaration -> ^( T_SOURCE collection_member_declaration ) );
 	public final JPA2Parser.identification_variable_declaration_or_collection_member_declaration_return identification_variable_declaration_or_collection_member_declaration() throws RecognitionException {
 		JPA2Parser.identification_variable_declaration_or_collection_member_declaration_return retval = new JPA2Parser.identification_variable_declaration_or_collection_member_declaration_return();
 		retval.start = input.LT(1);
@@ -797,7 +797,7 @@ public class JPA2Parser extends Parser {
 		RewriteRuleSubtreeStream stream_collection_member_declaration=new RewriteRuleSubtreeStream(adaptor,"rule collection_member_declaration");
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:91:6: ( identification_variable_declaration | collection_member_declaration -> ^( T_SOURCE collection_member_declaration ) )
+			// JPA2.g:91:6: ( identification_variable_declaration | collection_member_declaration -> ^( T_SOURCE collection_member_declaration ) )
 			int alt8=2;
 			int LA8_0 = input.LA(1);
 			if ( (LA8_0==WORD) ) {
@@ -816,7 +816,7 @@ public class JPA2Parser extends Parser {
 
 			switch (alt8) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:91:8: identification_variable_declaration
+					// JPA2.g:91:8: identification_variable_declaration
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -830,7 +830,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:92:8: collection_member_declaration
+					// JPA2.g:92:8: collection_member_declaration
 					{
 					pushFollow(FOLLOW_collection_member_declaration_in_identification_variable_declaration_or_collection_member_declaration601);
 					collection_member_declaration19=collection_member_declaration();
@@ -851,7 +851,7 @@ public class JPA2Parser extends Parser {
 					root_0 = (Object)adaptor.nil();
 					// 92:38: -> ^( T_SOURCE collection_member_declaration )
 					{
-						// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:92:41: ^( T_SOURCE collection_member_declaration )
+						// JPA2.g:92:41: ^( T_SOURCE collection_member_declaration )
 						{
 						Object root_1 = (Object)adaptor.nil();
 						root_1 = (Object)adaptor.becomeRoot(new SelectionSourceNode(T_SOURCE), root_1);
@@ -897,7 +897,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "identification_variable_declaration"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:94:1: identification_variable_declaration : range_variable_declaration ( joined_clause )* -> ^( T_SOURCE range_variable_declaration ( joined_clause )* ) ;
+	// JPA2.g:94:1: identification_variable_declaration : range_variable_declaration ( joined_clause )* -> ^( T_SOURCE range_variable_declaration ( joined_clause )* ) ;
 	public final JPA2Parser.identification_variable_declaration_return identification_variable_declaration() throws RecognitionException {
 		JPA2Parser.identification_variable_declaration_return retval = new JPA2Parser.identification_variable_declaration_return();
 		retval.start = input.LT(1);
@@ -911,15 +911,15 @@ public class JPA2Parser extends Parser {
 		RewriteRuleSubtreeStream stream_range_variable_declaration=new RewriteRuleSubtreeStream(adaptor,"rule range_variable_declaration");
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:95:6: ( range_variable_declaration ( joined_clause )* -> ^( T_SOURCE range_variable_declaration ( joined_clause )* ) )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:95:8: range_variable_declaration ( joined_clause )*
+			// JPA2.g:95:6: ( range_variable_declaration ( joined_clause )* -> ^( T_SOURCE range_variable_declaration ( joined_clause )* ) )
+			// JPA2.g:95:8: range_variable_declaration ( joined_clause )*
 			{
 			pushFollow(FOLLOW_range_variable_declaration_in_identification_variable_declaration625);
 			range_variable_declaration20=range_variable_declaration();
 			state._fsp--;
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) stream_range_variable_declaration.add(range_variable_declaration20.getTree());
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:95:35: ( joined_clause )*
+			// JPA2.g:95:35: ( joined_clause )*
 			loop9:
 			while (true) {
 				int alt9=2;
@@ -930,7 +930,7 @@ public class JPA2Parser extends Parser {
 
 				switch (alt9) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:95:35: joined_clause
+					// JPA2.g:95:35: joined_clause
 					{
 					pushFollow(FOLLOW_joined_clause_in_identification_variable_declaration627);
 					joined_clause21=joined_clause();
@@ -959,12 +959,12 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 			// 96:6: -> ^( T_SOURCE range_variable_declaration ( joined_clause )* )
 			{
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:96:9: ^( T_SOURCE range_variable_declaration ( joined_clause )* )
+				// JPA2.g:96:9: ^( T_SOURCE range_variable_declaration ( joined_clause )* )
 				{
 				Object root_1 = (Object)adaptor.nil();
 				root_1 = (Object)adaptor.becomeRoot(new SelectionSourceNode(T_SOURCE), root_1);
 				adaptor.addChild(root_1, stream_range_variable_declaration.nextTree());
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:96:68: ( joined_clause )*
+				// JPA2.g:96:68: ( joined_clause )*
 				while ( stream_joined_clause.hasNext() ) {
 					adaptor.addChild(root_1, stream_joined_clause.nextTree());
 				}
@@ -1009,7 +1009,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "joined_clause"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:97:1: joined_clause : ( join | fetch_join );
+	// JPA2.g:97:1: joined_clause : ( join | fetch_join );
 	public final JPA2Parser.joined_clause_return joined_clause() throws RecognitionException {
 		JPA2Parser.joined_clause_return retval = new JPA2Parser.joined_clause_return();
 		retval.start = input.LT(1);
@@ -1021,7 +1021,7 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:97:15: ( join | fetch_join )
+			// JPA2.g:97:15: ( join | fetch_join )
 			int alt10=2;
 			switch ( input.LA(1) ) {
 			case LEFT:
@@ -1189,7 +1189,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt10) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:97:17: join
+					// JPA2.g:97:17: join
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -1203,7 +1203,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:97:24: fetch_join
+					// JPA2.g:97:24: fetch_join
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -1246,7 +1246,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "range_variable_declaration"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:98:1: range_variable_declaration : entity_name ( 'AS' )? identification_variable -> ^( T_ID_VAR[$identification_variable.text] entity_name ) ;
+	// JPA2.g:98:1: range_variable_declaration : entity_name ( 'AS' )? identification_variable -> ^( T_ID_VAR[$identification_variable.text] entity_name ) ;
 	public final JPA2Parser.range_variable_declaration_return range_variable_declaration() throws RecognitionException {
 		JPA2Parser.range_variable_declaration_return retval = new JPA2Parser.range_variable_declaration_return();
 		retval.start = input.LT(1);
@@ -1263,15 +1263,15 @@ public class JPA2Parser extends Parser {
 		RewriteRuleSubtreeStream stream_entity_name=new RewriteRuleSubtreeStream(adaptor,"rule entity_name");
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:99:6: ( entity_name ( 'AS' )? identification_variable -> ^( T_ID_VAR[$identification_variable.text] entity_name ) )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:99:8: entity_name ( 'AS' )? identification_variable
+			// JPA2.g:99:6: ( entity_name ( 'AS' )? identification_variable -> ^( T_ID_VAR[$identification_variable.text] entity_name ) )
+			// JPA2.g:99:8: entity_name ( 'AS' )? identification_variable
 			{
 			pushFollow(FOLLOW_entity_name_in_range_variable_declaration670);
 			entity_name24=entity_name();
 			state._fsp--;
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) stream_entity_name.add(entity_name24.getTree());
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:99:20: ( 'AS' )?
+			// JPA2.g:99:20: ( 'AS' )?
 			int alt11=2;
 			int LA11_0 = input.LA(1);
 			if ( (LA11_0==75) ) {
@@ -1279,7 +1279,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt11) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:99:21: 'AS'
+					// JPA2.g:99:21: 'AS'
 					{
 					string_literal25=(Token)match(input,75,FOLLOW_75_in_range_variable_declaration673); if (state.failed) return retval; 
 					if ( state.backtracking==0 ) stream_75.add(string_literal25);
@@ -1308,7 +1308,7 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 			// 100:6: -> ^( T_ID_VAR[$identification_variable.text] entity_name )
 			{
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:100:9: ^( T_ID_VAR[$identification_variable.text] entity_name )
+				// JPA2.g:100:9: ^( T_ID_VAR[$identification_variable.text] entity_name )
 				{
 				Object root_1 = (Object)adaptor.nil();
 				root_1 = (Object)adaptor.becomeRoot(new IdentificationVariableNode(T_ID_VAR, (identification_variable26!=null?input.toString(identification_variable26.start,identification_variable26.stop):null)), root_1);
@@ -1352,7 +1352,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "join"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:101:1: join : join_spec join_association_path_expression ( 'AS' )? identification_variable ( join_condition )? -> ^( T_JOIN_VAR[$join_spec.text, $identification_variable.text] join_association_path_expression ) ;
+	// JPA2.g:101:1: join : join_spec join_association_path_expression ( 'AS' )? identification_variable ( join_condition )? -> ^( T_JOIN_VAR[$join_spec.text, $identification_variable.text] join_association_path_expression ) ;
 	public final JPA2Parser.join_return join() throws RecognitionException {
 		JPA2Parser.join_return retval = new JPA2Parser.join_return();
 		retval.start = input.LT(1);
@@ -1373,8 +1373,8 @@ public class JPA2Parser extends Parser {
 		RewriteRuleSubtreeStream stream_join_condition=new RewriteRuleSubtreeStream(adaptor,"rule join_condition");
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:102:6: ( join_spec join_association_path_expression ( 'AS' )? identification_variable ( join_condition )? -> ^( T_JOIN_VAR[$join_spec.text, $identification_variable.text] join_association_path_expression ) )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:102:8: join_spec join_association_path_expression ( 'AS' )? identification_variable ( join_condition )?
+			// JPA2.g:102:6: ( join_spec join_association_path_expression ( 'AS' )? identification_variable ( join_condition )? -> ^( T_JOIN_VAR[$join_spec.text, $identification_variable.text] join_association_path_expression ) )
+			// JPA2.g:102:8: join_spec join_association_path_expression ( 'AS' )? identification_variable ( join_condition )?
 			{
 			pushFollow(FOLLOW_join_spec_in_join706);
 			join_spec27=join_spec();
@@ -1386,7 +1386,7 @@ public class JPA2Parser extends Parser {
 			state._fsp--;
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) stream_join_association_path_expression.add(join_association_path_expression28.getTree());
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:102:51: ( 'AS' )?
+			// JPA2.g:102:51: ( 'AS' )?
 			int alt12=2;
 			int LA12_0 = input.LA(1);
 			if ( (LA12_0==75) ) {
@@ -1394,7 +1394,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt12) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:102:52: 'AS'
+					// JPA2.g:102:52: 'AS'
 					{
 					string_literal29=(Token)match(input,75,FOLLOW_75_in_join711); if (state.failed) return retval; 
 					if ( state.backtracking==0 ) stream_75.add(string_literal29);
@@ -1409,7 +1409,7 @@ public class JPA2Parser extends Parser {
 			state._fsp--;
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) stream_identification_variable.add(identification_variable30.getTree());
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:102:83: ( join_condition )?
+			// JPA2.g:102:83: ( join_condition )?
 			int alt13=2;
 			int LA13_0 = input.LA(1);
 			if ( (LA13_0==115) ) {
@@ -1417,7 +1417,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt13) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:102:84: join_condition
+					// JPA2.g:102:84: join_condition
 					{
 					pushFollow(FOLLOW_join_condition_in_join718);
 					join_condition31=join_condition();
@@ -1443,7 +1443,7 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 			// 103:6: -> ^( T_JOIN_VAR[$join_spec.text, $identification_variable.text] join_association_path_expression )
 			{
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:103:9: ^( T_JOIN_VAR[$join_spec.text, $identification_variable.text] join_association_path_expression )
+				// JPA2.g:103:9: ^( T_JOIN_VAR[$join_spec.text, $identification_variable.text] join_association_path_expression )
 				{
 				Object root_1 = (Object)adaptor.nil();
 				root_1 = (Object)adaptor.becomeRoot(new JoinVariableNode(T_JOIN_VAR, (join_spec27!=null?input.toString(join_spec27.start,join_spec27.stop):null), (identification_variable30!=null?input.toString(identification_variable30.start,identification_variable30.stop):null)), root_1);
@@ -1487,7 +1487,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "fetch_join"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:104:1: fetch_join : join_spec 'FETCH' join_association_path_expression ;
+	// JPA2.g:104:1: fetch_join : join_spec 'FETCH' join_association_path_expression ;
 	public final JPA2Parser.fetch_join_return fetch_join() throws RecognitionException {
 		JPA2Parser.fetch_join_return retval = new JPA2Parser.fetch_join_return();
 		retval.start = input.LT(1);
@@ -1501,8 +1501,8 @@ public class JPA2Parser extends Parser {
 		Object string_literal33_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:105:6: ( join_spec 'FETCH' join_association_path_expression )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:105:8: join_spec 'FETCH' join_association_path_expression
+			// JPA2.g:105:6: ( join_spec 'FETCH' join_association_path_expression )
+			// JPA2.g:105:8: join_spec 'FETCH' join_association_path_expression
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -1555,7 +1555,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "join_spec"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:106:1: join_spec : ( ( 'LEFT' ) ( 'OUTER' )? | 'INNER' )? 'JOIN' ;
+	// JPA2.g:106:1: join_spec : ( ( 'LEFT' ) ( 'OUTER' )? | 'INNER' )? 'JOIN' ;
 	public final JPA2Parser.join_spec_return join_spec() throws RecognitionException {
 		JPA2Parser.join_spec_return retval = new JPA2Parser.join_spec_return();
 		retval.start = input.LT(1);
@@ -1573,13 +1573,13 @@ public class JPA2Parser extends Parser {
 		Object string_literal38_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:107:6: ( ( ( 'LEFT' ) ( 'OUTER' )? | 'INNER' )? 'JOIN' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:107:8: ( ( 'LEFT' ) ( 'OUTER' )? | 'INNER' )? 'JOIN'
+			// JPA2.g:107:6: ( ( ( 'LEFT' ) ( 'OUTER' )? | 'INNER' )? 'JOIN' )
+			// JPA2.g:107:8: ( ( 'LEFT' ) ( 'OUTER' )? | 'INNER' )? 'JOIN'
 			{
 			root_0 = (Object)adaptor.nil();
 
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:107:8: ( ( 'LEFT' ) ( 'OUTER' )? | 'INNER' )?
+			// JPA2.g:107:8: ( ( 'LEFT' ) ( 'OUTER' )? | 'INNER' )?
 			int alt15=3;
 			int LA15_0 = input.LA(1);
 			if ( (LA15_0==LEFT) ) {
@@ -1590,10 +1590,10 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt15) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:107:9: ( 'LEFT' ) ( 'OUTER' )?
+					// JPA2.g:107:9: ( 'LEFT' ) ( 'OUTER' )?
 					{
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:107:9: ( 'LEFT' )
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:107:10: 'LEFT'
+					// JPA2.g:107:9: ( 'LEFT' )
+					// JPA2.g:107:10: 'LEFT'
 					{
 					string_literal35=(Token)match(input,LEFT,FOLLOW_LEFT_in_join_spec767); if (state.failed) return retval;
 					if ( state.backtracking==0 ) {
@@ -1603,7 +1603,7 @@ public class JPA2Parser extends Parser {
 
 					}
 
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:107:18: ( 'OUTER' )?
+					// JPA2.g:107:18: ( 'OUTER' )?
 					int alt14=2;
 					int LA14_0 = input.LA(1);
 					if ( (LA14_0==OUTER) ) {
@@ -1611,7 +1611,7 @@ public class JPA2Parser extends Parser {
 					}
 					switch (alt14) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:107:19: 'OUTER'
+							// JPA2.g:107:19: 'OUTER'
 							{
 							string_literal36=(Token)match(input,OUTER,FOLLOW_OUTER_in_join_spec771); if (state.failed) return retval;
 							if ( state.backtracking==0 ) {
@@ -1627,7 +1627,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:107:31: 'INNER'
+					// JPA2.g:107:31: 'INNER'
 					{
 					string_literal37=(Token)match(input,INNER,FOLLOW_INNER_in_join_spec777); if (state.failed) return retval;
 					if ( state.backtracking==0 ) {
@@ -1676,7 +1676,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "join_condition"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:108:1: join_condition : 'ON' conditional_expression ;
+	// JPA2.g:108:1: join_condition : 'ON' conditional_expression ;
 	public final JPA2Parser.join_condition_return join_condition() throws RecognitionException {
 		JPA2Parser.join_condition_return retval = new JPA2Parser.join_condition_return();
 		retval.start = input.LT(1);
@@ -1689,8 +1689,8 @@ public class JPA2Parser extends Parser {
 		Object string_literal39_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:109:6: ( 'ON' conditional_expression )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:109:8: 'ON' conditional_expression
+			// JPA2.g:109:6: ( 'ON' conditional_expression )
+			// JPA2.g:109:8: 'ON' conditional_expression
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -1737,7 +1737,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "join_association_path_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:112:1: join_association_path_expression : ( identification_variable '.' ( field '.' )* field -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* ) | 'TREAT(' identification_variable '.' ( field '.' )* ( field )? 'AS' subtype ')' -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* ) );
+	// JPA2.g:112:1: join_association_path_expression : ( identification_variable '.' ( field '.' )* field -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* ) | 'TREAT(' identification_variable '.' ( field '.' )* ( field )? 'AS' subtype ')' -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* ) );
 	public final JPA2Parser.join_association_path_expression_return join_association_path_expression() throws RecognitionException {
 		JPA2Parser.join_association_path_expression_return retval = new JPA2Parser.join_association_path_expression_return();
 		retval.start = input.LT(1);
@@ -1775,7 +1775,7 @@ public class JPA2Parser extends Parser {
 		RewriteRuleSubtreeStream stream_subtype=new RewriteRuleSubtreeStream(adaptor,"rule subtype");
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:113:6: ( identification_variable '.' ( field '.' )* field -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* ) | 'TREAT(' identification_variable '.' ( field '.' )* ( field )? 'AS' subtype ')' -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* ) )
+			// JPA2.g:113:6: ( identification_variable '.' ( field '.' )* field -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* ) | 'TREAT(' identification_variable '.' ( field '.' )* ( field )? 'AS' subtype ')' -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* ) )
 			int alt19=2;
 			int LA19_0 = input.LA(1);
 			if ( (LA19_0==WORD) ) {
@@ -1794,7 +1794,7 @@ public class JPA2Parser extends Parser {
 
 			switch (alt19) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:113:8: identification_variable '.' ( field '.' )* field
+					// JPA2.g:113:8: identification_variable '.' ( field '.' )* field
 					{
 					pushFollow(FOLLOW_identification_variable_in_join_association_path_expression810);
 					identification_variable41=identification_variable();
@@ -1804,7 +1804,7 @@ public class JPA2Parser extends Parser {
 					char_literal42=(Token)match(input,57,FOLLOW_57_in_join_association_path_expression812); if (state.failed) return retval; 
 					if ( state.backtracking==0 ) stream_57.add(char_literal42);
 
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:113:36: ( field '.' )*
+					// JPA2.g:113:36: ( field '.' )*
 					loop16:
 					while (true) {
 						int alt16=2;
@@ -1819,7 +1819,7 @@ public class JPA2Parser extends Parser {
 
 						switch (alt16) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:113:37: field '.'
+							// JPA2.g:113:37: field '.'
 							{
 							pushFollow(FOLLOW_field_in_join_association_path_expression815);
 							field43=field();
@@ -1856,11 +1856,11 @@ public class JPA2Parser extends Parser {
 					root_0 = (Object)adaptor.nil();
 					// 114:10: -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* )
 					{
-						// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:114:13: ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* )
+						// JPA2.g:114:13: ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* )
 						{
 						Object root_1 = (Object)adaptor.nil();
 						root_1 = (Object)adaptor.becomeRoot(new PathNode(T_SELECTED_FIELD, (identification_variable41!=null?input.toString(identification_variable41.start,identification_variable41.stop):null)), root_1);
-						// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:114:73: ( field )*
+						// JPA2.g:114:73: ( field )*
 						while ( stream_field.hasNext() ) {
 							adaptor.addChild(root_1, stream_field.nextTree());
 						}
@@ -1878,7 +1878,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:115:9: 'TREAT(' identification_variable '.' ( field '.' )* ( field )? 'AS' subtype ')'
+					// JPA2.g:115:9: 'TREAT(' identification_variable '.' ( field '.' )* ( field )? 'AS' subtype ')'
 					{
 					string_literal46=(Token)match(input,125,FOLLOW_125_in_join_association_path_expression854); if (state.failed) return retval; 
 					if ( state.backtracking==0 ) stream_125.add(string_literal46);
@@ -1891,7 +1891,7 @@ public class JPA2Parser extends Parser {
 					char_literal48=(Token)match(input,57,FOLLOW_57_in_join_association_path_expression858); if (state.failed) return retval; 
 					if ( state.backtracking==0 ) stream_57.add(char_literal48);
 
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:115:46: ( field '.' )*
+					// JPA2.g:115:46: ( field '.' )*
 					loop17:
 					while (true) {
 						int alt17=2;
@@ -1906,7 +1906,7 @@ public class JPA2Parser extends Parser {
 
 						switch (alt17) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:115:47: field '.'
+							// JPA2.g:115:47: field '.'
 							{
 							pushFollow(FOLLOW_field_in_join_association_path_expression861);
 							field49=field();
@@ -1924,7 +1924,7 @@ public class JPA2Parser extends Parser {
 						}
 					}
 
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:115:58: ( field )?
+					// JPA2.g:115:58: ( field )?
 					int alt18=2;
 					int LA18_0 = input.LA(1);
 					if ( (LA18_0==GROUP||LA18_0==WORD) ) {
@@ -1932,7 +1932,7 @@ public class JPA2Parser extends Parser {
 					}
 					switch (alt18) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:115:58: field
+							// JPA2.g:115:58: field
 							{
 							pushFollow(FOLLOW_field_in_join_association_path_expression866);
 							field51=field();
@@ -1969,11 +1969,11 @@ public class JPA2Parser extends Parser {
 					root_0 = (Object)adaptor.nil();
 					// 116:10: -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* )
 					{
-						// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:116:13: ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* )
+						// JPA2.g:116:13: ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* )
 						{
 						Object root_1 = (Object)adaptor.nil();
 						root_1 = (Object)adaptor.becomeRoot(new PathNode(T_SELECTED_FIELD, (identification_variable47!=null?input.toString(identification_variable47.start,identification_variable47.stop):null)), root_1);
-						// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:116:73: ( field )*
+						// JPA2.g:116:73: ( field )*
 						while ( stream_field.hasNext() ) {
 							adaptor.addChild(root_1, stream_field.nextTree());
 						}
@@ -2020,7 +2020,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "collection_member_declaration"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:119:1: collection_member_declaration : 'IN' '(' path_expression ')' ( 'AS' )? identification_variable -> ^( T_COLLECTION_MEMBER[$identification_variable.text] path_expression ) ;
+	// JPA2.g:119:1: collection_member_declaration : 'IN' '(' path_expression ')' ( 'AS' )? identification_variable -> ^( T_COLLECTION_MEMBER[$identification_variable.text] path_expression ) ;
 	public final JPA2Parser.collection_member_declaration_return collection_member_declaration() throws RecognitionException {
 		JPA2Parser.collection_member_declaration_return retval = new JPA2Parser.collection_member_declaration_return();
 		retval.start = input.LT(1);
@@ -2046,8 +2046,8 @@ public class JPA2Parser extends Parser {
 		RewriteRuleSubtreeStream stream_path_expression=new RewriteRuleSubtreeStream(adaptor,"rule path_expression");
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:120:5: ( 'IN' '(' path_expression ')' ( 'AS' )? identification_variable -> ^( T_COLLECTION_MEMBER[$identification_variable.text] path_expression ) )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:120:7: 'IN' '(' path_expression ')' ( 'AS' )? identification_variable
+			// JPA2.g:120:5: ( 'IN' '(' path_expression ')' ( 'AS' )? identification_variable -> ^( T_COLLECTION_MEMBER[$identification_variable.text] path_expression ) )
+			// JPA2.g:120:7: 'IN' '(' path_expression ')' ( 'AS' )? identification_variable
 			{
 			string_literal55=(Token)match(input,95,FOLLOW_95_in_collection_member_declaration910); if (state.failed) return retval; 
 			if ( state.backtracking==0 ) stream_95.add(string_literal55);
@@ -2063,7 +2063,7 @@ public class JPA2Parser extends Parser {
 			char_literal58=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_collection_member_declaration915); if (state.failed) return retval; 
 			if ( state.backtracking==0 ) stream_RPAREN.add(char_literal58);
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:120:35: ( 'AS' )?
+			// JPA2.g:120:35: ( 'AS' )?
 			int alt20=2;
 			int LA20_0 = input.LA(1);
 			if ( (LA20_0==75) ) {
@@ -2071,7 +2071,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt20) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:120:36: 'AS'
+					// JPA2.g:120:36: 'AS'
 					{
 					string_literal59=(Token)match(input,75,FOLLOW_75_in_collection_member_declaration918); if (state.failed) return retval; 
 					if ( state.backtracking==0 ) stream_75.add(string_literal59);
@@ -2100,7 +2100,7 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 			// 121:5: -> ^( T_COLLECTION_MEMBER[$identification_variable.text] path_expression )
 			{
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:121:8: ^( T_COLLECTION_MEMBER[$identification_variable.text] path_expression )
+				// JPA2.g:121:8: ^( T_COLLECTION_MEMBER[$identification_variable.text] path_expression )
 				{
 				Object root_1 = (Object)adaptor.nil();
 				root_1 = (Object)adaptor.becomeRoot(new CollectionMemberNode(T_COLLECTION_MEMBER, (identification_variable60!=null?input.toString(identification_variable60.start,identification_variable60.stop):null)), root_1);
@@ -2144,7 +2144,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "qualified_identification_variable"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:123:1: qualified_identification_variable : ( map_field_identification_variable | 'ENTRY(' identification_variable ')' );
+	// JPA2.g:123:1: qualified_identification_variable : ( map_field_identification_variable | 'ENTRY(' identification_variable ')' );
 	public final JPA2Parser.qualified_identification_variable_return qualified_identification_variable() throws RecognitionException {
 		JPA2Parser.qualified_identification_variable_return retval = new JPA2Parser.qualified_identification_variable_return();
 		retval.start = input.LT(1);
@@ -2160,7 +2160,7 @@ public class JPA2Parser extends Parser {
 		Object char_literal64_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:124:5: ( map_field_identification_variable | 'ENTRY(' identification_variable ')' )
+			// JPA2.g:124:5: ( map_field_identification_variable | 'ENTRY(' identification_variable ')' )
 			int alt21=2;
 			int LA21_0 = input.LA(1);
 			if ( (LA21_0==98||LA21_0==130) ) {
@@ -2179,7 +2179,7 @@ public class JPA2Parser extends Parser {
 
 			switch (alt21) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:124:7: map_field_identification_variable
+					// JPA2.g:124:7: map_field_identification_variable
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -2193,7 +2193,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:125:7: 'ENTRY(' identification_variable ')'
+					// JPA2.g:125:7: 'ENTRY(' identification_variable ')'
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -2248,7 +2248,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "map_field_identification_variable"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:126:1: map_field_identification_variable : ( 'KEY(' identification_variable ')' | 'VALUE(' identification_variable ')' );
+	// JPA2.g:126:1: map_field_identification_variable : ( 'KEY(' identification_variable ')' | 'VALUE(' identification_variable ')' );
 	public final JPA2Parser.map_field_identification_variable_return map_field_identification_variable() throws RecognitionException {
 		JPA2Parser.map_field_identification_variable_return retval = new JPA2Parser.map_field_identification_variable_return();
 		retval.start = input.LT(1);
@@ -2268,7 +2268,7 @@ public class JPA2Parser extends Parser {
 		Object char_literal70_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:126:35: ( 'KEY(' identification_variable ')' | 'VALUE(' identification_variable ')' )
+			// JPA2.g:126:35: ( 'KEY(' identification_variable ')' | 'VALUE(' identification_variable ')' )
 			int alt22=2;
 			int LA22_0 = input.LA(1);
 			if ( (LA22_0==98) ) {
@@ -2287,7 +2287,7 @@ public class JPA2Parser extends Parser {
 
 			switch (alt22) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:126:37: 'KEY(' identification_variable ')'
+					// JPA2.g:126:37: 'KEY(' identification_variable ')'
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -2313,7 +2313,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:126:72: 'VALUE(' identification_variable ')'
+					// JPA2.g:126:72: 'VALUE(' identification_variable ')'
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -2368,7 +2368,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "path_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:129:1: path_expression : identification_variable '.' ( field '.' )* field -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* ) ;
+	// JPA2.g:129:1: path_expression : identification_variable '.' ( field '.' )* field -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* ) ;
 	public final JPA2Parser.path_expression_return path_expression() throws RecognitionException {
 		JPA2Parser.path_expression_return retval = new JPA2Parser.path_expression_return();
 		retval.start = input.LT(1);
@@ -2388,8 +2388,8 @@ public class JPA2Parser extends Parser {
 		RewriteRuleSubtreeStream stream_field=new RewriteRuleSubtreeStream(adaptor,"rule field");
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:130:5: ( identification_variable '.' ( field '.' )* field -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* ) )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:130:8: identification_variable '.' ( field '.' )* field
+			// JPA2.g:130:5: ( identification_variable '.' ( field '.' )* field -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* ) )
+			// JPA2.g:130:8: identification_variable '.' ( field '.' )* field
 			{
 			pushFollow(FOLLOW_identification_variable_in_path_expression990);
 			identification_variable71=identification_variable();
@@ -2399,7 +2399,7 @@ public class JPA2Parser extends Parser {
 			char_literal72=(Token)match(input,57,FOLLOW_57_in_path_expression992); if (state.failed) return retval; 
 			if ( state.backtracking==0 ) stream_57.add(char_literal72);
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:130:36: ( field '.' )*
+			// JPA2.g:130:36: ( field '.' )*
 			loop23:
 			while (true) {
 				int alt23=2;
@@ -2414,7 +2414,7 @@ public class JPA2Parser extends Parser {
 
 				switch (alt23) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:130:37: field '.'
+					// JPA2.g:130:37: field '.'
 					{
 					pushFollow(FOLLOW_field_in_path_expression995);
 					field73=field();
@@ -2451,11 +2451,11 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 			// 131:5: -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* )
 			{
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:131:8: ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* )
+				// JPA2.g:131:8: ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* )
 				{
 				Object root_1 = (Object)adaptor.nil();
 				root_1 = (Object)adaptor.becomeRoot(new PathNode(T_SELECTED_FIELD, (identification_variable71!=null?input.toString(identification_variable71.start,identification_variable71.stop):null)), root_1);
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:131:68: ( field )*
+				// JPA2.g:131:68: ( field )*
 				while ( stream_field.hasNext() ) {
 					adaptor.addChild(root_1, stream_field.nextTree());
 				}
@@ -2500,7 +2500,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "general_identification_variable"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:136:1: general_identification_variable : ( identification_variable | map_field_identification_variable );
+	// JPA2.g:136:1: general_identification_variable : ( identification_variable | map_field_identification_variable );
 	public final JPA2Parser.general_identification_variable_return general_identification_variable() throws RecognitionException {
 		JPA2Parser.general_identification_variable_return retval = new JPA2Parser.general_identification_variable_return();
 		retval.start = input.LT(1);
@@ -2512,7 +2512,7 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:137:5: ( identification_variable | map_field_identification_variable )
+			// JPA2.g:137:5: ( identification_variable | map_field_identification_variable )
 			int alt24=2;
 			int LA24_0 = input.LA(1);
 			if ( (LA24_0==WORD) ) {
@@ -2531,7 +2531,7 @@ public class JPA2Parser extends Parser {
 
 			switch (alt24) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:137:7: identification_variable
+					// JPA2.g:137:7: identification_variable
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -2545,7 +2545,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:138:7: map_field_identification_variable
+					// JPA2.g:138:7: map_field_identification_variable
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -2588,7 +2588,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "update_clause"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:139:1: update_clause : entity_name ( ( 'AS' )? identification_variable )? 'SET' update_item ( ',' update_item )* ;
+	// JPA2.g:139:1: update_clause : entity_name ( ( 'AS' )? identification_variable )? 'SET' update_item ( ',' update_item )* ;
 	public final JPA2Parser.update_clause_return update_clause() throws RecognitionException {
 		JPA2Parser.update_clause_return retval = new JPA2Parser.update_clause_return();
 		retval.start = input.LT(1);
@@ -2608,8 +2608,8 @@ public class JPA2Parser extends Parser {
 		Object char_literal83_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:140:5: ( entity_name ( ( 'AS' )? identification_variable )? 'SET' update_item ( ',' update_item )* )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:140:7: entity_name ( ( 'AS' )? identification_variable )? 'SET' update_item ( ',' update_item )*
+			// JPA2.g:140:5: ( entity_name ( ( 'AS' )? identification_variable )? 'SET' update_item ( ',' update_item )* )
+			// JPA2.g:140:7: entity_name ( ( 'AS' )? identification_variable )? 'SET' update_item ( ',' update_item )*
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -2620,7 +2620,7 @@ public class JPA2Parser extends Parser {
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) adaptor.addChild(root_0, entity_name78.getTree());
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:140:19: ( ( 'AS' )? identification_variable )?
+			// JPA2.g:140:19: ( ( 'AS' )? identification_variable )?
 			int alt26=2;
 			int LA26_0 = input.LA(1);
 			if ( (LA26_0==WORD||LA26_0==75) ) {
@@ -2628,9 +2628,9 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt26) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:140:20: ( 'AS' )? identification_variable
+					// JPA2.g:140:20: ( 'AS' )? identification_variable
 					{
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:140:20: ( 'AS' )?
+					// JPA2.g:140:20: ( 'AS' )?
 					int alt25=2;
 					int LA25_0 = input.LA(1);
 					if ( (LA25_0==75) ) {
@@ -2638,7 +2638,7 @@ public class JPA2Parser extends Parser {
 					}
 					switch (alt25) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:140:21: 'AS'
+							// JPA2.g:140:21: 'AS'
 							{
 							string_literal79=(Token)match(input,75,FOLLOW_75_in_update_clause1061); if (state.failed) return retval;
 							if ( state.backtracking==0 ) {
@@ -2674,7 +2674,7 @@ public class JPA2Parser extends Parser {
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) adaptor.addChild(root_0, update_item82.getTree());
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:140:72: ( ',' update_item )*
+			// JPA2.g:140:72: ( ',' update_item )*
 			loop27:
 			while (true) {
 				int alt27=2;
@@ -2685,7 +2685,7 @@ public class JPA2Parser extends Parser {
 
 				switch (alt27) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:140:73: ',' update_item
+					// JPA2.g:140:73: ',' update_item
 					{
 					char_literal83=(Token)match(input,55,FOLLOW_55_in_update_clause1074); if (state.failed) return retval;
 					if ( state.backtracking==0 ) {
@@ -2737,7 +2737,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "update_item"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:141:1: update_item : ( identification_variable '.' ) ( single_valued_embeddable_object_field '.' )* single_valued_object_field '=' new_value ;
+	// JPA2.g:141:1: update_item : ( identification_variable '.' ) ( single_valued_embeddable_object_field '.' )* single_valued_object_field '=' new_value ;
 	public final JPA2Parser.update_item_return update_item() throws RecognitionException {
 		JPA2Parser.update_item_return retval = new JPA2Parser.update_item_return();
 		retval.start = input.LT(1);
@@ -2757,14 +2757,14 @@ public class JPA2Parser extends Parser {
 		Object char_literal90_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:142:5: ( ( identification_variable '.' ) ( single_valued_embeddable_object_field '.' )* single_valued_object_field '=' new_value )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:142:7: ( identification_variable '.' ) ( single_valued_embeddable_object_field '.' )* single_valued_object_field '=' new_value
+			// JPA2.g:142:5: ( ( identification_variable '.' ) ( single_valued_embeddable_object_field '.' )* single_valued_object_field '=' new_value )
+			// JPA2.g:142:7: ( identification_variable '.' ) ( single_valued_embeddable_object_field '.' )* single_valued_object_field '=' new_value
 			{
 			root_0 = (Object)adaptor.nil();
 
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:142:7: ( identification_variable '.' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:142:8: identification_variable '.'
+			// JPA2.g:142:7: ( identification_variable '.' )
+			// JPA2.g:142:8: identification_variable '.'
 			{
 			pushFollow(FOLLOW_identification_variable_in_update_item1090);
 			identification_variable85=identification_variable();
@@ -2780,7 +2780,7 @@ public class JPA2Parser extends Parser {
 
 			}
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:142:35: ( single_valued_embeddable_object_field '.' )*
+			// JPA2.g:142:35: ( single_valued_embeddable_object_field '.' )*
 			loop28:
 			while (true) {
 				int alt28=2;
@@ -2795,7 +2795,7 @@ public class JPA2Parser extends Parser {
 
 				switch (alt28) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:142:36: single_valued_embeddable_object_field '.'
+					// JPA2.g:142:36: single_valued_embeddable_object_field '.'
 					{
 					pushFollow(FOLLOW_single_valued_embeddable_object_field_in_update_item1094);
 					single_valued_embeddable_object_field87=single_valued_embeddable_object_field();
@@ -2865,7 +2865,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "new_value"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:143:1: new_value : ( scalar_expression | simple_entity_expression | 'NULL' );
+	// JPA2.g:143:1: new_value : ( scalar_expression | simple_entity_expression | 'NULL' );
 	public final JPA2Parser.new_value_return new_value() throws RecognitionException {
 		JPA2Parser.new_value_return retval = new JPA2Parser.new_value_return();
 		retval.start = input.LT(1);
@@ -2879,7 +2879,7 @@ public class JPA2Parser extends Parser {
 		Object string_literal94_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:144:5: ( scalar_expression | simple_entity_expression | 'NULL' )
+			// JPA2.g:144:5: ( scalar_expression | simple_entity_expression | 'NULL' )
 			int alt29=3;
 			switch ( input.LA(1) ) {
 			case AVG:
@@ -3133,7 +3133,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt29) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:144:7: scalar_expression
+					// JPA2.g:144:7: scalar_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -3147,7 +3147,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:145:7: simple_entity_expression
+					// JPA2.g:145:7: simple_entity_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -3161,7 +3161,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:146:7: 'NULL'
+					// JPA2.g:146:7: 'NULL'
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -3204,7 +3204,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "delete_clause"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:147:1: delete_clause : entity_name ( ( 'AS' )? identification_variable )? ;
+	// JPA2.g:147:1: delete_clause : entity_name ( ( 'AS' )? identification_variable )? ;
 	public final JPA2Parser.delete_clause_return delete_clause() throws RecognitionException {
 		JPA2Parser.delete_clause_return retval = new JPA2Parser.delete_clause_return();
 		retval.start = input.LT(1);
@@ -3218,8 +3218,8 @@ public class JPA2Parser extends Parser {
 		Object string_literal96_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:148:5: ( entity_name ( ( 'AS' )? identification_variable )? )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:148:7: entity_name ( ( 'AS' )? identification_variable )?
+			// JPA2.g:148:5: ( entity_name ( ( 'AS' )? identification_variable )? )
+			// JPA2.g:148:7: entity_name ( ( 'AS' )? identification_variable )?
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -3230,7 +3230,7 @@ public class JPA2Parser extends Parser {
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) adaptor.addChild(root_0, entity_name95.getTree());
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:148:19: ( ( 'AS' )? identification_variable )?
+			// JPA2.g:148:19: ( ( 'AS' )? identification_variable )?
 			int alt31=2;
 			int LA31_0 = input.LA(1);
 			if ( (LA31_0==WORD||LA31_0==75) ) {
@@ -3238,9 +3238,9 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt31) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:148:20: ( 'AS' )? identification_variable
+					// JPA2.g:148:20: ( 'AS' )? identification_variable
 					{
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:148:20: ( 'AS' )?
+					// JPA2.g:148:20: ( 'AS' )?
 					int alt30=2;
 					int LA30_0 = input.LA(1);
 					if ( (LA30_0==75) ) {
@@ -3248,7 +3248,7 @@ public class JPA2Parser extends Parser {
 					}
 					switch (alt30) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:148:21: 'AS'
+							// JPA2.g:148:21: 'AS'
 							{
 							string_literal96=(Token)match(input,75,FOLLOW_75_in_delete_clause1144); if (state.failed) return retval;
 							if ( state.backtracking==0 ) {
@@ -3302,7 +3302,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "select_clause"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:149:1: select_clause : ( 'DISTINCT' )? select_item ( ',' select_item )* -> ^( T_SELECTED_ITEMS ( 'DISTINCT' )? ( ^( T_SELECTED_ITEM[] select_item ) )* ) ;
+	// JPA2.g:149:1: select_clause : ( 'DISTINCT' )? select_item ( ',' select_item )* -> ^( T_SELECTED_ITEMS ( 'DISTINCT' )? ( ^( T_SELECTED_ITEM[] select_item ) )* ) ;
 	public final JPA2Parser.select_clause_return select_clause() throws RecognitionException {
 		JPA2Parser.select_clause_return retval = new JPA2Parser.select_clause_return();
 		retval.start = input.LT(1);
@@ -3321,10 +3321,10 @@ public class JPA2Parser extends Parser {
 		RewriteRuleSubtreeStream stream_select_item=new RewriteRuleSubtreeStream(adaptor,"rule select_item");
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:150:5: ( ( 'DISTINCT' )? select_item ( ',' select_item )* -> ^( T_SELECTED_ITEMS ( 'DISTINCT' )? ( ^( T_SELECTED_ITEM[] select_item ) )* ) )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:150:7: ( 'DISTINCT' )? select_item ( ',' select_item )*
+			// JPA2.g:150:5: ( ( 'DISTINCT' )? select_item ( ',' select_item )* -> ^( T_SELECTED_ITEMS ( 'DISTINCT' )? ( ^( T_SELECTED_ITEM[] select_item ) )* ) )
+			// JPA2.g:150:7: ( 'DISTINCT' )? select_item ( ',' select_item )*
 			{
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:150:7: ( 'DISTINCT' )?
+			// JPA2.g:150:7: ( 'DISTINCT' )?
 			int alt32=2;
 			int LA32_0 = input.LA(1);
 			if ( (LA32_0==DISTINCT) ) {
@@ -3332,7 +3332,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt32) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:150:8: 'DISTINCT'
+					// JPA2.g:150:8: 'DISTINCT'
 					{
 					string_literal98=(Token)match(input,DISTINCT,FOLLOW_DISTINCT_in_select_clause1162); if (state.failed) return retval; 
 					if ( state.backtracking==0 ) stream_DISTINCT.add(string_literal98);
@@ -3347,7 +3347,7 @@ public class JPA2Parser extends Parser {
 			state._fsp--;
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) stream_select_item.add(select_item99.getTree());
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:150:33: ( ',' select_item )*
+			// JPA2.g:150:33: ( ',' select_item )*
 			loop33:
 			while (true) {
 				int alt33=2;
@@ -3358,7 +3358,7 @@ public class JPA2Parser extends Parser {
 
 				switch (alt33) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:150:34: ',' select_item
+					// JPA2.g:150:34: ',' select_item
 					{
 					char_literal100=(Token)match(input,55,FOLLOW_55_in_select_clause1169); if (state.failed) return retval; 
 					if ( state.backtracking==0 ) stream_55.add(char_literal100);
@@ -3377,7 +3377,7 @@ public class JPA2Parser extends Parser {
 			}
 
 			// AST REWRITE
-			// elements: DISTINCT, select_item
+			// elements: select_item, DISTINCT
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -3390,19 +3390,19 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 			// 151:5: -> ^( T_SELECTED_ITEMS ( 'DISTINCT' )? ( ^( T_SELECTED_ITEM[] select_item ) )* )
 			{
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:151:8: ^( T_SELECTED_ITEMS ( 'DISTINCT' )? ( ^( T_SELECTED_ITEM[] select_item ) )* )
+				// JPA2.g:151:8: ^( T_SELECTED_ITEMS ( 'DISTINCT' )? ( ^( T_SELECTED_ITEM[] select_item ) )* )
 				{
 				Object root_1 = (Object)adaptor.nil();
 				root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(T_SELECTED_ITEMS, "T_SELECTED_ITEMS"), root_1);
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:151:27: ( 'DISTINCT' )?
+				// JPA2.g:151:27: ( 'DISTINCT' )?
 				if ( stream_DISTINCT.hasNext() ) {
 					adaptor.addChild(root_1, stream_DISTINCT.nextNode());
 				}
 				stream_DISTINCT.reset();
 
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:151:41: ( ^( T_SELECTED_ITEM[] select_item ) )*
+				// JPA2.g:151:41: ( ^( T_SELECTED_ITEM[] select_item ) )*
 				while ( stream_select_item.hasNext() ) {
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:151:41: ^( T_SELECTED_ITEM[] select_item )
+					// JPA2.g:151:41: ^( T_SELECTED_ITEM[] select_item )
 					{
 					Object root_2 = (Object)adaptor.nil();
 					root_2 = (Object)adaptor.becomeRoot(new SelectedItemNode(T_SELECTED_ITEM), root_2);
@@ -3452,7 +3452,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "select_item"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:152:1: select_item : select_expression ( ( 'AS' )? result_variable )? ;
+	// JPA2.g:152:1: select_item : select_expression ( ( 'AS' )? result_variable )? ;
 	public final JPA2Parser.select_item_return select_item() throws RecognitionException {
 		JPA2Parser.select_item_return retval = new JPA2Parser.select_item_return();
 		retval.start = input.LT(1);
@@ -3466,8 +3466,8 @@ public class JPA2Parser extends Parser {
 		Object string_literal103_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:153:5: ( select_expression ( ( 'AS' )? result_variable )? )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:153:7: select_expression ( ( 'AS' )? result_variable )?
+			// JPA2.g:153:5: ( select_expression ( ( 'AS' )? result_variable )? )
+			// JPA2.g:153:7: select_expression ( ( 'AS' )? result_variable )?
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -3478,7 +3478,7 @@ public class JPA2Parser extends Parser {
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) adaptor.addChild(root_0, select_expression102.getTree());
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:153:25: ( ( 'AS' )? result_variable )?
+			// JPA2.g:153:25: ( ( 'AS' )? result_variable )?
 			int alt35=2;
 			int LA35_0 = input.LA(1);
 			if ( (LA35_0==WORD||LA35_0==75) ) {
@@ -3486,9 +3486,9 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt35) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:153:26: ( 'AS' )? result_variable
+					// JPA2.g:153:26: ( 'AS' )? result_variable
 					{
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:153:26: ( 'AS' )?
+					// JPA2.g:153:26: ( 'AS' )?
 					int alt34=2;
 					int LA34_0 = input.LA(1);
 					if ( (LA34_0==75) ) {
@@ -3496,7 +3496,7 @@ public class JPA2Parser extends Parser {
 					}
 					switch (alt34) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:153:27: 'AS'
+							// JPA2.g:153:27: 'AS'
 							{
 							string_literal103=(Token)match(input,75,FOLLOW_75_in_select_item1214); if (state.failed) return retval;
 							if ( state.backtracking==0 ) {
@@ -3550,7 +3550,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "select_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:154:1: select_expression : ( path_expression | identification_variable -> ^( T_SELECTED_ENTITY[$identification_variable.text] ) | scalar_expression | aggregate_expression | 'OBJECT' '(' identification_variable ')' | constructor_expression );
+	// JPA2.g:154:1: select_expression : ( path_expression | identification_variable -> ^( T_SELECTED_ENTITY[$identification_variable.text] ) | scalar_expression | aggregate_expression | 'OBJECT' '(' identification_variable ')' | constructor_expression );
 	public final JPA2Parser.select_expression_return select_expression() throws RecognitionException {
 		JPA2Parser.select_expression_return retval = new JPA2Parser.select_expression_return();
 		retval.start = input.LT(1);
@@ -3573,7 +3573,7 @@ public class JPA2Parser extends Parser {
 		RewriteRuleSubtreeStream stream_identification_variable=new RewriteRuleSubtreeStream(adaptor,"rule identification_variable");
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:155:5: ( path_expression | identification_variable -> ^( T_SELECTED_ENTITY[$identification_variable.text] ) | scalar_expression | aggregate_expression | 'OBJECT' '(' identification_variable ')' | constructor_expression )
+			// JPA2.g:155:5: ( path_expression | identification_variable -> ^( T_SELECTED_ENTITY[$identification_variable.text] ) | scalar_expression | aggregate_expression | 'OBJECT' '(' identification_variable ')' | constructor_expression )
 			int alt36=6;
 			switch ( input.LA(1) ) {
 			case WORD:
@@ -3734,7 +3734,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt36) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:155:7: path_expression
+					// JPA2.g:155:7: path_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -3748,7 +3748,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:156:7: identification_variable
+					// JPA2.g:156:7: identification_variable
 					{
 					pushFollow(FOLLOW_identification_variable_in_select_expression1239);
 					identification_variable106=identification_variable();
@@ -3769,7 +3769,7 @@ public class JPA2Parser extends Parser {
 					root_0 = (Object)adaptor.nil();
 					// 156:31: -> ^( T_SELECTED_ENTITY[$identification_variable.text] )
 					{
-						// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:156:34: ^( T_SELECTED_ENTITY[$identification_variable.text] )
+						// JPA2.g:156:34: ^( T_SELECTED_ENTITY[$identification_variable.text] )
 						{
 						Object root_1 = (Object)adaptor.nil();
 						root_1 = (Object)adaptor.becomeRoot(new PathNode(T_SELECTED_ENTITY, (identification_variable106!=null?input.toString(identification_variable106.start,identification_variable106.stop):null)), root_1);
@@ -3785,7 +3785,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:157:7: scalar_expression
+					// JPA2.g:157:7: scalar_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -3799,7 +3799,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 4 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:158:7: aggregate_expression
+					// JPA2.g:158:7: aggregate_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -3813,7 +3813,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 5 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:159:7: 'OBJECT' '(' identification_variable ')'
+					// JPA2.g:159:7: 'OBJECT' '(' identification_variable ')'
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -3845,7 +3845,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 6 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:160:7: constructor_expression
+					// JPA2.g:160:7: constructor_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -3888,7 +3888,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "constructor_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:161:1: constructor_expression : 'NEW' constructor_name '(' constructor_item ( ',' constructor_item )* ')' ;
+	// JPA2.g:161:1: constructor_expression : 'NEW' constructor_name '(' constructor_item ( ',' constructor_item )* ')' ;
 	public final JPA2Parser.constructor_expression_return constructor_expression() throws RecognitionException {
 		JPA2Parser.constructor_expression_return retval = new JPA2Parser.constructor_expression_return();
 		retval.start = input.LT(1);
@@ -3909,8 +3909,8 @@ public class JPA2Parser extends Parser {
 		Object char_literal120_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:162:5: ( 'NEW' constructor_name '(' constructor_item ( ',' constructor_item )* ')' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:162:7: 'NEW' constructor_name '(' constructor_item ( ',' constructor_item )* ')'
+			// JPA2.g:162:5: ( 'NEW' constructor_name '(' constructor_item ( ',' constructor_item )* ')' )
+			// JPA2.g:162:7: 'NEW' constructor_name '(' constructor_item ( ',' constructor_item )* ')'
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -3939,7 +3939,7 @@ public class JPA2Parser extends Parser {
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) adaptor.addChild(root_0, constructor_item117.getTree());
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:162:51: ( ',' constructor_item )*
+			// JPA2.g:162:51: ( ',' constructor_item )*
 			loop37:
 			while (true) {
 				int alt37=2;
@@ -3950,7 +3950,7 @@ public class JPA2Parser extends Parser {
 
 				switch (alt37) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:162:52: ',' constructor_item
+					// JPA2.g:162:52: ',' constructor_item
 					{
 					char_literal118=(Token)match(input,55,FOLLOW_55_in_constructor_expression1305); if (state.failed) return retval;
 					if ( state.backtracking==0 ) {
@@ -4008,7 +4008,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "constructor_item"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:163:1: constructor_item : ( path_expression | scalar_expression | aggregate_expression | identification_variable );
+	// JPA2.g:163:1: constructor_item : ( path_expression | scalar_expression | aggregate_expression | identification_variable );
 	public final JPA2Parser.constructor_item_return constructor_item() throws RecognitionException {
 		JPA2Parser.constructor_item_return retval = new JPA2Parser.constructor_item_return();
 		retval.start = input.LT(1);
@@ -4022,7 +4022,7 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:164:5: ( path_expression | scalar_expression | aggregate_expression | identification_variable )
+			// JPA2.g:164:5: ( path_expression | scalar_expression | aggregate_expression | identification_variable )
 			int alt38=4;
 			switch ( input.LA(1) ) {
 			case WORD:
@@ -4160,7 +4160,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt38) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:164:7: path_expression
+					// JPA2.g:164:7: path_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -4174,7 +4174,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:165:7: scalar_expression
+					// JPA2.g:165:7: scalar_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -4188,7 +4188,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:166:7: aggregate_expression
+					// JPA2.g:166:7: aggregate_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -4202,7 +4202,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 4 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:167:7: identification_variable
+					// JPA2.g:167:7: identification_variable
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -4245,7 +4245,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "aggregate_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:168:1: aggregate_expression : ( aggregate_expression_function_name '(' ( DISTINCT )? path_expression ')' -> ^( T_AGGREGATE_EXPR[] aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')' ) | 'COUNT' '(' ( DISTINCT )? count_argument ')' -> ^( T_AGGREGATE_EXPR[] 'COUNT' '(' ( 'DISTINCT' )? count_argument ')' ) | function_invocation );
+	// JPA2.g:168:1: aggregate_expression : ( aggregate_expression_function_name '(' ( DISTINCT )? path_expression ')' -> ^( T_AGGREGATE_EXPR[] aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')' ) | 'COUNT' '(' ( DISTINCT )? count_argument ')' -> ^( T_AGGREGATE_EXPR[] 'COUNT' '(' ( 'DISTINCT' )? count_argument ')' ) | function_invocation );
 	public final JPA2Parser.aggregate_expression_return aggregate_expression() throws RecognitionException {
 		JPA2Parser.aggregate_expression_return retval = new JPA2Parser.aggregate_expression_return();
 		retval.start = input.LT(1);
@@ -4280,12 +4280,12 @@ public class JPA2Parser extends Parser {
 		RewriteRuleSubtreeStream stream_count_argument=new RewriteRuleSubtreeStream(adaptor,"rule count_argument");
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:169:5: ( aggregate_expression_function_name '(' ( DISTINCT )? path_expression ')' -> ^( T_AGGREGATE_EXPR[] aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')' ) | 'COUNT' '(' ( DISTINCT )? count_argument ')' -> ^( T_AGGREGATE_EXPR[] 'COUNT' '(' ( 'DISTINCT' )? count_argument ')' ) | function_invocation )
+			// JPA2.g:169:5: ( aggregate_expression_function_name '(' ( DISTINCT )? path_expression ')' -> ^( T_AGGREGATE_EXPR[] aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')' ) | 'COUNT' '(' ( DISTINCT )? count_argument ')' -> ^( T_AGGREGATE_EXPR[] 'COUNT' '(' ( 'DISTINCT' )? count_argument ')' ) | function_invocation )
 			int alt41=3;
 			alt41 = dfa41.predict(input);
 			switch (alt41) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:169:7: aggregate_expression_function_name '(' ( DISTINCT )? path_expression ')'
+					// JPA2.g:169:7: aggregate_expression_function_name '(' ( DISTINCT )? path_expression ')'
 					{
 					pushFollow(FOLLOW_aggregate_expression_function_name_in_aggregate_expression1357);
 					aggregate_expression_function_name125=aggregate_expression_function_name();
@@ -4295,7 +4295,7 @@ public class JPA2Parser extends Parser {
 					char_literal126=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_aggregate_expression1359); if (state.failed) return retval; 
 					if ( state.backtracking==0 ) stream_LPAREN.add(char_literal126);
 
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:169:45: ( DISTINCT )?
+					// JPA2.g:169:45: ( DISTINCT )?
 					int alt39=2;
 					int LA39_0 = input.LA(1);
 					if ( (LA39_0==DISTINCT) ) {
@@ -4303,7 +4303,7 @@ public class JPA2Parser extends Parser {
 					}
 					switch (alt39) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:169:46: DISTINCT
+							// JPA2.g:169:46: DISTINCT
 							{
 							DISTINCT127=(Token)match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregate_expression1361); if (state.failed) return retval; 
 							if ( state.backtracking==0 ) stream_DISTINCT.add(DISTINCT127);
@@ -4322,7 +4322,7 @@ public class JPA2Parser extends Parser {
 					if ( state.backtracking==0 ) stream_RPAREN.add(char_literal129);
 
 					// AST REWRITE
-					// elements: DISTINCT, aggregate_expression_function_name, RPAREN, path_expression, LPAREN
+					// elements: path_expression, LPAREN, RPAREN, aggregate_expression_function_name, DISTINCT
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -4335,13 +4335,13 @@ public class JPA2Parser extends Parser {
 					root_0 = (Object)adaptor.nil();
 					// 170:5: -> ^( T_AGGREGATE_EXPR[] aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')' )
 					{
-						// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:170:8: ^( T_AGGREGATE_EXPR[] aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')' )
+						// JPA2.g:170:8: ^( T_AGGREGATE_EXPR[] aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')' )
 						{
 						Object root_1 = (Object)adaptor.nil();
 						root_1 = (Object)adaptor.becomeRoot(new AggregateExpressionNode(T_AGGREGATE_EXPR), root_1);
 						adaptor.addChild(root_1, stream_aggregate_expression_function_name.nextTree());
 						adaptor.addChild(root_1, stream_LPAREN.nextNode());
-						// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:170:93: ( 'DISTINCT' )?
+						// JPA2.g:170:93: ( 'DISTINCT' )?
 						if ( stream_DISTINCT.hasNext() ) {
 							adaptor.addChild(root_1, (Object)adaptor.create(DISTINCT, "DISTINCT"));
 						}
@@ -4361,7 +4361,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:171:7: 'COUNT' '(' ( DISTINCT )? count_argument ')'
+					// JPA2.g:171:7: 'COUNT' '(' ( DISTINCT )? count_argument ')'
 					{
 					string_literal130=(Token)match(input,COUNT,FOLLOW_COUNT_in_aggregate_expression1400); if (state.failed) return retval; 
 					if ( state.backtracking==0 ) stream_COUNT.add(string_literal130);
@@ -4369,7 +4369,7 @@ public class JPA2Parser extends Parser {
 					char_literal131=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_aggregate_expression1402); if (state.failed) return retval; 
 					if ( state.backtracking==0 ) stream_LPAREN.add(char_literal131);
 
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:171:18: ( DISTINCT )?
+					// JPA2.g:171:18: ( DISTINCT )?
 					int alt40=2;
 					int LA40_0 = input.LA(1);
 					if ( (LA40_0==DISTINCT) ) {
@@ -4377,7 +4377,7 @@ public class JPA2Parser extends Parser {
 					}
 					switch (alt40) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:171:19: DISTINCT
+							// JPA2.g:171:19: DISTINCT
 							{
 							DISTINCT132=(Token)match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregate_expression1404); if (state.failed) return retval; 
 							if ( state.backtracking==0 ) stream_DISTINCT.add(DISTINCT132);
@@ -4396,7 +4396,7 @@ public class JPA2Parser extends Parser {
 					if ( state.backtracking==0 ) stream_RPAREN.add(char_literal134);
 
 					// AST REWRITE
-					// elements: RPAREN, LPAREN, count_argument, DISTINCT, COUNT
+					// elements: DISTINCT, RPAREN, count_argument, LPAREN, COUNT
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -4409,13 +4409,13 @@ public class JPA2Parser extends Parser {
 					root_0 = (Object)adaptor.nil();
 					// 172:5: -> ^( T_AGGREGATE_EXPR[] 'COUNT' '(' ( 'DISTINCT' )? count_argument ')' )
 					{
-						// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:172:8: ^( T_AGGREGATE_EXPR[] 'COUNT' '(' ( 'DISTINCT' )? count_argument ')' )
+						// JPA2.g:172:8: ^( T_AGGREGATE_EXPR[] 'COUNT' '(' ( 'DISTINCT' )? count_argument ')' )
 						{
 						Object root_1 = (Object)adaptor.nil();
 						root_1 = (Object)adaptor.becomeRoot(new AggregateExpressionNode(T_AGGREGATE_EXPR), root_1);
 						adaptor.addChild(root_1, stream_COUNT.nextNode());
 						adaptor.addChild(root_1, stream_LPAREN.nextNode());
-						// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:172:66: ( 'DISTINCT' )?
+						// JPA2.g:172:66: ( 'DISTINCT' )?
 						if ( stream_DISTINCT.hasNext() ) {
 							adaptor.addChild(root_1, (Object)adaptor.create(DISTINCT, "DISTINCT"));
 						}
@@ -4435,7 +4435,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:173:7: function_invocation
+					// JPA2.g:173:7: function_invocation
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -4478,7 +4478,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "aggregate_expression_function_name"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:174:1: aggregate_expression_function_name : ( 'AVG' | 'MAX' | 'MIN' | 'SUM' | 'COUNT' );
+	// JPA2.g:174:1: aggregate_expression_function_name : ( 'AVG' | 'MAX' | 'MIN' | 'SUM' | 'COUNT' );
 	public final JPA2Parser.aggregate_expression_function_name_return aggregate_expression_function_name() throws RecognitionException {
 		JPA2Parser.aggregate_expression_function_name_return retval = new JPA2Parser.aggregate_expression_function_name_return();
 		retval.start = input.LT(1);
@@ -4490,8 +4490,8 @@ public class JPA2Parser extends Parser {
 		Object set136_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:175:5: ( 'AVG' | 'MAX' | 'MIN' | 'SUM' | 'COUNT' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:
+			// JPA2.g:175:5: ( 'AVG' | 'MAX' | 'MIN' | 'SUM' | 'COUNT' )
+			// JPA2.g:
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -4538,7 +4538,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "count_argument"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:176:1: count_argument : ( identification_variable | path_expression );
+	// JPA2.g:176:1: count_argument : ( identification_variable | path_expression );
 	public final JPA2Parser.count_argument_return count_argument() throws RecognitionException {
 		JPA2Parser.count_argument_return retval = new JPA2Parser.count_argument_return();
 		retval.start = input.LT(1);
@@ -4550,7 +4550,7 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:177:5: ( identification_variable | path_expression )
+			// JPA2.g:177:5: ( identification_variable | path_expression )
 			int alt42=2;
 			int LA42_0 = input.LA(1);
 			if ( (LA42_0==WORD) ) {
@@ -4586,7 +4586,7 @@ public class JPA2Parser extends Parser {
 
 			switch (alt42) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:177:7: identification_variable
+					// JPA2.g:177:7: identification_variable
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -4600,7 +4600,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:177:33: path_expression
+					// JPA2.g:177:33: path_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -4643,7 +4643,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "where_clause"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:178:1: where_clause : wh= 'WHERE' conditional_expression -> ^( T_CONDITION[$wh] conditional_expression ) ;
+	// JPA2.g:178:1: where_clause : wh= 'WHERE' conditional_expression -> ^( T_CONDITION[$wh] conditional_expression ) ;
 	public final JPA2Parser.where_clause_return where_clause() throws RecognitionException {
 		JPA2Parser.where_clause_return retval = new JPA2Parser.where_clause_return();
 		retval.start = input.LT(1);
@@ -4658,8 +4658,8 @@ public class JPA2Parser extends Parser {
 		RewriteRuleSubtreeStream stream_conditional_expression=new RewriteRuleSubtreeStream(adaptor,"rule conditional_expression");
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:179:5: (wh= 'WHERE' conditional_expression -> ^( T_CONDITION[$wh] conditional_expression ) )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:179:7: wh= 'WHERE' conditional_expression
+			// JPA2.g:179:5: (wh= 'WHERE' conditional_expression -> ^( T_CONDITION[$wh] conditional_expression ) )
+			// JPA2.g:179:7: wh= 'WHERE' conditional_expression
 			{
 			wh=(Token)match(input,132,FOLLOW_132_in_where_clause1499); if (state.failed) return retval; 
 			if ( state.backtracking==0 ) stream_132.add(wh);
@@ -4683,7 +4683,7 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 			// 179:40: -> ^( T_CONDITION[$wh] conditional_expression )
 			{
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:179:43: ^( T_CONDITION[$wh] conditional_expression )
+				// JPA2.g:179:43: ^( T_CONDITION[$wh] conditional_expression )
 				{
 				Object root_1 = (Object)adaptor.nil();
 				root_1 = (Object)adaptor.becomeRoot(new WhereNode(T_CONDITION, wh), root_1);
@@ -4727,7 +4727,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "groupby_clause"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:180:1: groupby_clause : 'GROUP' 'BY' groupby_item ( ',' groupby_item )* -> ^( T_GROUP_BY[] 'GROUP' 'BY' ( groupby_item )* ) ;
+	// JPA2.g:180:1: groupby_clause : 'GROUP' 'BY' groupby_item ( ',' groupby_item )* -> ^( T_GROUP_BY[] 'GROUP' 'BY' ( groupby_item )* ) ;
 	public final JPA2Parser.groupby_clause_return groupby_clause() throws RecognitionException {
 		JPA2Parser.groupby_clause_return retval = new JPA2Parser.groupby_clause_return();
 		retval.start = input.LT(1);
@@ -4749,8 +4749,8 @@ public class JPA2Parser extends Parser {
 		RewriteRuleSubtreeStream stream_groupby_item=new RewriteRuleSubtreeStream(adaptor,"rule groupby_item");
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:181:5: ( 'GROUP' 'BY' groupby_item ( ',' groupby_item )* -> ^( T_GROUP_BY[] 'GROUP' 'BY' ( groupby_item )* ) )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:181:7: 'GROUP' 'BY' groupby_item ( ',' groupby_item )*
+			// JPA2.g:181:5: ( 'GROUP' 'BY' groupby_item ( ',' groupby_item )* -> ^( T_GROUP_BY[] 'GROUP' 'BY' ( groupby_item )* ) )
+			// JPA2.g:181:7: 'GROUP' 'BY' groupby_item ( ',' groupby_item )*
 			{
 			string_literal140=(Token)match(input,GROUP,FOLLOW_GROUP_in_groupby_clause1523); if (state.failed) return retval; 
 			if ( state.backtracking==0 ) stream_GROUP.add(string_literal140);
@@ -4763,7 +4763,7 @@ public class JPA2Parser extends Parser {
 			state._fsp--;
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) stream_groupby_item.add(groupby_item142.getTree());
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:181:33: ( ',' groupby_item )*
+			// JPA2.g:181:33: ( ',' groupby_item )*
 			loop43:
 			while (true) {
 				int alt43=2;
@@ -4774,7 +4774,7 @@ public class JPA2Parser extends Parser {
 
 				switch (alt43) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:181:34: ',' groupby_item
+					// JPA2.g:181:34: ',' groupby_item
 					{
 					char_literal143=(Token)match(input,55,FOLLOW_55_in_groupby_clause1530); if (state.failed) return retval; 
 					if ( state.backtracking==0 ) stream_55.add(char_literal143);
@@ -4793,7 +4793,7 @@ public class JPA2Parser extends Parser {
 			}
 
 			// AST REWRITE
-			// elements: groupby_item, GROUP, BY
+			// elements: BY, groupby_item, GROUP
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -4806,13 +4806,13 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 			// 182:5: -> ^( T_GROUP_BY[] 'GROUP' 'BY' ( groupby_item )* )
 			{
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:182:8: ^( T_GROUP_BY[] 'GROUP' 'BY' ( groupby_item )* )
+				// JPA2.g:182:8: ^( T_GROUP_BY[] 'GROUP' 'BY' ( groupby_item )* )
 				{
 				Object root_1 = (Object)adaptor.nil();
 				root_1 = (Object)adaptor.becomeRoot(new GroupByNode(T_GROUP_BY), root_1);
 				adaptor.addChild(root_1, stream_GROUP.nextNode());
 				adaptor.addChild(root_1, stream_BY.nextNode());
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:182:49: ( groupby_item )*
+				// JPA2.g:182:49: ( groupby_item )*
 				while ( stream_groupby_item.hasNext() ) {
 					adaptor.addChild(root_1, stream_groupby_item.nextTree());
 				}
@@ -4857,7 +4857,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "groupby_item"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:183:1: groupby_item : ( path_expression | identification_variable );
+	// JPA2.g:183:1: groupby_item : ( path_expression | identification_variable );
 	public final JPA2Parser.groupby_item_return groupby_item() throws RecognitionException {
 		JPA2Parser.groupby_item_return retval = new JPA2Parser.groupby_item_return();
 		retval.start = input.LT(1);
@@ -4869,7 +4869,7 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:184:5: ( path_expression | identification_variable )
+			// JPA2.g:184:5: ( path_expression | identification_variable )
 			int alt44=2;
 			int LA44_0 = input.LA(1);
 			if ( (LA44_0==WORD) ) {
@@ -4905,7 +4905,7 @@ public class JPA2Parser extends Parser {
 
 			switch (alt44) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:184:7: path_expression
+					// JPA2.g:184:7: path_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -4919,7 +4919,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:184:25: identification_variable
+					// JPA2.g:184:25: identification_variable
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -4962,7 +4962,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "having_clause"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:185:1: having_clause : 'HAVING' conditional_expression ;
+	// JPA2.g:185:1: having_clause : 'HAVING' conditional_expression ;
 	public final JPA2Parser.having_clause_return having_clause() throws RecognitionException {
 		JPA2Parser.having_clause_return retval = new JPA2Parser.having_clause_return();
 		retval.start = input.LT(1);
@@ -4975,8 +4975,8 @@ public class JPA2Parser extends Parser {
 		Object string_literal147_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:186:5: ( 'HAVING' conditional_expression )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:186:7: 'HAVING' conditional_expression
+			// JPA2.g:186:5: ( 'HAVING' conditional_expression )
+			// JPA2.g:186:7: 'HAVING' conditional_expression
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -5023,7 +5023,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "orderby_clause"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:187:1: orderby_clause : 'ORDER' 'BY' orderby_item ( ',' orderby_item )* -> ^( T_ORDER_BY[] 'ORDER' 'BY' ( orderby_item )* ) ;
+	// JPA2.g:187:1: orderby_clause : 'ORDER' 'BY' orderby_item ( ',' orderby_item )* -> ^( T_ORDER_BY[] 'ORDER' 'BY' ( orderby_item )* ) ;
 	public final JPA2Parser.orderby_clause_return orderby_clause() throws RecognitionException {
 		JPA2Parser.orderby_clause_return retval = new JPA2Parser.orderby_clause_return();
 		retval.start = input.LT(1);
@@ -5045,8 +5045,8 @@ public class JPA2Parser extends Parser {
 		RewriteRuleSubtreeStream stream_orderby_item=new RewriteRuleSubtreeStream(adaptor,"rule orderby_item");
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:188:5: ( 'ORDER' 'BY' orderby_item ( ',' orderby_item )* -> ^( T_ORDER_BY[] 'ORDER' 'BY' ( orderby_item )* ) )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:188:7: 'ORDER' 'BY' orderby_item ( ',' orderby_item )*
+			// JPA2.g:188:5: ( 'ORDER' 'BY' orderby_item ( ',' orderby_item )* -> ^( T_ORDER_BY[] 'ORDER' 'BY' ( orderby_item )* ) )
+			// JPA2.g:188:7: 'ORDER' 'BY' orderby_item ( ',' orderby_item )*
 			{
 			string_literal149=(Token)match(input,ORDER,FOLLOW_ORDER_in_orderby_clause1594); if (state.failed) return retval; 
 			if ( state.backtracking==0 ) stream_ORDER.add(string_literal149);
@@ -5059,7 +5059,7 @@ public class JPA2Parser extends Parser {
 			state._fsp--;
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) stream_orderby_item.add(orderby_item151.getTree());
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:188:33: ( ',' orderby_item )*
+			// JPA2.g:188:33: ( ',' orderby_item )*
 			loop45:
 			while (true) {
 				int alt45=2;
@@ -5070,7 +5070,7 @@ public class JPA2Parser extends Parser {
 
 				switch (alt45) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:188:34: ',' orderby_item
+					// JPA2.g:188:34: ',' orderby_item
 					{
 					char_literal152=(Token)match(input,55,FOLLOW_55_in_orderby_clause1601); if (state.failed) return retval; 
 					if ( state.backtracking==0 ) stream_55.add(char_literal152);
@@ -5089,7 +5089,7 @@ public class JPA2Parser extends Parser {
 			}
 
 			// AST REWRITE
-			// elements: BY, orderby_item, ORDER
+			// elements: orderby_item, BY, ORDER
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -5102,13 +5102,13 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 			// 189:5: -> ^( T_ORDER_BY[] 'ORDER' 'BY' ( orderby_item )* )
 			{
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:189:8: ^( T_ORDER_BY[] 'ORDER' 'BY' ( orderby_item )* )
+				// JPA2.g:189:8: ^( T_ORDER_BY[] 'ORDER' 'BY' ( orderby_item )* )
 				{
 				Object root_1 = (Object)adaptor.nil();
 				root_1 = (Object)adaptor.becomeRoot(new OrderByNode(T_ORDER_BY), root_1);
 				adaptor.addChild(root_1, stream_ORDER.nextNode());
 				adaptor.addChild(root_1, stream_BY.nextNode());
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:189:49: ( orderby_item )*
+				// JPA2.g:189:49: ( orderby_item )*
 				while ( stream_orderby_item.hasNext() ) {
 					adaptor.addChild(root_1, stream_orderby_item.nextTree());
 				}
@@ -5153,7 +5153,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "orderby_item"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:190:1: orderby_item : ( orderby_variable ( 'ASC' )? -> ^( T_ORDER_BY_FIELD[] orderby_variable ( 'ASC' )? ) | orderby_variable 'DESC' -> ^( T_ORDER_BY_FIELD[] orderby_variable 'DESC' ) );
+	// JPA2.g:190:1: orderby_item : ( orderby_variable ( 'ASC' )? -> ^( T_ORDER_BY_FIELD[] orderby_variable ( 'ASC' )? ) | orderby_variable 'DESC' -> ^( T_ORDER_BY_FIELD[] orderby_variable 'DESC' ) );
 	public final JPA2Parser.orderby_item_return orderby_item() throws RecognitionException {
 		JPA2Parser.orderby_item_return retval = new JPA2Parser.orderby_item_return();
 		retval.start = input.LT(1);
@@ -5172,19 +5172,19 @@ public class JPA2Parser extends Parser {
 		RewriteRuleSubtreeStream stream_orderby_variable=new RewriteRuleSubtreeStream(adaptor,"rule orderby_variable");
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:191:5: ( orderby_variable ( 'ASC' )? -> ^( T_ORDER_BY_FIELD[] orderby_variable ( 'ASC' )? ) | orderby_variable 'DESC' -> ^( T_ORDER_BY_FIELD[] orderby_variable 'DESC' ) )
+			// JPA2.g:191:5: ( orderby_variable ( 'ASC' )? -> ^( T_ORDER_BY_FIELD[] orderby_variable ( 'ASC' )? ) | orderby_variable 'DESC' -> ^( T_ORDER_BY_FIELD[] orderby_variable 'DESC' ) )
 			int alt47=2;
 			alt47 = dfa47.predict(input);
 			switch (alt47) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:191:7: orderby_variable ( 'ASC' )?
+					// JPA2.g:191:7: orderby_variable ( 'ASC' )?
 					{
 					pushFollow(FOLLOW_orderby_variable_in_orderby_item1637);
 					orderby_variable154=orderby_variable();
 					state._fsp--;
 					if (state.failed) return retval;
 					if ( state.backtracking==0 ) stream_orderby_variable.add(orderby_variable154.getTree());
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:191:24: ( 'ASC' )?
+					// JPA2.g:191:24: ( 'ASC' )?
 					int alt46=2;
 					int LA46_0 = input.LA(1);
 					if ( (LA46_0==ASC) ) {
@@ -5192,7 +5192,7 @@ public class JPA2Parser extends Parser {
 					}
 					switch (alt46) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:191:25: 'ASC'
+							// JPA2.g:191:25: 'ASC'
 							{
 							string_literal155=(Token)match(input,ASC,FOLLOW_ASC_in_orderby_item1640); if (state.failed) return retval; 
 							if ( state.backtracking==0 ) stream_ASC.add(string_literal155);
@@ -5203,7 +5203,7 @@ public class JPA2Parser extends Parser {
 					}
 
 					// AST REWRITE
-					// elements: ASC, orderby_variable
+					// elements: orderby_variable, ASC
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -5216,12 +5216,12 @@ public class JPA2Parser extends Parser {
 					root_0 = (Object)adaptor.nil();
 					// 192:6: -> ^( T_ORDER_BY_FIELD[] orderby_variable ( 'ASC' )? )
 					{
-						// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:192:9: ^( T_ORDER_BY_FIELD[] orderby_variable ( 'ASC' )? )
+						// JPA2.g:192:9: ^( T_ORDER_BY_FIELD[] orderby_variable ( 'ASC' )? )
 						{
 						Object root_1 = (Object)adaptor.nil();
 						root_1 = (Object)adaptor.becomeRoot(new OrderByFieldNode(T_ORDER_BY_FIELD), root_1);
 						adaptor.addChild(root_1, stream_orderby_variable.nextTree());
-						// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:192:65: ( 'ASC' )?
+						// JPA2.g:192:65: ( 'ASC' )?
 						if ( stream_ASC.hasNext() ) {
 							adaptor.addChild(root_1, stream_ASC.nextNode());
 						}
@@ -5239,7 +5239,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:193:7: orderby_variable 'DESC'
+					// JPA2.g:193:7: orderby_variable 'DESC'
 					{
 					pushFollow(FOLLOW_orderby_variable_in_orderby_item1672);
 					orderby_variable156=orderby_variable();
@@ -5250,7 +5250,7 @@ public class JPA2Parser extends Parser {
 					if ( state.backtracking==0 ) stream_DESC.add(string_literal157);
 
 					// AST REWRITE
-					// elements: orderby_variable, DESC
+					// elements: DESC, orderby_variable
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -5263,7 +5263,7 @@ public class JPA2Parser extends Parser {
 					root_0 = (Object)adaptor.nil();
 					// 194:5: -> ^( T_ORDER_BY_FIELD[] orderby_variable 'DESC' )
 					{
-						// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:194:8: ^( T_ORDER_BY_FIELD[] orderby_variable 'DESC' )
+						// JPA2.g:194:8: ^( T_ORDER_BY_FIELD[] orderby_variable 'DESC' )
 						{
 						Object root_1 = (Object)adaptor.nil();
 						root_1 = (Object)adaptor.becomeRoot(new OrderByFieldNode(T_ORDER_BY_FIELD), root_1);
@@ -5310,7 +5310,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "orderby_variable"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:195:1: orderby_variable : ( path_expression | general_identification_variable | result_variable );
+	// JPA2.g:195:1: orderby_variable : ( path_expression | general_identification_variable | result_variable );
 	public final JPA2Parser.orderby_variable_return orderby_variable() throws RecognitionException {
 		JPA2Parser.orderby_variable_return retval = new JPA2Parser.orderby_variable_return();
 		retval.start = input.LT(1);
@@ -5323,7 +5323,7 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:196:5: ( path_expression | general_identification_variable | result_variable )
+			// JPA2.g:196:5: ( path_expression | general_identification_variable | result_variable )
 			int alt48=3;
 			int LA48_0 = input.LA(1);
 			if ( (LA48_0==WORD) ) {
@@ -5352,7 +5352,7 @@ public class JPA2Parser extends Parser {
 
 			switch (alt48) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:196:7: path_expression
+					// JPA2.g:196:7: path_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -5366,7 +5366,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:196:25: general_identification_variable
+					// JPA2.g:196:25: general_identification_variable
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -5380,7 +5380,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:196:59: result_variable
+					// JPA2.g:196:59: result_variable
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -5423,7 +5423,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "subquery"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:198:1: subquery : lp= '(' 'SELECT' simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? rp= ')' -> ^( T_QUERY[$lp,$rp] 'SELECT' simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ) ;
+	// JPA2.g:198:1: subquery : lp= '(' 'SELECT' simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? rp= ')' -> ^( T_QUERY[$lp,$rp] 'SELECT' simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ) ;
 	public final JPA2Parser.subquery_return subquery() throws RecognitionException {
 		JPA2Parser.subquery_return retval = new JPA2Parser.subquery_return();
 		retval.start = input.LT(1);
@@ -5452,8 +5452,8 @@ public class JPA2Parser extends Parser {
 		RewriteRuleSubtreeStream stream_simple_select_clause=new RewriteRuleSubtreeStream(adaptor,"rule simple_select_clause");
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:199:5: (lp= '(' 'SELECT' simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? rp= ')' -> ^( T_QUERY[$lp,$rp] 'SELECT' simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ) )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:199:7: lp= '(' 'SELECT' simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? rp= ')'
+			// JPA2.g:199:5: (lp= '(' 'SELECT' simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? rp= ')' -> ^( T_QUERY[$lp,$rp] 'SELECT' simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ) )
+			// JPA2.g:199:7: lp= '(' 'SELECT' simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? rp= ')'
 			{
 			lp=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_subquery1726); if (state.failed) return retval; 
 			if ( state.backtracking==0 ) stream_LPAREN.add(lp);
@@ -5471,7 +5471,7 @@ public class JPA2Parser extends Parser {
 			state._fsp--;
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) stream_subquery_from_clause.add(subquery_from_clause163.getTree());
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:199:65: ( where_clause )?
+			// JPA2.g:199:65: ( where_clause )?
 			int alt49=2;
 			int LA49_0 = input.LA(1);
 			if ( (LA49_0==132) ) {
@@ -5479,7 +5479,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt49) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:199:66: where_clause
+					// JPA2.g:199:66: where_clause
 					{
 					pushFollow(FOLLOW_where_clause_in_subquery1735);
 					where_clause164=where_clause();
@@ -5491,7 +5491,7 @@ public class JPA2Parser extends Parser {
 
 			}
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:199:81: ( groupby_clause )?
+			// JPA2.g:199:81: ( groupby_clause )?
 			int alt50=2;
 			int LA50_0 = input.LA(1);
 			if ( (LA50_0==GROUP) ) {
@@ -5499,7 +5499,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt50) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:199:82: groupby_clause
+					// JPA2.g:199:82: groupby_clause
 					{
 					pushFollow(FOLLOW_groupby_clause_in_subquery1740);
 					groupby_clause165=groupby_clause();
@@ -5511,7 +5511,7 @@ public class JPA2Parser extends Parser {
 
 			}
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:199:99: ( having_clause )?
+			// JPA2.g:199:99: ( having_clause )?
 			int alt51=2;
 			int LA51_0 = input.LA(1);
 			if ( (LA51_0==HAVING) ) {
@@ -5519,7 +5519,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt51) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:199:100: having_clause
+					// JPA2.g:199:100: having_clause
 					{
 					pushFollow(FOLLOW_having_clause_in_subquery1745);
 					having_clause166=having_clause();
@@ -5535,7 +5535,7 @@ public class JPA2Parser extends Parser {
 			if ( state.backtracking==0 ) stream_RPAREN.add(rp);
 
 			// AST REWRITE
-			// elements: subquery_from_clause, simple_select_clause, groupby_clause, 117, having_clause, where_clause
+			// elements: 117, where_clause, subquery_from_clause, having_clause, simple_select_clause, groupby_clause
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -5548,26 +5548,26 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 			// 200:6: -> ^( T_QUERY[$lp,$rp] 'SELECT' simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? )
 			{
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:200:9: ^( T_QUERY[$lp,$rp] 'SELECT' simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? )
+				// JPA2.g:200:9: ^( T_QUERY[$lp,$rp] 'SELECT' simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? )
 				{
 				Object root_1 = (Object)adaptor.nil();
 				root_1 = (Object)adaptor.becomeRoot(new QueryNode(T_QUERY, lp, rp), root_1);
 				adaptor.addChild(root_1, stream_117.nextNode());
 				adaptor.addChild(root_1, stream_simple_select_clause.nextTree());
 				adaptor.addChild(root_1, stream_subquery_from_clause.nextTree());
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:200:90: ( where_clause )?
+				// JPA2.g:200:90: ( where_clause )?
 				if ( stream_where_clause.hasNext() ) {
 					adaptor.addChild(root_1, stream_where_clause.nextTree());
 				}
 				stream_where_clause.reset();
 
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:200:106: ( groupby_clause )?
+				// JPA2.g:200:106: ( groupby_clause )?
 				if ( stream_groupby_clause.hasNext() ) {
 					adaptor.addChild(root_1, stream_groupby_clause.nextTree());
 				}
 				stream_groupby_clause.reset();
 
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:200:124: ( having_clause )?
+				// JPA2.g:200:124: ( having_clause )?
 				if ( stream_having_clause.hasNext() ) {
 					adaptor.addChild(root_1, stream_having_clause.nextTree());
 				}
@@ -5612,7 +5612,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "subquery_from_clause"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:201:1: subquery_from_clause : fr= 'FROM' subselect_identification_variable_declaration ( ',' subselect_identification_variable_declaration )* -> ^( T_SOURCES[$fr] ( ^( T_SOURCE subselect_identification_variable_declaration ) )* ) ;
+	// JPA2.g:201:1: subquery_from_clause : fr= 'FROM' subselect_identification_variable_declaration ( ',' subselect_identification_variable_declaration )* -> ^( T_SOURCES[$fr] ( ^( T_SOURCE subselect_identification_variable_declaration ) )* ) ;
 	public final JPA2Parser.subquery_from_clause_return subquery_from_clause() throws RecognitionException {
 		JPA2Parser.subquery_from_clause_return retval = new JPA2Parser.subquery_from_clause_return();
 		retval.start = input.LT(1);
@@ -5631,8 +5631,8 @@ public class JPA2Parser extends Parser {
 		RewriteRuleSubtreeStream stream_subselect_identification_variable_declaration=new RewriteRuleSubtreeStream(adaptor,"rule subselect_identification_variable_declaration");
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:202:5: (fr= 'FROM' subselect_identification_variable_declaration ( ',' subselect_identification_variable_declaration )* -> ^( T_SOURCES[$fr] ( ^( T_SOURCE subselect_identification_variable_declaration ) )* ) )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:202:7: fr= 'FROM' subselect_identification_variable_declaration ( ',' subselect_identification_variable_declaration )*
+			// JPA2.g:202:5: (fr= 'FROM' subselect_identification_variable_declaration ( ',' subselect_identification_variable_declaration )* -> ^( T_SOURCES[$fr] ( ^( T_SOURCE subselect_identification_variable_declaration ) )* ) )
+			// JPA2.g:202:7: fr= 'FROM' subselect_identification_variable_declaration ( ',' subselect_identification_variable_declaration )*
 			{
 			fr=(Token)match(input,92,FOLLOW_92_in_subquery_from_clause1801); if (state.failed) return retval; 
 			if ( state.backtracking==0 ) stream_92.add(fr);
@@ -5642,7 +5642,7 @@ public class JPA2Parser extends Parser {
 			state._fsp--;
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) stream_subselect_identification_variable_declaration.add(subselect_identification_variable_declaration167.getTree());
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:202:63: ( ',' subselect_identification_variable_declaration )*
+			// JPA2.g:202:63: ( ',' subselect_identification_variable_declaration )*
 			loop52:
 			while (true) {
 				int alt52=2;
@@ -5653,7 +5653,7 @@ public class JPA2Parser extends Parser {
 
 				switch (alt52) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:202:64: ',' subselect_identification_variable_declaration
+					// JPA2.g:202:64: ',' subselect_identification_variable_declaration
 					{
 					char_literal168=(Token)match(input,55,FOLLOW_55_in_subquery_from_clause1806); if (state.failed) return retval; 
 					if ( state.backtracking==0 ) stream_55.add(char_literal168);
@@ -5685,13 +5685,13 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 			// 203:5: -> ^( T_SOURCES[$fr] ( ^( T_SOURCE subselect_identification_variable_declaration ) )* )
 			{
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:203:8: ^( T_SOURCES[$fr] ( ^( T_SOURCE subselect_identification_variable_declaration ) )* )
+				// JPA2.g:203:8: ^( T_SOURCES[$fr] ( ^( T_SOURCE subselect_identification_variable_declaration ) )* )
 				{
 				Object root_1 = (Object)adaptor.nil();
 				root_1 = (Object)adaptor.becomeRoot(new FromNode(T_SOURCES, fr), root_1);
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:203:35: ( ^( T_SOURCE subselect_identification_variable_declaration ) )*
+				// JPA2.g:203:35: ( ^( T_SOURCE subselect_identification_variable_declaration ) )*
 				while ( stream_subselect_identification_variable_declaration.hasNext() ) {
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:203:35: ^( T_SOURCE subselect_identification_variable_declaration )
+					// JPA2.g:203:35: ^( T_SOURCE subselect_identification_variable_declaration )
 					{
 					Object root_2 = (Object)adaptor.nil();
 					root_2 = (Object)adaptor.becomeRoot(new SelectionSourceNode(T_SOURCE), root_2);
@@ -5741,7 +5741,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "subselect_identification_variable_declaration"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:205:1: subselect_identification_variable_declaration : ( identification_variable_declaration | derived_path_expression 'AS' identification_variable ( join )* | derived_collection_member_declaration );
+	// JPA2.g:205:1: subselect_identification_variable_declaration : ( identification_variable_declaration | derived_path_expression 'AS' identification_variable ( join )* | derived_collection_member_declaration );
 	public final JPA2Parser.subselect_identification_variable_declaration_return subselect_identification_variable_declaration() throws RecognitionException {
 		JPA2Parser.subselect_identification_variable_declaration_return retval = new JPA2Parser.subselect_identification_variable_declaration_return();
 		retval.start = input.LT(1);
@@ -5758,7 +5758,7 @@ public class JPA2Parser extends Parser {
 		Object string_literal172_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:206:5: ( identification_variable_declaration | derived_path_expression 'AS' identification_variable ( join )* | derived_collection_member_declaration )
+			// JPA2.g:206:5: ( identification_variable_declaration | derived_path_expression 'AS' identification_variable ( join )* | derived_collection_member_declaration )
 			int alt54=3;
 			switch ( input.LA(1) ) {
 			case WORD:
@@ -5804,7 +5804,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt54) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:206:7: identification_variable_declaration
+					// JPA2.g:206:7: identification_variable_declaration
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -5818,7 +5818,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:207:7: derived_path_expression 'AS' identification_variable ( join )*
+					// JPA2.g:207:7: derived_path_expression 'AS' identification_variable ( join )*
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -5841,7 +5841,7 @@ public class JPA2Parser extends Parser {
 					if (state.failed) return retval;
 					if ( state.backtracking==0 ) adaptor.addChild(root_0, identification_variable173.getTree());
 
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:207:60: ( join )*
+					// JPA2.g:207:60: ( join )*
 					loop53:
 					while (true) {
 						int alt53=2;
@@ -5852,7 +5852,7 @@ public class JPA2Parser extends Parser {
 
 						switch (alt53) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:207:61: join
+							// JPA2.g:207:61: join
 							{
 							pushFollow(FOLLOW_join_in_subselect_identification_variable_declaration1861);
 							join174=join();
@@ -5871,7 +5871,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:208:7: derived_collection_member_declaration
+					// JPA2.g:208:7: derived_collection_member_declaration
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -5914,7 +5914,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "derived_path_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:209:1: derived_path_expression : ( general_derived_path '.' single_valued_object_field | general_derived_path '.' collection_valued_field );
+	// JPA2.g:209:1: derived_path_expression : ( general_derived_path '.' single_valued_object_field | general_derived_path '.' collection_valued_field );
 	public final JPA2Parser.derived_path_expression_return derived_path_expression() throws RecognitionException {
 		JPA2Parser.derived_path_expression_return retval = new JPA2Parser.derived_path_expression_return();
 		retval.start = input.LT(1);
@@ -5932,7 +5932,7 @@ public class JPA2Parser extends Parser {
 		Object char_literal180_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:210:5: ( general_derived_path '.' single_valued_object_field | general_derived_path '.' collection_valued_field )
+			// JPA2.g:210:5: ( general_derived_path '.' single_valued_object_field | general_derived_path '.' collection_valued_field )
 			int alt55=2;
 			int LA55_0 = input.LA(1);
 			if ( (LA55_0==WORD) ) {
@@ -5965,7 +5965,7 @@ public class JPA2Parser extends Parser {
 
 			switch (alt55) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:210:7: general_derived_path '.' single_valued_object_field
+					// JPA2.g:210:7: general_derived_path '.' single_valued_object_field
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -5991,7 +5991,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:211:7: general_derived_path '.' collection_valued_field
+					// JPA2.g:211:7: general_derived_path '.' collection_valued_field
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -6046,7 +6046,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "general_derived_path"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:212:1: general_derived_path : ( simple_derived_path | treated_derived_path ( '.' single_valued_object_field )* );
+	// JPA2.g:212:1: general_derived_path : ( simple_derived_path | treated_derived_path ( '.' single_valued_object_field )* );
 	public final JPA2Parser.general_derived_path_return general_derived_path() throws RecognitionException {
 		JPA2Parser.general_derived_path_return retval = new JPA2Parser.general_derived_path_return();
 		retval.start = input.LT(1);
@@ -6061,7 +6061,7 @@ public class JPA2Parser extends Parser {
 		Object char_literal184_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:213:5: ( simple_derived_path | treated_derived_path ( '.' single_valued_object_field )* )
+			// JPA2.g:213:5: ( simple_derived_path | treated_derived_path ( '.' single_valued_object_field )* )
 			int alt57=2;
 			int LA57_0 = input.LA(1);
 			if ( (LA57_0==WORD) ) {
@@ -6080,7 +6080,7 @@ public class JPA2Parser extends Parser {
 
 			switch (alt57) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:213:7: simple_derived_path
+					// JPA2.g:213:7: simple_derived_path
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -6094,7 +6094,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:214:7: treated_derived_path ( '.' single_valued_object_field )*
+					// JPA2.g:214:7: treated_derived_path ( '.' single_valued_object_field )*
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -6105,7 +6105,7 @@ public class JPA2Parser extends Parser {
 					if (state.failed) return retval;
 					if ( state.backtracking==0 ) adaptor.addChild(root_0, treated_derived_path183.getTree());
 
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:214:27: ( '.' single_valued_object_field )*
+					// JPA2.g:214:27: ( '.' single_valued_object_field )*
 					loop56:
 					while (true) {
 						int alt56=2;
@@ -6150,7 +6150,7 @@ public class JPA2Parser extends Parser {
 
 						switch (alt56) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:214:28: '.' single_valued_object_field
+							// JPA2.g:214:28: '.' single_valued_object_field
 							{
 							char_literal184=(Token)match(input,57,FOLLOW_57_in_general_derived_path1915); if (state.failed) return retval;
 							if ( state.backtracking==0 ) {
@@ -6204,7 +6204,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "simple_derived_path"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:216:1: simple_derived_path : superquery_identification_variable ;
+	// JPA2.g:216:1: simple_derived_path : superquery_identification_variable ;
 	public final JPA2Parser.simple_derived_path_return simple_derived_path() throws RecognitionException {
 		JPA2Parser.simple_derived_path_return retval = new JPA2Parser.simple_derived_path_return();
 		retval.start = input.LT(1);
@@ -6215,8 +6215,8 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:217:5: ( superquery_identification_variable )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:217:7: superquery_identification_variable
+			// JPA2.g:217:5: ( superquery_identification_variable )
+			// JPA2.g:217:7: superquery_identification_variable
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -6257,7 +6257,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "treated_derived_path"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:219:1: treated_derived_path : 'TREAT(' general_derived_path 'AS' subtype ')' ;
+	// JPA2.g:219:1: treated_derived_path : 'TREAT(' general_derived_path 'AS' subtype ')' ;
 	public final JPA2Parser.treated_derived_path_return treated_derived_path() throws RecognitionException {
 		JPA2Parser.treated_derived_path_return retval = new JPA2Parser.treated_derived_path_return();
 		retval.start = input.LT(1);
@@ -6275,8 +6275,8 @@ public class JPA2Parser extends Parser {
 		Object char_literal191_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:220:5: ( 'TREAT(' general_derived_path 'AS' subtype ')' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:220:7: 'TREAT(' general_derived_path 'AS' subtype ')'
+			// JPA2.g:220:5: ( 'TREAT(' general_derived_path 'AS' subtype ')' )
+			// JPA2.g:220:7: 'TREAT(' general_derived_path 'AS' subtype ')'
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -6341,7 +6341,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "derived_collection_member_declaration"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:221:1: derived_collection_member_declaration : 'IN' superquery_identification_variable '.' ( single_valued_object_field '.' )* collection_valued_field ;
+	// JPA2.g:221:1: derived_collection_member_declaration : 'IN' superquery_identification_variable '.' ( single_valued_object_field '.' )* collection_valued_field ;
 	public final JPA2Parser.derived_collection_member_declaration_return derived_collection_member_declaration() throws RecognitionException {
 		JPA2Parser.derived_collection_member_declaration_return retval = new JPA2Parser.derived_collection_member_declaration_return();
 		retval.start = input.LT(1);
@@ -6360,8 +6360,8 @@ public class JPA2Parser extends Parser {
 		Object char_literal196_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:222:5: ( 'IN' superquery_identification_variable '.' ( single_valued_object_field '.' )* collection_valued_field )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:222:7: 'IN' superquery_identification_variable '.' ( single_valued_object_field '.' )* collection_valued_field
+			// JPA2.g:222:5: ( 'IN' superquery_identification_variable '.' ( single_valued_object_field '.' )* collection_valued_field )
+			// JPA2.g:222:7: 'IN' superquery_identification_variable '.' ( single_valued_object_field '.' )* collection_valued_field
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -6384,7 +6384,7 @@ public class JPA2Parser extends Parser {
 			adaptor.addChild(root_0, char_literal194_tree);
 			}
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:222:49: ( single_valued_object_field '.' )*
+			// JPA2.g:222:49: ( single_valued_object_field '.' )*
 			loop58:
 			while (true) {
 				int alt58=2;
@@ -6399,7 +6399,7 @@ public class JPA2Parser extends Parser {
 
 				switch (alt58) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:222:50: single_valued_object_field '.'
+					// JPA2.g:222:50: single_valued_object_field '.'
 					{
 					pushFollow(FOLLOW_single_valued_object_field_in_derived_collection_member_declaration1974);
 					single_valued_object_field195=single_valued_object_field();
@@ -6457,7 +6457,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "simple_select_clause"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:224:1: simple_select_clause : ( 'DISTINCT' )? simple_select_expression -> ^( T_SELECTED_ITEMS ^( T_SELECTED_ITEM[] ( 'DISTINCT' )? simple_select_expression ) ) ;
+	// JPA2.g:224:1: simple_select_clause : ( 'DISTINCT' )? simple_select_expression -> ^( T_SELECTED_ITEMS ^( T_SELECTED_ITEM[] ( 'DISTINCT' )? simple_select_expression ) ) ;
 	public final JPA2Parser.simple_select_clause_return simple_select_clause() throws RecognitionException {
 		JPA2Parser.simple_select_clause_return retval = new JPA2Parser.simple_select_clause_return();
 		retval.start = input.LT(1);
@@ -6472,10 +6472,10 @@ public class JPA2Parser extends Parser {
 		RewriteRuleSubtreeStream stream_simple_select_expression=new RewriteRuleSubtreeStream(adaptor,"rule simple_select_expression");
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:225:5: ( ( 'DISTINCT' )? simple_select_expression -> ^( T_SELECTED_ITEMS ^( T_SELECTED_ITEM[] ( 'DISTINCT' )? simple_select_expression ) ) )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:225:7: ( 'DISTINCT' )? simple_select_expression
+			// JPA2.g:225:5: ( ( 'DISTINCT' )? simple_select_expression -> ^( T_SELECTED_ITEMS ^( T_SELECTED_ITEM[] ( 'DISTINCT' )? simple_select_expression ) ) )
+			// JPA2.g:225:7: ( 'DISTINCT' )? simple_select_expression
 			{
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:225:7: ( 'DISTINCT' )?
+			// JPA2.g:225:7: ( 'DISTINCT' )?
 			int alt59=2;
 			int LA59_0 = input.LA(1);
 			if ( (LA59_0==DISTINCT) ) {
@@ -6483,7 +6483,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt59) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:225:8: 'DISTINCT'
+					// JPA2.g:225:8: 'DISTINCT'
 					{
 					string_literal198=(Token)match(input,DISTINCT,FOLLOW_DISTINCT_in_simple_select_clause1992); if (state.failed) return retval; 
 					if ( state.backtracking==0 ) stream_DISTINCT.add(string_literal198);
@@ -6499,7 +6499,7 @@ public class JPA2Parser extends Parser {
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) stream_simple_select_expression.add(simple_select_expression199.getTree());
 			// AST REWRITE
-			// elements: DISTINCT, simple_select_expression
+			// elements: simple_select_expression, DISTINCT
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -6512,15 +6512,15 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 			// 226:5: -> ^( T_SELECTED_ITEMS ^( T_SELECTED_ITEM[] ( 'DISTINCT' )? simple_select_expression ) )
 			{
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:226:8: ^( T_SELECTED_ITEMS ^( T_SELECTED_ITEM[] ( 'DISTINCT' )? simple_select_expression ) )
+				// JPA2.g:226:8: ^( T_SELECTED_ITEMS ^( T_SELECTED_ITEM[] ( 'DISTINCT' )? simple_select_expression ) )
 				{
 				Object root_1 = (Object)adaptor.nil();
 				root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(T_SELECTED_ITEMS, "T_SELECTED_ITEMS"), root_1);
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:226:27: ^( T_SELECTED_ITEM[] ( 'DISTINCT' )? simple_select_expression )
+				// JPA2.g:226:27: ^( T_SELECTED_ITEM[] ( 'DISTINCT' )? simple_select_expression )
 				{
 				Object root_2 = (Object)adaptor.nil();
 				root_2 = (Object)adaptor.becomeRoot(new SelectedItemNode(T_SELECTED_ITEM), root_2);
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:226:65: ( 'DISTINCT' )?
+				// JPA2.g:226:65: ( 'DISTINCT' )?
 				if ( stream_DISTINCT.hasNext() ) {
 					adaptor.addChild(root_2, stream_DISTINCT.nextNode());
 				}
@@ -6569,7 +6569,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "simple_select_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:227:1: simple_select_expression : ( path_expression | scalar_expression | aggregate_expression | identification_variable );
+	// JPA2.g:227:1: simple_select_expression : ( path_expression | scalar_expression | aggregate_expression | identification_variable );
 	public final JPA2Parser.simple_select_expression_return simple_select_expression() throws RecognitionException {
 		JPA2Parser.simple_select_expression_return retval = new JPA2Parser.simple_select_expression_return();
 		retval.start = input.LT(1);
@@ -6583,7 +6583,7 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:228:5: ( path_expression | scalar_expression | aggregate_expression | identification_variable )
+			// JPA2.g:228:5: ( path_expression | scalar_expression | aggregate_expression | identification_variable )
 			int alt60=4;
 			switch ( input.LA(1) ) {
 			case WORD:
@@ -6721,7 +6721,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt60) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:228:7: path_expression
+					// JPA2.g:228:7: path_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -6735,7 +6735,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:229:7: scalar_expression
+					// JPA2.g:229:7: scalar_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -6749,7 +6749,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:230:7: aggregate_expression
+					// JPA2.g:230:7: aggregate_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -6763,7 +6763,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 4 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:231:7: identification_variable
+					// JPA2.g:231:7: identification_variable
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -6806,7 +6806,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "scalar_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:232:1: scalar_expression : ( arithmetic_expression | string_expression | enum_expression | datetime_expression | boolean_expression | case_expression | entity_type_expression );
+	// JPA2.g:232:1: scalar_expression : ( arithmetic_expression | string_expression | enum_expression | datetime_expression | boolean_expression | case_expression | entity_type_expression );
 	public final JPA2Parser.scalar_expression_return scalar_expression() throws RecognitionException {
 		JPA2Parser.scalar_expression_return retval = new JPA2Parser.scalar_expression_return();
 		retval.start = input.LT(1);
@@ -6823,7 +6823,7 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:233:5: ( arithmetic_expression | string_expression | enum_expression | datetime_expression | boolean_expression | case_expression | entity_type_expression )
+			// JPA2.g:233:5: ( arithmetic_expression | string_expression | enum_expression | datetime_expression | boolean_expression | case_expression | entity_type_expression )
 			int alt61=7;
 			switch ( input.LA(1) ) {
 			case INT_NUMERAL:
@@ -7208,7 +7208,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt61) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:233:7: arithmetic_expression
+					// JPA2.g:233:7: arithmetic_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -7222,7 +7222,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:234:7: string_expression
+					// JPA2.g:234:7: string_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -7236,7 +7236,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:235:7: enum_expression
+					// JPA2.g:235:7: enum_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -7250,7 +7250,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 4 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:236:7: datetime_expression
+					// JPA2.g:236:7: datetime_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -7264,7 +7264,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 5 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:237:7: boolean_expression
+					// JPA2.g:237:7: boolean_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -7278,7 +7278,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 6 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:238:7: case_expression
+					// JPA2.g:238:7: case_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -7292,7 +7292,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 7 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:239:7: entity_type_expression
+					// JPA2.g:239:7: entity_type_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -7335,7 +7335,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "conditional_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:240:1: conditional_expression : ( conditional_term ) ( 'OR' conditional_term )* ;
+	// JPA2.g:240:1: conditional_expression : ( conditional_term ) ( 'OR' conditional_term )* ;
 	public final JPA2Parser.conditional_expression_return conditional_expression() throws RecognitionException {
 		JPA2Parser.conditional_expression_return retval = new JPA2Parser.conditional_expression_return();
 		retval.start = input.LT(1);
@@ -7349,14 +7349,14 @@ public class JPA2Parser extends Parser {
 		Object string_literal212_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:241:5: ( ( conditional_term ) ( 'OR' conditional_term )* )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:241:7: ( conditional_term ) ( 'OR' conditional_term )*
+			// JPA2.g:241:5: ( ( conditional_term ) ( 'OR' conditional_term )* )
+			// JPA2.g:241:7: ( conditional_term ) ( 'OR' conditional_term )*
 			{
 			root_0 = (Object)adaptor.nil();
 
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:241:7: ( conditional_term )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:241:8: conditional_term
+			// JPA2.g:241:7: ( conditional_term )
+			// JPA2.g:241:8: conditional_term
 			{
 			pushFollow(FOLLOW_conditional_term_in_conditional_expression2127);
 			conditional_term211=conditional_term();
@@ -7366,7 +7366,7 @@ public class JPA2Parser extends Parser {
 
 			}
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:241:26: ( 'OR' conditional_term )*
+			// JPA2.g:241:26: ( 'OR' conditional_term )*
 			loop62:
 			while (true) {
 				int alt62=2;
@@ -7377,7 +7377,7 @@ public class JPA2Parser extends Parser {
 
 				switch (alt62) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:241:27: 'OR' conditional_term
+					// JPA2.g:241:27: 'OR' conditional_term
 					{
 					string_literal212=(Token)match(input,OR,FOLLOW_OR_in_conditional_expression2131); if (state.failed) return retval;
 					if ( state.backtracking==0 ) {
@@ -7429,7 +7429,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "conditional_term"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:242:1: conditional_term : ( conditional_factor ) ( 'AND' conditional_factor )* ;
+	// JPA2.g:242:1: conditional_term : ( conditional_factor ) ( 'AND' conditional_factor )* ;
 	public final JPA2Parser.conditional_term_return conditional_term() throws RecognitionException {
 		JPA2Parser.conditional_term_return retval = new JPA2Parser.conditional_term_return();
 		retval.start = input.LT(1);
@@ -7443,14 +7443,14 @@ public class JPA2Parser extends Parser {
 		Object string_literal215_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:243:5: ( ( conditional_factor ) ( 'AND' conditional_factor )* )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:243:7: ( conditional_factor ) ( 'AND' conditional_factor )*
+			// JPA2.g:243:5: ( ( conditional_factor ) ( 'AND' conditional_factor )* )
+			// JPA2.g:243:7: ( conditional_factor ) ( 'AND' conditional_factor )*
 			{
 			root_0 = (Object)adaptor.nil();
 
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:243:7: ( conditional_factor )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:243:8: conditional_factor
+			// JPA2.g:243:7: ( conditional_factor )
+			// JPA2.g:243:8: conditional_factor
 			{
 			pushFollow(FOLLOW_conditional_factor_in_conditional_term2147);
 			conditional_factor214=conditional_factor();
@@ -7460,7 +7460,7 @@ public class JPA2Parser extends Parser {
 
 			}
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:243:28: ( 'AND' conditional_factor )*
+			// JPA2.g:243:28: ( 'AND' conditional_factor )*
 			loop63:
 			while (true) {
 				int alt63=2;
@@ -7471,7 +7471,7 @@ public class JPA2Parser extends Parser {
 
 				switch (alt63) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:243:29: 'AND' conditional_factor
+					// JPA2.g:243:29: 'AND' conditional_factor
 					{
 					string_literal215=(Token)match(input,AND,FOLLOW_AND_in_conditional_term2151); if (state.failed) return retval;
 					if ( state.backtracking==0 ) {
@@ -7523,7 +7523,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "conditional_factor"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:244:1: conditional_factor : ( 'NOT' )? conditional_primary ;
+	// JPA2.g:244:1: conditional_factor : ( 'NOT' )? conditional_primary ;
 	public final JPA2Parser.conditional_factor_return conditional_factor() throws RecognitionException {
 		JPA2Parser.conditional_factor_return retval = new JPA2Parser.conditional_factor_return();
 		retval.start = input.LT(1);
@@ -7536,13 +7536,13 @@ public class JPA2Parser extends Parser {
 		Object string_literal217_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:245:5: ( ( 'NOT' )? conditional_primary )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:245:7: ( 'NOT' )? conditional_primary
+			// JPA2.g:245:5: ( ( 'NOT' )? conditional_primary )
+			// JPA2.g:245:7: ( 'NOT' )? conditional_primary
 			{
 			root_0 = (Object)adaptor.nil();
 
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:245:7: ( 'NOT' )?
+			// JPA2.g:245:7: ( 'NOT' )?
 			int alt64=2;
 			int LA64_0 = input.LA(1);
 			if ( (LA64_0==109) ) {
@@ -7553,7 +7553,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt64) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:245:8: 'NOT'
+					// JPA2.g:245:8: 'NOT'
 					{
 					string_literal217=(Token)match(input,109,FOLLOW_109_in_conditional_factor2167); if (state.failed) return retval;
 					if ( state.backtracking==0 ) {
@@ -7602,7 +7602,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "conditional_primary"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:246:1: conditional_primary : ( simple_cond_expression -> ^( T_SIMPLE_CONDITION[] simple_cond_expression ) | '(' conditional_expression ')' );
+	// JPA2.g:246:1: conditional_primary : ( simple_cond_expression -> ^( T_SIMPLE_CONDITION[] simple_cond_expression ) | '(' conditional_expression ')' );
 	public final JPA2Parser.conditional_primary_return conditional_primary() throws RecognitionException {
 		JPA2Parser.conditional_primary_return retval = new JPA2Parser.conditional_primary_return();
 		retval.start = input.LT(1);
@@ -7619,7 +7619,7 @@ public class JPA2Parser extends Parser {
 		RewriteRuleSubtreeStream stream_simple_cond_expression=new RewriteRuleSubtreeStream(adaptor,"rule simple_cond_expression");
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:247:5: ( simple_cond_expression -> ^( T_SIMPLE_CONDITION[] simple_cond_expression ) | '(' conditional_expression ')' )
+			// JPA2.g:247:5: ( simple_cond_expression -> ^( T_SIMPLE_CONDITION[] simple_cond_expression ) | '(' conditional_expression ')' )
 			int alt65=2;
 			int LA65_0 = input.LA(1);
 			if ( (LA65_0==AVG||LA65_0==COUNT||LA65_0==INT_NUMERAL||(LA65_0 >= MAX && LA65_0 <= NAMED_PARAMETER)||(LA65_0 >= STRING_LITERAL && LA65_0 <= SUM)||LA65_0==WORD||LA65_0==52||LA65_0==54||LA65_0==56||LA65_0==59||(LA65_0 >= 66 && LA65_0 <= 72)||(LA65_0 >= 78 && LA65_0 <= 83)||LA65_0==91||LA65_0==93||LA65_0==96||LA65_0==100||(LA65_0 >= 102 && LA65_0 <= 103)||LA65_0==106||LA65_0==109||LA65_0==112||LA65_0==119||(LA65_0 >= 121 && LA65_0 <= 122)||(LA65_0 >= 126 && LA65_0 <= 127)||LA65_0==129||(LA65_0 >= 134 && LA65_0 <= 135)) ) {
@@ -7645,7 +7645,7 @@ public class JPA2Parser extends Parser {
 
 			switch (alt65) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:247:7: simple_cond_expression
+					// JPA2.g:247:7: simple_cond_expression
 					{
 					pushFollow(FOLLOW_simple_cond_expression_in_conditional_primary2182);
 					simple_cond_expression219=simple_cond_expression();
@@ -7666,7 +7666,7 @@ public class JPA2Parser extends Parser {
 					root_0 = (Object)adaptor.nil();
 					// 248:5: -> ^( T_SIMPLE_CONDITION[] simple_cond_expression )
 					{
-						// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:248:8: ^( T_SIMPLE_CONDITION[] simple_cond_expression )
+						// JPA2.g:248:8: ^( T_SIMPLE_CONDITION[] simple_cond_expression )
 						{
 						Object root_1 = (Object)adaptor.nil();
 						root_1 = (Object)adaptor.becomeRoot(new SimpleConditionNode(T_SIMPLE_CONDITION), root_1);
@@ -7683,7 +7683,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:249:7: '(' conditional_expression ')'
+					// JPA2.g:249:7: '(' conditional_expression ')'
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -7738,7 +7738,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "simple_cond_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:250:1: simple_cond_expression : ( comparison_expression | between_expression | in_expression | like_expression | null_comparison_expression | empty_collection_comparison_expression | collection_member_expression | exists_expression | date_macro_expression );
+	// JPA2.g:250:1: simple_cond_expression : ( comparison_expression | between_expression | in_expression | like_expression | null_comparison_expression | empty_collection_comparison_expression | collection_member_expression | exists_expression | date_macro_expression );
 	public final JPA2Parser.simple_cond_expression_return simple_cond_expression() throws RecognitionException {
 		JPA2Parser.simple_cond_expression_return retval = new JPA2Parser.simple_cond_expression_return();
 		retval.start = input.LT(1);
@@ -7757,7 +7757,7 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:251:5: ( comparison_expression | between_expression | in_expression | like_expression | null_comparison_expression | empty_collection_comparison_expression | collection_member_expression | exists_expression | date_macro_expression )
+			// JPA2.g:251:5: ( comparison_expression | between_expression | in_expression | like_expression | null_comparison_expression | empty_collection_comparison_expression | collection_member_expression | exists_expression | date_macro_expression )
 			int alt66=9;
 			switch ( input.LA(1) ) {
 			case WORD:
@@ -8601,7 +8601,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt66) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:251:7: comparison_expression
+					// JPA2.g:251:7: comparison_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -8615,7 +8615,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:252:7: between_expression
+					// JPA2.g:252:7: between_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -8629,7 +8629,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:253:7: in_expression
+					// JPA2.g:253:7: in_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -8643,7 +8643,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 4 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:254:7: like_expression
+					// JPA2.g:254:7: like_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -8657,7 +8657,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 5 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:255:7: null_comparison_expression
+					// JPA2.g:255:7: null_comparison_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -8671,7 +8671,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 6 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:256:7: empty_collection_comparison_expression
+					// JPA2.g:256:7: empty_collection_comparison_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -8685,7 +8685,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 7 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:257:7: collection_member_expression
+					// JPA2.g:257:7: collection_member_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -8699,7 +8699,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 8 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:258:7: exists_expression
+					// JPA2.g:258:7: exists_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -8713,7 +8713,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 9 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:259:7: date_macro_expression
+					// JPA2.g:259:7: date_macro_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -8756,7 +8756,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "date_macro_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:262:1: date_macro_expression : ( date_between_macro_expression | date_before_macro_expression | date_after_macro_expression | date_equals_macro_expression | date_today_macro_expression );
+	// JPA2.g:262:1: date_macro_expression : ( date_between_macro_expression | date_before_macro_expression | date_after_macro_expression | date_equals_macro_expression | date_today_macro_expression );
 	public final JPA2Parser.date_macro_expression_return date_macro_expression() throws RecognitionException {
 		JPA2Parser.date_macro_expression_return retval = new JPA2Parser.date_macro_expression_return();
 		retval.start = input.LT(1);
@@ -8771,7 +8771,7 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:263:5: ( date_between_macro_expression | date_before_macro_expression | date_after_macro_expression | date_equals_macro_expression | date_today_macro_expression )
+			// JPA2.g:263:5: ( date_between_macro_expression | date_before_macro_expression | date_after_macro_expression | date_equals_macro_expression | date_today_macro_expression )
 			int alt67=5;
 			switch ( input.LA(1) ) {
 			case 67:
@@ -8807,7 +8807,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt67) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:263:7: date_between_macro_expression
+					// JPA2.g:263:7: date_between_macro_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -8821,7 +8821,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:264:7: date_before_macro_expression
+					// JPA2.g:264:7: date_before_macro_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -8835,7 +8835,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:265:7: date_after_macro_expression
+					// JPA2.g:265:7: date_after_macro_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -8849,7 +8849,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 4 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:266:7: date_equals_macro_expression
+					// JPA2.g:266:7: date_equals_macro_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -8863,7 +8863,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 5 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:267:7: date_today_macro_expression
+					// JPA2.g:267:7: date_today_macro_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -8906,7 +8906,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "date_between_macro_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:269:1: date_between_macro_expression : '@BETWEEN' '(' path_expression ',' 'NOW' ( ( '+' | '-' ) numeric_literal )? ',' 'NOW' ( ( '+' | '-' ) numeric_literal )? ',' ( 'YEAR' | 'MONTH' | 'DAY' | 'HOUR' | 'MINUTE' | 'SECOND' ) ')' ;
+	// JPA2.g:269:1: date_between_macro_expression : '@BETWEEN' '(' path_expression ',' 'NOW' ( ( '+' | '-' ) numeric_literal )? ',' 'NOW' ( ( '+' | '-' ) numeric_literal )? ',' ( 'YEAR' | 'MONTH' | 'DAY' | 'HOUR' | 'MINUTE' | 'SECOND' ) ')' ;
 	public final JPA2Parser.date_between_macro_expression_return date_between_macro_expression() throws RecognitionException {
 		JPA2Parser.date_between_macro_expression_return retval = new JPA2Parser.date_between_macro_expression_return();
 		retval.start = input.LT(1);
@@ -8941,8 +8941,8 @@ public class JPA2Parser extends Parser {
 		Object char_literal250_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:270:5: ( '@BETWEEN' '(' path_expression ',' 'NOW' ( ( '+' | '-' ) numeric_literal )? ',' 'NOW' ( ( '+' | '-' ) numeric_literal )? ',' ( 'YEAR' | 'MONTH' | 'DAY' | 'HOUR' | 'MINUTE' | 'SECOND' ) ')' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:270:7: '@BETWEEN' '(' path_expression ',' 'NOW' ( ( '+' | '-' ) numeric_literal )? ',' 'NOW' ( ( '+' | '-' ) numeric_literal )? ',' ( 'YEAR' | 'MONTH' | 'DAY' | 'HOUR' | 'MINUTE' | 'SECOND' ) ')'
+			// JPA2.g:270:5: ( '@BETWEEN' '(' path_expression ',' 'NOW' ( ( '+' | '-' ) numeric_literal )? ',' 'NOW' ( ( '+' | '-' ) numeric_literal )? ',' ( 'YEAR' | 'MONTH' | 'DAY' | 'HOUR' | 'MINUTE' | 'SECOND' ) ')' )
+			// JPA2.g:270:7: '@BETWEEN' '(' path_expression ',' 'NOW' ( ( '+' | '-' ) numeric_literal )? ',' 'NOW' ( ( '+' | '-' ) numeric_literal )? ',' ( 'YEAR' | 'MONTH' | 'DAY' | 'HOUR' | 'MINUTE' | 'SECOND' ) ')'
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -8977,7 +8977,7 @@ public class JPA2Parser extends Parser {
 			adaptor.addChild(root_0, string_literal241_tree);
 			}
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:270:48: ( ( '+' | '-' ) numeric_literal )?
+			// JPA2.g:270:48: ( ( '+' | '-' ) numeric_literal )?
 			int alt68=2;
 			int LA68_0 = input.LA(1);
 			if ( (LA68_0==54||LA68_0==56) ) {
@@ -8985,7 +8985,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt68) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:270:49: ( '+' | '-' ) numeric_literal
+					// JPA2.g:270:49: ( '+' | '-' ) numeric_literal
 					{
 					set242=input.LT(1);
 					if ( input.LA(1)==54||input.LA(1)==56 ) {
@@ -9022,7 +9022,7 @@ public class JPA2Parser extends Parser {
 			adaptor.addChild(root_0, string_literal245_tree);
 			}
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:270:89: ( ( '+' | '-' ) numeric_literal )?
+			// JPA2.g:270:89: ( ( '+' | '-' ) numeric_literal )?
 			int alt69=2;
 			int LA69_0 = input.LA(1);
 			if ( (LA69_0==54||LA69_0==56) ) {
@@ -9030,7 +9030,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt69) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:270:90: ( '+' | '-' ) numeric_literal
+					// JPA2.g:270:90: ( '+' | '-' ) numeric_literal
 					{
 					set246=input.LT(1);
 					if ( input.LA(1)==54||input.LA(1)==56 ) {
@@ -9109,7 +9109,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "date_before_macro_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:272:1: date_before_macro_expression : '@DATEBEFORE' '(' path_expression ',' ( path_expression | input_parameter ) ')' ;
+	// JPA2.g:272:1: date_before_macro_expression : '@DATEBEFORE' '(' path_expression ',' ( path_expression | input_parameter ) ')' ;
 	public final JPA2Parser.date_before_macro_expression_return date_before_macro_expression() throws RecognitionException {
 		JPA2Parser.date_before_macro_expression_return retval = new JPA2Parser.date_before_macro_expression_return();
 		retval.start = input.LT(1);
@@ -9130,8 +9130,8 @@ public class JPA2Parser extends Parser {
 		Object char_literal257_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:273:5: ( '@DATEBEFORE' '(' path_expression ',' ( path_expression | input_parameter ) ')' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:273:7: '@DATEBEFORE' '(' path_expression ',' ( path_expression | input_parameter ) ')'
+			// JPA2.g:273:5: ( '@DATEBEFORE' '(' path_expression ',' ( path_expression | input_parameter ) ')' )
+			// JPA2.g:273:7: '@DATEBEFORE' '(' path_expression ',' ( path_expression | input_parameter ) ')'
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -9160,7 +9160,7 @@ public class JPA2Parser extends Parser {
 			adaptor.addChild(root_0, char_literal254_tree);
 			}
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:273:45: ( path_expression | input_parameter )
+			// JPA2.g:273:45: ( path_expression | input_parameter )
 			int alt70=2;
 			int LA70_0 = input.LA(1);
 			if ( (LA70_0==WORD) ) {
@@ -9179,7 +9179,7 @@ public class JPA2Parser extends Parser {
 
 			switch (alt70) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:273:46: path_expression
+					// JPA2.g:273:46: path_expression
 					{
 					pushFollow(FOLLOW_path_expression_in_date_before_macro_expression2426);
 					path_expression255=path_expression();
@@ -9190,7 +9190,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:273:64: input_parameter
+					// JPA2.g:273:64: input_parameter
 					{
 					pushFollow(FOLLOW_input_parameter_in_date_before_macro_expression2430);
 					input_parameter256=input_parameter();
@@ -9239,7 +9239,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "date_after_macro_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:275:1: date_after_macro_expression : '@DATEAFTER' '(' path_expression ',' ( path_expression | input_parameter ) ')' ;
+	// JPA2.g:275:1: date_after_macro_expression : '@DATEAFTER' '(' path_expression ',' ( path_expression | input_parameter ) ')' ;
 	public final JPA2Parser.date_after_macro_expression_return date_after_macro_expression() throws RecognitionException {
 		JPA2Parser.date_after_macro_expression_return retval = new JPA2Parser.date_after_macro_expression_return();
 		retval.start = input.LT(1);
@@ -9260,8 +9260,8 @@ public class JPA2Parser extends Parser {
 		Object char_literal264_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:276:5: ( '@DATEAFTER' '(' path_expression ',' ( path_expression | input_parameter ) ')' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:276:7: '@DATEAFTER' '(' path_expression ',' ( path_expression | input_parameter ) ')'
+			// JPA2.g:276:5: ( '@DATEAFTER' '(' path_expression ',' ( path_expression | input_parameter ) ')' )
+			// JPA2.g:276:7: '@DATEAFTER' '(' path_expression ',' ( path_expression | input_parameter ) ')'
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -9290,7 +9290,7 @@ public class JPA2Parser extends Parser {
 			adaptor.addChild(root_0, char_literal261_tree);
 			}
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:276:44: ( path_expression | input_parameter )
+			// JPA2.g:276:44: ( path_expression | input_parameter )
 			int alt71=2;
 			int LA71_0 = input.LA(1);
 			if ( (LA71_0==WORD) ) {
@@ -9309,7 +9309,7 @@ public class JPA2Parser extends Parser {
 
 			switch (alt71) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:276:45: path_expression
+					// JPA2.g:276:45: path_expression
 					{
 					pushFollow(FOLLOW_path_expression_in_date_after_macro_expression2454);
 					path_expression262=path_expression();
@@ -9320,7 +9320,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:276:63: input_parameter
+					// JPA2.g:276:63: input_parameter
 					{
 					pushFollow(FOLLOW_input_parameter_in_date_after_macro_expression2458);
 					input_parameter263=input_parameter();
@@ -9369,7 +9369,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "date_equals_macro_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:278:1: date_equals_macro_expression : '@DATEEQUALS' '(' path_expression ',' ( path_expression | input_parameter ) ')' ;
+	// JPA2.g:278:1: date_equals_macro_expression : '@DATEEQUALS' '(' path_expression ',' ( path_expression | input_parameter ) ')' ;
 	public final JPA2Parser.date_equals_macro_expression_return date_equals_macro_expression() throws RecognitionException {
 		JPA2Parser.date_equals_macro_expression_return retval = new JPA2Parser.date_equals_macro_expression_return();
 		retval.start = input.LT(1);
@@ -9390,8 +9390,8 @@ public class JPA2Parser extends Parser {
 		Object char_literal271_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:279:5: ( '@DATEEQUALS' '(' path_expression ',' ( path_expression | input_parameter ) ')' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:279:7: '@DATEEQUALS' '(' path_expression ',' ( path_expression | input_parameter ) ')'
+			// JPA2.g:279:5: ( '@DATEEQUALS' '(' path_expression ',' ( path_expression | input_parameter ) ')' )
+			// JPA2.g:279:7: '@DATEEQUALS' '(' path_expression ',' ( path_expression | input_parameter ) ')'
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -9420,7 +9420,7 @@ public class JPA2Parser extends Parser {
 			adaptor.addChild(root_0, char_literal268_tree);
 			}
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:279:45: ( path_expression | input_parameter )
+			// JPA2.g:279:45: ( path_expression | input_parameter )
 			int alt72=2;
 			int LA72_0 = input.LA(1);
 			if ( (LA72_0==WORD) ) {
@@ -9439,7 +9439,7 @@ public class JPA2Parser extends Parser {
 
 			switch (alt72) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:279:46: path_expression
+					// JPA2.g:279:46: path_expression
 					{
 					pushFollow(FOLLOW_path_expression_in_date_equals_macro_expression2482);
 					path_expression269=path_expression();
@@ -9450,7 +9450,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:279:64: input_parameter
+					// JPA2.g:279:64: input_parameter
 					{
 					pushFollow(FOLLOW_input_parameter_in_date_equals_macro_expression2486);
 					input_parameter270=input_parameter();
@@ -9499,7 +9499,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "date_today_macro_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:281:1: date_today_macro_expression : '@TODAY' '(' path_expression ')' ;
+	// JPA2.g:281:1: date_today_macro_expression : '@TODAY' '(' path_expression ')' ;
 	public final JPA2Parser.date_today_macro_expression_return date_today_macro_expression() throws RecognitionException {
 		JPA2Parser.date_today_macro_expression_return retval = new JPA2Parser.date_today_macro_expression_return();
 		retval.start = input.LT(1);
@@ -9516,8 +9516,8 @@ public class JPA2Parser extends Parser {
 		Object char_literal275_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:282:5: ( '@TODAY' '(' path_expression ')' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:282:7: '@TODAY' '(' path_expression ')'
+			// JPA2.g:282:5: ( '@TODAY' '(' path_expression ')' )
+			// JPA2.g:282:7: '@TODAY' '(' path_expression ')'
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -9576,7 +9576,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "between_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:285:1: between_expression : ( arithmetic_expression ( 'NOT' )? 'BETWEEN' arithmetic_expression 'AND' arithmetic_expression | string_expression ( 'NOT' )? 'BETWEEN' string_expression 'AND' string_expression | datetime_expression ( 'NOT' )? 'BETWEEN' datetime_expression 'AND' datetime_expression );
+	// JPA2.g:285:1: between_expression : ( arithmetic_expression ( 'NOT' )? 'BETWEEN' arithmetic_expression 'AND' arithmetic_expression | string_expression ( 'NOT' )? 'BETWEEN' string_expression 'AND' string_expression | datetime_expression ( 'NOT' )? 'BETWEEN' datetime_expression 'AND' datetime_expression );
 	public final JPA2Parser.between_expression_return between_expression() throws RecognitionException {
 		JPA2Parser.between_expression_return retval = new JPA2Parser.between_expression_return();
 		retval.start = input.LT(1);
@@ -9613,7 +9613,7 @@ public class JPA2Parser extends Parser {
 		Object string_literal292_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:286:5: ( arithmetic_expression ( 'NOT' )? 'BETWEEN' arithmetic_expression 'AND' arithmetic_expression | string_expression ( 'NOT' )? 'BETWEEN' string_expression 'AND' string_expression | datetime_expression ( 'NOT' )? 'BETWEEN' datetime_expression 'AND' datetime_expression )
+			// JPA2.g:286:5: ( arithmetic_expression ( 'NOT' )? 'BETWEEN' arithmetic_expression 'AND' arithmetic_expression | string_expression ( 'NOT' )? 'BETWEEN' string_expression 'AND' string_expression | datetime_expression ( 'NOT' )? 'BETWEEN' datetime_expression 'AND' datetime_expression )
 			int alt76=3;
 			switch ( input.LA(1) ) {
 			case INT_NUMERAL:
@@ -9824,7 +9824,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt76) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:286:7: arithmetic_expression ( 'NOT' )? 'BETWEEN' arithmetic_expression 'AND' arithmetic_expression
+					// JPA2.g:286:7: arithmetic_expression ( 'NOT' )? 'BETWEEN' arithmetic_expression 'AND' arithmetic_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -9835,7 +9835,7 @@ public class JPA2Parser extends Parser {
 					if (state.failed) return retval;
 					if ( state.backtracking==0 ) adaptor.addChild(root_0, arithmetic_expression276.getTree());
 
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:286:29: ( 'NOT' )?
+					// JPA2.g:286:29: ( 'NOT' )?
 					int alt73=2;
 					int LA73_0 = input.LA(1);
 					if ( (LA73_0==109) ) {
@@ -9843,7 +9843,7 @@ public class JPA2Parser extends Parser {
 					}
 					switch (alt73) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:286:30: 'NOT'
+							// JPA2.g:286:30: 'NOT'
 							{
 							string_literal277=(Token)match(input,109,FOLLOW_109_in_between_expression2523); if (state.failed) return retval;
 							if ( state.backtracking==0 ) {
@@ -9883,7 +9883,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:287:7: string_expression ( 'NOT' )? 'BETWEEN' string_expression 'AND' string_expression
+					// JPA2.g:287:7: string_expression ( 'NOT' )? 'BETWEEN' string_expression 'AND' string_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -9894,7 +9894,7 @@ public class JPA2Parser extends Parser {
 					if (state.failed) return retval;
 					if ( state.backtracking==0 ) adaptor.addChild(root_0, string_expression282.getTree());
 
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:287:25: ( 'NOT' )?
+					// JPA2.g:287:25: ( 'NOT' )?
 					int alt74=2;
 					int LA74_0 = input.LA(1);
 					if ( (LA74_0==109) ) {
@@ -9902,7 +9902,7 @@ public class JPA2Parser extends Parser {
 					}
 					switch (alt74) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:287:26: 'NOT'
+							// JPA2.g:287:26: 'NOT'
 							{
 							string_literal283=(Token)match(input,109,FOLLOW_109_in_between_expression2544); if (state.failed) return retval;
 							if ( state.backtracking==0 ) {
@@ -9942,7 +9942,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:288:7: datetime_expression ( 'NOT' )? 'BETWEEN' datetime_expression 'AND' datetime_expression
+					// JPA2.g:288:7: datetime_expression ( 'NOT' )? 'BETWEEN' datetime_expression 'AND' datetime_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -9953,7 +9953,7 @@ public class JPA2Parser extends Parser {
 					if (state.failed) return retval;
 					if ( state.backtracking==0 ) adaptor.addChild(root_0, datetime_expression288.getTree());
 
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:288:27: ( 'NOT' )?
+					// JPA2.g:288:27: ( 'NOT' )?
 					int alt75=2;
 					int LA75_0 = input.LA(1);
 					if ( (LA75_0==109) ) {
@@ -9961,7 +9961,7 @@ public class JPA2Parser extends Parser {
 					}
 					switch (alt75) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:288:28: 'NOT'
+							// JPA2.g:288:28: 'NOT'
 							{
 							string_literal289=(Token)match(input,109,FOLLOW_109_in_between_expression2565); if (state.failed) return retval;
 							if ( state.backtracking==0 ) {
@@ -10030,7 +10030,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "in_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:289:1: in_expression : ( path_expression | type_discriminator ) ( 'NOT' )? 'IN' ( '(' in_item ( ',' in_item )* ')' | subquery | collection_valued_input_parameter ) ;
+	// JPA2.g:289:1: in_expression : ( path_expression | type_discriminator ) ( 'NOT' )? 'IN' ( '(' in_item ( ',' in_item )* ')' | subquery | collection_valued_input_parameter ) ;
 	public final JPA2Parser.in_expression_return in_expression() throws RecognitionException {
 		JPA2Parser.in_expression_return retval = new JPA2Parser.in_expression_return();
 		retval.start = input.LT(1);
@@ -10056,13 +10056,13 @@ public class JPA2Parser extends Parser {
 		Object char_literal302_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:290:5: ( ( path_expression | type_discriminator ) ( 'NOT' )? 'IN' ( '(' in_item ( ',' in_item )* ')' | subquery | collection_valued_input_parameter ) )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:290:7: ( path_expression | type_discriminator ) ( 'NOT' )? 'IN' ( '(' in_item ( ',' in_item )* ')' | subquery | collection_valued_input_parameter )
+			// JPA2.g:290:5: ( ( path_expression | type_discriminator ) ( 'NOT' )? 'IN' ( '(' in_item ( ',' in_item )* ')' | subquery | collection_valued_input_parameter ) )
+			// JPA2.g:290:7: ( path_expression | type_discriminator ) ( 'NOT' )? 'IN' ( '(' in_item ( ',' in_item )* ')' | subquery | collection_valued_input_parameter )
 			{
 			root_0 = (Object)adaptor.nil();
 
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:290:7: ( path_expression | type_discriminator )
+			// JPA2.g:290:7: ( path_expression | type_discriminator )
 			int alt77=2;
 			int LA77_0 = input.LA(1);
 			if ( (LA77_0==WORD) ) {
@@ -10081,7 +10081,7 @@ public class JPA2Parser extends Parser {
 
 			switch (alt77) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:290:8: path_expression
+					// JPA2.g:290:8: path_expression
 					{
 					pushFollow(FOLLOW_path_expression_in_in_expression2587);
 					path_expression294=path_expression();
@@ -10092,7 +10092,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:290:26: type_discriminator
+					// JPA2.g:290:26: type_discriminator
 					{
 					pushFollow(FOLLOW_type_discriminator_in_in_expression2591);
 					type_discriminator295=type_discriminator();
@@ -10105,7 +10105,7 @@ public class JPA2Parser extends Parser {
 
 			}
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:290:46: ( 'NOT' )?
+			// JPA2.g:290:46: ( 'NOT' )?
 			int alt78=2;
 			int LA78_0 = input.LA(1);
 			if ( (LA78_0==109) ) {
@@ -10113,7 +10113,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt78) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:290:47: 'NOT'
+					// JPA2.g:290:47: 'NOT'
 					{
 					string_literal296=(Token)match(input,109,FOLLOW_109_in_in_expression2595); if (state.failed) return retval;
 					if ( state.backtracking==0 ) {
@@ -10132,7 +10132,7 @@ public class JPA2Parser extends Parser {
 			adaptor.addChild(root_0, string_literal297_tree);
 			}
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:291:13: ( '(' in_item ( ',' in_item )* ')' | subquery | collection_valued_input_parameter )
+			// JPA2.g:291:13: ( '(' in_item ( ',' in_item )* ')' | subquery | collection_valued_input_parameter )
 			int alt80=3;
 			int LA80_0 = input.LA(1);
 			if ( (LA80_0==LPAREN) ) {
@@ -10171,7 +10171,7 @@ public class JPA2Parser extends Parser {
 
 			switch (alt80) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:291:15: '(' in_item ( ',' in_item )* ')'
+					// JPA2.g:291:15: '(' in_item ( ',' in_item )* ')'
 					{
 					char_literal298=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_in_expression2615); if (state.failed) return retval;
 					if ( state.backtracking==0 ) {
@@ -10185,7 +10185,7 @@ public class JPA2Parser extends Parser {
 					if (state.failed) return retval;
 					if ( state.backtracking==0 ) adaptor.addChild(root_0, in_item299.getTree());
 
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:291:27: ( ',' in_item )*
+					// JPA2.g:291:27: ( ',' in_item )*
 					loop79:
 					while (true) {
 						int alt79=2;
@@ -10196,7 +10196,7 @@ public class JPA2Parser extends Parser {
 
 						switch (alt79) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:291:28: ',' in_item
+							// JPA2.g:291:28: ',' in_item
 							{
 							char_literal300=(Token)match(input,55,FOLLOW_55_in_in_expression2620); if (state.failed) return retval;
 							if ( state.backtracking==0 ) {
@@ -10227,7 +10227,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:292:15: subquery
+					// JPA2.g:292:15: subquery
 					{
 					pushFollow(FOLLOW_subquery_in_in_expression2642);
 					subquery303=subquery();
@@ -10238,7 +10238,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:293:15: collection_valued_input_parameter
+					// JPA2.g:293:15: collection_valued_input_parameter
 					{
 					pushFollow(FOLLOW_collection_valued_input_parameter_in_in_expression2658);
 					collection_valued_input_parameter304=collection_valued_input_parameter();
@@ -10281,7 +10281,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "in_item"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:294:1: in_item : ( literal | single_valued_input_parameter );
+	// JPA2.g:294:1: in_item : ( literal | single_valued_input_parameter );
 	public final JPA2Parser.in_item_return in_item() throws RecognitionException {
 		JPA2Parser.in_item_return retval = new JPA2Parser.in_item_return();
 		retval.start = input.LT(1);
@@ -10293,7 +10293,7 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:295:5: ( literal | single_valued_input_parameter )
+			// JPA2.g:295:5: ( literal | single_valued_input_parameter )
 			int alt81=2;
 			int LA81_0 = input.LA(1);
 			if ( (LA81_0==WORD) ) {
@@ -10312,7 +10312,7 @@ public class JPA2Parser extends Parser {
 
 			switch (alt81) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:295:7: literal
+					// JPA2.g:295:7: literal
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -10326,7 +10326,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:295:17: single_valued_input_parameter
+					// JPA2.g:295:17: single_valued_input_parameter
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -10369,7 +10369,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "like_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:296:1: like_expression : string_expression ( 'NOT' )? 'LIKE' ( pattern_value | input_parameter ) ( 'ESCAPE' escape_character )? ;
+	// JPA2.g:296:1: like_expression : string_expression ( 'NOT' )? 'LIKE' ( pattern_value | input_parameter ) ( 'ESCAPE' escape_character )? ;
 	public final JPA2Parser.like_expression_return like_expression() throws RecognitionException {
 		JPA2Parser.like_expression_return retval = new JPA2Parser.like_expression_return();
 		retval.start = input.LT(1);
@@ -10389,8 +10389,8 @@ public class JPA2Parser extends Parser {
 		Object string_literal312_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:297:5: ( string_expression ( 'NOT' )? 'LIKE' ( pattern_value | input_parameter ) ( 'ESCAPE' escape_character )? )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:297:7: string_expression ( 'NOT' )? 'LIKE' ( pattern_value | input_parameter ) ( 'ESCAPE' escape_character )?
+			// JPA2.g:297:5: ( string_expression ( 'NOT' )? 'LIKE' ( pattern_value | input_parameter ) ( 'ESCAPE' escape_character )? )
+			// JPA2.g:297:7: string_expression ( 'NOT' )? 'LIKE' ( pattern_value | input_parameter ) ( 'ESCAPE' escape_character )?
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -10401,7 +10401,7 @@ public class JPA2Parser extends Parser {
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) adaptor.addChild(root_0, string_expression307.getTree());
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:297:25: ( 'NOT' )?
+			// JPA2.g:297:25: ( 'NOT' )?
 			int alt82=2;
 			int LA82_0 = input.LA(1);
 			if ( (LA82_0==109) ) {
@@ -10409,7 +10409,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt82) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:297:26: 'NOT'
+					// JPA2.g:297:26: 'NOT'
 					{
 					string_literal308=(Token)match(input,109,FOLLOW_109_in_like_expression2689); if (state.failed) return retval;
 					if ( state.backtracking==0 ) {
@@ -10428,7 +10428,7 @@ public class JPA2Parser extends Parser {
 			adaptor.addChild(root_0, string_literal309_tree);
 			}
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:297:41: ( pattern_value | input_parameter )
+			// JPA2.g:297:41: ( pattern_value | input_parameter )
 			int alt83=2;
 			int LA83_0 = input.LA(1);
 			if ( (LA83_0==STRING_LITERAL) ) {
@@ -10447,7 +10447,7 @@ public class JPA2Parser extends Parser {
 
 			switch (alt83) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:297:42: pattern_value
+					// JPA2.g:297:42: pattern_value
 					{
 					pushFollow(FOLLOW_pattern_value_in_like_expression2696);
 					pattern_value310=pattern_value();
@@ -10458,7 +10458,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:297:58: input_parameter
+					// JPA2.g:297:58: input_parameter
 					{
 					pushFollow(FOLLOW_input_parameter_in_like_expression2700);
 					input_parameter311=input_parameter();
@@ -10471,7 +10471,7 @@ public class JPA2Parser extends Parser {
 
 			}
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:297:74: ( 'ESCAPE' escape_character )?
+			// JPA2.g:297:74: ( 'ESCAPE' escape_character )?
 			int alt84=2;
 			int LA84_0 = input.LA(1);
 			if ( (LA84_0==90) ) {
@@ -10479,7 +10479,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt84) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:297:75: 'ESCAPE' escape_character
+					// JPA2.g:297:75: 'ESCAPE' escape_character
 					{
 					string_literal312=(Token)match(input,90,FOLLOW_90_in_like_expression2703); if (state.failed) return retval;
 					if ( state.backtracking==0 ) {
@@ -10528,7 +10528,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "null_comparison_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:298:1: null_comparison_expression : ( path_expression | input_parameter ) 'IS' ( 'NOT' )? 'NULL' ;
+	// JPA2.g:298:1: null_comparison_expression : ( path_expression | input_parameter ) 'IS' ( 'NOT' )? 'NULL' ;
 	public final JPA2Parser.null_comparison_expression_return null_comparison_expression() throws RecognitionException {
 		JPA2Parser.null_comparison_expression_return retval = new JPA2Parser.null_comparison_expression_return();
 		retval.start = input.LT(1);
@@ -10546,13 +10546,13 @@ public class JPA2Parser extends Parser {
 		Object string_literal318_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:299:5: ( ( path_expression | input_parameter ) 'IS' ( 'NOT' )? 'NULL' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:299:7: ( path_expression | input_parameter ) 'IS' ( 'NOT' )? 'NULL'
+			// JPA2.g:299:5: ( ( path_expression | input_parameter ) 'IS' ( 'NOT' )? 'NULL' )
+			// JPA2.g:299:7: ( path_expression | input_parameter ) 'IS' ( 'NOT' )? 'NULL'
 			{
 			root_0 = (Object)adaptor.nil();
 
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:299:7: ( path_expression | input_parameter )
+			// JPA2.g:299:7: ( path_expression | input_parameter )
 			int alt85=2;
 			int LA85_0 = input.LA(1);
 			if ( (LA85_0==WORD) ) {
@@ -10571,7 +10571,7 @@ public class JPA2Parser extends Parser {
 
 			switch (alt85) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:299:8: path_expression
+					// JPA2.g:299:8: path_expression
 					{
 					pushFollow(FOLLOW_path_expression_in_null_comparison_expression2719);
 					path_expression314=path_expression();
@@ -10582,7 +10582,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:299:26: input_parameter
+					// JPA2.g:299:26: input_parameter
 					{
 					pushFollow(FOLLOW_input_parameter_in_null_comparison_expression2723);
 					input_parameter315=input_parameter();
@@ -10601,7 +10601,7 @@ public class JPA2Parser extends Parser {
 			adaptor.addChild(root_0, string_literal316_tree);
 			}
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:299:48: ( 'NOT' )?
+			// JPA2.g:299:48: ( 'NOT' )?
 			int alt86=2;
 			int LA86_0 = input.LA(1);
 			if ( (LA86_0==109) ) {
@@ -10609,7 +10609,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt86) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:299:49: 'NOT'
+					// JPA2.g:299:49: 'NOT'
 					{
 					string_literal317=(Token)match(input,109,FOLLOW_109_in_null_comparison_expression2729); if (state.failed) return retval;
 					if ( state.backtracking==0 ) {
@@ -10658,7 +10658,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "empty_collection_comparison_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:300:1: empty_collection_comparison_expression : path_expression 'IS' ( 'NOT' )? 'EMPTY' ;
+	// JPA2.g:300:1: empty_collection_comparison_expression : path_expression 'IS' ( 'NOT' )? 'EMPTY' ;
 	public final JPA2Parser.empty_collection_comparison_expression_return empty_collection_comparison_expression() throws RecognitionException {
 		JPA2Parser.empty_collection_comparison_expression_return retval = new JPA2Parser.empty_collection_comparison_expression_return();
 		retval.start = input.LT(1);
@@ -10675,8 +10675,8 @@ public class JPA2Parser extends Parser {
 		Object string_literal322_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:301:5: ( path_expression 'IS' ( 'NOT' )? 'EMPTY' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:301:7: path_expression 'IS' ( 'NOT' )? 'EMPTY'
+			// JPA2.g:301:5: ( path_expression 'IS' ( 'NOT' )? 'EMPTY' )
+			// JPA2.g:301:7: path_expression 'IS' ( 'NOT' )? 'EMPTY'
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -10693,7 +10693,7 @@ public class JPA2Parser extends Parser {
 			adaptor.addChild(root_0, string_literal320_tree);
 			}
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:301:28: ( 'NOT' )?
+			// JPA2.g:301:28: ( 'NOT' )?
 			int alt87=2;
 			int LA87_0 = input.LA(1);
 			if ( (LA87_0==109) ) {
@@ -10701,7 +10701,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt87) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:301:29: 'NOT'
+					// JPA2.g:301:29: 'NOT'
 					{
 					string_literal321=(Token)match(input,109,FOLLOW_109_in_empty_collection_comparison_expression2749); if (state.failed) return retval;
 					if ( state.backtracking==0 ) {
@@ -10750,7 +10750,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "collection_member_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:302:1: collection_member_expression : entity_or_value_expression ( 'NOT' )? 'MEMBER' ( 'OF' )? path_expression ;
+	// JPA2.g:302:1: collection_member_expression : entity_or_value_expression ( 'NOT' )? 'MEMBER' ( 'OF' )? path_expression ;
 	public final JPA2Parser.collection_member_expression_return collection_member_expression() throws RecognitionException {
 		JPA2Parser.collection_member_expression_return retval = new JPA2Parser.collection_member_expression_return();
 		retval.start = input.LT(1);
@@ -10768,8 +10768,8 @@ public class JPA2Parser extends Parser {
 		Object string_literal326_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:303:5: ( entity_or_value_expression ( 'NOT' )? 'MEMBER' ( 'OF' )? path_expression )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:303:7: entity_or_value_expression ( 'NOT' )? 'MEMBER' ( 'OF' )? path_expression
+			// JPA2.g:303:5: ( entity_or_value_expression ( 'NOT' )? 'MEMBER' ( 'OF' )? path_expression )
+			// JPA2.g:303:7: entity_or_value_expression ( 'NOT' )? 'MEMBER' ( 'OF' )? path_expression
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -10780,7 +10780,7 @@ public class JPA2Parser extends Parser {
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) adaptor.addChild(root_0, entity_or_value_expression323.getTree());
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:303:35: ( 'NOT' )?
+			// JPA2.g:303:35: ( 'NOT' )?
 			int alt88=2;
 			int LA88_0 = input.LA(1);
 			if ( (LA88_0==109) ) {
@@ -10788,7 +10788,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt88) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:303:36: 'NOT'
+					// JPA2.g:303:36: 'NOT'
 					{
 					string_literal324=(Token)match(input,109,FOLLOW_109_in_collection_member_expression2768); if (state.failed) return retval;
 					if ( state.backtracking==0 ) {
@@ -10807,7 +10807,7 @@ public class JPA2Parser extends Parser {
 			adaptor.addChild(root_0, string_literal325_tree);
 			}
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:303:53: ( 'OF' )?
+			// JPA2.g:303:53: ( 'OF' )?
 			int alt89=2;
 			int LA89_0 = input.LA(1);
 			if ( (LA89_0==114) ) {
@@ -10815,7 +10815,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt89) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:303:54: 'OF'
+					// JPA2.g:303:54: 'OF'
 					{
 					string_literal326=(Token)match(input,114,FOLLOW_114_in_collection_member_expression2775); if (state.failed) return retval;
 					if ( state.backtracking==0 ) {
@@ -10864,7 +10864,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "entity_or_value_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:304:1: entity_or_value_expression : ( path_expression | simple_entity_or_value_expression );
+	// JPA2.g:304:1: entity_or_value_expression : ( path_expression | simple_entity_or_value_expression );
 	public final JPA2Parser.entity_or_value_expression_return entity_or_value_expression() throws RecognitionException {
 		JPA2Parser.entity_or_value_expression_return retval = new JPA2Parser.entity_or_value_expression_return();
 		retval.start = input.LT(1);
@@ -10876,7 +10876,7 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:305:5: ( path_expression | simple_entity_or_value_expression )
+			// JPA2.g:305:5: ( path_expression | simple_entity_or_value_expression )
 			int alt90=2;
 			int LA90_0 = input.LA(1);
 			if ( (LA90_0==WORD) ) {
@@ -10915,7 +10915,7 @@ public class JPA2Parser extends Parser {
 
 			switch (alt90) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:305:7: path_expression
+					// JPA2.g:305:7: path_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -10929,7 +10929,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:306:7: simple_entity_or_value_expression
+					// JPA2.g:306:7: simple_entity_or_value_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -10972,7 +10972,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "simple_entity_or_value_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:307:1: simple_entity_or_value_expression : ( identification_variable | input_parameter | literal );
+	// JPA2.g:307:1: simple_entity_or_value_expression : ( identification_variable | input_parameter | literal );
 	public final JPA2Parser.simple_entity_or_value_expression_return simple_entity_or_value_expression() throws RecognitionException {
 		JPA2Parser.simple_entity_or_value_expression_return retval = new JPA2Parser.simple_entity_or_value_expression_return();
 		retval.start = input.LT(1);
@@ -10985,7 +10985,7 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:308:5: ( identification_variable | input_parameter | literal )
+			// JPA2.g:308:5: ( identification_variable | input_parameter | literal )
 			int alt91=3;
 			int LA91_0 = input.LA(1);
 			if ( (LA91_0==WORD) ) {
@@ -11011,7 +11011,7 @@ public class JPA2Parser extends Parser {
 
 			switch (alt91) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:308:7: identification_variable
+					// JPA2.g:308:7: identification_variable
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -11025,7 +11025,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:309:7: input_parameter
+					// JPA2.g:309:7: input_parameter
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -11039,7 +11039,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:310:7: literal
+					// JPA2.g:310:7: literal
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -11082,7 +11082,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "exists_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:311:1: exists_expression : ( 'NOT' )? 'EXISTS' subquery ;
+	// JPA2.g:311:1: exists_expression : ( 'NOT' )? 'EXISTS' subquery ;
 	public final JPA2Parser.exists_expression_return exists_expression() throws RecognitionException {
 		JPA2Parser.exists_expression_return retval = new JPA2Parser.exists_expression_return();
 		retval.start = input.LT(1);
@@ -11097,13 +11097,13 @@ public class JPA2Parser extends Parser {
 		Object string_literal334_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:312:5: ( ( 'NOT' )? 'EXISTS' subquery )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:312:7: ( 'NOT' )? 'EXISTS' subquery
+			// JPA2.g:312:5: ( ( 'NOT' )? 'EXISTS' subquery )
+			// JPA2.g:312:7: ( 'NOT' )? 'EXISTS' subquery
 			{
 			root_0 = (Object)adaptor.nil();
 
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:312:7: ( 'NOT' )?
+			// JPA2.g:312:7: ( 'NOT' )?
 			int alt92=2;
 			int LA92_0 = input.LA(1);
 			if ( (LA92_0==109) ) {
@@ -11111,7 +11111,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt92) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:312:8: 'NOT'
+					// JPA2.g:312:8: 'NOT'
 					{
 					string_literal333=(Token)match(input,109,FOLLOW_109_in_exists_expression2837); if (state.failed) return retval;
 					if ( state.backtracking==0 ) {
@@ -11166,7 +11166,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "all_or_any_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:313:1: all_or_any_expression : ( 'ALL' | 'ANY' | 'SOME' ) subquery ;
+	// JPA2.g:313:1: all_or_any_expression : ( 'ALL' | 'ANY' | 'SOME' ) subquery ;
 	public final JPA2Parser.all_or_any_expression_return all_or_any_expression() throws RecognitionException {
 		JPA2Parser.all_or_any_expression_return retval = new JPA2Parser.all_or_any_expression_return();
 		retval.start = input.LT(1);
@@ -11179,8 +11179,8 @@ public class JPA2Parser extends Parser {
 		Object set336_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:314:5: ( ( 'ALL' | 'ANY' | 'SOME' ) subquery )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:314:7: ( 'ALL' | 'ANY' | 'SOME' ) subquery
+			// JPA2.g:314:5: ( ( 'ALL' | 'ANY' | 'SOME' ) subquery )
+			// JPA2.g:314:7: ( 'ALL' | 'ANY' | 'SOME' ) subquery
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -11233,7 +11233,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "comparison_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:315:1: comparison_expression : ( string_expression comparison_operator ( string_expression | all_or_any_expression ) | boolean_expression ( '=' | '<>' ) ( boolean_expression | all_or_any_expression ) | enum_expression ( '=' | '<>' ) ( enum_expression | all_or_any_expression ) | datetime_expression comparison_operator ( datetime_expression | all_or_any_expression ) | entity_expression ( '=' | '<>' ) ( entity_expression | all_or_any_expression ) | entity_type_expression ( '=' | '<>' ) entity_type_expression | arithmetic_expression comparison_operator ( arithmetic_expression | all_or_any_expression ) );
+	// JPA2.g:315:1: comparison_expression : ( string_expression comparison_operator ( string_expression | all_or_any_expression ) | boolean_expression ( '=' | '<>' ) ( boolean_expression | all_or_any_expression ) | enum_expression ( '=' | '<>' ) ( enum_expression | all_or_any_expression ) | datetime_expression comparison_operator ( datetime_expression | all_or_any_expression ) | entity_expression ( '=' | '<>' ) ( entity_expression | all_or_any_expression ) | entity_type_expression ( '=' | '<>' ) entity_type_expression | arithmetic_expression comparison_operator ( arithmetic_expression | all_or_any_expression ) );
 	public final JPA2Parser.comparison_expression_return comparison_expression() throws RecognitionException {
 		JPA2Parser.comparison_expression_return retval = new JPA2Parser.comparison_expression_return();
 		retval.start = input.LT(1);
@@ -11274,7 +11274,7 @@ public class JPA2Parser extends Parser {
 		Object set359_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:316:5: ( string_expression comparison_operator ( string_expression | all_or_any_expression ) | boolean_expression ( '=' | '<>' ) ( boolean_expression | all_or_any_expression ) | enum_expression ( '=' | '<>' ) ( enum_expression | all_or_any_expression ) | datetime_expression comparison_operator ( datetime_expression | all_or_any_expression ) | entity_expression ( '=' | '<>' ) ( entity_expression | all_or_any_expression ) | entity_type_expression ( '=' | '<>' ) entity_type_expression | arithmetic_expression comparison_operator ( arithmetic_expression | all_or_any_expression ) )
+			// JPA2.g:316:5: ( string_expression comparison_operator ( string_expression | all_or_any_expression ) | boolean_expression ( '=' | '<>' ) ( boolean_expression | all_or_any_expression ) | enum_expression ( '=' | '<>' ) ( enum_expression | all_or_any_expression ) | datetime_expression comparison_operator ( datetime_expression | all_or_any_expression ) | entity_expression ( '=' | '<>' ) ( entity_expression | all_or_any_expression ) | entity_type_expression ( '=' | '<>' ) entity_type_expression | arithmetic_expression comparison_operator ( arithmetic_expression | all_or_any_expression ) )
 			int alt99=7;
 			switch ( input.LA(1) ) {
 			case WORD:
@@ -11571,7 +11571,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt99) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:316:7: string_expression comparison_operator ( string_expression | all_or_any_expression )
+					// JPA2.g:316:7: string_expression comparison_operator ( string_expression | all_or_any_expression )
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -11588,7 +11588,7 @@ public class JPA2Parser extends Parser {
 					if (state.failed) return retval;
 					if ( state.backtracking==0 ) adaptor.addChild(root_0, comparison_operator339.getTree());
 
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:316:45: ( string_expression | all_or_any_expression )
+					// JPA2.g:316:45: ( string_expression | all_or_any_expression )
 					int alt93=2;
 					int LA93_0 = input.LA(1);
 					if ( (LA93_0==AVG||LA93_0==COUNT||(LA93_0 >= LPAREN && LA93_0 <= NAMED_PARAMETER)||(LA93_0 >= STRING_LITERAL && LA93_0 <= SUM)||LA93_0==WORD||LA93_0==52||LA93_0==66||(LA93_0 >= 78 && LA93_0 <= 80)||LA93_0==93||LA93_0==103||LA93_0==112||LA93_0==122||LA93_0==126||LA93_0==129) ) {
@@ -11607,7 +11607,7 @@ public class JPA2Parser extends Parser {
 
 					switch (alt93) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:316:46: string_expression
+							// JPA2.g:316:46: string_expression
 							{
 							pushFollow(FOLLOW_string_expression_in_comparison_expression2883);
 							string_expression340=string_expression();
@@ -11618,7 +11618,7 @@ public class JPA2Parser extends Parser {
 							}
 							break;
 						case 2 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:316:66: all_or_any_expression
+							// JPA2.g:316:66: all_or_any_expression
 							{
 							pushFollow(FOLLOW_all_or_any_expression_in_comparison_expression2887);
 							all_or_any_expression341=all_or_any_expression();
@@ -11634,7 +11634,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:317:7: boolean_expression ( '=' | '<>' ) ( boolean_expression | all_or_any_expression )
+					// JPA2.g:317:7: boolean_expression ( '=' | '<>' ) ( boolean_expression | all_or_any_expression )
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -11657,7 +11657,7 @@ public class JPA2Parser extends Parser {
 						MismatchedSetException mse = new MismatchedSetException(null,input);
 						throw mse;
 					}
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:317:39: ( boolean_expression | all_or_any_expression )
+					// JPA2.g:317:39: ( boolean_expression | all_or_any_expression )
 					int alt94=2;
 					int LA94_0 = input.LA(1);
 					if ( (LA94_0==LPAREN||LA94_0==NAMED_PARAMETER||LA94_0==WORD||LA94_0==52||LA94_0==66||(LA94_0 >= 78 && LA94_0 <= 79)||LA94_0==93||LA94_0==112||(LA94_0 >= 134 && LA94_0 <= 135)) ) {
@@ -11676,7 +11676,7 @@ public class JPA2Parser extends Parser {
 
 					switch (alt94) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:317:40: boolean_expression
+							// JPA2.g:317:40: boolean_expression
 							{
 							pushFollow(FOLLOW_boolean_expression_in_comparison_expression2907);
 							boolean_expression344=boolean_expression();
@@ -11687,7 +11687,7 @@ public class JPA2Parser extends Parser {
 							}
 							break;
 						case 2 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:317:61: all_or_any_expression
+							// JPA2.g:317:61: all_or_any_expression
 							{
 							pushFollow(FOLLOW_all_or_any_expression_in_comparison_expression2911);
 							all_or_any_expression345=all_or_any_expression();
@@ -11703,7 +11703,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:318:7: enum_expression ( '=' | '<>' ) ( enum_expression | all_or_any_expression )
+					// JPA2.g:318:7: enum_expression ( '=' | '<>' ) ( enum_expression | all_or_any_expression )
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -11726,7 +11726,7 @@ public class JPA2Parser extends Parser {
 						MismatchedSetException mse = new MismatchedSetException(null,input);
 						throw mse;
 					}
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:318:34: ( enum_expression | all_or_any_expression )
+					// JPA2.g:318:34: ( enum_expression | all_or_any_expression )
 					int alt95=2;
 					int LA95_0 = input.LA(1);
 					if ( (LA95_0==LPAREN||LA95_0==NAMED_PARAMETER||LA95_0==WORD||LA95_0==52||LA95_0==66||(LA95_0 >= 78 && LA95_0 <= 79)||LA95_0==112) ) {
@@ -11745,7 +11745,7 @@ public class JPA2Parser extends Parser {
 
 					switch (alt95) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:318:35: enum_expression
+							// JPA2.g:318:35: enum_expression
 							{
 							pushFollow(FOLLOW_enum_expression_in_comparison_expression2929);
 							enum_expression348=enum_expression();
@@ -11756,7 +11756,7 @@ public class JPA2Parser extends Parser {
 							}
 							break;
 						case 2 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:318:53: all_or_any_expression
+							// JPA2.g:318:53: all_or_any_expression
 							{
 							pushFollow(FOLLOW_all_or_any_expression_in_comparison_expression2933);
 							all_or_any_expression349=all_or_any_expression();
@@ -11772,7 +11772,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 4 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:319:7: datetime_expression comparison_operator ( datetime_expression | all_or_any_expression )
+					// JPA2.g:319:7: datetime_expression comparison_operator ( datetime_expression | all_or_any_expression )
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -11789,7 +11789,7 @@ public class JPA2Parser extends Parser {
 					if (state.failed) return retval;
 					if ( state.backtracking==0 ) adaptor.addChild(root_0, comparison_operator351.getTree());
 
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:319:47: ( datetime_expression | all_or_any_expression )
+					// JPA2.g:319:47: ( datetime_expression | all_or_any_expression )
 					int alt96=2;
 					int LA96_0 = input.LA(1);
 					if ( (LA96_0==AVG||LA96_0==COUNT||(LA96_0 >= LPAREN && LA96_0 <= NAMED_PARAMETER)||LA96_0==SUM||LA96_0==WORD||LA96_0==52||LA96_0==66||(LA96_0 >= 78 && LA96_0 <= 79)||(LA96_0 >= 81 && LA96_0 <= 83)||LA96_0==93||LA96_0==112) ) {
@@ -11808,7 +11808,7 @@ public class JPA2Parser extends Parser {
 
 					switch (alt96) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:319:48: datetime_expression
+							// JPA2.g:319:48: datetime_expression
 							{
 							pushFollow(FOLLOW_datetime_expression_in_comparison_expression2947);
 							datetime_expression352=datetime_expression();
@@ -11819,7 +11819,7 @@ public class JPA2Parser extends Parser {
 							}
 							break;
 						case 2 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:319:70: all_or_any_expression
+							// JPA2.g:319:70: all_or_any_expression
 							{
 							pushFollow(FOLLOW_all_or_any_expression_in_comparison_expression2951);
 							all_or_any_expression353=all_or_any_expression();
@@ -11835,7 +11835,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 5 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:320:7: entity_expression ( '=' | '<>' ) ( entity_expression | all_or_any_expression )
+					// JPA2.g:320:7: entity_expression ( '=' | '<>' ) ( entity_expression | all_or_any_expression )
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -11858,7 +11858,7 @@ public class JPA2Parser extends Parser {
 						MismatchedSetException mse = new MismatchedSetException(null,input);
 						throw mse;
 					}
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:320:38: ( entity_expression | all_or_any_expression )
+					// JPA2.g:320:38: ( entity_expression | all_or_any_expression )
 					int alt97=2;
 					int LA97_0 = input.LA(1);
 					if ( (LA97_0==NAMED_PARAMETER||LA97_0==WORD||LA97_0==52||LA97_0==66) ) {
@@ -11877,7 +11877,7 @@ public class JPA2Parser extends Parser {
 
 					switch (alt97) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:320:39: entity_expression
+							// JPA2.g:320:39: entity_expression
 							{
 							pushFollow(FOLLOW_entity_expression_in_comparison_expression2971);
 							entity_expression356=entity_expression();
@@ -11888,7 +11888,7 @@ public class JPA2Parser extends Parser {
 							}
 							break;
 						case 2 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:320:59: all_or_any_expression
+							// JPA2.g:320:59: all_or_any_expression
 							{
 							pushFollow(FOLLOW_all_or_any_expression_in_comparison_expression2975);
 							all_or_any_expression357=all_or_any_expression();
@@ -11904,7 +11904,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 6 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:321:7: entity_type_expression ( '=' | '<>' ) entity_type_expression
+					// JPA2.g:321:7: entity_type_expression ( '=' | '<>' ) entity_type_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -11936,7 +11936,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 7 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:322:7: arithmetic_expression comparison_operator ( arithmetic_expression | all_or_any_expression )
+					// JPA2.g:322:7: arithmetic_expression comparison_operator ( arithmetic_expression | all_or_any_expression )
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -11953,7 +11953,7 @@ public class JPA2Parser extends Parser {
 					if (state.failed) return retval;
 					if ( state.backtracking==0 ) adaptor.addChild(root_0, comparison_operator362.getTree());
 
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:322:49: ( arithmetic_expression | all_or_any_expression )
+					// JPA2.g:322:49: ( arithmetic_expression | all_or_any_expression )
 					int alt98=2;
 					int LA98_0 = input.LA(1);
 					if ( (LA98_0==AVG||LA98_0==COUNT||LA98_0==INT_NUMERAL||(LA98_0 >= LPAREN && LA98_0 <= NAMED_PARAMETER)||LA98_0==SUM||LA98_0==WORD||LA98_0==52||LA98_0==54||LA98_0==56||LA98_0==59||LA98_0==66||LA98_0==72||(LA98_0 >= 78 && LA98_0 <= 79)||LA98_0==93||LA98_0==96||LA98_0==100||LA98_0==102||LA98_0==106||LA98_0==112||LA98_0==119||LA98_0==121) ) {
@@ -11972,7 +11972,7 @@ public class JPA2Parser extends Parser {
 
 					switch (alt98) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:322:50: arithmetic_expression
+							// JPA2.g:322:50: arithmetic_expression
 							{
 							pushFollow(FOLLOW_arithmetic_expression_in_comparison_expression3007);
 							arithmetic_expression363=arithmetic_expression();
@@ -11983,7 +11983,7 @@ public class JPA2Parser extends Parser {
 							}
 							break;
 						case 2 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:322:74: all_or_any_expression
+							// JPA2.g:322:74: all_or_any_expression
 							{
 							pushFollow(FOLLOW_all_or_any_expression_in_comparison_expression3011);
 							all_or_any_expression364=all_or_any_expression();
@@ -12028,7 +12028,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "comparison_operator"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:324:1: comparison_operator : ( '=' | '>' | '>=' | '<' | '<=' | '<>' );
+	// JPA2.g:324:1: comparison_operator : ( '=' | '>' | '>=' | '<' | '<=' | '<>' );
 	public final JPA2Parser.comparison_operator_return comparison_operator() throws RecognitionException {
 		JPA2Parser.comparison_operator_return retval = new JPA2Parser.comparison_operator_return();
 		retval.start = input.LT(1);
@@ -12040,8 +12040,8 @@ public class JPA2Parser extends Parser {
 		Object set365_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:325:5: ( '=' | '>' | '>=' | '<' | '<=' | '<>' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:
+			// JPA2.g:325:5: ( '=' | '>' | '>=' | '<' | '<=' | '<>' )
+			// JPA2.g:
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -12088,7 +12088,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "arithmetic_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:331:1: arithmetic_expression : ( arithmetic_term | arithmetic_term ( '+' | '-' ) arithmetic_term );
+	// JPA2.g:331:1: arithmetic_expression : ( arithmetic_term | arithmetic_term ( '+' | '-' ) arithmetic_term );
 	public final JPA2Parser.arithmetic_expression_return arithmetic_expression() throws RecognitionException {
 		JPA2Parser.arithmetic_expression_return retval = new JPA2Parser.arithmetic_expression_return();
 		retval.start = input.LT(1);
@@ -12103,7 +12103,7 @@ public class JPA2Parser extends Parser {
 		Object set368_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:332:5: ( arithmetic_term | arithmetic_term ( '+' | '-' ) arithmetic_term )
+			// JPA2.g:332:5: ( arithmetic_term | arithmetic_term ( '+' | '-' ) arithmetic_term )
 			int alt100=2;
 			switch ( input.LA(1) ) {
 			case 54:
@@ -12370,7 +12370,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt100) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:332:7: arithmetic_term
+					// JPA2.g:332:7: arithmetic_term
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -12384,7 +12384,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:333:7: arithmetic_term ( '+' | '-' ) arithmetic_term
+					// JPA2.g:333:7: arithmetic_term ( '+' | '-' ) arithmetic_term
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -12445,7 +12445,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "arithmetic_term"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:334:1: arithmetic_term : ( arithmetic_factor | arithmetic_factor ( '*' | '/' ) arithmetic_factor );
+	// JPA2.g:334:1: arithmetic_term : ( arithmetic_factor | arithmetic_factor ( '*' | '/' ) arithmetic_factor );
 	public final JPA2Parser.arithmetic_term_return arithmetic_term() throws RecognitionException {
 		JPA2Parser.arithmetic_term_return retval = new JPA2Parser.arithmetic_term_return();
 		retval.start = input.LT(1);
@@ -12460,7 +12460,7 @@ public class JPA2Parser extends Parser {
 		Object set372_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:335:5: ( arithmetic_factor | arithmetic_factor ( '*' | '/' ) arithmetic_factor )
+			// JPA2.g:335:5: ( arithmetic_factor | arithmetic_factor ( '*' | '/' ) arithmetic_factor )
 			int alt101=2;
 			switch ( input.LA(1) ) {
 			case 54:
@@ -12727,7 +12727,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt101) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:335:7: arithmetic_factor
+					// JPA2.g:335:7: arithmetic_factor
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -12741,7 +12741,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:336:7: arithmetic_factor ( '*' | '/' ) arithmetic_factor
+					// JPA2.g:336:7: arithmetic_factor ( '*' | '/' ) arithmetic_factor
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -12802,7 +12802,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "arithmetic_factor"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:337:1: arithmetic_factor : ( ( '+' | '-' ) )? arithmetic_primary ;
+	// JPA2.g:337:1: arithmetic_factor : ( ( '+' | '-' ) )? arithmetic_primary ;
 	public final JPA2Parser.arithmetic_factor_return arithmetic_factor() throws RecognitionException {
 		JPA2Parser.arithmetic_factor_return retval = new JPA2Parser.arithmetic_factor_return();
 		retval.start = input.LT(1);
@@ -12815,13 +12815,13 @@ public class JPA2Parser extends Parser {
 		Object set374_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:338:5: ( ( ( '+' | '-' ) )? arithmetic_primary )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:338:7: ( ( '+' | '-' ) )? arithmetic_primary
+			// JPA2.g:338:5: ( ( ( '+' | '-' ) )? arithmetic_primary )
+			// JPA2.g:338:7: ( ( '+' | '-' ) )? arithmetic_primary
 			{
 			root_0 = (Object)adaptor.nil();
 
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:338:7: ( ( '+' | '-' ) )?
+			// JPA2.g:338:7: ( ( '+' | '-' ) )?
 			int alt102=2;
 			int LA102_0 = input.LA(1);
 			if ( (LA102_0==54||LA102_0==56) ) {
@@ -12829,7 +12829,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt102) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:
+					// JPA2.g:
 					{
 					set374=input.LT(1);
 					if ( input.LA(1)==54||input.LA(1)==56 ) {
@@ -12884,7 +12884,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "arithmetic_primary"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:339:1: arithmetic_primary : ( path_expression | numeric_literal | '(' arithmetic_expression ')' | input_parameter | functions_returning_numerics | aggregate_expression | case_expression | function_invocation | subquery );
+	// JPA2.g:339:1: arithmetic_primary : ( path_expression | numeric_literal | '(' arithmetic_expression ')' | input_parameter | functions_returning_numerics | aggregate_expression | case_expression | function_invocation | subquery );
 	public final JPA2Parser.arithmetic_primary_return arithmetic_primary() throws RecognitionException {
 		JPA2Parser.arithmetic_primary_return retval = new JPA2Parser.arithmetic_primary_return();
 		retval.start = input.LT(1);
@@ -12907,7 +12907,7 @@ public class JPA2Parser extends Parser {
 		Object char_literal380_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:340:5: ( path_expression | numeric_literal | '(' arithmetic_expression ')' | input_parameter | functions_returning_numerics | aggregate_expression | case_expression | function_invocation | subquery )
+			// JPA2.g:340:5: ( path_expression | numeric_literal | '(' arithmetic_expression ')' | input_parameter | functions_returning_numerics | aggregate_expression | case_expression | function_invocation | subquery )
 			int alt103=9;
 			switch ( input.LA(1) ) {
 			case WORD:
@@ -13000,7 +13000,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt103) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:340:7: path_expression
+					// JPA2.g:340:7: path_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13014,7 +13014,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:341:7: numeric_literal
+					// JPA2.g:341:7: numeric_literal
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13028,7 +13028,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:342:7: '(' arithmetic_expression ')'
+					// JPA2.g:342:7: '(' arithmetic_expression ')'
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13054,7 +13054,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 4 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:343:7: input_parameter
+					// JPA2.g:343:7: input_parameter
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13068,7 +13068,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 5 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:344:7: functions_returning_numerics
+					// JPA2.g:344:7: functions_returning_numerics
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13082,7 +13082,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 6 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:345:7: aggregate_expression
+					// JPA2.g:345:7: aggregate_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13096,7 +13096,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 7 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:346:7: case_expression
+					// JPA2.g:346:7: case_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13110,7 +13110,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 8 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:347:7: function_invocation
+					// JPA2.g:347:7: function_invocation
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13124,7 +13124,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 9 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:348:7: subquery
+					// JPA2.g:348:7: subquery
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13167,7 +13167,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "string_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:349:1: string_expression : ( path_expression | string_literal | input_parameter | functions_returning_strings | aggregate_expression | case_expression | function_invocation | subquery );
+	// JPA2.g:349:1: string_expression : ( path_expression | string_literal | input_parameter | functions_returning_strings | aggregate_expression | case_expression | function_invocation | subquery );
 	public final JPA2Parser.string_expression_return string_expression() throws RecognitionException {
 		JPA2Parser.string_expression_return retval = new JPA2Parser.string_expression_return();
 		retval.start = input.LT(1);
@@ -13185,7 +13185,7 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:350:5: ( path_expression | string_literal | input_parameter | functions_returning_strings | aggregate_expression | case_expression | function_invocation | subquery )
+			// JPA2.g:350:5: ( path_expression | string_literal | input_parameter | functions_returning_strings | aggregate_expression | case_expression | function_invocation | subquery )
 			int alt104=8;
 			switch ( input.LA(1) ) {
 			case WORD:
@@ -13268,7 +13268,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt104) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:350:7: path_expression
+					// JPA2.g:350:7: path_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13282,7 +13282,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:351:7: string_literal
+					// JPA2.g:351:7: string_literal
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13296,7 +13296,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:352:7: input_parameter
+					// JPA2.g:352:7: input_parameter
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13310,7 +13310,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 4 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:353:7: functions_returning_strings
+					// JPA2.g:353:7: functions_returning_strings
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13324,7 +13324,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 5 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:354:7: aggregate_expression
+					// JPA2.g:354:7: aggregate_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13338,7 +13338,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 6 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:355:7: case_expression
+					// JPA2.g:355:7: case_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13352,7 +13352,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 7 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:356:7: function_invocation
+					// JPA2.g:356:7: function_invocation
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13366,7 +13366,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 8 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:357:7: subquery
+					// JPA2.g:357:7: subquery
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13409,7 +13409,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "datetime_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:358:1: datetime_expression : ( path_expression | input_parameter | functions_returning_datetime | aggregate_expression | case_expression | function_invocation | date_time_timestamp_literal | subquery );
+	// JPA2.g:358:1: datetime_expression : ( path_expression | input_parameter | functions_returning_datetime | aggregate_expression | case_expression | function_invocation | date_time_timestamp_literal | subquery );
 	public final JPA2Parser.datetime_expression_return datetime_expression() throws RecognitionException {
 		JPA2Parser.datetime_expression_return retval = new JPA2Parser.datetime_expression_return();
 		retval.start = input.LT(1);
@@ -13427,7 +13427,7 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:359:5: ( path_expression | input_parameter | functions_returning_datetime | aggregate_expression | case_expression | function_invocation | date_time_timestamp_literal | subquery )
+			// JPA2.g:359:5: ( path_expression | input_parameter | functions_returning_datetime | aggregate_expression | case_expression | function_invocation | date_time_timestamp_literal | subquery )
 			int alt105=8;
 			switch ( input.LA(1) ) {
 			case WORD:
@@ -13523,7 +13523,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt105) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:359:7: path_expression
+					// JPA2.g:359:7: path_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13537,7 +13537,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:360:7: input_parameter
+					// JPA2.g:360:7: input_parameter
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13551,7 +13551,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:361:7: functions_returning_datetime
+					// JPA2.g:361:7: functions_returning_datetime
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13565,7 +13565,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 4 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:362:7: aggregate_expression
+					// JPA2.g:362:7: aggregate_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13579,7 +13579,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 5 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:363:7: case_expression
+					// JPA2.g:363:7: case_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13593,7 +13593,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 6 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:364:7: function_invocation
+					// JPA2.g:364:7: function_invocation
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13607,7 +13607,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 7 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:365:7: date_time_timestamp_literal
+					// JPA2.g:365:7: date_time_timestamp_literal
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13621,7 +13621,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 8 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:366:7: subquery
+					// JPA2.g:366:7: subquery
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13664,7 +13664,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "boolean_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:367:1: boolean_expression : ( path_expression | boolean_literal | input_parameter | case_expression | function_invocation | subquery );
+	// JPA2.g:367:1: boolean_expression : ( path_expression | boolean_literal | input_parameter | case_expression | function_invocation | subquery );
 	public final JPA2Parser.boolean_expression_return boolean_expression() throws RecognitionException {
 		JPA2Parser.boolean_expression_return retval = new JPA2Parser.boolean_expression_return();
 		retval.start = input.LT(1);
@@ -13680,7 +13680,7 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:368:5: ( path_expression | boolean_literal | input_parameter | case_expression | function_invocation | subquery )
+			// JPA2.g:368:5: ( path_expression | boolean_literal | input_parameter | case_expression | function_invocation | subquery )
 			int alt106=6;
 			switch ( input.LA(1) ) {
 			case WORD:
@@ -13726,7 +13726,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt106) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:368:7: path_expression
+					// JPA2.g:368:7: path_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13740,7 +13740,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:369:7: boolean_literal
+					// JPA2.g:369:7: boolean_literal
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13754,7 +13754,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:370:7: input_parameter
+					// JPA2.g:370:7: input_parameter
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13768,7 +13768,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 4 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:371:7: case_expression
+					// JPA2.g:371:7: case_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13782,7 +13782,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 5 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:372:7: function_invocation
+					// JPA2.g:372:7: function_invocation
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13796,7 +13796,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 6 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:373:7: subquery
+					// JPA2.g:373:7: subquery
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13839,7 +13839,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "enum_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:374:1: enum_expression : ( path_expression | enum_literal | input_parameter | case_expression | subquery );
+	// JPA2.g:374:1: enum_expression : ( path_expression | enum_literal | input_parameter | case_expression | subquery );
 	public final JPA2Parser.enum_expression_return enum_expression() throws RecognitionException {
 		JPA2Parser.enum_expression_return retval = new JPA2Parser.enum_expression_return();
 		retval.start = input.LT(1);
@@ -13854,7 +13854,7 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:375:5: ( path_expression | enum_literal | input_parameter | case_expression | subquery )
+			// JPA2.g:375:5: ( path_expression | enum_literal | input_parameter | case_expression | subquery )
 			int alt107=5;
 			switch ( input.LA(1) ) {
 			case WORD:
@@ -13909,7 +13909,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt107) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:375:7: path_expression
+					// JPA2.g:375:7: path_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13923,7 +13923,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:376:7: enum_literal
+					// JPA2.g:376:7: enum_literal
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13937,7 +13937,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:377:7: input_parameter
+					// JPA2.g:377:7: input_parameter
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13951,7 +13951,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 4 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:378:7: case_expression
+					// JPA2.g:378:7: case_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -13965,7 +13965,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 5 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:379:7: subquery
+					// JPA2.g:379:7: subquery
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -14008,7 +14008,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "entity_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:380:1: entity_expression : ( path_expression | simple_entity_expression );
+	// JPA2.g:380:1: entity_expression : ( path_expression | simple_entity_expression );
 	public final JPA2Parser.entity_expression_return entity_expression() throws RecognitionException {
 		JPA2Parser.entity_expression_return retval = new JPA2Parser.entity_expression_return();
 		retval.start = input.LT(1);
@@ -14020,7 +14020,7 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:381:5: ( path_expression | simple_entity_expression )
+			// JPA2.g:381:5: ( path_expression | simple_entity_expression )
 			int alt108=2;
 			int LA108_0 = input.LA(1);
 			if ( (LA108_0==WORD) ) {
@@ -14059,7 +14059,7 @@ public class JPA2Parser extends Parser {
 
 			switch (alt108) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:381:7: path_expression
+					// JPA2.g:381:7: path_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -14073,7 +14073,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:382:7: simple_entity_expression
+					// JPA2.g:382:7: simple_entity_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -14116,7 +14116,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "simple_entity_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:383:1: simple_entity_expression : ( identification_variable | input_parameter );
+	// JPA2.g:383:1: simple_entity_expression : ( identification_variable | input_parameter );
 	public final JPA2Parser.simple_entity_expression_return simple_entity_expression() throws RecognitionException {
 		JPA2Parser.simple_entity_expression_return retval = new JPA2Parser.simple_entity_expression_return();
 		retval.start = input.LT(1);
@@ -14128,7 +14128,7 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:384:5: ( identification_variable | input_parameter )
+			// JPA2.g:384:5: ( identification_variable | input_parameter )
 			int alt109=2;
 			int LA109_0 = input.LA(1);
 			if ( (LA109_0==WORD) ) {
@@ -14147,7 +14147,7 @@ public class JPA2Parser extends Parser {
 
 			switch (alt109) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:384:7: identification_variable
+					// JPA2.g:384:7: identification_variable
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -14161,7 +14161,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:385:7: input_parameter
+					// JPA2.g:385:7: input_parameter
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -14204,7 +14204,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "entity_type_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:386:1: entity_type_expression : ( type_discriminator | entity_type_literal | input_parameter );
+	// JPA2.g:386:1: entity_type_expression : ( type_discriminator | entity_type_literal | input_parameter );
 	public final JPA2Parser.entity_type_expression_return entity_type_expression() throws RecognitionException {
 		JPA2Parser.entity_type_expression_return retval = new JPA2Parser.entity_type_expression_return();
 		retval.start = input.LT(1);
@@ -14217,7 +14217,7 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:387:5: ( type_discriminator | entity_type_literal | input_parameter )
+			// JPA2.g:387:5: ( type_discriminator | entity_type_literal | input_parameter )
 			int alt110=3;
 			switch ( input.LA(1) ) {
 			case 127:
@@ -14245,7 +14245,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt110) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:387:7: type_discriminator
+					// JPA2.g:387:7: type_discriminator
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -14259,7 +14259,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:388:7: entity_type_literal
+					// JPA2.g:388:7: entity_type_literal
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -14273,7 +14273,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:389:7: input_parameter
+					// JPA2.g:389:7: input_parameter
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -14316,7 +14316,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "type_discriminator"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:390:1: type_discriminator : 'TYPE' ( general_identification_variable | path_expression | input_parameter ) ;
+	// JPA2.g:390:1: type_discriminator : 'TYPE' ( general_identification_variable | path_expression | input_parameter ) ;
 	public final JPA2Parser.type_discriminator_return type_discriminator() throws RecognitionException {
 		JPA2Parser.type_discriminator_return retval = new JPA2Parser.type_discriminator_return();
 		retval.start = input.LT(1);
@@ -14331,8 +14331,8 @@ public class JPA2Parser extends Parser {
 		Object string_literal421_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:391:5: ( 'TYPE' ( general_identification_variable | path_expression | input_parameter ) )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:391:7: 'TYPE' ( general_identification_variable | path_expression | input_parameter )
+			// JPA2.g:391:5: ( 'TYPE' ( general_identification_variable | path_expression | input_parameter ) )
+			// JPA2.g:391:7: 'TYPE' ( general_identification_variable | path_expression | input_parameter )
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -14343,7 +14343,7 @@ public class JPA2Parser extends Parser {
 			adaptor.addChild(root_0, string_literal421_tree);
 			}
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:391:13: ( general_identification_variable | path_expression | input_parameter )
+			// JPA2.g:391:13: ( general_identification_variable | path_expression | input_parameter )
 			int alt111=3;
 			switch ( input.LA(1) ) {
 			case WORD:
@@ -14392,7 +14392,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt111) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:391:14: general_identification_variable
+					// JPA2.g:391:14: general_identification_variable
 					{
 					pushFollow(FOLLOW_general_identification_variable_in_type_discriminator3529);
 					general_identification_variable422=general_identification_variable();
@@ -14403,7 +14403,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:391:48: path_expression
+					// JPA2.g:391:48: path_expression
 					{
 					pushFollow(FOLLOW_path_expression_in_type_discriminator3533);
 					path_expression423=path_expression();
@@ -14414,7 +14414,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:391:66: input_parameter
+					// JPA2.g:391:66: input_parameter
 					{
 					pushFollow(FOLLOW_input_parameter_in_type_discriminator3537);
 					input_parameter424=input_parameter();
@@ -14457,7 +14457,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "functions_returning_numerics"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:392:1: functions_returning_numerics : ( 'LENGTH(' string_expression ')' | 'LOCATE(' string_expression ',' string_expression ( ',' arithmetic_expression )? ')' | 'ABS(' arithmetic_expression ')' | 'SQRT(' arithmetic_expression ')' | 'MOD(' arithmetic_expression ',' arithmetic_expression ')' | 'SIZE(' path_expression ')' | 'INDEX(' identification_variable ')' );
+	// JPA2.g:392:1: functions_returning_numerics : ( 'LENGTH(' string_expression ')' | 'LOCATE(' string_expression ',' string_expression ( ',' arithmetic_expression )? ')' | 'ABS(' arithmetic_expression ')' | 'SQRT(' arithmetic_expression ')' | 'MOD(' arithmetic_expression ',' arithmetic_expression ')' | 'SIZE(' path_expression ')' | 'INDEX(' identification_variable ')' );
 	public final JPA2Parser.functions_returning_numerics_return functions_returning_numerics() throws RecognitionException {
 		JPA2Parser.functions_returning_numerics_return retval = new JPA2Parser.functions_returning_numerics_return();
 		retval.start = input.LT(1);
@@ -14511,7 +14511,7 @@ public class JPA2Parser extends Parser {
 		Object char_literal451_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:393:5: ( 'LENGTH(' string_expression ')' | 'LOCATE(' string_expression ',' string_expression ( ',' arithmetic_expression )? ')' | 'ABS(' arithmetic_expression ')' | 'SQRT(' arithmetic_expression ')' | 'MOD(' arithmetic_expression ',' arithmetic_expression ')' | 'SIZE(' path_expression ')' | 'INDEX(' identification_variable ')' )
+			// JPA2.g:393:5: ( 'LENGTH(' string_expression ')' | 'LOCATE(' string_expression ',' string_expression ( ',' arithmetic_expression )? ')' | 'ABS(' arithmetic_expression ')' | 'SQRT(' arithmetic_expression ')' | 'MOD(' arithmetic_expression ',' arithmetic_expression ')' | 'SIZE(' path_expression ')' | 'INDEX(' identification_variable ')' )
 			int alt113=7;
 			switch ( input.LA(1) ) {
 			case 100:
@@ -14557,7 +14557,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt113) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:393:7: 'LENGTH(' string_expression ')'
+					// JPA2.g:393:7: 'LENGTH(' string_expression ')'
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -14583,7 +14583,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:394:7: 'LOCATE(' string_expression ',' string_expression ( ',' arithmetic_expression )? ')'
+					// JPA2.g:394:7: 'LOCATE(' string_expression ',' string_expression ( ',' arithmetic_expression )? ')'
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -14612,7 +14612,7 @@ public class JPA2Parser extends Parser {
 					if (state.failed) return retval;
 					if ( state.backtracking==0 ) adaptor.addChild(root_0, string_expression431.getTree());
 
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:394:55: ( ',' arithmetic_expression )?
+					// JPA2.g:394:55: ( ',' arithmetic_expression )?
 					int alt112=2;
 					int LA112_0 = input.LA(1);
 					if ( (LA112_0==55) ) {
@@ -14620,7 +14620,7 @@ public class JPA2Parser extends Parser {
 					}
 					switch (alt112) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:394:56: ',' arithmetic_expression
+							// JPA2.g:394:56: ',' arithmetic_expression
 							{
 							char_literal432=(Token)match(input,55,FOLLOW_55_in_functions_returning_numerics3566); if (state.failed) return retval;
 							if ( state.backtracking==0 ) {
@@ -14648,7 +14648,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:395:7: 'ABS(' arithmetic_expression ')'
+					// JPA2.g:395:7: 'ABS(' arithmetic_expression ')'
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -14674,7 +14674,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 4 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:396:7: 'SQRT(' arithmetic_expression ')'
+					// JPA2.g:396:7: 'SQRT(' arithmetic_expression ')'
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -14700,7 +14700,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 5 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:397:7: 'MOD(' arithmetic_expression ',' arithmetic_expression ')'
+					// JPA2.g:397:7: 'MOD(' arithmetic_expression ',' arithmetic_expression ')'
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -14738,7 +14738,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 6 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:398:7: 'SIZE(' path_expression ')'
+					// JPA2.g:398:7: 'SIZE(' path_expression ')'
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -14764,7 +14764,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 7 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:399:7: 'INDEX(' identification_variable ')'
+					// JPA2.g:399:7: 'INDEX(' identification_variable ')'
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -14819,7 +14819,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "functions_returning_datetime"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:400:1: functions_returning_datetime : ( 'CURRENT_DATE' | 'CURRENT_TIME' | 'CURRENT_TIMESTAMP' );
+	// JPA2.g:400:1: functions_returning_datetime : ( 'CURRENT_DATE' | 'CURRENT_TIME' | 'CURRENT_TIMESTAMP' );
 	public final JPA2Parser.functions_returning_datetime_return functions_returning_datetime() throws RecognitionException {
 		JPA2Parser.functions_returning_datetime_return retval = new JPA2Parser.functions_returning_datetime_return();
 		retval.start = input.LT(1);
@@ -14831,8 +14831,8 @@ public class JPA2Parser extends Parser {
 		Object set452_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:401:5: ( 'CURRENT_DATE' | 'CURRENT_TIME' | 'CURRENT_TIMESTAMP' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:
+			// JPA2.g:401:5: ( 'CURRENT_DATE' | 'CURRENT_TIME' | 'CURRENT_TIMESTAMP' )
+			// JPA2.g:
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -14879,7 +14879,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "functions_returning_strings"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:404:1: functions_returning_strings : ( 'CONCAT(' string_expression ',' string_expression ( ',' string_expression )* ')' | 'SUBSTRING(' string_expression ',' arithmetic_expression ( ',' arithmetic_expression )? ')' | 'TRIM(' ( ( trim_specification )? ( trim_character )? 'FROM' )? string_expression ')' | 'LOWER(' string_expression ')' | 'UPPER(' string_expression ')' );
+	// JPA2.g:404:1: functions_returning_strings : ( 'CONCAT(' string_expression ',' string_expression ( ',' string_expression )* ')' | 'SUBSTRING(' string_expression ',' arithmetic_expression ( ',' arithmetic_expression )? ')' | 'TRIM(' ( ( trim_specification )? ( trim_character )? 'FROM' )? string_expression ')' | 'LOWER(' string_expression ')' | 'UPPER(' string_expression ')' );
 	public final JPA2Parser.functions_returning_strings_return functions_returning_strings() throws RecognitionException {
 		JPA2Parser.functions_returning_strings_return retval = new JPA2Parser.functions_returning_strings_return();
 		retval.start = input.LT(1);
@@ -14930,7 +14930,7 @@ public class JPA2Parser extends Parser {
 		Object char_literal478_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:405:5: ( 'CONCAT(' string_expression ',' string_expression ( ',' string_expression )* ')' | 'SUBSTRING(' string_expression ',' arithmetic_expression ( ',' arithmetic_expression )? ')' | 'TRIM(' ( ( trim_specification )? ( trim_character )? 'FROM' )? string_expression ')' | 'LOWER(' string_expression ')' | 'UPPER(' string_expression ')' )
+			// JPA2.g:405:5: ( 'CONCAT(' string_expression ',' string_expression ( ',' string_expression )* ')' | 'SUBSTRING(' string_expression ',' arithmetic_expression ( ',' arithmetic_expression )? ')' | 'TRIM(' ( ( trim_specification )? ( trim_character )? 'FROM' )? string_expression ')' | 'LOWER(' string_expression ')' | 'UPPER(' string_expression ')' )
 			int alt119=5;
 			switch ( input.LA(1) ) {
 			case 80:
@@ -14966,7 +14966,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt119) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:405:7: 'CONCAT(' string_expression ',' string_expression ( ',' string_expression )* ')'
+					// JPA2.g:405:7: 'CONCAT(' string_expression ',' string_expression ( ',' string_expression )* ')'
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -14995,7 +14995,7 @@ public class JPA2Parser extends Parser {
 					if (state.failed) return retval;
 					if ( state.backtracking==0 ) adaptor.addChild(root_0, string_expression456.getTree());
 
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:405:55: ( ',' string_expression )*
+					// JPA2.g:405:55: ( ',' string_expression )*
 					loop114:
 					while (true) {
 						int alt114=2;
@@ -15006,7 +15006,7 @@ public class JPA2Parser extends Parser {
 
 						switch (alt114) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:405:56: ',' string_expression
+							// JPA2.g:405:56: ',' string_expression
 							{
 							char_literal457=(Token)match(input,55,FOLLOW_55_in_functions_returning_strings3668); if (state.failed) return retval;
 							if ( state.backtracking==0 ) {
@@ -15037,7 +15037,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:406:7: 'SUBSTRING(' string_expression ',' arithmetic_expression ( ',' arithmetic_expression )? ')'
+					// JPA2.g:406:7: 'SUBSTRING(' string_expression ',' arithmetic_expression ( ',' arithmetic_expression )? ')'
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -15066,7 +15066,7 @@ public class JPA2Parser extends Parser {
 					if (state.failed) return retval;
 					if ( state.backtracking==0 ) adaptor.addChild(root_0, arithmetic_expression463.getTree());
 
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:406:63: ( ',' arithmetic_expression )?
+					// JPA2.g:406:63: ( ',' arithmetic_expression )?
 					int alt115=2;
 					int LA115_0 = input.LA(1);
 					if ( (LA115_0==55) ) {
@@ -15074,7 +15074,7 @@ public class JPA2Parser extends Parser {
 					}
 					switch (alt115) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:406:64: ',' arithmetic_expression
+							// JPA2.g:406:64: ',' arithmetic_expression
 							{
 							char_literal464=(Token)match(input,55,FOLLOW_55_in_functions_returning_strings3689); if (state.failed) return retval;
 							if ( state.backtracking==0 ) {
@@ -15102,7 +15102,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:407:7: 'TRIM(' ( ( trim_specification )? ( trim_character )? 'FROM' )? string_expression ')'
+					// JPA2.g:407:7: 'TRIM(' ( ( trim_specification )? ( trim_character )? 'FROM' )? string_expression ')'
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -15113,7 +15113,7 @@ public class JPA2Parser extends Parser {
 					adaptor.addChild(root_0, string_literal467_tree);
 					}
 
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:407:14: ( ( trim_specification )? ( trim_character )? 'FROM' )?
+					// JPA2.g:407:14: ( ( trim_specification )? ( trim_character )? 'FROM' )?
 					int alt118=2;
 					int LA118_0 = input.LA(1);
 					if ( (LA118_0==TRIM_CHARACTER||LA118_0==77||LA118_0==92||LA118_0==99||LA118_0==124) ) {
@@ -15121,9 +15121,9 @@ public class JPA2Parser extends Parser {
 					}
 					switch (alt118) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:407:15: ( trim_specification )? ( trim_character )? 'FROM'
+							// JPA2.g:407:15: ( trim_specification )? ( trim_character )? 'FROM'
 							{
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:407:15: ( trim_specification )?
+							// JPA2.g:407:15: ( trim_specification )?
 							int alt116=2;
 							int LA116_0 = input.LA(1);
 							if ( (LA116_0==77||LA116_0==99||LA116_0==124) ) {
@@ -15131,7 +15131,7 @@ public class JPA2Parser extends Parser {
 							}
 							switch (alt116) {
 								case 1 :
-									// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:407:16: trim_specification
+									// JPA2.g:407:16: trim_specification
 									{
 									pushFollow(FOLLOW_trim_specification_in_functions_returning_strings3705);
 									trim_specification468=trim_specification();
@@ -15144,7 +15144,7 @@ public class JPA2Parser extends Parser {
 
 							}
 
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:407:37: ( trim_character )?
+							// JPA2.g:407:37: ( trim_character )?
 							int alt117=2;
 							int LA117_0 = input.LA(1);
 							if ( (LA117_0==TRIM_CHARACTER) ) {
@@ -15152,7 +15152,7 @@ public class JPA2Parser extends Parser {
 							}
 							switch (alt117) {
 								case 1 :
-									// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:407:38: trim_character
+									// JPA2.g:407:38: trim_character
 									{
 									pushFollow(FOLLOW_trim_character_in_functions_returning_strings3710);
 									trim_character469=trim_character();
@@ -15191,7 +15191,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 4 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:408:7: 'LOWER(' string_expression ')'
+					// JPA2.g:408:7: 'LOWER(' string_expression ')'
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -15217,7 +15217,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 5 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:409:7: 'UPPER(' string_expression ')'
+					// JPA2.g:409:7: 'UPPER(' string_expression ')'
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -15272,7 +15272,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "trim_specification"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:410:1: trim_specification : ( 'LEADING' | 'TRAILING' | 'BOTH' );
+	// JPA2.g:410:1: trim_specification : ( 'LEADING' | 'TRAILING' | 'BOTH' );
 	public final JPA2Parser.trim_specification_return trim_specification() throws RecognitionException {
 		JPA2Parser.trim_specification_return retval = new JPA2Parser.trim_specification_return();
 		retval.start = input.LT(1);
@@ -15284,8 +15284,8 @@ public class JPA2Parser extends Parser {
 		Object set479_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:411:5: ( 'LEADING' | 'TRAILING' | 'BOTH' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:
+			// JPA2.g:411:5: ( 'LEADING' | 'TRAILING' | 'BOTH' )
+			// JPA2.g:
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -15332,7 +15332,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "function_invocation"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:412:1: function_invocation : 'FUNCTION(' function_name ( ',' function_arg )* ')' ;
+	// JPA2.g:412:1: function_invocation : 'FUNCTION(' function_name ( ',' function_arg )* ')' ;
 	public final JPA2Parser.function_invocation_return function_invocation() throws RecognitionException {
 		JPA2Parser.function_invocation_return retval = new JPA2Parser.function_invocation_return();
 		retval.start = input.LT(1);
@@ -15350,8 +15350,8 @@ public class JPA2Parser extends Parser {
 		Object char_literal484_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:413:5: ( 'FUNCTION(' function_name ( ',' function_arg )* ')' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:413:7: 'FUNCTION(' function_name ( ',' function_arg )* ')'
+			// JPA2.g:413:5: ( 'FUNCTION(' function_name ( ',' function_arg )* ')' )
+			// JPA2.g:413:7: 'FUNCTION(' function_name ( ',' function_arg )* ')'
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -15368,7 +15368,7 @@ public class JPA2Parser extends Parser {
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) adaptor.addChild(root_0, function_name481.getTree());
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:413:32: ( ',' function_arg )*
+			// JPA2.g:413:32: ( ',' function_arg )*
 			loop120:
 			while (true) {
 				int alt120=2;
@@ -15379,7 +15379,7 @@ public class JPA2Parser extends Parser {
 
 				switch (alt120) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:413:33: ',' function_arg
+					// JPA2.g:413:33: ',' function_arg
 					{
 					char_literal482=(Token)match(input,55,FOLLOW_55_in_function_invocation3774); if (state.failed) return retval;
 					if ( state.backtracking==0 ) {
@@ -15437,7 +15437,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "function_arg"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:414:1: function_arg : ( literal | path_expression | input_parameter | scalar_expression );
+	// JPA2.g:414:1: function_arg : ( literal | path_expression | input_parameter | scalar_expression );
 	public final JPA2Parser.function_arg_return function_arg() throws RecognitionException {
 		JPA2Parser.function_arg_return retval = new JPA2Parser.function_arg_return();
 		retval.start = input.LT(1);
@@ -15451,7 +15451,7 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:415:5: ( literal | path_expression | input_parameter | scalar_expression )
+			// JPA2.g:415:5: ( literal | path_expression | input_parameter | scalar_expression )
 			int alt121=4;
 			switch ( input.LA(1) ) {
 			case WORD:
@@ -15632,7 +15632,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt121) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:415:7: literal
+					// JPA2.g:415:7: literal
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -15646,7 +15646,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:416:7: path_expression
+					// JPA2.g:416:7: path_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -15660,7 +15660,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:417:7: input_parameter
+					// JPA2.g:417:7: input_parameter
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -15674,7 +15674,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 4 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:418:7: scalar_expression
+					// JPA2.g:418:7: scalar_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -15717,7 +15717,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "case_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:419:1: case_expression : ( general_case_expression | simple_case_expression | coalesce_expression | nullif_expression );
+	// JPA2.g:419:1: case_expression : ( general_case_expression | simple_case_expression | coalesce_expression | nullif_expression );
 	public final JPA2Parser.case_expression_return case_expression() throws RecognitionException {
 		JPA2Parser.case_expression_return retval = new JPA2Parser.case_expression_return();
 		retval.start = input.LT(1);
@@ -15731,7 +15731,7 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:420:5: ( general_case_expression | simple_case_expression | coalesce_expression | nullif_expression )
+			// JPA2.g:420:5: ( general_case_expression | simple_case_expression | coalesce_expression | nullif_expression )
 			int alt122=4;
 			switch ( input.LA(1) ) {
 			case 78:
@@ -15777,7 +15777,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt122) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:420:7: general_case_expression
+					// JPA2.g:420:7: general_case_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -15791,7 +15791,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:421:7: simple_case_expression
+					// JPA2.g:421:7: simple_case_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -15805,7 +15805,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:422:7: coalesce_expression
+					// JPA2.g:422:7: coalesce_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -15819,7 +15819,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 4 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:423:7: nullif_expression
+					// JPA2.g:423:7: nullif_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -15862,7 +15862,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "general_case_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:424:1: general_case_expression : 'CASE' when_clause ( when_clause )* 'ELSE' scalar_expression 'END' ;
+	// JPA2.g:424:1: general_case_expression : 'CASE' when_clause ( when_clause )* 'ELSE' scalar_expression 'END' ;
 	public final JPA2Parser.general_case_expression_return general_case_expression() throws RecognitionException {
 		JPA2Parser.general_case_expression_return retval = new JPA2Parser.general_case_expression_return();
 		retval.start = input.LT(1);
@@ -15881,8 +15881,8 @@ public class JPA2Parser extends Parser {
 		Object string_literal498_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:425:5: ( 'CASE' when_clause ( when_clause )* 'ELSE' scalar_expression 'END' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:425:7: 'CASE' when_clause ( when_clause )* 'ELSE' scalar_expression 'END'
+			// JPA2.g:425:5: ( 'CASE' when_clause ( when_clause )* 'ELSE' scalar_expression 'END' )
+			// JPA2.g:425:7: 'CASE' when_clause ( when_clause )* 'ELSE' scalar_expression 'END'
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -15899,7 +15899,7 @@ public class JPA2Parser extends Parser {
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) adaptor.addChild(root_0, when_clause494.getTree());
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:425:26: ( when_clause )*
+			// JPA2.g:425:26: ( when_clause )*
 			loop123:
 			while (true) {
 				int alt123=2;
@@ -15910,7 +15910,7 @@ public class JPA2Parser extends Parser {
 
 				switch (alt123) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:425:27: when_clause
+					// JPA2.g:425:27: when_clause
 					{
 					pushFollow(FOLLOW_when_clause_in_general_case_expression3866);
 					when_clause495=when_clause();
@@ -15974,7 +15974,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "when_clause"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:426:1: when_clause : 'WHEN' conditional_expression 'THEN' scalar_expression ;
+	// JPA2.g:426:1: when_clause : 'WHEN' conditional_expression 'THEN' scalar_expression ;
 	public final JPA2Parser.when_clause_return when_clause() throws RecognitionException {
 		JPA2Parser.when_clause_return retval = new JPA2Parser.when_clause_return();
 		retval.start = input.LT(1);
@@ -15990,8 +15990,8 @@ public class JPA2Parser extends Parser {
 		Object string_literal501_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:427:5: ( 'WHEN' conditional_expression 'THEN' scalar_expression )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:427:7: 'WHEN' conditional_expression 'THEN' scalar_expression
+			// JPA2.g:427:5: ( 'WHEN' conditional_expression 'THEN' scalar_expression )
+			// JPA2.g:427:7: 'WHEN' conditional_expression 'THEN' scalar_expression
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -16050,7 +16050,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "simple_case_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:428:1: simple_case_expression : 'CASE' case_operand simple_when_clause ( simple_when_clause )* 'ELSE' scalar_expression 'END' ;
+	// JPA2.g:428:1: simple_case_expression : 'CASE' case_operand simple_when_clause ( simple_when_clause )* 'ELSE' scalar_expression 'END' ;
 	public final JPA2Parser.simple_case_expression_return simple_case_expression() throws RecognitionException {
 		JPA2Parser.simple_case_expression_return retval = new JPA2Parser.simple_case_expression_return();
 		retval.start = input.LT(1);
@@ -16070,8 +16070,8 @@ public class JPA2Parser extends Parser {
 		Object string_literal509_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:429:5: ( 'CASE' case_operand simple_when_clause ( simple_when_clause )* 'ELSE' scalar_expression 'END' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:429:7: 'CASE' case_operand simple_when_clause ( simple_when_clause )* 'ELSE' scalar_expression 'END'
+			// JPA2.g:429:5: ( 'CASE' case_operand simple_when_clause ( simple_when_clause )* 'ELSE' scalar_expression 'END' )
+			// JPA2.g:429:7: 'CASE' case_operand simple_when_clause ( simple_when_clause )* 'ELSE' scalar_expression 'END'
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -16094,7 +16094,7 @@ public class JPA2Parser extends Parser {
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) adaptor.addChild(root_0, simple_when_clause505.getTree());
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:429:46: ( simple_when_clause )*
+			// JPA2.g:429:46: ( simple_when_clause )*
 			loop124:
 			while (true) {
 				int alt124=2;
@@ -16105,7 +16105,7 @@ public class JPA2Parser extends Parser {
 
 				switch (alt124) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:429:47: simple_when_clause
+					// JPA2.g:429:47: simple_when_clause
 					{
 					pushFollow(FOLLOW_simple_when_clause_in_simple_case_expression3909);
 					simple_when_clause506=simple_when_clause();
@@ -16169,7 +16169,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "case_operand"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:430:1: case_operand : ( path_expression | type_discriminator );
+	// JPA2.g:430:1: case_operand : ( path_expression | type_discriminator );
 	public final JPA2Parser.case_operand_return case_operand() throws RecognitionException {
 		JPA2Parser.case_operand_return retval = new JPA2Parser.case_operand_return();
 		retval.start = input.LT(1);
@@ -16181,7 +16181,7 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:431:5: ( path_expression | type_discriminator )
+			// JPA2.g:431:5: ( path_expression | type_discriminator )
 			int alt125=2;
 			int LA125_0 = input.LA(1);
 			if ( (LA125_0==WORD) ) {
@@ -16200,7 +16200,7 @@ public class JPA2Parser extends Parser {
 
 			switch (alt125) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:431:7: path_expression
+					// JPA2.g:431:7: path_expression
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -16214,7 +16214,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:432:7: type_discriminator
+					// JPA2.g:432:7: type_discriminator
 					{
 					root_0 = (Object)adaptor.nil();
 
@@ -16257,7 +16257,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "simple_when_clause"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:433:1: simple_when_clause : 'WHEN' scalar_expression 'THEN' scalar_expression ;
+	// JPA2.g:433:1: simple_when_clause : 'WHEN' scalar_expression 'THEN' scalar_expression ;
 	public final JPA2Parser.simple_when_clause_return simple_when_clause() throws RecognitionException {
 		JPA2Parser.simple_when_clause_return retval = new JPA2Parser.simple_when_clause_return();
 		retval.start = input.LT(1);
@@ -16273,8 +16273,8 @@ public class JPA2Parser extends Parser {
 		Object string_literal514_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:434:5: ( 'WHEN' scalar_expression 'THEN' scalar_expression )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:434:7: 'WHEN' scalar_expression 'THEN' scalar_expression
+			// JPA2.g:434:5: ( 'WHEN' scalar_expression 'THEN' scalar_expression )
+			// JPA2.g:434:7: 'WHEN' scalar_expression 'THEN' scalar_expression
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -16333,7 +16333,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "coalesce_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:435:1: coalesce_expression : 'COALESCE(' scalar_expression ( ',' scalar_expression )+ ')' ;
+	// JPA2.g:435:1: coalesce_expression : 'COALESCE(' scalar_expression ( ',' scalar_expression )+ ')' ;
 	public final JPA2Parser.coalesce_expression_return coalesce_expression() throws RecognitionException {
 		JPA2Parser.coalesce_expression_return retval = new JPA2Parser.coalesce_expression_return();
 		retval.start = input.LT(1);
@@ -16351,8 +16351,8 @@ public class JPA2Parser extends Parser {
 		Object char_literal520_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:436:5: ( 'COALESCE(' scalar_expression ( ',' scalar_expression )+ ')' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:436:7: 'COALESCE(' scalar_expression ( ',' scalar_expression )+ ')'
+			// JPA2.g:436:5: ( 'COALESCE(' scalar_expression ( ',' scalar_expression )+ ')' )
+			// JPA2.g:436:7: 'COALESCE(' scalar_expression ( ',' scalar_expression )+ ')'
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -16369,7 +16369,7 @@ public class JPA2Parser extends Parser {
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) adaptor.addChild(root_0, scalar_expression517.getTree());
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:436:36: ( ',' scalar_expression )+
+			// JPA2.g:436:36: ( ',' scalar_expression )+
 			int cnt126=0;
 			loop126:
 			while (true) {
@@ -16381,7 +16381,7 @@ public class JPA2Parser extends Parser {
 
 				switch (alt126) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:436:37: ',' scalar_expression
+					// JPA2.g:436:37: ',' scalar_expression
 					{
 					char_literal518=(Token)match(input,55,FOLLOW_55_in_coalesce_expression3968); if (state.failed) return retval;
 					if ( state.backtracking==0 ) {
@@ -16443,7 +16443,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "nullif_expression"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:437:1: nullif_expression : 'NULLIF(' scalar_expression ',' scalar_expression ')' ;
+	// JPA2.g:437:1: nullif_expression : 'NULLIF(' scalar_expression ',' scalar_expression ')' ;
 	public final JPA2Parser.nullif_expression_return nullif_expression() throws RecognitionException {
 		JPA2Parser.nullif_expression_return retval = new JPA2Parser.nullif_expression_return();
 		retval.start = input.LT(1);
@@ -16461,8 +16461,8 @@ public class JPA2Parser extends Parser {
 		Object char_literal525_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:438:5: ( 'NULLIF(' scalar_expression ',' scalar_expression ')' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:438:7: 'NULLIF(' scalar_expression ',' scalar_expression ')'
+			// JPA2.g:438:5: ( 'NULLIF(' scalar_expression ',' scalar_expression ')' )
+			// JPA2.g:438:7: 'NULLIF(' scalar_expression ',' scalar_expression ')'
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -16527,7 +16527,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "input_parameter"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:441:1: input_parameter : ( '?' numeric_literal -> ^( T_PARAMETER[] '?' numeric_literal ) | NAMED_PARAMETER -> ^( T_PARAMETER[] NAMED_PARAMETER ) | '${' WORD '}' -> ^( T_PARAMETER[] '${' WORD '}' ) );
+	// JPA2.g:441:1: input_parameter : ( '?' numeric_literal -> ^( T_PARAMETER[] '?' numeric_literal ) | NAMED_PARAMETER -> ^( T_PARAMETER[] NAMED_PARAMETER ) | '${' WORD '}' -> ^( T_PARAMETER[] '${' WORD '}' ) );
 	public final JPA2Parser.input_parameter_return input_parameter() throws RecognitionException {
 		JPA2Parser.input_parameter_return retval = new JPA2Parser.input_parameter_return();
 		retval.start = input.LT(1);
@@ -16554,7 +16554,7 @@ public class JPA2Parser extends Parser {
 		RewriteRuleSubtreeStream stream_numeric_literal=new RewriteRuleSubtreeStream(adaptor,"rule numeric_literal");
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:442:5: ( '?' numeric_literal -> ^( T_PARAMETER[] '?' numeric_literal ) | NAMED_PARAMETER -> ^( T_PARAMETER[] NAMED_PARAMETER ) | '${' WORD '}' -> ^( T_PARAMETER[] '${' WORD '}' ) )
+			// JPA2.g:442:5: ( '?' numeric_literal -> ^( T_PARAMETER[] '?' numeric_literal ) | NAMED_PARAMETER -> ^( T_PARAMETER[] NAMED_PARAMETER ) | '${' WORD '}' -> ^( T_PARAMETER[] '${' WORD '}' ) )
 			int alt127=3;
 			switch ( input.LA(1) ) {
 			case 66:
@@ -16580,7 +16580,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt127) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:442:7: '?' numeric_literal
+					// JPA2.g:442:7: '?' numeric_literal
 					{
 					char_literal526=(Token)match(input,66,FOLLOW_66_in_input_parameter4003); if (state.failed) return retval; 
 					if ( state.backtracking==0 ) stream_66.add(char_literal526);
@@ -16591,7 +16591,7 @@ public class JPA2Parser extends Parser {
 					if (state.failed) return retval;
 					if ( state.backtracking==0 ) stream_numeric_literal.add(numeric_literal527.getTree());
 					// AST REWRITE
-					// elements: numeric_literal, 66
+					// elements: 66, numeric_literal
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -16604,7 +16604,7 @@ public class JPA2Parser extends Parser {
 					root_0 = (Object)adaptor.nil();
 					// 442:27: -> ^( T_PARAMETER[] '?' numeric_literal )
 					{
-						// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:442:30: ^( T_PARAMETER[] '?' numeric_literal )
+						// JPA2.g:442:30: ^( T_PARAMETER[] '?' numeric_literal )
 						{
 						Object root_1 = (Object)adaptor.nil();
 						root_1 = (Object)adaptor.becomeRoot(new ParameterNode(T_PARAMETER), root_1);
@@ -16622,7 +16622,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:443:7: NAMED_PARAMETER
+					// JPA2.g:443:7: NAMED_PARAMETER
 					{
 					NAMED_PARAMETER528=(Token)match(input,NAMED_PARAMETER,FOLLOW_NAMED_PARAMETER_in_input_parameter4028); if (state.failed) return retval; 
 					if ( state.backtracking==0 ) stream_NAMED_PARAMETER.add(NAMED_PARAMETER528);
@@ -16641,7 +16641,7 @@ public class JPA2Parser extends Parser {
 					root_0 = (Object)adaptor.nil();
 					// 443:23: -> ^( T_PARAMETER[] NAMED_PARAMETER )
 					{
-						// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:443:26: ^( T_PARAMETER[] NAMED_PARAMETER )
+						// JPA2.g:443:26: ^( T_PARAMETER[] NAMED_PARAMETER )
 						{
 						Object root_1 = (Object)adaptor.nil();
 						root_1 = (Object)adaptor.becomeRoot(new ParameterNode(T_PARAMETER), root_1);
@@ -16658,7 +16658,7 @@ public class JPA2Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:444:7: '${' WORD '}'
+					// JPA2.g:444:7: '${' WORD '}'
 					{
 					string_literal529=(Token)match(input,52,FOLLOW_52_in_input_parameter4049); if (state.failed) return retval; 
 					if ( state.backtracking==0 ) stream_52.add(string_literal529);
@@ -16670,7 +16670,7 @@ public class JPA2Parser extends Parser {
 					if ( state.backtracking==0 ) stream_136.add(char_literal531);
 
 					// AST REWRITE
-					// elements: 136, WORD, 52
+					// elements: 52, 136, WORD
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -16683,7 +16683,7 @@ public class JPA2Parser extends Parser {
 					root_0 = (Object)adaptor.nil();
 					// 444:21: -> ^( T_PARAMETER[] '${' WORD '}' )
 					{
-						// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:444:24: ^( T_PARAMETER[] '${' WORD '}' )
+						// JPA2.g:444:24: ^( T_PARAMETER[] '${' WORD '}' )
 						{
 						Object root_1 = (Object)adaptor.nil();
 						root_1 = (Object)adaptor.becomeRoot(new ParameterNode(T_PARAMETER), root_1);
@@ -16731,7 +16731,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "literal"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:446:1: literal : WORD ;
+	// JPA2.g:446:1: literal : WORD ;
 	public final JPA2Parser.literal_return literal() throws RecognitionException {
 		JPA2Parser.literal_return retval = new JPA2Parser.literal_return();
 		retval.start = input.LT(1);
@@ -16743,8 +16743,8 @@ public class JPA2Parser extends Parser {
 		Object WORD532_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:447:5: ( WORD )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:447:7: WORD
+			// JPA2.g:447:5: ( WORD )
+			// JPA2.g:447:7: WORD
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -16785,7 +16785,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "constructor_name"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:449:1: constructor_name : WORD ;
+	// JPA2.g:449:1: constructor_name : WORD ;
 	public final JPA2Parser.constructor_name_return constructor_name() throws RecognitionException {
 		JPA2Parser.constructor_name_return retval = new JPA2Parser.constructor_name_return();
 		retval.start = input.LT(1);
@@ -16797,8 +16797,8 @@ public class JPA2Parser extends Parser {
 		Object WORD533_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:450:5: ( WORD )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:450:7: WORD
+			// JPA2.g:450:5: ( WORD )
+			// JPA2.g:450:7: WORD
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -16839,7 +16839,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "enum_literal"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:452:1: enum_literal : WORD ;
+	// JPA2.g:452:1: enum_literal : WORD ;
 	public final JPA2Parser.enum_literal_return enum_literal() throws RecognitionException {
 		JPA2Parser.enum_literal_return retval = new JPA2Parser.enum_literal_return();
 		retval.start = input.LT(1);
@@ -16851,8 +16851,8 @@ public class JPA2Parser extends Parser {
 		Object WORD534_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:453:5: ( WORD )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:453:7: WORD
+			// JPA2.g:453:5: ( WORD )
+			// JPA2.g:453:7: WORD
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -16893,7 +16893,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "boolean_literal"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:455:1: boolean_literal : ( 'true' | 'false' );
+	// JPA2.g:455:1: boolean_literal : ( 'true' | 'false' );
 	public final JPA2Parser.boolean_literal_return boolean_literal() throws RecognitionException {
 		JPA2Parser.boolean_literal_return retval = new JPA2Parser.boolean_literal_return();
 		retval.start = input.LT(1);
@@ -16905,8 +16905,8 @@ public class JPA2Parser extends Parser {
 		Object set535_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:456:5: ( 'true' | 'false' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:
+			// JPA2.g:456:5: ( 'true' | 'false' )
+			// JPA2.g:
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -16953,7 +16953,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "field"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:460:1: field : ( WORD | 'GROUP' );
+	// JPA2.g:460:1: field : ( WORD | 'GROUP' );
 	public final JPA2Parser.field_return field() throws RecognitionException {
 		JPA2Parser.field_return retval = new JPA2Parser.field_return();
 		retval.start = input.LT(1);
@@ -16965,8 +16965,8 @@ public class JPA2Parser extends Parser {
 		Object set536_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:461:5: ( WORD | 'GROUP' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:
+			// JPA2.g:461:5: ( WORD | 'GROUP' )
+			// JPA2.g:
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -17013,7 +17013,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "identification_variable"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:463:1: identification_variable : WORD ;
+	// JPA2.g:463:1: identification_variable : WORD ;
 	public final JPA2Parser.identification_variable_return identification_variable() throws RecognitionException {
 		JPA2Parser.identification_variable_return retval = new JPA2Parser.identification_variable_return();
 		retval.start = input.LT(1);
@@ -17025,8 +17025,8 @@ public class JPA2Parser extends Parser {
 		Object WORD537_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:464:5: ( WORD )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:464:7: WORD
+			// JPA2.g:464:5: ( WORD )
+			// JPA2.g:464:7: WORD
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -17067,7 +17067,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "parameter_name"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:466:1: parameter_name : WORD ( '.' WORD )* ;
+	// JPA2.g:466:1: parameter_name : WORD ( '.' WORD )* ;
 	public final JPA2Parser.parameter_name_return parameter_name() throws RecognitionException {
 		JPA2Parser.parameter_name_return retval = new JPA2Parser.parameter_name_return();
 		retval.start = input.LT(1);
@@ -17083,8 +17083,8 @@ public class JPA2Parser extends Parser {
 		Object WORD540_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:467:5: ( WORD ( '.' WORD )* )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:467:7: WORD ( '.' WORD )*
+			// JPA2.g:467:5: ( WORD ( '.' WORD )* )
+			// JPA2.g:467:7: WORD ( '.' WORD )*
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -17095,7 +17095,7 @@ public class JPA2Parser extends Parser {
 			adaptor.addChild(root_0, WORD538_tree);
 			}
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:467:12: ( '.' WORD )*
+			// JPA2.g:467:12: ( '.' WORD )*
 			loop128:
 			while (true) {
 				int alt128=2;
@@ -17106,7 +17106,7 @@ public class JPA2Parser extends Parser {
 
 				switch (alt128) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:467:13: '.' WORD
+					// JPA2.g:467:13: '.' WORD
 					{
 					char_literal539=(Token)match(input,57,FOLLOW_57_in_parameter_name4169); if (state.failed) return retval;
 					if ( state.backtracking==0 ) {
@@ -17158,7 +17158,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "escape_character"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:469:1: escape_character : ESCAPE_CHARACTER ;
+	// JPA2.g:469:1: escape_character : ESCAPE_CHARACTER ;
 	public final JPA2Parser.escape_character_return escape_character() throws RecognitionException {
 		JPA2Parser.escape_character_return retval = new JPA2Parser.escape_character_return();
 		retval.start = input.LT(1);
@@ -17170,8 +17170,8 @@ public class JPA2Parser extends Parser {
 		Object ESCAPE_CHARACTER541_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:470:5: ( ESCAPE_CHARACTER )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:470:7: ESCAPE_CHARACTER
+			// JPA2.g:470:5: ( ESCAPE_CHARACTER )
+			// JPA2.g:470:7: ESCAPE_CHARACTER
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -17212,7 +17212,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "trim_character"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:471:1: trim_character : TRIM_CHARACTER ;
+	// JPA2.g:471:1: trim_character : TRIM_CHARACTER ;
 	public final JPA2Parser.trim_character_return trim_character() throws RecognitionException {
 		JPA2Parser.trim_character_return retval = new JPA2Parser.trim_character_return();
 		retval.start = input.LT(1);
@@ -17224,8 +17224,8 @@ public class JPA2Parser extends Parser {
 		Object TRIM_CHARACTER542_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:472:5: ( TRIM_CHARACTER )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:472:7: TRIM_CHARACTER
+			// JPA2.g:472:5: ( TRIM_CHARACTER )
+			// JPA2.g:472:7: TRIM_CHARACTER
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -17266,7 +17266,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "string_literal"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:473:1: string_literal : STRING_LITERAL ;
+	// JPA2.g:473:1: string_literal : STRING_LITERAL ;
 	public final JPA2Parser.string_literal_return string_literal() throws RecognitionException {
 		JPA2Parser.string_literal_return retval = new JPA2Parser.string_literal_return();
 		retval.start = input.LT(1);
@@ -17278,8 +17278,8 @@ public class JPA2Parser extends Parser {
 		Object STRING_LITERAL543_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:474:5: ( STRING_LITERAL )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:474:7: STRING_LITERAL
+			// JPA2.g:474:5: ( STRING_LITERAL )
+			// JPA2.g:474:7: STRING_LITERAL
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -17320,7 +17320,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "numeric_literal"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:475:1: numeric_literal : ( '0x' )? INT_NUMERAL ;
+	// JPA2.g:475:1: numeric_literal : ( '0x' )? INT_NUMERAL ;
 	public final JPA2Parser.numeric_literal_return numeric_literal() throws RecognitionException {
 		JPA2Parser.numeric_literal_return retval = new JPA2Parser.numeric_literal_return();
 		retval.start = input.LT(1);
@@ -17334,13 +17334,13 @@ public class JPA2Parser extends Parser {
 		Object INT_NUMERAL545_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:476:5: ( ( '0x' )? INT_NUMERAL )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:476:7: ( '0x' )? INT_NUMERAL
+			// JPA2.g:476:5: ( ( '0x' )? INT_NUMERAL )
+			// JPA2.g:476:7: ( '0x' )? INT_NUMERAL
 			{
 			root_0 = (Object)adaptor.nil();
 
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:476:7: ( '0x' )?
+			// JPA2.g:476:7: ( '0x' )?
 			int alt129=2;
 			int LA129_0 = input.LA(1);
 			if ( (LA129_0==59) ) {
@@ -17348,7 +17348,7 @@ public class JPA2Parser extends Parser {
 			}
 			switch (alt129) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:476:8: '0x'
+					// JPA2.g:476:8: '0x'
 					{
 					string_literal544=(Token)match(input,59,FOLLOW_59_in_numeric_literal4220); if (state.failed) return retval;
 					if ( state.backtracking==0 ) {
@@ -17397,7 +17397,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "single_valued_object_field"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:477:1: single_valued_object_field : WORD ;
+	// JPA2.g:477:1: single_valued_object_field : WORD ;
 	public final JPA2Parser.single_valued_object_field_return single_valued_object_field() throws RecognitionException {
 		JPA2Parser.single_valued_object_field_return retval = new JPA2Parser.single_valued_object_field_return();
 		retval.start = input.LT(1);
@@ -17409,8 +17409,8 @@ public class JPA2Parser extends Parser {
 		Object WORD546_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:478:5: ( WORD )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:478:7: WORD
+			// JPA2.g:478:5: ( WORD )
+			// JPA2.g:478:7: WORD
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -17451,7 +17451,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "single_valued_embeddable_object_field"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:479:1: single_valued_embeddable_object_field : WORD ;
+	// JPA2.g:479:1: single_valued_embeddable_object_field : WORD ;
 	public final JPA2Parser.single_valued_embeddable_object_field_return single_valued_embeddable_object_field() throws RecognitionException {
 		JPA2Parser.single_valued_embeddable_object_field_return retval = new JPA2Parser.single_valued_embeddable_object_field_return();
 		retval.start = input.LT(1);
@@ -17463,8 +17463,8 @@ public class JPA2Parser extends Parser {
 		Object WORD547_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:480:5: ( WORD )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:480:7: WORD
+			// JPA2.g:480:5: ( WORD )
+			// JPA2.g:480:7: WORD
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -17505,7 +17505,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "collection_valued_field"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:481:1: collection_valued_field : WORD ;
+	// JPA2.g:481:1: collection_valued_field : WORD ;
 	public final JPA2Parser.collection_valued_field_return collection_valued_field() throws RecognitionException {
 		JPA2Parser.collection_valued_field_return retval = new JPA2Parser.collection_valued_field_return();
 		retval.start = input.LT(1);
@@ -17517,8 +17517,8 @@ public class JPA2Parser extends Parser {
 		Object WORD548_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:482:5: ( WORD )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:482:7: WORD
+			// JPA2.g:482:5: ( WORD )
+			// JPA2.g:482:7: WORD
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -17559,7 +17559,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "entity_name"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:483:1: entity_name : WORD ;
+	// JPA2.g:483:1: entity_name : WORD ;
 	public final JPA2Parser.entity_name_return entity_name() throws RecognitionException {
 		JPA2Parser.entity_name_return retval = new JPA2Parser.entity_name_return();
 		retval.start = input.LT(1);
@@ -17571,8 +17571,8 @@ public class JPA2Parser extends Parser {
 		Object WORD549_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:484:5: ( WORD )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:484:7: WORD
+			// JPA2.g:484:5: ( WORD )
+			// JPA2.g:484:7: WORD
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -17613,7 +17613,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "subtype"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:485:1: subtype : WORD ;
+	// JPA2.g:485:1: subtype : WORD ;
 	public final JPA2Parser.subtype_return subtype() throws RecognitionException {
 		JPA2Parser.subtype_return retval = new JPA2Parser.subtype_return();
 		retval.start = input.LT(1);
@@ -17625,8 +17625,8 @@ public class JPA2Parser extends Parser {
 		Object WORD550_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:486:5: ( WORD )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:486:7: WORD
+			// JPA2.g:486:5: ( WORD )
+			// JPA2.g:486:7: WORD
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -17667,7 +17667,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "entity_type_literal"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:487:1: entity_type_literal : WORD ;
+	// JPA2.g:487:1: entity_type_literal : WORD ;
 	public final JPA2Parser.entity_type_literal_return entity_type_literal() throws RecognitionException {
 		JPA2Parser.entity_type_literal_return retval = new JPA2Parser.entity_type_literal_return();
 		retval.start = input.LT(1);
@@ -17679,8 +17679,8 @@ public class JPA2Parser extends Parser {
 		Object WORD551_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:488:5: ( WORD )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:488:7: WORD
+			// JPA2.g:488:5: ( WORD )
+			// JPA2.g:488:7: WORD
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -17721,7 +17721,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "function_name"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:489:1: function_name : WORD ;
+	// JPA2.g:489:1: function_name : WORD ;
 	public final JPA2Parser.function_name_return function_name() throws RecognitionException {
 		JPA2Parser.function_name_return retval = new JPA2Parser.function_name_return();
 		retval.start = input.LT(1);
@@ -17733,8 +17733,8 @@ public class JPA2Parser extends Parser {
 		Object WORD552_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:490:5: ( WORD )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:490:7: WORD
+			// JPA2.g:490:5: ( WORD )
+			// JPA2.g:490:7: WORD
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -17775,7 +17775,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "state_field"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:491:1: state_field : WORD ;
+	// JPA2.g:491:1: state_field : WORD ;
 	public final JPA2Parser.state_field_return state_field() throws RecognitionException {
 		JPA2Parser.state_field_return retval = new JPA2Parser.state_field_return();
 		retval.start = input.LT(1);
@@ -17787,8 +17787,8 @@ public class JPA2Parser extends Parser {
 		Object WORD553_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:492:5: ( WORD )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:492:7: WORD
+			// JPA2.g:492:5: ( WORD )
+			// JPA2.g:492:7: WORD
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -17829,7 +17829,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "result_variable"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:493:1: result_variable : WORD ;
+	// JPA2.g:493:1: result_variable : WORD ;
 	public final JPA2Parser.result_variable_return result_variable() throws RecognitionException {
 		JPA2Parser.result_variable_return retval = new JPA2Parser.result_variable_return();
 		retval.start = input.LT(1);
@@ -17841,8 +17841,8 @@ public class JPA2Parser extends Parser {
 		Object WORD554_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:494:5: ( WORD )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:494:7: WORD
+			// JPA2.g:494:5: ( WORD )
+			// JPA2.g:494:7: WORD
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -17883,7 +17883,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "superquery_identification_variable"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:495:1: superquery_identification_variable : WORD ;
+	// JPA2.g:495:1: superquery_identification_variable : WORD ;
 	public final JPA2Parser.superquery_identification_variable_return superquery_identification_variable() throws RecognitionException {
 		JPA2Parser.superquery_identification_variable_return retval = new JPA2Parser.superquery_identification_variable_return();
 		retval.start = input.LT(1);
@@ -17895,8 +17895,8 @@ public class JPA2Parser extends Parser {
 		Object WORD555_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:496:5: ( WORD )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:496:7: WORD
+			// JPA2.g:496:5: ( WORD )
+			// JPA2.g:496:7: WORD
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -17937,7 +17937,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "date_time_timestamp_literal"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:497:1: date_time_timestamp_literal : WORD ;
+	// JPA2.g:497:1: date_time_timestamp_literal : WORD ;
 	public final JPA2Parser.date_time_timestamp_literal_return date_time_timestamp_literal() throws RecognitionException {
 		JPA2Parser.date_time_timestamp_literal_return retval = new JPA2Parser.date_time_timestamp_literal_return();
 		retval.start = input.LT(1);
@@ -17949,8 +17949,8 @@ public class JPA2Parser extends Parser {
 		Object WORD556_tree=null;
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:498:5: ( WORD )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:498:7: WORD
+			// JPA2.g:498:5: ( WORD )
+			// JPA2.g:498:7: WORD
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -17991,7 +17991,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "pattern_value"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:499:1: pattern_value : string_literal ;
+	// JPA2.g:499:1: pattern_value : string_literal ;
 	public final JPA2Parser.pattern_value_return pattern_value() throws RecognitionException {
 		JPA2Parser.pattern_value_return retval = new JPA2Parser.pattern_value_return();
 		retval.start = input.LT(1);
@@ -18002,8 +18002,8 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:500:5: ( string_literal )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:500:7: string_literal
+			// JPA2.g:500:5: ( string_literal )
+			// JPA2.g:500:7: string_literal
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -18044,7 +18044,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "collection_valued_input_parameter"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:501:1: collection_valued_input_parameter : input_parameter ;
+	// JPA2.g:501:1: collection_valued_input_parameter : input_parameter ;
 	public final JPA2Parser.collection_valued_input_parameter_return collection_valued_input_parameter() throws RecognitionException {
 		JPA2Parser.collection_valued_input_parameter_return retval = new JPA2Parser.collection_valued_input_parameter_return();
 		retval.start = input.LT(1);
@@ -18055,8 +18055,8 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:502:5: ( input_parameter )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:502:7: input_parameter
+			// JPA2.g:502:5: ( input_parameter )
+			// JPA2.g:502:7: input_parameter
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -18097,7 +18097,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "single_valued_input_parameter"
-	// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:503:1: single_valued_input_parameter : input_parameter ;
+	// JPA2.g:503:1: single_valued_input_parameter : input_parameter ;
 	public final JPA2Parser.single_valued_input_parameter_return single_valued_input_parameter() throws RecognitionException {
 		JPA2Parser.single_valued_input_parameter_return retval = new JPA2Parser.single_valued_input_parameter_return();
 		retval.start = input.LT(1);
@@ -18108,8 +18108,8 @@ public class JPA2Parser extends Parser {
 
 
 		try {
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:504:5: ( input_parameter )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:504:7: input_parameter
+			// JPA2.g:504:5: ( input_parameter )
+			// JPA2.g:504:7: input_parameter
 			{
 			root_0 = (Object)adaptor.nil();
 
@@ -18143,8 +18143,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred30_JPA2
 	public final void synpred30_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:144:7: ( scalar_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:144:7: scalar_expression
+		// JPA2.g:144:7: ( scalar_expression )
+		// JPA2.g:144:7: scalar_expression
 		{
 		pushFollow(FOLLOW_scalar_expression_in_synpred30_JPA21113);
 		scalar_expression();
@@ -18158,8 +18158,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred31_JPA2
 	public final void synpred31_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:145:7: ( simple_entity_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:145:7: simple_entity_expression
+		// JPA2.g:145:7: ( simple_entity_expression )
+		// JPA2.g:145:7: simple_entity_expression
 		{
 		pushFollow(FOLLOW_simple_entity_expression_in_synpred31_JPA21121);
 		simple_entity_expression();
@@ -18173,8 +18173,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred38_JPA2
 	public final void synpred38_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:155:7: ( path_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:155:7: path_expression
+		// JPA2.g:155:7: ( path_expression )
+		// JPA2.g:155:7: path_expression
 		{
 		pushFollow(FOLLOW_path_expression_in_synpred38_JPA21231);
 		path_expression();
@@ -18188,8 +18188,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred39_JPA2
 	public final void synpred39_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:156:7: ( identification_variable )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:156:7: identification_variable
+		// JPA2.g:156:7: ( identification_variable )
+		// JPA2.g:156:7: identification_variable
 		{
 		pushFollow(FOLLOW_identification_variable_in_synpred39_JPA21239);
 		identification_variable();
@@ -18203,8 +18203,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred40_JPA2
 	public final void synpred40_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:157:7: ( scalar_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:157:7: scalar_expression
+		// JPA2.g:157:7: ( scalar_expression )
+		// JPA2.g:157:7: scalar_expression
 		{
 		pushFollow(FOLLOW_scalar_expression_in_synpred40_JPA21257);
 		scalar_expression();
@@ -18218,8 +18218,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred41_JPA2
 	public final void synpred41_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:158:7: ( aggregate_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:158:7: aggregate_expression
+		// JPA2.g:158:7: ( aggregate_expression )
+		// JPA2.g:158:7: aggregate_expression
 		{
 		pushFollow(FOLLOW_aggregate_expression_in_synpred41_JPA21265);
 		aggregate_expression();
@@ -18233,8 +18233,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred44_JPA2
 	public final void synpred44_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:164:7: ( path_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:164:7: path_expression
+		// JPA2.g:164:7: ( path_expression )
+		// JPA2.g:164:7: path_expression
 		{
 		pushFollow(FOLLOW_path_expression_in_synpred44_JPA21322);
 		path_expression();
@@ -18248,8 +18248,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred45_JPA2
 	public final void synpred45_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:165:7: ( scalar_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:165:7: scalar_expression
+		// JPA2.g:165:7: ( scalar_expression )
+		// JPA2.g:165:7: scalar_expression
 		{
 		pushFollow(FOLLOW_scalar_expression_in_synpred45_JPA21330);
 		scalar_expression();
@@ -18263,8 +18263,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred46_JPA2
 	public final void synpred46_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:166:7: ( aggregate_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:166:7: aggregate_expression
+		// JPA2.g:166:7: ( aggregate_expression )
+		// JPA2.g:166:7: aggregate_expression
 		{
 		pushFollow(FOLLOW_aggregate_expression_in_synpred46_JPA21338);
 		aggregate_expression();
@@ -18278,8 +18278,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred48_JPA2
 	public final void synpred48_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:169:7: ( aggregate_expression_function_name '(' ( DISTINCT )? path_expression ')' )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:169:7: aggregate_expression_function_name '(' ( DISTINCT )? path_expression ')'
+		// JPA2.g:169:7: ( aggregate_expression_function_name '(' ( DISTINCT )? path_expression ')' )
+		// JPA2.g:169:7: aggregate_expression_function_name '(' ( DISTINCT )? path_expression ')'
 		{
 		pushFollow(FOLLOW_aggregate_expression_function_name_in_synpred48_JPA21357);
 		aggregate_expression_function_name();
@@ -18288,7 +18288,7 @@ public class JPA2Parser extends Parser {
 
 		match(input,LPAREN,FOLLOW_LPAREN_in_synpred48_JPA21359); if (state.failed) return;
 
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:169:45: ( DISTINCT )?
+		// JPA2.g:169:45: ( DISTINCT )?
 		int alt135=2;
 		int LA135_0 = input.LA(1);
 		if ( (LA135_0==DISTINCT) ) {
@@ -18296,7 +18296,7 @@ public class JPA2Parser extends Parser {
 		}
 		switch (alt135) {
 			case 1 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:169:46: DISTINCT
+				// JPA2.g:169:46: DISTINCT
 				{
 				match(input,DISTINCT,FOLLOW_DISTINCT_in_synpred48_JPA21361); if (state.failed) return;
 
@@ -18319,14 +18319,14 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred50_JPA2
 	public final void synpred50_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:171:7: ( 'COUNT' '(' ( DISTINCT )? count_argument ')' )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:171:7: 'COUNT' '(' ( DISTINCT )? count_argument ')'
+		// JPA2.g:171:7: ( 'COUNT' '(' ( DISTINCT )? count_argument ')' )
+		// JPA2.g:171:7: 'COUNT' '(' ( DISTINCT )? count_argument ')'
 		{
 		match(input,COUNT,FOLLOW_COUNT_in_synpred50_JPA21400); if (state.failed) return;
 
 		match(input,LPAREN,FOLLOW_LPAREN_in_synpred50_JPA21402); if (state.failed) return;
 
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:171:18: ( DISTINCT )?
+		// JPA2.g:171:18: ( DISTINCT )?
 		int alt136=2;
 		int LA136_0 = input.LA(1);
 		if ( (LA136_0==DISTINCT) ) {
@@ -18334,7 +18334,7 @@ public class JPA2Parser extends Parser {
 		}
 		switch (alt136) {
 			case 1 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:171:19: DISTINCT
+				// JPA2.g:171:19: DISTINCT
 				{
 				match(input,DISTINCT,FOLLOW_DISTINCT_in_synpred50_JPA21404); if (state.failed) return;
 
@@ -18357,8 +18357,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred62_JPA2
 	public final void synpred62_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:196:25: ( general_identification_variable )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:196:25: general_identification_variable
+		// JPA2.g:196:25: ( general_identification_variable )
+		// JPA2.g:196:25: general_identification_variable
 		{
 		pushFollow(FOLLOW_general_identification_variable_in_synpred62_JPA21708);
 		general_identification_variable();
@@ -18372,8 +18372,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred70_JPA2
 	public final void synpred70_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:210:7: ( general_derived_path '.' single_valued_object_field )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:210:7: general_derived_path '.' single_valued_object_field
+		// JPA2.g:210:7: ( general_derived_path '.' single_valued_object_field )
+		// JPA2.g:210:7: general_derived_path '.' single_valued_object_field
 		{
 		pushFollow(FOLLOW_general_derived_path_in_synpred70_JPA21882);
 		general_derived_path();
@@ -18394,8 +18394,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred75_JPA2
 	public final void synpred75_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:228:7: ( path_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:228:7: path_expression
+		// JPA2.g:228:7: ( path_expression )
+		// JPA2.g:228:7: path_expression
 		{
 		pushFollow(FOLLOW_path_expression_in_synpred75_JPA22032);
 		path_expression();
@@ -18409,8 +18409,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred76_JPA2
 	public final void synpred76_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:229:7: ( scalar_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:229:7: scalar_expression
+		// JPA2.g:229:7: ( scalar_expression )
+		// JPA2.g:229:7: scalar_expression
 		{
 		pushFollow(FOLLOW_scalar_expression_in_synpred76_JPA22040);
 		scalar_expression();
@@ -18424,8 +18424,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred77_JPA2
 	public final void synpred77_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:230:7: ( aggregate_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:230:7: aggregate_expression
+		// JPA2.g:230:7: ( aggregate_expression )
+		// JPA2.g:230:7: aggregate_expression
 		{
 		pushFollow(FOLLOW_aggregate_expression_in_synpred77_JPA22048);
 		aggregate_expression();
@@ -18439,8 +18439,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred78_JPA2
 	public final void synpred78_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:233:7: ( arithmetic_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:233:7: arithmetic_expression
+		// JPA2.g:233:7: ( arithmetic_expression )
+		// JPA2.g:233:7: arithmetic_expression
 		{
 		pushFollow(FOLLOW_arithmetic_expression_in_synpred78_JPA22067);
 		arithmetic_expression();
@@ -18454,8 +18454,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred79_JPA2
 	public final void synpred79_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:234:7: ( string_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:234:7: string_expression
+		// JPA2.g:234:7: ( string_expression )
+		// JPA2.g:234:7: string_expression
 		{
 		pushFollow(FOLLOW_string_expression_in_synpred79_JPA22075);
 		string_expression();
@@ -18469,8 +18469,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred80_JPA2
 	public final void synpred80_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:235:7: ( enum_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:235:7: enum_expression
+		// JPA2.g:235:7: ( enum_expression )
+		// JPA2.g:235:7: enum_expression
 		{
 		pushFollow(FOLLOW_enum_expression_in_synpred80_JPA22083);
 		enum_expression();
@@ -18484,8 +18484,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred81_JPA2
 	public final void synpred81_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:236:7: ( datetime_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:236:7: datetime_expression
+		// JPA2.g:236:7: ( datetime_expression )
+		// JPA2.g:236:7: datetime_expression
 		{
 		pushFollow(FOLLOW_datetime_expression_in_synpred81_JPA22091);
 		datetime_expression();
@@ -18499,8 +18499,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred82_JPA2
 	public final void synpred82_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:237:7: ( boolean_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:237:7: boolean_expression
+		// JPA2.g:237:7: ( boolean_expression )
+		// JPA2.g:237:7: boolean_expression
 		{
 		pushFollow(FOLLOW_boolean_expression_in_synpred82_JPA22099);
 		boolean_expression();
@@ -18514,8 +18514,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred83_JPA2
 	public final void synpred83_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:238:7: ( case_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:238:7: case_expression
+		// JPA2.g:238:7: ( case_expression )
+		// JPA2.g:238:7: case_expression
 		{
 		pushFollow(FOLLOW_case_expression_in_synpred83_JPA22107);
 		case_expression();
@@ -18529,8 +18529,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred86_JPA2
 	public final void synpred86_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:245:8: ( 'NOT' )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:245:8: 'NOT'
+		// JPA2.g:245:8: ( 'NOT' )
+		// JPA2.g:245:8: 'NOT'
 		{
 		match(input,109,FOLLOW_109_in_synpred86_JPA22167); if (state.failed) return;
 
@@ -18541,8 +18541,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred87_JPA2
 	public final void synpred87_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:247:7: ( simple_cond_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:247:7: simple_cond_expression
+		// JPA2.g:247:7: ( simple_cond_expression )
+		// JPA2.g:247:7: simple_cond_expression
 		{
 		pushFollow(FOLLOW_simple_cond_expression_in_synpred87_JPA22182);
 		simple_cond_expression();
@@ -18556,8 +18556,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred88_JPA2
 	public final void synpred88_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:251:7: ( comparison_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:251:7: comparison_expression
+		// JPA2.g:251:7: ( comparison_expression )
+		// JPA2.g:251:7: comparison_expression
 		{
 		pushFollow(FOLLOW_comparison_expression_in_synpred88_JPA22219);
 		comparison_expression();
@@ -18571,8 +18571,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred89_JPA2
 	public final void synpred89_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:252:7: ( between_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:252:7: between_expression
+		// JPA2.g:252:7: ( between_expression )
+		// JPA2.g:252:7: between_expression
 		{
 		pushFollow(FOLLOW_between_expression_in_synpred89_JPA22227);
 		between_expression();
@@ -18586,8 +18586,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred90_JPA2
 	public final void synpred90_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:253:7: ( in_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:253:7: in_expression
+		// JPA2.g:253:7: ( in_expression )
+		// JPA2.g:253:7: in_expression
 		{
 		pushFollow(FOLLOW_in_expression_in_synpred90_JPA22235);
 		in_expression();
@@ -18601,8 +18601,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred91_JPA2
 	public final void synpred91_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:254:7: ( like_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:254:7: like_expression
+		// JPA2.g:254:7: ( like_expression )
+		// JPA2.g:254:7: like_expression
 		{
 		pushFollow(FOLLOW_like_expression_in_synpred91_JPA22243);
 		like_expression();
@@ -18616,8 +18616,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred92_JPA2
 	public final void synpred92_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:255:7: ( null_comparison_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:255:7: null_comparison_expression
+		// JPA2.g:255:7: ( null_comparison_expression )
+		// JPA2.g:255:7: null_comparison_expression
 		{
 		pushFollow(FOLLOW_null_comparison_expression_in_synpred92_JPA22251);
 		null_comparison_expression();
@@ -18631,8 +18631,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred93_JPA2
 	public final void synpred93_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:256:7: ( empty_collection_comparison_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:256:7: empty_collection_comparison_expression
+		// JPA2.g:256:7: ( empty_collection_comparison_expression )
+		// JPA2.g:256:7: empty_collection_comparison_expression
 		{
 		pushFollow(FOLLOW_empty_collection_comparison_expression_in_synpred93_JPA22259);
 		empty_collection_comparison_expression();
@@ -18646,8 +18646,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred94_JPA2
 	public final void synpred94_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:257:7: ( collection_member_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:257:7: collection_member_expression
+		// JPA2.g:257:7: ( collection_member_expression )
+		// JPA2.g:257:7: collection_member_expression
 		{
 		pushFollow(FOLLOW_collection_member_expression_in_synpred94_JPA22267);
 		collection_member_expression();
@@ -18661,15 +18661,15 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred113_JPA2
 	public final void synpred113_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:286:7: ( arithmetic_expression ( 'NOT' )? 'BETWEEN' arithmetic_expression 'AND' arithmetic_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:286:7: arithmetic_expression ( 'NOT' )? 'BETWEEN' arithmetic_expression 'AND' arithmetic_expression
+		// JPA2.g:286:7: ( arithmetic_expression ( 'NOT' )? 'BETWEEN' arithmetic_expression 'AND' arithmetic_expression )
+		// JPA2.g:286:7: arithmetic_expression ( 'NOT' )? 'BETWEEN' arithmetic_expression 'AND' arithmetic_expression
 		{
 		pushFollow(FOLLOW_arithmetic_expression_in_synpred113_JPA22520);
 		arithmetic_expression();
 		state._fsp--;
 		if (state.failed) return;
 
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:286:29: ( 'NOT' )?
+		// JPA2.g:286:29: ( 'NOT' )?
 		int alt139=2;
 		int LA139_0 = input.LA(1);
 		if ( (LA139_0==109) ) {
@@ -18677,7 +18677,7 @@ public class JPA2Parser extends Parser {
 		}
 		switch (alt139) {
 			case 1 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:286:30: 'NOT'
+				// JPA2.g:286:30: 'NOT'
 				{
 				match(input,109,FOLLOW_109_in_synpred113_JPA22523); if (state.failed) return;
 
@@ -18707,15 +18707,15 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred115_JPA2
 	public final void synpred115_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:287:7: ( string_expression ( 'NOT' )? 'BETWEEN' string_expression 'AND' string_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:287:7: string_expression ( 'NOT' )? 'BETWEEN' string_expression 'AND' string_expression
+		// JPA2.g:287:7: ( string_expression ( 'NOT' )? 'BETWEEN' string_expression 'AND' string_expression )
+		// JPA2.g:287:7: string_expression ( 'NOT' )? 'BETWEEN' string_expression 'AND' string_expression
 		{
 		pushFollow(FOLLOW_string_expression_in_synpred115_JPA22541);
 		string_expression();
 		state._fsp--;
 		if (state.failed) return;
 
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:287:25: ( 'NOT' )?
+		// JPA2.g:287:25: ( 'NOT' )?
 		int alt140=2;
 		int LA140_0 = input.LA(1);
 		if ( (LA140_0==109) ) {
@@ -18723,7 +18723,7 @@ public class JPA2Parser extends Parser {
 		}
 		switch (alt140) {
 			case 1 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:287:26: 'NOT'
+				// JPA2.g:287:26: 'NOT'
 				{
 				match(input,109,FOLLOW_109_in_synpred115_JPA22544); if (state.failed) return;
 
@@ -18753,8 +18753,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred132_JPA2
 	public final void synpred132_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:308:7: ( identification_variable )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:308:7: identification_variable
+		// JPA2.g:308:7: ( identification_variable )
+		// JPA2.g:308:7: identification_variable
 		{
 		pushFollow(FOLLOW_identification_variable_in_synpred132_JPA22809);
 		identification_variable();
@@ -18768,8 +18768,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred138_JPA2
 	public final void synpred138_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:316:7: ( string_expression comparison_operator ( string_expression | all_or_any_expression ) )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:316:7: string_expression comparison_operator ( string_expression | all_or_any_expression )
+		// JPA2.g:316:7: ( string_expression comparison_operator ( string_expression | all_or_any_expression ) )
+		// JPA2.g:316:7: string_expression comparison_operator ( string_expression | all_or_any_expression )
 		{
 		pushFollow(FOLLOW_string_expression_in_synpred138_JPA22878);
 		string_expression();
@@ -18781,7 +18781,7 @@ public class JPA2Parser extends Parser {
 		state._fsp--;
 		if (state.failed) return;
 
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:316:45: ( string_expression | all_or_any_expression )
+		// JPA2.g:316:45: ( string_expression | all_or_any_expression )
 		int alt142=2;
 		int LA142_0 = input.LA(1);
 		if ( (LA142_0==AVG||LA142_0==COUNT||(LA142_0 >= LPAREN && LA142_0 <= NAMED_PARAMETER)||(LA142_0 >= STRING_LITERAL && LA142_0 <= SUM)||LA142_0==WORD||LA142_0==52||LA142_0==66||(LA142_0 >= 78 && LA142_0 <= 80)||LA142_0==93||LA142_0==103||LA142_0==112||LA142_0==122||LA142_0==126||LA142_0==129) ) {
@@ -18800,7 +18800,7 @@ public class JPA2Parser extends Parser {
 
 		switch (alt142) {
 			case 1 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:316:46: string_expression
+				// JPA2.g:316:46: string_expression
 				{
 				pushFollow(FOLLOW_string_expression_in_synpred138_JPA22883);
 				string_expression();
@@ -18810,7 +18810,7 @@ public class JPA2Parser extends Parser {
 				}
 				break;
 			case 2 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:316:66: all_or_any_expression
+				// JPA2.g:316:66: all_or_any_expression
 				{
 				pushFollow(FOLLOW_all_or_any_expression_in_synpred138_JPA22887);
 				all_or_any_expression();
@@ -18829,8 +18829,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred141_JPA2
 	public final void synpred141_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:317:7: ( boolean_expression ( '=' | '<>' ) ( boolean_expression | all_or_any_expression ) )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:317:7: boolean_expression ( '=' | '<>' ) ( boolean_expression | all_or_any_expression )
+		// JPA2.g:317:7: ( boolean_expression ( '=' | '<>' ) ( boolean_expression | all_or_any_expression ) )
+		// JPA2.g:317:7: boolean_expression ( '=' | '<>' ) ( boolean_expression | all_or_any_expression )
 		{
 		pushFollow(FOLLOW_boolean_expression_in_synpred141_JPA22896);
 		boolean_expression();
@@ -18847,7 +18847,7 @@ public class JPA2Parser extends Parser {
 			MismatchedSetException mse = new MismatchedSetException(null,input);
 			throw mse;
 		}
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:317:39: ( boolean_expression | all_or_any_expression )
+		// JPA2.g:317:39: ( boolean_expression | all_or_any_expression )
 		int alt143=2;
 		int LA143_0 = input.LA(1);
 		if ( (LA143_0==LPAREN||LA143_0==NAMED_PARAMETER||LA143_0==WORD||LA143_0==52||LA143_0==66||(LA143_0 >= 78 && LA143_0 <= 79)||LA143_0==93||LA143_0==112||(LA143_0 >= 134 && LA143_0 <= 135)) ) {
@@ -18866,7 +18866,7 @@ public class JPA2Parser extends Parser {
 
 		switch (alt143) {
 			case 1 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:317:40: boolean_expression
+				// JPA2.g:317:40: boolean_expression
 				{
 				pushFollow(FOLLOW_boolean_expression_in_synpred141_JPA22907);
 				boolean_expression();
@@ -18876,7 +18876,7 @@ public class JPA2Parser extends Parser {
 				}
 				break;
 			case 2 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:317:61: all_or_any_expression
+				// JPA2.g:317:61: all_or_any_expression
 				{
 				pushFollow(FOLLOW_all_or_any_expression_in_synpred141_JPA22911);
 				all_or_any_expression();
@@ -18895,8 +18895,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred144_JPA2
 	public final void synpred144_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:318:7: ( enum_expression ( '=' | '<>' ) ( enum_expression | all_or_any_expression ) )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:318:7: enum_expression ( '=' | '<>' ) ( enum_expression | all_or_any_expression )
+		// JPA2.g:318:7: ( enum_expression ( '=' | '<>' ) ( enum_expression | all_or_any_expression ) )
+		// JPA2.g:318:7: enum_expression ( '=' | '<>' ) ( enum_expression | all_or_any_expression )
 		{
 		pushFollow(FOLLOW_enum_expression_in_synpred144_JPA22920);
 		enum_expression();
@@ -18913,7 +18913,7 @@ public class JPA2Parser extends Parser {
 			MismatchedSetException mse = new MismatchedSetException(null,input);
 			throw mse;
 		}
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:318:34: ( enum_expression | all_or_any_expression )
+		// JPA2.g:318:34: ( enum_expression | all_or_any_expression )
 		int alt144=2;
 		int LA144_0 = input.LA(1);
 		if ( (LA144_0==LPAREN||LA144_0==NAMED_PARAMETER||LA144_0==WORD||LA144_0==52||LA144_0==66||(LA144_0 >= 78 && LA144_0 <= 79)||LA144_0==112) ) {
@@ -18932,7 +18932,7 @@ public class JPA2Parser extends Parser {
 
 		switch (alt144) {
 			case 1 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:318:35: enum_expression
+				// JPA2.g:318:35: enum_expression
 				{
 				pushFollow(FOLLOW_enum_expression_in_synpred144_JPA22929);
 				enum_expression();
@@ -18942,7 +18942,7 @@ public class JPA2Parser extends Parser {
 				}
 				break;
 			case 2 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:318:53: all_or_any_expression
+				// JPA2.g:318:53: all_or_any_expression
 				{
 				pushFollow(FOLLOW_all_or_any_expression_in_synpred144_JPA22933);
 				all_or_any_expression();
@@ -18961,8 +18961,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred146_JPA2
 	public final void synpred146_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:319:7: ( datetime_expression comparison_operator ( datetime_expression | all_or_any_expression ) )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:319:7: datetime_expression comparison_operator ( datetime_expression | all_or_any_expression )
+		// JPA2.g:319:7: ( datetime_expression comparison_operator ( datetime_expression | all_or_any_expression ) )
+		// JPA2.g:319:7: datetime_expression comparison_operator ( datetime_expression | all_or_any_expression )
 		{
 		pushFollow(FOLLOW_datetime_expression_in_synpred146_JPA22942);
 		datetime_expression();
@@ -18974,7 +18974,7 @@ public class JPA2Parser extends Parser {
 		state._fsp--;
 		if (state.failed) return;
 
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:319:47: ( datetime_expression | all_or_any_expression )
+		// JPA2.g:319:47: ( datetime_expression | all_or_any_expression )
 		int alt145=2;
 		int LA145_0 = input.LA(1);
 		if ( (LA145_0==AVG||LA145_0==COUNT||(LA145_0 >= LPAREN && LA145_0 <= NAMED_PARAMETER)||LA145_0==SUM||LA145_0==WORD||LA145_0==52||LA145_0==66||(LA145_0 >= 78 && LA145_0 <= 79)||(LA145_0 >= 81 && LA145_0 <= 83)||LA145_0==93||LA145_0==112) ) {
@@ -18993,7 +18993,7 @@ public class JPA2Parser extends Parser {
 
 		switch (alt145) {
 			case 1 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:319:48: datetime_expression
+				// JPA2.g:319:48: datetime_expression
 				{
 				pushFollow(FOLLOW_datetime_expression_in_synpred146_JPA22947);
 				datetime_expression();
@@ -19003,7 +19003,7 @@ public class JPA2Parser extends Parser {
 				}
 				break;
 			case 2 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:319:70: all_or_any_expression
+				// JPA2.g:319:70: all_or_any_expression
 				{
 				pushFollow(FOLLOW_all_or_any_expression_in_synpred146_JPA22951);
 				all_or_any_expression();
@@ -19022,8 +19022,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred149_JPA2
 	public final void synpred149_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:320:7: ( entity_expression ( '=' | '<>' ) ( entity_expression | all_or_any_expression ) )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:320:7: entity_expression ( '=' | '<>' ) ( entity_expression | all_or_any_expression )
+		// JPA2.g:320:7: ( entity_expression ( '=' | '<>' ) ( entity_expression | all_or_any_expression ) )
+		// JPA2.g:320:7: entity_expression ( '=' | '<>' ) ( entity_expression | all_or_any_expression )
 		{
 		pushFollow(FOLLOW_entity_expression_in_synpred149_JPA22960);
 		entity_expression();
@@ -19040,7 +19040,7 @@ public class JPA2Parser extends Parser {
 			MismatchedSetException mse = new MismatchedSetException(null,input);
 			throw mse;
 		}
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:320:38: ( entity_expression | all_or_any_expression )
+		// JPA2.g:320:38: ( entity_expression | all_or_any_expression )
 		int alt146=2;
 		int LA146_0 = input.LA(1);
 		if ( (LA146_0==NAMED_PARAMETER||LA146_0==WORD||LA146_0==52||LA146_0==66) ) {
@@ -19059,7 +19059,7 @@ public class JPA2Parser extends Parser {
 
 		switch (alt146) {
 			case 1 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:320:39: entity_expression
+				// JPA2.g:320:39: entity_expression
 				{
 				pushFollow(FOLLOW_entity_expression_in_synpred149_JPA22971);
 				entity_expression();
@@ -19069,7 +19069,7 @@ public class JPA2Parser extends Parser {
 				}
 				break;
 			case 2 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:320:59: all_or_any_expression
+				// JPA2.g:320:59: all_or_any_expression
 				{
 				pushFollow(FOLLOW_all_or_any_expression_in_synpred149_JPA22975);
 				all_or_any_expression();
@@ -19088,8 +19088,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred151_JPA2
 	public final void synpred151_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:321:7: ( entity_type_expression ( '=' | '<>' ) entity_type_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:321:7: entity_type_expression ( '=' | '<>' ) entity_type_expression
+		// JPA2.g:321:7: ( entity_type_expression ( '=' | '<>' ) entity_type_expression )
+		// JPA2.g:321:7: entity_type_expression ( '=' | '<>' ) entity_type_expression
 		{
 		pushFollow(FOLLOW_entity_type_expression_in_synpred151_JPA22984);
 		entity_type_expression();
@@ -19118,8 +19118,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred158_JPA2
 	public final void synpred158_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:332:7: ( arithmetic_term )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:332:7: arithmetic_term
+		// JPA2.g:332:7: ( arithmetic_term )
+		// JPA2.g:332:7: arithmetic_term
 		{
 		pushFollow(FOLLOW_arithmetic_term_in_synpred158_JPA23075);
 		arithmetic_term();
@@ -19133,8 +19133,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred160_JPA2
 	public final void synpred160_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:335:7: ( arithmetic_factor )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:335:7: arithmetic_factor
+		// JPA2.g:335:7: ( arithmetic_factor )
+		// JPA2.g:335:7: arithmetic_factor
 		{
 		pushFollow(FOLLOW_arithmetic_factor_in_synpred160_JPA23104);
 		arithmetic_factor();
@@ -19148,8 +19148,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred166_JPA2
 	public final void synpred166_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:342:7: ( '(' arithmetic_expression ')' )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:342:7: '(' arithmetic_expression ')'
+		// JPA2.g:342:7: ( '(' arithmetic_expression ')' )
+		// JPA2.g:342:7: '(' arithmetic_expression ')'
 		{
 		match(input,LPAREN,FOLLOW_LPAREN_in_synpred166_JPA23173); if (state.failed) return;
 
@@ -19167,8 +19167,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred169_JPA2
 	public final void synpred169_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:345:7: ( aggregate_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:345:7: aggregate_expression
+		// JPA2.g:345:7: ( aggregate_expression )
+		// JPA2.g:345:7: aggregate_expression
 		{
 		pushFollow(FOLLOW_aggregate_expression_in_synpred169_JPA23199);
 		aggregate_expression();
@@ -19182,8 +19182,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred171_JPA2
 	public final void synpred171_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:347:7: ( function_invocation )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:347:7: function_invocation
+		// JPA2.g:347:7: ( function_invocation )
+		// JPA2.g:347:7: function_invocation
 		{
 		pushFollow(FOLLOW_function_invocation_in_synpred171_JPA23215);
 		function_invocation();
@@ -19197,8 +19197,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred176_JPA2
 	public final void synpred176_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:354:7: ( aggregate_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:354:7: aggregate_expression
+		// JPA2.g:354:7: ( aggregate_expression )
+		// JPA2.g:354:7: aggregate_expression
 		{
 		pushFollow(FOLLOW_aggregate_expression_in_synpred176_JPA23266);
 		aggregate_expression();
@@ -19212,8 +19212,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred178_JPA2
 	public final void synpred178_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:356:7: ( function_invocation )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:356:7: function_invocation
+		// JPA2.g:356:7: ( function_invocation )
+		// JPA2.g:356:7: function_invocation
 		{
 		pushFollow(FOLLOW_function_invocation_in_synpred178_JPA23282);
 		function_invocation();
@@ -19227,8 +19227,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred179_JPA2
 	public final void synpred179_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:359:7: ( path_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:359:7: path_expression
+		// JPA2.g:359:7: ( path_expression )
+		// JPA2.g:359:7: path_expression
 		{
 		pushFollow(FOLLOW_path_expression_in_synpred179_JPA23301);
 		path_expression();
@@ -19242,8 +19242,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred182_JPA2
 	public final void synpred182_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:362:7: ( aggregate_expression )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:362:7: aggregate_expression
+		// JPA2.g:362:7: ( aggregate_expression )
+		// JPA2.g:362:7: aggregate_expression
 		{
 		pushFollow(FOLLOW_aggregate_expression_in_synpred182_JPA23325);
 		aggregate_expression();
@@ -19257,8 +19257,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred184_JPA2
 	public final void synpred184_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:364:7: ( function_invocation )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:364:7: function_invocation
+		// JPA2.g:364:7: ( function_invocation )
+		// JPA2.g:364:7: function_invocation
 		{
 		pushFollow(FOLLOW_function_invocation_in_synpred184_JPA23341);
 		function_invocation();
@@ -19272,8 +19272,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred185_JPA2
 	public final void synpred185_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:365:7: ( date_time_timestamp_literal )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:365:7: date_time_timestamp_literal
+		// JPA2.g:365:7: ( date_time_timestamp_literal )
+		// JPA2.g:365:7: date_time_timestamp_literal
 		{
 		pushFollow(FOLLOW_date_time_timestamp_literal_in_synpred185_JPA23349);
 		date_time_timestamp_literal();
@@ -19287,8 +19287,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred222_JPA2
 	public final void synpred222_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:415:7: ( literal )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:415:7: literal
+		// JPA2.g:415:7: ( literal )
+		// JPA2.g:415:7: literal
 		{
 		pushFollow(FOLLOW_literal_in_synpred222_JPA23791);
 		literal();
@@ -19302,8 +19302,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred224_JPA2
 	public final void synpred224_JPA2_fragment() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:417:7: ( input_parameter )
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:417:7: input_parameter
+		// JPA2.g:417:7: ( input_parameter )
+		// JPA2.g:417:7: input_parameter
 		{
 		pushFollow(FOLLOW_input_parameter_in_synpred224_JPA23807);
 		input_parameter();

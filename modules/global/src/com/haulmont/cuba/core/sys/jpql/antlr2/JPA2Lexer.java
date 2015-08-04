@@ -1,4 +1,4 @@
-// $ANTLR 3.5.2 F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g 2015-08-04 11:03:42
+// $ANTLR 3.5.2 JPA2.g 2015-08-04 11:39:22
 
 package com.haulmont.cuba.core.sys.jpql.antlr2;
 
@@ -159,15 +159,15 @@ public class JPA2Lexer extends Lexer {
 	public JPA2Lexer(CharStream input, RecognizerSharedState state) {
 		super(input,state);
 	}
-	@Override public String getGrammarFileName() { return "F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g"; }
+	@Override public String getGrammarFileName() { return "JPA2.g"; }
 
 	// $ANTLR start "AND"
 	public final void mAND() throws RecognitionException {
 		try {
 			int _type = AND;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:7:5: ( 'AND' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:7:7: 'AND'
+			// JPA2.g:7:5: ( 'AND' )
+			// JPA2.g:7:7: 'AND'
 			{
 			match("AND"); 
 
@@ -187,8 +187,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = ASC;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:8:5: ( 'ASC' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:8:7: 'ASC'
+			// JPA2.g:8:5: ( 'ASC' )
+			// JPA2.g:8:7: 'ASC'
 			{
 			match("ASC"); 
 
@@ -208,8 +208,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = AVG;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:9:5: ( 'AVG' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:9:7: 'AVG'
+			// JPA2.g:9:5: ( 'AVG' )
+			// JPA2.g:9:7: 'AVG'
 			{
 			match("AVG"); 
 
@@ -229,8 +229,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = BY;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:10:4: ( 'BY' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:10:6: 'BY'
+			// JPA2.g:10:4: ( 'BY' )
+			// JPA2.g:10:6: 'BY'
 			{
 			match("BY"); 
 
@@ -250,8 +250,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = COUNT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:11:7: ( 'COUNT' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:11:9: 'COUNT'
+			// JPA2.g:11:7: ( 'COUNT' )
+			// JPA2.g:11:9: 'COUNT'
 			{
 			match("COUNT"); 
 
@@ -271,8 +271,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = DESC;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:12:6: ( 'DESC' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:12:8: 'DESC'
+			// JPA2.g:12:6: ( 'DESC' )
+			// JPA2.g:12:8: 'DESC'
 			{
 			match("DESC"); 
 
@@ -292,8 +292,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = DISTINCT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:13:10: ( 'DISTINCT' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:13:12: 'DISTINCT'
+			// JPA2.g:13:10: ( 'DISTINCT' )
+			// JPA2.g:13:12: 'DISTINCT'
 			{
 			match("DISTINCT"); 
 
@@ -313,8 +313,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = FETCH;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:14:7: ( 'FETCH' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:14:9: 'FETCH'
+			// JPA2.g:14:7: ( 'FETCH' )
+			// JPA2.g:14:9: 'FETCH'
 			{
 			match("FETCH"); 
 
@@ -334,8 +334,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = GROUP;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:15:7: ( 'GROUP' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:15:9: 'GROUP'
+			// JPA2.g:15:7: ( 'GROUP' )
+			// JPA2.g:15:9: 'GROUP'
 			{
 			match("GROUP"); 
 
@@ -355,8 +355,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = HAVING;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:16:8: ( 'HAVING' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:16:10: 'HAVING'
+			// JPA2.g:16:8: ( 'HAVING' )
+			// JPA2.g:16:10: 'HAVING'
 			{
 			match("HAVING"); 
 
@@ -376,8 +376,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = INNER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:17:7: ( 'INNER' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:17:9: 'INNER'
+			// JPA2.g:17:7: ( 'INNER' )
+			// JPA2.g:17:9: 'INNER'
 			{
 			match("INNER"); 
 
@@ -397,8 +397,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = JOIN;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:18:6: ( 'JOIN' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:18:8: 'JOIN'
+			// JPA2.g:18:6: ( 'JOIN' )
+			// JPA2.g:18:8: 'JOIN'
 			{
 			match("JOIN"); 
 
@@ -418,8 +418,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = LEFT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:19:6: ( 'LEFT' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:19:8: 'LEFT'
+			// JPA2.g:19:6: ( 'LEFT' )
+			// JPA2.g:19:8: 'LEFT'
 			{
 			match("LEFT"); 
 
@@ -439,8 +439,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = LPAREN;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:20:8: ( '(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:20:10: '('
+			// JPA2.g:20:8: ( '(' )
+			// JPA2.g:20:10: '('
 			{
 			match('('); 
 			}
@@ -459,8 +459,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = MAX;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:21:5: ( 'MAX' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:21:7: 'MAX'
+			// JPA2.g:21:5: ( 'MAX' )
+			// JPA2.g:21:7: 'MAX'
 			{
 			match("MAX"); 
 
@@ -480,8 +480,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = MIN;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:22:5: ( 'MIN' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:22:7: 'MIN'
+			// JPA2.g:22:5: ( 'MIN' )
+			// JPA2.g:22:7: 'MIN'
 			{
 			match("MIN"); 
 
@@ -501,8 +501,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = OR;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:23:4: ( 'OR' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:23:6: 'OR'
+			// JPA2.g:23:4: ( 'OR' )
+			// JPA2.g:23:6: 'OR'
 			{
 			match("OR"); 
 
@@ -522,8 +522,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = ORDER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:24:7: ( 'ORDER' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:24:9: 'ORDER'
+			// JPA2.g:24:7: ( 'ORDER' )
+			// JPA2.g:24:9: 'ORDER'
 			{
 			match("ORDER"); 
 
@@ -543,8 +543,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = OUTER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:25:7: ( 'OUTER' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:25:9: 'OUTER'
+			// JPA2.g:25:7: ( 'OUTER' )
+			// JPA2.g:25:9: 'OUTER'
 			{
 			match("OUTER"); 
 
@@ -564,8 +564,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = RPAREN;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:26:8: ( ')' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:26:10: ')'
+			// JPA2.g:26:8: ( ')' )
+			// JPA2.g:26:10: ')'
 			{
 			match(')'); 
 			}
@@ -584,8 +584,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = SUM;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:27:5: ( 'SUM' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:27:7: 'SUM'
+			// JPA2.g:27:5: ( 'SUM' )
+			// JPA2.g:27:7: 'SUM'
 			{
 			match("SUM"); 
 
@@ -605,8 +605,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__52;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:28:7: ( '${' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:28:9: '${'
+			// JPA2.g:28:7: ( '${' )
+			// JPA2.g:28:9: '${'
 			{
 			match("${"); 
 
@@ -626,8 +626,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__53;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:29:7: ( '*' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:29:9: '*'
+			// JPA2.g:29:7: ( '*' )
+			// JPA2.g:29:9: '*'
 			{
 			match('*'); 
 			}
@@ -646,8 +646,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__54;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:30:7: ( '+' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:30:9: '+'
+			// JPA2.g:30:7: ( '+' )
+			// JPA2.g:30:9: '+'
 			{
 			match('+'); 
 			}
@@ -666,8 +666,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__55;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:31:7: ( ',' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:31:9: ','
+			// JPA2.g:31:7: ( ',' )
+			// JPA2.g:31:9: ','
 			{
 			match(','); 
 			}
@@ -686,8 +686,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__56;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:32:7: ( '-' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:32:9: '-'
+			// JPA2.g:32:7: ( '-' )
+			// JPA2.g:32:9: '-'
 			{
 			match('-'); 
 			}
@@ -706,8 +706,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__57;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:33:7: ( '.' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:33:9: '.'
+			// JPA2.g:33:7: ( '.' )
+			// JPA2.g:33:9: '.'
 			{
 			match('.'); 
 			}
@@ -726,8 +726,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__58;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:34:7: ( '/' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:34:9: '/'
+			// JPA2.g:34:7: ( '/' )
+			// JPA2.g:34:9: '/'
 			{
 			match('/'); 
 			}
@@ -746,8 +746,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__59;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:35:7: ( '0x' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:35:9: '0x'
+			// JPA2.g:35:7: ( '0x' )
+			// JPA2.g:35:9: '0x'
 			{
 			match("0x"); 
 
@@ -767,8 +767,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__60;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:36:7: ( '<' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:36:9: '<'
+			// JPA2.g:36:7: ( '<' )
+			// JPA2.g:36:9: '<'
 			{
 			match('<'); 
 			}
@@ -787,8 +787,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__61;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:37:7: ( '<=' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:37:9: '<='
+			// JPA2.g:37:7: ( '<=' )
+			// JPA2.g:37:9: '<='
 			{
 			match("<="); 
 
@@ -808,8 +808,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__62;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:38:7: ( '<>' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:38:9: '<>'
+			// JPA2.g:38:7: ( '<>' )
+			// JPA2.g:38:9: '<>'
 			{
 			match("<>"); 
 
@@ -829,8 +829,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__63;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:39:7: ( '=' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:39:9: '='
+			// JPA2.g:39:7: ( '=' )
+			// JPA2.g:39:9: '='
 			{
 			match('='); 
 			}
@@ -849,8 +849,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__64;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:40:7: ( '>' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:40:9: '>'
+			// JPA2.g:40:7: ( '>' )
+			// JPA2.g:40:9: '>'
 			{
 			match('>'); 
 			}
@@ -869,8 +869,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__65;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:41:7: ( '>=' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:41:9: '>='
+			// JPA2.g:41:7: ( '>=' )
+			// JPA2.g:41:9: '>='
 			{
 			match(">="); 
 
@@ -890,8 +890,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__66;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:42:7: ( '?' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:42:9: '?'
+			// JPA2.g:42:7: ( '?' )
+			// JPA2.g:42:9: '?'
 			{
 			match('?'); 
 			}
@@ -910,8 +910,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__67;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:43:7: ( '@BETWEEN' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:43:9: '@BETWEEN'
+			// JPA2.g:43:7: ( '@BETWEEN' )
+			// JPA2.g:43:9: '@BETWEEN'
 			{
 			match("@BETWEEN"); 
 
@@ -931,8 +931,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__68;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:44:7: ( '@DATEAFTER' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:44:9: '@DATEAFTER'
+			// JPA2.g:44:7: ( '@DATEAFTER' )
+			// JPA2.g:44:9: '@DATEAFTER'
 			{
 			match("@DATEAFTER"); 
 
@@ -952,8 +952,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__69;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:45:7: ( '@DATEBEFORE' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:45:9: '@DATEBEFORE'
+			// JPA2.g:45:7: ( '@DATEBEFORE' )
+			// JPA2.g:45:9: '@DATEBEFORE'
 			{
 			match("@DATEBEFORE"); 
 
@@ -973,8 +973,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__70;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:46:7: ( '@DATEEQUALS' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:46:9: '@DATEEQUALS'
+			// JPA2.g:46:7: ( '@DATEEQUALS' )
+			// JPA2.g:46:9: '@DATEEQUALS'
 			{
 			match("@DATEEQUALS"); 
 
@@ -994,8 +994,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__71;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:47:7: ( '@TODAY' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:47:9: '@TODAY'
+			// JPA2.g:47:7: ( '@TODAY' )
+			// JPA2.g:47:9: '@TODAY'
 			{
 			match("@TODAY"); 
 
@@ -1015,8 +1015,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__72;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:48:7: ( 'ABS(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:48:9: 'ABS('
+			// JPA2.g:48:7: ( 'ABS(' )
+			// JPA2.g:48:9: 'ABS('
 			{
 			match("ABS("); 
 
@@ -1036,8 +1036,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__73;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:49:7: ( 'ALL' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:49:9: 'ALL'
+			// JPA2.g:49:7: ( 'ALL' )
+			// JPA2.g:49:9: 'ALL'
 			{
 			match("ALL"); 
 
@@ -1057,8 +1057,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__74;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:50:7: ( 'ANY' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:50:9: 'ANY'
+			// JPA2.g:50:7: ( 'ANY' )
+			// JPA2.g:50:9: 'ANY'
 			{
 			match("ANY"); 
 
@@ -1078,8 +1078,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__75;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:51:7: ( 'AS' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:51:9: 'AS'
+			// JPA2.g:51:7: ( 'AS' )
+			// JPA2.g:51:9: 'AS'
 			{
 			match("AS"); 
 
@@ -1099,8 +1099,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__76;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:52:7: ( 'BETWEEN' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:52:9: 'BETWEEN'
+			// JPA2.g:52:7: ( 'BETWEEN' )
+			// JPA2.g:52:9: 'BETWEEN'
 			{
 			match("BETWEEN"); 
 
@@ -1120,8 +1120,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__77;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:53:7: ( 'BOTH' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:53:9: 'BOTH'
+			// JPA2.g:53:7: ( 'BOTH' )
+			// JPA2.g:53:9: 'BOTH'
 			{
 			match("BOTH"); 
 
@@ -1141,8 +1141,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__78;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:54:7: ( 'CASE' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:54:9: 'CASE'
+			// JPA2.g:54:7: ( 'CASE' )
+			// JPA2.g:54:9: 'CASE'
 			{
 			match("CASE"); 
 
@@ -1162,8 +1162,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__79;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:55:7: ( 'COALESCE(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:55:9: 'COALESCE('
+			// JPA2.g:55:7: ( 'COALESCE(' )
+			// JPA2.g:55:9: 'COALESCE('
 			{
 			match("COALESCE("); 
 
@@ -1183,8 +1183,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__80;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:56:7: ( 'CONCAT(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:56:9: 'CONCAT('
+			// JPA2.g:56:7: ( 'CONCAT(' )
+			// JPA2.g:56:9: 'CONCAT('
 			{
 			match("CONCAT("); 
 
@@ -1204,8 +1204,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__81;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:57:7: ( 'CURRENT_DATE' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:57:9: 'CURRENT_DATE'
+			// JPA2.g:57:7: ( 'CURRENT_DATE' )
+			// JPA2.g:57:9: 'CURRENT_DATE'
 			{
 			match("CURRENT_DATE"); 
 
@@ -1225,8 +1225,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__82;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:58:7: ( 'CURRENT_TIME' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:58:9: 'CURRENT_TIME'
+			// JPA2.g:58:7: ( 'CURRENT_TIME' )
+			// JPA2.g:58:9: 'CURRENT_TIME'
 			{
 			match("CURRENT_TIME"); 
 
@@ -1246,8 +1246,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__83;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:59:7: ( 'CURRENT_TIMESTAMP' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:59:9: 'CURRENT_TIMESTAMP'
+			// JPA2.g:59:7: ( 'CURRENT_TIMESTAMP' )
+			// JPA2.g:59:9: 'CURRENT_TIMESTAMP'
 			{
 			match("CURRENT_TIMESTAMP"); 
 
@@ -1267,8 +1267,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__84;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:60:7: ( 'DAY' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:60:9: 'DAY'
+			// JPA2.g:60:7: ( 'DAY' )
+			// JPA2.g:60:9: 'DAY'
 			{
 			match("DAY"); 
 
@@ -1288,8 +1288,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__85;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:61:7: ( 'DELETE' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:61:9: 'DELETE'
+			// JPA2.g:61:7: ( 'DELETE' )
+			// JPA2.g:61:9: 'DELETE'
 			{
 			match("DELETE"); 
 
@@ -1309,8 +1309,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__86;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:62:7: ( 'ELSE' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:62:9: 'ELSE'
+			// JPA2.g:62:7: ( 'ELSE' )
+			// JPA2.g:62:9: 'ELSE'
 			{
 			match("ELSE"); 
 
@@ -1330,8 +1330,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__87;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:63:7: ( 'EMPTY' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:63:9: 'EMPTY'
+			// JPA2.g:63:7: ( 'EMPTY' )
+			// JPA2.g:63:9: 'EMPTY'
 			{
 			match("EMPTY"); 
 
@@ -1351,8 +1351,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__88;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:64:7: ( 'END' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:64:9: 'END'
+			// JPA2.g:64:7: ( 'END' )
+			// JPA2.g:64:9: 'END'
 			{
 			match("END"); 
 
@@ -1372,8 +1372,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__89;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:65:7: ( 'ENTRY(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:65:9: 'ENTRY('
+			// JPA2.g:65:7: ( 'ENTRY(' )
+			// JPA2.g:65:9: 'ENTRY('
 			{
 			match("ENTRY("); 
 
@@ -1393,8 +1393,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__90;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:66:7: ( 'ESCAPE' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:66:9: 'ESCAPE'
+			// JPA2.g:66:7: ( 'ESCAPE' )
+			// JPA2.g:66:9: 'ESCAPE'
 			{
 			match("ESCAPE"); 
 
@@ -1414,8 +1414,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__91;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:67:7: ( 'EXISTS' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:67:9: 'EXISTS'
+			// JPA2.g:67:7: ( 'EXISTS' )
+			// JPA2.g:67:9: 'EXISTS'
 			{
 			match("EXISTS"); 
 
@@ -1435,8 +1435,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__92;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:68:7: ( 'FROM' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:68:9: 'FROM'
+			// JPA2.g:68:7: ( 'FROM' )
+			// JPA2.g:68:9: 'FROM'
 			{
 			match("FROM"); 
 
@@ -1456,8 +1456,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__93;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:69:7: ( 'FUNCTION(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:69:9: 'FUNCTION('
+			// JPA2.g:69:7: ( 'FUNCTION(' )
+			// JPA2.g:69:9: 'FUNCTION('
 			{
 			match("FUNCTION("); 
 
@@ -1477,8 +1477,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__94;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:70:7: ( 'HOUR' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:70:9: 'HOUR'
+			// JPA2.g:70:7: ( 'HOUR' )
+			// JPA2.g:70:9: 'HOUR'
 			{
 			match("HOUR"); 
 
@@ -1498,8 +1498,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__95;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:71:7: ( 'IN' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:71:9: 'IN'
+			// JPA2.g:71:7: ( 'IN' )
+			// JPA2.g:71:9: 'IN'
 			{
 			match("IN"); 
 
@@ -1519,8 +1519,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__96;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:72:7: ( 'INDEX(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:72:9: 'INDEX('
+			// JPA2.g:72:7: ( 'INDEX(' )
+			// JPA2.g:72:9: 'INDEX('
 			{
 			match("INDEX("); 
 
@@ -1540,8 +1540,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__97;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:73:7: ( 'IS' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:73:9: 'IS'
+			// JPA2.g:73:7: ( 'IS' )
+			// JPA2.g:73:9: 'IS'
 			{
 			match("IS"); 
 
@@ -1561,8 +1561,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__98;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:74:7: ( 'KEY(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:74:9: 'KEY('
+			// JPA2.g:74:7: ( 'KEY(' )
+			// JPA2.g:74:9: 'KEY('
 			{
 			match("KEY("); 
 
@@ -1582,8 +1582,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__99;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:75:7: ( 'LEADING' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:75:9: 'LEADING'
+			// JPA2.g:75:7: ( 'LEADING' )
+			// JPA2.g:75:9: 'LEADING'
 			{
 			match("LEADING"); 
 
@@ -1603,8 +1603,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__100;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:76:8: ( 'LENGTH(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:76:10: 'LENGTH('
+			// JPA2.g:76:8: ( 'LENGTH(' )
+			// JPA2.g:76:10: 'LENGTH('
 			{
 			match("LENGTH("); 
 
@@ -1624,8 +1624,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__101;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:77:8: ( 'LIKE' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:77:10: 'LIKE'
+			// JPA2.g:77:8: ( 'LIKE' )
+			// JPA2.g:77:10: 'LIKE'
 			{
 			match("LIKE"); 
 
@@ -1645,8 +1645,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__102;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:78:8: ( 'LOCATE(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:78:10: 'LOCATE('
+			// JPA2.g:78:8: ( 'LOCATE(' )
+			// JPA2.g:78:10: 'LOCATE('
 			{
 			match("LOCATE("); 
 
@@ -1666,8 +1666,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__103;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:79:8: ( 'LOWER(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:79:10: 'LOWER('
+			// JPA2.g:79:8: ( 'LOWER(' )
+			// JPA2.g:79:10: 'LOWER('
 			{
 			match("LOWER("); 
 
@@ -1687,8 +1687,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__104;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:80:8: ( 'MEMBER' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:80:10: 'MEMBER'
+			// JPA2.g:80:8: ( 'MEMBER' )
+			// JPA2.g:80:10: 'MEMBER'
 			{
 			match("MEMBER"); 
 
@@ -1708,8 +1708,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__105;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:81:8: ( 'MINUTE' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:81:10: 'MINUTE'
+			// JPA2.g:81:8: ( 'MINUTE' )
+			// JPA2.g:81:10: 'MINUTE'
 			{
 			match("MINUTE"); 
 
@@ -1729,8 +1729,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__106;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:82:8: ( 'MOD(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:82:10: 'MOD('
+			// JPA2.g:82:8: ( 'MOD(' )
+			// JPA2.g:82:10: 'MOD('
 			{
 			match("MOD("); 
 
@@ -1750,8 +1750,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__107;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:83:8: ( 'MONTH' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:83:10: 'MONTH'
+			// JPA2.g:83:8: ( 'MONTH' )
+			// JPA2.g:83:10: 'MONTH'
 			{
 			match("MONTH"); 
 
@@ -1771,8 +1771,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__108;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:84:8: ( 'NEW' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:84:10: 'NEW'
+			// JPA2.g:84:8: ( 'NEW' )
+			// JPA2.g:84:10: 'NEW'
 			{
 			match("NEW"); 
 
@@ -1792,8 +1792,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__109;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:85:8: ( 'NOT' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:85:10: 'NOT'
+			// JPA2.g:85:8: ( 'NOT' )
+			// JPA2.g:85:10: 'NOT'
 			{
 			match("NOT"); 
 
@@ -1813,8 +1813,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__110;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:86:8: ( 'NOW' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:86:10: 'NOW'
+			// JPA2.g:86:8: ( 'NOW' )
+			// JPA2.g:86:10: 'NOW'
 			{
 			match("NOW"); 
 
@@ -1834,8 +1834,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__111;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:87:8: ( 'NULL' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:87:10: 'NULL'
+			// JPA2.g:87:8: ( 'NULL' )
+			// JPA2.g:87:10: 'NULL'
 			{
 			match("NULL"); 
 
@@ -1855,8 +1855,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__112;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:88:8: ( 'NULLIF(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:88:10: 'NULLIF('
+			// JPA2.g:88:8: ( 'NULLIF(' )
+			// JPA2.g:88:10: 'NULLIF('
 			{
 			match("NULLIF("); 
 
@@ -1876,8 +1876,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__113;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:89:8: ( 'OBJECT' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:89:10: 'OBJECT'
+			// JPA2.g:89:8: ( 'OBJECT' )
+			// JPA2.g:89:10: 'OBJECT'
 			{
 			match("OBJECT"); 
 
@@ -1897,8 +1897,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__114;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:90:8: ( 'OF' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:90:10: 'OF'
+			// JPA2.g:90:8: ( 'OF' )
+			// JPA2.g:90:10: 'OF'
 			{
 			match("OF"); 
 
@@ -1918,8 +1918,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__115;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:91:8: ( 'ON' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:91:10: 'ON'
+			// JPA2.g:91:8: ( 'ON' )
+			// JPA2.g:91:10: 'ON'
 			{
 			match("ON"); 
 
@@ -1939,8 +1939,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__116;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:92:8: ( 'SECOND' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:92:10: 'SECOND'
+			// JPA2.g:92:8: ( 'SECOND' )
+			// JPA2.g:92:10: 'SECOND'
 			{
 			match("SECOND"); 
 
@@ -1960,8 +1960,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__117;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:93:8: ( 'SELECT' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:93:10: 'SELECT'
+			// JPA2.g:93:8: ( 'SELECT' )
+			// JPA2.g:93:10: 'SELECT'
 			{
 			match("SELECT"); 
 
@@ -1981,8 +1981,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__118;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:94:8: ( 'SET' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:94:10: 'SET'
+			// JPA2.g:94:8: ( 'SET' )
+			// JPA2.g:94:10: 'SET'
 			{
 			match("SET"); 
 
@@ -2002,8 +2002,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__119;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:95:8: ( 'SIZE(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:95:10: 'SIZE('
+			// JPA2.g:95:8: ( 'SIZE(' )
+			// JPA2.g:95:10: 'SIZE('
 			{
 			match("SIZE("); 
 
@@ -2023,8 +2023,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__120;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:96:8: ( 'SOME' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:96:10: 'SOME'
+			// JPA2.g:96:8: ( 'SOME' )
+			// JPA2.g:96:10: 'SOME'
 			{
 			match("SOME"); 
 
@@ -2044,8 +2044,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__121;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:97:8: ( 'SQRT(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:97:10: 'SQRT('
+			// JPA2.g:97:8: ( 'SQRT(' )
+			// JPA2.g:97:10: 'SQRT('
 			{
 			match("SQRT("); 
 
@@ -2065,8 +2065,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__122;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:98:8: ( 'SUBSTRING(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:98:10: 'SUBSTRING('
+			// JPA2.g:98:8: ( 'SUBSTRING(' )
+			// JPA2.g:98:10: 'SUBSTRING('
 			{
 			match("SUBSTRING("); 
 
@@ -2086,8 +2086,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__123;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:99:8: ( 'THEN' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:99:10: 'THEN'
+			// JPA2.g:99:8: ( 'THEN' )
+			// JPA2.g:99:10: 'THEN'
 			{
 			match("THEN"); 
 
@@ -2107,8 +2107,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__124;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:100:8: ( 'TRAILING' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:100:10: 'TRAILING'
+			// JPA2.g:100:8: ( 'TRAILING' )
+			// JPA2.g:100:10: 'TRAILING'
 			{
 			match("TRAILING"); 
 
@@ -2128,8 +2128,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__125;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:101:8: ( 'TREAT(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:101:10: 'TREAT('
+			// JPA2.g:101:8: ( 'TREAT(' )
+			// JPA2.g:101:10: 'TREAT('
 			{
 			match("TREAT("); 
 
@@ -2149,8 +2149,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__126;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:102:8: ( 'TRIM(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:102:10: 'TRIM('
+			// JPA2.g:102:8: ( 'TRIM(' )
+			// JPA2.g:102:10: 'TRIM('
 			{
 			match("TRIM("); 
 
@@ -2170,8 +2170,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__127;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:103:8: ( 'TYPE' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:103:10: 'TYPE'
+			// JPA2.g:103:8: ( 'TYPE' )
+			// JPA2.g:103:10: 'TYPE'
 			{
 			match("TYPE"); 
 
@@ -2191,8 +2191,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__128;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:104:8: ( 'UPDATE' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:104:10: 'UPDATE'
+			// JPA2.g:104:8: ( 'UPDATE' )
+			// JPA2.g:104:10: 'UPDATE'
 			{
 			match("UPDATE"); 
 
@@ -2212,8 +2212,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__129;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:105:8: ( 'UPPER(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:105:10: 'UPPER('
+			// JPA2.g:105:8: ( 'UPPER(' )
+			// JPA2.g:105:10: 'UPPER('
 			{
 			match("UPPER("); 
 
@@ -2233,8 +2233,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__130;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:106:8: ( 'VALUE(' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:106:10: 'VALUE('
+			// JPA2.g:106:8: ( 'VALUE(' )
+			// JPA2.g:106:10: 'VALUE('
 			{
 			match("VALUE("); 
 
@@ -2254,8 +2254,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__131;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:107:8: ( 'WHEN' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:107:10: 'WHEN'
+			// JPA2.g:107:8: ( 'WHEN' )
+			// JPA2.g:107:10: 'WHEN'
 			{
 			match("WHEN"); 
 
@@ -2275,8 +2275,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__132;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:108:8: ( 'WHERE' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:108:10: 'WHERE'
+			// JPA2.g:108:8: ( 'WHERE' )
+			// JPA2.g:108:10: 'WHERE'
 			{
 			match("WHERE"); 
 
@@ -2296,8 +2296,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__133;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:109:8: ( 'YEAR' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:109:10: 'YEAR'
+			// JPA2.g:109:8: ( 'YEAR' )
+			// JPA2.g:109:10: 'YEAR'
 			{
 			match("YEAR"); 
 
@@ -2317,8 +2317,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__134;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:110:8: ( 'false' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:110:10: 'false'
+			// JPA2.g:110:8: ( 'false' )
+			// JPA2.g:110:10: 'false'
 			{
 			match("false"); 
 
@@ -2338,8 +2338,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__135;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:111:8: ( 'true' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:111:10: 'true'
+			// JPA2.g:111:8: ( 'true' )
+			// JPA2.g:111:10: 'true'
 			{
 			match("true"); 
 
@@ -2359,8 +2359,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__136;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:112:8: ( '}' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:112:10: '}'
+			// JPA2.g:112:8: ( '}' )
+			// JPA2.g:112:10: '}'
 			{
 			match('}'); 
 			}
@@ -2379,8 +2379,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = TRIM_CHARACTER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:509:5: ( '\\'.\\'' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:509:7: '\\'.\\''
+			// JPA2.g:509:5: ( '\\'.\\'' )
+			// JPA2.g:509:7: '\\'.\\''
 			{
 			match("'.'"); 
 
@@ -2400,11 +2400,11 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = STRING_LITERAL;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:512:5: ( '\\'' (~ ( '\\'' | '\"' ) )* '\\'' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:512:7: '\\'' (~ ( '\\'' | '\"' ) )* '\\''
+			// JPA2.g:512:5: ( '\\'' (~ ( '\\'' | '\"' ) )* '\\'' )
+			// JPA2.g:512:7: '\\'' (~ ( '\\'' | '\"' ) )* '\\''
 			{
 			match('\''); 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:512:12: (~ ( '\\'' | '\"' ) )*
+			// JPA2.g:512:12: (~ ( '\\'' | '\"' ) )*
 			loop1:
 			while (true) {
 				int alt1=2;
@@ -2415,7 +2415,7 @@ public class JPA2Lexer extends Lexer {
 
 				switch (alt1) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:
+					// JPA2.g:
 					{
 					if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '!')||(input.LA(1) >= '#' && input.LA(1) <= '&')||(input.LA(1) >= '(' && input.LA(1) <= '\uFFFF') ) {
 						input.consume();
@@ -2450,8 +2450,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = WORD;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:515:5: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:515:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
+			// JPA2.g:515:5: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* )
+			// JPA2.g:515:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
 			{
 			if ( (input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
 				input.consume();
@@ -2461,7 +2461,7 @@ public class JPA2Lexer extends Lexer {
 				recover(mse);
 				throw mse;
 			}
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:515:31: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
+			// JPA2.g:515:31: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
 			loop2:
 			while (true) {
 				int alt2=2;
@@ -2472,7 +2472,7 @@ public class JPA2Lexer extends Lexer {
 
 				switch (alt2) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:
+					// JPA2.g:
 					{
 					if ( input.LA(1)=='$'||(input.LA(1) >= '0' && input.LA(1) <= '9')||(input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
 						input.consume();
@@ -2506,8 +2506,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = RUSSIAN_SYMBOLS;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:518:5: ( ( '\\u0400' .. '\\u04FF' | '\\u0500' .. '\\u052F' ) )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:518:7: ( '\\u0400' .. '\\u04FF' | '\\u0500' .. '\\u052F' )
+			// JPA2.g:518:5: ( ( '\\u0400' .. '\\u04FF' | '\\u0500' .. '\\u052F' ) )
+			// JPA2.g:518:7: ( '\\u0400' .. '\\u04FF' | '\\u0500' .. '\\u052F' )
 			{
 			if ( (input.LA(1) >= '\u0400' && input.LA(1) <= '\u052F') ) {
 				input.consume();
@@ -2534,8 +2534,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = NAMED_PARAMETER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:521:5: ( ':' ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )* )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:521:7: ':' ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )*
+			// JPA2.g:521:5: ( ':' ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )* )
+			// JPA2.g:521:7: ':' ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )*
 			{
 			match(':'); 
 			if ( (input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
@@ -2546,7 +2546,7 @@ public class JPA2Lexer extends Lexer {
 				recover(mse);
 				throw mse;
 			}
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:521:34: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
+			// JPA2.g:521:34: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
 			loop3:
 			while (true) {
 				int alt3=2;
@@ -2557,7 +2557,7 @@ public class JPA2Lexer extends Lexer {
 
 				switch (alt3) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:
+					// JPA2.g:
 					{
 					if ( input.LA(1)=='$'||(input.LA(1) >= '0' && input.LA(1) <= '9')||(input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
 						input.consume();
@@ -2575,7 +2575,7 @@ public class JPA2Lexer extends Lexer {
 				}
 			}
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:521:72: ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )*
+			// JPA2.g:521:72: ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )*
 			loop5:
 			while (true) {
 				int alt5=2;
@@ -2586,15 +2586,15 @@ public class JPA2Lexer extends Lexer {
 
 				switch (alt5) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:521:73: ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+
+					// JPA2.g:521:73: ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+
 					{
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:521:73: ( '.' )
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:521:74: '.'
+					// JPA2.g:521:73: ( '.' )
+					// JPA2.g:521:74: '.'
 					{
 					match('.'); 
 					}
 
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:521:79: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+
+					// JPA2.g:521:79: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+
 					int cnt4=0;
 					loop4:
 					while (true) {
@@ -2606,7 +2606,7 @@ public class JPA2Lexer extends Lexer {
 
 						switch (alt4) {
 						case 1 :
-							// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:
+							// JPA2.g:
 							{
 							if ( input.LA(1)=='$'||(input.LA(1) >= '0' && input.LA(1) <= '9')||(input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
 								input.consume();
@@ -2651,8 +2651,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = WS;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:523:5: ( ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' ) )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:523:7: ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' )
+			// JPA2.g:523:5: ( ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' ) )
+			// JPA2.g:523:7: ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' )
 			{
 			if ( (input.LA(1) >= '\t' && input.LA(1) <= '\n')||(input.LA(1) >= '\f' && input.LA(1) <= '\r')||input.LA(1)==' ' ) {
 				input.consume();
@@ -2679,12 +2679,12 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = COMMENT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:527:5: ( '/*' ( . )* '*/' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:527:7: '/*' ( . )* '*/'
+			// JPA2.g:527:5: ( '/*' ( . )* '*/' )
+			// JPA2.g:527:7: '/*' ( . )* '*/'
 			{
 			match("/*"); 
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:527:12: ( . )*
+			// JPA2.g:527:12: ( . )*
 			loop6:
 			while (true) {
 				int alt6=2;
@@ -2705,7 +2705,7 @@ public class JPA2Lexer extends Lexer {
 
 				switch (alt6) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:527:12: .
+					// JPA2.g:527:12: .
 					{
 					matchAny(); 
 					}
@@ -2735,12 +2735,12 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = LINE_COMMENT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:530:5: ( '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:530:7: '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
+			// JPA2.g:530:5: ( '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
+			// JPA2.g:530:7: '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
 			{
 			match("//"); 
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:530:12: (~ ( '\\n' | '\\r' ) )*
+			// JPA2.g:530:12: (~ ( '\\n' | '\\r' ) )*
 			loop7:
 			while (true) {
 				int alt7=2;
@@ -2751,7 +2751,7 @@ public class JPA2Lexer extends Lexer {
 
 				switch (alt7) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:
+					// JPA2.g:
 					{
 					if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '\t')||(input.LA(1) >= '\u000B' && input.LA(1) <= '\f')||(input.LA(1) >= '\u000E' && input.LA(1) <= '\uFFFF') ) {
 						input.consume();
@@ -2769,7 +2769,7 @@ public class JPA2Lexer extends Lexer {
 				}
 			}
 
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:530:26: ( '\\r' )?
+			// JPA2.g:530:26: ( '\\r' )?
 			int alt8=2;
 			int LA8_0 = input.LA(1);
 			if ( (LA8_0=='\r') ) {
@@ -2777,7 +2777,7 @@ public class JPA2Lexer extends Lexer {
 			}
 			switch (alt8) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:530:26: '\\r'
+					// JPA2.g:530:26: '\\r'
 					{
 					match('\r'); 
 					}
@@ -2803,8 +2803,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = ESCAPE_CHARACTER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:533:5: ( '\\'' (~ ( '\\'' | '\\\\' ) ) '\\'' )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:533:7: '\\'' (~ ( '\\'' | '\\\\' ) ) '\\''
+			// JPA2.g:533:5: ( '\\'' (~ ( '\\'' | '\\\\' ) ) '\\'' )
+			// JPA2.g:533:7: '\\'' (~ ( '\\'' | '\\\\' ) ) '\\''
 			{
 			match('\''); 
 			if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '&')||(input.LA(1) >= '(' && input.LA(1) <= '[')||(input.LA(1) >= ']' && input.LA(1) <= '\uFFFF') ) {
@@ -2832,10 +2832,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = INT_NUMERAL;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:535:5: ( ( '0' .. '9' )+ )
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:535:7: ( '0' .. '9' )+
+			// JPA2.g:535:5: ( ( '0' .. '9' )+ )
+			// JPA2.g:535:7: ( '0' .. '9' )+
 			{
-			// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:535:7: ( '0' .. '9' )+
+			// JPA2.g:535:7: ( '0' .. '9' )+
 			int cnt9=0;
 			loop9:
 			while (true) {
@@ -2847,7 +2847,7 @@ public class JPA2Lexer extends Lexer {
 
 				switch (alt9) {
 				case 1 :
-					// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:
+					// JPA2.g:
 					{
 					if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
 						input.consume();
@@ -2881,817 +2881,817 @@ public class JPA2Lexer extends Lexer {
 
 	@Override
 	public void mTokens() throws RecognitionException {
-		// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:8: ( AND | ASC | AVG | BY | COUNT | DESC | DISTINCT | FETCH | GROUP | HAVING | INNER | JOIN | LEFT | LPAREN | MAX | MIN | OR | ORDER | OUTER | RPAREN | SUM | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | T__102 | T__103 | T__104 | T__105 | T__106 | T__107 | T__108 | T__109 | T__110 | T__111 | T__112 | T__113 | T__114 | T__115 | T__116 | T__117 | T__118 | T__119 | T__120 | T__121 | T__122 | T__123 | T__124 | T__125 | T__126 | T__127 | T__128 | T__129 | T__130 | T__131 | T__132 | T__133 | T__134 | T__135 | T__136 | TRIM_CHARACTER | STRING_LITERAL | WORD | RUSSIAN_SYMBOLS | NAMED_PARAMETER | WS | COMMENT | LINE_COMMENT | ESCAPE_CHARACTER | INT_NUMERAL )
+		// JPA2.g:1:8: ( AND | ASC | AVG | BY | COUNT | DESC | DISTINCT | FETCH | GROUP | HAVING | INNER | JOIN | LEFT | LPAREN | MAX | MIN | OR | ORDER | OUTER | RPAREN | SUM | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | T__102 | T__103 | T__104 | T__105 | T__106 | T__107 | T__108 | T__109 | T__110 | T__111 | T__112 | T__113 | T__114 | T__115 | T__116 | T__117 | T__118 | T__119 | T__120 | T__121 | T__122 | T__123 | T__124 | T__125 | T__126 | T__127 | T__128 | T__129 | T__130 | T__131 | T__132 | T__133 | T__134 | T__135 | T__136 | TRIM_CHARACTER | STRING_LITERAL | WORD | RUSSIAN_SYMBOLS | NAMED_PARAMETER | WS | COMMENT | LINE_COMMENT | ESCAPE_CHARACTER | INT_NUMERAL )
 		int alt10=116;
 		alt10 = dfa10.predict(input);
 		switch (alt10) {
 			case 1 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:10: AND
+				// JPA2.g:1:10: AND
 				{
 				mAND(); 
 
 				}
 				break;
 			case 2 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:14: ASC
+				// JPA2.g:1:14: ASC
 				{
 				mASC(); 
 
 				}
 				break;
 			case 3 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:18: AVG
+				// JPA2.g:1:18: AVG
 				{
 				mAVG(); 
 
 				}
 				break;
 			case 4 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:22: BY
+				// JPA2.g:1:22: BY
 				{
 				mBY(); 
 
 				}
 				break;
 			case 5 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:25: COUNT
+				// JPA2.g:1:25: COUNT
 				{
 				mCOUNT(); 
 
 				}
 				break;
 			case 6 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:31: DESC
+				// JPA2.g:1:31: DESC
 				{
 				mDESC(); 
 
 				}
 				break;
 			case 7 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:36: DISTINCT
+				// JPA2.g:1:36: DISTINCT
 				{
 				mDISTINCT(); 
 
 				}
 				break;
 			case 8 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:45: FETCH
+				// JPA2.g:1:45: FETCH
 				{
 				mFETCH(); 
 
 				}
 				break;
 			case 9 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:51: GROUP
+				// JPA2.g:1:51: GROUP
 				{
 				mGROUP(); 
 
 				}
 				break;
 			case 10 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:57: HAVING
+				// JPA2.g:1:57: HAVING
 				{
 				mHAVING(); 
 
 				}
 				break;
 			case 11 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:64: INNER
+				// JPA2.g:1:64: INNER
 				{
 				mINNER(); 
 
 				}
 				break;
 			case 12 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:70: JOIN
+				// JPA2.g:1:70: JOIN
 				{
 				mJOIN(); 
 
 				}
 				break;
 			case 13 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:75: LEFT
+				// JPA2.g:1:75: LEFT
 				{
 				mLEFT(); 
 
 				}
 				break;
 			case 14 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:80: LPAREN
+				// JPA2.g:1:80: LPAREN
 				{
 				mLPAREN(); 
 
 				}
 				break;
 			case 15 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:87: MAX
+				// JPA2.g:1:87: MAX
 				{
 				mMAX(); 
 
 				}
 				break;
 			case 16 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:91: MIN
+				// JPA2.g:1:91: MIN
 				{
 				mMIN(); 
 
 				}
 				break;
 			case 17 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:95: OR
+				// JPA2.g:1:95: OR
 				{
 				mOR(); 
 
 				}
 				break;
 			case 18 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:98: ORDER
+				// JPA2.g:1:98: ORDER
 				{
 				mORDER(); 
 
 				}
 				break;
 			case 19 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:104: OUTER
+				// JPA2.g:1:104: OUTER
 				{
 				mOUTER(); 
 
 				}
 				break;
 			case 20 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:110: RPAREN
+				// JPA2.g:1:110: RPAREN
 				{
 				mRPAREN(); 
 
 				}
 				break;
 			case 21 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:117: SUM
+				// JPA2.g:1:117: SUM
 				{
 				mSUM(); 
 
 				}
 				break;
 			case 22 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:121: T__52
+				// JPA2.g:1:121: T__52
 				{
 				mT__52(); 
 
 				}
 				break;
 			case 23 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:127: T__53
+				// JPA2.g:1:127: T__53
 				{
 				mT__53(); 
 
 				}
 				break;
 			case 24 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:133: T__54
+				// JPA2.g:1:133: T__54
 				{
 				mT__54(); 
 
 				}
 				break;
 			case 25 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:139: T__55
+				// JPA2.g:1:139: T__55
 				{
 				mT__55(); 
 
 				}
 				break;
 			case 26 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:145: T__56
+				// JPA2.g:1:145: T__56
 				{
 				mT__56(); 
 
 				}
 				break;
 			case 27 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:151: T__57
+				// JPA2.g:1:151: T__57
 				{
 				mT__57(); 
 
 				}
 				break;
 			case 28 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:157: T__58
+				// JPA2.g:1:157: T__58
 				{
 				mT__58(); 
 
 				}
 				break;
 			case 29 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:163: T__59
+				// JPA2.g:1:163: T__59
 				{
 				mT__59(); 
 
 				}
 				break;
 			case 30 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:169: T__60
+				// JPA2.g:1:169: T__60
 				{
 				mT__60(); 
 
 				}
 				break;
 			case 31 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:175: T__61
+				// JPA2.g:1:175: T__61
 				{
 				mT__61(); 
 
 				}
 				break;
 			case 32 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:181: T__62
+				// JPA2.g:1:181: T__62
 				{
 				mT__62(); 
 
 				}
 				break;
 			case 33 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:187: T__63
+				// JPA2.g:1:187: T__63
 				{
 				mT__63(); 
 
 				}
 				break;
 			case 34 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:193: T__64
+				// JPA2.g:1:193: T__64
 				{
 				mT__64(); 
 
 				}
 				break;
 			case 35 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:199: T__65
+				// JPA2.g:1:199: T__65
 				{
 				mT__65(); 
 
 				}
 				break;
 			case 36 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:205: T__66
+				// JPA2.g:1:205: T__66
 				{
 				mT__66(); 
 
 				}
 				break;
 			case 37 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:211: T__67
+				// JPA2.g:1:211: T__67
 				{
 				mT__67(); 
 
 				}
 				break;
 			case 38 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:217: T__68
+				// JPA2.g:1:217: T__68
 				{
 				mT__68(); 
 
 				}
 				break;
 			case 39 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:223: T__69
+				// JPA2.g:1:223: T__69
 				{
 				mT__69(); 
 
 				}
 				break;
 			case 40 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:229: T__70
+				// JPA2.g:1:229: T__70
 				{
 				mT__70(); 
 
 				}
 				break;
 			case 41 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:235: T__71
+				// JPA2.g:1:235: T__71
 				{
 				mT__71(); 
 
 				}
 				break;
 			case 42 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:241: T__72
+				// JPA2.g:1:241: T__72
 				{
 				mT__72(); 
 
 				}
 				break;
 			case 43 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:247: T__73
+				// JPA2.g:1:247: T__73
 				{
 				mT__73(); 
 
 				}
 				break;
 			case 44 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:253: T__74
+				// JPA2.g:1:253: T__74
 				{
 				mT__74(); 
 
 				}
 				break;
 			case 45 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:259: T__75
+				// JPA2.g:1:259: T__75
 				{
 				mT__75(); 
 
 				}
 				break;
 			case 46 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:265: T__76
+				// JPA2.g:1:265: T__76
 				{
 				mT__76(); 
 
 				}
 				break;
 			case 47 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:271: T__77
+				// JPA2.g:1:271: T__77
 				{
 				mT__77(); 
 
 				}
 				break;
 			case 48 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:277: T__78
+				// JPA2.g:1:277: T__78
 				{
 				mT__78(); 
 
 				}
 				break;
 			case 49 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:283: T__79
+				// JPA2.g:1:283: T__79
 				{
 				mT__79(); 
 
 				}
 				break;
 			case 50 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:289: T__80
+				// JPA2.g:1:289: T__80
 				{
 				mT__80(); 
 
 				}
 				break;
 			case 51 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:295: T__81
+				// JPA2.g:1:295: T__81
 				{
 				mT__81(); 
 
 				}
 				break;
 			case 52 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:301: T__82
+				// JPA2.g:1:301: T__82
 				{
 				mT__82(); 
 
 				}
 				break;
 			case 53 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:307: T__83
+				// JPA2.g:1:307: T__83
 				{
 				mT__83(); 
 
 				}
 				break;
 			case 54 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:313: T__84
+				// JPA2.g:1:313: T__84
 				{
 				mT__84(); 
 
 				}
 				break;
 			case 55 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:319: T__85
+				// JPA2.g:1:319: T__85
 				{
 				mT__85(); 
 
 				}
 				break;
 			case 56 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:325: T__86
+				// JPA2.g:1:325: T__86
 				{
 				mT__86(); 
 
 				}
 				break;
 			case 57 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:331: T__87
+				// JPA2.g:1:331: T__87
 				{
 				mT__87(); 
 
 				}
 				break;
 			case 58 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:337: T__88
+				// JPA2.g:1:337: T__88
 				{
 				mT__88(); 
 
 				}
 				break;
 			case 59 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:343: T__89
+				// JPA2.g:1:343: T__89
 				{
 				mT__89(); 
 
 				}
 				break;
 			case 60 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:349: T__90
+				// JPA2.g:1:349: T__90
 				{
 				mT__90(); 
 
 				}
 				break;
 			case 61 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:355: T__91
+				// JPA2.g:1:355: T__91
 				{
 				mT__91(); 
 
 				}
 				break;
 			case 62 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:361: T__92
+				// JPA2.g:1:361: T__92
 				{
 				mT__92(); 
 
 				}
 				break;
 			case 63 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:367: T__93
+				// JPA2.g:1:367: T__93
 				{
 				mT__93(); 
 
 				}
 				break;
 			case 64 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:373: T__94
+				// JPA2.g:1:373: T__94
 				{
 				mT__94(); 
 
 				}
 				break;
 			case 65 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:379: T__95
+				// JPA2.g:1:379: T__95
 				{
 				mT__95(); 
 
 				}
 				break;
 			case 66 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:385: T__96
+				// JPA2.g:1:385: T__96
 				{
 				mT__96(); 
 
 				}
 				break;
 			case 67 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:391: T__97
+				// JPA2.g:1:391: T__97
 				{
 				mT__97(); 
 
 				}
 				break;
 			case 68 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:397: T__98
+				// JPA2.g:1:397: T__98
 				{
 				mT__98(); 
 
 				}
 				break;
 			case 69 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:403: T__99
+				// JPA2.g:1:403: T__99
 				{
 				mT__99(); 
 
 				}
 				break;
 			case 70 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:409: T__100
+				// JPA2.g:1:409: T__100
 				{
 				mT__100(); 
 
 				}
 				break;
 			case 71 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:416: T__101
+				// JPA2.g:1:416: T__101
 				{
 				mT__101(); 
 
 				}
 				break;
 			case 72 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:423: T__102
+				// JPA2.g:1:423: T__102
 				{
 				mT__102(); 
 
 				}
 				break;
 			case 73 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:430: T__103
+				// JPA2.g:1:430: T__103
 				{
 				mT__103(); 
 
 				}
 				break;
 			case 74 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:437: T__104
+				// JPA2.g:1:437: T__104
 				{
 				mT__104(); 
 
 				}
 				break;
 			case 75 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:444: T__105
+				// JPA2.g:1:444: T__105
 				{
 				mT__105(); 
 
 				}
 				break;
 			case 76 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:451: T__106
+				// JPA2.g:1:451: T__106
 				{
 				mT__106(); 
 
 				}
 				break;
 			case 77 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:458: T__107
+				// JPA2.g:1:458: T__107
 				{
 				mT__107(); 
 
 				}
 				break;
 			case 78 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:465: T__108
+				// JPA2.g:1:465: T__108
 				{
 				mT__108(); 
 
 				}
 				break;
 			case 79 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:472: T__109
+				// JPA2.g:1:472: T__109
 				{
 				mT__109(); 
 
 				}
 				break;
 			case 80 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:479: T__110
+				// JPA2.g:1:479: T__110
 				{
 				mT__110(); 
 
 				}
 				break;
 			case 81 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:486: T__111
+				// JPA2.g:1:486: T__111
 				{
 				mT__111(); 
 
 				}
 				break;
 			case 82 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:493: T__112
+				// JPA2.g:1:493: T__112
 				{
 				mT__112(); 
 
 				}
 				break;
 			case 83 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:500: T__113
+				// JPA2.g:1:500: T__113
 				{
 				mT__113(); 
 
 				}
 				break;
 			case 84 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:507: T__114
+				// JPA2.g:1:507: T__114
 				{
 				mT__114(); 
 
 				}
 				break;
 			case 85 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:514: T__115
+				// JPA2.g:1:514: T__115
 				{
 				mT__115(); 
 
 				}
 				break;
 			case 86 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:521: T__116
+				// JPA2.g:1:521: T__116
 				{
 				mT__116(); 
 
 				}
 				break;
 			case 87 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:528: T__117
+				// JPA2.g:1:528: T__117
 				{
 				mT__117(); 
 
 				}
 				break;
 			case 88 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:535: T__118
+				// JPA2.g:1:535: T__118
 				{
 				mT__118(); 
 
 				}
 				break;
 			case 89 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:542: T__119
+				// JPA2.g:1:542: T__119
 				{
 				mT__119(); 
 
 				}
 				break;
 			case 90 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:549: T__120
+				// JPA2.g:1:549: T__120
 				{
 				mT__120(); 
 
 				}
 				break;
 			case 91 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:556: T__121
+				// JPA2.g:1:556: T__121
 				{
 				mT__121(); 
 
 				}
 				break;
 			case 92 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:563: T__122
+				// JPA2.g:1:563: T__122
 				{
 				mT__122(); 
 
 				}
 				break;
 			case 93 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:570: T__123
+				// JPA2.g:1:570: T__123
 				{
 				mT__123(); 
 
 				}
 				break;
 			case 94 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:577: T__124
+				// JPA2.g:1:577: T__124
 				{
 				mT__124(); 
 
 				}
 				break;
 			case 95 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:584: T__125
+				// JPA2.g:1:584: T__125
 				{
 				mT__125(); 
 
 				}
 				break;
 			case 96 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:591: T__126
+				// JPA2.g:1:591: T__126
 				{
 				mT__126(); 
 
 				}
 				break;
 			case 97 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:598: T__127
+				// JPA2.g:1:598: T__127
 				{
 				mT__127(); 
 
 				}
 				break;
 			case 98 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:605: T__128
+				// JPA2.g:1:605: T__128
 				{
 				mT__128(); 
 
 				}
 				break;
 			case 99 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:612: T__129
+				// JPA2.g:1:612: T__129
 				{
 				mT__129(); 
 
 				}
 				break;
 			case 100 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:619: T__130
+				// JPA2.g:1:619: T__130
 				{
 				mT__130(); 
 
 				}
 				break;
 			case 101 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:626: T__131
+				// JPA2.g:1:626: T__131
 				{
 				mT__131(); 
 
 				}
 				break;
 			case 102 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:633: T__132
+				// JPA2.g:1:633: T__132
 				{
 				mT__132(); 
 
 				}
 				break;
 			case 103 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:640: T__133
+				// JPA2.g:1:640: T__133
 				{
 				mT__133(); 
 
 				}
 				break;
 			case 104 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:647: T__134
+				// JPA2.g:1:647: T__134
 				{
 				mT__134(); 
 
 				}
 				break;
 			case 105 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:654: T__135
+				// JPA2.g:1:654: T__135
 				{
 				mT__135(); 
 
 				}
 				break;
 			case 106 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:661: T__136
+				// JPA2.g:1:661: T__136
 				{
 				mT__136(); 
 
 				}
 				break;
 			case 107 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:668: TRIM_CHARACTER
+				// JPA2.g:1:668: TRIM_CHARACTER
 				{
 				mTRIM_CHARACTER(); 
 
 				}
 				break;
 			case 108 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:683: STRING_LITERAL
+				// JPA2.g:1:683: STRING_LITERAL
 				{
 				mSTRING_LITERAL(); 
 
 				}
 				break;
 			case 109 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:698: WORD
+				// JPA2.g:1:698: WORD
 				{
 				mWORD(); 
 
 				}
 				break;
 			case 110 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:703: RUSSIAN_SYMBOLS
+				// JPA2.g:1:703: RUSSIAN_SYMBOLS
 				{
 				mRUSSIAN_SYMBOLS(); 
 
 				}
 				break;
 			case 111 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:719: NAMED_PARAMETER
+				// JPA2.g:1:719: NAMED_PARAMETER
 				{
 				mNAMED_PARAMETER(); 
 
 				}
 				break;
 			case 112 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:735: WS
+				// JPA2.g:1:735: WS
 				{
 				mWS(); 
 
 				}
 				break;
 			case 113 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:738: COMMENT
+				// JPA2.g:1:738: COMMENT
 				{
 				mCOMMENT(); 
 
 				}
 				break;
 			case 114 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:746: LINE_COMMENT
+				// JPA2.g:1:746: LINE_COMMENT
 				{
 				mLINE_COMMENT(); 
 
 				}
 				break;
 			case 115 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:759: ESCAPE_CHARACTER
+				// JPA2.g:1:759: ESCAPE_CHARACTER
 				{
 				mESCAPE_CHARACTER(); 
 
 				}
 				break;
 			case 116 :
-				// F:\\WORK\\platform\\project-all\\project-all-trunk\\cuba\\modules\\global\\src\\com\\haulmont\\cuba\\core\\sys\\jpql\\antlr2\\JPA2.g:1:776: INT_NUMERAL
+				// JPA2.g:1:776: INT_NUMERAL
 				{
 				mINT_NUMERAL(); 
 
