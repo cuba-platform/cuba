@@ -13,6 +13,7 @@ import com.vaadin.shared.ui.TabIndexState;
  * @version $Id$
  */
 public class CubaFileUploadState extends TabIndexState {
+
     {
         primaryStyleName = "cuba-fileupload";
     }
@@ -35,4 +36,7 @@ public class CubaFileUploadState extends TabIndexState {
 
     @NoLayout
     public String unableToUploadFileMessage;
+
+    @NoLayout
+    public int fileSizeLimit;
 }

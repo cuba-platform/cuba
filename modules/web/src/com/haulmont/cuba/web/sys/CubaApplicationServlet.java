@@ -12,6 +12,7 @@ import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.WebStatisticsAccumulator;
 import com.haulmont.cuba.web.auth.RequestContext;
 import com.vaadin.server.*;
+import com.vaadin.shared.ApplicationConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -41,8 +42,7 @@ public class CubaApplicationServlet extends VaadinServlet {
 
     protected WebConfig webConfig;
 
-    //private StatisticsCounter statisticsCounter;
-    private WebStatisticsAccumulator statisticsCounter;
+    protected WebStatisticsAccumulator statisticsCounter;
 
     @Override
     protected VaadinServletService createServletService(DeploymentConfiguration deploymentConfiguration)
@@ -167,11 +167,26 @@ public class CubaApplicationServlet extends VaadinServlet {
             AppContext.setSecurityContext(null);
         }
 
-        long t = System.currentTimeMillis() - startTs;
-        if (t > (webConfig.getLogLongRequestsThresholdSec() * 1000)) {
-            // todo artamonov ignore file uploading requests here
-            log.warn(String.format("Too long request processing [%d ms]: ip=%s, url=%s",
-                    t, request.getRemoteAddr(), request.getRequestURI()));
+        if (hasPathPrefix(request, ApplicationConstants.UIDL_PATH + '/')) {
+            long t = System.currentTimeMillis() - startTs;
+            if (t > (webConfig.getLogLongRequestsThresholdSec() * 1000)) {
+                log.warn(String.format("Too long request processing [%d ms]: ip=%s, url=%s",
+                        t, request.getRemoteAddr(), request.getRequestURI()));
+            }
         }
+    }
+
+    protected boolean hasPathPrefix(HttpServletRequest request, String prefix) {
+        String pathInfo = request.getPathInfo();
+
+        if (pathInfo == null) {
+            return false;
+        }
+
+        if (!prefix.startsWith("/")) {
+            prefix = '/' + prefix;
+        }
+
+        return pathInfo.startsWith(prefix);
     }
 }

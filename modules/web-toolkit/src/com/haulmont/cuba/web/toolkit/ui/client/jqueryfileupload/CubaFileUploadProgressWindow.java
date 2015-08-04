@@ -21,6 +21,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.vaadin.client.BrowserInfo;
+import com.vaadin.client.ComputedStyle;
 import com.vaadin.client.Focusable;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.ui.*;
@@ -39,7 +40,7 @@ public class CubaFileUploadProgressWindow extends VOverlay implements KeyDownHan
 
     private static final String MODAL_WINDOW_OPEN_CLASSNAME = "v-modal-window-open";
 
-    public static final int Z_INDEX = 10000;
+    public static final int Z_INDEX = 15000;
 
     protected Element contents;
 
@@ -49,7 +50,7 @@ public class CubaFileUploadProgressWindow extends VOverlay implements KeyDownHan
 
     protected Element resizeBox;
 
-    protected final FocusableScrollPanel contentPanel = new FocusableScrollPanel();
+    protected SimpleFocusablePanel contentPanel;
 
     protected boolean dragging;
 
@@ -114,9 +115,6 @@ public class CubaFileUploadProgressWindow extends VOverlay implements KeyDownHan
                 RelevantValue.ADDITIONS);
 
         constructDOM();
-        
-        contentPanel.addKeyDownHandler(this);
-        contentPanel.addKeyUpHandler(this);
     }
 
     @Override
@@ -248,10 +246,18 @@ public class CubaFileUploadProgressWindow extends VOverlay implements KeyDownHan
             }
         });
 
+        contentPanel = new SimpleFocusablePanel();
+        contentPanel.setStyleName("content-pane");
+        contentPanel.addKeyDownHandler(this);
+        contentPanel.addKeyUpHandler(this);
+
         setWidget(contentPanel);
 
         final FlowPanel verticalPanel = new FlowPanel();
-        verticalPanel.setWidth("100%");
+        verticalPanel.setStyleName("vertical-panel");
+        verticalPanel.addStyleName("v-widget");
+        verticalPanel.addStyleName("v-has-width");
+        verticalPanel.addStyleName("v-has-height");
 
         verticalPanel.add(currentFileLabel);
         verticalPanel.add(progressBar);
@@ -265,13 +271,15 @@ public class CubaFileUploadProgressWindow extends VOverlay implements KeyDownHan
             public void execute() {
                 Style contentStyle = contents.getStyle();
 
-                int headerHeight = WidgetUtil.getRequiredHeight(header);
-                contentStyle.setPaddingTop(headerHeight, Style.Unit.PX);
-                contentStyle.setMarginTop(-headerHeight, Style.Unit.PX);
+                ComputedStyle headerCs = new ComputedStyle(header);
+                String headerHeight = headerCs.getProperty("height");
+                contentStyle.setProperty("paddingTop", headerHeight);
+                contentStyle.setProperty("marginTop", "-" + headerHeight);
 
-                int footerHeight = WidgetUtil.getRequiredHeight(footer);
-                contentStyle.setPaddingBottom(footerHeight, Style.Unit.PX);
-                contentStyle.setMarginBottom(-footerHeight, Style.Unit.PX);
+                ComputedStyle footerCs = new ComputedStyle(footer);
+                String footerHeight = footerCs.getProperty("height");
+                contentStyle.setProperty("paddingBottom", footerHeight);
+                contentStyle.setProperty("marginBottom", "-" + footerHeight);
             }
         });
 

@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.web.toolkit.ui.client.fileupload.CubaFileUploadServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.CubaFileUploadState;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.server.*;
@@ -13,6 +14,9 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.LegacyComponent;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -24,9 +28,9 @@ import java.util.*;
  * @version $Id$
  */
 @JavaScript({
-        "resources/jqueryfileupload/jquery.ui.widget-1.11.1.js",
-        "resources/jqueryfileupload/jquery.iframe-transport-9.10.5.js",
-        "resources/jqueryfileupload/jquery.fileupload-9.10.5.js"
+        "resources/jqueryfileupload/jquery.ui.widget-1.11.1.min.js",
+        "resources/jqueryfileupload/jquery.iframe-transport-9.10.5.min.js",
+        "resources/jqueryfileupload/jquery.fileupload-9.10.5.min.js"
 })
 public class CubaFileUpload extends AbstractComponent implements Component.Focusable, LegacyComponent {
 
@@ -50,6 +54,26 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
     protected Set<String> permittedExtensions;
 
     public CubaFileUpload() {
+        registerRpc(new CubaFileUploadServerRpc() {
+            @Override
+            public void fileSizeLimitExceeded(String fileName) {
+                fireFileSizeLimitExceeded(fileName);
+            }
+        });
+
+        setErrorHandler(new ErrorHandler() {
+            @Override
+            public void error(com.vaadin.server.ErrorEvent event) {
+                Log log = LogFactory.getLog(CubaFileUpload.class);
+                //noinspection ThrowableResultOfMethodCallIgnored
+                Throwable ex = event.getThrowable();
+                if (StringUtils.contains(ExceptionUtils.getRootCauseMessage(ex), "The multipart stream ended unexpectedly")) {
+                    log.warn("Unable to upload file, it seems upload canceled or network error occured");
+                } else {
+                    log.warn("Unexpected error in CubaFileUpload", ex);
+                }
+            }
+        });
     }
 
     @Override
@@ -212,6 +236,17 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
         }
     }
 
+    public double getFileSizeLimit() {
+        return getState(false).fileSizeLimit;
+    }
+
+    /**
+     * @param fileSizeLimit file size limit in bytes
+     */
+    public void setFileSizeLimit(int fileSizeLimit) {
+        getState().fileSizeLimit = fileSizeLimit;
+    }
+
     public Receiver getReceiver() {
         return receiver;
     }
@@ -256,8 +291,19 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
                 public void streamingStarted(StreamingStartEvent event) {
                     startUpload();
                     contentLength = event.getContentLength();
-                    fireStarted(event.getFileName(), event.getMimeType());
                     lastStartedEvent = event;
+
+                    double fileSizeLimit = getFileSizeLimit();
+                    if (fileSizeLimit >0 && event.getContentLength() > fileSizeLimit) {
+                        Log log = LogFactory.getLog(CubaFileUpload.class);
+                        log.warn("Unable to start upload. File size limit exceeded, but client-side checks ignored.");
+
+                        interruptUpload();
+                        return;
+                        // here client sends file to us bypassing client-side checks, just stop uploading
+                    }
+
+                    fireStarted(event.getFileName(), event.getMimeType());
                 }
 
                 @Override
@@ -364,6 +410,10 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
     protected void fireUploadSuccess(String filename, String MIMEType,
                                      long length) {
         fireEvent(new SucceededEvent(this, filename, MIMEType, length));
+    }
+
+    protected void fireFileSizeLimitExceeded(String filename) {
+        fireEvent(new FileSizeLimitExceededEvent(this, filename));
     }
 
     /**
@@ -499,6 +549,21 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
          */
         public Exception getReason() {
             return reason;
+        }
+    }
+
+    public static class FileSizeLimitExceededEvent extends Component.Event {
+
+        private String filename;
+
+        /**
+         * @param source   the source of the file.
+         * @param filename the received file name.
+         */
+        public FileSizeLimitExceededEvent(CubaFileUpload source, String filename) {
+            super(source);
+
+            this.filename = filename;
         }
     }
 
@@ -665,6 +730,11 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
         void uploadSucceeded(SucceededEvent event);
     }
 
+    public interface FileSizeLimitExceededListener extends Serializable {
+
+        void fileSizeLimitExceeded(FileSizeLimitExceededEvent e);
+    }
+
     private static final Method UPLOAD_FINISHED_METHOD;
 
     private static final Method UPLOAD_FAILED_METHOD;
@@ -673,16 +743,19 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
 
     private static final Method UPLOAD_STARTED_METHOD;
 
+    private static final Method FILESIZE_LIMIT_EXCEEDED_METHOD;
+
     static {
         try {
             UPLOAD_FINISHED_METHOD = FinishedListener.class.getDeclaredMethod("uploadFinished", FinishedEvent.class);
             UPLOAD_FAILED_METHOD = FailedListener.class.getDeclaredMethod("uploadFailed", FailedEvent.class);
             UPLOAD_STARTED_METHOD = StartedListener.class.getDeclaredMethod("uploadStarted", StartedEvent.class);
             UPLOAD_SUCCEEDED_METHOD = SucceededListener.class.getDeclaredMethod("uploadSucceeded", SucceededEvent.class);
+            FILESIZE_LIMIT_EXCEEDED_METHOD = FileSizeLimitExceededListener.class.getDeclaredMethod("fileSizeLimitExceeded", FileSizeLimitExceededEvent.class);
         } catch (final java.lang.NoSuchMethodException e) {
             // This should never happen
             throw new java.lang.RuntimeException(
-                    "Internal error finding methods in Upload");
+                    "Internal error finding methods in CubaFileUpload");
         }
     }
 
@@ -764,5 +837,13 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
      */
     public void removeSucceededListener(SucceededListener listener) {
         removeListener(SucceededEvent.class, listener, UPLOAD_SUCCEEDED_METHOD);
+    }
+
+    public void addFileSizeLimitExceededListener(FileSizeLimitExceededListener listener) {
+        addListener(FileSizeLimitExceededEvent.class, listener, FILESIZE_LIMIT_EXCEEDED_METHOD);
+    }
+
+    public void removeFileSizeLimitExceededListener(FileSizeLimitExceededListener listener) {
+        removeListener(FileSizeLimitExceededEvent.class, listener, FILESIZE_LIMIT_EXCEEDED_METHOD);
     }
 }

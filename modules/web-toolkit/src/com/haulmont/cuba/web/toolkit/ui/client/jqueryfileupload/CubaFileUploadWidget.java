@@ -5,71 +5,81 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload;
 
-import com.google.gwt.aria.client.Roles;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.user.client.ui.FocusWidget;
-import com.vaadin.client.ui.Icon;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.vaadin.client.StyleConstants;
+import com.vaadin.client.WidgetUtil;
+import com.vaadin.client.ui.VButton;
+import com.vaadin.client.ui.VNotification;
+import com.vaadin.shared.Position;
 
 /**
- * todo artamonov support keyboard Enter/Space press
- *
- * todo artamonov compress js files
- *
  * @author artamonov
  * @version $Id$
  */
-public class CubaFileUploadWidget extends FocusWidget {
+public class CubaFileUploadWidget extends FlowPanel {
 
     public static final String DEFAULT_CLASSNAME = "cuba-fileupload";
 
-    protected Element rootElement;
     protected Element inputElement;
-    protected Element captionElement;
-    protected Element buttonWrap;
-    protected Icon icon;
 
-    protected int tabIndex = 0;
-    protected boolean enabled = true;
+    protected VButton submitButton;
 
     protected JQueryFileUploadOverlay fileUpload;
+    protected CubaFileUploadProgressWindow progressWindow;
 
     protected String unableToUploadFileMessage;
     protected String progressWindowCaption;
     protected String cancelButtonCaption;
-    private CubaFileUploadProgressWindow progressWindow;
+
+    protected int fileSizeLimit = -1;
+    protected FilePermissionsHandler filePermissionsHandler;
+
+    protected boolean enabled;
 
     public CubaFileUploadWidget() {
-        Document doc = Document.get();
-
-        rootElement = doc.createDivElement();
-
-        buttonWrap = doc.createSpanElement();
-
-        captionElement = doc.createSpanElement();
-        buttonWrap.appendChild(captionElement);
-
-        rootElement.appendChild(buttonWrap);
-
-        inputElement = doc.createFileInputElement();
-        inputElement.setAttribute("name", "files[]");
-        Style inputStyle = inputElement.getStyle();
-        inputStyle.setPosition(Style.Position.ABSOLUTE);
-        inputStyle.setTop(0, Unit.PX);
-        inputStyle.setRight(0, Unit.PX);
-        inputStyle.setFontSize(200, Unit.PX);
-        inputStyle.setMargin(0, Unit.PX);
-        inputStyle.setOpacity(0);
-
-        rootElement.appendChild(inputElement);
-
-        setElement(rootElement);
+        submitButton = new VButton();
+        submitButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                fireNativeClick(inputElement);
+            }
+        });
+        add(submitButton);
+        submitButton.setTabIndex(-1);
 
         setStyleName(DEFAULT_CLASSNAME);
 
+        if (inputElement != null) {
+            getElement().removeChild(inputElement);
+        }
+
+        inputElement = Document.get().createFileInputElement();
+        inputElement.setAttribute("name", "files[]");
+        DOM.sinkEvents(inputElement, Event.ONFOCUS);
+
+        getElement().appendChild(inputElement);
+
         fileUpload = new JQueryFileUploadOverlay(inputElement) {
+            protected boolean canceled = false;
+
+            @Override
+            protected boolean isValidFile(String name, double size) {
+                if (fileSizeLimit > 0 && size > fileSizeLimit) {
+                    if (filePermissionsHandler != null) {
+                        filePermissionsHandler.fileSizeLimitExceeded(name);
+                    }
+                    return false;
+                }
+
+                return true;
+            }
+
             @Override
             protected void queueUploadStart() {
                 progressWindow = new CubaFileUploadProgressWindow();
@@ -87,7 +97,9 @@ public class CubaFileUploadWidget extends FocusWidget {
                 progressWindow.closeListener = new CubaFileUploadProgressWindow.CloseListener() {
                     @Override
                     public void onClose() {
-                        // todo artamonov cancel uploading
+                        canceled = true;
+                        cancelUploading();
+
                         progressWindow = null;
                     }
                 };
@@ -96,6 +108,8 @@ public class CubaFileUploadWidget extends FocusWidget {
                 progressWindow.show();
                 progressWindow.center();
                 progressWindow.setVisible(true);
+
+                canceled = false;
             }
 
             @Override
@@ -120,8 +134,28 @@ public class CubaFileUploadWidget extends FocusWidget {
                     progressWindow = null;
                 }
             }
+
+            @Override
+            protected void uploadFailed(String textStatus, String errorThrown) {
+                if (!canceled) {
+                    if (unableToUploadFileMessage != null) {
+                        // show notification without server round trip, server may be unreachable
+                        VNotification notification = VNotification.createNotification(-1, CubaFileUploadWidget.this);
+                        String message = "<h1>" + WidgetUtil.escapeHTML(unableToUploadFileMessage) + "</h1>";
+                        notification.show(message, Position.MIDDLE_CENTER, "error");
+                    }
+
+                    canceled = true;
+                    cancelUploading();
+                }
+            }
         };
     }
+
+    private static native void fireNativeClick(Element element)
+    /*-{
+        element.click();
+    }-*/;
 
     public void setMultiSelect(boolean multiple) {
         if (multiple) {
@@ -135,61 +169,35 @@ public class CubaFileUploadWidget extends FocusWidget {
         fileUpload.setUploadUrl(uploadUrl);
     }
 
-    @Override
-    public final void setEnabled(boolean enabled) {
-        if (isEnabled() != enabled) {
-            this.enabled = enabled;
-            if (!enabled) {
-                Roles.getButtonRole().setAriaDisabledState(getElement(), true);
-                super.setTabIndex(-1);
-            } else {
-                Roles.getButtonRole().removeAriaDisabledState(getElement());
-                super.setTabIndex(tabIndex);
-            }
+    public void setAccept(String accept) {
+        if (accept != null) {
+            inputElement.setAttribute("accept", accept);
+        } else {
+            inputElement.removeAttribute("accept");
         }
     }
 
-    @Override
-    public final boolean isEnabled() {
-        return enabled;
+    public void disableUpload() {
+        setEnabledForSubmitButton(false);
+        // Cannot disable the fileupload while submitting or the file won't
+        // be submitted at all
+        inputElement.setAttribute("disabled", "disabled");
+        enabled = false;
     }
 
-    @Override
-    public final void setTabIndex(int index) {
-        if (isEnabled()) {
-            super.setTabIndex(index);
-        }
-        tabIndex = index;
+    public void enableUpload() {
+        setEnabledForSubmitButton(true);
+        inputElement.removeAttribute("disabled");
+        enabled = true;
     }
 
-    @Override
-    public int getTabIndex() {
-        return tabIndex;
+    protected void setEnabledForSubmitButton(boolean enabled) {
+        submitButton.setEnabled(enabled);
+        submitButton.setStyleName(StyleConstants.DISABLED, !enabled);
     }
 
-    @Override
-    protected void onAttach() {
-        int tabIndex = this.tabIndex;
+    public interface FilePermissionsHandler {
 
-        super.onAttach();
-
-        // Small hack to restore tabIndex after attach
-        setTabIndex(tabIndex);
-    }
-
-    @Override
-    public void setStyleName(String style) {
-        super.setStyleName(style);
-
-        buttonWrap.setClassName(getStylePrimaryName() + "-wrap");
-        captionElement.setClassName(getStylePrimaryName() + "-caption");
-    }
-
-    @Override
-    public void setStylePrimaryName(String style) {
-        super.setStylePrimaryName(style);
-
-        buttonWrap.setClassName(getStylePrimaryName() + "-wrap");
-        captionElement.setClassName(getStylePrimaryName() + "-caption");
+        void fileSizeLimitExceeded(String filename);
     }
 }

@@ -14,6 +14,10 @@ import com.vaadin.client.ui.VUpload;
 public class CubaUploadWidget extends VUpload {
 
     public void setAccept(String accept) {
-        fu.getElement().setAttribute("accept", accept);
+        if (accept != null) {
+            fu.getElement().setAttribute("accept", accept);
+        } else {
+            fu.getElement().removeAttribute("accept");
+        }
     }
 }

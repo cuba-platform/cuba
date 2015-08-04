@@ -6,6 +6,7 @@
 package com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload;
 
 import com.haulmont.cuba.web.toolkit.ui.CubaFileUpload;
+import com.haulmont.cuba.web.toolkit.ui.client.fileupload.CubaFileUploadServerRpc;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.Paintable;
 import com.vaadin.client.UIDL;
@@ -38,30 +39,42 @@ public class CubaFileUploadConnector extends AbstractComponentConnector implemen
     }
 
     @Override
+    protected void init() {
+        super.init();
+
+        getWidget().filePermissionsHandler = new CubaFileUploadWidget.FilePermissionsHandler() {
+            @Override
+            public void fileSizeLimitExceeded(String filename) {
+                getRpcProxy(CubaFileUploadServerRpc.class).fileSizeLimitExceeded(filename);
+            }
+        };
+    }
+
+    @Override
     public void onStateChanged(StateChangeEvent stateChangeEvent) {
         super.onStateChanged(stateChangeEvent);
 
         if (stateChangeEvent.hasPropertyChanged("caption")
                 || stateChangeEvent.hasPropertyChanged("captionAsHtml")) {
-            VCaption.setCaptionText(getWidget().captionElement, getState());
+            VCaption.setCaptionText(getWidget().submitButton.captionElement, getState());
         }
 
         if (stateChangeEvent.hasPropertyChanged("resources")) {
-            if (getWidget().icon != null) {
-                getWidget().buttonWrap.removeChild(getWidget().icon.getElement());
-                getWidget().icon = null;
+            if (getWidget().submitButton.icon != null) {
+                getWidget().submitButton.wrapper.removeChild(getWidget().submitButton.icon.getElement());
+                getWidget().submitButton.icon = null;
             }
             Icon icon = getIcon();
             if (icon != null) {
-                getWidget().icon = icon;
+                getWidget().submitButton.icon = icon;
                 if (getState().iconAltText != null) {
                     icon.setAlternateText(getState().iconAltText);
                 } else {
                     icon.setAlternateText("");
                 }
 
-                getWidget().buttonWrap.insertBefore(icon.getElement(),
-                        getWidget().captionElement);
+                getWidget().submitButton.wrapper.insertBefore(icon.getElement(),
+                        getWidget().submitButton.captionElement);
             }
         }
 
@@ -70,8 +83,8 @@ public class CubaFileUploadConnector extends AbstractComponentConnector implemen
         }
 
         if (stateChangeEvent.hasPropertyChanged("iconAltText")) {
-            if (getWidget().icon != null) {
-                Icon icon = getWidget().icon;
+            if (getWidget().submitButton.icon != null) {
+                Icon icon = getWidget().submitButton.icon;
                 if (getState().iconAltText != null) {
                     icon.setAlternateText(getState().iconAltText);
                 } else {
@@ -90,6 +103,20 @@ public class CubaFileUploadConnector extends AbstractComponentConnector implemen
 
         if (stateChangeEvent.hasPropertyChanged("unableToUploadFileMessage")) {
             getWidget().unableToUploadFileMessage = getState().unableToUploadFileMessage;
+        }
+
+        if (stateChangeEvent.hasPropertyChanged("accept")) {
+            getWidget().setAccept(getState().accept);
+        }
+
+        if (stateChangeEvent.hasPropertyChanged("fileSizeLimit")) {
+            getWidget().fileSizeLimit = getState().fileSizeLimit;
+        }
+
+        if (!isEnabled() || isReadOnly()) {
+            getWidget().disableUpload();
+        } else {
+            getWidget().enableUpload();
         }
     }
 

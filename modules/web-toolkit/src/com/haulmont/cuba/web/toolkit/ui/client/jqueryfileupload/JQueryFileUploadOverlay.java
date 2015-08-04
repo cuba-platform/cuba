@@ -5,7 +5,11 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload;
 
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author artamonov
@@ -15,6 +19,8 @@ public class JQueryFileUploadOverlay {
 
     protected Element fileInput;
     protected String uploadUrl;
+
+    protected List<JavaScriptObject> currentXHRs = new ArrayList<JavaScriptObject>();
 
     public JQueryFileUploadOverlay(Element fileInput) {
         this.fileInput = fileInput;
@@ -41,51 +47,81 @@ public class JQueryFileUploadOverlay {
 
         var self = this;
 
-        upload.bind('fileuploadadd', function (e, data) {
-            console.log('Add file');
+        upload.bind('fileuploadadd', $entry(function (e, data) {
+            console.log(">> File add");
 
             data.url = self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::uploadUrl;
-            data.submit();
-        });
 
-        upload.bind('fileuploadsend', function (e, data) {
-            $entry(
-                self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::fileUploadStart(*)(data.files[0].name)
-            );
-        });
+            var file = data.files[0];
+            var valid = self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::isValidFile(*)(file.name, file.size);
 
-        upload.bind('fileuploadprogress', function (e, data) {
+            if (valid) {
+                self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::addPendingUpload(*)(data);
+
+                data.submit();
+            }
+        }));
+
+        upload.bind('fileuploaddone', $entry(function (e, data) {
+            console.log(">> File done");
+
+            self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::removePendingUpload(*)(data)
+        }));
+
+        upload.bind('fileuploadsend', $entry(function (e, data) {
+            console.log(">> File send");
+
+            self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::fileUploadStart(*)(data.files[0].name)
+        }));
+
+        upload.bind('fileuploadprogress', $entry(function (e, data) {
             console.log('Upload progress ' + data.loaded + ' / ' + data.total);
 
-            $entry(
-                self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::uploadProgress(*)(data.loaded, data.total)
-            );
-        });
+            self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::uploadProgress(*)(data.loaded, data.total)
+        }));
 
-        upload.bind('fileuploadstart', function (e, data) {
-            console.log('Start upload');
+        upload.bind('fileuploadstart', $entry(function (e, data) {
+            console.log(">> queue start");
 
-            $entry(
-                self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::queueUploadStart()()
-            );
-        });
+            self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::queueUploadStart()()
+        }));
 
-        upload.bind('fileuploadstop', function (e, data) {
-            console.log('Stop upload');
+        upload.bind('fileuploadstop', $entry(function (e, data) {
+            console.log(">> queue stop");
 
-            $entry(
-                self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::queueUploadStop()()
-            );
-        });
+            self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::queueUploadStop()()
+        }));
 
-        upload.bind('fileuploadfail', function (e, data) {
-            console.log('Failed upload ' + data.errorThrown + ' ' + data.textStatus);
+        upload.bind('fileuploadfail', $entry(function (e, data) {
+            console.log(">> fail");
 
-            $entry(
-                self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::uploadFailed(*)(data.textStatus, data.errorThrown)
-            );
-        });
+            self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::uploadFailed(*)(data.textStatus, data.errorThrown)
+        }));
     }-*/;
+
+    protected native void cancelXHR(JavaScriptObject jqXHR) /*-{
+        jqXHR.abort();
+    }-*/;
+
+    protected void addPendingUpload(JavaScriptObject jqXHR) {
+        currentXHRs.add(jqXHR);
+    }
+
+    protected void removePendingUpload(JavaScriptObject jqXHR) {
+        currentXHRs.remove(jqXHR);
+    }
+
+    public void cancelUploading() {
+        for (int i = currentXHRs.size() - 1; i >= 0; i--) {
+            cancelXHR(currentXHRs.get(i));
+        }
+        currentXHRs.clear();
+    }
+
+    protected boolean isValidFile(String name, double size) {
+        // check if file has valid extension and size
+        return true;
+    }
 
     protected void uploadProgress(double loaded, double total) {
         // change progress bar value

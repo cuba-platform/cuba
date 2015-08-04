@@ -12,9 +12,7 @@ import java.util.UUID;
  * @author abramov
  * @version $Id$
  */
-public interface FileUploadField
-        extends Component, Component.HasCaption, Component.BelongToFrame
-{
+public interface FileUploadField extends Component, Component.HasCaption, Component.BelongToFrame {
     String NAME = "upload";
 
     interface Listener {
@@ -47,7 +45,7 @@ public interface FileUploadField
         void uploadFailed(Event event);
     }
 
-    public class ListenerAdapter implements Listener {
+    class ListenerAdapter implements Listener {
         @Override
         public void uploadStarted(Event event) {
         }
