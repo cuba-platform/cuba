@@ -159,7 +159,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected boolean filtersPopupDisplayed = false;
     protected boolean filtersLookupDisplayed = false;
     protected boolean maxResultsDisplayed = false;
-    protected boolean editable;
+    protected boolean editable = true;
     protected FilterMode filterMode;
     protected boolean filterSavingPossible = true;
     protected Integer columnsCount;
