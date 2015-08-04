@@ -317,10 +317,12 @@ public class UserManagementServiceBean implements UserManagementService {
         try {
             EntityManager em = persistence.getEntityManager();
             User user = em.find(User.class, userId, "user.timeZone");
-            if (user == null)
+            if (user == null) {
                 throw new EntityAccessException();
+            }
 
             user.setPassword(newPasswordHash);
+            user.setChangePasswordAtNextLogon(false);
 
             // reset remember me for user
             Query query = em.createQuery("delete from sec$RememberMeToken rt where rt.user.id=:userId");
@@ -334,13 +336,13 @@ public class UserManagementServiceBean implements UserManagementService {
     }
 
     protected EmailTemplate getResetPasswordTemplate(User user,
-                                                   SimpleTemplateEngine templateEngine,
-                                                   String resetPasswordSubjectTemplate,
-                                                   String resetPasswordBodyTemplate,
-                                                   Template subjectDefaultTemplate,
-                                                   Template bodyDefaultTemplate,
-                                                   Map<String, Template> localizedSubjectTemplates,
-                                                   Map<String, Template> localizedBodyTemplates) {
+                                                     SimpleTemplateEngine templateEngine,
+                                                     String resetPasswordSubjectTemplate,
+                                                     String resetPasswordBodyTemplate,
+                                                     Template subjectDefaultTemplate,
+                                                     Template bodyDefaultTemplate,
+                                                     Map<String, Template> localizedSubjectTemplates,
+                                                     Map<String, Template> localizedBodyTemplates) {
 
         boolean userLocaleIsUnknown = StringUtils.isEmpty(user.getLanguage());
         String locale = userLocaleIsUnknown ?
