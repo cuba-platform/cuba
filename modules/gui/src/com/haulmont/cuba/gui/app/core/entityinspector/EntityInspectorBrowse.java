@@ -233,9 +233,6 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
         filterBox.add(filter);
 
-        Element xmlDescriptor = DocumentHelper.createElement("filter");
-        filter.setXmlDescriptor(xmlDescriptor);
-
         filter.setUseMaxResults(true);
         filter.setManualApplyRequired(true);
         filter.setEditable(true);

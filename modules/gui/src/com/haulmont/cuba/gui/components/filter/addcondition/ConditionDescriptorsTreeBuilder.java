@@ -71,23 +71,25 @@ public class ConditionDescriptorsTreeBuilder {
         List<AbstractConditionDescriptor> customDescriptors = new ArrayList<>();
 
         boolean propertiesExplicitlyDefined = false;
-        for (Element element : Dom4j.elements(filter.getXmlDescriptor())) {
-            AbstractConditionDescriptor conditionDescriptor;
-            if ("properties".equals(element.getName())) {
-                addMultiplePropertyDescriptors(element, propertyDescriptors, filter);
-                propertiesExplicitlyDefined = true;
-            } else if ("property".equals(element.getName())) {
-                conditionDescriptor = new PropertyConditionDescriptor(element, messagesPack, filterComponentName, datasource);
-                propertyDescriptors.add(conditionDescriptor);
-                propertiesExplicitlyDefined = true;
-            } else if ("custom".equals(element.getName())) {
-                conditionDescriptor = new CustomConditionDescriptor(element, messagesPack, filterComponentName, datasource);
-                customDescriptors.add(conditionDescriptor);
-                propertiesExplicitlyDefined = true;
-            } else {
-                throw new UnsupportedOperationException("Element not supported: " + element.getName());
-            }
+        if (filter.getXmlDescriptor() != null) {
+            for (Element element : Dom4j.elements(filter.getXmlDescriptor())) {
+                AbstractConditionDescriptor conditionDescriptor;
+                if ("properties".equals(element.getName())) {
+                    addMultiplePropertyDescriptors(element, propertyDescriptors, filter);
+                    propertiesExplicitlyDefined = true;
+                } else if ("property".equals(element.getName())) {
+                    conditionDescriptor = new PropertyConditionDescriptor(element, messagesPack, filterComponentName, datasource);
+                    propertyDescriptors.add(conditionDescriptor);
+                    propertiesExplicitlyDefined = true;
+                } else if ("custom".equals(element.getName())) {
+                    conditionDescriptor = new CustomConditionDescriptor(element, messagesPack, filterComponentName, datasource);
+                    customDescriptors.add(conditionDescriptor);
+                    propertiesExplicitlyDefined = true;
+                } else {
+                    throw new UnsupportedOperationException("Element not supported: " + element.getName());
+                }
 
+            }
         }
 
         if (!propertiesExplicitlyDefined) {
