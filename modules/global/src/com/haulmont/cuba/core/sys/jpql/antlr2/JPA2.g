@@ -110,7 +110,7 @@ join_condition
 
 //Start : here we have simplified joins
 join_association_path_expression
-     : identification_variable '.' (field'.')* field
+     : identification_variable '.' (field'.')* field?
          -> ^(T_SELECTED_FIELD<PathNode>[$identification_variable.text] (field)*)
      |  'TREAT(' identification_variable '.' (field'.')* field? 'AS' subtype ')'
          -> ^(T_SELECTED_FIELD<PathNode>[$identification_variable.text] (field)*);
@@ -127,7 +127,7 @@ map_field_identification_variable : 'KEY('identification_variable')' | 'VALUE('i
 
 //Start : here we have simplified paths
 path_expression
-    :  identification_variable '.' (field'.')* field
+    :  identification_variable '.' (field'.')* field?
     -> ^(T_SELECTED_FIELD<PathNode>[$identification_variable.text] (field)*)
     ;
 //todo eude treated path
