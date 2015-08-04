@@ -60,6 +60,10 @@ public class ExcelExporter {
 
     private HSSFCellStyle dateFormatCellStyle;
 
+    private HSSFCellStyle integerFormatCellStyle;
+
+    private HSSFCellStyle doubleFormatCellStyle;
+
     protected ExcelAutoColumnSizer[] sizers;
 
     private final String trueStr;
@@ -225,6 +229,12 @@ public class ExcelExporter {
 
         dateFormatCellStyle = wb.createCellStyle();
         dateFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("m/d/yy"));
+
+        integerFormatCellStyle = wb.createCellStyle();
+        integerFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("#,##0"));
+
+        doubleFormatCellStyle = wb.createCellStyle();
+        doubleFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("#,##0.00"));
     }
 
     protected int createHierarhicalRow(TreeTable table, List<Table.Column> columns,
@@ -348,8 +358,10 @@ public class ExcelExporter {
                     Number result = (Number) datatype.parse(str);
                     if (n instanceof Integer || n instanceof Long || n instanceof Byte || n instanceof Short) {
                         cell.setCellValue(result.longValue());
+                        cell.setCellStyle(integerFormatCellStyle);
                     } else {
                         cell.setCellValue(result.doubleValue());
+                        cell.setCellStyle(doubleFormatCellStyle);
                     }
                 } catch (ParseException e) {
                     throw new RuntimeException(e);
