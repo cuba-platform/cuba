@@ -59,6 +59,12 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
             public void fileSizeLimitExceeded(String fileName) {
                 fireFileSizeLimitExceeded(fileName);
             }
+
+            @Override
+            public void queueUploadFinished() {
+                // trigger UI update after uploading
+                markAsDirty();
+            }
         });
 
         setErrorHandler(new ErrorHandler() {

@@ -48,6 +48,13 @@ public class CubaFileUploadConnector extends AbstractComponentConnector implemen
                 getRpcProxy(CubaFileUploadServerRpc.class).fileSizeLimitExceeded(filename);
             }
         };
+
+        getWidget().queueUploadListener = new CubaFileUploadWidget.QueueUploadListener() {
+            @Override
+            public void uploadFinished() {
+                getRpcProxy(CubaFileUploadServerRpc.class).queueUploadFinished();
+            }
+        };
     }
 
     @Override

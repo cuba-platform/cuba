@@ -40,6 +40,8 @@ public class CubaFileUploadWidget extends FlowPanel {
     protected int fileSizeLimit = -1;
     protected FilePermissionsHandler filePermissionsHandler;
 
+    protected QueueUploadListener queueUploadListener;
+
     protected boolean enabled;
 
     public CubaFileUploadWidget() {
@@ -133,6 +135,10 @@ public class CubaFileUploadWidget extends FlowPanel {
                     progressWindow.hide();
                     progressWindow = null;
                 }
+
+                if (queueUploadListener != null) {
+                    queueUploadListener.uploadFinished();
+                }
             }
 
             @Override
@@ -199,5 +205,10 @@ public class CubaFileUploadWidget extends FlowPanel {
     public interface FilePermissionsHandler {
 
         void fileSizeLimitExceeded(String filename);
+    }
+
+    public interface QueueUploadListener {
+
+        void uploadFinished();
     }
 }
