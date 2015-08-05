@@ -155,7 +155,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
         if (contextMenuEnabled) {
             if (customContextMenu == null) {
                 return super.handleBodyContextMenu(left, top);
-            } else if (enabled) {
+            } else if (enabled && !selectedRowKeys.isEmpty()) {
                 showContextMenuPopup(left, top);
 
                 return true;
