@@ -202,7 +202,7 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
     protected void handleBodyContextMenu(ContextMenuEvent event) {
         if (customContextMenu == null) {
             super.handleBodyContextMenu(event);
-        } else {
+        } else if (!selectedIds.isEmpty()) {
             int left = event.getNativeEvent().getClientX();
             int top = event.getNativeEvent().getClientY();
             top += Window.getScrollTop();
