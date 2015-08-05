@@ -143,7 +143,8 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams().setWidth(themeConstants.getInt("cuba.gui.BackgroundWorkProgressWindow.width"));
+        getDialogParams()
+                .setWidth(themeConstants.getInt("cuba.gui.BackgroundWorkProgressWindow.width"));
 
         @SuppressWarnings("unchecked")
         final BackgroundTask<T, V> task = (BackgroundTask<T, V>) params.get("task");
@@ -185,7 +186,13 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
 
     @Override
     protected boolean preClose(String actionId) {
-        return cancelAllowed;
+        if (cancelAllowed) {
+            if (!taskHandler.cancel()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     protected class WrapperTask extends LocalizedTaskWrapper<T, V> {
