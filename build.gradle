@@ -546,7 +546,7 @@ configure(desktopModule) {
         compile(group: 'com.miglayout', name: 'miglayout-swing', version: '4.2')
         compile(group: 'com.fifesoft', name: 'rsyntaxtextarea', version: '2.5.6')
         compile(group: 'com.haulmont.thirdparty', name: 'glazedlists', version: '1.9.20110801')
-        compile(group: 'com.haulmont.thirdparty', name: 'swingx-core', version: '1.6.5-1')
+        compile(group: 'com.haulmont.thirdparty', name: 'swingx-core', version: '1.6.5-1.cuba.0')
 
         assemble.dependsOn = [classes]
 
