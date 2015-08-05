@@ -4,9 +4,9 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.actions.ListActionType;
+import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
@@ -17,7 +17,7 @@ import org.dom4j.Element;
  * @author krivopustov
  * @version $Id$
  */
-public class TreeLoader extends ComponentLoader {
+public class TreeLoader extends ActionsHolderLoader {
 
     protected ComponentsFactory factory;
     protected LayoutLoaderConfig config;
@@ -71,34 +71,5 @@ public class TreeLoader extends ComponentLoader {
                 component.setCaptionMode(CaptionMode.PROPERTY);
             }
         }
-    }
-
-    @Override
-    protected Action loadDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {
-        String id = element.attributeValue("id");
-        if (id == null) {
-            Element component = element;
-            for (int i = 0; i < 2; i++) {
-                if (component.getParent() != null)
-                    component = component.getParent();
-                else
-                    throw new GuiDevelopmentException("No action ID provided", context.getFullFrameId());
-            }
-            throw new GuiDevelopmentException("No action ID provided", context.getFullFrameId(),
-                    "Tree ID", component.attributeValue("id"));
-        }
-
-        if (StringUtils.isBlank(element.attributeValue("invoke"))) {
-            // Try to create a standard list action
-            for (ListActionType type : ListActionType.values()) {
-                if (type.getId().equals(id)) {
-                    Action action = type.createAction((ListComponent) actionsHolder);
-                    actionsHolder.addAction(action);
-                    return action;
-                }
-            }
-        }
-
-        return super.loadDeclarativeAction(actionsHolder, element);
     }
 }
