@@ -27,9 +27,9 @@ import java.util.List;
  */
 public class TreeTableModelAdapter extends AbstractTreeTableModel implements AnyTableModelAdapter {
 
-    private JXTreeTable treeTable;
+    protected JXTreeTable treeTable;
     protected TreeModelAdapter treeDelegate;
-    private TableModelAdapter tableDelegate;
+    protected TableModelAdapter tableDelegate;
 
     protected List<DataChangeListener> changeListeners = new ArrayList<>();
 
@@ -51,30 +51,13 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
                         // Fixes #1160
                         JXTreeTableExt impl = (JXTreeTableExt) TreeTableModelAdapter.this.treeTable;
                         impl.setAutoCreateColumnsFromModel(false);
+                        impl.backupExpandedNodes();
 
-                        for (DataChangeListener changeListener : changeListeners)
+                        for (DataChangeListener changeListener : changeListeners) {
                             changeListener.beforeChange(true);
-
-                        switch (operation) {
-                            case CLEAR:
-                            case REFRESH:
-                            case ADD:
-                            case REMOVE:
-                                impl.backupExpandedNodes();
-                                modelSupport.fireTreeStructureChanged(root == null ? null : new TreePath(root));
-                                impl.restoreExpandedNodes();
-                                break;
-
-                            case UPDATE:
-                                for (Entity item : items) {
-                                    TreePath treePath = getTreePath(item);
-                                    modelSupport.firePathChanged(treePath);
-                                }
-                                break;
                         }
 
-                        for (DataChangeListener changeListener : changeListeners)
-                            changeListener.afterChange(true);
+                        modelSupport.fireTreeStructureChanged(root == null ? null : new TreePath(root));
                     }
                 }
         );
@@ -229,5 +212,17 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
     @Override
     public Class<?> getColumnClass(int column) {
         return tableDelegate.getColumnClass(column);
+    }
+
+    public void beforeDelayedStructureChange() {
+    }
+
+    public void afterDelayedStructureChange() {
+        JXTreeTableExt impl = (JXTreeTableExt) TreeTableModelAdapter.this.treeTable;
+        impl.restoreExpandedNodes();
+
+        for (DataChangeListener changeListener : changeListeners) {
+            changeListener.afterChange(true);
+        }
     }
 }

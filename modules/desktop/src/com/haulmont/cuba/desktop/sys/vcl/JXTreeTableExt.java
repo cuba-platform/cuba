@@ -14,6 +14,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 /**
  * @author artamonov
@@ -44,7 +45,7 @@ public class JXTreeTableExt extends JXTreeTable implements FocusableTable {
     }
 
     public void backupExpandedNodes() {
-        expandedPaths = new HashSet<>();
+        expandedPaths = new LinkedHashSet<>();
 
         TreeTableModel treeTableModel = getTreeTableModel();
         TreePath rootPath = new TreePath(treeTableModel.getRoot());

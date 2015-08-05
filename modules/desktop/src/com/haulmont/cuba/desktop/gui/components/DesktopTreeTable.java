@@ -19,10 +19,16 @@ import org.jdesktop.swingx.decorator.ComponentAdapter;
 
 import javax.swing.*;
 import javax.swing.event.*;
-import javax.swing.table.*;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author krivopustov
@@ -117,6 +123,16 @@ public class DesktopTreeTable extends DesktopAbstractTable<JXTreeTableExt> imple
                     }
                     removeEditor();
                 }
+            }
+
+            @Override
+            protected void beforeDelayedStructureChange() {
+                ((com.haulmont.cuba.desktop.gui.data.TreeTableModelAdapter) tableModel).beforeDelayedStructureChange();
+            }
+
+            @Override
+            protected void afterDelayedStructureChange() {
+                ((com.haulmont.cuba.desktop.gui.data.TreeTableModelAdapter) tableModel).afterDelayedStructureChange();
             }
         };
 
