@@ -23,8 +23,12 @@ public interface FtsSender {
     void enqueue(BaseEntity<UUID> entity, FtsChangeType changeType);
 
     void enqueue(String entityName, UUID entityId, FtsChangeType changeType);
-    
+
+    void enqueueFake(String entityName, UUID entityId);
+
     void emptyQueue(String entityName);
+
+    void emptyFakeQueue(String entityName);
 
     void emptyQueue();
 

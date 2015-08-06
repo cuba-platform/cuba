@@ -573,6 +573,7 @@ create table SYS_FTS_QUEUE (
     CHANGE_TYPE char(1),
     SOURCE_HOST varchar(255),
     INDEXING_HOST varchar(255),
+    FAKE tinyint,
     --
     primary key nonclustered (ID)
 )^

@@ -165,6 +165,8 @@ create table SYS_FTS_QUEUE (
     CHANGE_TYPE char(1),
     SOURCE_HOST varchar2(255),
     INDEXING_HOST varchar2(255),
+    FAKE char(1),
+
     primary key(ID)
 )^
 create index IDX_SYS_FTS_QUEUE_IDXHOST_CRTS on SYS_FTS_QUEUE (INDEXING_HOST, CREATE_TS)^

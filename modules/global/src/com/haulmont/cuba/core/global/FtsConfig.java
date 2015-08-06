@@ -45,4 +45,8 @@ public interface FtsConfig extends Config {
     @Property("cuba.fts.indexingHosts")
     @Factory(factory = StringListTypeFactory.class)
     List<String> getIndexingHosts();
+
+    @Property("cuba.fts.reindexBatchSize")
+    @DefaultInt(5000)
+    int getReindexBatchSize();
 }

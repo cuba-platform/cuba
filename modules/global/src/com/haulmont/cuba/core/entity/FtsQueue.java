@@ -33,6 +33,9 @@ public class FtsQueue extends BaseUuidEntity {
     @Column(name = "INDEXING_HOST")
     protected String indexingHost;
 
+    @Column(name = "FAKE")
+    protected Boolean fake = false;
+
     public UUID getEntityId() {
         return entityId;
     }
@@ -71,5 +74,13 @@ public class FtsQueue extends BaseUuidEntity {
 
     public void setIndexingHost(String indexingHost) {
         this.indexingHost = indexingHost;
+    }
+
+    public Boolean getFake() {
+        return fake;
+    }
+
+    public void setFake(Boolean fake) {
+        this.fake = fake;
     }
 }
