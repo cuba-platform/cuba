@@ -54,7 +54,7 @@ public interface DsContext {
      * @return      datasource instance
      * @throws java.lang.IllegalArgumentException if not found
      */
-    <T extends Datasource> Datasource getNN(String name);
+    <T extends Datasource> T getNN(String name);
 
     /**
      * @return all datasources contained in this context

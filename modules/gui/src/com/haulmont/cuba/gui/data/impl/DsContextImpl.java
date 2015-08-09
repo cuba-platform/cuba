@@ -415,11 +415,10 @@ public class DsContextImpl implements DsContextImplementation {
 
     @Override
     public <T extends Datasource> T getNN(String name) {
-        Datasource datasource = get(name);
+        T datasource = get(name);
         if (datasource == null)
             throw new IllegalArgumentException("Datasource '" + name + "' is not found");
-        //noinspection unchecked
-        return (T) datasource;
+        return datasource;
     }
 
     @Override
