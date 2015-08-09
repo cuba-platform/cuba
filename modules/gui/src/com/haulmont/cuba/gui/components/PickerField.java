@@ -431,34 +431,32 @@ public interface PickerField extends Field, Component.ActionsHolder {
             DataSupplier dataSupplier = window.getDsContext().getDataSupplier();
             entity = dataSupplier.reload(entity, View.MINIMAL);
 
-            if (entity != null) {
-                String windowAlias = getEditScreen();
-                if (windowAlias == null) {
-                    windowAlias = windowConfig.getEditorScreenId(entity.getMetaClass());
-                }
-
-                final Window.Editor editor = wm.openEditor(
-                        windowConfig.getWindowInfo(windowAlias),
-                        entity,
-                        openType,
-                        screenParams != null ? screenParams : Collections.<String, Object>emptyMap()
-                );
-                editor.addListener(new Window.CloseListener() {
-
-                    @Override
-                    public void windowClosed(String actionId) {
-                        if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                            Entity item = editor.getItem();
-                            afterCommitOpenedEntity(item);
-                        }
-
-                        // move focus to owner
-                        pickerField.requestFocus();
-
-                        afterWindowClosed(editor);
-                    }
-                });
+            String windowAlias = getEditScreen();
+            if (windowAlias == null) {
+                windowAlias = windowConfig.getEditorScreenId(entity.getMetaClass());
             }
+
+            final Window.Editor editor = wm.openEditor(
+                    windowConfig.getWindowInfo(windowAlias),
+                    entity,
+                    openType,
+                    screenParams != null ? screenParams : Collections.<String, Object>emptyMap()
+            );
+            editor.addListener(new Window.CloseListener() {
+
+                @Override
+                public void windowClosed(String actionId) {
+                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                        Entity item = editor.getItem();
+                        afterCommitOpenedEntity(item);
+                    }
+
+                    // move focus to owner
+                    pickerField.requestFocus();
+
+                    afterWindowClosed(editor);
+                }
+            });
         }
 
         protected Entity getEntity() {
