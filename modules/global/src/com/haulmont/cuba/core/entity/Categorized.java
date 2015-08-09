@@ -6,13 +6,15 @@
 package com.haulmont.cuba.core.entity;
 
 /**
- * Base interface for entities with fixed category
- * Such entities can be used in RuntimePropertiesFrame
+ * Interface to be implemented by entities which can be separated by categories and hence have several sets of
+ * dynamic attributes.
+ * Such entities can be displayed in RuntimePropertiesFrame.
  *
  * @author degtyarjov
  * @version $Id$
  */
 public interface Categorized {
+
     Category getCategory();
 
     void setCategory(Category category);

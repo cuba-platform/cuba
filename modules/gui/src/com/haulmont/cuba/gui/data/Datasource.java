@@ -145,7 +145,13 @@ public interface Datasource<T extends Entity> {
      */
     void removeListener(DatasourceListener<T> listener);
 
+    /**
+     * @return whether to load dynamic attributes
+     */
     boolean getLoadDynamicAttributes();
 
+    /**
+     * @param value whether to load dynamic attributes
+     */
     void setLoadDynamicAttributes(boolean value);
 }

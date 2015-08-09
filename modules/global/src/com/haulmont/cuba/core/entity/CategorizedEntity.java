@@ -13,12 +13,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
 /**
- * Base class for entities with fixed category
- * Please consider  implementation of  {@link com.haulmont.cuba.core.entity.Categorized} instead of extension of this class
- *
- * <p>$Id$</p>
+ * Base class for entities which can be separated by categories and hence have several sets of dynamic attributes.
+ * Instead of using this base class, consider implementing {@link com.haulmont.cuba.core.entity.Categorized} interface.
  *
  * @author devyatkin
+ * @version $Id$
  */
 @MappedSuperclass
 public abstract class CategorizedEntity extends BaseUuidEntity implements Categorized {

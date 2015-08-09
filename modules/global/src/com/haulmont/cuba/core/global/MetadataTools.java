@@ -568,11 +568,18 @@ public class MetadataTools {
         return result;
     }
 
+    /**
+     * Returns a {@link MetaPropertyPath} which can include the special MetaProperty for a dynamic attribute.
+     *
+     * @param metaClass     originating meta-class
+     * @param propertyPath  path to the attribute
+     * @return  MetaPropertyPath instance
+     */
     @Nullable
-    public MetaPropertyPath resolveMetaPropertyPath(MetaClass metaClass, String property) {
-        MetaPropertyPath metaPropertyPath = metaClass.getPropertyPath(property);
-        if (metaPropertyPath == null && DynamicAttributesUtils.isDynamicAttribute(property)) {
-            metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(metaClass, property);
+    public MetaPropertyPath resolveMetaPropertyPath(MetaClass metaClass, String propertyPath) {
+        MetaPropertyPath metaPropertyPath = metaClass.getPropertyPath(propertyPath);
+        if (metaPropertyPath == null && DynamicAttributesUtils.isDynamicAttribute(propertyPath)) {
+            metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(metaClass, propertyPath);
         }
         return metaPropertyPath;
     }

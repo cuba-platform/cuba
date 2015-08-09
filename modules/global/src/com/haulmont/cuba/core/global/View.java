@@ -28,6 +28,10 @@ import java.util.Map;
  * @version $Id$
  */
 public class View implements Serializable {
+
+    /**
+     * Parameters object to be used in constructors.
+     */
     public static class ViewParams {
         protected View src;
         protected Class<? extends Entity> entityClass;

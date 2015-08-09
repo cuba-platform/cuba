@@ -179,10 +179,16 @@ public class LoadContext implements Serializable {
         return dbHints;
     }
 
+    /**
+     * @return whether to load dynamic attributes
+     */
     public boolean getLoadDynamicAttributes() {
         return loadDynamicAttributes;
     }
 
+    /**
+     * @param loadDynamicAttributes whether to load dynamic attributes
+     */
     public void setLoadDynamicAttributes(boolean loadDynamicAttributes) {
         this.loadDynamicAttributes = loadDynamicAttributes;
     }
