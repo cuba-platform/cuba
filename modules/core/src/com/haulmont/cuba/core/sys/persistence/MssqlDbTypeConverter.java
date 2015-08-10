@@ -65,6 +65,8 @@ public class MssqlDbTypeConverter implements DbTypeConverter {
             return Types.TIMESTAMP;
         else if (javaClass == UUID.class)
             return Types.VARCHAR;
+        else if (javaClass == Boolean.class)
+            return Types.BIT;
         return Types.OTHER;
     }
 }
