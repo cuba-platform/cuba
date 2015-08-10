@@ -17,7 +17,7 @@ public class Mssql2012SequenceSupport implements SequenceSupport {
     @Override
     public String sequenceExistsSql(String sequenceName) {
         Preconditions.checkNotNullArgument(sequenceName, "sequenceName is null");
-        return "select * from SYS.SEQUENCES where NAME = '" + sequenceName.toUpperCase() + "'";
+        return "select NAME from SYS.SEQUENCES where NAME = '" + sequenceName.toUpperCase() + "'";
     }
 
     @Override
@@ -49,6 +49,6 @@ public class Mssql2012SequenceSupport implements SequenceSupport {
     @Override
     public String getCurrentValueSql(String sequenceName) {
         Preconditions.checkNotNullArgument(sequenceName, "sequenceName is null");
-        return "select CURRENT_VALUE from SYS.SEQUENCES where NAME = '" + sequenceName.toUpperCase() + "'";
+        return "select cast(CURRENT_VALUE as bigint) from SYS.SEQUENCES where NAME = '" + sequenceName.toUpperCase() + "'";
     }
 }
