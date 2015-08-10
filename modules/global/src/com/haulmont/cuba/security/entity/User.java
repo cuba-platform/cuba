@@ -43,7 +43,7 @@ public class User extends StandardEntity {
     @Column(name = "PASSWORD", length = 255)
     protected String password;
 
-    @Column(name = "NAME", length = 100)
+    @Column(name = "NAME", length = 255)
     protected String name;
 
     @Column(name = "FIRST_NAME", length = 255)
