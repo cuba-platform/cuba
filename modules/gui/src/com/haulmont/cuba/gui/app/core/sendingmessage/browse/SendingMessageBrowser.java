@@ -10,13 +10,12 @@ import com.haulmont.cuba.core.app.EmailService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
-import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.export.ExportFormat;
@@ -58,7 +57,10 @@ public class SendingMessageBrowser extends AbstractWindow {
     protected Table table;
 
     @Inject
-    protected FileUploadingAPI fileUploadingAPI;
+    protected FileUploadingAPI fileUploading;
+
+    @Inject
+    protected DataSupplier dataSupplier;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -121,14 +123,14 @@ public class SendingMessageBrowser extends AbstractWindow {
     }
 
     protected List<SendingAttachment> getAttachments(SendingMessage message) {
-        return getDsContext().getDataSupplier().reload(message, "sendingMessage.loadFromQueue").getAttachments();
+        return dataSupplier.reload(message, "sendingMessage.loadFromQueue").getAttachments();
     }
 
     protected FileDescriptor getFileDescriptor(SendingAttachment attachment) throws FileStorageException {
-        UUID uuid = fileUploadingAPI.saveFile(attachment.getContent());
-        FileDescriptor fileDescriptor = fileUploadingAPI.getFileDescriptor(uuid, attachment.getName());
-        fileUploadingAPI.putFileIntoStorage(uuid, fileDescriptor);
-        return getDsContext().getDataSupplier().commit(fileDescriptor);
+        UUID uuid = fileUploading.saveFile(attachment.getContent());
+        FileDescriptor fileDescriptor = fileUploading.getFileDescriptor(uuid, attachment.getName());
+        fileUploading.putFileIntoStorage(uuid, fileDescriptor);
+        return dataSupplier.commit(fileDescriptor);
     }
 
     protected void exportFile(SendingAttachment attachment) {
@@ -136,7 +138,7 @@ public class SendingMessageBrowser extends AbstractWindow {
             FileDescriptor fileDescriptor = getFileDescriptor(attachment);
             AppConfig.createExportDisplay(this).show(fileDescriptor, ExportFormat.OCTET_STREAM);
         } catch (FileStorageException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("File export filed", e);
         }
     }
 }
