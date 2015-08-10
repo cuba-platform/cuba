@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.gui.app.security.user;
 
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.Field;
@@ -82,6 +83,15 @@ public class NameBuilderListener<T extends Entity> extends DsListenerAdapter<T> 
         } catch (ParseException pe) {
             displayedName = "";
         }
+
+        MetaProperty nameProperty = source.getMetaClass().getProperty("name");
+        if (nameProperty != null) {
+            int length = (int) nameProperty.getAnnotations().get("length");
+            if (displayedName.length() > length) {
+                displayedName = "";
+            }
+        }
+
 
         setFullName(displayedName);
     }
