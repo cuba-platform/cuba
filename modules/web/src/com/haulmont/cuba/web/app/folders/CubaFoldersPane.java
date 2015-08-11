@@ -829,7 +829,7 @@ public class CubaFoldersPane extends VerticalLayout {
         public void perform(final Folder folder) {
             final FolderEditWindow window;
             if (folder instanceof SearchFolder) {
-                window = new FolderEditWindow(false, folder, null, new Runnable() {
+                window = AppFolderEditWindow.create(false, false, folder, null, new Runnable() {
                     @Override
                     public void run() {
                         saveFolder(folder);
