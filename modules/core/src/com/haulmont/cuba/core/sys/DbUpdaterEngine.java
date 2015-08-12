@@ -58,7 +58,7 @@ public class DbUpdaterEngine implements DbUpdater {
         requiredTables.put("reports", "report_report");
         requiredTables.put("workflow", "wf_proc");
         requiredTables.put("ccpayments", "cc_credit_card");
-        requiredTables.put("bpmn", "bpmn_group");
+        requiredTables.put("bpm", "bpm_proc_definition");
     }
 
     // register handlers for script files
