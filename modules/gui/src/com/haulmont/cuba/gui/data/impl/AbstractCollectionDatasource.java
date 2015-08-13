@@ -269,6 +269,17 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                 }
                 case CUSTOM: {
                     Object value = params.get(info.getPath());
+                    if (value == null) {
+                        //a case when a query contains a parameter like :custom$city.country.id and we passed
+                        //just "city" parameter to the datasource refresh() method
+                        String[] pathElements = info.getPath().split("\\.");
+                        if (pathElements.length > 1) {
+                            Object entity = params.get(pathElements[0]);
+                            if (entity != null && entity instanceof Instance) {
+                                value = InstanceUtils.getValueEx((Instance) entity, Arrays.copyOfRange(pathElements, 1, pathElements.length));
+                            }
+                        }
+                    }
                     if (value instanceof String && info.isCaseInsensitive()) {
                         value = makeCaseInsensitive((String) value);
                     }
