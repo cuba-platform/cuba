@@ -742,7 +742,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             int nextColumnEnd = nextColumnStart + conditionWidth - 1;
             if (nextColumnEnd >= conditionsCount) {
                 //complete current row in grid with gaps if next cell will be on next row
-                completeGridRowWithGaps(grid, row, nextColumnStart);
+                completeGridRowWithGaps(grid, row, nextColumnStart, false);
                 //place cell to next row in grid
                 nextColumnStart = 0;
                 nextColumnEnd = conditionWidth - 1;
@@ -776,7 +776,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         //complete last row in grid with gaps
-        completeGridRowWithGaps(grid, row, nextColumnStart);
+        completeGridRowWithGaps(grid, row, nextColumnStart, true);
 
         if (parentContainer != null) {
             parentContainer.add(grid);
@@ -829,7 +829,7 @@ public class FilterDelegateImpl implements FilterDelegate {
      * Adds empty containers to grid row. If not to complete the row with gaps then in case of grid with one element (element width = 1)
      * this element will occupy 100% of grid width, but expected behaviour is to occupy 1/3 of grid width
      */
-    protected void completeGridRowWithGaps(GridLayout grid, int row, int startColumn) {
+    protected void completeGridRowWithGaps(GridLayout grid, int row, int startColumn, boolean lastRow) {
         for (int i = startColumn * 2; i < grid.getColumns(); i++) {
             Component gap = componentsFactory.createComponent(Label.class);
             gap.setWidth("100%");
