@@ -12,6 +12,7 @@
     .#{$primary-stylename}-arow {
       @include box-defaults;
 
+      background: #ccc;
       border-top: 1px solid $cuba-field-border-color;
       border-left: 1px solid $cuba-field-border-color;
       border-right: 1px solid $cuba-field-border-color;
@@ -21,7 +22,6 @@
       @include box-defaults;
 
       height: 24px;
-      background: #ccc;
       border-right: 1px solid $cuba-field-border-color;
     }
 

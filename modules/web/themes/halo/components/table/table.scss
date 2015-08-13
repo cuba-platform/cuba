@@ -12,6 +12,14 @@
   .#{$primary-stylename}-arow {
     @include box-defaults;
 
+    $arow-background-color: white;
+    @if is-dark-color($v-app-background-color) {
+      $arow-background-color: scale-color($v-app-background-color, $lightness: 10%, $saturation: 80%);
+    } @else {
+      $arow-background-color: scale-color($v-app-background-color, $lightness: -10%, $saturation: 80%);
+    }
+    @include valo-gradient($arow-background-color);
+
     border-top: first-number($v-border) solid $border-color;
     border-left: first-number($v-border) solid $border-color;
     border-right: first-number($v-border) solid $border-color;
@@ -21,14 +29,6 @@
     @include box-defaults;
 
     height: $v-table-row-height;
-
-    $arow-background-color: white;
-    @if is-dark-color($v-app-background-color) {
-      $arow-background-color: scale-color($v-app-background-color, $lightness: 10%, $saturation: 80%);
-    } @else {
-      $arow-background-color: scale-color($v-app-background-color, $lightness: -10%, $saturation: 80%);
-    }
-    background-color: $arow-background-color;
 
     border-right: first-number($v-border) solid $border-color;
     color: valo-font-color($arow-background-color, 0.9);
