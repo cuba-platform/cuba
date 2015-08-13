@@ -25,9 +25,6 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.AbstractAction;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
@@ -63,7 +60,6 @@ import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.swing.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -119,6 +115,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected FilterEntity adHocFilter;
     protected ConditionsTree conditions;
     protected ConditionsTree prevConditions;
+    protected List<AbstractCondition> initialConditions = new ArrayList<>();
     protected FilterEntity filterEntity;
     protected FilterEntity initialFilterEntity;
     protected CollectionDatasource datasource;
@@ -154,7 +151,6 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected boolean textMaxResults;
     protected Boolean manualApplyRequired;
     protected boolean folderActionsEnabled = true;
-    protected boolean conditionsRemoveEnabled = false;
     protected boolean filtersLookupListenerEnabled = true;
     protected boolean filtersPopupDisplayed = false;
     protected boolean filtersLookupDisplayed = false;
@@ -429,6 +425,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     public void setFilterEntity(FilterEntity filterEntity) {
         this.filterEntity = filterEntity;
         conditions = FilterParser.getConditions(filter, filterEntity.getXml());
+        initialConditions = conditions.toConditionsList();
         for (AbstractCondition condition : conditions.toConditionsList()) {
             condition.addListener(new AbstractCondition.Listener() {
                 @Override
@@ -462,7 +459,6 @@ public class FilterDelegateImpl implements FilterDelegate {
             filtersLookupListenerEnabled = true;
         }
 
-        conditionsRemoveEnabled = filterEntity == adHocFilter;
         setFilterActionsEnabled();
         fillConditionsLayout(true);
         setConditionsLayoutVisible(true);
@@ -814,7 +810,8 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected ParamEditor createParamEditor(final AbstractCondition condition) {
-        ParamEditor paramEditor = new ParamEditor(condition, conditionsRemoveEnabled, isEditable() && userCanEditFilers());
+        boolean conditionRemoveEnabled = !initialConditions.contains(condition);
+        ParamEditor paramEditor = new ParamEditor(condition, conditionRemoveEnabled, isEditable() && userCanEditFilers());
         AbstractAction removeConditionAction = new AbstractAction("") {
             @Override
             public void actionPerform(Component component) {
@@ -823,7 +820,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 updateFilterModifiedIndicator();
             }
         };
-        removeConditionAction.setVisible(conditionsRemoveEnabled);
+        removeConditionAction.setVisible(conditionRemoveEnabled);
         paramEditor.setRemoveButtonAction(removeConditionAction);
         return paramEditor;
     }
@@ -1869,7 +1866,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                             updateWindowCaption();
 
                             //recreate layout to remove delete conditions buttons
-                            conditionsRemoveEnabled = false;
+                            initialConditions = conditions.toConditionsList();
                             fillConditionsLayout(false);
                         }
                     }
@@ -1907,7 +1904,6 @@ public class FilterDelegateImpl implements FilterDelegate {
                 @Override
                 public void windowClosed(String actionId) {
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                        boolean isNew = PersistenceHelper.isNew(filterEntity);
                         String filterName = window.getFilterName();
                         FilterEntity newFilterEntity = metadata.create(FilterEntity.class);
                         InstanceUtils.copy(filterEntity, newFilterEntity);
@@ -1926,10 +1922,10 @@ public class FilterDelegateImpl implements FilterDelegate {
                         saveFilterEntity();
                         initFilterSelectComponents();
                         updateWindowCaption();
-                        if (isNew) {
-                            //recreate layout to remove delete conditions buttons
-                            fillConditionsLayout(false);
-                        }
+
+                        //recreate layout to remove delete conditions buttons
+                        initialConditions = conditions.toConditionsList();
+                        fillConditionsLayout(false);
                     }
                 }
             });
