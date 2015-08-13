@@ -435,6 +435,16 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
+    public void setAggregationStyle(AggregationStyle aggregationStyle) {
+        component.setAggregationStyle(aggregationStyle);
+    }
+
+    @Override
+    public AggregationStyle getAggregationStyle() {
+        return component.getAggregationStyle();
+    }
+
+    @Override
     public void setShowTotalAggregation(boolean showAggregation) {
         component.setShowTotalAggregation(showAggregation);
     }

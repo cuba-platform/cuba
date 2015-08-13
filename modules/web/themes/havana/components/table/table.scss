@@ -29,6 +29,10 @@
       border-bottom: 0;
     }
 
+    .#{$primary-stylename}-footer {
+      background: #ccc;
+    }
+
     .#{$primary-stylename}-cell-content.boolean-cell-true .#{$primary-stylename}-cell-wrapper {
       color: transparent;
       font-size: 0;

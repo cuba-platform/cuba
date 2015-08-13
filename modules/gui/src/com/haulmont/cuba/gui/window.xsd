@@ -73,6 +73,13 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="aggregationStyle">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="TOP"/>
+            <xs:enumeration value="BOTTOM"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:simpleType name="componentSize">
         <xs:union>
             <xs:simpleType>
@@ -357,6 +364,7 @@
         <xs:attribute name="columnControlVisible" type="xs:boolean"/>
 
         <xs:attribute name="aggregatable" type="xs:boolean"/>
+        <xs:attribute name="aggregationStyle" type="aggregationStyle"/>
         <xs:attribute name="showTotalAggregation" type="xs:boolean"/>
         <xs:attribute name="presentations" type="xs:boolean"/>
         <xs:attribute name="contextMenuEnabled" type="xs:boolean"/>

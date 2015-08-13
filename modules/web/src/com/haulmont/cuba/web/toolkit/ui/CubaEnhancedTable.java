@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.vaadin.ui.Component;
@@ -48,6 +49,9 @@ public interface CubaEnhancedTable extends AggregationContainer {
 
     boolean isAggregatable();
     void setAggregatable(boolean aggregatable);
+
+    void setAggregationStyle(Table.AggregationStyle aggregationStyle);
+    Table.AggregationStyle getAggregationStyle();
 
     boolean isShowTotalAggregation();
     void setShowTotalAggregation(boolean showTotalAggregation);

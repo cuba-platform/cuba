@@ -86,6 +86,7 @@ public abstract class AbstractTableLoader extends ActionsHolderLoader {
         loadReorderingAllowed(component, element);
         loadColumnControlVisible(component, element);
         loadAggregatable(component, element);
+        loadAggregationStyle(component, element);
 
         loadPresentations(component, element);
 
@@ -240,6 +241,13 @@ public abstract class AbstractTableLoader extends ActionsHolderLoader {
             if (!StringUtils.isEmpty(showTotalAggregation)) {
                 component.setShowTotalAggregation(BooleanUtils.toBoolean(showTotalAggregation));
             }
+        }
+    }
+
+    protected void loadAggregationStyle(Table component, Element element) {
+        String aggregationStyle = element.attributeValue("aggregationStyle");
+        if (!StringUtils.isEmpty(aggregationStyle)) {
+            component.setAggregationStyle(Table.AggregationStyle.valueOf(aggregationStyle));
         }
     }
 

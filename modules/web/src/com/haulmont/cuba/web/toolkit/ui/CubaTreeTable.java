@@ -6,6 +6,7 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.google.common.collect.Iterables;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.data.PropertyValueStringify;
 import com.haulmont.cuba.web.toolkit.ShortcutActionManager;
@@ -58,6 +59,8 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
     protected Map<Object, CellClickListener> cellClickListeners; // lazily initialized map
 
     protected Map<Object, String> columnDescriptions; // lazily initialized map
+
+    protected Table.AggregationStyle aggregationStyle = Table.AggregationStyle.TOP;
 
     public CubaTreeTable() {
         registerRpc(new CubaTableServerRpc() {
@@ -486,6 +489,16 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
     }
 
     @Override
+    public Table.AggregationStyle getAggregationStyle() {
+        return aggregationStyle;
+    }
+
+    @Override
+    public void setAggregationStyle(Table.AggregationStyle aggregationStyle) {
+        this.aggregationStyle = aggregationStyle;
+    }
+
+    @Override
     public boolean isShowTotalAggregation() {
         return showTotalAggregation;
     }
@@ -543,7 +556,8 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
     @Override
     protected void paintAdditionalData(PaintTarget target) throws PaintException {
         if (reqFirstRowToPaint == -1 && items instanceof AggregationContainer && isAggregatable()
-                && !((AggregationContainer) items).getAggregationPropertyIds().isEmpty() && isShowTotalAggregation()) {
+                && !((AggregationContainer) items).getAggregationPropertyIds().isEmpty() && isShowTotalAggregation()
+                && Table.AggregationStyle.TOP.equals(getAggregationStyle())) {
             paintAggregationRow(target, ((AggregationContainer) items).aggregate(new Context(items.getItemIds())));
         }
     }
@@ -590,6 +604,25 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
 
         updateClickableColumnKeys();
         updateColumnDescriptions();
+
+        if (Table.AggregationStyle.BOTTOM.equals(getAggregationStyle())) {
+            updateFooterAggregation();
+        }
+    }
+
+    protected void updateFooterAggregation() {
+        if (!isFooterVisible()) {
+            setFooterVisible(true);
+        }
+        Map<Object, Object> aggregations = ((AggregationContainer) items).aggregate(new Context(items.getItemIds()));
+        for (final Object columnId : visibleColumns) {
+            if (columnId == null || isColumnCollapsed(columnId)) {
+                continue;
+            }
+
+            String value = (String) aggregations.get(columnId);
+            setColumnFooter(columnId, value);
+        }
     }
 
     protected void updateClickableColumnKeys() {

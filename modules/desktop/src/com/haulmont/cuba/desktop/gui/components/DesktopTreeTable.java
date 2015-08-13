@@ -125,15 +125,15 @@ public class DesktopTreeTable extends DesktopAbstractTable<JXTreeTableExt> imple
                 }
             }
 
-            @Override
-            protected void beforeDelayedStructureChange() {
-                ((com.haulmont.cuba.desktop.gui.data.TreeTableModelAdapter) tableModel).beforeDelayedStructureChange();
-            }
-
-            @Override
-            protected void afterDelayedStructureChange() {
-                ((com.haulmont.cuba.desktop.gui.data.TreeTableModelAdapter) tableModel).afterDelayedStructureChange();
-            }
+//            @Override
+//            protected void beforeDelayedStructureChange() {
+//                ((com.haulmont.cuba.desktop.gui.data.TreeTableModelAdapter) tableModel).beforeDelayedStructureChange();
+//            }
+//
+//            @Override
+//            protected void afterDelayedStructureChange() {
+//                ((com.haulmont.cuba.desktop.gui.data.TreeTableModelAdapter) tableModel).afterDelayedStructureChange();
+//            }
         };
 
         impl.addTreeExpansionListener(new TreeExpansionListener() {

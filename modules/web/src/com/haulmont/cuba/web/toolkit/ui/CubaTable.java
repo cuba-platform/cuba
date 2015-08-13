@@ -6,6 +6,7 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.google.common.collect.Iterables;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.data.PropertyValueStringify;
 import com.haulmont.cuba.web.toolkit.ShortcutActionManager;
@@ -54,6 +55,8 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
     protected Map<Object, CellClickListener> cellClickListeners; // lazily initialized map
 
     protected Map<Object, String> columnDescriptions; // lazily initialized map
+
+    protected Table.AggregationStyle aggregationStyle = Table.AggregationStyle.TOP;
 
     public CubaTable() {
         registerRpc(new CubaTableServerRpc() {
@@ -422,6 +425,16 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
     }
 
     @Override
+    public Table.AggregationStyle getAggregationStyle() {
+        return aggregationStyle;
+    }
+
+    @Override
+    public void setAggregationStyle(Table.AggregationStyle aggregationStyle) {
+        this.aggregationStyle = aggregationStyle;
+    }
+
+    @Override
     public boolean isShowTotalAggregation() {
         return showTotalAggregation;
     }
@@ -482,7 +495,8 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
             boolean hasAggregation = items instanceof AggregationContainer && isAggregatable()
                     && !((AggregationContainer) items).getAggregationPropertyIds().isEmpty();
 
-            if (hasAggregation && isShowTotalAggregation()) {
+            if (hasAggregation && isShowTotalAggregation()
+                    && Table.AggregationStyle.TOP.equals(getAggregationStyle())) {
                 Context context = new Context(getAggregationItemIds());
                 paintAggregationRow(target, ((AggregationContainer) items).aggregate(context));
             }
@@ -535,6 +549,26 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
 
         updateClickableColumnKeys();
         updateColumnDescriptions();
+
+        if (Table.AggregationStyle.BOTTOM.equals(getAggregationStyle())) {
+            updateFooterAggregation();
+        }
+    }
+
+    protected void updateFooterAggregation() {
+        if (!isFooterVisible()) {
+            setFooterVisible(true);
+        }
+        Context context = new Context(getAggregationItemIds());
+        Map<Object, Object> aggregations = ((AggregationContainer) items).aggregate(context);
+        for (final Object columnId : visibleColumns) {
+            if (columnId == null || isColumnCollapsed(columnId)) {
+                continue;
+            }
+
+            String value = (String) aggregations.get(columnId);
+            setColumnFooter(columnId, value);
+        }
     }
 
     protected void updateClickableColumnKeys() {
