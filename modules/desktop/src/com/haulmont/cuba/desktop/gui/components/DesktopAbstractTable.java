@@ -1195,6 +1195,15 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     }
 
     @Override
+    public void setAggregationStyle(AggregationStyle aggregationStyle) {
+    }
+
+    @Override
+    public AggregationStyle getAggregationStyle() {
+        return null;
+    }
+
+    @Override
     public void setShowTotalAggregation(boolean showAggregation) {
     }
 
