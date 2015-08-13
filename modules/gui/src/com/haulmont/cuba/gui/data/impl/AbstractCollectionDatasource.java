@@ -461,8 +461,25 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
             for (ParameterInfo info : queryParameters) {
                 if (ParameterInfo.Type.DATASOURCE.equals(info.getType())) {
                     Object value = parameters.get(info.getFlatName());
-                    if (value == null)
-                        return null;
+                    if (value == null) {
+                        String[] pathElements = info.getPath().split("\\.");
+                        if (pathElements.length == 1) {
+                            //nothing selected in 'master' datasource, so return null here to clear the 'detail' datasource
+                            return null;
+                        } else {
+                            //The parameter with null value is the path to the datasource item property,
+                            //e.g. :ds$User.group.id.
+                            //If the 'master' datasource item is not null then do not clear the 'detail' datasource,
+                            //a null query parameter value should be processed
+                            String dsName = pathElements[0];
+                            final Datasource datasource = dsContext.get(dsName);
+                            if (datasource == null) {
+                                throw new DevelopmentException("Datasource '" + dsName + "' not found in dsContext",
+                                        "datasource", dsName);
+                            }
+                            if (datasource.getState() != State.VALID || datasource.getItem() == null) return null;
+                        }
+                    }
                 }
             }
 
