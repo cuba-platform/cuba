@@ -8,6 +8,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.GroupInfo;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * @author gorodnov
@@ -18,6 +19,7 @@ public interface GroupTable extends Table {
     String NAME = "groupTable";
 
     void groupBy(Object[] properties);
+    void disableGroupBy(List<Object> properties);
 
     void expandAll();
     void expand(GroupInfo groupId);

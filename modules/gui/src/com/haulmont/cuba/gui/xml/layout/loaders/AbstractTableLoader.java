@@ -329,6 +329,11 @@ public abstract class AbstractTableLoader extends ActionsHolderLoader {
             column.setCollapsed(Boolean.valueOf(collapsed));
         }
 
+        String groupAllowed = element.attributeValue("groupAllowed");
+        if (StringUtils.isNotEmpty(groupAllowed)) {
+            column.setGroupAllowed(Boolean.valueOf(groupAllowed));
+        }
+
         loadCaption(column, element);
         loadDescription(column, element);
 

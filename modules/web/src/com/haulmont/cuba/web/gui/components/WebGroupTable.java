@@ -166,6 +166,11 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
     }
 
     @Override
+    public void disableGroupBy(List<Object> properties) {
+        component.disableGroupBy(properties);
+    }
+
+    @Override
     public void expandAll() {
         component.expandAll();
     }

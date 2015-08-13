@@ -30,6 +30,8 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
 
     protected KeyMapper groupIdMap = new KeyMapper();
 
+    protected final List<Object> groupDisallowedProperties = new ArrayList<>();
+
     protected GroupPropertyValueFormatter groupPropertyValueFormatter;
 
     protected boolean fixedGrouping = false;
@@ -125,18 +127,35 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
             }
         }
 
-        if (fixedGrouping && isGroupsChanged(newGroupProperties)) {
+        if ((hasGroupDisallowedProperties(newGroupProperties) || fixedGrouping) && isGroupsChanged(newGroupProperties)) {
             requestColumnReorderingAllowed = false;
             markAsDirty();
         }
 
         super.changeVariables(source, variables);
 
-        if (!fixedGrouping && newGroupProperties != null && isGroupsChanged(newGroupProperties)) {
+        if (!(hasGroupDisallowedProperties(newGroupProperties) || fixedGrouping) && newGroupProperties != null && isGroupsChanged(newGroupProperties)) {
             groupBy(newGroupProperties, true);
         }
 
         requestColumnReorderingAllowed = true;
+    }
+
+    protected boolean hasGroupDisallowedProperties(Object[] newGroupProperties) {
+        if (newGroupProperties == null) {
+            return false;
+        }
+
+        if (groupDisallowedProperties.isEmpty()) {
+            return false;
+        }
+
+        for (Object property : newGroupProperties) {
+            if (groupDisallowedProperties.contains(property)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected boolean isGroupsChanged(Object[] newGroupProperties) {
@@ -410,6 +429,10 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
     @Override
     public void groupBy(Object[] properties) {
         groupBy(properties, true);
+    }
+
+    public void disableGroupBy(List<Object> properties) {
+        groupDisallowedProperties.addAll(properties);
     }
 
     @Override

@@ -9,6 +9,8 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.data.GroupInfo;
 
+import java.util.List;
+
 /**
  * @author krivopustov
  * @version $Id$
@@ -19,6 +21,10 @@ public class DesktopGroupTable extends DesktopTable implements GroupTable {
 
     @Override
     public void groupBy(Object[] properties) {
+    }
+
+    @Override
+    public void disableGroupBy(List<Object> properties) {
     }
 
     @Override

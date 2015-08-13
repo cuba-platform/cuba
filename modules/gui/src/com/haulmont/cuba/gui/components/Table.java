@@ -424,6 +424,7 @@ public interface Table
         protected Formatter formatter;
         protected Integer width;
         protected boolean collapsed;
+        protected boolean groupAllowed = true;
         protected AggregationInfo aggregation;
         protected boolean calculatable;
         protected Integer maxTextLength;
@@ -533,6 +534,14 @@ public interface Table
             if (owner != null) {
                 owner.setColumnCollapsed(this, collapsed);
             }
+        }
+
+        public boolean isGroupAllowed() {
+            return groupAllowed;
+        }
+
+        public void setGroupAllowed(boolean groupAllowed) {
+            this.groupAllowed = groupAllowed;
         }
 
         public AggregationInfo getAggregation() {

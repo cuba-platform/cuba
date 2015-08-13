@@ -48,7 +48,9 @@ public class GroupTableLoader extends TableLoader {
             columns.addAll(super.loadColumns(component, groupElement, ds));
             final List<Object> groupProperties = new ArrayList<>(columns.size());
             for (Table.Column column : columns) {
-                groupProperties.add(column.getId());
+                if (column.isGroupAllowed()) {
+                    groupProperties.add(column.getId());
+                }
             }
             context.addPostInitTask(new PostInitTask() {
                 public void execute(Context context, IFrame window) {
@@ -58,6 +60,21 @@ public class GroupTableLoader extends TableLoader {
         }
 
         columns.addAll(super.loadColumns(component, columnsElement, ds));
+
+        if (!columns.isEmpty()) {
+            final List<Object> groupDisallowedProperties = new ArrayList<>(columns.size());
+            for (Table.Column column : columns) {
+                if (!column.isGroupAllowed()) {
+                    groupDisallowedProperties.add(column.getId());
+                }
+            }
+            context.addPostInitTask(new PostInitTask() {
+                public void execute(Context context, IFrame window) {
+                    ((GroupTable) component).disableGroupBy(groupDisallowedProperties);
+                }
+            });
+        }
+
         return columns;
     }
 }

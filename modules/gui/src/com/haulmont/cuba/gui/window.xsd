@@ -926,6 +926,7 @@
         <xs:attributeGroup ref="hasVisibility"/>
 
         <xs:attribute name="collapsed" type="xs:boolean"/>
+        <xs:attribute name="groupAllowed" type="xs:boolean"/>
         <xs:attribute name="maxTextLength" type="xs:integer"/>
         <xs:attribute name="calculatable" type="xs:boolean"/>
         <xs:attribute name="align" type="columnAlignment"/>
