@@ -214,7 +214,7 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
     @Override
     public void changeVariables(Object source, Map<String, Object> variables) {
 
-        if (Page.getCurrent().getWebBrowser().isIE() && !variables.containsKey("firstvisible")) {
+        if (Page.getCurrent().getWebBrowser().isIE() && variables.containsKey("clickEvent")) {
             focus();
         }
 
