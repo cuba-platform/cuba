@@ -79,6 +79,10 @@ public class NameBuilderListener<T extends Entity> extends DsListenerAdapter<T> 
                     pattern = DEFAULT_NAME_PATTERN;
             }
 
+            if (isHandleGeneratedDisplayName(pattern, firstName, lastName, middleName, property, prevValue)) {
+                return;
+            }
+
             displayedName = UserUtils.formatName(pattern, firstName, lastName, middleName);
         } catch (ParseException pe) {
             displayedName = "";
@@ -92,8 +96,36 @@ public class NameBuilderListener<T extends Entity> extends DsListenerAdapter<T> 
             }
         }
 
-
         setFullName(displayedName);
+    }
+
+    protected boolean isHandleGeneratedDisplayName(
+            String pattern, String firstName, String lastName, String middleName, String property, Object prevValue) {
+        String name = getFieldValue("name");
+        if (StringUtils.isNotEmpty(name)) {
+
+            switch (property) {
+                case "firstName": firstName = (String) prevValue;
+                    break;
+                case "lastName": lastName = (String) prevValue;
+                    break;
+                case "middleName": middleName = (String) prevValue;
+                    break;
+            }
+
+            String displayName;
+            try {
+                displayName = UserUtils.formatName(pattern, firstName, lastName, middleName);
+            } catch (ParseException e) {
+                return false;
+            }
+
+            if (!name.equals(displayName)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     protected void setFullName(String displayedName) {
