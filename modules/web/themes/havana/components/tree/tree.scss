@@ -16,6 +16,8 @@
 
     .#{$primary-stylename}-node-caption {
       margin-left: 16px;
+      cursor: default;
+      padding: 1px 0;
       span {
         cursor: default;
         padding-left: 2px;
@@ -37,10 +39,16 @@
       background-repeat: no-repeat;
       background-image: url(images/item-collapsed.png);
       background-position: 0 2px;
+      cursor: pointer;
+      padding: 0px;
     }
 
     .#{$primary-stylename}-node-expanded {
       background-image: url(images/item-expanded.png);
+    }
+
+    .#{$primary-stylename}-node-children {
+      cursor: default;
     }
 
     .#{$primary-stylename}-node-children .#{$primary-stylename}-node {
@@ -53,6 +61,7 @@
 
     .#{$primary-stylename}-node.#{$primary-stylename}-node-leaf {
       background-image: url(images/tree-line.png);
+      cursor: default;
     }
 
     .#{$primary-stylename}-node.#{$primary-stylename}-node-leaf.#{$primary-stylename}-node-leaf-last {
@@ -63,7 +72,6 @@
       background: $cuba-tree-selection-color;
       color: $cuba-tree-caption-selected-color;
       padding: 0 2px;
-      cursor: default;
     }
   }
 

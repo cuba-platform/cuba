@@ -9,6 +9,7 @@
   .#{$primary-stylename} {
     .v-tree-node .v-tree-node-content {
       margin-left: 16px;
+      cursor: default;
     }
 
     .v-tree-node .v-tree-node-caption {
