@@ -106,10 +106,7 @@ public class MessageTools {
      * @return a localized name of an entity with given locale or default if null. Messages pack must be located in the same package as entity.
      */
     public String getEntityCaption(MetaClass metaClass, @Nullable Locale locale) {
-        String className = metaClass.getJavaClass().getName();
-        int i = className.lastIndexOf('.');
-        if (i > -1)
-            className = className.substring(i + 1);
+        String className = metaClass.getJavaClass().getSimpleName();
 
         if (locale != null) {
             return messages.getMessage(metaClass.getJavaClass(), className, locale);
@@ -140,11 +137,7 @@ public class MessageTools {
     public String getPropertyCaption(MetaClass metaClass, String propertyName) {
         Class originalClass = extendedEntities.getOriginalClass(metaClass);
         Class<?> ownClass = originalClass != null ? originalClass : metaClass.getJavaClass();
-        String className = ownClass.getName();
-        int i = className.lastIndexOf('.');
-        if (i > -1) {
-            className = className.substring(i + 1);
-        }
+        String className = ownClass.getSimpleName();
 
         String key = className + "." + propertyName;
         String message = messages.getMessage(ownClass, key);
@@ -170,11 +163,7 @@ public class MessageTools {
         if (declaringClass == null)
             return property.getName();
 
-        String className = declaringClass.getName();
-        int i = className.lastIndexOf('.');
-        if (i > -1)
-            className = className.substring(i + 1);
-
+        String className = declaringClass.getSimpleName();
         return messages.getMessage(declaringClass, className + "." + property.getName());
     }
 
