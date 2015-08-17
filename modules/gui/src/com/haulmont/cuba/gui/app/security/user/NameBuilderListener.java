@@ -79,7 +79,7 @@ public class NameBuilderListener<T extends Entity> extends DsListenerAdapter<T> 
                     pattern = DEFAULT_NAME_PATTERN;
             }
 
-            if (isHandleGeneratedDisplayName(pattern, firstName, lastName, middleName, property, prevValue)) {
+            if (isGeneratingDisplayName(pattern, firstName, lastName, middleName, property, prevValue)) {
                 return;
             }
 
@@ -89,7 +89,7 @@ public class NameBuilderListener<T extends Entity> extends DsListenerAdapter<T> 
         }
 
         MetaProperty nameProperty = source.getMetaClass().getProperty("name");
-        if (nameProperty != null) {
+        if (nameProperty != null && nameProperty.getAnnotations().containsKey("length")) {
             int length = (int) nameProperty.getAnnotations().get("length");
             if (displayedName.length() > length) {
                 displayedName = "";
@@ -99,7 +99,7 @@ public class NameBuilderListener<T extends Entity> extends DsListenerAdapter<T> 
         setFullName(displayedName);
     }
 
-    protected boolean isHandleGeneratedDisplayName(
+    protected boolean isGeneratingDisplayName(
             String pattern, String firstName, String lastName, String middleName, String property, Object prevValue) {
         String name = getFieldValue("name");
         if (StringUtils.isNotEmpty(name)) {
