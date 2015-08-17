@@ -1,11 +1,11 @@
 create table SYS_APP_FOLDER (
-    ID varchar2(32) not null,
+    FOLDER_ID varchar2(32) not null,
     FILTER_COMPONENT varchar2(200),
     FILTER_XML varchar2(4000),
     VISIBILITY_SCRIPT clob,
     QUANTITY_SCRIPT clob,
     APPLY_DEFAULT char(1),
-    primary key(ID)
+    primary key(FOLDER_ID)
 )^
 
 create table SYS_ATTR_VALUE (
@@ -500,7 +500,7 @@ create index IDX_SEC_SCREEN_HISTORY_USER on SEC_SCREEN_HISTORY(USER_ID)^
 create index IDX_SEC_SCREEN_HIST_SUB_USER on SEC_SCREEN_HISTORY(SUBSTITUTED_USER_ID)^
 
 create table SEC_SEARCH_FOLDER (
-    ID varchar2(32) not null,
+    FOLDER_ID varchar2(32) not null,
     FILTER_COMPONENT varchar2(200),
     FILTER_XML varchar2(4000),
     USER_ID varchar2(32),
@@ -508,7 +508,7 @@ create table SEC_SEARCH_FOLDER (
     APPLY_DEFAULT char(1),
     IS_SET char(1),
     ENTITY_TYPE varchar2(50),
-    primary key(ID)
+    primary key(FOLDER_ID)
 )^
 create index IDX_SEC_SEARCH_FOLDER_USER on SEC_SEARCH_FOLDER(USER_ID)^
 
@@ -616,7 +616,7 @@ create table SEC_REMEMBER_ME (
 create index IDX_SEC_REMEMBER_ME_USER on SEC_REMEMBER_ME(USER_ID)^
 create index IDX_SEC_REMEMBER_ME_TOKEN on SEC_REMEMBER_ME(TOKEN)^
 
-alter table SYS_APP_FOLDER add constraint FK_SYS_APP_FOLDER_FOLDER foreign key (ID) references SYS_FOLDER(ID)^
+alter table SYS_APP_FOLDER add constraint FK_SYS_APP_FOLDER_FOLDER foreign key (FOLDER_ID) references SYS_FOLDER(ID)^
 
 alter table SYS_ATTR_VALUE add constraint SYS_ATTR_VALUE_CATEGORY_ATT_ID foreign key (CATEGORY_ATTR_ID) references SYS_CATEGORY_ATTR(ID)^
 
@@ -658,7 +658,7 @@ alter table SEC_SCREEN_HISTORY add constraint FK_SEC_HISTORY_SUB_USER foreign ke
 
 alter table SEC_SEARCH_FOLDER add constraint FK_SEC_SEARCH_FOLDER_PRE foreign key (PRESENTATION_ID) references SEC_PRESENTATION(ID)^
 alter table SEC_SEARCH_FOLDER add constraint FK_SEC_SEARCH_FOLDER_USER foreign key (USER_ID) references SEC_USER(ID)^
-alter table SEC_SEARCH_FOLDER add constraint FK_SEC_SEARCH_FOLDER_FOLDER foreign key (ID) references SYS_FOLDER(ID)^
+alter table SEC_SEARCH_FOLDER add constraint FK_SEC_SEARCH_FOLDER_FOLDER foreign key (FOLDER_ID) references SYS_FOLDER(ID)^
 
 alter table SEC_SESSION_ATTR add constraint SEC_SESSION_ATTR_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID)^
 
