@@ -194,6 +194,36 @@ configure(globalModule) {
         persistenceConfig = 'cuba-persistence.xml'
         metadataXml = "$globalModule.projectDir/src/cuba-metadata.xml"
     }
+
+    task filterDummyEntities {
+        ext.srcFile = file('src/cuba-persistence.xml')
+        ext.dstDir = file("$buildDir/tmp/filtered")
+        ext.dstFile = new File(ext.dstDir, "cuba-persistence.xml")
+        inputs.file srcFile
+        outputs.file dstFile
+        doLast {
+            dstDir.mkdirs()
+            List lines = srcFile.readLines()
+            def result = lines.findAll{ !it.contains('.entity.dummy.') }.join('\n')
+            dstFile.write(result)
+        }
+    }
+
+    jar {
+        exclude '**/entity/dummy/*'
+        exclude { it.file == file("$buildDir/resources/main/cuba-persistence.xml") }
+        from "$buildDir/tmp/filtered"
+    }
+    jar.dependsOn filterDummyEntities
+
+    sourceJar {
+        exclude '**/entity/dummy/*'
+        exclude {
+            it.file.name == 'cuba-persistence.xml' && sourceSets.main.java.srcDirs.contains(it.file.parentFile)
+        }
+        from "$buildDir/tmp/filtered"
+    }
+    sourceJar.dependsOn filterDummyEntities
 }
 
 configure(coreModule) {

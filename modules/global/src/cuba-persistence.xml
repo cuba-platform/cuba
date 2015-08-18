@@ -54,7 +54,6 @@
         <class>com.haulmont.cuba.core.entity.JmxInstance</class>
         <class>com.haulmont.cuba.security.entity.RememberMeToken</class>
 
-        <!-- todo EL: get rid of this -->
         <class>com.haulmont.cuba.core.entity.dummy.DummyStringIdEntity</class>
         <class>com.haulmont.cuba.core.entity.dummy.DummyIntegerIdEntity</class>
         <class>com.haulmont.cuba.core.entity.dummy.DummyLongIdEntity</class>
