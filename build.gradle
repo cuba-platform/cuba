@@ -53,8 +53,8 @@ def webModuleThemes = project(':cuba-web-themes')
 
 apply from: "$rootProject.projectDir/lib.gradle"
 
-def springVersion = '3.2.13.RELEASE'
-def springSecurityVersion = '3.2.7.RELEASE'
+def springVersion = '4.2.0.RELEASE'
+def springSecurityVersion = '4.0.2.RELEASE'
 
 def servletApi = [group: 'org.apache.tomcat', name: 'tomcat-servlet-api', version: '7.0.53']
 def groovyArtifact = [group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.1.6']

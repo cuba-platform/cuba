@@ -4,7 +4,6 @@
  */
 package com.haulmont.cuba.core.sys;
 
-import org.springframework.orm.jpa.JpaDialect;
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaDialect;
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter;
 
@@ -30,7 +29,7 @@ public class CubaEclipseLinkJpaVendorAdapter extends EclipseLinkJpaVendorAdapter
     }
 
     @Override
-    public JpaDialect getJpaDialect() {
+    public EclipseLinkJpaDialect getJpaDialect() {
         return jpaDialect;
     }
 }
