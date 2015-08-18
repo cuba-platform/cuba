@@ -4,7 +4,7 @@
  */
 package com.haulmont.cuba.testsupport;
 
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -22,7 +22,7 @@ public class TestDataSource implements DataSource {
         dataSource.setUrl(connUrl);
         dataSource.setUsername(user);
         dataSource.setPassword(password);
-        dataSource.setMaxActive(20);
+        dataSource.setMaxTotal(20);
     }
 
     public Connection getConnection() throws SQLException {

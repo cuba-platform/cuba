@@ -18,8 +18,11 @@ import groovy.util.ScriptException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.pool.BaseKeyedPoolableObjectFactory;
-import org.apache.commons.pool.impl.GenericKeyedObjectPool;
+import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
+import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
+import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilerConfiguration;
 
@@ -50,13 +53,13 @@ public abstract class AbstractScripting implements Scripting {
 
     protected String groovyClassPath;
 
-    protected Set<String> imports = new HashSet<String>();
+    protected Set<String> imports = new HashSet<>();
 
     protected volatile GroovyScriptEngine gse;
 
     protected GroovyClassLoader gcl;
 
-    protected GenericKeyedObjectPool pool;
+    protected GenericKeyedObjectPool<String, Script> pool;
 
     protected GlobalConfig globalConfig;
 
@@ -110,38 +113,35 @@ public abstract class AbstractScripting implements Scripting {
         return gcl;
     }
 
-    private synchronized GenericKeyedObjectPool getPool() {
+    private synchronized GenericKeyedObjectPool<String, Script> getPool() {
         if (pool == null) {
-            GenericKeyedObjectPool.Config poolConfig = new GenericKeyedObjectPool.Config();
-            poolConfig.maxActive = -1;
-            poolConfig.maxIdle = globalConfig.getGroovyEvaluationPoolMaxIdle();
-            pool = new GenericKeyedObjectPool(
-                    new BaseKeyedPoolableObjectFactory() {
-                        public Object makeObject(Object key) throws Exception {
-                            if (!(key instanceof String))
-                                throw new IllegalArgumentException();
-                            String text = ((String) key);
-
+            GenericKeyedObjectPoolConfig poolConfig = new GenericKeyedObjectPoolConfig();
+            poolConfig.setMaxTotalPerKey(-1);
+            poolConfig.setMaxIdlePerKey(globalConfig.getGroovyEvaluationPoolMaxIdle());
+            pool = new GenericKeyedObjectPool<>(
+                    new BaseKeyedPooledObjectFactory<String, Script>() {
+                        @Override
+                        public Script create(String key) throws Exception {
                             StringBuilder sb = new StringBuilder();
                             for (String importItem : imports) {
                                 sb.append("import ").append(importItem).append("\n");
                             }
 
-                            Matcher matcher = IMPORT_PATTERN.matcher(text);
+                            Matcher matcher = IMPORT_PATTERN.matcher(key);
                             String result;
                             if (matcher.find()) {
                                 StringBuffer s = new StringBuffer();
                                 matcher.appendReplacement(s, sb + "$0");
                                 result = matcher.appendTail(s).toString();
                             } else {
-                                Matcher packageMatcher = PACKAGE_PATTERN.matcher(text);
+                                Matcher packageMatcher = PACKAGE_PATTERN.matcher(key);
                                 if (packageMatcher.find()) {
                                     StringBuffer s = new StringBuffer();
                                     packageMatcher.appendReplacement(s, "$0\n"+sb);
                                     result = packageMatcher.appendTail(s).toString();
                                 }
                                 else {
-                                    result = sb.append(text).toString();
+                                    result = sb.append(key).toString();
                                 }
                             }
 
@@ -149,8 +149,14 @@ public abstract class AbstractScripting implements Scripting {
                             cc.setClasspath(groovyClassPath);
                             cc.setRecompileGroovySource(true);
                             GroovyShell shell = new GroovyShell(javaClassLoader, new Binding(), cc);
+                            //noinspection UnnecessaryLocalVariable
                             Script script = shell.parse(result);
                             return script;
+                        }
+
+                        @Override
+                        public PooledObject<Script> wrap(Script value) {
+                            return new DefaultPooledObject<>(value);
                         }
                     },
                     poolConfig
@@ -172,7 +178,7 @@ public abstract class AbstractScripting implements Scripting {
     public <T> T evaluateGroovy(String text, Binding binding) {
         Script script = null;
         try {
-            script = (Script) getPool().borrowObject(text);
+            script = getPool().borrowObject(text);
             script.setBinding(binding);
             return (T) script.run();
         } catch (Exception e) {
@@ -184,7 +190,7 @@ public abstract class AbstractScripting implements Scripting {
             if (e instanceof RuntimeException)
                 throw ((RuntimeException) e);
             else
-                throw new RuntimeException(e);
+                throw new RuntimeException("Error evaluating Groovy expression", e);
         } finally {
             if (script != null)
                 try {
@@ -222,12 +228,12 @@ public abstract class AbstractScripting implements Scripting {
                     script.setBinding(binding);
                     return (T) script.run();
                 } catch (InstantiationException | IllegalAccessException e1) {
-                    throw new RuntimeException(e1);
+                    throw new RuntimeException("Error instantiating Script object", e1);
                 }
             }
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error running Groovy script", e);
         } catch (ScriptException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error running Groovy script", e);
         }
     }
 
@@ -303,9 +309,6 @@ public abstract class AbstractScripting implements Scripting {
                             // Make sure we can open it, if we can't it doesn't exist.
                             groovyScriptConn.getInputStream();
                             break;
-                        } catch (MalformedURLException e) {
-                            groovyScriptConn = null;
-                            errors.append(e.toString()).append("\n");
                         } catch (IOException e) {
                             groovyScriptConn = null;
                             errors.append(e.toString()).append("\n");
@@ -346,15 +349,12 @@ public abstract class AbstractScripting implements Scripting {
                         // Make sure we can open it, if we can't it doesn't exist.
                         groovyScriptConn.getInputStream();
                         break;
-                    } catch (MalformedURLException e) {
-                        groovyScriptConn = null;
-                        errors.append(e.toString()).append("\n");
                     } catch (IOException e) {
                         groovyScriptConn = null;
                         errors.append(e.toString()).append("\n");
                     }
                 } else {
-                    errors.append("File " + file + " doesn't exist").append("\n");
+                    errors.append("File ").append(file).append(" doesn't exist").append("\n");
                 }
             }
             if (groovyScriptConn != null)
@@ -372,7 +372,7 @@ public abstract class AbstractScripting implements Scripting {
                     errors.append(e.toString()).append("\n");
                 }
             } else {
-                errors.append("Classpath resource " + fileName + " doesn't exist").append("\n");
+                errors.append("Classpath resource ").append(fileName).append(" doesn't exist").append("\n");
             }
             if (groovyScriptConn != null)
                 return groovyScriptConn;
@@ -431,7 +431,8 @@ public abstract class AbstractScripting implements Scripting {
                 try {
                     Class parentClassLoaderClass = super.loadClass(name, false, true, resolve);
                     // return if the parent loader was successful
-                    if (cls != parentClassLoaderClass) return parentClassLoaderClass;
+                    if (parentClassLoaderClass != null)
+                        return parentClassLoaderClass;
                 } catch (ClassNotFoundException cnfe) {
                     last = cnfe;
                 } catch (NoClassDefFoundError ncdfe) {
