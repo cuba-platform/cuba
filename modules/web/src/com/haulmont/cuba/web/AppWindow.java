@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.gui.components.mainwindow.WebAppWorkArea;
+import com.haulmont.cuba.web.gui.components.mainwindow.WebFoldersPane;
 import com.haulmont.cuba.web.toolkit.ui.*;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.server.Extension;
@@ -114,6 +115,16 @@ public class AppWindow extends UIView implements CubaHistoryControl.HistoryBackH
                         Component targetComponent = event.getClickedComponent();
 
                         if (targetComponent != null) {
+                            if (getMainWindow().getFoldersPane() != null) {
+                                WebFoldersPane foldersPane = (WebFoldersPane) getMainWindow().getFoldersPane();
+                                Component parent = targetComponent;
+                                while (parent != null) {
+                                    if (parent == foldersPane.getComponent()) {
+                                        return;
+                                    }
+                                    parent = parent.getParent();
+                                }
+                            }
                             if (getMainWindow().getWorkArea() != null) {
                                 WebAppWorkArea workArea = (WebAppWorkArea) getMainWindow().getWorkArea();
                                 CubaTabSheet tabbedWindowContainer = workArea.getTabbedWindowContainer();
