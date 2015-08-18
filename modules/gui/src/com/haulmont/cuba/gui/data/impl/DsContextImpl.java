@@ -289,7 +289,8 @@ public class DsContextImpl implements DsContextImplementation {
             if (inverseProp != null) {
                 MetaClass metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(inverseProp.getDomain());
                 if (metaClass.equals(datasource.getMetaClass())
-                        && entity.getValue(inverseProp.getName()) != null) // replace master only if it's already set
+                        && (PersistenceHelper.isLoaded(entity, inverseProp.getName())
+                            && entity.getValue(inverseProp.getName()) != null)) // replace master only if it's already set
                 {
                     Object masterItem;
                     if (masterDs instanceof CollectionDatasource) {
@@ -507,24 +508,26 @@ public class DsContextImpl implements DsContextImplementation {
             if (!property.getRange().isClass() || !property.getRange().asClass().equals(contextEntity.getMetaClass()))
                 return;
 
-            Object value = entity.getValue(property.getName());
-            if (value != null) {
-                if (property.getRange().getCardinality().isMany()) {
-                    Collection collection = (Collection) value;
-                    for (Object item : new ArrayList<>(collection)) {
-                        if (contextEntity.equals(item) && contextEntity != item) {
-                            if (collection instanceof List) {
-                                List list = (List) collection;
-                                list.set(list.indexOf(item), contextEntity);
-                            } else {
-                                collection.remove(item);
-                                collection.add(contextEntity);
+            if (PersistenceHelper.isLoaded(entity, property.getName())) {
+                Object value = entity.getValue(property.getName());
+                if (value != null) {
+                    if (property.getRange().getCardinality().isMany()) {
+                        Collection<Object> collection = (Collection<Object>) value;
+                        for (Object item : new ArrayList<>(collection)) {
+                            if (contextEntity.equals(item) && contextEntity != item) {
+                                if (collection instanceof List) {
+                                    List<Object> list = (List<Object>) collection;
+                                    list.set(list.indexOf(item), contextEntity);
+                                } else {
+                                    collection.remove(item);
+                                    collection.add(contextEntity);
+                                }
                             }
                         }
-                    }
-                } else {
-                    if (contextEntity.equals(value) && contextEntity != value) {
-                        entity.setValue(property.getName(), contextEntity);
+                    } else {
+                        if (contextEntity.equals(value) && contextEntity != value) {
+                            entity.setValue(property.getName(), contextEntity);
+                        }
                     }
                 }
             }

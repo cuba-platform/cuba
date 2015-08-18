@@ -606,14 +606,16 @@ public class MetadataTools {
         for (MetaProperty property : entity.getMetaClass().getProperties()) {
             visitor.visit(entity, property);
             if (property.getRange().isClass()) {
-                Object value = entity.getValue(property.getName());
-                if (value != null) {
-                    if (value instanceof Collection) {
-                        for (Object item : ((Collection) value)) {
-                            internalTraverseAttributes((Entity) item, visitor, visited);
+                if (PersistenceHelper.isLoaded(entity, property.getName())) {
+                    Object value = entity.getValue(property.getName());
+                    if (value != null) {
+                        if (value instanceof Collection) {
+                            for (Object item : ((Collection) value)) {
+                                internalTraverseAttributes((Entity) item, visitor, visited);
+                            }
+                        } else {
+                            internalTraverseAttributes((Entity) value, visitor, visited);
                         }
-                    } else {
-                        internalTraverseAttributes((Entity) value, visitor, visited);
                     }
                 }
             }
