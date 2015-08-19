@@ -108,7 +108,7 @@ public class DesktopFilterHelper implements FilterHelper {
 
     @Override
     public void addTextChangeListener(TextField textField, final TextChangeListener listener) {
-        final JTextField dTextField = DesktopComponentsHelper.unwrap(textField);
+        final JTextField dTextField = (JTextField) DesktopComponentsHelper.unwrap(textField);
         dTextField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -119,7 +119,7 @@ public class DesktopFilterHelper implements FilterHelper {
 
     @Override
     public void addShortcutListener(TextField textField, final ShortcutListener listener) {
-        final JTextField dTextField = DesktopComponentsHelper.unwrap(textField);
+        final JTextField dTextField = (JTextField) DesktopComponentsHelper.unwrap(textField);
         final KeyStroke keyStroke = DesktopComponentsHelper.convertKeyCombination(listener.getKeyCombination());
         dTextField.addKeyListener(new KeyAdapter() {
             @Override

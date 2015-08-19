@@ -19,7 +19,7 @@ import javax.swing.*;
 public class EntityInspectorBrowseCompanion implements EntityInspectorBrowse.Companion {
     @Override
     public void setHorizontalScrollEnabled(Table table, boolean enabled) {
-        JXTable jxTable = DesktopComponentsHelper.unwrap(table);
+        JXTable jxTable = (JXTable) DesktopComponentsHelper.unwrap(table);
         jxTable.setHorizontalScrollEnabled(enabled);
     }
 }

@@ -37,7 +37,7 @@ public class DesktopFilterDragAndDropSupport {
     private Log log = LogFactory.getLog(DesktopFilterDragAndDropSupport.class);
 
     public void initDragAndDrop(Tree tree, ConditionsTree conditions) {
-        JTree dTree = DesktopComponentsHelper.unwrap(tree);
+        JTree dTree = (JTree) DesktopComponentsHelper.unwrap(tree);
         dTree.setDragEnabled(true);
         dTree.setDropMode(DropMode.ON_OR_INSERT);
         dTree.setTransferHandler(new TreeTransferHandler(tree, conditions));
