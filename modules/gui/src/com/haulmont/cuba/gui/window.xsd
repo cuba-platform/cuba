@@ -413,6 +413,12 @@
         <xs:attribute name="message" type="xs:string"/>
         <xs:attribute name="script" type="xs:string"/>
         <xs:attribute name="onlyPositive" type="xs:boolean"/>
+        <xs:attribute name="valueType" type="xs:string"/>
+        <xs:attribute name="minValue" type="xs:string"/>
+        <xs:attribute name="includeMinValue" type="xs:boolean"/>
+        <xs:attribute name="maxValue" type="xs:string"/>
+        <xs:attribute name="includeMaxValue" type="xs:boolean"/>
+        <xs:attribute name="ignoreCase" type="xs:boolean"/>
     </xs:complexType>
 
     <xs:complexType name="tableRowsType">
