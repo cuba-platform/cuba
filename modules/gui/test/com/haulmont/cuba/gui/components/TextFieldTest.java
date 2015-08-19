@@ -57,7 +57,7 @@ public abstract class TextFieldTest extends AbstractComponentTest {
         component.setDatatype(Datatypes.getNN(Integer.class));
         component.setValue(10);
 
-        assertEquals(10, component.getValue());
+        assertEquals(10, (int) component.getValue());
     }
 
     @Test
