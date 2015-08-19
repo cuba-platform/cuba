@@ -54,7 +54,7 @@ public class CategoryBrowser extends AbstractLookup {
     @Override
     public void init(Map<String, Object> params) {
         categoriesDs = getDsContext().get("categoriesDs");
-        categoryTable = getComponent("categoryTable");
+        categoryTable = (Table) getComponent("categoryTable");
         categoryTable.addAction(new CreateAction());
         categoryTable.addAction(new EditAction());
         categoryTable.addAction(new RemoveAction(categoryTable));

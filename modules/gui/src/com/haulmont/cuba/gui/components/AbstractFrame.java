@@ -167,20 +167,20 @@ public class AbstractFrame implements IFrame, Component.Wrapper, Component.Order
     }
 
     @Override
-    public <T extends Component> T getOwnComponent(String id) {
+    public Component getOwnComponent(String id) {
         return frame.getOwnComponent(id);
     }
 
     @Nullable
     @Override
-    public <T extends Component> T getComponent(String id) {
+    public Component getComponent(String id) {
         return frame.getComponent(id);
     }
 
     @Nonnull
     @Override
-    public <T extends Component> T getComponentNN(String id) {
-        T component = getComponent(id);
+    public Component getComponentNN(String id) {
+        Component component = getComponent(id);
         if (component == null)
             throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
         return component;
@@ -197,9 +197,8 @@ public class AbstractFrame implements IFrame, Component.Wrapper, Component.Order
     }
 
     @Override
-    public <T> T getComponent() {
-        //noinspection unchecked
-        return (T) frame;
+    public Object getComponent() {
+        return frame;
     }
 
     @Override

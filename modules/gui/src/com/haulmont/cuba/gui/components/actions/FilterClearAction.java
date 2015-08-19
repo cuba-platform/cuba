@@ -50,7 +50,7 @@ public class FilterClearAction extends AbstractAction {
 
     @Override
     public void actionPerform(Component component) {
-        Component.Container container = owner.getFrame().getComponent(containerName);
+        Component.Container container = (Component.Container) owner.getFrame().getComponent(containerName);
         ComponentsHelper.walkComponents(container,
                 new ComponentVisitor() {
                     @Override

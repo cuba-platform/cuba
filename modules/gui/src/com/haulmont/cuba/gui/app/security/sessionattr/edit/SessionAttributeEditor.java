@@ -31,7 +31,7 @@ public class SessionAttributeEditor extends AbstractEditor {
     public void init(Map<String, Object> params) {
         datasource = getDsContext().get("attribute");
 
-        FieldGroup fields = getComponent("fields");
+        FieldGroup fields = (FieldGroup) getComponent("fields");
         FieldGroup.FieldConfig field = fields.getField("datatype");
         fields.addCustomField(field,
                 new FieldGroup.CustomFieldGenerator() {

@@ -339,7 +339,7 @@ public class DesktopFrame
     }
 
     @Override
-    public <T extends Component> T getComponent(String id) {
+    public Component getComponent(String id) {
         return ComponentsHelper.getFrameComponent(this, id);
     }
 

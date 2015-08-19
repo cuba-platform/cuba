@@ -228,7 +228,7 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
         Button oldButton = null;
         if (oldAction != null && oldAction.getOwner() != null && oldAction.getOwner() instanceof WebButton) {
             WebButton oldActionButton = (WebButton) oldAction.getOwner();
-            oldButton = oldActionButton.getComponent();
+            oldButton = (Button) oldActionButton.getComponent();
         }
 
         if (oldAction == null) {
@@ -243,7 +243,7 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
         PickerButton pButton = new PickerButton();
         pButton.setAction(action);
         // no captions for picker buttons
-        Button vButton = pButton.getComponent();
+        Button vButton = (Button) pButton.getComponent();
         vButton.setCaption("");
 
         if (oldButton == null) {
@@ -290,7 +290,7 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
             actionHandler.removeAction(action);
             //noinspection ConstantConditions
             if (action.getOwner() != null && action.getOwner() instanceof WebButton) {
-                Button button = ((WebButton) action.getOwner()).getComponent();
+                Button button = (Button) ((WebButton) action.getOwner()).getComponent();
                 component.removeButton(button);
             }
         }

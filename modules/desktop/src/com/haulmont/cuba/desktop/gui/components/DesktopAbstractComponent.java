@@ -257,10 +257,9 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
         xmlDescriptor = element;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T> T getComponent() {
-        return (T) impl;
+    public JComponent getComponent() {
+        return impl;
     }
 
     @Override

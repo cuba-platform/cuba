@@ -77,11 +77,10 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
     }
 
     @Override
-    public <T extends Component> T getOwnComponent(String id) {
+    public Component getOwnComponent(String id) {
         for (Component tabComponent : components.keySet()) {
             if (StringUtils.equals(id, tabComponent.getId())) {
-                //noinspection unchecked
-                return (T) tabComponent;
+                return tabComponent;
             }
         }
 
@@ -89,14 +88,14 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
     }
 
     @Override
-    public <T extends Component> T getComponent(String id) {
+    public Component getComponent(String id) {
         return ComponentsHelper.getComponent(this, id);
     }
 
     @Nonnull
     @Override
-    public <T extends Component> T getComponentNN(String id) {
-        T component = getComponent(id);
+    public Component getComponentNN(String id) {
+        Component component = getComponent(id);
         if (component == null) {
             throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
         }

@@ -225,7 +225,7 @@ public class GroupBrowser extends AbstractWindow {
         if (constraintsTabInitialized)
             return;
 
-        final Table constraintsTable = getComponentNN("constraintsTable");
+        final Table constraintsTable = (Table) getComponentNN("constraintsTable");
         constraintCreateAction = new GroupPropertyCreateAction(constraintsTable);
         constraintsTable.addAction(constraintCreateAction);
 
@@ -255,7 +255,7 @@ public class GroupBrowser extends AbstractWindow {
         if (attributesTabInitialized)
             return;
 
-        final Table attributesTable = getComponentNN("attributesTable");
+        final Table attributesTable = (Table) getComponentNN("attributesTable");
         attributeCreateAction = new GroupPropertyCreateAction(attributesTable);
         attributesTable.addAction(attributeCreateAction);
 

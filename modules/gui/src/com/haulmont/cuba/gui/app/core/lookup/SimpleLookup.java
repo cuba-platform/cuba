@@ -68,7 +68,7 @@ public class SimpleLookup extends AbstractLookup {
         else
             datasource.refresh();
 
-        Container lookupPanel = getComponent("lookupPanel");
+        Container lookupPanel = (Container) getComponent("lookupPanel");
 
         switch (componentType) {
             case TABLE:

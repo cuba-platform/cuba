@@ -42,10 +42,10 @@ public class SaveSetWindow extends AbstractWindow {
         foldersPane = (CubaFoldersPane) params.get("foldersPane");
         entityClass = (String) params.get("entityClass");
         query = (String) params.get("query");
-        foldersSelect = getComponent("folderSelect");
+        foldersSelect = (LookupField) getComponent("folderSelect");
 
-        Button createBtn = getComponentNN("createNew");
-        Button insertBtn = getComponentNN("insertBtn");
+        Button createBtn = (Button) getComponentNN("createNew");
+        Button insertBtn = (Button) getComponentNN("insertBtn");
 
         insertBtn.setAction(new InsertAction());
         createBtn.setAction(new CreateSetAction());

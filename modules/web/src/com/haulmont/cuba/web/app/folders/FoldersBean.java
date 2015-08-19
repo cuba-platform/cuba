@@ -76,7 +76,7 @@ public class FoldersBean implements Folders {
         if (strings.length > 1) {
             String filterComponentId = StringUtils.join(Arrays.copyOfRange(strings, 1, strings.length), '.');
 
-            filterComponent = window.getComponent(filterComponentId);
+            filterComponent = (Filter) window.getComponent(filterComponentId);
 
             FilterEntity filterEntity = new FilterEntity();
             filterEntity.setFolder(folder);

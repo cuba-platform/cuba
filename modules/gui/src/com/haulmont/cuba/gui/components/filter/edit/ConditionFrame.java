@@ -47,9 +47,9 @@ public abstract class ConditionFrame<T extends AbstractCondition> extends Abstra
     }
 
     protected void initComponents() {
-        required = getComponent("required");
-        hidden = getComponent("hidden");
-        width = getComponent("width");
+        required = (CheckBox) getComponent("required");
+        hidden = (CheckBox) getComponent("hidden");
+        width = (LookupField) getComponent("width");
 
         if (width != null) {
             List<Integer> widthValues = new ArrayList<>();
@@ -80,7 +80,7 @@ public abstract class ConditionFrame<T extends AbstractCondition> extends Abstra
     }
 
     protected void createDefaultValueComponent() {
-        defaultValueLayout = getComponent("defaultValueLayout");
+        defaultValueLayout = (BoxLayout) getComponent("defaultValueLayout");
         if (defaultValueLayout != null) {
             if (defaultValueComponent != null) {
                 defaultValueLayout.remove(defaultValueComponent);

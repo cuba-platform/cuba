@@ -793,11 +793,10 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     @Override
-    public <T extends Component> T getOwnComponent(String id) {
+    public Component getOwnComponent(String id) {
         Component nestedComponent = allComponents.get(id);
         if (ownComponents.contains(nestedComponent)) {
-            //noinspection unchecked
-            return (T) nestedComponent;
+            return nestedComponent;
         }
 
         return null;
@@ -805,14 +804,14 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Nullable
     @Override
-    public <T extends Component> T getComponent(String id) {
+    public Component getComponent(String id) {
         return ComponentsHelper.getWindowComponent(this, id);
     }
 
     @Nonnull
     @Override
-    public <T extends Component> T getComponentNN(String id) {
-        T component = getComponent(id);
+    public Component getComponentNN(String id) {
+        Component component = getComponent(id);
         if (component == null) {
             throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
         }
@@ -854,9 +853,8 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     @Override
-    public <T> T getComponent() {
-        //noinspection unchecked
-        return (T) component;
+    public com.vaadin.ui.Component getComponent() {
+        return component;
     }
 
     @Override

@@ -248,7 +248,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
     @Nullable
     @Override
-    public <T extends Component> T getComponent(String id) {
+    public Component getComponent(String id) {
         return delegate.getComponent(id);
     }
 

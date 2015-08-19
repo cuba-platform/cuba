@@ -40,11 +40,11 @@ public class FileFrameController extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        uploadField = getComponent("uploadField");
-        filesTable = getComponent("files");
+        uploadField = (FileUploadField) getComponent("uploadField");
+        filesTable = (Table) getComponent("files");
         initGeneratedColumn();
         ds = getDsContext().get("filesDs");
-        Button remove = getComponentNN("remove");
+        Button remove = (Button) getComponentNN("remove");
         remove.setAction(new RemoveAction(filesTable, false));
 
         uploadField.addListener(new FileUploadField.Listener() {

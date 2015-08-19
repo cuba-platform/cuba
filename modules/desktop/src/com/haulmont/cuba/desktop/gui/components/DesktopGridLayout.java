@@ -265,22 +265,21 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
         requestRepaint();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T extends Component> T getOwnComponent(String id) {
-        return (T) componentByIds.get(id);
+    public Component getOwnComponent(String id) {
+        return componentByIds.get(id);
     }
 
     @Nullable
     @Override
-    public <T extends Component> T getComponent(String id) {
+    public Component getComponent(String id) {
         return ComponentsHelper.getComponent(this, id);
     }
 
     @Nonnull
     @Override
-    public <T extends Component> T getComponentNN(String id) {
-        T component = getComponent(id);
+    public Component getComponentNN(String id) {
+        Component component = getComponent(id);
         if (component == null) {
             throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
         }

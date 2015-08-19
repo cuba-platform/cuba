@@ -948,7 +948,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             }
 
             if (columnComponent instanceof DesktopCheckBox) {
-                JCheckBox checkboxImpl = ((DesktopCheckBox) columnComponent).getComponent();
+                JCheckBox checkboxImpl = (JCheckBox) ((DesktopCheckBox) columnComponent).getComponent();
                 checkboxImpl.setHorizontalAlignment(SwingConstants.CENTER);
             }
 

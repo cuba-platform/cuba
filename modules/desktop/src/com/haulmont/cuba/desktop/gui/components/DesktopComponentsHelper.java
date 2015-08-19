@@ -42,12 +42,12 @@ public class DesktopComponentsHelper {
      * @return          Swing component
      * @see #getComposition(com.haulmont.cuba.gui.components.Component)
      */
-    public static <T extends JComponent> T unwrap(Component component) {
+    public static JComponent unwrap(Component component) {
         Object comp = component;
         while (comp instanceof Component.Wrapper) {
             comp = ((Component.Wrapper) comp).getComponent();
         }
-        return (T) comp;
+        return (JComponent) comp;
     }
 
     /**
@@ -366,7 +366,7 @@ public class DesktopComponentsHelper {
     }
 
     public static void addEnterShortcut(com.haulmont.cuba.gui.components.TextField textField, final Runnable runnable) {
-        JTextField impl = DesktopComponentsHelper.unwrap(textField);
+        JTextField impl = (JTextField) DesktopComponentsHelper.unwrap(textField);
 
         impl.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
         impl.getActionMap().put("enter", new ValidationAwareAction() {

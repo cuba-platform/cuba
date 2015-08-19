@@ -337,7 +337,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
 
     public void setRequiredControlEnabled(boolean requiredControlEnabled) {
         this.requiredControlEnabled = requiredControlEnabled;
-        FieldGroup newRuntime = getComponent("runtime");
+        FieldGroup newRuntime = (FieldGroup) getComponent("runtime");
         if (newRuntime != null) {
             for (final FieldGroup.FieldConfig field : newRuntime.getFields()) {
                 loadRequired(newRuntime, field);
@@ -347,7 +347,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
 
     public void setCategoryFieldEditable(boolean editable) {
         categoryField.setEditable(editable);
-        FieldGroup newRuntime = getComponent("runtime");
+        FieldGroup newRuntime = (FieldGroup) getComponent("runtime");
         if (newRuntime != null) {
             newRuntime.setEditable(editable);
         }

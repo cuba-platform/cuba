@@ -56,7 +56,7 @@ public class MigLayoutHelper {
 
         // for latter comparing with AutoExpanding
         if (component instanceof AbstractFrame) {
-            component = ((AbstractFrame) component).getComponent();
+            component = (Component) ((AbstractFrame) component).getComponent();
         }
 
         if (component instanceof AutoExpanding) {

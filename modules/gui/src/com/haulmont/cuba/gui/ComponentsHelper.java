@@ -38,17 +38,15 @@ public abstract class ComponentsHelper {
     }
 
     @Nullable
-    public static <T extends com.haulmont.cuba.gui.components.Component> T getWindowComponent(
+    public static Component getWindowComponent(
             Window window, String id) {
         final String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1) {
-            //noinspection unchecked
-            T component = (T) window.getRegisteredComponent(id);
+            Component component = window.getRegisteredComponent(id);
             if (component != null)
                 return component;
             else
-                //noinspection unchecked
-                return (T) window.getTimer(id);
+                return window.getTimer(id);
         } else {
             Component innerComponent = window.getRegisteredComponent(elements[0]);
             if (innerComponent instanceof Component.Container) {
@@ -63,20 +61,18 @@ public abstract class ComponentsHelper {
                 final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                 String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
 
-                //noinspection unchecked
-                return (T) ((FieldGroup) innerComponent).getFieldComponent(subPath);
+                return ((FieldGroup) innerComponent).getFieldComponent(subPath);
             }
             return null;
         }
     }
 
     @Nullable
-    public static <T extends com.haulmont.cuba.gui.components.Component> T getFrameComponent(
+    public static Component getFrameComponent(
             IFrame frame, String id) {
         final String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1) {
-            //noinspection unchecked
-            T component = (T) frame.getRegisteredComponent(id);
+            Component component = frame.getRegisteredComponent(id);
             if (component == null && frame.getFrame() != null && frame.getFrame() != frame) {
                 component = frame.getFrame().getComponent(id);
             }
@@ -95,15 +91,14 @@ public abstract class ComponentsHelper {
                 final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                 String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
 
-                //noinspection unchecked
-                return (T) ((FieldGroup) innerComponent).getFieldComponent(subPath);
+                return ((FieldGroup) innerComponent).getFieldComponent(subPath);
             }
             return null;
         }
     }
 
     @Nullable
-    public static <T extends com.haulmont.cuba.gui.components.Component> T getComponent(
+    public static Component getComponent(
             Component.Container container, String id) {
         final String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1) {
@@ -112,10 +107,10 @@ public abstract class ComponentsHelper {
             if (component == null)
                 return getComponentByIteration(container, id);
             else
-                return (T) component;
+                return component;
 
         } else {
-            com.haulmont.cuba.gui.components.Component innerComponent = container.getOwnComponent(elements[0]);
+            Component innerComponent = container.getOwnComponent(elements[0]);
 
             if (innerComponent == null) {
                 return getComponentByIteration(container, id);
@@ -132,8 +127,7 @@ public abstract class ComponentsHelper {
                     final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                     String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
 
-                    //noinspection unchecked
-                    return (T) ((FieldGroup) innerComponent).getFieldComponent(subPath);
+                    return ((FieldGroup) innerComponent).getFieldComponent(subPath);
                 }
                 return null;
             }

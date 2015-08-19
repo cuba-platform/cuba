@@ -343,7 +343,7 @@ public class EntityLogBrowser extends AbstractWindow {
     }
 
     protected void checkAllCheckboxes() {
-        CheckBox selectAllCheckBox = attributesBox.getOwnComponent(SELECT_ALL_CHECK_BOX);
+        CheckBox selectAllCheckBox = (CheckBox) attributesBox.getOwnComponent(SELECT_ALL_CHECK_BOX);
         if (selectAllCheckBox != null) {
             for (Component c : attributesBox.getComponents()) {
                 if (!c.equals(selectAllCheckBox)) {

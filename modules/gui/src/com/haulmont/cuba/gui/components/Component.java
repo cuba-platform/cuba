@@ -114,14 +114,14 @@ public interface Component {
          * @return component or null if not found
          */
         @Nullable
-        <T extends Component> T getOwnComponent(String id);
+        Component getOwnComponent(String id);
 
         /**
          * Get component belonging to the whole components tree below this container.
          * @return component or null if not found
          */
         @Nullable
-        <T extends Component> T getComponent(String id);
+        Component getComponent(String id);
 
         /**
          * Get component belonging to the whole components tree below this container.
@@ -129,7 +129,7 @@ public interface Component {
          * @return component. Throws exception if not found.
          */
         @Nonnull
-        <T extends Component> T getComponentNN(String id);
+        Component getComponentNN(String id);
 
         /** Get all components directly owned by this container */
         Collection<Component> getOwnComponents();
@@ -149,14 +149,14 @@ public interface Component {
          * @return component or null if not found
          */
         @Nullable
-        <T extends Component> T getComponent(String id);
+        Component getComponent(String id);
     }
 
     /**
      * Component delegating work to some "wrapped" client-specific implementation
      */
     interface Wrapper extends Component {
-        <T> T getComponent();
+        Object getComponent();
         Object getComposition();
     }
 

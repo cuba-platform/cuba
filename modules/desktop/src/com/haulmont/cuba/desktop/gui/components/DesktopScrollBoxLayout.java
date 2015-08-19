@@ -209,20 +209,20 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
     }
 
     @Override
-    public <T extends Component> T getOwnComponent(String id) {
+    public Component getOwnComponent(String id) {
         return content.getOwnComponent(id);
     }
 
     @Nullable
     @Override
-    public <T extends Component> T getComponent(String id) {
+    public Component getComponent(String id) {
         return content.getComponent(id);
     }
 
     @Nonnull
     @Override
-    public <T extends Component> T getComponentNN(String id) {
-        T component = getComponent(id);
+    public Component getComponentNN(String id) {
+        Component component = getComponent(id);
         if (component == null) {
             throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
         }

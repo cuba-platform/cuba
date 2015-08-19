@@ -826,20 +826,19 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     @Override
-    public <T extends Component> T getOwnComponent(String id) {
-        //noinspection unchecked
-        return (T) componentByIds.get(id);
+    public Component getOwnComponent(String id) {
+        return componentByIds.get(id);
     }
 
     @Override
-    public <T extends Component> T getComponent(String id) {
+    public Component getComponent(String id) {
         return ComponentsHelper.getWindowComponent(this, id);
     }
 
     @Nonnull
     @Override
-    public <T extends Component> T getComponentNN(String id) {
-        T component = getComponent(id);
+    public Component getComponentNN(String id) {
+        Component component = getComponent(id);
         if (component == null) {
             throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
         }
@@ -856,10 +855,9 @@ public class DesktopWindow implements Window, Component.Disposable,
         return ComponentsHelper.getComponents(this);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T> T getComponent() {
-        return (T) panel;
+    public JComponent getComponent() {
+        return panel;
     }
 
     @Override

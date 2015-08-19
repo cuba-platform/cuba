@@ -514,7 +514,7 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
             removeButton.setVisible(isEditable());
             removeButton.setIcon("icons/remove.png");
 
-            JButton button = removeButton.getComponent();
+            JButton button = (JButton) removeButton.getComponent();
             button.setBorder(new EmptyBorder(0, 3, 0, 3));
             button.setFocusPainted(false);
             button.setBorderPainted(false);
@@ -535,12 +535,12 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
             composition.add(openButton);
             openButton.setVisible(false);
 
-            button = openButton.getComponent();
+            button = (JButton) openButton.getComponent();
             button.setBorder(new EmptyBorder(0, 3, 0, 3));
             button.setFocusPainted(false);
             button.setBorderPainted(false);
 
-            impl = label.getComponent();
+            impl = (JLabel) label.getComponent();
         }
 
         @Override

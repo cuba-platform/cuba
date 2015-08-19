@@ -115,9 +115,9 @@ public class EntityPermissionsFrame extends AbstractFrame {
                                        String allowChecker, String denyChecker) {
             this.operation = operation;
             this.metaProperty = metaProperty;
-            this.operationLabel = getComponent(operationLabel);
-            this.allowChecker = getComponent(allowChecker);
-            this.denyChecker = getComponent(denyChecker);
+            this.operationLabel = (Label) getComponent(operationLabel);
+            this.allowChecker = (CheckBox) getComponent(allowChecker);
+            this.denyChecker = (CheckBox) getComponent(denyChecker);
         }
 
         public CheckBox getAllowChecker() {

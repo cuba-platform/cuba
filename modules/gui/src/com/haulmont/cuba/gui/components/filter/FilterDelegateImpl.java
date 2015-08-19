@@ -1579,9 +1579,9 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (buttons == null) {
             return; // in lookup windows, there is no button panel
         }
-        com.haulmont.cuba.gui.components.Button addToSetBtn = buttons.getComponent("addToSetBtn");
-        com.haulmont.cuba.gui.components.Button addToCurSetBtn = buttons.getComponent("addToCurSetBtn");
-        com.haulmont.cuba.gui.components.Button removeFromCurSetBtn = buttons.getComponent("removeFromCurSetBtn");
+        com.haulmont.cuba.gui.components.Button addToSetBtn = (Button) buttons.getComponent("addToSetBtn");
+        com.haulmont.cuba.gui.components.Button addToCurSetBtn = (Button) buttons.getComponent("addToCurSetBtn");
+        com.haulmont.cuba.gui.components.Button removeFromCurSetBtn = (Button) buttons.getComponent("removeFromCurSetBtn");
 
         Action addToSet = table.getAction("addToSet");
 

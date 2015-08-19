@@ -82,7 +82,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
         timeField = new WebTimeField();
 
-        CubaMaskedTextField vTimeField = timeField.getComponent();
+        CubaMaskedTextField vTimeField = (CubaMaskedTextField) timeField.getComponent();
         vTimeField.setImmediate(true);
         vTimeField.setInvalidAllowed(false);
         vTimeField.setInvalidCommitted(true);

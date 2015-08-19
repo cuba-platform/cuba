@@ -132,7 +132,7 @@ public class NameBuilderListener<T extends Entity> extends DsListenerAdapter<T> 
         if (datasource != null) {
             datasource.getItem().setValue("name", displayedName);
         } else if (window != null) {
-            Field field = window.getComponentNN("name");
+            Field field = (Field) window.getComponentNN("name");
             field.setValue(displayedName);
         } else {
             fieldGroup.setFieldValue("name", displayedName);
@@ -143,7 +143,7 @@ public class NameBuilderListener<T extends Entity> extends DsListenerAdapter<T> 
         if (datasource != null) {
             return datasource.getItem().getValue(name);
         } else if (window != null) {
-            Field field = window.getComponentNN(name);
+            Field field = (Field) window.getComponentNN(name);
             return field.getValue();
         } else {
             return (String) fieldGroup.getFieldValue(name);
