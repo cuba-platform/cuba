@@ -5,6 +5,8 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
 
 import javax.annotation.Nullable;
@@ -17,6 +19,9 @@ import java.util.List;
 public interface GroupTable extends Table {
 
     String NAME = "groupTable";
+
+    @Override
+    GroupDatasource getDatasource();
 
     void groupBy(Object[] properties);
     void disableGroupBy(List<Object> properties);

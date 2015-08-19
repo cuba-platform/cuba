@@ -221,7 +221,7 @@ public class ParamWrapper implements Component.HasValue {
     }
 
     @Override
-    public <A extends IFrame> A getFrame() {
+    public IFrame getFrame() {
         return null;
     }
 

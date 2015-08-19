@@ -79,7 +79,7 @@ public class AppMainWindow extends AbstractMainWindow {
                 foldersSplit.setSplitPosition(0);
             }
 
-            CubaHorizontalSplitPanel vSplitPanel = WebComponentsHelper.unwrap(foldersSplit);
+            CubaHorizontalSplitPanel vSplitPanel = (CubaHorizontalSplitPanel) WebComponentsHelper.unwrap(foldersSplit);
             vSplitPanel.setDefaultPosition(webConfig.getFoldersPaneDefaultWidth() + "px");
             vSplitPanel.setMaxSplitPosition(50, Sizeable.Unit.PERCENTAGE);
             vSplitPanel.setDockable(true);

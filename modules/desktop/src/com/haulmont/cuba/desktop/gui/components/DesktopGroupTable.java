@@ -7,6 +7,8 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.GroupTable;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
 
 import java.util.List;
@@ -18,6 +20,11 @@ import java.util.List;
 public class DesktopGroupTable extends DesktopTable implements GroupTable {
 
     protected boolean showItemsCountForGroup = true;
+
+    @Override
+    public GroupDatasource getDatasource() {
+        return (GroupDatasource) super.getDatasource();
+    }
 
     @Override
     public void groupBy(Object[] properties) {

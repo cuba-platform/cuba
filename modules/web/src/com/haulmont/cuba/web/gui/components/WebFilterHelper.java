@@ -57,13 +57,13 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public void setLookupNullSelectionAllowed(LookupField lookupField, boolean value) {
-        ComboBox vComboBox = WebComponentsHelper.unwrap(lookupField);
+        ComboBox vComboBox = (ComboBox) WebComponentsHelper.unwrap(lookupField);
         vComboBox.setNullSelectionAllowed(value);
     }
 
     @Override
     public void setLookupTextInputAllowed(LookupField lookupField, boolean value) {
-        ComboBox vComboBox = WebComponentsHelper.unwrap(lookupField);
+        ComboBox vComboBox = (ComboBox) WebComponentsHelper.unwrap(lookupField);
         vComboBox.setTextInputAllowed(value);
     }
 
@@ -75,7 +75,7 @@ public class WebFilterHelper implements FilterHelper {
         if (foldersPane == null)
             return null;
 
-        CubaFoldersPane foldersPaneImpl = WebComponentsHelper.unwrap(foldersPane);
+        CubaFoldersPane foldersPaneImpl = (CubaFoldersPane) WebComponentsHelper.unwrap(foldersPane);
         AbstractSearchFolder savedFolder = (AbstractSearchFolder) foldersPaneImpl.saveFolder(folder);
         foldersPaneImpl.refreshFolders();
         return savedFolder;
@@ -94,7 +94,7 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public void initConditionsDragAndDrop(final Tree tree, final ConditionsTree conditions) {
-        final com.vaadin.ui.Tree vTree = WebComponentsHelper.unwrap(tree);
+        final com.vaadin.ui.Tree vTree = (com.vaadin.ui.Tree) WebComponentsHelper.unwrap(tree);
         vTree.setDragMode(com.vaadin.ui.Tree.TreeDragMode.NODE);
         vTree.setDropHandler(new DropHandler() {
             @Override
@@ -206,7 +206,7 @@ public class WebFilterHelper implements FilterHelper {
             return;
         }
 
-        CubaFoldersPane foldersPaneImpl = WebComponentsHelper.unwrap(foldersPane);
+        CubaFoldersPane foldersPaneImpl = (CubaFoldersPane) WebComponentsHelper.unwrap(foldersPane);
 
         foldersPaneImpl.removeFolder(folder);
         foldersPaneImpl.refreshFolders();
@@ -219,7 +219,7 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public void initTableFtsTooltips(Table table, final Map<UUID, String> tooltips) {
-        com.vaadin.ui.Table vTable = WebComponentsHelper.unwrap(table);
+        com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
         vTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
             @SuppressWarnings("SuspiciousMethodCalls")
             @Override
@@ -234,13 +234,13 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public void removeTableFtsTooltips(Table table) {
-        com.vaadin.ui.Table vTable = WebComponentsHelper.unwrap(table);
+        com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
         vTable.setItemDescriptionGenerator(null);
     }
 
     @Override
     public void setFieldReadOnlyFocusable(TextField textField, boolean readOnlyFocusable) {
-        CubaTextField vTextField = WebComponentsHelper.unwrap(textField);
+        CubaTextField vTextField = (CubaTextField) WebComponentsHelper.unwrap(textField);
         vTextField.setReadOnlyFocusable(readOnlyFocusable);
     }
 
@@ -254,7 +254,7 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public void setLookupCaptions(LookupField lookupField, Map<Object, String> captions) {
-        ComboBox vLookupField = WebComponentsHelper.unwrap(lookupField);
+        ComboBox vLookupField = (ComboBox) WebComponentsHelper.unwrap(lookupField);
         vLookupField.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT);
         for (Map.Entry<Object, String> entry : captions.entrySet()) {
             vLookupField.setItemCaption(entry.getKey(), entry.getValue());
@@ -263,7 +263,7 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public void addTextChangeListener(TextField textField, final TextChangeListener listener) {
-        CubaTextField vTextField = WebComponentsHelper.unwrap(textField);
+        CubaTextField vTextField = (CubaTextField) WebComponentsHelper.unwrap(textField);
         vTextField.setTextChangeEventMode(AbstractTextField.TextChangeEventMode.TIMEOUT);
         vTextField.addTextChangeListener(new FieldEvents.TextChangeListener() {
             @Override
@@ -275,7 +275,7 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public void addShortcutListener(TextField textField, final ShortcutListener listener) {
-        CubaTextField vTextField = WebComponentsHelper.unwrap(textField);
+        CubaTextField vTextField = (CubaTextField) WebComponentsHelper.unwrap(textField);
         int[] modifiers = null;
         KeyCombination.Modifier[] listenerModifiers = listener.getKeyCombination().getModifiers();
         if (listenerModifiers != null) {
@@ -295,7 +295,7 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public void setLookupFieldPageLength(LookupField lookupField, int pageLength) {
-        ComboBox vComboBox = WebComponentsHelper.unwrap(lookupField);
+        ComboBox vComboBox = (ComboBox) WebComponentsHelper.unwrap(lookupField);
         vComboBox.setPageLength(pageLength);
     }
 }

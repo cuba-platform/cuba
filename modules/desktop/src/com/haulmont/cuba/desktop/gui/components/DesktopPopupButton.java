@@ -242,8 +242,8 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
         }
 
         @Override
-        public <A extends IFrame> A getFrame() {
-            return (A) DesktopPopupButton.this.getFrame();
+        public IFrame getFrame() {
+            return DesktopPopupButton.this.getFrame();
         }
 
         @Override

@@ -12,11 +12,12 @@ import com.haulmont.cuba.web.toolkit.ui.CubaTable;
 
 /**
  * @author zlatoverov
+ * @version $Id$
  */
 public class EntityLogBrowserCompanion implements EntityLogBrowser.Companion {
     @Override
     public void enableTextSelection(Table table) {
-        CubaTable webTable = WebComponentsHelper.unwrap(table);
+        CubaTable webTable = (CubaTable) WebComponentsHelper.unwrap(table);
         webTable.setTextSelectionEnabled(true);
     }
 }

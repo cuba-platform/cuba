@@ -43,6 +43,11 @@ public class WebTreeTable extends WebAbstractTable<CubaTreeTable> implements Tre
     }
 
     @Override
+    public HierarchicalDatasource getDatasource() {
+        return (HierarchicalDatasource) super.getDatasource();
+    }
+
+    @Override
     public void setRowHeaderMode(RowHeaderMode rowHeaderMode) {
         // Row Header mode for TreeTable ignored
     }

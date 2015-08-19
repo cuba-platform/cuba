@@ -75,10 +75,9 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
         this.parent = parent;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <A extends IFrame> A getFrame() {
-        return (A) frame;
+    public IFrame getFrame() {
+        return frame;
     }
 
     @Override

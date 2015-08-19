@@ -435,7 +435,7 @@ public class AbstractFrame implements IFrame, Component.Wrapper, Component.Order
     }
 
     @Override
-    public <A extends IFrame> A getFrame() {
+    public IFrame getFrame() {
         return this.frame.getFrame();
     }
 

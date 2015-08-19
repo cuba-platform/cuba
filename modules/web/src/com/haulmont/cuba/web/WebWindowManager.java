@@ -604,7 +604,7 @@ public class WebWindowManager extends WindowManager {
             vWindow.setId(ui.getTestIdManager().getTestId("dialog_" + window.getId()));
         }
 
-        Layout layout = WebComponentsHelper.getComposition(window);
+        Layout layout = (Layout) WebComponentsHelper.getComposition(window);
         vWindow.setContent(layout);
 
         vWindow.addPreCloseListener(new CubaWindow.PreCloseListener() {

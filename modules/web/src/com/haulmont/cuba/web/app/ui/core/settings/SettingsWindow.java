@@ -101,7 +101,7 @@ public class SettingsWindow extends AbstractWindow {
         String userAppTheme = userSettingsTools.loadAppWindowTheme();
         appThemeField.setValue(userAppTheme);
 
-        ComboBox vAppThemeField = WebComponentsHelper.unwrap(appThemeField);
+        ComboBox vAppThemeField = (ComboBox) WebComponentsHelper.unwrap(appThemeField);
         vAppThemeField.setTextInputAllowed(false);
         appThemeField.setEditable(changeThemeEnabled);
 

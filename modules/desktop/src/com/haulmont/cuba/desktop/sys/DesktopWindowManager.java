@@ -639,7 +639,7 @@ public class DesktopWindowManager extends WindowManager {
             throw new IllegalStateException("BreadCrumbs not found");
 
         Window currentWindow = breadCrumbs.getCurrentWindow();
-        Window currentWindowFrame = currentWindow.getFrame();
+        Window currentWindowFrame = (Window) currentWindow.getFrame();
         windowOpenMode.get(currentWindowFrame).setFocusOwner(frame.getFocusOwner());
 
         Set<Map.Entry<Window, Integer>> set = windows.entrySet();
@@ -907,12 +907,12 @@ public class DesktopWindowManager extends WindowManager {
 
         //WindowOpenMode map
         Map<Window, WindowOpenMode> detachOpenModes = new HashMap<>();
-        detachOpenModes.put(window.<Window>getFrame(), windowOpenMode.get(window.<Window>getFrame()));
+        detachOpenModes.put((Window) window.getFrame(), windowOpenMode.get(window.<Window>getFrame()));
         windowOpenMode.remove(window.<Window>getFrame());
         Stack<Map.Entry<Window, Integer>> stack = stacks.get(breadCrumbs);
         for (Map.Entry<Window, Integer> entry : stack) {
             WindowOpenMode openMode = windowOpenMode.get(entry.getKey().<Window>getFrame());
-            detachOpenModes.put(entry.getKey().<Window>getFrame(), openMode);
+            detachOpenModes.put((Window) entry.getKey().getFrame(), openMode);
             windowOpenMode.remove(entry.getKey().<Window>getFrame());
         }
 
@@ -1066,7 +1066,7 @@ public class DesktopWindowManager extends WindowManager {
                     putToWindowMap(entry.getKey(), entry.getValue());
                 }
                 JComponent component = DesktopComponentsHelper.getComposition(currentWindow);
-                Window currentWindowFrame = currentWindow.getFrame();
+                Window currentWindowFrame = (Window) currentWindow.getFrame();
                 final java.awt.Component focusedCmp = windowOpenMode.get(currentWindowFrame).getFocusOwner();
                 if (focusedCmp != null) {
                     SwingUtilities.invokeLater(new Runnable() {

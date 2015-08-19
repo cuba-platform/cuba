@@ -190,7 +190,7 @@ public class EntityLogBrowser extends AbstractWindow {
                         currentWindowAlias = windowConfig.getLookupScreenId(metaClass);
                     }
 
-                    Window lookupWindow = pickerField.getFrame();
+                    Window lookupWindow = (Window) pickerField.getFrame();
                     Lookup.Handler lookupWindowHandler = new Lookup.Handler() {
                         @Override
                         public void handleLookup(Collection items) {

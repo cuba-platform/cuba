@@ -66,6 +66,11 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
     }
 
     @Override
+    public GroupDatasource getDatasource() {
+        return (GroupDatasource) super.getDatasource();
+    }
+
+    @Override
     protected StyleGeneratorAdapter createStyleGenerator() {
         return new StyleGeneratorAdapter(){
             @Override
@@ -770,7 +775,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
         @Override
         public void valueChanged(Entity source, String property, Object prevValue, Object value) {
             super.valueChanged(source, property, prevValue, value);
-            GroupDatasource ds = (GroupDatasource) WebGroupTable.this.getDatasource();
+            GroupDatasource ds = WebGroupTable.this.getDatasource();
             @SuppressWarnings("unchecked")
             Collection<GroupInfo> roots = ds.rootGroups();
             for (final GroupInfo root : roots) {

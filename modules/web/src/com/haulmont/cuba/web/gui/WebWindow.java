@@ -1027,9 +1027,8 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     @Override
-    public <A extends IFrame> A getFrame() {
-        //noinspection unchecked
-        return (A) this;
+    public IFrame getFrame() {
+        return this;
     }
 
     @Override

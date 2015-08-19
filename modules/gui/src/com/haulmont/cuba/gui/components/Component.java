@@ -164,7 +164,7 @@ public interface Component {
      * Component belonging to a frame
      */
     interface BelongToFrame extends Component {
-        <A extends IFrame> A getFrame();
+        IFrame getFrame();
         void setFrame(IFrame frame);
     }
 

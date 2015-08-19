@@ -587,10 +587,9 @@ public class DesktopWindow implements Window, Component.Disposable,
         getWindowManager().showWebPage(url, params);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <A extends IFrame> A getFrame() {
-        return (A) this;
+    public IFrame getFrame() {
+        return this;
     }
 
     @Override

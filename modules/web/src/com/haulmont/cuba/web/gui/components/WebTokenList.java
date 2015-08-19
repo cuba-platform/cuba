@@ -506,7 +506,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
             addButton.setVisible(isSimple());
             addButton.setStyleName("add-btn");
 
-            Button wrappedButton = WebComponentsHelper.unwrap(addButton);
+            Button wrappedButton = (Button) WebComponentsHelper.unwrap(addButton);
             Collection listeners = wrappedButton.getListeners(Button.ClickEvent.class);
             for (Object listener : listeners) {
                 wrappedButton.removeClickListener((Button.ClickListener) listener);

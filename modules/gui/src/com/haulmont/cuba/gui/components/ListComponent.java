@@ -26,7 +26,7 @@ public interface ListComponent extends Component, Component.BelongToFrame, Compo
     void setSelected(@Nullable Entity item);
     void setSelected(Collection<Entity> items);
 
-    <T extends CollectionDatasource> T getDatasource();
+    CollectionDatasource getDatasource();
 
     void refresh();
 }

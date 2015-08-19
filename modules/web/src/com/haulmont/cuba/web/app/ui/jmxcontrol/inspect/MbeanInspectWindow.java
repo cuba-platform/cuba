@@ -51,7 +51,7 @@ public class MbeanInspectWindow extends AbstractEditor {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        CubaTable vaadinAttrTable = WebComponentsHelper.unwrap(attributesTable);
+        CubaTable vaadinAttrTable = (CubaTable) WebComponentsHelper.unwrap(attributesTable);
         vaadinAttrTable.setTextSelectionEnabled(true);
 
         attributesTable.setItemClickAction(editAttributeAction);

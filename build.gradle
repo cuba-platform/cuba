@@ -60,7 +60,7 @@ def servletApi = [group: 'org.apache.tomcat', name: 'tomcat-servlet-api', versio
 def groovyArtifact = 'org.codehaus.groovy:groovy-all:2.4.4'
 //def asm = [group: 'org.ow2.asm', name: 'asm', version: '5.0.3']
 def poi = [group: 'com.haulmont.thirdparty', name: 'poi', version: '3.9.20130515']
-def postgres = [group: 'postgresql', name: 'postgresql', version: '9.1-901.jdbc4']
+def postgres = 'org.postgresql:postgresql:9.4-1201-jdbc41'
 def hsqldb = [group: 'org.hsqldb', name: 'hsqldb', version: '2.2.9']
 
 /* Shared web dependencies */

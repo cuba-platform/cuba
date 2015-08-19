@@ -376,6 +376,11 @@ public class DesktopTreeTable extends DesktopAbstractTable<JXTreeTableExt> imple
     }
 
     @Override
+    public HierarchicalDatasource getDatasource() {
+        return (HierarchicalDatasource) super.getDatasource();
+    }
+
+    @Override
     public void addGeneratedColumn(String columnId, ColumnGenerator generator,
                                    Class<? extends com.haulmont.cuba.gui.components.Component> componentClass) {
         if (columnId == null)

@@ -59,12 +59,12 @@ public class DesktopComponentsHelper {
      * @return          Swing component
      * @see #unwrap(com.haulmont.cuba.gui.components.Component)
      */
-    public static <T extends JComponent> T getComposition(Component component) {
+    public static JComponent getComposition(Component component) {
         Object comp = component;
         while (comp instanceof Component.Wrapper) {
             comp = ((Component.Wrapper) comp).getComposition();
         }
-        return (T) comp;
+        return (JComponent) comp;
     }
 
     public static int convertMessageType(IFrame.MessageType messageType) {

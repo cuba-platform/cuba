@@ -43,7 +43,7 @@ public class WebFtsField extends WebAbstractComponent<HorizontalLayout> implemen
         ComponentsFactory cf = AppBeans.get(ComponentsFactory.NAME);
         com.haulmont.cuba.gui.components.TextField searchFieldComponent =
                 cf.createComponent(com.haulmont.cuba.gui.components.TextField.NAME);
-        searchField = WebComponentsHelper.unwrap(searchFieldComponent);
+        searchField = (TextField) WebComponentsHelper.unwrap(searchFieldComponent);
         searchField.setStyleName("cuba-fts-field");
 
         AppUI ui = AppUI.getCurrent();

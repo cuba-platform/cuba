@@ -17,22 +17,22 @@ import com.vaadin.ui.ComboBox;
 public class WebComponentsUtils {
 
     public static void allowHtmlContent(Label label) {
-        com.vaadin.ui.Label vLabel = WebComponentsHelper.unwrap(label);
+        com.vaadin.ui.Label vLabel = (com.vaadin.ui.Label) WebComponentsHelper.unwrap(label);
         vLabel.setContentMode(ContentMode.HTML);
     }
 
     public static void disallowHtmlContent(Label label) {
-        com.vaadin.ui.Label vLabel = WebComponentsHelper.unwrap(label);
+        com.vaadin.ui.Label vLabel = (com.vaadin.ui.Label) WebComponentsHelper.unwrap(label);
         vLabel.setContentMode(ContentMode.TEXT);
     }
 
     public static void allowNullSelection(LookupField lookupField) {
-        ComboBox vCombobox = WebComponentsHelper.unwrap(lookupField);
+        ComboBox vCombobox = (ComboBox) WebComponentsHelper.unwrap(lookupField);
         vCombobox.setNullSelectionAllowed(true);
     }
 
     public static void disallowNullSelection(LookupField lookupField) {
-        ComboBox vCombobox = WebComponentsHelper.unwrap(lookupField);
+        ComboBox vCombobox = (ComboBox) WebComponentsHelper.unwrap(lookupField);
         vCombobox.setNullSelectionAllowed(false);
     }
 }

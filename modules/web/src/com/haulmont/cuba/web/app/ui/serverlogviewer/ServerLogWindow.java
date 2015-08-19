@@ -171,7 +171,7 @@ public class ServerLogWindow extends AbstractWindow {
             }
         });
 
-        com.vaadin.ui.Label vlogTailLabel = WebComponentsHelper.unwrap(logTailLabel);
+        com.vaadin.ui.Label vlogTailLabel = (com.vaadin.ui.Label) WebComponentsHelper.unwrap(logTailLabel);
 
         vlogTailLabel.setSizeUndefined();
         vlogTailLabel.setContentMode(ContentMode.HTML);
@@ -199,7 +199,7 @@ public class ServerLogWindow extends AbstractWindow {
         UserSession userSession = sessionSource.getUserSession();
         downloadButton.setEnabled(userSession.isSpecificPermitted("cuba.gui.administration.downloadlogs"));
 
-        ComboBox comboBox = WebComponentsHelper.unwrap(logFileNameField);
+        ComboBox comboBox = (ComboBox) WebComponentsHelper.unwrap(logFileNameField);
         comboBox.addShortcutListener(new ShortcutListener("", ShortcutAction.KeyCode.D,
                 new int[] {ShortcutAction.ModifierKey.CTRL, ShortcutAction.ModifierKey.SHIFT}) {
             @Override
@@ -309,7 +309,7 @@ public class ServerLogWindow extends AbstractWindow {
             showNotification(getMessage("log.notSelected"), NotificationType.HUMANIZED);
         }
 
-        Panel vlogContainer = WebComponentsHelper.unwrap(logContainer);
+        Panel vlogContainer = (Panel) WebComponentsHelper.unwrap(logContainer);
 
         int scrollPos = vlogContainer.getScrollTop() + 30000;
         vlogContainer.setScrollTop(scrollPos);

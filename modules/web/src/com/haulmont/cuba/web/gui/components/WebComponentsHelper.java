@@ -118,13 +118,13 @@ public class WebComponentsHelper {
      * @return          Vaadin component
      * @see #getComposition(com.haulmont.cuba.gui.components.Component)
      */
-    public static <T extends Component> T unwrap(com.haulmont.cuba.gui.components.Component component) {
+    public static Component unwrap(com.haulmont.cuba.gui.components.Component component) {
         Object comp = component;
         while (comp instanceof com.haulmont.cuba.gui.components.Component.Wrapper) {
             comp = ((com.haulmont.cuba.gui.components.Component.Wrapper) comp).getComponent();
         }
 
-        return (T) comp;
+        return (Component) comp;
     }
 
     /**
@@ -136,13 +136,13 @@ public class WebComponentsHelper {
      * @return          Vaadin component
      * @see #unwrap(com.haulmont.cuba.gui.components.Component)
      */
-    public static <T extends Component> T getComposition(com.haulmont.cuba.gui.components.Component component) {
+    public static Component getComposition(com.haulmont.cuba.gui.components.Component component) {
         Object comp = component;
         while (comp instanceof com.haulmont.cuba.gui.components.Component.Wrapper) {
             comp = ((com.haulmont.cuba.gui.components.Component.Wrapper) comp).getComposition();
         }
 
-        return (T) comp;
+        return (Component) comp;
     }
 
     public static void expand(AbstractOrderedLayout layout, Component component, String height, String width) {
@@ -484,7 +484,7 @@ public class WebComponentsHelper {
     }
 
     public static void addEnterShortcut(TextField textField, final Runnable runnable) {
-        CubaTextField cubaTextField = WebComponentsHelper.unwrap(textField);
+        CubaTextField cubaTextField = (CubaTextField) WebComponentsHelper.unwrap(textField);
         cubaTextField.addShortcutListener(new ShortcutListener("", ShortcutAction.KeyCode.ENTER, KeyCombination.Modifier.codes()) {
             @Override
             public void handleAction(Object sender, Object target) {

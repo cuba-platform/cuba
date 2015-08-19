@@ -43,10 +43,9 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     protected boolean expandable = true;
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <A extends com.haulmont.cuba.gui.components.IFrame> A getFrame() {
-        return (A) frame;
+    public IFrame getFrame() {
+        return frame;
     }
 
     @Override

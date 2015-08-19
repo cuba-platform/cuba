@@ -48,7 +48,7 @@ public class MenuBuilder {
     // call MenuBuilder after attaching menubar to UI
     public MenuBuilder(AppMenu menu) {
         this.session = uss.getUserSession();
-        this.menuBar = WebComponentsHelper.unwrap(menu);
+        this.menuBar = (CubaMenuBar) WebComponentsHelper.unwrap(menu);
         this.appWindow = ((AppUI) menuBar.getUI()).getAppWindow();
     }
 

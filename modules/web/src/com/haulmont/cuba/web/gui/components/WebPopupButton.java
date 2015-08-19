@@ -208,7 +208,7 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
                 for (ActionOwner owner : new LinkedList<>(action.getOwners())) {
                     if (owner instanceof PopupButtonActionButton) {
                         owner.setAction(null);
-                        Button vButton = WebComponentsHelper.unwrap((PopupButtonActionButton) owner);
+                        Button vButton = (Button) WebComponentsHelper.unwrap((PopupButtonActionButton) owner);
                         ((com.vaadin.ui.Layout) vPopupComponent).removeComponent(vButton);
                     }
                 }
