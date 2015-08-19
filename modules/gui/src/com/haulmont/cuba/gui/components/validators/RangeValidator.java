@@ -164,7 +164,7 @@ public class RangeValidator implements Field.Validator {
                 return (Comparable) method.invoke(type, valueStr);
             } catch (IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(
-                        String.format("Value '%s' convertation failed", valueStr));
+                        String.format("Value '%s' conversion failed", valueStr));
             }
         }
     }
