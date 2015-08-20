@@ -28,8 +28,8 @@ public abstract class PortalSessionProvider {
      *
      * @return current user session instance
      */
-    public static <T extends PortalSession> T getUserSession() {
-        return (T) getSource().getUserSession();
+    public static PortalSession getUserSession() {
+        return (PortalSession) getSource().getUserSession();
     }
 
     public static Locale getLocale() {

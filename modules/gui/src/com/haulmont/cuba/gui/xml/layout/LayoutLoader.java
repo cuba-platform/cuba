@@ -157,9 +157,9 @@ public class LayoutLoader {
         return loader;
     }
 
-    public <T extends Component> T loadComponent(Element element, Component parent) {
+    public Component loadComponent(Element element, Component parent) {
         ComponentLoader loader = getLoader(element);
-        return (T) loader.loadComponent(factory, element, parent);
+        return loader.loadComponent(factory, element, parent);
     }
 
     public Locale getLocale() {

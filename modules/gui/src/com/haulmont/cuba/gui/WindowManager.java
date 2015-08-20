@@ -229,7 +229,7 @@ public abstract class WindowManager {
             layoutLoader.setMessagesPack(path);
         }
 
-        final Window window = layoutLoader.loadComponent(rootElement, null);
+        final Window window = (Window) layoutLoader.loadComponent(rootElement, null);
         return window;
     }
 
