@@ -22,7 +22,7 @@ public class ButtonLoader extends com.haulmont.cuba.gui.xml.layout.loaders.Compo
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final Button component = factory.createComponent(element.getName());
+        final Button component = (Button) factory.createComponent(element.getName());
 
         initComponent(component, element, parent);
 

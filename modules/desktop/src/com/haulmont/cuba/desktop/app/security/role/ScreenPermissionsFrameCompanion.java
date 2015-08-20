@@ -32,7 +32,7 @@ public class ScreenPermissionsFrameCompanion implements ScreenPermissionsFrame.C
         screenPermissionsTree.addGeneratedColumn("permissionVariant", new Table.ColumnGenerator<BasicPermissionTarget>() {
             @Override
             public Component generateCell(BasicPermissionTarget entity) {
-                Label label = AppConfig.getFactory().createComponent(Label.NAME);
+                Label label = AppConfig.getFactory().createComponent(Label.class);
                 JLabel jLabel = (JLabel) DesktopComponentsHelper.unwrap(label);
 
                 StringBuilder builder = new StringBuilder();

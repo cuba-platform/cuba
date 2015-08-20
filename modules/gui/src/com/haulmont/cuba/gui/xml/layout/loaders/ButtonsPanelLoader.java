@@ -26,7 +26,7 @@ public class ButtonsPanelLoader extends ContainerLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final ButtonsPanel component = factory.createComponent(element.getName());
+        final ButtonsPanel component = (ButtonsPanel) factory.createComponent(element.getName());
 
         initComponent(component, element, factory);
 

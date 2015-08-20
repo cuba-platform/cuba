@@ -128,7 +128,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         attributeFieldGroup.addCustomField("dataType", new FieldGroup.CustomFieldGenerator() {
             @Override
             public Component generateField(Datasource datasource, String propertyId) {
-                dataTypeField = factory.createComponent(LookupField.NAME);
+                dataTypeField = factory.createComponent(LookupField.class);
                 Map<String, Object> options = new TreeMap<>();
                 PropertyType[] types = PropertyType.values();
                 for (PropertyType propertyType : types) {
@@ -151,7 +151,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         attributeFieldGroup.addCustomField("screen", new FieldGroup.CustomFieldGenerator() {
             @Override
             public Component generateField(Datasource datasource, String propertyId) {
-                screenField = factory.createComponent(LookupField.NAME);
+                screenField = factory.createComponent(LookupField.class);
                 screenField.setId("screenField");
                 screenField.setCaption(getMessage("screen"));
                 screenField.setWidth(fieldWidth);
@@ -167,7 +167,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         attributeFieldGroup.addCustomField("entityClass", new FieldGroup.CustomFieldGenerator() {
             @Override
             public Component generateField(Datasource datasource, String propertyId) {
-                entityTypeField = factory.createComponent(LookupField.NAME);
+                entityTypeField = factory.createComponent(LookupField.class);
                 entityTypeField.setId("entityClass");
                 entityTypeField.setCaption(getMessage("entityType"));
                 entityTypeField.setRequired(true);
@@ -196,7 +196,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         attributeFieldGroup.addCustomField("defaultEntityId", new FieldGroup.CustomFieldGenerator() {
             @Override
             public Component generateField(Datasource datasource, String propertyId) {
-                defaultEntityField = factory.createComponent(PickerField.NAME);
+                defaultEntityField = factory.createComponent(PickerField.class);
 
                 defaultEntityField.addLookupAction();
                 defaultEntityField.addListener(new ValueListener() {
@@ -358,7 +358,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                 new Table.ColumnGenerator<ScreenAndComponent>() {
                     @Override
                     public Component generateCell(ScreenAndComponent entity) {
-                        final LookupField lookupField = componentsFactory.createComponent(LookupField.NAME);
+                        final LookupField lookupField = componentsFactory.createComponent(LookupField.class);
                         lookupField.setDatasource(targetScreensTable.getItemDatasource(entity), "screen");
                         lookupField.setOptionsMap(optionsMap);
                         lookupField.setNewOptionAllowed(true);

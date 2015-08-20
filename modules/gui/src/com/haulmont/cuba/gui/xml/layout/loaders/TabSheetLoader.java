@@ -27,7 +27,7 @@ public class TabSheetLoader extends ContainerLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        TabSheet component = factory.createComponent(TabSheet.NAME);
+        TabSheet component = (TabSheet) factory.createComponent(TabSheet.NAME);
 
         initComponent(component, factory, element, parent);
 

@@ -24,7 +24,7 @@ public class ProgressBarLoader extends ComponentLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final ProgressBar component = factory.createComponent(element.getName());
+        final ProgressBar component = (ProgressBar) factory.createComponent(element.getName());
 
         initComponent(component, element, parent);
 

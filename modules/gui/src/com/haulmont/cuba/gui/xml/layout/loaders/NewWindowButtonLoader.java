@@ -21,7 +21,7 @@ public class NewWindowButtonLoader extends ComponentLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        NewWindowButton component = factory.createComponent(element.getName());
+        NewWindowButton component = (NewWindowButton) factory.createComponent(element.getName());
 
         initComponent(component, element, parent);
 

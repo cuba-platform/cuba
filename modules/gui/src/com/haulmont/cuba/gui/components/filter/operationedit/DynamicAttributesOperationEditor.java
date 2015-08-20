@@ -26,7 +26,7 @@ public class DynamicAttributesOperationEditor extends PropertyOperationEditor {
     @Override
     protected Component createComponent() {
         ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.class);
-        Label label = componentsFactory.createComponent(Label.NAME);
+        Label label = componentsFactory.createComponent(Label.class);
         label.setValue(condition.getOperationCaption());
         return label;
     }

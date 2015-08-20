@@ -28,7 +28,7 @@ public class PopupButtonLoader extends ComponentLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        PopupButton component = factory.createComponent(element.getName());
+        PopupButton component = (PopupButton) factory.createComponent(element.getName());
 
         initComponent(component, element, parent);
 

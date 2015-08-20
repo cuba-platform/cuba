@@ -262,17 +262,17 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
     }
 
     private void createMethodParamsGrid(MethodInfo methodInfo) {
-        GridLayout methodParamsGrid = componentsFactory.createComponent(GridLayout.NAME);
+        GridLayout methodParamsGrid = componentsFactory.createComponent(GridLayout.class);
         methodParamsGrid.setSpacing(true);
         methodParamsGrid.setColumns(2);
 
         int rowsCount = 0;
 
         for (final MethodParameterInfo parameterInfo : methodInfo.getParameters()) {
-            Label nameLabel = componentsFactory.createComponent(Label.NAME);
+            Label nameLabel = componentsFactory.createComponent(Label.class);
             nameLabel.setValue(parameterInfo.getType().getSimpleName() + " " + parameterInfo.getName());
 
-            TextField valueTextField = componentsFactory.createComponent(TextField.NAME);
+            TextField valueTextField = componentsFactory.createComponent(TextField.class);
             valueTextField.setWidth(themeConstants.get("cuba.gui.ScheduledTaskEditor.valueTextField.width"));
             valueTextField.setValue(parameterInfo.getValue());
 

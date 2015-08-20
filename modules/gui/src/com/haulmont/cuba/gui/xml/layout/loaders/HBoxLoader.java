@@ -6,6 +6,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.BoxLayout;
+import com.haulmont.cuba.gui.components.HBoxLayout;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
@@ -23,7 +24,7 @@ public class HBoxLoader extends ContainerLoader implements ComponentLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        BoxLayout component = factory.createComponent(BoxLayout.HBOX);
+        BoxLayout component = factory.createComponent(HBoxLayout.class);
 
         initComponent(component, element, parent);
 

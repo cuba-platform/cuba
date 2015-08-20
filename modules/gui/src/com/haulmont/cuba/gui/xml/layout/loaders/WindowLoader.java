@@ -63,7 +63,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
     }
 
     protected Window createComponent(ComponentsFactory factory) {
-        return factory.createComponent(Window.NAME);
+        return factory.createComponent(Window.class);
     }
 
     public static class Editor extends WindowLoader {
@@ -73,7 +73,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
 
         @Override
         protected Window createComponent(ComponentsFactory factory) {
-            return factory.createComponent(Window.Editor.NAME);
+            return factory.createComponent(Window.Editor.class);
         }
     }
 
@@ -84,7 +84,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
 
         @Override
         protected Window createComponent(ComponentsFactory factory) {
-            return factory.createComponent(Window.Lookup.NAME);
+            return factory.createComponent(Window.Lookup.class);
         }
     }
 

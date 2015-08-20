@@ -31,7 +31,7 @@ public class UiPermissionsFrameCompanion implements UiPermissionsFrame.Companion
         uiPermissionsTable.addGeneratedColumn("permissionVariant", new Table.ColumnGenerator<UiPermissionTarget>() {
             @Override
             public Component generateCell(UiPermissionTarget entity) {
-                Label label = AppConfig.getFactory().createComponent(Label.NAME);
+                Label label = AppConfig.getFactory().createComponent(Label.class);
                 JLabel jLabel = (JLabel) DesktopComponentsHelper.unwrap(label);
 
                 StringBuilder builder = new StringBuilder();

@@ -84,7 +84,7 @@ public class SimpleLookup extends AbstractLookup {
                 break;
             //LOOKUP_FIELD is used by default
             default: 
-                LookupField lookupField = AppConfig.getFactory().createComponent(LookupField.NAME);
+                LookupField lookupField = AppConfig.getFactory().createComponent(LookupField.class);
                 lookupField.setOptionsDatasource(datasource);
 
                 lookupPanel.add(lookupField);
@@ -101,7 +101,7 @@ public class SimpleLookup extends AbstractLookup {
     }
 
     private Table createTable(List<String> columnNames, MetaClass metaClass) {
-        Table table = AppConfig.getFactory().createComponent(Table.NAME);
+        Table table = AppConfig.getFactory().createComponent(Table.class);
         table.setId("lookupComponent");
         table.setHeight("100%");
         table.setWidth("100%");

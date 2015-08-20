@@ -22,7 +22,7 @@ public class FoldersPaneLoader extends ComponentLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        FoldersPane component = factory.createComponent(element.getName());
+        FoldersPane component = (FoldersPane) factory.createComponent(element.getName());
 
         initComponent(component, element, parent);
 

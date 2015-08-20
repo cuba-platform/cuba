@@ -347,7 +347,7 @@ public class EntityInspectorEditor extends AbstractWindow {
      * @param metaClass item meta class
      */
     private void createDataComponents(MetaClass metaClass, Entity item) {
-        FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.NAME);
+        FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.class);
         fieldGroup.setWidth("100%");
         LinkedList<FieldGroup.FieldConfig> customFields = new LinkedList<>();
 
@@ -412,7 +412,7 @@ public class EntityInspectorEditor extends AbstractWindow {
             throw new IllegalStateException(String.format("Datasource %s for property %s not found", fqn,
                     embeddedMetaProperty.getName()));
         }
-        FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.NAME);
+        FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.class);
         contentPane.add(fieldGroup);
         fieldGroup.setFrame(frame);
         fieldGroup.setCaption(getPropertyCaption(embeddedMetaProperty));
@@ -529,12 +529,12 @@ public class EntityInspectorEditor extends AbstractWindow {
     }
 
     private void createCommitButtons() {
-        buttonsPanel = componentsFactory.createComponent(ButtonsPanel.NAME);
-        commitButton = componentsFactory.createComponent(Button.NAME);
+        buttonsPanel = componentsFactory.createComponent(ButtonsPanel.class);
+        commitButton = componentsFactory.createComponent(Button.class);
         commitButton.setIcon("icons/ok.png");
         commitButton.setCaption(messages.getMessage(EntityInspectorEditor.class, "commit"));
         commitButton.setAction(new CommitAction());
-        cancelButton = componentsFactory.createComponent(Button.NAME);
+        cancelButton = componentsFactory.createComponent(Button.class);
         cancelButton.setIcon("icons/cancel.png");
         cancelButton.setCaption(messages.getMessage(EntityInspectorEditor.class, "cancel"));
         cancelButton.setAction(new CancelAction());
@@ -641,7 +641,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                 public Component generateField(Datasource datasource, String propertyId) {
                     MetaProperty metaProperty = datasource.getMetaClass().getPropertyNN(propertyId);
                     MetaClass propertyMeta = metaProperty.getRange().asClass();
-                    PickerField field = componentsFactory.createComponent(PickerField.NAME);
+                    PickerField field = componentsFactory.createComponent(PickerField.class);
                     String caption = getPropertyCaption(metaProperty);
                     field.setCaption(caption);
                     field.setMetaClass(propertyMeta);
@@ -711,15 +711,15 @@ public class EntityInspectorEditor extends AbstractWindow {
         }
 
         //vertical box for the table and its label
-        BoxLayout vbox = componentsFactory.createComponent(BoxLayout.VBOX);
+        BoxLayout vbox = componentsFactory.createComponent(VBoxLayout.class);
         vbox.setWidth("100%");
         CollectionDatasource propertyDs = (CollectionDatasource) datasources.get(childMeta.getName());
 
-        Label label = componentsFactory.createComponent(Label.NAME);
+        Label label = componentsFactory.createComponent(Label.class);
         label.setValue(getPropertyCaption(childMeta));
         label.setStyleName("h2");
 
-        Table table = componentsFactory.createComponent(Table.NAME);
+        Table table = componentsFactory.createComponent(Table.class);
         table.setMultiSelect(true);
         table.setFrame(frame);
         //place non-system properties columns first
@@ -752,7 +752,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         ButtonsPanel propertyButtonsPanel = createButtonsPanel(childMeta, propertyDs, table);
         table.setButtonsPanel(propertyButtonsPanel);
 
-        RowsCount rowsCount = componentsFactory.createComponent(RowsCount.NAME);
+        RowsCount rowsCount = componentsFactory.createComponent(RowsCount.class);
         rowsCount.setDatasource(propertyDs);
         table.setRowsCount(rowsCount);
         table.setWidth("100%");
@@ -776,23 +776,23 @@ public class EntityInspectorEditor extends AbstractWindow {
     private ButtonsPanel createButtonsPanel(final MetaProperty metaProperty,
                                             final CollectionDatasource propertyDs, Table table) {
         MetaClass propertyMetaClass = metaProperty.getRange().asClass();
-        ButtonsPanel propertyButtonsPanel = componentsFactory.createComponent(ButtonsPanel.NAME);
+        ButtonsPanel propertyButtonsPanel = componentsFactory.createComponent(ButtonsPanel.class);
 
-        Button createButton = componentsFactory.createComponent(Button.NAME);
+        Button createButton = componentsFactory.createComponent(Button.class);
         CreateAction createAction = new CreateAction(metaProperty, propertyDs, propertyMetaClass);
         createButton.setAction(createAction);
         table.addAction(createAction);
         createButton.setCaption(messages.getMessage(EntityInspectorEditor.class, "create"));
         createButton.setIcon("icons/create.png");
 
-        Button addButton = componentsFactory.createComponent(Button.NAME);
+        Button addButton = componentsFactory.createComponent(Button.class);
         AddAction addAction = createAddAction(metaProperty, propertyDs, table, propertyMetaClass);
         table.addAction(addAction);
         addButton.setAction(addAction);
         addButton.setCaption(messages.getMessage(EntityInspectorEditor.class, "add"));
         addButton.setIcon("icons/add.png");
 
-        Button editButton = componentsFactory.createComponent(Button.NAME);
+        Button editButton = componentsFactory.createComponent(Button.class);
         EditAction editAction = new EditAction(metaProperty, table, propertyDs);
         editButton.setAction(editAction);
         editButton.setCaption(messages.getMessage(EntityInspectorEditor.class, "edit"));
@@ -802,7 +802,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         table.setEnterPressAction(editAction);
 
         RemoveAction removeAction = createRemoveAction(metaProperty, table);
-        Button removeButton = componentsFactory.createComponent(Button.NAME);
+        Button removeButton = componentsFactory.createComponent(Button.class);
         removeButton.setAction(removeAction);
         table.addAction(removeAction);
         removeButton.setCaption(messages.getMessage(EntityInspectorEditor.class, "remove"));

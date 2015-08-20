@@ -25,7 +25,7 @@ public class AppWorkAreaLoader extends ContainerLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        AppWorkArea component = factory.createComponent(element.getName());
+        AppWorkArea component = (AppWorkArea) factory.createComponent(element.getName());
 
         initComponent(component, element, parent);
 

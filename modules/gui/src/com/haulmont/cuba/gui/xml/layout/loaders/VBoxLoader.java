@@ -6,6 +6,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.BoxLayout;
+import com.haulmont.cuba.gui.components.VBoxLayout;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
@@ -23,7 +24,7 @@ public class VBoxLoader extends ContainerLoader implements ComponentLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        BoxLayout component = factory.createComponent(BoxLayout.VBOX);
+        BoxLayout component = factory.createComponent(VBoxLayout.class);
 
         initComponent(component, element, parent);
 

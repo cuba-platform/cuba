@@ -21,7 +21,7 @@ public class UserIndicatorLoader extends ComponentLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        UserIndicator component = factory.createComponent(element.getName());
+        UserIndicator component = (UserIndicator) factory.createComponent(element.getName());
 
         initComponent(component, element, parent);
 

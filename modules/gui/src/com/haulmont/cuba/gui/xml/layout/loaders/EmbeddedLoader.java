@@ -33,7 +33,7 @@ public class EmbeddedLoader extends ComponentLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        Embedded component = factory.createComponent(element.getName());
+        Embedded component = (Embedded) factory.createComponent(element.getName());
 
         initComponent(component, element, parent);
 

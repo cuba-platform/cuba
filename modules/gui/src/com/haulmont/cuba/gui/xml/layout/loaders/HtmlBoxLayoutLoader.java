@@ -25,7 +25,7 @@ public class HtmlBoxLayoutLoader extends ContainerLoader implements ComponentLoa
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        HtmlBoxLayout component = factory.createComponent(HtmlBoxLayout.NAME);
+        HtmlBoxLayout component = (HtmlBoxLayout) factory.createComponent(HtmlBoxLayout.NAME);
 
         initComponent(component, element, parent);
 

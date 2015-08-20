@@ -73,7 +73,7 @@ public class CategoryBrowser extends AbstractLookup {
         categoryTable.addGeneratedColumn("entityType", new Table.ColumnGenerator<Category>() {
             @Override
             public Component generateCell(Category entity) {
-                Label dataTypeLabel = AppConfig.getFactory().createComponent(Label.NAME);
+                Label dataTypeLabel = AppConfig.getFactory().createComponent(Label.class);
                 MetaClass meta = metadata.getSession().getClassNN(entity.getEntityType());
                 dataTypeLabel.setValue(messageTools.getEntityCaption(meta));
                 return dataTypeLabel;

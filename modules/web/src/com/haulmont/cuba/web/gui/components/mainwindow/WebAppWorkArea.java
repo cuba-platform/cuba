@@ -61,7 +61,7 @@ public class WebAppWorkArea extends WebAbstractComponent<VerticalLayout> impleme
         component.addStyleName(STATE_INITIAL_STYLENAME);
 
         ComponentsFactory cf = AppBeans.get(ComponentsFactory.NAME);
-        setInitialLayout(cf.<VBoxLayout>createComponent(BoxLayout.VBOX));
+        setInitialLayout(cf.createComponent(VBoxLayout.class));
 
         tabbedContainer = createTabbedModeContainer();
 

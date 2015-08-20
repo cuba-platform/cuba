@@ -22,7 +22,7 @@ public class TimeZoneIndicatorLoader extends ComponentLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        TimeZoneIndicator component = factory.createComponent(element.getName());
+        TimeZoneIndicator component = (TimeZoneIndicator) factory.createComponent(element.getName());
 
         initComponent(component, element, parent);
 

@@ -22,7 +22,7 @@ public class LinkLoader extends AbstractDatasourceComponentLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final Link component = factory.createComponent("link");
+        final Link component = (Link) factory.createComponent("link");
 
         initComponent(component, element, parent);
 

@@ -30,7 +30,7 @@ public class SpecificPermissionsFrameCompanion implements SpecificPermissionsFra
         specificPermissionsTree.addGeneratedColumn("permissionVariant", new Table.ColumnGenerator<BasicPermissionTarget>() {
             @Override
             public Component generateCell(BasicPermissionTarget entity) {
-                Label label = AppConfig.getFactory().createComponent(Label.NAME);
+                Label label = AppConfig.getFactory().createComponent(Label.class);
 
                 WebComponentsUtils.allowHtmlContent(label);
 

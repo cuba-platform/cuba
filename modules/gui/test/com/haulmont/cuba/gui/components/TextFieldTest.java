@@ -39,7 +39,7 @@ public abstract class TextFieldTest extends AbstractComponentTest {
 
     @Test
     public void testGetSetValue() {
-        TextField component = factory.createComponent(TextField.NAME);
+        TextField component = factory.createComponent(TextField.class);
 
         assertNull(component.getValue());
 
@@ -50,7 +50,7 @@ public abstract class TextFieldTest extends AbstractComponentTest {
 
     @Test
     public void testGetSetInteger() {
-        TextField component = factory.createComponent(TextField.NAME);
+        TextField component = factory.createComponent(TextField.class);
 
         assertNull(component.getValue());
 
@@ -62,7 +62,7 @@ public abstract class TextFieldTest extends AbstractComponentTest {
 
     @Test
     public void testSetToReadonly() {
-        TextField component = factory.createComponent(TextField.NAME);
+        TextField component = factory.createComponent(TextField.class);
 
         component.setEditable(false);
         assertFalse(component.isEditable());
@@ -75,7 +75,7 @@ public abstract class TextFieldTest extends AbstractComponentTest {
 
     @Test
     public void testSetToReadonlyFromValueListener() {
-        final TextField component = factory.createComponent(TextField.NAME);
+        final TextField component = factory.createComponent(TextField.class);
 
         assertTrue(component.isEditable());
 
@@ -94,7 +94,7 @@ public abstract class TextFieldTest extends AbstractComponentTest {
 
     @Test
     public void testDatasource() {
-        TextField component = factory.createComponent(TextField.NAME);
+        TextField component = factory.createComponent(TextField.class);
 
         //noinspection unchecked
         Datasource<User> testDs = new DsBuilder()
@@ -122,7 +122,7 @@ public abstract class TextFieldTest extends AbstractComponentTest {
 
     @Test
     public void testValueChangeListener() {
-        TextField component = factory.createComponent(TextField.NAME);
+        TextField component = factory.createComponent(TextField.class);
 
         final AtomicInteger counter = new AtomicInteger(0);
 

@@ -50,7 +50,7 @@ public class AttributeEditor {
             layout = new WebVBoxLayout();
             layout.setSpacing(true);
         } else if (AttributeHelper.isDate(type)) {
-            dateField = AppConfig.getFactory().createComponent(DateField.NAME);
+            dateField = AppConfig.getFactory().createComponent(DateField.class);
             dateField.setWidth("500px");
             dateField.setFrame(frame);
             if (value != null) {

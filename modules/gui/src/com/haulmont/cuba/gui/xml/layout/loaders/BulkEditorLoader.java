@@ -30,7 +30,7 @@ public class BulkEditorLoader extends ComponentLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        BulkEditor component = factory.createComponent(element.getName());
+        BulkEditor component = (BulkEditor) factory.createComponent(element.getName());
 
         initComponent(component, element, parent);
 

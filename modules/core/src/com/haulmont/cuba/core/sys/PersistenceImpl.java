@@ -69,8 +69,8 @@ public class PersistenceImpl implements Persistence {
     }
 
     @Override
-    public <T extends PersistenceTools> T getTools() {
-        return (T) tools;
+    public PersistenceTools getTools() {
+        return tools;
     }
 
     @Override

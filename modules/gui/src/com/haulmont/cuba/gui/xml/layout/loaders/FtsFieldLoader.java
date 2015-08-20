@@ -21,7 +21,7 @@ public class FtsFieldLoader extends ComponentLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        FtsField component = factory.createComponent(element.getName());
+        FtsField component = (FtsField) factory.createComponent(element.getName());
 
         initComponent(component, element, parent);
 

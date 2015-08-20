@@ -44,7 +44,7 @@ public class LinkColumnHelper {
                 }
                 final Object value = (nestedEntity == null) ? null : nestedEntity.getValue(props[props.length - 1]);
                 if (value != null) {
-                    Button button = componentsFactory.createComponent(Button.NAME);
+                    Button button = componentsFactory.createComponent(Button.class);
                     button.setStyleName("link");
                     button.setAction(new AbstractAction("open") {
                         @Override

@@ -41,7 +41,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         XmlInheritanceProcessor processor = new XmlInheritanceProcessor(element.getDocument(), params);
         element = processor.getResultRoot();
 
-        IFrame component = factory.createComponent("iframe");
+        IFrame component = (IFrame) factory.createComponent("iframe");
 
         WindowCreationHelper.deployViews(element);
 

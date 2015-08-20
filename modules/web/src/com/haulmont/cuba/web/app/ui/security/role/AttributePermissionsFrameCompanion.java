@@ -30,7 +30,7 @@ public class AttributePermissionsFrameCompanion implements AttributePermissionsF
         propertyPermissionsTable.addGeneratedColumn("permissionsInfo", new Table.ColumnGenerator<MultiplePermissionTarget>() {
             @Override
             public Component generateCell(MultiplePermissionTarget target) {
-                Label label = AppConfig.getFactory().createComponent(Label.NAME);
+                Label label = AppConfig.getFactory().createComponent(Label.class);
 
                 WebComponentsUtils.allowHtmlContent(label);
 

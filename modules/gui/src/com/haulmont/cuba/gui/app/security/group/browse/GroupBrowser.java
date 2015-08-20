@@ -235,12 +235,12 @@ public class GroupBrowser extends AbstractWindow {
                     @Override
                     public Component generateCell(Constraint constraint) {
                         if (StringUtils.isEmpty(constraint.getEntityName())) {
-                            return componentsFactory.createComponent(Label.NAME);
+                            return componentsFactory.createComponent(Label.class);
                         }
 
                         MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(
                                 metadata.getClassNN(constraint.getEntityName()));
-                        Label label = componentsFactory.createComponent(Label.NAME);
+                        Label label = componentsFactory.createComponent(Label.class);
                         label.setValue(effectiveMetaClass.getName());
                         return label;
                     }

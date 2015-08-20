@@ -28,7 +28,7 @@ public class ScrollBoxLayoutLoader extends ContainerLoader implements com.haulmo
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final ScrollBoxLayout component = factory.createComponent(ScrollBoxLayout.NAME);
+        final ScrollBoxLayout component = (ScrollBoxLayout) factory.createComponent(element.getName());
 
         initComponent(component, element, parent);
 

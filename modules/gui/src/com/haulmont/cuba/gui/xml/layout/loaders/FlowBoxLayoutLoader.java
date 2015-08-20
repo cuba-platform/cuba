@@ -22,7 +22,7 @@ public class FlowBoxLayoutLoader extends ContainerLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final FlowBoxLayout component = factory.createComponent(FlowBoxLayout.NAME);
+        final FlowBoxLayout component = (FlowBoxLayout) factory.createComponent(element.getName());
 
         initComponent(component, element, parent);
 

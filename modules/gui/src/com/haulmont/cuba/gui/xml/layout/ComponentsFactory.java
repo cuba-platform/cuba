@@ -26,7 +26,7 @@ public interface ComponentsFactory {
      *             It is also usually equal to component's XML name.
      * @return component instance for the current client type (web or desktop)
      */
-    <T extends Component> T createComponent(String name);
+    Component createComponent(String name);
 
     /**
      * Create a component instance by its type.

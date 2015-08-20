@@ -27,7 +27,7 @@ public class SplitPanelLoader extends ContainerLoader{
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        SplitPanel component = factory.createComponent(SplitPanel.NAME);
+        SplitPanel component = (SplitPanel) factory.createComponent(element.getName());
 
         initComponent(component, factory, element, parent);
 

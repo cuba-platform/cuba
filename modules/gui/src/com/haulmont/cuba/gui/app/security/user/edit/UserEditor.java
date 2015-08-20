@@ -213,7 +213,7 @@ public class UserEditor extends AbstractEditor<User> {
         fieldGroupLeft.addCustomField("passw", new FieldGroup.CustomFieldGenerator() {
             @Override
             public Component generateField(Datasource datasource, String propertyId) {
-                passwField = factory.createComponent(PasswordField.NAME);
+                passwField = factory.createComponent(PasswordField.class);
                 if (isNew) {
                     passwField.setRequiredMessage(getMessage("passwMsg"));
 
@@ -233,7 +233,7 @@ public class UserEditor extends AbstractEditor<User> {
         fieldGroupLeft.addCustomField("confirmPassw", new FieldGroup.CustomFieldGenerator() {
             @Override
             public Component generateField(Datasource datasource, String propertyId) {
-                confirmPasswField = factory.createComponent(PasswordField.NAME);
+                confirmPasswField = factory.createComponent(PasswordField.class);
                 if (isNew) {
                     confirmPasswField.setRequiredMessage(getMessage("confirmPasswMsg"));
 
@@ -253,7 +253,7 @@ public class UserEditor extends AbstractEditor<User> {
         fieldGroupRight.addCustomField("language", new FieldGroup.CustomFieldGenerator() {
             @Override
             public Component generateField(Datasource datasource, String propertyId) {
-                languageLookup = factory.createComponent(LookupField.NAME);
+                languageLookup = factory.createComponent(LookupField.class);
 
                 languageLookup.setDatasource(datasource, propertyId);
                 languageLookup.setRequired(false);
@@ -271,10 +271,10 @@ public class UserEditor extends AbstractEditor<User> {
         fieldGroupRight.addCustomField("timeZone", new FieldGroup.CustomFieldGenerator() {
             @Override
             public Component generateField(Datasource datasource, String propertyId) {
-                HBoxLayout hbox = factory.createComponent(HBoxLayout.NAME);
+                HBoxLayout hbox = factory.createComponent(HBoxLayout.class);
                 hbox.setSpacing(true);
 
-                timeZoneLookup = factory.createComponent(LookupField.NAME);
+                timeZoneLookup = factory.createComponent(LookupField.class);
 
                 timeZoneLookup.setDatasource(datasource, propertyId);
                 timeZoneLookup.setRequired(false);
@@ -292,7 +292,7 @@ public class UserEditor extends AbstractEditor<User> {
 
                 hbox.add(timeZoneLookup);
 
-                CheckBox autoDetectField = factory.createComponent(CheckBox.NAME);
+                CheckBox autoDetectField = factory.createComponent(CheckBox.class);
                 autoDetectField.setDatasource(datasource, "timeZoneAuto");
                 autoDetectField.setCaption(messages.getMainMessage("timeZone.auto"));
                 autoDetectField.setDescription(messages.getMainMessage("timeZone.auto.descr"));
@@ -312,7 +312,7 @@ public class UserEditor extends AbstractEditor<User> {
         fieldGroupRight.addCustomField("group", new FieldGroup.CustomFieldGenerator() {
             @Override
             public Component generateField(Datasource datasource, String propertyId) {
-                PickerField pickerField = factory.createComponent(PickerField.NAME);
+                PickerField pickerField = factory.createComponent(PickerField.class);
                 pickerField.setDatasource(datasource, propertyId);
                 pickerField.setRequired(true);
                 pickerField.setRequiredMessage(getMessage("groupMsg"));

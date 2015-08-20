@@ -25,7 +25,7 @@ public interface Persistence {
      * Convenient access to {@link PersistenceTools} bean.
      * @return  PersistenceTools instance
      */
-    <T extends PersistenceTools> T getTools();
+    PersistenceTools getTools();
 
     /**
      * Returns DbTypeConverter for the current DBMS.

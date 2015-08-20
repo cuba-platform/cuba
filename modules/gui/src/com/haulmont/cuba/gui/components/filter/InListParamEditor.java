@@ -77,7 +77,7 @@ public class InListParamEditor extends AbstractWindow {
         String pickerWidth = theme.get("cuba.gui.filter.FilterListParamEditor.picker.width");
 
         if (collectionDatasource != null) {
-            final LookupField lookup = componentsFactory.createComponent(LookupField.NAME);
+            final LookupField lookup = componentsFactory.createComponent(LookupField.class);
             lookup.setWidth(pickerWidth);
             lookup.setOptionsDatasource(collectionDatasource);
 
@@ -105,7 +105,7 @@ public class InListParamEditor extends AbstractWindow {
             lookup.requestFocus();
 
         } else if (metaClass != null) {
-            final PickerField picker = componentsFactory.createComponent(PickerField.NAME);
+            final PickerField picker = componentsFactory.createComponent(PickerField.class);
             picker.setWidth(pickerWidth);
             picker.setMetaClass(metaClass);
 
@@ -132,7 +132,7 @@ public class InListParamEditor extends AbstractWindow {
             picker.requestFocus();
 
         } else if (runtimeEnum != null) {
-            final LookupField lookup = componentsFactory.createComponent(LookupField.NAME);
+            final LookupField lookup = componentsFactory.createComponent(LookupField.class);
             lookup.setWidth(pickerWidth);
             lookup.setOptionsList(runtimeEnum);
 
@@ -155,7 +155,7 @@ public class InListParamEditor extends AbstractWindow {
                 options.put(messages.getMessage((Enum) obj), obj);
             }
 
-            final LookupField lookup = componentsFactory.createComponent(LookupField.NAME);
+            final LookupField lookup = componentsFactory.createComponent(LookupField.class);
             lookup.setWidth(pickerWidth);
             lookup.setOptionsMap(options);
 
@@ -174,9 +174,9 @@ public class InListParamEditor extends AbstractWindow {
             lookup.requestFocus();
 
         } else if (Date.class.isAssignableFrom(itemClass)) {
-            final DateField dateField = componentsFactory.createComponent(DateField.NAME);
+            final DateField dateField = componentsFactory.createComponent(DateField.class);
 
-            Button addButton = componentsFactory.createComponent(Button.NAME);
+            Button addButton = componentsFactory.createComponent(Button.class);
             addButton.setAction(new AbstractAction("") {
                 @Override
                 public void actionPerform(Component component) {
@@ -244,15 +244,15 @@ public class InListParamEditor extends AbstractWindow {
     }
 
     protected void addItemLayout(final Object value, String str) {
-        final BoxLayout itemLayout = componentsFactory.createComponent(BoxLayout.HBOX);
+        final BoxLayout itemLayout = componentsFactory.createComponent(HBoxLayout.class);
         itemLayout.setSpacing(true);
 
-        Label itemLab = componentsFactory.createComponent(Label.NAME);
+        Label itemLab = componentsFactory.createComponent(Label.class);
         itemLab.setValue(str);
         itemLayout.add(itemLab);
         itemLab.setAlignment(Alignment.MIDDLE_LEFT);
 
-        LinkButton delItemBtn = componentsFactory.createComponent(LinkButton.NAME);
+        LinkButton delItemBtn = componentsFactory.createComponent(LinkButton.class);
         delItemBtn.setIcon("icons/item-remove.png");
         delItemBtn.setAction(new AbstractAction("") {
             @Override

@@ -32,7 +32,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        GridLayout component = factory.createComponent(element.getName());
+        GridLayout component = (GridLayout) factory.createComponent(element.getName());
 
         initComponent(component, element, parent);
 
@@ -216,7 +216,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
                 grid.remove(comp);
                 grid.add(comp, c1, r1, c2, r2);
             } else {
-                Label label = factory.createComponent(Label.NAME);
+                Label label = factory.createComponent(Label.class);
                 grid.add(label, c1, r1, c2, r2);
             }
         } else {

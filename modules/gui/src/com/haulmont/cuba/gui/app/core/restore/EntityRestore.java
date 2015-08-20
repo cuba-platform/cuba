@@ -92,18 +92,18 @@ public class EntityRestore extends AbstractWindow {
 
                 ComponentsFactory componentsFactory = AppConfig.getFactory();
 
-                entitiesTable = componentsFactory.createComponent(Table.NAME);
+                entitiesTable = componentsFactory.createComponent(Table.class);
                 entitiesTable.setFrame(frame);
 
-                restoreButton = componentsFactory.createComponent(Button.NAME);
+                restoreButton = componentsFactory.createComponent(Button.class);
                 restoreButton.setId("restore");
                 restoreButton.setCaption(getMessage("entityRestore.restore"));
 
-                ButtonsPanel buttonsPanel = componentsFactory.createComponent(ButtonsPanel.NAME);
+                ButtonsPanel buttonsPanel = componentsFactory.createComponent(ButtonsPanel.class);
                 buttonsPanel.add(restoreButton);
                 entitiesTable.setButtonsPanel(buttonsPanel);
 
-                RowsCount rowsCount = componentsFactory.createComponent(RowsCount.NAME);
+                RowsCount rowsCount = componentsFactory.createComponent(RowsCount.class);
                 entitiesTable.setRowsCount(rowsCount);
 
                 //collect properties in order to add non-system columns first
@@ -159,7 +159,7 @@ public class EntityRestore extends AbstractWindow {
 
                 String filterId = metaClass.getName().replace("$", "") + "GenericFilter";
 
-                filter = componentsFactory.createComponent(Filter.NAME);
+                filter = componentsFactory.createComponent(Filter.class);
                 filter.setId(filterId);
                 filter.setFrame(getFrame());
 

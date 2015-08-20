@@ -95,7 +95,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
     }
 
     protected Component createDatatypeLinkField(Datasource datasource, String property, Element xmlDescriptor) {
-        EntityLinkField linkField = componentsFactory.createComponent(EntityLinkField.NAME);
+        EntityLinkField linkField = componentsFactory.createComponent(EntityLinkField.class);
 
         linkField.setDatasource(datasource, property);
 
@@ -121,26 +121,26 @@ public abstract class AbstractFieldFactory implements FieldFactory {
     }
 
     private Component createUuidField(Datasource datasource, String property) {
-        MaskedField maskedField = componentsFactory.createComponent(MaskedField.NAME);
+        MaskedField maskedField = componentsFactory.createComponent(MaskedField.class);
         maskedField.setDatasource(datasource, property);
         maskedField.setMask("hhhhhhhh-hhhh-hhhh-hhhh-hhhhhhhhhhhh");
         return maskedField;
     }
 
     protected Component createNumberField(Datasource datasource, String property) {
-        TextField textField = componentsFactory.createComponent(TextField.NAME);
+        TextField textField = componentsFactory.createComponent(TextField.class);
         textField.setDatasource(datasource, property);
         return textField;
     }
 
     protected Component createBooleanField(Datasource datasource, String property) {
-        CheckBox checkBox = componentsFactory.createComponent(CheckBox.NAME);
+        CheckBox checkBox = componentsFactory.createComponent(CheckBox.class);
         checkBox.setDatasource(datasource, property);
         return checkBox;
     }
 
     protected Component createMaskedField(Datasource datasource, String property, Element xmlDescriptor) {
-        MaskedField maskedField = componentsFactory.createComponent(MaskedField.NAME);
+        MaskedField maskedField = componentsFactory.createComponent(MaskedField.class);
         maskedField.setDatasource(datasource, property);
         if (xmlDescriptor != null) {
             maskedField.setMask(xmlDescriptor.attributeValue("mask"));
@@ -154,14 +154,14 @@ public abstract class AbstractFieldFactory implements FieldFactory {
         if (xmlDescriptor != null) {
             final String rows = xmlDescriptor.attributeValue("rows");
             if (!StringUtils.isEmpty(rows)) {
-                TextArea textArea = componentsFactory.createComponent(TextArea.NAME);
+                TextArea textArea = componentsFactory.createComponent(TextArea.class);
                 textArea.setRows(Integer.parseInt(rows));
                 textField = textArea;
             }
         }
 
         if (textField == null) {
-            textField = componentsFactory.createComponent(TextField.NAME);
+            textField = componentsFactory.createComponent(TextField.class);
         }
 
         textField.setDatasource(datasource, property);
@@ -182,7 +182,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
 
     protected Component createDateField(Datasource datasource, String property, MetaPropertyPath mpp,
                                         Element xmlDescriptor) {
-        DateField dateField = componentsFactory.createComponent(DateField.NAME);
+        DateField dateField = componentsFactory.createComponent(DateField.class);
         dateField.setDatasource(datasource, property);
 
         MetaProperty metaProperty = mpp.getMetaProperty();
@@ -235,7 +235,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
     }
 
     protected Component createTimeField(Datasource datasource, String property, Element xmlDescriptor) {
-        TimeField timeField = componentsFactory.createComponent(TimeField.NAME);
+        TimeField timeField = componentsFactory.createComponent(TimeField.class);
         timeField.setDatasource(datasource, property);
 
         if (xmlDescriptor != null) {
@@ -270,11 +270,11 @@ public abstract class AbstractFieldFactory implements FieldFactory {
 
             PickerField pickerField;
             if (optionsDatasource == null) {
-                pickerField = componentsFactory.createComponent(PickerField.NAME);
+                pickerField = componentsFactory.createComponent(PickerField.class);
                 pickerField.addLookupAction();
                 pickerField.addClearAction();
             } else {
-                LookupPickerField lookupPickerField = componentsFactory.createComponent(LookupPickerField.NAME);
+                LookupPickerField lookupPickerField = componentsFactory.createComponent(LookupPickerField.class);
                 lookupPickerField.setOptionsDatasource(optionsDatasource);
 
                 pickerField = lookupPickerField;
@@ -294,7 +294,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
 
             return pickerField;
         } else {
-            EntityLinkField linkField = componentsFactory.createComponent(EntityLinkField.NAME);
+            EntityLinkField linkField = componentsFactory.createComponent(EntityLinkField.class);
 
             linkField.setDatasource(datasource, property);
 
@@ -321,14 +321,14 @@ public abstract class AbstractFieldFactory implements FieldFactory {
     }
 
     protected Component createEnumField(Datasource datasource, String property) {
-        LookupField lookupField = componentsFactory.createComponent(LookupField.NAME);
+        LookupField lookupField = componentsFactory.createComponent(LookupField.class);
         lookupField.setDatasource(datasource, property);
 
         return lookupField;
     }
 
     protected Component createUnsupportedField(MetaPropertyPath mpp) {
-        Label label = componentsFactory.createComponent(Label.NAME);
+        Label label = componentsFactory.createComponent(Label.class);
         label.setValue("TODO: " + (mpp != null ? mpp.getRange() : ""));
         return label;
     }

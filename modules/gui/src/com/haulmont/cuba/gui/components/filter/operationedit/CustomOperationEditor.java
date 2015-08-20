@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.components.filter.operationedit;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.VBoxLayout;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
@@ -24,7 +25,7 @@ public class CustomOperationEditor extends AbstractOperationEditor {
     @Override
     protected Component createComponent() {
         ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.class);
-        BoxLayout layout = componentsFactory.createComponent(BoxLayout.VBOX);
+        BoxLayout layout = componentsFactory.createComponent(VBoxLayout.class);
         return layout;
     }
 }

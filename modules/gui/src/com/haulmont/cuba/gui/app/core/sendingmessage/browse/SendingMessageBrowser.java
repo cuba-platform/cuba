@@ -67,7 +67,7 @@ public class SendingMessageBrowser extends AbstractWindow {
         fg.addCustomField(CONTENT_TEXT, new FieldGroup.CustomFieldGenerator() {
             @Override
             public Component generateField(Datasource datasource, String propertyId) {
-                TextArea contentTextArea = factory.createComponent(TextArea.NAME);
+                TextArea contentTextArea = factory.createComponent(TextArea.class);
                 contentTextArea.setRows(20);
                 contentTextArea.setHeight(themeConstants.get("cuba.gui.SendingMessageBrowser.contentTextArea.height"));
                 return contentTextArea;

@@ -64,7 +64,7 @@ public class EntityPermissionsFrameCompanion implements EntityPermissionsFrame.C
     }
 
     private Label generateLabelByPermissionVariant(PermissionVariant permissionVariant) {
-        Label label = AppConfig.getFactory().createComponent(Label.NAME);
+        Label label = AppConfig.getFactory().createComponent(Label.class);
         JLabel jLabel = (JLabel) DesktopComponentsHelper.unwrap(label);
 
         StringBuilder builder = new StringBuilder();

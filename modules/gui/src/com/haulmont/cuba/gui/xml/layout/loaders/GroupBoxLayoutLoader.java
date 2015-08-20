@@ -24,7 +24,7 @@ public class GroupBoxLayoutLoader extends ContainerLoader implements com.haulmon
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        GroupBoxLayout component = factory.createComponent(element.getName());
+        GroupBoxLayout component = (GroupBoxLayout) factory.createComponent(element.getName());
 
         initComponent(component, element, parent);
 

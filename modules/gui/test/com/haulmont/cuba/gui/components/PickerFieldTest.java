@@ -48,7 +48,7 @@ public abstract class PickerFieldTest extends AbstractComponentTest {
 
     @Test
     public void testGetSetValue() {
-        PickerField component = factory.createComponent(PickerField.NAME);
+        PickerField component = factory.createComponent(PickerField.class);
 
         assertNull(component.getValue());
 
@@ -73,7 +73,7 @@ public abstract class PickerFieldTest extends AbstractComponentTest {
 
     @Test
     public void testSetToReadonly() {
-        PickerField component = factory.createComponent(PickerField.NAME);
+        PickerField component = factory.createComponent(PickerField.class);
 
         component.setEditable(false);
         component.setMetaClass(metadata.getClass(User.class));
@@ -89,7 +89,7 @@ public abstract class PickerFieldTest extends AbstractComponentTest {
 
     @Test
     public void testSetToReadonlyFromValueListener() {
-        final PickerField component = factory.createComponent(PickerField.NAME);
+        final PickerField component = factory.createComponent(PickerField.class);
 
         component.setMetaClass(metadata.getClass(User.class));
         assertTrue(component.isEditable());
@@ -111,7 +111,7 @@ public abstract class PickerFieldTest extends AbstractComponentTest {
 
     @Test
     public void testDatasource() {
-        PickerField component = factory.createComponent(PickerField.NAME);
+        PickerField component = factory.createComponent(PickerField.class);
 
         //noinspection unchecked
         Datasource<User> testDs = new DsBuilder()
@@ -145,7 +145,7 @@ public abstract class PickerFieldTest extends AbstractComponentTest {
 
     @Test
     public void testValueChangeListener() {
-        PickerField component = factory.createComponent(PickerField.NAME);
+        PickerField component = factory.createComponent(PickerField.class);
 
         final AtomicInteger counter = new AtomicInteger(0);
 

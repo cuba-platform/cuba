@@ -61,9 +61,9 @@ public class BulkEditorFieldFactory {
 
         TextInputField textField;
         if (!isLong) {
-            textField = componentsFactory.createComponent(TextField.NAME);
+            textField = componentsFactory.createComponent(TextField.class);
         } else {
-            TextArea textArea = componentsFactory.createComponent(TextArea.NAME);
+            TextArea textArea = componentsFactory.createComponent(TextArea.class);
             textArea.setRows(3);
             textField = textArea;
         }
@@ -78,7 +78,7 @@ public class BulkEditorFieldFactory {
     }
 
     protected Field createBooleanField(final Datasource datasource, MetaProperty property) {
-        LookupField lookupField = componentsFactory.createComponent(LookupField.NAME);
+        LookupField lookupField = componentsFactory.createComponent(LookupField.class);
         lookupField.setDatasource(datasource, property.getName());
 
         Map<String, Object> options = new HashMap<>();
@@ -93,7 +93,7 @@ public class BulkEditorFieldFactory {
     protected Field createDateField(Datasource datasource, MetaProperty property) {
         Datatype<?> datatype = property.getRange().asDatatype();
 
-        DateField dateField = componentsFactory.createComponent(DateField.NAME);
+        DateField dateField = componentsFactory.createComponent(DateField.class);
         dateField.setDatasource(datasource, property.getName());
 
         if (datatype.equals(Datatypes.get(DateTimeDatatype.NAME))) {
@@ -110,20 +110,20 @@ public class BulkEditorFieldFactory {
     }
 
     protected Field createTimeField(Datasource datasource, MetaProperty property) {
-        TimeField timeField = componentsFactory.createComponent(TimeField.NAME);
+        TimeField timeField = componentsFactory.createComponent(TimeField.class);
         timeField.setDatasource(datasource, property.getName());
         timeField.setShowSeconds(true);
         return timeField;
     }
 
     protected Field createNumberField(Datasource datasource, MetaProperty property) {
-        TextField textField = componentsFactory.createComponent(TextField.NAME);
+        TextField textField = componentsFactory.createComponent(TextField.class);
         textField.setDatasource(datasource, property.getName());
         return textField;
     }
 
     protected Field createEntityField(Datasource datasource, MetaProperty property) {
-        PickerField pickerField = componentsFactory.createComponent(PickerField.NAME);
+        PickerField pickerField = componentsFactory.createComponent(PickerField.class);
         pickerField.addLookupAction();
         pickerField.addClearAction();
 
@@ -133,7 +133,7 @@ public class BulkEditorFieldFactory {
     }
 
     protected Field createEnumField(Datasource datasource, MetaProperty property) {
-        LookupField lookupField = componentsFactory.createComponent(LookupField.NAME);
+        LookupField lookupField = componentsFactory.createComponent(LookupField.class);
         lookupField.setDatasource(datasource, property.getName());
 
         return lookupField;

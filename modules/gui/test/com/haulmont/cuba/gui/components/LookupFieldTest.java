@@ -62,7 +62,7 @@ public abstract class LookupFieldTest extends AbstractComponentTest {
 
     @Test
     public void testGetSetValue() {
-        LookupField component = factory.createComponent(LookupField.NAME);
+        LookupField component = factory.createComponent(LookupField.class);
 
         assertNull(component.getValue());
 
@@ -74,7 +74,7 @@ public abstract class LookupFieldTest extends AbstractComponentTest {
 
     @Test
     public void testSetToReadonly() {
-        LookupField component = factory.createComponent(LookupField.NAME);
+        LookupField component = factory.createComponent(LookupField.class);
 
         component.setEditable(false);
         assertFalse(component.isEditable());
@@ -88,7 +88,7 @@ public abstract class LookupFieldTest extends AbstractComponentTest {
 
     @Test
     public void testSetToReadonlyFromValueListener() {
-        final LookupField component = factory.createComponent(LookupField.NAME);
+        final LookupField component = factory.createComponent(LookupField.class);
 
         assertTrue(component.isEditable());
 
@@ -107,7 +107,7 @@ public abstract class LookupFieldTest extends AbstractComponentTest {
 
     @Test
     public void testDatasource() {
-        LookupField component = factory.createComponent(LookupField.NAME);
+        LookupField component = factory.createComponent(LookupField.class);
 
         //noinspection unchecked
         Datasource<User> testDs = new DsBuilder()
@@ -160,7 +160,7 @@ public abstract class LookupFieldTest extends AbstractComponentTest {
 
     @Test
     public void testValueChangeListener() {
-        LookupField component = factory.createComponent(LookupField.NAME);
+        LookupField component = factory.createComponent(LookupField.class);
 
         final AtomicInteger counter = new AtomicInteger(0);
 
@@ -254,7 +254,7 @@ public abstract class LookupFieldTest extends AbstractComponentTest {
 
     @Test
     public void testValueLoadFromOptions() {
-        LookupField component = factory.createComponent(LookupField.NAME);
+        LookupField component = factory.createComponent(LookupField.class);
 
         //noinspection unchecked
         Datasource<User> testDs = new DsBuilder()

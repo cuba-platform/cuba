@@ -58,7 +58,7 @@ public abstract class AbstractTableLoader extends ActionsHolderLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        Table component = factory.createComponent(element.getName());
+        Table component = (Table) factory.createComponent(element.getName());
 
         initComponent(component, element, parent);
 
@@ -215,7 +215,7 @@ public abstract class AbstractTableLoader extends ActionsHolderLoader {
     protected void loadRowsCount(Table table, Element element) {
         Element rowsCountElement = element.element("rowsCount");
         if (rowsCountElement != null) {
-            RowsCount rowsCount = factory.createComponent("rowsCount");
+            RowsCount rowsCount = factory.createComponent(RowsCount.class);
             rowsCount.setOwner(table);
             table.setRowsCount(rowsCount);
         }

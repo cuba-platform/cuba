@@ -114,18 +114,18 @@ public class MbeanInspectWindow extends AbstractEditor {
         ComponentsFactory componentsFactory = AppConfig.getFactory();
         BoxLayout container = operations;
         for (final ManagedBeanOperation op : mbean.getOperations()) {
-            BoxLayout vl = componentsFactory.createComponent(BoxLayout.VBOX);
+            BoxLayout vl = componentsFactory.createComponent(VBoxLayout.class);
             vl.setMargin(false, false, true, false);
             vl.setSpacing(true);
             vl.setStyleName("cuba-mbeans-operation-container");
 
-            Label nameLbl = componentsFactory.createComponent(Label.NAME);
+            Label nameLbl = componentsFactory.createComponent(Label.class);
             nameLbl.setValue(op.getReturnType() + " " + op.getName() + "()");
             nameLbl.setStyleName("h2");
             vl.add(nameLbl);
 
             if (StringUtils.isNotEmpty(op.getDescription())) {
-                Label descrLbl = componentsFactory.createComponent(Label.NAME);
+                Label descrLbl = componentsFactory.createComponent(Label.class);
                 descrLbl.setValue(op.getDescription());
                 vl.add(descrLbl);
             }
@@ -133,16 +133,16 @@ public class MbeanInspectWindow extends AbstractEditor {
             final List<AttributeEditor> attrProviders = new ArrayList<>();
 
             if (!op.getParameters().isEmpty()) {
-                GridLayout grid = componentsFactory.createComponent(GridLayout.NAME);
+                GridLayout grid = componentsFactory.createComponent(GridLayout.class);
                 grid.setSpacing(true);
                 grid.setColumns(3);
                 grid.setRows(op.getParameters().size());
                 int row = 0;
                 for (ManagedBeanOperationParameter param : op.getParameters()) {
-                    Label pnameLbl = componentsFactory.createComponent(Label.NAME);
+                    Label pnameLbl = componentsFactory.createComponent(Label.class);
                     pnameLbl.setValue(param.getName());
 
-                    Label ptypeLbl = componentsFactory.createComponent(Label.NAME);
+                    Label ptypeLbl = componentsFactory.createComponent(Label.class);
                     ptypeLbl.setValue(param.getType());
 
                     AttributeEditor prov = new AttributeEditor(this, param.getType());
@@ -152,10 +152,10 @@ public class MbeanInspectWindow extends AbstractEditor {
                     Component editComposition = editField;
 
                     if (StringUtils.isNotBlank(param.getDescription())) {
-                        Label pdescrLbl = componentsFactory.createComponent(Label.NAME);
+                        Label pdescrLbl = componentsFactory.createComponent(Label.class);
                         pdescrLbl.setValue(param.getDescription());
 
-                        BoxLayout editorLayout = componentsFactory.createComponent(BoxLayout.VBOX);
+                        BoxLayout editorLayout = componentsFactory.createComponent(VBoxLayout.class);
                         editorLayout.add(editField);
                         editorLayout.add(pdescrLbl);
 
@@ -170,7 +170,7 @@ public class MbeanInspectWindow extends AbstractEditor {
                 vl.add(grid);
             }
 
-            Button invokeBtn = componentsFactory.createComponent(Button.NAME);
+            Button invokeBtn = componentsFactory.createComponent(Button.class);
             invokeBtn.setAction(new AbstractAction("invoke") {
                 @Override
                 public void actionPerform(Component component) {
@@ -187,7 +187,7 @@ public class MbeanInspectWindow extends AbstractEditor {
             container.add(vl);
         }
         if (mbean.getOperations().isEmpty()) {
-            Label lbl = componentsFactory.createComponent(Label.NAME);
+            Label lbl = componentsFactory.createComponent(Label.class);
             lbl.setValue(getMessage("mbean.operations.none"));
             container.add(lbl);
         }

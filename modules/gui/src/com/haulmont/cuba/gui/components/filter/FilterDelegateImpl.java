@@ -192,11 +192,11 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected void createLayout() {
         if (layout == null) {
-            groupBoxLayout = componentsFactory.createComponent(GroupBoxLayout.NAME);
+            groupBoxLayout = componentsFactory.createComponent(GroupBoxLayout.class);
             groupBoxLayout.setOrientation(GroupBoxLayout.Orientation.VERTICAL);
             groupBoxLayout.setStyleName("cuba-generic-filter");
             groupBoxLayout.setWidth("100%");
-            layout = componentsFactory.createComponent(VBoxLayout.NAME);
+            layout = componentsFactory.createComponent(VBoxLayout.class);
             layout.setWidth("100%");
             groupBoxLayout.add(layout);
             if (caption == null)
@@ -209,7 +209,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
         layout.setSpacing(false);
 
-        appliedFiltersLayout = componentsFactory.createComponent(BoxLayout.VBOX);
+        appliedFiltersLayout = componentsFactory.createComponent(VBoxLayout.class);
 
         conditionsLayout = componentsFactory.createComponent(HBoxLayout.class);
         conditionsLayout.setWidth("100%");
@@ -231,14 +231,14 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected void createControlsLayoutForGeneric() {
-        controlsLayout = componentsFactory.createComponent(BoxLayout.HBOX);
+        controlsLayout = componentsFactory.createComponent(HBoxLayout.class);
         controlsLayout.setSpacing(true);
         controlsLayout.setWidth("100%");
 
         filtersPopupBox = componentsFactory.createComponent(HBoxLayout.class);
         filtersPopupBox.setStyleName("filter-search-button-layout");
 
-        searchBtn = componentsFactory.createComponent(Button.NAME);
+        searchBtn = componentsFactory.createComponent(Button.class);
         filtersPopupBox.add(searchBtn);
         searchBtn.setStyleName("filter-search-button");
         searchBtn.setCaption(getMessage("Filter.search"));
@@ -253,12 +253,12 @@ public class FilterDelegateImpl implements FilterDelegate {
         filtersPopupButton = componentsFactory.createComponent(PopupButton.class);
         filtersPopupBox.add(filtersPopupButton);
 
-        filtersLookup = componentsFactory.createComponent(LookupField.NAME);
+        filtersLookup = componentsFactory.createComponent(LookupField.class);
         filtersLookup.setWidth(theme.get("cuba.gui.filter.select.width"));
         filtersLookup.addListener(new FiltersLookupChangeListener());
         filterHelper.setLookupNullSelectionAllowed(filtersLookup, false);
 
-        addConditionBtn = componentsFactory.createComponent(LinkButton.NAME);
+        addConditionBtn = componentsFactory.createComponent(LinkButton.class);
         addConditionBtn.setAlignment(Component.Alignment.MIDDLE_LEFT);
         addConditionBtn.setCaption(getMessage("Filter.addCondition"));
         addConditionBtn.setAction(new AbstractAction("openAddConditionDlg") {
@@ -272,7 +272,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         controlsLayout.add(controlsLayoutGap);
         controlsLayout.expand(controlsLayoutGap);
 
-        settingsBtn = componentsFactory.createComponent(PopupButton.NAME);
+        settingsBtn = componentsFactory.createComponent(PopupButton.class);
         settingsBtn.setIcon("icons/gear.png");
         createFilterActions();
 
@@ -290,11 +290,11 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected void createControlsLayoutForFts() {
-        controlsLayout = componentsFactory.createComponent(BoxLayout.HBOX);
+        controlsLayout = componentsFactory.createComponent(HBoxLayout.class);
         controlsLayout.setSpacing(true);
         controlsLayout.setWidth("100%");
 
-        ftsSearchCriteriaField = componentsFactory.createComponent(TextField.NAME);
+        ftsSearchCriteriaField = componentsFactory.createComponent(TextField.class);
         ftsSearchCriteriaField.setAlignment(Component.Alignment.MIDDLE_LEFT);
         ftsSearchCriteriaField.setWidth(theme.get("cuba.gui.filter.ftsSearchCriteriaField.width"));
         ftsSearchCriteriaField.setInputPrompt(getMessage("Filter.enterSearchPhrase"));
@@ -307,7 +307,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         });
         controlsLayout.add(ftsSearchCriteriaField);
 
-        searchBtn = componentsFactory.createComponent(Button.NAME);
+        searchBtn = componentsFactory.createComponent(Button.class);
         searchBtn.setCaption(getMessage("Filter.search"));
         searchBtn.setIcon("icons/search.png");
         searchBtn.setAction(new AbstractAction("search") {
@@ -333,7 +333,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected void createFtsSwitch() {
-        ftsSwitch = componentsFactory.createComponent(CheckBox.NAME);
+        ftsSwitch = componentsFactory.createComponent(CheckBox.class);
         ftsSwitch.setCaption(getMessage("Filter.ftsSwitch"));
         ftsSwitch.setValue(filterMode == FilterMode.FTS_MODE);
         ftsSwitch.addListener(new ValueListener() {
@@ -360,7 +360,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected void createMaxResultsLayout() {
-        maxResultsLayout = componentsFactory.createComponent(BoxLayout.HBOX);
+        maxResultsLayout = componentsFactory.createComponent(HBoxLayout.class);
         maxResultsLayout.setSpacing(true);
         maxResultsLayout.setAlignment(Component.Alignment.MIDDLE_RIGHT);
         Label maxResultsLabel1 = componentsFactory.createComponent(Label.class);
@@ -368,7 +368,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         maxResultsLabel1.setAlignment(Component.Alignment.MIDDLE_RIGHT);
         maxResultsLayout.add(maxResultsLabel1);
 
-        maxResultsTextField = componentsFactory.createComponent(TextField.NAME);
+        maxResultsTextField = componentsFactory.createComponent(TextField.class);
         maxResultsTextField.setAlignment(Component.Alignment.MIDDLE_RIGHT);
         maxResultsTextField.setMaxLength(4);
         maxResultsTextField.setWidth(theme.get("cuba.gui.Filter.maxResults.width"));
@@ -668,7 +668,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         if (hasGroups && conditions.getRootNodes().size() > 1) {
-            GroupBoxLayout groupBox = componentsFactory.createComponent(GroupBoxLayout.NAME);
+            GroupBoxLayout groupBox = componentsFactory.createComponent(GroupBoxLayout.class);
             groupBox.setWidth("100%");
             groupBox.setCaption(getMessage("GroupType.AND"));
             conditionsLayout.add(groupBox);
@@ -696,7 +696,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         int conditionsCount = getColumnsCount();
         int row = 0;
         int nextColumnStart = 0;
-        GridLayout grid = componentsFactory.createComponent(GridLayout.NAME);
+        GridLayout grid = componentsFactory.createComponent(GridLayout.class);
         grid.setColumns(conditionsCount * 2);
         //set expand ratio only for cells with param edit components
         for (int i = 0; i < conditionsCount; i++) {
@@ -729,7 +729,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                     labelAndOperationCellContent = paramEditor.getLabelAndOperationLayout();
                     paramEditComponentCellContent = paramEditor.getParamEditComponentLayout();
                 } else {
-                    BoxLayout paramLayout = componentsFactory.createComponent(BoxLayout.HBOX);
+                    BoxLayout paramLayout = componentsFactory.createComponent(HBoxLayout.class);
                     paramLayout.setSpacing(true);
                     paramLayout.setMargin(false);
 
@@ -797,7 +797,8 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected Component createGroupConditionBox(AbstractCondition condition, Node<AbstractCondition> node, boolean focusOnConditions, boolean focusSet, int level) {
-        Component groupCellContent;GroupBoxLayout groupBox = componentsFactory.createComponent(GroupBoxLayout.NAME);
+        Component groupCellContent;
+        GroupBoxLayout groupBox = componentsFactory.createComponent(GroupBoxLayout.class);
         groupBox.setWidth("100%");
         groupBox.setCaption(condition.getLocCaption());
 
@@ -1070,7 +1071,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         this.layout.add(appliedFiltersLayout, CONDITIONS_LOCATION_TOP.equals(conditionsLocation) ? 0 : 1);
 
-        BoxLayout layout = componentsFactory.createComponent(BoxLayout.HBOX);
+        BoxLayout layout = componentsFactory.createComponent(HBoxLayout.class);
         layout.setSpacing(true);
 
         if (!appliedFilters.isEmpty()) {
@@ -1078,12 +1079,12 @@ public class FilterDelegateImpl implements FilterDelegate {
             holder.layout.remove(holder.button);
         }
 
-        Label label = componentsFactory.createComponent(Label.NAME);
+        Label label = componentsFactory.createComponent(Label.class);
         label.setValue(lastAppliedFilter.getText());
         layout.add(label);
         label.setAlignment(Component.Alignment.MIDDLE_LEFT);
 
-        LinkButton button = componentsFactory.createComponent(LinkButton.NAME);
+        LinkButton button = componentsFactory.createComponent(LinkButton.class);
         button.setIcon("icons/item-remove.png");
         button.setAction(new AbstractAction("") {
             @Override
@@ -1609,7 +1610,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             addToCurrSet = new AddToCurrSetAction();
 
             if (addToCurSetBtn == null) {
-                addToCurSetBtn = componentsFactory.createComponent(Button.NAME);
+                addToCurSetBtn = componentsFactory.createComponent(Button.class);
                 addToCurSetBtn.setId("addToCurSetBtn");
                 addToCurSetBtn.setCaption(getMessage("addToCurSet"));
                 buttons.add(addToCurSetBtn);
@@ -1624,7 +1625,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
             removeFromCurrSet = new RemoveFromSetAction(table);
             if (removeFromCurSetBtn == null) {
-                removeFromCurSetBtn = componentsFactory.createComponent(Button.NAME);
+                removeFromCurSetBtn = componentsFactory.createComponent(Button.class);
                 removeFromCurSetBtn.setId("removeFromCurSetBtn");
                 removeFromCurSetBtn.setCaption(getMessage("removeFromCurSet"));
                 buttons.add(removeFromCurSetBtn);
@@ -1640,7 +1641,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         } else {
             addToSet = new AddToSetAction(table);
             if (addToSetBtn == null) {
-                addToSetBtn = componentsFactory.createComponent(Button.NAME);
+                addToSetBtn = componentsFactory.createComponent(Button.class);
                 addToSetBtn.setId("addToSetBtn");
                 addToSetBtn.setCaption(getMessage("addToSet"));
                 buttons.add(addToSetBtn);

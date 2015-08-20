@@ -38,7 +38,7 @@ public abstract class DateFieldTest extends AbstractComponentTest {
 
     @Test
     public void testGetSetValue() throws ParseException {
-        DateField component = factory.createComponent(DateField.NAME);
+        DateField component = factory.createComponent(DateField.class);
 
         assertNull(component.getValue());
 
@@ -50,7 +50,7 @@ public abstract class DateFieldTest extends AbstractComponentTest {
 
     @Test
     public void testSetToReadonly() throws ParseException {
-        DateField component = factory.createComponent(DateField.NAME);
+        DateField component = factory.createComponent(DateField.class);
 
         component.setEditable(false);
         assertFalse(component.isEditable());
@@ -64,7 +64,7 @@ public abstract class DateFieldTest extends AbstractComponentTest {
 
     @Test
     public void testSetToReadonlyFromValueListener() throws ParseException {
-        final DateField component = factory.createComponent(DateField.NAME);
+        final DateField component = factory.createComponent(DateField.class);
 
         assertTrue(component.isEditable());
 
@@ -84,7 +84,7 @@ public abstract class DateFieldTest extends AbstractComponentTest {
 
     @Test
     public void testDatasource() throws ParseException {
-        DateField component = factory.createComponent(DateField.NAME);
+        DateField component = factory.createComponent(DateField.class);
 
         //noinspection unchecked
         Datasource<User> testDs = new DsBuilder()
@@ -116,7 +116,7 @@ public abstract class DateFieldTest extends AbstractComponentTest {
 
     @Test
     public void testValueChangeListener() throws ParseException {
-        DateField component = factory.createComponent(DateField.NAME);
+        DateField component = factory.createComponent(DateField.class);
 
         final AtomicInteger counter = new AtomicInteger(0);
 

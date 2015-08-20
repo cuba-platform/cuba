@@ -159,7 +159,7 @@ public class BulkEditorWindow extends AbstractWindow {
             return;
         }
 
-        GridLayout grid = componentsFactory.createComponent(GridLayout.NAME);
+        GridLayout grid = componentsFactory.createComponent(GridLayout.class);
         grid.setSpacing(true);
         grid.setColumns(4);
         grid.setRows((managedFields.size() + 1) / 2);
@@ -178,7 +178,7 @@ public class BulkEditorWindow extends AbstractWindow {
         String fieldWidth = themeConstants.get("cuba.gui.BulkEditorWindow.field.width");
 
         for (ManagedField field : editFields) {
-            Label label = componentsFactory.createComponent(Label.NAME);
+            Label label = componentsFactory.createComponent(Label.class);
             label.setFrame(getFrame());
             label.setValue(field.getLocalizedName());
             label.setAlignment(Alignment.MIDDLE_LEFT);
@@ -199,14 +199,14 @@ public class BulkEditorWindow extends AbstractWindow {
 
                 boolean required = editField.isRequired();
 
-                BoxLayout boxLayout = componentsFactory.createComponent(BoxLayout.HBOX);
+                BoxLayout boxLayout = componentsFactory.createComponent(HBoxLayout.class);
                 boxLayout.setFrame(getFrame());
                 boxLayout.setSpacing(true);
 
                 boxLayout.add(editField);
 
                 if (!required) {
-                    final Button clearButton = componentsFactory.createComponent(Button.NAME);
+                    final Button clearButton = componentsFactory.createComponent(Button.class);
                     clearButton.setFrame(getFrame());
                     Action action = new AbstractAction("actions.BulkClear") {
                         @Override
@@ -244,7 +244,7 @@ public class BulkEditorWindow extends AbstractWindow {
 
                 dataFields.put(field.getFqn(), editField);
             } else {
-                Label unknownLabel = componentsFactory.createComponent(Label.NAME);
+                Label unknownLabel = componentsFactory.createComponent(Label.class);
                 unknownLabel.setFrame(getFrame());
                 grid.add(unknownLabel);
             }

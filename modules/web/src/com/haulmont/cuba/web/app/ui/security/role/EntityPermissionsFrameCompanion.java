@@ -49,7 +49,7 @@ public class EntityPermissionsFrameCompanion implements EntityPermissionsFrame.C
     }
 
     protected Label generateLabelByPermissionVariant(PermissionVariant permissionVariant) {
-        Label label = AppConfig.getFactory().createComponent(Label.NAME);
+        Label label = AppConfig.getFactory().createComponent(Label.class);
 
         WebComponentsUtils.allowHtmlContent(label);
 

@@ -93,16 +93,16 @@ public class DesktopComponentsFactory implements ComponentsFactory {
     }
 
     @Override
-    public <T extends Component> T createComponent(String name) {
-        final Class<Component> componentClass = (Class<Component>) classes.get(name);
+    public Component createComponent(String name) {
+        final Class<? extends Component> componentClass = classes.get(name);
         if (componentClass == null) {
             throw new IllegalStateException(String.format("Can't find component class for '%s'", name));
         }
 
         try {
-            return (T) componentClass.newInstance();
+            return componentClass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error creating the '" + name + "' component instance", e);
         }
     }
 
@@ -118,7 +118,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         }
 
         if (name != null) {
-            return createComponent(name);
+            return type.cast(createComponent(name));
         } else {
             throw new IllegalStateException(String.format("Class '%s' doesn't have NAME property", type.getName()));
         }

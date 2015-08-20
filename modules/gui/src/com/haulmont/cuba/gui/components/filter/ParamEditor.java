@@ -39,7 +39,7 @@ public class ParamEditor implements AbstractCondition.Listener {
         labelAndOperationLayout.setSpacing(true);
         labelAndOperationLayout.setAlignment(Component.Alignment.MIDDLE_RIGHT);
 
-        captionLbl = componentsFactory.createComponent(Label.NAME);
+        captionLbl = componentsFactory.createComponent(Label.class);
         captionLbl.setAlignment(Component.Alignment.MIDDLE_RIGHT);
         captionLbl.setValue(condition.getLocCaption());
         labelAndOperationLayout.add(captionLbl);
@@ -68,7 +68,7 @@ public class ParamEditor implements AbstractCondition.Listener {
         }
         paramEditComponentLayout.add(paramEditComponent);
 
-        removeButton = componentsFactory.createComponent(LinkButton.NAME);
+        removeButton = componentsFactory.createComponent(LinkButton.class);
         removeButton.setIcon("icons/item-remove.png");
         removeButton.setAlignment(Component.Alignment.MIDDLE_LEFT);
         removeButton.setVisible(removeButtonVisible);

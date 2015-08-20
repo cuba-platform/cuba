@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.components.GridLayout;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
@@ -36,6 +37,9 @@ public class ControlLoggerWindow extends AbstractWindow {
 
     @Inject
     protected ThemeConstants themeConstants;
+
+    @Inject
+    protected ComponentsFactory componentsFactory;
 
     protected final Map<String, LookupField> fieldMap = new HashMap<>();
 
@@ -90,13 +94,13 @@ public class ControlLoggerWindow extends AbstractWindow {
     }
 
     protected Pair<TextField, LookupField> createEditComponents(String loggerName, Level level) {
-        final TextField loggerNameField = AppConfig.getFactory().createComponent(TextField.NAME);
+        final TextField loggerNameField = componentsFactory.createComponent(TextField.class);
         loggerNameField.setValue(loggerName);
         loggerNameField.setEditable(false);
         loggerNameField.setFrame(this);
         loggerNameField.setWidth("100%");
 
-        final LookupField logLevelField = AppConfig.getFactory().createComponent(LookupField.NAME);
+        final LookupField logLevelField = componentsFactory.createComponent(LookupField.class);
         logLevelField.setWidth(themeConstants.get("cuba.web.ControlLoggerWindow.logLevelField.width"));
         logLevelField.setOptionsList(LoggingHelper.getLevels());
         logLevelField.setValue(level);

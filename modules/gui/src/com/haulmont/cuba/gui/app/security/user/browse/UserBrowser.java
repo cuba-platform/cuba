@@ -158,7 +158,7 @@ public class UserBrowser extends AbstractLookup {
         usersTable.addGeneratedColumn("timeZone", new Table.ColumnGenerator<User>() {
             @Override
             public Component generateCell(User entity) {
-                Label label = componentsFactory.createComponent(Label.NAME);
+                Label label = componentsFactory.createComponent(Label.class);
                 if (Boolean.TRUE.equals(entity.getTimeZoneAuto())) {
                     label.setValue(messages.getMainMessage("timeZone.auto"));
                 } else if (entity.getTimeZone() != null) {

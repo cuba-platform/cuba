@@ -153,7 +153,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
         categoryAttrsTable.removeGeneratedColumn("dataType");
         categoryAttrsTable.addGeneratedColumn("dataType", new Table.ColumnGenerator<CategoryAttribute>() {
             public Component generateCell(CategoryAttribute attribute) {
-                Label dataTypeLabel = factory.createComponent(Label.NAME);
+                Label dataTypeLabel = factory.createComponent(Label.class);
                 String labelContent;
                 if (BooleanUtils.isTrue(attribute.getIsEntity())) {
                     Class clazz = attribute.getJavaClassForEntity();
@@ -219,7 +219,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
                     }
                 }
 
-                Label defaultValueLabel = factory.createComponent(Label.NAME);
+                Label defaultValueLabel = factory.createComponent(Label.class);
                 defaultValueLabel.setValue(defaultValue);
                 return defaultValueLabel;
             }

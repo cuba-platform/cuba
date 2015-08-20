@@ -160,14 +160,14 @@ public class EntityLogBrowser extends AbstractWindow {
 
         addAction(new SaveAction());
         addAction(new CancelAction());
-        Label label1 = factory.createComponent(Label.NAME);
+        Label label1 = factory.createComponent(Label.class);
         label1.setValue(messages.getMessage(getClass(),"show"));
         label1.setAlignment(Alignment.MIDDLE_LEFT);
-        Label label2 = factory.createComponent(Label.NAME);
+        Label label2 = factory.createComponent(Label.class);
         label2.setValue(messages.getMessage(getClass(),"rows"));
         label2.setAlignment(Alignment.MIDDLE_LEFT);
         ButtonsPanel panel = entityLogTable.getButtonsPanel();
-        showRowField = factory.createComponent(TextField.NAME);
+        showRowField = factory.createComponent(TextField.class);
         showRowField.setWidth(themeConstants.get("cuba.gui.EntityLogBrowser.showRowField.width"));
         showRowField.setValue(String.valueOf(DEFAULT_SHOW_ROWS));
         panel.add(label1);
@@ -317,7 +317,7 @@ public class EntityLogBrowser extends AbstractWindow {
                 enabledAttr = item.getAttributes();
             for (MetaProperty property : metaProperties) {
                 if (!systemAttrsList.contains(property.getName())) {
-                    CheckBox checkBox = factory.createComponent(CheckBox.NAME);
+                    CheckBox checkBox = factory.createComponent(CheckBox.class);
                     if ((enabledAttr != null) && isEntityHaveAtrribute(property.getName(), enabledAttr))
                         checkBox.setValue(true);
                     checkBox.setId(property.getName());

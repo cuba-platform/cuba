@@ -350,7 +350,7 @@ public class Param {
     }
 
     private CheckBox createUnaryField(final ValueProperty valueProperty) {
-        CheckBox field = componentsFactory.createComponent(CheckBox.NAME);
+        CheckBox field = componentsFactory.createComponent(CheckBox.class);
         field.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
@@ -408,7 +408,7 @@ public class Param {
 
 
     private Component createTextField(final ValueProperty valueProperty) {
-        TextField field = componentsFactory.createComponent(TextField.NAME);
+        TextField field = componentsFactory.createComponent(TextField.class);
 
         field.setWidth(theme.get("cuba.gui.filter.Param.textComponent.width"));
 
@@ -469,7 +469,7 @@ public class Param {
             return inListParamComponent.getComponent();
         }
 
-        DateField dateField = componentsFactory.createComponent(DateField.NAME);
+        DateField dateField = componentsFactory.createComponent(DateField.class);
 
         DateField.Resolution resolution;
         String formatStr;
@@ -504,7 +504,7 @@ public class Param {
     }
 
     private Component createNumberField(final Datatype datatype, final ValueProperty valueProperty) {
-        TextField field = componentsFactory.createComponent(TextField.NAME);
+        TextField field = componentsFactory.createComponent(TextField.class);
 
         field.addListener(new ValueListener() {
             @Override
@@ -556,7 +556,7 @@ public class Param {
         Messages messages = AppBeans.get(Messages.NAME);
         ThemeConstants theme = AppBeans.get(ThemeConstantsManager.class).getConstants();
 
-        LookupField field = componentsFactory.createComponent(LookupField.NAME);
+        LookupField field = componentsFactory.createComponent(LookupField.class);
         field.setWidth(theme.get("cuba.gui.filter.Param.booleanLookup.width"));
 
         Map<String, Object> values = new HashMap<>();
@@ -577,7 +577,7 @@ public class Param {
     }
 
     private Component createUuidField(final ValueProperty valueProperty) {
-        TextField field = componentsFactory.createComponent(TextField.NAME);
+        TextField field = componentsFactory.createComponent(TextField.class);
 
         field.addListener(new ValueListener() {
             @Override
@@ -644,7 +644,7 @@ public class Param {
                 initListEdit(inListParamComponent, valueProperty);
                 return inListParamComponent.getComponent();
             } else {
-                PickerField picker = componentsFactory.createComponent(PickerField.NAME);
+                PickerField picker = componentsFactory.createComponent(PickerField.class);
                 picker.setMetaClass(metaClass);
 
                 picker.setWidth(theme.get("cuba.gui.filter.Param.textComponent.width"));
@@ -693,7 +693,7 @@ public class Param {
                 initListEdit(inListParamComponent, valueProperty);
                 return inListParamComponent.getComponent();
             } else {
-                final LookupPickerField lookup = componentsFactory.createComponent(LookupPickerField.NAME);
+                final LookupPickerField lookup = componentsFactory.createComponent(LookupPickerField.class);
                 lookup.addClearAction();
                 lookup.setWidth(theme.get("cuba.gui.filter.Param.textComponent.width"));
                 lookup.setOptionsDatasource(ds);
@@ -734,7 +734,7 @@ public class Param {
                 options.put(messages.getMessage((Enum) obj), obj);
             }
 
-            LookupField lookup = componentsFactory.createComponent(LookupField.NAME);
+            LookupField lookup = componentsFactory.createComponent(LookupField.class);
             lookup.setOptionsMap(options);
 
             lookup.addListener(new ValueListener() {
@@ -773,7 +773,7 @@ public class Param {
             initListEdit(inListParamComponent, valueProperty);
             return inListParamComponent.getComponent();
         } else {
-            LookupField lookup = componentsFactory.createComponent(LookupField.NAME);
+            LookupField lookup = componentsFactory.createComponent(LookupField.class);
             lookup.setOptionsList(runtimeEnum);
 
             lookup.addListener(new ValueListener() {

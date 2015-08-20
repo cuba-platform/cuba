@@ -22,7 +22,7 @@ public class LabelLoader extends AbstractDatasourceComponentLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        Label component = factory.createComponent(element.getName());
+        Label component = (Label) factory.createComponent(element.getName());
 
         initComponent(component, element, parent);
 

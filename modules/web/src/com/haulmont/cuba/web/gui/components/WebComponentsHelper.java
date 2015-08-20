@@ -271,7 +271,7 @@ public class WebComponentsHelper {
     public static Button createButton(String icon) {
         ComponentsFactory cf = AppBeans.get(ComponentsFactory.NAME);
         com.haulmont.cuba.gui.components.Button button =
-                cf.createComponent(com.haulmont.cuba.gui.components.Button.NAME);
+                cf.createComponent(com.haulmont.cuba.gui.components.Button.class);
         button.setIcon(icon);
         return (Button) unwrap(button);
     }

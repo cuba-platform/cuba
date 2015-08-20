@@ -131,7 +131,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
             remove(runtime);
         }
 
-        final FieldGroup newRuntimeFieldGroup = componentsFactory.createComponent(FieldGroup.NAME);
+        final FieldGroup newRuntimeFieldGroup = componentsFactory.createComponent(FieldGroup.class);
         newRuntimeFieldGroup.setBorderVisible(Boolean.TRUE.equals(borderVisible));
         newRuntimeFieldGroup.setWidth("100%");
         newRuntimeFieldGroup.setId("runtime");
@@ -219,7 +219,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                         Boolean lookup = ((DynamicAttributesEntity) datasource.getItem())
                                 .getCategoryValue(metaProperty.getName()).getCategoryAttribute().getLookup();
                         if (lookup != null && lookup) {
-                            pickerField = componentsFactory.createComponent(LookupPickerField.NAME);
+                            pickerField = componentsFactory.createComponent(LookupPickerField.class);
 
                             CollectionDatasource optionsDs = new DsBuilder(datasource.getDsContext())
                                     .setMetaClass(metaProperty.getRange().asClass())
@@ -232,7 +232,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
 
                             ((LookupPickerField) pickerField).setOptionsDatasource(optionsDs);
                         } else {
-                            pickerField = componentsFactory.createComponent(PickerField.NAME);
+                            pickerField = componentsFactory.createComponent(PickerField.class);
                             pickerField.addLookupAction();
                         }
                         pickerField.setMetaClass(ds.getMetaClass());
@@ -266,7 +266,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                                 component.addCustomField(metaProperty.getName(), new FieldGroup.CustomFieldGenerator() {
                                     @Override
                                     public Component generateField(Datasource datasource, String propertyId) {
-                                        LookupField field = componentsFactory.createComponent(LookupField.NAME);
+                                        LookupField field = componentsFactory.createComponent(LookupField.class);
                                         field.setFrame(RuntimePropertiesFrame.this);
                                         field.setOptionsList(attribute.getEnumerationOptions());
                                         field.setDatasource(rds, propertyId);

@@ -21,7 +21,7 @@ public class AppMenuLoader extends ComponentLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        AppMenu component = factory.createComponent(element.getName());
+        AppMenu component = (AppMenu) factory.createComponent(element.getName());
 
         initComponent(component, element);
 

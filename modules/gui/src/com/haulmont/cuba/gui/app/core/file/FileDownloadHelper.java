@@ -58,11 +58,11 @@ public class FileDownloadHelper {
                 }
 
                 if (PersistenceHelper.isNew(fd)) {
-                    Label label = componentsFactory.createComponent(Label.NAME);
+                    Label label = componentsFactory.createComponent(Label.class);
                     label.setValue(fd.getName());
                     return label;
                 } else {
-                    Button button = componentsFactory.createComponent(Button.NAME);
+                    Button button = componentsFactory.createComponent(Button.class);
                     button.setStyleName("link");
                     button.setAction(new AbstractAction("download") {
                         @Override
@@ -90,15 +90,15 @@ public class FileDownloadHelper {
             public Component generateCell(final Entity entity) {
                 final FileDescriptor fd = entity.getValueEx(fileProperty);
                 if (fd == null) {
-                    return componentsFactory.createComponent(Label.NAME);
+                    return componentsFactory.createComponent(Label.class);
                 }
 
                 if (PersistenceHelper.isNew(fd)) {
-                    Label label = componentsFactory.createComponent(Label.NAME);
+                    Label label = componentsFactory.createComponent(Label.class);
                     label.setValue(fd.getName());
                     return label;
                 } else {
-                    Button button = componentsFactory.createComponent(Button.NAME);
+                    Button button = componentsFactory.createComponent(Button.class);
                     button.setStyleName("link");
                     button.setAction(new AbstractAction("download") {
                         @Override

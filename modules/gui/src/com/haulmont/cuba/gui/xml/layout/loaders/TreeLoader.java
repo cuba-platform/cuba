@@ -30,7 +30,7 @@ public class TreeLoader extends ActionsHolderLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        Tree component = factory.createComponent(element.getName());
+        Tree component = (Tree) factory.createComponent(element.getName());
 
         initComponent(component, element, parent);
 

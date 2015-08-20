@@ -29,7 +29,7 @@ public class RelatedEntitiesLoader extends ComponentLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final RelatedEntities component = factory.createComponent(RelatedEntities.NAME);
+        final RelatedEntities component = (RelatedEntities) factory.createComponent(RelatedEntities.NAME);
 
         initComponent(component, element, parent);
 

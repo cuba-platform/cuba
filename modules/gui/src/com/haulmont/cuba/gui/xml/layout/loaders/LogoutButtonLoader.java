@@ -21,7 +21,7 @@ public class LogoutButtonLoader extends ComponentLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        LogoutButton component = factory.createComponent(element.getName());
+        LogoutButton component = (LogoutButton) factory.createComponent(element.getName());
 
         initComponent(component, element, parent);
 
