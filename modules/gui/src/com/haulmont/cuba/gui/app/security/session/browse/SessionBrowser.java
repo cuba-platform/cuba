@@ -129,7 +129,7 @@ public class SessionBrowser extends AbstractLookup {
         Map<String, Object> params = new HashMap<>();
         params.put("selectedSessions", selected);
         params.put("allSessions", all);
-        final SessionMessageWindow window = openWindow("sessionMessageWindow", WindowManager.OpenType.DIALOG, params);
+        final SessionMessageWindow window = (SessionMessageWindow) openWindow("sessionMessageWindow", WindowManager.OpenType.DIALOG, params);
         window.addListener(new CloseListener() {
             @Override
             public void windowClosed(String actionId) {

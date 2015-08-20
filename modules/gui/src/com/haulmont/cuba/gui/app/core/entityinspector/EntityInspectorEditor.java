@@ -217,7 +217,7 @@ public class EntityInspectorEditor extends AbstractWindow {
             params.put("fieldWidth", themeConstants.get("cuba.gui.EntityInspectorEditor.field.width"));
             params.put("borderVisible", Boolean.TRUE);
 
-            RuntimePropertiesFrame runtimePropertiesFrame = openFrame(runtimePane, "runtimePropertiesFrame", params);
+            RuntimePropertiesFrame runtimePropertiesFrame = (RuntimePropertiesFrame) openFrame(runtimePane, "runtimePropertiesFrame", params);
             runtimePropertiesFrame.setFrame(this.getFrame());
             runtimePropertiesFrame.setMessagesPack("com.haulmont.cuba.gui.app.core.entityinspector");
             runtimePropertiesFrame.setCategoryFieldVisible(false);
@@ -979,7 +979,7 @@ public class EntityInspectorEditor extends AbstractWindow {
             if (inverseProperty != null)
                 editorParams.put("parentProperty", inverseProperty.getName());
             editorParams.put("parent", item);
-            EntityInspectorEditor window = openWindow("entityInspector.edit", OPEN_TYPE, editorParams);
+            Window window = openWindow("entityInspector.edit", OPEN_TYPE, editorParams);
             if (!(entitiesDs instanceof PropertyDatasource))
                 window.addListener(new CloseListener() {
                     @Override

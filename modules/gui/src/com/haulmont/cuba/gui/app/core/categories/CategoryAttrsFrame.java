@@ -255,7 +255,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
         public void actionPerform(Component component) {
             Set<CategoryAttribute> selected = categoryAttrsTable.getSelected();
             if (!selected.isEmpty()) {
-                AttributeEditor editor = openEditor(
+                AttributeEditor editor = (AttributeEditor) openEditor(
                         "sys$CategoryAttribute.edit",
                         selected.iterator().next(),
                         WindowManager.OpenType.DIALOG,
@@ -289,7 +289,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
             final CategoryAttribute attribute = metadata.create(CategoryAttribute.class);
             attribute.setCategory((Category) categoryDs.getItem());
             assignNextOrderNo(attribute);
-            AttributeEditor editor = openEditor(
+            AttributeEditor editor = (AttributeEditor) openEditor(
                     "sys$CategoryAttribute.edit",
                     attribute,
                     WindowManager.OpenType.DIALOG,

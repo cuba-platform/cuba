@@ -904,7 +904,7 @@ public class CubaFoldersPane extends VerticalLayout {
         public void perform(final Folder folder) {
             WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
 
-            final FileUploadDialog dialog = App.getInstance().getWindowManager().
+            final FileUploadDialog dialog = (FileUploadDialog) App.getInstance().getWindowManager().
                     openWindow(windowConfig.getWindowInfo("fileUploadDialog"), WindowManager.OpenType.DIALOG);
 
             dialog.addListener(new com.haulmont.cuba.gui.components.Window.CloseListener() {

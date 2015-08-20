@@ -68,7 +68,7 @@ public class InListParamComponent {
                 params.put("runtimeEnum", runtimeEnum);
                 params.put("itemClass", itemClass);
 
-                final InListParamEditor editor = windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
+                final InListParamEditor editor = (InListParamEditor) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
                 editor.addListener(new Window.CloseListener() {
                     @Override
                     public void windowClosed(String actionId) {

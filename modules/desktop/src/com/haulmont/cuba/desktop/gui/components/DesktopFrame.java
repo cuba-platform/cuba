@@ -138,61 +138,61 @@ public class DesktopFrame
     }
 
     @Override
-    public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
+    public Window openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return getWindowManager().openWindow(windowInfo, openType, params);
     }
 
     @Override
-    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
+    public <T extends Entity> Window.Editor openEditor(String windowAlias, T item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return getWindowManager().openEditor(windowInfo, item, openType, params, parentDs);
     }
 
     @Override
-    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
+    public <T extends Entity> Window.Editor openEditor(String windowAlias, T item, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return getWindowManager().openEditor(windowInfo, item, openType, params);
     }
 
     @Override
-    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
+    public <T extends Entity> Window.Editor openEditor(String windowAlias, T item, WindowManager.OpenType openType, Datasource parentDs) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return getWindowManager().openEditor(windowInfo, item, openType, parentDs);
     }
 
     @Override
-    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
+    public <T extends Entity> Window.Editor openEditor(String windowAlias, T item, WindowManager.OpenType openType) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return getWindowManager().openEditor(windowInfo, item, openType);
     }
 
     @Override
-    public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
+    public Window openWindow(String windowAlias, WindowManager.OpenType openType) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return getWindowManager().openWindow(windowInfo, openType);
     }
 
     @Override
-    public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
+    public Window.Lookup openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return getWindowManager().openLookup(windowInfo, handler, openType, params);
     }
 
     @Override
-    public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+    public Window.Lookup openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return getWindowManager().openLookup(windowInfo, handler, openType);
     }
 
     @Override
-    public <T extends IFrame> T openFrame(Component parent, String windowAlias) {
+    public IFrame openFrame(Component parent, String windowAlias) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return getWindowManager().openFrame(wrapper, parent, windowInfo);
     }
 
     @Override
-    public <T extends IFrame> T openFrame(Component parent, String windowAlias, Map<String, Object> params) {
+    public IFrame openFrame(Component parent, String windowAlias, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return getWindowManager().openFrame(wrapper, parent, windowInfo, params);
     }

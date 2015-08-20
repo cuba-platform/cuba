@@ -96,7 +96,7 @@ public class CategoryBrowser extends AbstractLookup {
         @Override
         public void actionPerform(Component component) {
             Category category = metadata.create(Category.class);
-            CategoryEditor editor = openEditor("sys$Category.edit", category, WindowManager.OpenType.THIS_TAB);
+            Editor editor = openEditor("sys$Category.edit", category, WindowManager.OpenType.THIS_TAB);
             editor.addListener(new CloseListener() {
                 @Override
                 public void windowClosed(String actionId) {
@@ -123,7 +123,7 @@ public class CategoryBrowser extends AbstractLookup {
             Set<Category> selected = categoryTable.getSelected();
             if (!selected.isEmpty()) {
                 Category category = selected.iterator().next();
-                CategoryEditor editor = openEditor("sys$Category.edit", category, WindowManager.OpenType.THIS_TAB);
+                Editor editor = openEditor("sys$Category.edit", category, WindowManager.OpenType.THIS_TAB);
                 editor.addListener(new CloseListener() {
                     @Override
                     public void windowClosed(String actionId) {

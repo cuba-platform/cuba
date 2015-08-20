@@ -70,7 +70,7 @@ public class AddConditionHelper {
         }
         params.put("descriptorsTree", descriptorsTree);
         WindowInfo windowInfo = windowConfig.getWindowInfo("addCondition");
-        final AddConditionWindow window = windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
+        final AddConditionWindow window = (AddConditionWindow) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
         window.addListener(new Window.CloseListener() {
             @Override
             public void windowClosed(String actionId) {
@@ -94,7 +94,7 @@ public class AddConditionHelper {
             Map<String, Object> params = new HashMap<>();
             params.put("condition", condition);
             params.put("conditionsTree", conditionsTree);
-            final CustomConditionEditor window = windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
+            final CustomConditionEditor window = (CustomConditionEditor) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
             window.addListener(new Window.CloseListener() {
                 @Override
                 public void windowClosed(String actionId) {
@@ -107,7 +107,7 @@ public class AddConditionHelper {
             WindowInfo windowInfo = windowConfig.getWindowInfo("dynamicAttributesConditionEditor");
             Map<String, Object> params = new HashMap<>();
             params.put("condition", condition);
-            final DynamicAttributesConditionEditor window = windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
+            final DynamicAttributesConditionEditor window = (DynamicAttributesConditionEditor) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
             window.addListener(new Window.CloseListener() {
                 @Override
                 public void windowClosed(String actionId) {

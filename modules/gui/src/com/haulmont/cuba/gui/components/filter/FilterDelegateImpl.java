@@ -985,7 +985,8 @@ public class FilterDelegateImpl implements FilterDelegate {
             @Override
             public void actionPerform(Component component) {
                 WindowInfo windowInfo = windowConfig.getWindowInfo("filterSelect");
-                final FilterSelectWindow window = windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG,
+                final FilterSelectWindow window = (FilterSelectWindow) windowManager.openWindow(windowInfo,
+                        WindowManager.OpenType.DIALOG,
                         Collections.<String, Object>singletonMap("filterEntities", filterEntities));
                 window.addListener(new Window.CloseListener() {
                     @Override
@@ -1852,7 +1853,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 if (!getMessage("Filter.adHocFilter").equals(filterEntity.getName())) {
                     params.put("filterName", filterEntity.getName());
                 }
-                final SaveFilterWindow window = windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
+                final SaveFilterWindow window = (SaveFilterWindow) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
                 window.addListener(new Window.CloseListener() {
                     @Override
                     public void windowClosed(String actionId) {
@@ -1899,7 +1900,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         @Override
         public void actionPerform(Component component) {
             WindowInfo windowInfo = windowConfig.getWindowInfo("saveFilter");
-            final SaveFilterWindow window = windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG);
+            final SaveFilterWindow window = (SaveFilterWindow) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG);
             window.addListener(new Window.CloseListener() {
                 @Override
                 public void windowClosed(String actionId) {
@@ -1950,7 +1951,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             params.put("filterEntity", filterEntity);
             params.put("filter", filter);
             params.put("conditions", conditions);
-            final FilterEditor window = windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
+            final FilterEditor window = (FilterEditor) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
             window.addListener(new Window.CloseListener() {
                 @Override
                 public void windowClosed(String actionId) {

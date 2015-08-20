@@ -96,7 +96,7 @@ public interface IFrame
      * @param params      parameters to pass to <code>init()</code> method of the screen's controller
      * @return created window
      */
-    <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params);
+    Window openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params);
 
     /**
      * Open a simple screen.
@@ -105,7 +105,7 @@ public interface IFrame
      * @param openType    how to open the screen
      * @return created window
      */
-    <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType);
+    Window openWindow(String windowAlias, WindowManager.OpenType openType);
 
     /**
      * Open an edit screen.
@@ -118,7 +118,7 @@ public interface IFrame
      *                    datasource instead of directly to database
      * @return created window
      */
-    <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType,
+    <T extends Entity> Window.Editor openEditor(String windowAlias, T item, WindowManager.OpenType openType,
                                     Map<String, Object> params, Datasource parentDs);
 
     /**
@@ -130,7 +130,7 @@ public interface IFrame
      * @param params      parameters to pass to <code>init()</code> method of the screen's controller
      * @return created window
      */
-    <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType,
+    <T extends Entity> Window.Editor openEditor(String windowAlias, T item, WindowManager.OpenType openType,
                                     Map<String, Object> params);
 
     /**
@@ -143,7 +143,7 @@ public interface IFrame
      *                    datasource instead of directly to database
      * @return created window
      */
-    <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType,
+    <T extends Entity> Window.Editor openEditor(String windowAlias, T item, WindowManager.OpenType openType,
                                     Datasource parentDs);
 
     /**
@@ -154,7 +154,7 @@ public interface IFrame
      * @param openType    how to open the screen
      * @return created window
      */
-    <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType);
+    <T extends Entity> Window.Editor openEditor(String windowAlias, T item, WindowManager.OpenType openType);
 
     /**
      * Open a lookup screen.
@@ -165,7 +165,7 @@ public interface IFrame
      * @param params      parameters to pass to <code>init()</code> method of the screen's controller
      * @return created window
      */
-    <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType,
+    Window.Lookup openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType,
                                     Map<String, Object> params);
 
     /**
@@ -176,7 +176,7 @@ public interface IFrame
      * @param openType    how to open the screen
      * @return created window
      */
-    <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType);
+    Window.Lookup openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType);
 
     /**
      * Load a frame registered in <code>screens.xml</code> and optionally show it inside a parent component of this
@@ -185,7 +185,7 @@ public interface IFrame
      * @param windowAlias   frame ID as defined in <code>screens.xml</code>
      * @return              frame's controller instance
      */
-    <T extends IFrame> T openFrame(@Nullable Component parent, String windowAlias);
+    IFrame openFrame(@Nullable Component parent, String windowAlias);
 
     /**
      * Load a frame registered in <code>screens.xml</code> and optionally show it inside a parent component of this
@@ -195,7 +195,7 @@ public interface IFrame
      * @param params        parameters to be passed into the frame's controller <code>init</code> method
      * @return              frame's controller instance
      */
-    <T extends IFrame> T openFrame(@Nullable Component parent, String windowAlias, Map<String, Object> params);
+    IFrame openFrame(@Nullable Component parent, String windowAlias, Map<String, Object> params);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

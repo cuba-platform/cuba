@@ -190,7 +190,7 @@ public class UserBrowser extends AbstractLookup {
                 newUser.setUserRoles(userRoles);
             }
             newUser.setGroup(selectedUser.getGroup());
-            UserEditor editor = openEditor("sec$User.edit", newUser, WindowManager.OpenType.THIS_TAB);
+            UserEditor editor = (UserEditor) openEditor("sec$User.edit", newUser, WindowManager.OpenType.THIS_TAB);
             editor.initCopy();
             editor.addListener(new CloseListener() {
                 @Override
@@ -243,7 +243,7 @@ public class UserBrowser extends AbstractLookup {
 
     public void changePasswordAtLogon() {
         if (!usersTable.getSelected().isEmpty()) {
-            final ResetPasswordsDialog resetPasswordsDialog = openWindow("sec$User.resetPasswords", WindowManager.OpenType.DIALOG);
+            final ResetPasswordsDialog resetPasswordsDialog = (ResetPasswordsDialog) openWindow("sec$User.resetPasswords", WindowManager.OpenType.DIALOG);
             resetPasswordsDialog.addListener(new CloseListener() {
                 @Override
                 public void windowClosed(String actionId) {

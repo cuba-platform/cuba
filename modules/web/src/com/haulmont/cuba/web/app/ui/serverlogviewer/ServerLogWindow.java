@@ -153,7 +153,7 @@ public class ServerLogWindow extends AbstractWindow {
         jmxConnectionField.addAction(new AbstractAction("actions.Add") {
             @Override
             public void actionPerform(Component component) {
-                final JmxInstanceEditor instanceEditor = openEditor("sys$JmxInstance.edit", new JmxInstance(), WindowManager.OpenType.DIALOG);
+                final AbstractEditor<JmxInstance> instanceEditor = openEditor("sys$JmxInstance.edit", new JmxInstance(), WindowManager.OpenType.DIALOG);
                 instanceEditor.addListener(new CloseListener() {
                     @Override
                     public void windowClosed(String actionId) {
@@ -227,7 +227,7 @@ public class ServerLogWindow extends AbstractWindow {
     }
 
     protected void openAddLoggerDialog() {
-        final AdditionLoggerWindow additionLogger = openWindow("serverLogAddLoggerDialog", WindowManager.OpenType.DIALOG);
+        final AdditionLoggerWindow additionLogger = (AdditionLoggerWindow) openWindow("serverLogAddLoggerDialog", WindowManager.OpenType.DIALOG);
         additionLogger.addListener(new CloseListener() {
             @Override
             public void windowClosed(String actionId) {
@@ -449,7 +449,7 @@ public class ServerLogWindow extends AbstractWindow {
 
         params.put("loggersMap", loggersMap);
 
-        final ControlLoggerWindow controlLogger = openWindow("serverLogLoggerControlDialog", WindowManager.OpenType.DIALOG, params);
+        final ControlLoggerWindow controlLogger = (ControlLoggerWindow) openWindow("serverLogLoggerControlDialog", WindowManager.OpenType.DIALOG, params);
         controlLogger.addListener(new CloseListener() {
             @Override
             public void windowClosed(String actionId) {

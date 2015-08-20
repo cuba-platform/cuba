@@ -317,7 +317,7 @@ public abstract class WindowManager {
         return (getWindow(getHash(windowInfo, params)) != null);
     }
 
-    public <T extends Window> T openWindow(WindowInfo windowInfo, WindowManager.OpenType openType, Map<String, Object> params) {
+    public Window openWindow(WindowInfo windowInfo, WindowManager.OpenType openType, Map<String, Object> params) {
         if (params == null) {
             params = Collections.emptyMap();
         }
@@ -330,7 +330,6 @@ public abstract class WindowManager {
         Window window;
 
         if (template != null) {
-            //noinspection unchecked
             window = createWindow(windowInfo, openType, params, LayoutLoaderConfig.getWindowLoaders());
             String caption = loadCaption(window, params);
             String description = loadDescription(window, params);
@@ -338,19 +337,22 @@ public abstract class WindowManager {
                 putToWindowMap(window, hashCode);
             }
             showWindow(window, caption, description, openType, windowInfo.getMultipleOpen());
-            return (T) window;
+            return window;
         } else {
             Class screenClass = windowInfo.getScreenClass();
             if (screenClass != null) {
-                //noinspection unchecked
                 window = createWindowByScreenClass(windowInfo, params);
                 if (openType == OpenType.NEW_TAB) {
                     putToWindowMap(window, hashCode);
                 }
-                return (T) window;
+                return window;
             } else
                 return null;
         }
+    }
+
+    public Window openWindow(WindowInfo windowInfo, OpenType openType) {
+        return openWindow(windowInfo, openType, Collections.<String, Object>emptyMap());
     }
 
     protected abstract void putToWindowMap(Window window, Integer hashCode);
@@ -399,23 +401,20 @@ public abstract class WindowManager {
         return description;
     }
 
-    public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item, OpenType openType,
+    public Window.Editor openEditor(WindowInfo windowInfo, Entity item, OpenType openType,
                                            Datasource parentDs) {
-        //noinspection unchecked
         return openEditor(windowInfo, item, openType, Collections.<String, Object>emptyMap(), parentDs);
     }
 
-    public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item, OpenType openType) {
-        //noinspection unchecked
+    public Window.Editor openEditor(WindowInfo windowInfo, Entity item, OpenType openType) {
         return openEditor(windowInfo, item, openType, Collections.<String, Object>emptyMap());
     }
 
-    public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item, OpenType openType, Map<String, Object> params) {
-        //noinspection unchecked
+    public Window.Editor openEditor(WindowInfo windowInfo, Entity item, OpenType openType, Map<String, Object> params) {
         return openEditor(windowInfo, item, openType, params, null);
     }
 
-    public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item,
+    public Window.Editor openEditor(WindowInfo windowInfo, Entity item,
                                            OpenType openType, Map<String, Object> params,
                                            Datasource parentDs) {
         if (params == null) {
@@ -433,7 +432,7 @@ public abstract class WindowManager {
             String description = loadDescription(window, params);
 
             showWindow(window, caption, description, openType, false);
-            return (T) window;
+            return (Window.Editor) window;
         }
 
         params = createParametersMap(windowInfo, params);
@@ -467,11 +466,10 @@ public abstract class WindowManager {
         final String description = loadDescription(window, params);
         showWindow(window, caption, description, openType, false);
 
-        //noinspection unchecked
-        return (T) window;
+        return (Window.Editor) window;
     }
 
-    public <T extends Window> T openLookup(WindowInfo windowInfo, Window.Lookup.Handler handler,
+    public Window.Lookup openLookup(WindowInfo windowInfo, Window.Lookup.Handler handler,
                                            OpenType openType, Map<String, Object> params) {
         if (params == null) {
             params = Collections.emptyMap();
@@ -513,15 +511,18 @@ public abstract class WindowManager {
 
         showWindow(window, caption, description, openType, false);
 
-        //noinspection unchecked
-        return (T) window;
+        return (Window.Lookup) window;
     }
 
-    public <T extends IFrame> T openFrame(IFrame parentFrame, Component parent, WindowInfo windowInfo) {
+    public Window.Lookup openLookup(WindowInfo windowInfo, Window.Lookup.Handler handler, OpenType openType) {
+        return openLookup(windowInfo, handler, openType, Collections.<String, Object>emptyMap());
+    }
+
+    public IFrame openFrame(IFrame parentFrame, Component parent, WindowInfo windowInfo) {
         return openFrame(parentFrame, parent, windowInfo, Collections.<String, Object>emptyMap());
     }
 
-    public <T extends IFrame> T openFrame(IFrame parentFrame, Component parent, WindowInfo windowInfo,
+    public IFrame openFrame(IFrame parentFrame, Component parent, WindowInfo windowInfo,
                                           Map<String, Object> params) {
         if (params == null) {
             params = Collections.emptyMap();
@@ -572,7 +573,7 @@ public abstract class WindowManager {
 
         initDebugIds(component);
 
-        return (T) component;
+        return component;
     }
 
     protected Map<String, Object> createParametersMap(WindowInfo windowInfo, Map<String, Object> params) {
@@ -617,14 +618,6 @@ public abstract class WindowManager {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public <T extends Window> T openWindow(WindowInfo windowInfo, OpenType openType) {
-        return openWindow(windowInfo, openType, Collections.<String, Object>emptyMap());
-    }
-
-    public <T extends Window> T openLookup(WindowInfo windowInfo, Window.Lookup.Handler handler, OpenType openType) {
-        return openLookup(windowInfo, handler, openType, Collections.<String, Object>emptyMap());
-    }
 
     protected abstract void showWindow(Window window, String caption, OpenType openType, boolean multipleOpen);
 

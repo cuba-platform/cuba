@@ -339,45 +339,49 @@ public class AbstractFrame implements IFrame, Component.Wrapper, Component.Order
     }
 
     @Override
-    public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
-        return frame.openWindow(windowAlias, openType, params);
+    public AbstractWindow openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
+        return (AbstractWindow) frame.openWindow(windowAlias, openType, params);
     }
 
     @Override
-    public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
-        return frame.openWindow(windowAlias, openType);
+    public AbstractWindow openWindow(String windowAlias, WindowManager.OpenType openType) {
+        return (AbstractWindow) frame.openWindow(windowAlias, openType);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Entity> AbstractEditor<T> openEditor(String windowAlias, T item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
+        return (AbstractEditor<T>) frame.openEditor(windowAlias, item, openType, params, parentDs);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Entity> AbstractEditor<T> openEditor(String windowAlias, T item, WindowManager.OpenType openType, Map<String, Object> params) {
+        return (AbstractEditor<T>) frame.openEditor(windowAlias, item, openType, params);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Entity> AbstractEditor<T> openEditor(String windowAlias, T item, WindowManager.OpenType openType, Datasource parentDs) {
+        return (AbstractEditor<T>) frame.openEditor(windowAlias, item, openType, Collections.<String, Object>emptyMap(), parentDs);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Entity> AbstractEditor<T> openEditor(String windowAlias, T item, WindowManager.OpenType openType) {
+        return (AbstractEditor<T>) frame.openEditor(windowAlias, item, openType, Collections.<String, Object>emptyMap());
     }
 
     @Override
-    public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
-        return frame.openEditor(windowAlias, item, openType, params, parentDs);
-    }
-
-    @Override
-    public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
-        return frame.openEditor(windowAlias, item, openType, params);
-    }
-
-    @Override
-    public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
-        return frame.openEditor(windowAlias, item, openType, Collections.<String, Object>emptyMap(), parentDs);
-    }
-
-    @Override
-    public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
-        return frame.openEditor(windowAlias, item, openType, Collections.<String, Object>emptyMap());
-    }
-
-    @Override
-    public <T extends Window> T openLookup(
+    public AbstractLookup openLookup(
             String windowAlias, @Nullable Window.Lookup.Handler handler,
             WindowManager.OpenType openType, Map<String, Object> params) {
-        return frame.openLookup(windowAlias, handler, openType, params);
+        return (AbstractLookup) frame.openLookup(windowAlias, handler, openType, params);
     }
 
     @Override
-    public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
-        return frame.openLookup(windowAlias, handler, openType, Collections.<String, Object>emptyMap());
+    public AbstractLookup openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+        return (AbstractLookup) frame.openLookup(windowAlias, handler, openType, Collections.<String, Object>emptyMap());
     }
 
     /**
@@ -387,8 +391,8 @@ public class AbstractFrame implements IFrame, Component.Wrapper, Component.Order
      * @return              frame's controller instance
      */
     @Override
-    public <T extends IFrame> T openFrame(@Nullable Component parent, String windowAlias) {
-        return frame.openFrame(parent, windowAlias);
+    public AbstractFrame openFrame(@Nullable Component parent, String windowAlias) {
+        return (AbstractFrame) frame.openFrame(parent, windowAlias);
     }
 
     /**
@@ -399,8 +403,8 @@ public class AbstractFrame implements IFrame, Component.Wrapper, Component.Order
      * @return              frame's controller instance
      */
     @Override
-    public <T extends IFrame> T openFrame(@Nullable Component parent, String windowAlias, Map<String, Object> params) {
-        return frame.openFrame(parent, windowAlias, params);
+    public AbstractFrame openFrame(@Nullable Component parent, String windowAlias, Map<String, Object> params) {
+        return (AbstractFrame) frame.openFrame(parent, windowAlias, params);
     }
 
     @Override

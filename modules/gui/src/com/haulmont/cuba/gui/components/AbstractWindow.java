@@ -96,9 +96,8 @@ public class AbstractWindow extends AbstractFrame
 
     /** For internal use only. Don't call from application code. */
     @Override
-    public <T extends Window> T getWrappedWindow() {
-        //noinspection unchecked
-        return (T) frame;
+    public Window getWrappedWindow() {
+        return (Window) frame;
     }
 
     @Override

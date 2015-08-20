@@ -370,52 +370,52 @@ public class WebWindow implements Window, Component.Wrapper,
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
+    public Window openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
         return delegate.openWindow(windowAlias, openType, params);
     }
 
     @Override
-    public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
+    public Window openWindow(String windowAlias, WindowManager.OpenType openType) {
         return delegate.openWindow(windowAlias, openType);
     }
 
     @Override
-    public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
+    public <T extends Entity> Window.Editor openEditor(String windowAlias, T item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
         return delegate.openEditor(windowAlias, item, openType, params, parentDs);
     }
 
     @Override
-    public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
+    public <T extends Entity> Window.Editor openEditor(String windowAlias, T item, WindowManager.OpenType openType, Map<String, Object> params) {
         return delegate.openEditor(windowAlias, item, openType, params);
     }
 
     @Override
-    public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
+    public <T extends Entity> Window.Editor openEditor(String windowAlias, T item, WindowManager.OpenType openType, Datasource parentDs) {
         return delegate.openEditor(windowAlias, item, openType, parentDs);
     }
 
     @Override
-    public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
+    public <T extends Entity> Window.Editor openEditor(String windowAlias, T item, WindowManager.OpenType openType) {
         return delegate.openEditor(windowAlias, item, openType);
     }
 
     @Override
-    public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
+    public Window.Lookup openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
         return delegate.openLookup(windowAlias, handler, openType, params);
     }
 
     @Override
-    public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+    public Window.Lookup openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
         return delegate.openLookup(windowAlias, handler, openType);
     }
 
     @Override
-    public <T extends IFrame> T openFrame(Component parent, String windowAlias) {
+    public IFrame openFrame(Component parent, String windowAlias) {
         return delegate.openFrame(parent, windowAlias);
     }
 
     @Override
-    public <T extends IFrame> T openFrame(Component parent, String windowAlias, Map<String, Object> params) {
+    public IFrame openFrame(Component parent, String windowAlias, Map<String, Object> params) {
         return delegate.openFrame(parent, windowAlias, params);
     }
 

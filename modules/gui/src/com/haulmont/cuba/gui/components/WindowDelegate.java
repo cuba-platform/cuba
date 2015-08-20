@@ -211,52 +211,52 @@ public class WindowDelegate {
             return true;
     }
 
-    public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
+    public Window openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return window.getWindowManager().openWindow(windowInfo, openType, params);
     }
 
-    public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
+    public Window openWindow(String windowAlias, WindowManager.OpenType openType) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return window.getWindowManager().openWindow(windowInfo, openType);
     }
 
-    public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
+    public Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return window.getWindowManager().openEditor(windowInfo, item, openType, params, parentDs);
     }
 
-    public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
+    public Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return window.getWindowManager().openEditor(windowInfo, item, openType, params);
     }
 
-    public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
+    public Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return window.getWindowManager().openEditor(windowInfo, item, openType, parentDs);
     }
 
-    public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
+    public Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return window.getWindowManager().openEditor(windowInfo, item, openType);
     }
 
-    public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
+    public Window.Lookup openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return window.getWindowManager().openLookup(windowInfo, handler, openType, params);
     }
 
-    public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+    public Window.Lookup openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return window.getWindowManager().openLookup(windowInfo, handler, openType);
     }
 
-    public <T extends IFrame> T openFrame(Component parent, String windowAlias) {
+    public IFrame openFrame(Component parent, String windowAlias) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return window.getWindowManager().openFrame(wrapper, parent, windowInfo);
     }
 
-    public <T extends IFrame> T openFrame(Component parent, String windowAlias, Map<String, Object> params) {
+    public IFrame openFrame(Component parent, String windowAlias, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return window.getWindowManager().openFrame(wrapper, parent, windowInfo, params);
     }

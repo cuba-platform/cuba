@@ -355,6 +355,6 @@ public interface Window extends IFrame, Component.HasCaption {
      * <p/> For internal use only.
      */
     interface Wrapper {
-        <T extends Window> T getWrappedWindow();
+        Window getWrappedWindow();
     }
 }

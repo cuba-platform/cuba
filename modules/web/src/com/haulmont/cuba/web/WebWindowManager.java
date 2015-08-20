@@ -1272,7 +1272,7 @@ public class WebWindowManager extends WindowManager {
         }
 
         // detect work area
-        WebWindow windowImpl = ((Window.Wrapper) mainWindow).getWrappedWindow();
+        WebWindow windowImpl = (WebWindow) ((Window.Wrapper) mainWindow).getWrappedWindow();
 
         // bind system UI components to AbstractMainWindow
         ComponentsHelper.walkComponents(windowImpl, new ComponentFinder() {

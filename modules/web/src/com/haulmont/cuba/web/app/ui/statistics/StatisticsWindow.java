@@ -102,7 +102,7 @@ public class StatisticsWindow extends AbstractWindow {
         jmxConnectionField.addAction(new AbstractAction("actions.Add") {
             @Override
             public void actionPerform(Component component) {
-                final JmxInstanceEditor instanceEditor = openEditor("sys$JmxInstance.edit", new JmxInstance(), WindowManager.OpenType.DIALOG);
+                final AbstractEditor<JmxInstance> instanceEditor = openEditor("sys$JmxInstance.edit", new JmxInstance(), WindowManager.OpenType.DIALOG);
                 instanceEditor.addListener(new CloseListener() {
                     @Override
                     public void windowClosed(String actionId) {
