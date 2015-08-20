@@ -58,10 +58,11 @@ public interface FilterDelegate {
 
     Boolean getManualApplyRequired();
 
-    <T extends Component> T getOwnComponent(String id);
+    @Nullable
+    Component getOwnComponent(String id);
 
     @Nullable
-    <T extends Component> T getComponent(String id);
+    Component getComponent(String id);
 
     boolean saveSettings(Element element);
 

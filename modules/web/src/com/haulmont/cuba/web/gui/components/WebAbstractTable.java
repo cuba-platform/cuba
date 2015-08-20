@@ -2087,7 +2087,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             if (StringUtils.isBlank(optDsName)) {
                 return null;
             } else {
-                CollectionDatasource ds = dsContext.get(optDsName);
+                CollectionDatasource ds = (CollectionDatasource) dsContext.get(optDsName);
                 if (ds == null)
                     throw new IllegalStateException("Options datasource for table column '" + propertyId + "' not found: " + optDsName);
 

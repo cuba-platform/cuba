@@ -945,7 +945,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             String optDsName = descriptor == null ? null : descriptor.attributeValue("optionsDatasource");
 
             if (StringUtils.isNotBlank(optDsName)) {
-                CollectionDatasource optDs = dsContext.get(optDsName);
+                CollectionDatasource optDs = (CollectionDatasource) dsContext.get(optDsName);
                 if (optDs == null) {
                     throw new IllegalStateException("Options datasource not found: " + optDsName);
                 }

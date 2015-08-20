@@ -68,8 +68,7 @@ public abstract class ComponentsHelper {
     }
 
     @Nullable
-    public static Component getFrameComponent(
-            IFrame frame, String id) {
+    public static Component getFrameComponent(IFrame frame, String id) {
         final String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1) {
             Component component = frame.getRegisteredComponent(id);
@@ -98,8 +97,7 @@ public abstract class ComponentsHelper {
     }
 
     @Nullable
-    public static Component getComponent(
-            Component.Container container, String id) {
+    public static Component getComponent(Component.Container container, String id) {
         final String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1) {
             final com.haulmont.cuba.gui.components.Component component = container.getOwnComponent(id);
@@ -135,14 +133,13 @@ public abstract class ComponentsHelper {
     }
 
     @Nullable
-    private static <T extends com.haulmont.cuba.gui.components.Component> T getComponentByIteration(
-            Component.Container container, String id) {
-        for (com.haulmont.cuba.gui.components.Component component : container.getOwnComponents()) {
+    private static Component getComponentByIteration(Component.Container container, String id) {
+        for (Component component : container.getOwnComponents()) {
             if (id.equals(component.getId()))
-                return (T) component;
+                return component;
             else {
-                if (component instanceof com.haulmont.cuba.gui.components.Component.Container) {
-                    return getComponentByIteration((com.haulmont.cuba.gui.components.Component.Container) component, id);
+                if (component instanceof Component.Container) {
+                    return getComponentByIteration((Component.Container) component, id);
                 }
             }
         }

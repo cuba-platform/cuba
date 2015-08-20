@@ -43,7 +43,7 @@ public interface DsContext {
      * @return      datasource instance or null if not found
      */
     @Nullable
-    <T extends Datasource> T get(String name);
+    Datasource get(String name);
 
     /**
      * Get datasource by name. Name may contain path to a datasource in nested frame
@@ -54,7 +54,7 @@ public interface DsContext {
      * @return      datasource instance
      * @throws java.lang.IllegalArgumentException if not found
      */
-    <T extends Datasource> T getNN(String name);
+    Datasource getNN(String name);
 
     /**
      * @return all datasources contained in this context
@@ -124,7 +124,7 @@ public interface DsContext {
      * @see DsContext#removeListener(com.haulmont.cuba.gui.data.DsContext.CommitListener)
      * @see CommitListenerAdapter
      */
-    public interface CommitListener {
+    interface CommitListener {
         /**
          * Called before sending data to the middleware.
          * @param context   commit context
@@ -145,7 +145,7 @@ public interface DsContext {
      * @see DsContext#addListener(com.haulmont.cuba.gui.data.DsContext.CommitListener)
      * @see DsContext#removeListener(com.haulmont.cuba.gui.data.DsContext.CommitListener)
      */
-    public abstract class CommitListenerAdapter implements CommitListener {
+    abstract class CommitListenerAdapter implements CommitListener {
         @Override
         public void beforeCommit(CommitContext context) {
         }

@@ -392,7 +392,7 @@ public class DsContextImpl implements DsContextImplementation {
     }
 
     @Override
-    public <T extends Datasource> T get(String id) {
+    public Datasource get(String id) {
         Preconditions.checkNotNullArgument(id, "Null datasource ID");
         Datasource ds = null;
         if (!id.contains(".")) {
@@ -410,13 +410,12 @@ public class DsContextImpl implements DsContextImplementation {
                 }
             }
         }
-        //noinspection unchecked
-        return (T) ds;
+        return ds;
     }
 
     @Override
-    public <T extends Datasource> T getNN(String name) {
-        T datasource = get(name);
+    public Datasource getNN(String name) {
+        Datasource datasource = get(name);
         if (datasource == null)
             throw new IllegalArgumentException("Datasource '" + name + "' is not found");
         return datasource;

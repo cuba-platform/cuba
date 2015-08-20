@@ -62,7 +62,7 @@ public class TreeLoader extends ActionsHolderLoader {
         Element itemsElem = element.element("treechildren");
         String datasource = itemsElem.attributeValue("datasource");
         if (!StringUtils.isBlank(datasource)) {
-            HierarchicalDatasource ds = context.getDsContext().get(datasource);
+            HierarchicalDatasource ds = (HierarchicalDatasource) context.getDsContext().get(datasource);
             component.setDatasource(ds);
 
             String captionProperty = itemsElem.attributeValue("captionProperty");

@@ -39,7 +39,7 @@ public class WidgetsTreeLoader extends TreeLoader {
         Element itemsElement = element.element("items");
         String datasource = itemsElement.attributeValue("datasource");
         if (!StringUtils.isBlank(datasource)) {
-            HierarchicalDatasource ds = context.getDsContext().get(datasource);
+            HierarchicalDatasource ds = (HierarchicalDatasource) context.getDsContext().get(datasource);
             component.setDatasource(ds);
         }
 

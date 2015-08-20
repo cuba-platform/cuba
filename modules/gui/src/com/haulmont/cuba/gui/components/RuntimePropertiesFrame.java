@@ -95,14 +95,14 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         String dsId = (String) params.get("runtimeDs");
         if (dsId == null)
             throw new DevelopmentException("runtimeProperties initialization error: runtimeDs is not provided");
-        rds = getDsContext().get(dsId);
+        rds = (RuntimePropsDatasource) getDsContext().get(dsId);
         if (rds == null)
             throw new DevelopmentException("runtimeProperties initialization error: runtimeDs '" + dsId + "' does not exists");
 
         String categoriesDsId = (String) params.get("categoriesDs");
         if (categoriesDsId == null)
             throw new DevelopmentException("runtimeProperties initialization error: categoriesDs is not provided");
-        categoriesDs = getDsContext().get(categoriesDsId);
+        categoriesDs = (CollectionDatasource) getDsContext().get(categoriesDsId);
         if (categoriesDs == null)
             throw new DevelopmentException("runtimeProperties initialization error: categoriesDs '" + categoriesDsId + "' does not exists");
     }

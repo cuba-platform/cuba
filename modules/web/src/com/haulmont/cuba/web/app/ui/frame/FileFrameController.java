@@ -43,7 +43,7 @@ public class FileFrameController extends AbstractWindow {
         uploadField = (FileUploadField) getComponent("uploadField");
         filesTable = (Table) getComponent("files");
         initGeneratedColumn();
-        ds = getDsContext().get("filesDs");
+        ds = (CollectionDatasource) getDsContext().get("filesDs");
         Button remove = (Button) getComponentNN("remove");
         remove.setAction(new RemoveAction(filesTable, false));
 

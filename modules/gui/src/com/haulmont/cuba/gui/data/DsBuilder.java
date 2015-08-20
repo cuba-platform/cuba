@@ -282,7 +282,7 @@ public class DsBuilder {
         return datasource;
     }
 
-    public <T extends CollectionDatasource> T buildCollectionDatasource() {
+    public CollectionDatasource buildCollectionDatasource() {
         init();
         CollectionDatasource datasource;
         try {
@@ -314,7 +314,7 @@ public class DsBuilder {
         datasource.setSoftDeletion(softDeletion);
         datasource.setAllowCommit(allowCommit);
         registerDatasource(datasource);
-        return (T) datasource;
+        return datasource;
     }
 
     private CollectionDatasource.FetchMode resolvedFetchMode() {
@@ -333,7 +333,7 @@ public class DsBuilder {
         return fm;
     }
 
-    public <T extends HierarchicalDatasource> T buildHierarchicalDatasource() {
+    public HierarchicalDatasource buildHierarchicalDatasource() {
         init();
         HierarchicalDatasource datasource;
         try {
@@ -364,10 +364,10 @@ public class DsBuilder {
         datasource.setSoftDeletion(softDeletion);
         datasource.setAllowCommit(allowCommit);
         registerDatasource(datasource);
-        return (T) datasource;
+        return datasource;
     }
 
-    public <T extends GroupDatasource> T buildGroupDatasource() {
+    public GroupDatasource buildGroupDatasource() {
         init();
         GroupDatasource datasource;
         try {
@@ -398,15 +398,15 @@ public class DsBuilder {
         datasource.setSoftDeletion(softDeletion);
         datasource.setAllowCommit(allowCommit);
         registerDatasource(datasource);
-        return (T) datasource;
+        return datasource;
     }
 
-    public <T extends RuntimePropsDatasource> T buildRuntimePropsDataSource(String mainDsId, @Nullable MetaClass categorizedEntityClass) {
+    public RuntimePropsDatasource buildRuntimePropsDataSource(String mainDsId, @Nullable MetaClass categorizedEntityClass) {
         init();
         RuntimePropsDatasourceImpl datasource;
         datasource = new RuntimePropsDatasourceImpl(dsContext, dataSupplier, id, mainDsId, categorizedEntityClass);
         registerDatasource(datasource);
-        return (T) datasource;
+        return datasource;
     }
 
     private void registerDatasource(Datasource datasource) {

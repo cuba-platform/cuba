@@ -102,9 +102,8 @@ public enum WindowParams {
      * @param params    parameters map
      * @return          parameter value
      */
-    @SuppressWarnings("unchecked")
-    public <T extends Entity> T getEntity(Map<String, Object> params) {
-        return (T) params.get(name());
+    public Entity getEntity(Map<String, Object> params) {
+        return (Entity) params.get(name());
     }
 
     /**

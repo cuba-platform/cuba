@@ -1009,7 +1009,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
             if (StringUtils.isBlank(optDsName)) {
                 return null;
             } else {
-                CollectionDatasource ds = dsContext.get(optDsName);
+                CollectionDatasource ds = (CollectionDatasource) dsContext.get(optDsName);
                 if (ds == null)
                     throw new IllegalStateException("Options datasource not found: " + optDsName);
 

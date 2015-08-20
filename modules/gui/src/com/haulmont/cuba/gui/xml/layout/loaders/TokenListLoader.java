@@ -68,7 +68,7 @@ public class TokenListLoader extends AbstractFieldLoader {
 
         String optionsDatasource = lookupElement.attributeValue("optionsDatasource");
         if (!StringUtils.isEmpty(optionsDatasource)) {
-            final CollectionDatasource ds = context.getDsContext().get(optionsDatasource);
+            CollectionDatasource ds = (CollectionDatasource) context.getDsContext().get(optionsDatasource);
             component.setOptionsDatasource(ds);
         }
 
@@ -128,7 +128,7 @@ public class TokenListLoader extends AbstractFieldLoader {
     protected void loadDatasource(TokenList component, Element element) {
         final String datasource = element.attributeValue("datasource");
         if (!StringUtils.isEmpty(datasource)) {
-            final CollectionDatasource ds = context.getDsContext().get(datasource);
+            CollectionDatasource ds = (CollectionDatasource) context.getDsContext().get(datasource);
             if (ds == null)
                 throw new GuiDevelopmentException(String.format("Datasource '%s' is not defined", datasource), context.getFullFrameId());
             component.setDatasource(ds);

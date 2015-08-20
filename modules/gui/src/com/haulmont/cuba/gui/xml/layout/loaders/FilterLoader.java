@@ -67,7 +67,7 @@ public class FilterLoader extends ComponentLoader {
 
         String datasource = element.attributeValue("datasource");
         if (!StringUtils.isBlank(datasource)) {
-            CollectionDatasource ds = context.getDsContext().get(datasource);
+            CollectionDatasource ds = (CollectionDatasource) context.getDsContext().get(datasource);
             if (ds == null)
                 throw new GuiDevelopmentException("Can't find datasource by name: " + datasource, context.getCurrentIFrameId());
             filter.setDatasource(ds);

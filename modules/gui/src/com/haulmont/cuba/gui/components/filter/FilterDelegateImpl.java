@@ -1454,7 +1454,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     @Override
-    public <T extends Component> T getOwnComponent(String id) {
+    public Component getOwnComponent(String id) {
         for (AbstractCondition condition : conditions.toConditionsList()) {
             if (condition.getParam() != null) {
                 String paramName = condition.getParam().getName();
@@ -1462,7 +1462,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 String componentName = paramName.substring(paramName.lastIndexOf('.') + 1);
                 if (id.equals(componentName)) {
                     ParamWrapper wrapper = new ParamWrapper(condition, condition.getParam());
-                    return (T) wrapper;
+                    return wrapper;
                 }
             }
         }
@@ -1471,7 +1471,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     @Override
     @Nullable
-    public <T extends Component> T getComponent(String id) {
+    public Component getComponent(String id) {
         String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1) {
             return getOwnComponent(id);
