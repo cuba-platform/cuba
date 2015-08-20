@@ -69,9 +69,9 @@ import static com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper.c
  * @author krivopustov
  * @version $Id$
  */
-public abstract class DesktopAbstractTable<C extends JXTable>
+public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
         extends DesktopAbstractActionsHolderComponent<C>
-        implements Table {
+        implements Table<E> {
 
     protected static final int DEFAULT_ROW_MARGIN = 4;
 
@@ -116,7 +116,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     protected int defaultRowHeight = 24;
     protected int defaultEditableRowHeight = 28;
 
-    protected Set<Entity> selectedItems = Collections.emptySet();
+    protected Set<E> selectedItems = Collections.emptySet();
 
     protected Map<String, Printable> printables = new HashMap<>();
 
@@ -649,13 +649,13 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                         packRows();
 
                         // #PL-2035, reload selection from ds
-                        Set<Entity> selectedItems = getSelected();
+                        Set<E> selectedItems = getSelected();
                         if (selectedItems == null) {
                             selectedItems = Collections.emptySet();
                         }
 
-                        Set<Entity> newSelection = new HashSet<>();
-                        for (Entity entity : selectedItems) {
+                        Set<E> newSelection = new HashSet<>();
+                        for (E entity : selectedItems) {
                             if (ds.containsItem(entity.getId())) {
                                 newSelection.add(entity);
                             }
@@ -663,12 +663,12 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
                         if (ds.getState() == Datasource.State.VALID && ds.getItem() != null) {
                             if (ds.containsItem(ds.getItem())) {
-                                newSelection.add(ds.getItem());
+                                newSelection.add((E) ds.getItem());
                             }
                         }
 
                         if (newSelection.isEmpty()) {
-                            setSelected((Entity) null);
+                            setSelected((E) null);
                         } else {
                             setSelected(newSelection);
                         }
@@ -753,7 +753,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         tableModel.addChangeListener(new AnyTableModelAdapter.DataChangeListener() {
 
             private boolean focused = false;
-            private ThreadLocal<Set<Entity>> selectionBackup = new ThreadLocal<>();
+            private ThreadLocal<Set<E>> selectionBackup = new ThreadLocal<>();
             private int scrollRowIndex = -1;
 
             @Override
@@ -799,20 +799,20 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             }
 
             @SuppressWarnings("unchecked")
-            private Set<Entity> filterSelection(Set<Entity> selection) {
+            private Set<E> filterSelection(Set<E> selection) {
                 if (selection == null)
                     return Collections.emptySet();
 
-                Set<Entity> newSelection = new HashSet<>(2 * selection.size());
+                Set<E> newSelection = new HashSet<>(2 * selection.size());
                 for (Entity item : selection) {
                     if (datasource.containsItem(item.getId())) {
-                        newSelection.add(datasource.getItem(item.getId()));
+                        newSelection.add((E) datasource.getItem(item.getId()));
                     }
                 }
                 return newSelection;
             }
 
-            private void applySelection(Set<Entity> selection) {
+            private void applySelection(Set<E> selection) {
                 int minimalSelectionRowIndex = Integer.MAX_VALUE;
                 if (!selection.isEmpty()) {
                     for (Entity entity : selection) {
@@ -1815,36 +1815,37 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     }
 
     @Override
-    public <T extends Entity> T getSingleSelected() {
-        Set<T> selected = getSelected();
+    public E getSingleSelected() {
+        Set<E> selected = getSelected();
         return selected.isEmpty() ? null : selected.iterator().next();
     }
 
     @Override
-    public <T extends Entity> Set<T> getSelected() {
-        Set<T> set = new HashSet<>();
+    public Set<E> getSelected() {
+        Set<E> set = new HashSet<>();
         int[] rows = impl.getSelectedRows();
         for (int row : rows) {
             int modelRow = impl.convertRowIndexToModel(row);
             Object item = tableModel.getItem(modelRow);
             if (item != null) {
-                set.add((T) item);
+                //noinspection unchecked
+                set.add((E) item);
             }
         }
         return set;
     }
 
     @Override
-    public void setSelected(Entity item) {
+    public void setSelected(E item) {
         if (item != null) {
             setSelected(Collections.singleton(item));
         } else {
-            setSelected(Collections.<Entity>emptySet());
+            setSelected(Collections.<E>emptySet());
         }
     }
 
     @Override
-    public void setSelected(Collection<Entity> items) {
+    public void setSelected(Collection<E> items) {
         if (items == null) {
             items = Collections.emptyList();
         }
@@ -1889,7 +1890,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         model.setValueIsAdjusting(false);
     }
 
-    protected List<Integer> getSelectionIndexes(Collection<Entity> items) {
+    protected List<Integer> getSelectionIndexes(Collection<? extends Entity> items) {
         if (items.isEmpty()) {
             return Collections.emptyList();
         }

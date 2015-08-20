@@ -31,7 +31,7 @@ import java.util.Set;
  * @author krivopustov
  * @version $Id$
  */
-public class WebTree extends WebAbstractTree<CubaTree> {
+public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
 
     protected String hierarchyProperty;
     protected CaptionMode captionMode = CaptionMode.ITEM;
@@ -54,7 +54,7 @@ public class WebTree extends WebAbstractTree<CubaTree> {
                     @Override
                     public void valueChange(Property.ValueChangeEvent event) {
                         if (datasource != null) {
-                            Set<Entity> selected = getSelected();
+                            Set<E> selected = getSelected();
                             if (selected.isEmpty()) {
                                 Entity dsItem = datasource.getItemIfValid();
                                 datasource.setItem(null);
@@ -173,6 +173,7 @@ public class WebTree extends WebAbstractTree<CubaTree> {
             action.setDatasource(datasource);
         }
 
+        //noinspection unchecked
         datasource.addListener(new CollectionDsActionsNotifier(this) {
             @Override
             public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
@@ -194,7 +195,7 @@ public class WebTree extends WebAbstractTree<CubaTree> {
                 }
 
                 if (newSelection.isEmpty()) {
-                    setSelected((Entity) null);
+                    setSelected((E) null);
                 } else {
                     setSelectedIds(newSelection);
                 }

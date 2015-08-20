@@ -15,16 +15,18 @@ import java.util.Collection;
  * @author abramov
  * @version $Id$
  */
-public interface ListComponent extends Component, Component.BelongToFrame, Component.ActionsHolder {
+public interface ListComponent<E extends Entity> extends Component, Component.BelongToFrame, Component.ActionsHolder {
+
     boolean isMultiSelect();
     void setMultiSelect(boolean multiselect);
 
     @Nullable
-    <T extends Entity> T getSingleSelected();
-    <T extends Entity> Set<T> getSelected();
+    E getSingleSelected();
 
-    void setSelected(@Nullable Entity item);
-    void setSelected(Collection<Entity> items);
+    Set<E> getSelected();
+
+    void setSelected(@Nullable E item);
+    void setSelected(Collection<E> items);
 
     CollectionDatasource getDatasource();
 

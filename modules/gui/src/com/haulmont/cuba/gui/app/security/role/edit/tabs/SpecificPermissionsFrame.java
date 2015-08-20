@@ -49,7 +49,7 @@ public class SpecificPermissionsFrame extends AbstractFrame {
     protected CollectionDatasource<Permission, UUID> specificPermissionsDs;
 
     @Inject
-    protected TreeTable specificPermissionsTree;
+    protected TreeTable<BasicPermissionTarget> specificPermissionsTree;
 
     @Inject
     protected SpecificPermissionTreeDatasource specificPermissionsTreeDs;

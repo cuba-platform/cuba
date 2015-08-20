@@ -120,7 +120,7 @@ public class ExcelExporter {
         exportTable(table, columns, exportExpanded, display, filterDescription, null, ExportMode.ALL_ROWS);
     }
 
-    public void exportTable(Table table, List<Table.Column> columns, Boolean exportExpanded,
+    public void exportTable(Table<Entity> table, List<Table.Column> columns, Boolean exportExpanded,
                             ExportDisplay display, List<String> filterDescription, String fileName, ExportMode exportMode) {
 
         if (display == null) {

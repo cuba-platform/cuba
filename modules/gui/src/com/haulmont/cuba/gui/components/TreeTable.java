@@ -4,14 +4,14 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 
 /**
  * @author abramov
  * @version $Id$
  */
-public interface TreeTable extends Table {
+public interface TreeTable<E extends Entity> extends Table<E> {
 
     String NAME = "treeTable";
 

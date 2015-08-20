@@ -59,7 +59,7 @@ public class RoleBrowser extends AbstractLookup {
                     return;
                 }
 
-                final Role role = target.getSingleSelected();
+                final Role role = (Role) target.getSingleSelected();
                 Map<String, Object> params = new HashMap<>();
                 WindowParams.MULTI_SELECT.set(params, true);
                 openLookup("sec$User.lookup", new Handler() {

@@ -38,7 +38,7 @@ import java.util.*;
 public class UserBrowser extends AbstractLookup {
 
     @Inject
-    protected Table usersTable;
+    protected Table<User> usersTable;
 
     @Inject
     protected CollectionDatasource<User, UUID> usersDs;
@@ -131,7 +131,7 @@ public class UserBrowser extends AbstractLookup {
             @Override
             public boolean isApplicable() {
                 if (target != null) {
-                    Set<Entity> selected = target.getSelected();
+                    Set selected = target.getSelected();
                     if (!selected.isEmpty()) {
                         return !(selected.contains(userSession.getUser())
                                 || userSession.getCurrentOrSubstitutedUser().equals(target.getSingleSelected()));

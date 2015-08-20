@@ -31,7 +31,7 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
     private static final long serialVersionUID = 4263878244286411498L;
     private T entity;
     protected IFrame frame;
-    protected Table table;
+    protected Table<T> table;
     protected Datasource<T> datasource;
 
 

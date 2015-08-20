@@ -32,7 +32,7 @@ public class ScheduledTaskBrowser extends AbstractWindow {
     protected CollectionDatasource tasksDs;
 
     @Inject
-    protected Table tasksTable;
+    protected Table<ScheduledTask> tasksTable;
 
     @Inject
     protected Button activateBtn;

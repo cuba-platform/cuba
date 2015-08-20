@@ -17,7 +17,9 @@ import java.util.List;
  * @author krivopustov
  * @version $Id$
  */
-public class DesktopGroupTable extends DesktopTable implements GroupTable {
+public class DesktopGroupTable<E extends Entity>
+        extends DesktopTable<E>
+        implements GroupTable<E> {
 
     protected boolean showItemsCountForGroup = true;
 

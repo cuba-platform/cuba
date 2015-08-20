@@ -7,6 +7,8 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Tree;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import org.apache.commons.lang.StringUtils;
 
@@ -18,10 +20,16 @@ import java.util.List;
  * @author gorelov
  * @version $Id$
  */
-public abstract class WebAbstractTree<T extends CubaTree> extends WebAbstractList<T> implements Tree {
+public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
+        extends WebAbstractList<T, E> implements Tree<E> {
 
     protected List<Tree.StyleProvider> styleProviders; // lazily initialized List
     protected StyleGeneratorAdapter styleGenerator;    // lazily initialized field
+
+    @Override
+    public HierarchicalDatasource getDatasource() {
+        return (HierarchicalDatasource) super.getDatasource();
+    }
 
     @Override
     public void collapseTree() {

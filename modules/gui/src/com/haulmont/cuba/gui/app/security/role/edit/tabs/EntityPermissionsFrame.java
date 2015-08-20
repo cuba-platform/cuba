@@ -51,7 +51,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
     protected EntityPermissionTargetsDatasource entityTargetsDs;
 
     @Inject
-    protected Table entityPermissionsTable;
+    protected Table<OperationPermissionTarget> entityPermissionsTable;
 
     @Inject
     protected Label selectedTargetCaption;

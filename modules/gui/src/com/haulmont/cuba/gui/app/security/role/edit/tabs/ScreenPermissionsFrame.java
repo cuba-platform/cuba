@@ -44,7 +44,7 @@ public class ScreenPermissionsFrame extends AbstractFrame {
     protected CollectionDatasource<Permission, UUID> screenPermissionsDs;
 
     @Inject
-    protected TreeTable screenPermissionsTree;
+    protected TreeTable<BasicPermissionTarget> screenPermissionsTree;
 
     @Inject
     protected ScreenPermissionTreeDatasource screenPermissionsTreeDs;
@@ -187,7 +187,7 @@ public class ScreenPermissionsFrame extends AbstractFrame {
     }
 
     private void markItemPermission(PermissionVariant permissionVariant) {
-        for (BasicPermissionTarget target : screenPermissionsTree.<BasicPermissionTarget>getSelected()) {
+        for (BasicPermissionTarget target : screenPermissionsTree.getSelected()) {
             target.setPermissionVariant(permissionVariant);
             if (permissionVariant != PermissionVariant.NOTSET) {
                 // Create permission

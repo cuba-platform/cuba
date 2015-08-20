@@ -54,7 +54,7 @@ public class SendingMessageBrowser extends AbstractWindow {
     protected ThemeConstants themeConstants;
 
     @Inject
-    protected Table table;
+    protected Table<SendingMessage> table;
 
     @Inject
     protected FileUploadingAPI fileUploading;

@@ -33,7 +33,9 @@ import java.util.*;
  * @author gorodnov
  * @version $Id$
  */
-public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements GroupTable {
+public class WebGroupTable<E extends Entity>
+        extends WebAbstractTable<CubaGroupTable, E>
+        implements GroupTable<E> {
 
     protected Map<Table.Column, GroupAggregationCells> groupAggregationCells = null;
 

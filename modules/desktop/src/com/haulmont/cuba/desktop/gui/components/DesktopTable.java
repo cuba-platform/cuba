@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.desktop.gui.data.TableModelAdapter;
 import com.haulmont.cuba.desktop.sys.vcl.JXTableExt;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -19,7 +20,7 @@ import java.awt.*;
  * @author krivopustov
  * @version $Id$
  */
-public class DesktopTable extends DesktopAbstractTable<JXTable> {
+public class DesktopTable<E extends Entity> extends DesktopAbstractTable<JXTable, E> {
 
     public DesktopTable() {
         impl = new JXTableExt() {
@@ -44,7 +45,7 @@ public class DesktopTable extends DesktopAbstractTable<JXTable> {
                 TableCellEditor editor = getCellEditor();
                 if (editor != null) {
                     Object value = editor.getCellEditorValue();
-                    DesktopTable tableComponent = DesktopTable.this;
+                    DesktopTable<E> tableComponent = DesktopTable.this;
                     if (editingColumn >= 0) {
                         Column editColumn = tableComponent.getColumns().get(editingColumn);
 

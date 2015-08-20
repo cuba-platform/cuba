@@ -18,12 +18,12 @@ import java.util.List;
  * @author abramov
  * @version $Id$
  */
-public interface Table
+public interface Table<E extends Entity>
         extends
-            ListComponent, Component.Editable, Component.HasSettings,
+            ListComponent<E>, Component.Editable, Component.HasSettings,
             Component.HasButtonsPanel, Component.HasPresentations {
 
-    public enum ColumnAlignment {
+    enum ColumnAlignment {
         LEFT,
         CENTER,
         RIGHT
@@ -275,12 +275,12 @@ public interface Table
      * @param item entity item
      * @return datasource containing the item
      */
-    public Datasource getItemDatasource(Entity item);
+    Datasource getItemDatasource(Entity item);
 
     /**
      * Allows rendering of an arbitrary {@link Component} inside a table cell.
      */
-    public interface ColumnGenerator<E extends Entity> {
+    interface ColumnGenerator<E extends Entity> {
         /**
          * Called by {@link Table} when rendering a column for which the generator was created.
          *
@@ -297,7 +297,7 @@ public interface Table
      * @param <E> type of item
      * @param <P> type of printable value, e.g. String/Date/Integer/Double/BigDecimal
      */
-    public interface Printable<E extends Entity, P> {
+    interface Printable<E extends Entity, P> {
         P getValue(E item);
     }
 
@@ -307,7 +307,7 @@ public interface Table
      * @param <E> entity type
      * @param <P> printable value type
      */
-    public interface PrintableColumnGenerator<E extends Entity, P> extends ColumnGenerator<E>, Printable<E, P> {
+    interface PrintableColumnGenerator<E extends Entity, P> extends ColumnGenerator<E>, Printable<E, P> {
     }
 
     /**
@@ -413,7 +413,7 @@ public interface Table
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public static class Column implements HasXmlDescriptor, HasCaption, HasFormatter {
+    class Column implements HasXmlDescriptor, HasCaption, HasFormatter {
 
         private static final Log log = LogFactory.getLog(Table.class);
 
@@ -614,7 +614,7 @@ public interface Table
      * Special component for generated columns which will be rendered as simple text cell.
      * Very usefull for heavy tables to decrease rendering time in browser.
      */
-    public static class PlainTextCell implements Component {
+    class PlainTextCell implements Component {
         
         protected Component parent;
         protected String text;

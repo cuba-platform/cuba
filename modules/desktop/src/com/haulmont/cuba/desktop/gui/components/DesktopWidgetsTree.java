@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.desktop.gui.data.TreeModelAdapter;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.WidgetsTree;
@@ -19,7 +20,9 @@ import java.util.EventObject;
  * @author krivopustov
  * @version $Id$
  */
-public class DesktopWidgetsTree extends DesktopTree implements WidgetsTree {
+public class DesktopWidgetsTree<E extends Entity>
+        extends DesktopTree<E>
+        implements WidgetsTree<E> {
 
     @Override
     public void setWidgetBuilder(final WidgetBuilder widgetBuilder) {

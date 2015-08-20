@@ -5,6 +5,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 
 import javax.annotation.Nullable;
@@ -13,7 +14,8 @@ import javax.annotation.Nullable;
  * @author krivopustov
  * @version $Id$
  */
-public interface Tree extends ListComponent, Component.Editable {
+public interface Tree<E extends Entity> extends ListComponent<E>, Component.Editable {
+
     String NAME = "tree";
 
     void expandTree();
@@ -32,6 +34,9 @@ public interface Tree extends ListComponent, Component.Editable {
 
     String getHierarchyProperty();
     void setDatasource(HierarchicalDatasource datasource);
+
+    @Override
+    HierarchicalDatasource getDatasource();
 
     /**
      * Assign action to be executed on double click inside a tree node.

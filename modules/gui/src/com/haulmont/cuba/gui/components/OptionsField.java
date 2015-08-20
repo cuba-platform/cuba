@@ -6,6 +6,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,8 +29,8 @@ public interface OptionsField extends Field {
     CollectionDatasource getOptionsDatasource();
     void setOptionsDatasource(CollectionDatasource datasource);
     
-    java.util.List getOptionsList();
-    void setOptionsList(java.util.List optionsList);
+    List getOptionsList();
+    void setOptionsList(List optionsList);
 
     Map<String, Object> getOptionsMap();
     void setOptionsMap(Map<String, Object> map);

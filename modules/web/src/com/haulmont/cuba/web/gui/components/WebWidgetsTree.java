@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
@@ -16,7 +17,9 @@ import com.haulmont.cuba.web.toolkit.ui.CubaWidgetsTree;
  * @author gorodnov
  * @version $Id$
  */
-public class WebWidgetsTree extends WebAbstractTree<CubaWidgetsTree> implements WidgetsTree {
+public class WebWidgetsTree<E extends Entity>
+        extends WebAbstractTree<CubaWidgetsTree, E>
+        implements WidgetsTree<E> {
 
     protected String hierarchyProperty;
 

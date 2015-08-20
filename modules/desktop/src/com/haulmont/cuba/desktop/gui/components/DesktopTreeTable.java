@@ -34,7 +34,9 @@ import java.util.Set;
  * @author krivopustov
  * @version $Id$
  */
-public class DesktopTreeTable extends DesktopAbstractTable<JXTreeTableExt> implements TreeTable {
+public class DesktopTreeTable<E extends Entity>
+        extends DesktopAbstractTable<JXTreeTableExt, E>
+        implements TreeTable<E> {
 
     protected String hierarchyProperty;
 
@@ -81,7 +83,7 @@ public class DesktopTreeTable extends DesktopAbstractTable<JXTreeTableExt> imple
                     return true;
                 }
 
-                DesktopTreeTable treeTable = DesktopTreeTable.this;
+                DesktopTreeTable<E> treeTable = DesktopTreeTable.this;
                 Column editColumn = treeTable.getColumns().get(column);
                 return (treeTable.isEditable() && editColumn.isEditable())
                         || tableModel.isGeneratedColumn(editColumn);
@@ -113,7 +115,7 @@ public class DesktopTreeTable extends DesktopAbstractTable<JXTreeTableExt> imple
                 TableCellEditor editor = getCellEditor();
                 if (editor != null) {
                     Object value = editor.getCellEditorValue();
-                    DesktopTreeTable tableComponent = DesktopTreeTable.this;
+                    DesktopTreeTable<E> tableComponent = DesktopTreeTable.this;
                     Column editColumn = tableComponent.getColumns().get(editingColumn);
 
                     if (!(editor instanceof DesktopAbstractTable.EditableColumnTableCellEditor)) {
@@ -301,31 +303,32 @@ public class DesktopTreeTable extends DesktopAbstractTable<JXTreeTableExt> imple
         return impl.isExpanded(((TreeTableModelAdapter) tableModel).getTreePath(item));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <T extends Entity> Set<T> getSelected() {
-        Set<T> selected = new HashSet<>();
+    public Set<E> getSelected() {
+        Set<E> selected = new HashSet<>();
         TreePath[] selectionPaths = impl.getTreeSelectionModel().getSelectionPaths();
         if (selectionPaths != null) {
             for (TreePath path : selectionPaths) {
                 Entity entity = ((TreeTableModelAdapter) tableModel).getEntity(path.getLastPathComponent());
                 if (entity != null)
-                    selected.add((T) entity);
+                    selected.add((E) entity);
             }
         }
         return selected;
     }
 
     @Override
-    public void setSelected(final Entity item) {
+    public void setSelected(E item) {
         if (item != null) {
             setSelected(Collections.singleton(item));
         } else {
-            setSelected(Collections.<Entity>emptySet());
+            setSelected(Collections.<E>emptySet());
         }
     }
 
     @Override
-    public void setSelected(Collection<Entity> items) {
+    public void setSelected(Collection<E> items) {
         if (items == null) {
             items = Collections.emptySet();
         }

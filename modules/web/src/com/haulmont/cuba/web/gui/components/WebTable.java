@@ -6,6 +6,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
@@ -23,7 +24,7 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-public class WebTable extends WebAbstractTable<CubaTable> {
+public class WebTable<E extends Entity> extends WebAbstractTable<CubaTable, E> {
 
     public WebTable() {
         component = new CubaTable() {

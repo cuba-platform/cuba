@@ -25,7 +25,7 @@ public class LockBrowser extends AbstractWindow {
     protected LockService service;
 
     @Named("locks")
-    protected Table table;
+    protected Table<LockInfo> table;
 
     @Named("setupTable.create")
     protected CreateAction createAction;

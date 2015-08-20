@@ -64,7 +64,7 @@ public class AttributePermissionsFrame extends AbstractFrame {
     /* Selection */
 
     @Inject
-    protected Table propertyPermissionsTable;
+    protected Table<MultiplePermissionTarget> propertyPermissionsTable;
 
     @Inject
     protected Label selectedTargetCaption;

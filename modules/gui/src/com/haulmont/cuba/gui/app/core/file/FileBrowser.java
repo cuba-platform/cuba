@@ -26,7 +26,7 @@ import java.util.UUID;
 public class FileBrowser extends AbstractLookup {
 
     @Inject
-    protected Table filesTable;
+    protected Table<FileDescriptor> filesTable;
 
     @Inject
     protected CollectionDatasource<FileDescriptor, UUID> filesDs;

@@ -16,7 +16,7 @@ import java.util.List;
  * @author gorodnov
  * @version $Id$
  */
-public interface GroupTable extends Table {
+public interface GroupTable<E extends Entity> extends Table<E> {
 
     String NAME = "groupTable";
 

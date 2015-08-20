@@ -79,7 +79,7 @@ public class UiPermissionsFrame extends AbstractFrame {
     protected CheckBox showCheckBox;
 
     @Inject
-    protected GroupTable uiPermissionsTable;
+    protected GroupTable<UiPermissionTarget> uiPermissionsTable;
 
     @Inject
     protected Button removePermissionBtn;
@@ -122,7 +122,7 @@ public class UiPermissionsFrame extends AbstractFrame {
             @Override
             public void valueChanged(UiPermissionTarget source, String property, Object prevValue, Object value) {
                 if ("permissionVariant".equals(property)) {
-                    updateCheckBoxes(uiPermissionsTable.<UiPermissionTarget>getSingleSelected());
+                    updateCheckBoxes(uiPermissionsTable.getSingleSelected());
                 }
             }
         });

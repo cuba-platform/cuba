@@ -40,7 +40,9 @@ import java.util.List;
  * @author krivopustov
  * @version $Id$
  */
-public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> implements Tree {
+public class DesktopTree<E extends Entity>
+        extends DesktopAbstractActionsHolderComponent<JTree>
+        implements Tree<E> {
 
     protected String hierarchyProperty;
     protected HierarchicalDatasource<Entity<Object>, Object> datasource;
@@ -217,25 +219,27 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
             action.setDatasource(datasource);
         }
 
+        //noinspection unchecked
         datasource.addListener(
                 new CollectionDsActionsNotifier(this) {
                     @Override
                     public void collectionChanged(CollectionDatasource ds, CollectionDatasourceListener.Operation operation, List<Entity> items) {
                         // #PL-2035, reload selection from ds
-                        Set<Entity> selectedItems = getSelected();
+                        Set<E> selectedItems = getSelected();
                         if (selectedItems == null) {
                             selectedItems = Collections.emptySet();
                         }
 
-                        Set<Entity> newSelection = new HashSet<>();
-                        for (Entity entity : selectedItems) {
+                        Set<E> newSelection = new HashSet<>();
+                        for (E entity : selectedItems) {
                             if (ds.containsItem(entity.getId())) {
                                 newSelection.add(entity);
                             }
                         }
 
                         if (ds.getState() == Datasource.State.VALID && ds.getItem() != null) {
-                            newSelection.add(ds.getItem());
+                            //noinspection unchecked
+                            newSelection.add((E) ds.getItem());
                         }
 
                         if (newSelection.isEmpty()) {
@@ -321,20 +325,21 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
     }
 
     @Override
-    public <T extends Entity> T getSingleSelected() {
-        Set selected = getSelected();
-        return selected.isEmpty() ? null : (T) selected.iterator().next();
+    public  E getSingleSelected() {
+        Set<E> selected = getSelected();
+        return selected.isEmpty() ? null : selected.iterator().next();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <T extends Entity> Set<T> getSelected() {
-        Set<T> selected = new HashSet<>();
+    public Set<E> getSelected() {
+        Set<E> selected = new HashSet<>();
         TreePath[] selectionPaths = impl.getSelectionPaths();
         if (selectionPaths != null) {
             for (TreePath selectionPath : selectionPaths) {
                 Entity entity = model.getEntity(selectionPath.getLastPathComponent());
                 if (entity != null) {
-                    selected.add((T) entity);
+                    selected.add((E) entity);
                 }
             }
         }
@@ -352,7 +357,7 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
     }
 
     @Override
-    public void setSelected(Collection<Entity> items) {
+    public void setSelected(Collection<E> items) {
         TreePath[] paths = new TreePath[items.size()];
         int i = 0;
         for (Entity item : items) {
@@ -362,7 +367,7 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
     }
 
     @Override
-    public CollectionDatasource getDatasource() {
+    public HierarchicalDatasource getDatasource() {
         return datasource;
     }
 
@@ -395,7 +400,7 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
         @SuppressWarnings("unchecked")
         @Override
         public void valueChanged(TreeSelectionEvent e) {
-            Set<Entity> selected = getSelected();
+            Set<E> selected = getSelected();
             if (selected.isEmpty()) {
                 Entity dsItem = datasource.getItemIfValid();
                 datasource.setItem(null);

@@ -19,11 +19,11 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-public abstract class WebAbstractList<T extends AbstractSelect>
+public abstract class WebAbstractList<T extends AbstractSelect, E extends Entity>
     extends
         WebAbstractActionsHolderComponent<T>
     implements
-        ListComponent {
+        ListComponent<E> {
 
     protected CollectionDatasource datasource;
 
@@ -37,23 +37,25 @@ public abstract class WebAbstractList<T extends AbstractSelect>
         component.setMultiSelect(multiselect);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <T extends Entity> T getSingleSelected() {
+    public E getSingleSelected() {
         final Set selected = getSelectedItemIds();
         return selected == null || selected.isEmpty() ?
-                null : (T) datasource.getItem(selected.iterator().next());
+                null : (E) datasource.getItem(selected.iterator().next());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <T extends Entity> Set<T> getSelected() {
+    public Set<E> getSelected() {
         Set<Object> itemIds = getSelectedItemIds();
 
         if (itemIds != null) {
-            Set<T> res = new LinkedHashSet<>();
+            Set res = new LinkedHashSet<>();
             for (Object id : itemIds) {
                 Entity item = datasource.getItem(id);
                 if (item != null)
-                    res.add((T) item);
+                    res.add(item);
             }
             return res;
         } else {
@@ -61,6 +63,7 @@ public abstract class WebAbstractList<T extends AbstractSelect>
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Nullable
     protected Set<Object> getSelectedItemIds() {
         final Object value = component.getValue();
@@ -69,14 +72,14 @@ public abstract class WebAbstractList<T extends AbstractSelect>
         } else if (value instanceof Set) {
             return (Set) value;
         } else if (value instanceof Collection) {
-            return new LinkedHashSet<Object>((Collection) value);
+            return new LinkedHashSet((Collection) value);
         } else {
             return Collections.singleton(value);
         }
     }
 
     @Override
-    public void setSelected(Entity item) {
+    public void setSelected(E item) {
         if (item == null) {
             component.setValue(null);
         } else {
@@ -84,8 +87,9 @@ public abstract class WebAbstractList<T extends AbstractSelect>
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public void setSelected(Collection<Entity> items) {
+    public void setSelected(Collection<E> items) {
         Set itemIds = new HashSet();
         for (Entity item : items) {
             if (!datasource.containsItem(item.getId())) {

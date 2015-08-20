@@ -71,9 +71,9 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  * @author abramov
  * @version $Id$
  */
-public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhancedTable>
-        extends WebAbstractList<T>
-        implements Table {
+public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhancedTable, E extends Entity>
+        extends WebAbstractList<T, E>
+        implements Table<E> {
 
     protected Map<Object, Column> columns = new HashMap<>();
     protected List<Table.Column> columnsOrder = new ArrayList<>();
@@ -512,7 +512,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             public void valueChange(Property.ValueChangeEvent event) {
                 if (datasource == null) return;
 
-                final Set<Entity> selected = getSelected();
+                final Set<? extends Entity> selected = getSelected();
                 if (selected.isEmpty()) {
                     Entity dsItem = datasource.getItemIfValid();
                     datasource.setItem(null);
@@ -876,7 +876,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 }
 
                 if (newSelection.isEmpty()) {
-                    setSelected((Entity) null);
+                    setSelected((E) null);
                 } else {
                     setSelectedIds(newSelection);
                 }
@@ -1891,7 +1891,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                         && !isMultiLineCell)) {
                     // todo artamonov if we click with CTRL and Table is multiselect then we lose previous selected items
                     if (!getSelected().contains(item)) {
-                        setSelected(item);
+                        setSelected((E) item);
                     }
                     // do not show popup view
                     return;
