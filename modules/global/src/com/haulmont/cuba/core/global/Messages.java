@@ -22,7 +22,7 @@ public interface Messages {
      * Convenient access to {@link MessageTools} bean.
      * @return  MessageTools instance
      */
-    <T extends MessageTools> T getTools();
+    MessageTools getTools();
 
     /**
      * @return main message pack for this application tier

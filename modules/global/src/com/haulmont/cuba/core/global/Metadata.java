@@ -40,7 +40,7 @@ public interface Metadata extends Session {
      * Convenient access to {@link MetadataTools} bean.
      * @return  MetadataTools instance
      */
-    <T extends MetadataTools> T getTools();
+    MetadataTools getTools();
 
     /**
      * Instantiate an entity, taking into account extended entities.

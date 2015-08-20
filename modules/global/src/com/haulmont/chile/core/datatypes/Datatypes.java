@@ -138,12 +138,11 @@ public final class Datatypes {
      * @throws IllegalArgumentException if no datatype with the given name found
      */
     @Nonnull
-    public static <T extends Datatype> T get(String name) {
+    public static Datatype get(String name) {
         Datatype datatype = instance.datatypeByName.get(name);
         if (datatype == null)
             throw new IllegalArgumentException("Datatype " + name + " is not found");
-        //noinspection unchecked
-        return (T) datatype;
+        return datatype;
     }
 
     /**

@@ -129,10 +129,9 @@ public abstract class AbstractMessages implements Messages {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T extends MessageTools> T getTools() {
-        return (T)messageTools;
+    public MessageTools getTools() {
+        return messageTools;
     }
 
     @Override

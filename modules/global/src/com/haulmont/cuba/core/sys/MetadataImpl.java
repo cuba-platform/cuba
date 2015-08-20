@@ -90,7 +90,6 @@ public class MetadataImpl implements Metadata {
         return extendedEntities;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public MetadataTools getTools() {
         return tools;
