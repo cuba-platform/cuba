@@ -100,9 +100,10 @@ public class CubaFileUploadWidget extends FlowPanel {
                     @Override
                     public void onClose() {
                         canceled = true;
-                        cancelUploading();
-
+                        // null progress to prevent repeated hide() call inside cancelUploading
                         progressWindow = null;
+
+                        cancelUploading();
                     }
                 };
 
