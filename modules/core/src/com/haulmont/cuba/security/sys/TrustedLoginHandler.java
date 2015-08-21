@@ -29,6 +29,9 @@ public class TrustedLoginHandler {
     public void setServerConfig(ServerConfig serverConfig) {
         String permittedIpList = serverConfig.getTrustedClientPermittedIpList();
         permittedIpList = convertToRegex(permittedIpList);
+        if (StringUtils.isEmpty(permittedIpList)) {
+            permittedIpList = "127\\.0\\.0\\.1";
+        }
         permittedIpMaskPattern = Pattern.compile(permittedIpList);
     }
 
