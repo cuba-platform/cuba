@@ -4,15 +4,19 @@
  */
 package com.haulmont.cuba.core.sys.persistence;
 
+import com.haulmont.chile.core.common.ValueListener;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.chile.core.model.utils.MethodsCache;
-import com.haulmont.chile.core.common.ValueListener;
-import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import org.apache.commons.lang.ObjectUtils;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.UUID;
 
 /**
  * Used for byte code analysis
@@ -45,7 +49,7 @@ class CubaEnchancedEntityTemplate implements Instance {
 
     public MetaClass getMetaClass()
     {
-        return MetadataProvider.getSession().getClass(getClass());
+        return AppBeans.get(Metadata.class).getSession().getClass(getClass());
     }
 
     public String getInstanceName() {

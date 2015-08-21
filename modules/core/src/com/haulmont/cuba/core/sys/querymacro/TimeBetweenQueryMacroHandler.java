@@ -4,7 +4,8 @@
  */
 package com.haulmont.cuba.core.sys.querymacro;
 
-import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.QueryMacroHandler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -135,7 +136,7 @@ public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
 
     protected Date computeDate(int num, String unit) {
         Calendar cal = Calendar.getInstance();
-        cal.setTime(TimeProvider.currentTimestamp());
+        cal.setTime(AppBeans.get(TimeSource.class).currentTimestamp());
         int calField1 = getCalendarField(unit);
         if (num != 0) {
             cal.add(calField1, num);

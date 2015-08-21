@@ -5,7 +5,8 @@
 
 package com.haulmont.cuba.core.sys.persistence;
 
-import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.TimeSource;
 
 import java.text.SimpleDateFormat;
 
@@ -33,7 +34,7 @@ public class MssqlSequenceSupport implements SequenceSupport {
         return String.format("drop table %1$s ^ " +
                 "create table %1$s (ID bigint identity(%2$d,1), CREATE_TS datetime) ^ " +
                 "insert into %1$s (CREATE_TS) values ({ts '%3$s'})",
-                sequenceName.toUpperCase(), startWith, dateFormat.format(TimeProvider.currentTimestamp()));
+                sequenceName.toUpperCase(), startWith, dateFormat.format(AppBeans.get(TimeSource.class).currentTimestamp()));
     }
 
     @Override
@@ -45,7 +46,7 @@ public class MssqlSequenceSupport implements SequenceSupport {
     public String getNextValueSql(String sequenceName) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         return String.format("insert into %s (CREATE_TS) values ({ts '%s'}) ^ select ident_current('%s') as NEXT_VALUE",
-                sequenceName.toUpperCase(), dateFormat.format(TimeProvider.currentTimestamp()), sequenceName.toUpperCase());
+                sequenceName.toUpperCase(), dateFormat.format(AppBeans.get(TimeSource.class).currentTimestamp()), sequenceName.toUpperCase());
     }
 
     @Override

@@ -6,7 +6,6 @@
 package com.haulmont.cuba.desktop.sys;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import org.apache.commons.io.FileUtils;
@@ -40,7 +39,7 @@ public class MainWindowProperties {
         Properties properties = new Properties();
         saveProperties(properties);
         try {
-            File file = new File(ConfigProvider.getConfig(GlobalConfig.class).getDataDir(), "main-window.properties");
+            File file = new File(AppBeans.get(Configuration.class).getConfig(GlobalConfig.class).getDataDir(), "main-window.properties");
             FileOutputStream stream = FileUtils.openOutputStream(file);
             try {
                 properties.store(stream, "Main window properties");

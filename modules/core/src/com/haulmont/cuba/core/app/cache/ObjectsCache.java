@@ -6,7 +6,8 @@
 package com.haulmont.cuba.core.app.cache;
 
 import com.haulmont.bali.datastruct.Pair;
-import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
@@ -95,8 +96,9 @@ public class ObjectsCache implements ObjectsCacheInstance, ObjectsCacheControlle
     }
 
     public void refresh() {
+        TimeSource timeSource = AppBeans.get(TimeSource.class);
         if (isValidState()) {
-            Date updateStart = TimeProvider.currentTimestamp();
+            Date updateStart = timeSource.currentTimestamp();
 
             // Load data
             CacheSet data;
@@ -108,7 +110,7 @@ public class ObjectsCache implements ObjectsCacheInstance, ObjectsCacheControlle
                 return;
             }
 
-            Date updateEnd = TimeProvider.currentTimestamp();
+            Date updateEnd = timeSource.currentTimestamp();
 
             this.lastUpdateDuration = updateEnd.getTime() - updateStart.getTime();
 
@@ -126,7 +128,7 @@ public class ObjectsCache implements ObjectsCacheInstance, ObjectsCacheControlle
 
             cacheLock.writeLock().unlock();
 
-            this.lastUpdateTime = TimeProvider.currentTimestamp();
+            this.lastUpdateTime = timeSource.currentTimestamp();
 
             if (logUpdateEvent)
                 log.debug("Updated cache set in " + name + " " +

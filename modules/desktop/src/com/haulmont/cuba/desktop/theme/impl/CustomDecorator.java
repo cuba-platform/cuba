@@ -5,7 +5,8 @@
 
 package com.haulmont.cuba.desktop.theme.impl;
 
-import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.desktop.theme.ComponentDecorator;
 
 import java.util.Set;
@@ -25,15 +26,12 @@ public class CustomDecorator implements ComponentDecorator {
 
     @Override
     public void decorate(Object component, Set<String> state) {
-        Class decoratorClass = ScriptingProvider.loadClass(className);
+        Class decoratorClass = AppBeans.get(Scripting.class).loadClass(className);
         try {
             ComponentDecorator delegate = (ComponentDecorator) decoratorClass.newInstance();
             delegate.decorate(component, state);
         }
-        catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        }
-        catch (IllegalAccessException e) {
+        catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }

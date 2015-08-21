@@ -5,8 +5,8 @@
 
 package com.haulmont.cuba.portal.springframework.view;
 
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.portal.config.PortalConfig;
@@ -39,7 +39,7 @@ public class FreeMarkerView extends org.springframework.web.servlet.view.freemar
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        PortalConfig config = ConfigProvider.getConfig(PortalConfig.class);
+        PortalConfig config = AppBeans.get(Configuration.class).getConfig(PortalConfig.class);
 
         SimpleHash context = super.buildTemplateModel(model, request, response);
         if (AppContext.getSecurityContext() != null)
@@ -70,9 +70,9 @@ public class FreeMarkerView extends org.springframework.web.servlet.view.freemar
         @Override
         public Object exec(List args) throws TemplateModelException {
             if (args.size() == 2)
-                return MessageProvider.getMessage((String) args.get(0), (String) args.get(1));
+                return AppBeans.get(Messages.class).getMessage((String) args.get(0), (String) args.get(1));
             else if (args.size() == 1) {
-                return MessageProvider.getMessage((Enum) args.get(0));
+                return AppBeans.get(Messages.class).getMessage((Enum) args.get(0));
             } else
                 throw new TemplateModelException("Wrong arguments");
         }

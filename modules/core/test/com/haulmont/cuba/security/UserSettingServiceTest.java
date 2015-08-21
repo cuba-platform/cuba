@@ -4,10 +4,14 @@
  */
 package com.haulmont.cuba.security;
 
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.CubaTestCase;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.testsupport.TestUserSessionSource;
 import com.haulmont.cuba.security.app.UserSettingService;
+import com.haulmont.cuba.testsupport.TestUserSessionSource;
 
 public class UserSettingServiceTest extends CubaTestCase
 {
@@ -15,13 +19,13 @@ public class UserSettingServiceTest extends CubaTestCase
 
     protected void setUp() throws Exception {
         super.setUp();
-        uss = Locator.lookup(UserSettingService.NAME);
+        uss = AppBeans.get(UserSettingService.NAME);
     }
 
     protected void tearDown() throws Exception {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             Query q = em.createNativeQuery("delete from SEC_USER_SETTING where USER_ID = ?");
             q.setParameter(1, TestUserSessionSource.USER_ID);
             q.executeUpdate();

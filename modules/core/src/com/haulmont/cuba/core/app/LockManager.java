@@ -9,10 +9,7 @@ import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.entity.LockDescriptor;
-import com.haulmont.cuba.core.global.LockInfo;
-import com.haulmont.cuba.core.global.LockNotSupported;
-import com.haulmont.cuba.core.global.TimeProvider;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -173,7 +170,7 @@ public class LockManager implements LockManagerAPI, ClusterListener<LockInfo> {
                     Integer timeoutSec = ld.getTimeoutSec();
                     if (timeoutSec != null && timeoutSec > 0) {
                         Date since = lockInfo.getSince();
-                        if (since.getTime() + timeoutSec * 1000 < TimeProvider.currentTimestamp().getTime()) {
+                        if (since.getTime() + timeoutSec * 1000 < AppBeans.get(TimeSource.class).currentTimestamp().getTime()) {
                             log.debug("Lock " + key.name + "/" + key.id + " expired");
                             locks.remove(key);
                         }

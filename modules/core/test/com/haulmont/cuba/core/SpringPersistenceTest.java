@@ -7,16 +7,16 @@ package com.haulmont.cuba.core;
 public class SpringPersistenceTest extends CubaTestCase {
 
     public void test() {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             em.setSoftDeletion(false);
             assertFalse(em.isSoftDeletion());
 
             nestedMethod();
             nestedTxMethod();
 
-            em = PersistenceProvider.getEntityManager();
+            em = persistence.getEntityManager();
             assertFalse(em.isSoftDeletion());
 
             tx.commit();
@@ -26,14 +26,14 @@ public class SpringPersistenceTest extends CubaTestCase {
     }
 
     private void nestedMethod() {
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = persistence.getEntityManager();
         assertFalse(em.isSoftDeletion());
     }
 
     private void nestedTxMethod() {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             assertTrue(em.isSoftDeletion());
             nestedTxMethod2();
 
@@ -44,9 +44,9 @@ public class SpringPersistenceTest extends CubaTestCase {
     }
 
     private void nestedTxMethod2() {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             assertTrue(em.isSoftDeletion());
 
             tx.commit();

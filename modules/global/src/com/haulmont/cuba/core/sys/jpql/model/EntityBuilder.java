@@ -7,7 +7,6 @@ package com.haulmont.cuba.core.sys.jpql.model;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageTools;
 
 /**

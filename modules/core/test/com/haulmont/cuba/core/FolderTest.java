@@ -9,9 +9,9 @@ import java.util.List;
 public class FolderTest extends CubaTestCase {
 
     public void test() {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             Query q = em.createQuery("select f from sys$Folder f");
             List list = q.getResultList();
 

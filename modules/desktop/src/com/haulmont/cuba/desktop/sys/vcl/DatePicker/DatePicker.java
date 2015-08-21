@@ -6,8 +6,9 @@
 package com.haulmont.cuba.desktop.sys.vcl.DatePicker;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Frame;
@@ -76,14 +77,14 @@ public class DatePicker extends JXDatePicker {
         super.setEditor(editor);
 
         if (format == null) {
-            setFormats(Datatypes.getFormatStrings(UserSessionProvider.getLocale()).getDateFormat());
+            setFormats(Datatypes.getFormatStrings(AppBeans.get(UserSessionSource.class).getLocale()).getDateFormat());
         } else
             setFormats(format);
     }
 
     public void setLinkDay(Date linkDay) {
-        MessageFormat todayFormat = new MessageFormat(MessageProvider.getMessage("com.haulmont.cuba.desktop", "DatePicker.linkFormat"));
-        todayFormat.setFormat(0, new SimpleDateFormat(Datatypes.getFormatStrings(UserSessionProvider.getLocale()).getDateFormat()));
+        MessageFormat todayFormat = new MessageFormat(AppBeans.get(Messages.class).getMessage("com.haulmont.cuba.desktop", "DatePicker.linkFormat"));
+        todayFormat.setFormat(0, new SimpleDateFormat(Datatypes.getFormatStrings(AppBeans.get(UserSessionSource.class).getLocale()).getDateFormat()));
         setLinkFormat(todayFormat);
         super.setLinkDay(linkDay);
     }
@@ -158,7 +159,7 @@ public class DatePicker extends JXDatePicker {
                 return super.stringToValue(text);
             } catch (ParseException e) {
                 DesktopComponentsHelper.getTopLevelFrame(getParent()).showNotification(
-                        MessageProvider.getMessage(AppConfig.getMessagesPack(), "validationFail"),
+                        AppBeans.get(Messages.class).getMessage(AppConfig.getMessagesPack(), "validationFail"),
                         Frame.NotificationType.TRAY
                 );
                 cancelEdit();

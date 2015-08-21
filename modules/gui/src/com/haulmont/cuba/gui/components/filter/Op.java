@@ -6,7 +6,8 @@
 package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 
 import java.util.Date;
 import java.util.EnumSet;
@@ -77,6 +78,6 @@ public enum Op {
     }
 
     public String toString() {
-        return MessageProvider.getMessage(this);
+        return AppBeans.get(Messages.class).getMessage(this);
     }
 }

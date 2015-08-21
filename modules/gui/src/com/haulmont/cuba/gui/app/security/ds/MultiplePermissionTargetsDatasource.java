@@ -7,14 +7,14 @@ package com.haulmont.cuba.gui.app.security.ds;
 
 import com.google.common.base.Predicate;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.app.security.entity.AttributePermissionVariant;
+import com.haulmont.cuba.gui.app.security.entity.MultiplePermissionTarget;
 import com.haulmont.cuba.gui.app.security.role.edit.PropertyPermissionValue;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.security.entity.Permission;
-import com.haulmont.cuba.gui.app.security.entity.AttributePermissionVariant;
-import com.haulmont.cuba.gui.app.security.entity.MultiplePermissionTarget;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ public class MultiplePermissionTargetsDatasource extends CollectionDatasourceImp
         if (targets == null) {
             targets = new ArrayList<>();
             PermissionConfig permissionConfig = AppBeans.get(PermissionConfig.class);
-            List<MultiplePermissionTarget> entityAttrs = permissionConfig.getEntityAttributes(UserSessionProvider.getLocale());
+            List<MultiplePermissionTarget> entityAttrs = permissionConfig.getEntityAttributes(AppBeans.get(UserSessionSource.class).getLocale());
             for (MultiplePermissionTarget target : entityAttrs) {
                 try {
                     MultiplePermissionTarget cloneTarget = target.clone();

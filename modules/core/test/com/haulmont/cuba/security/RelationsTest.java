@@ -14,9 +14,9 @@ public class RelationsTest extends CubaTestCase
     public void testRole() {
         UUID roleId = createRole();
 
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             Role role = em.find(Role.class, roleId);
             em.remove(role);
@@ -28,9 +28,9 @@ public class RelationsTest extends CubaTestCase
     }
 
     public UUID createRole() {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             User user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
 

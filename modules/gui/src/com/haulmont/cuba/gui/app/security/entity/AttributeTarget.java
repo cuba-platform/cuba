@@ -10,7 +10,8 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UuidProvider;
 
 import java.util.UUID;
@@ -49,7 +50,7 @@ public class AttributeTarget extends AbstractInstance
 
     @Override
     public MetaClass getMetaClass() {
-        return MetadataProvider.getSession().getClass(getClass());
+        return AppBeans.get(Metadata.class).getSession().getClass(getClass());
     }
 
     public AttributePermissionVariant getPermissionVariant() {

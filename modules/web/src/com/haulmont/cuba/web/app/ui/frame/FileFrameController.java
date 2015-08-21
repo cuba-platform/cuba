@@ -7,7 +7,7 @@ package com.haulmont.cuba.web.app.ui.frame;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.gui.app.core.file.FileDownloadHelper;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Button;
@@ -68,7 +68,7 @@ public class FileFrameController extends AbstractWindow {
                 File file = fileUploading.getFile(uploadField.getFileId());
                 fd.setSize(file.length());
 
-                fd.setCreateDate(TimeProvider.currentTimestamp());
+                fd.setCreateDate(AppBeans.get(TimeSource.class).currentTimestamp());
                 saveFile();
                 ds.addItem(fd);
                 showNotification(getMessage("uploadSuccess"), NotificationType.HUMANIZED);

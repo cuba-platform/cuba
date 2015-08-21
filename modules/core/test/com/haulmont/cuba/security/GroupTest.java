@@ -15,16 +15,16 @@ public class GroupTest extends CubaTestCase
     private UUID rootId, group1Id, group2Id, group3Id;
 
     private void createGroups() {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             Group root = new Group();
             rootId = root.getId();
             root.setName("root");
             em.persist(root);
             tx.commitRetaining();
 
-            em = PersistenceProvider.getEntityManager();
+            em = persistence.getEntityManager();
             root = em.find(Group.class, rootId);
             Group group1 = new Group();
             group1Id = group1.getId();
@@ -33,7 +33,7 @@ public class GroupTest extends CubaTestCase
             em.persist(group1);
             tx.commitRetaining();
 
-            em = PersistenceProvider.getEntityManager();
+            em = persistence.getEntityManager();
             group1 = em.find(Group.class, group1Id);
             Group group2 = new Group();
             group2Id = group2.getId();
@@ -42,7 +42,7 @@ public class GroupTest extends CubaTestCase
             em.persist(group2);
             tx.commitRetaining();
 
-            em = PersistenceProvider.getEntityManager();
+            em = persistence.getEntityManager();
             root = em.find(Group.class, rootId);
             Group group3 = new Group();
             group3Id = group3.getId();
@@ -58,9 +58,9 @@ public class GroupTest extends CubaTestCase
     public void testNew() {
         createGroups();
 
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             Group group2 = em.find(Group.class, group2Id);
             for (GroupHierarchy hierarchy : group2.getHierarchyList()) {
                 assertEquals(group2, hierarchy.getGroup());
@@ -78,15 +78,15 @@ public class GroupTest extends CubaTestCase
     public void testUpdate() {
         createGroups();
 
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             Group group1 = em.find(Group.class, group1Id);
             Group group3 = em.find(Group.class, group3Id);
             group1.setParent(group3);
             tx.commitRetaining();
 
-            em = PersistenceProvider.getEntityManager();
+            em = persistence.getEntityManager();
 
             group1 = em.find(Group.class, group1Id);
             for (GroupHierarchy hierarchy : group1.getHierarchyList()) {

@@ -32,7 +32,7 @@ public class QueryResultTest extends CubaTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        QueryRunner runner = new QueryRunner(Locator.getDataSource());
+        QueryRunner runner = new QueryRunner(persistence.getDataSource());
         try {
             runner.update("delete from SYS_QUERY_RESULT");
         } catch (SQLException e) {
@@ -51,9 +51,9 @@ public class QueryResultTest extends CubaTestCase {
     }
 
     private void createEntities() {
-        Transaction tx = PersistenceProvider.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             User user;
 
             int k = 0;
@@ -196,7 +196,7 @@ public class QueryResultTest extends CubaTestCase {
     }
 
     private List<Map<String, Object>> getQueryResults() throws SQLException {
-        QueryRunner queryRunner = new QueryRunner(Locator.getDataSource());
+        QueryRunner queryRunner = new QueryRunner(persistence.getDataSource());
         return queryRunner.query("select * from SYS_QUERY_RESULT", new MapListHandler());
     }
 }

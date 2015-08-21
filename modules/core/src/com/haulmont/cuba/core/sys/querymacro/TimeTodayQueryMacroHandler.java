@@ -4,7 +4,8 @@
  */
 package com.haulmont.cuba.core.sys.querymacro;
 
-import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.QueryMacroHandler;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.context.annotation.Scope;
@@ -61,7 +62,7 @@ public class TimeTodayQueryMacroHandler implements QueryMacroHandler {
         String param2 = macro.replace(".", "_") + "_" + count + "_2";
 
         Calendar cal = Calendar.getInstance();
-        cal.setTime(TimeProvider.currentTimestamp());
+        cal.setTime(AppBeans.get(TimeSource.class).currentTimestamp());
 //        cal.setTime(new Date());
         params.put(param1, DateUtils.truncate(cal.getTime(), Calendar.DAY_OF_MONTH));
 
