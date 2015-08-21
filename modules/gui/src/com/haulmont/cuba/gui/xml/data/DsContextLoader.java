@@ -383,7 +383,6 @@ public class DsContextLoader {
                 .setId(id)
                 .setViewName(viewName)
                 .setSoftDeletion(softDeletion)
-                .setFetchMode(getFetchMode(element))
                 .setRefreshMode(getRefreshMode(element))
                 .setMaxResults(getMaxResults(element))
                 .setAllowCommit(getAllowCommit(element));
@@ -403,12 +402,6 @@ public class DsContextLoader {
     private boolean getAllowCommit(Element element) {
         final String allowCommitStr = element.attributeValue("allowCommit");
         return StringUtils.isEmpty(allowCommitStr) || Boolean.valueOf(allowCommitStr);
-    }
-
-    protected CollectionDatasource.FetchMode getFetchMode(Element element) {
-        final String fetchMode = element.attributeValue("fetchMode");
-        return StringUtils.isEmpty(fetchMode) ?
-                null : CollectionDatasource.FetchMode.valueOf(fetchMode);
     }
 
     protected RuntimePropsDatasource loadRuntimePropsDataSource(Element element){

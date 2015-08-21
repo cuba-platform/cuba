@@ -60,8 +60,6 @@ public class DsBuilder {
 
     private Class<?> dsClass;
 
-    private CollectionDatasource.FetchMode fetchMode;
-
     private CollectionDatasource.RefreshMode refreshMode;
 
     private int maxResults;
@@ -185,17 +183,6 @@ public class DsBuilder {
         return this;
     }
 
-    @Deprecated
-    public CollectionDatasource.FetchMode getFetchMode() {
-        return fetchMode;
-    }
-
-    @Deprecated
-    public DsBuilder setFetchMode(CollectionDatasource.FetchMode fetchMode) {
-        this.fetchMode = fetchMode;
-        return this;
-    }
-
     public CollectionDatasource.RefreshMode getRefreshMode() {
         return refreshMode;
     }
@@ -232,7 +219,6 @@ public class DsBuilder {
         property = null;
         softDeletion = true;
         allowCommit = true;
-        fetchMode = null;
         refreshMode = null;
         maxResults = 0;
         dsClass = null;
@@ -288,8 +274,7 @@ public class DsBuilder {
         try {
             if (master == null && property == null) {
                 if (dsClass == null) {
-                    datasource = CollectionDatasource.FetchMode.LAZY.equals(resolvedFetchMode()) ?
-                            new LazyCollectionDatasource() : new CollectionDatasourceImpl();
+                    datasource = new CollectionDatasourceImpl();
                 } else {
                     datasource = (CollectionDatasource) dsClass.newInstance();
                 }
@@ -315,22 +300,6 @@ public class DsBuilder {
         datasource.setAllowCommit(allowCommit);
         registerDatasource(datasource);
         return datasource;
-    }
-
-    private CollectionDatasource.FetchMode resolvedFetchMode() {
-        CollectionDatasource.FetchMode fm;
-        if (fetchMode == null) {
-            fm = CollectionDatasource.FetchMode.ALL;
-        } else if (CollectionDatasource.FetchMode.AUTO.equals(fetchMode)) {
-            if (metaClass == null)
-                throw new IllegalStateException("MetaClass is not set");
-
-            boolean lazy = persistenceManager.useLazyCollection(metaClass.getName());
-            fm = lazy ? CollectionDatasource.FetchMode.LAZY : CollectionDatasource.FetchMode.ALL;
-        } else {
-            fm = fetchMode;
-        }
-        return fm;
     }
 
     public HierarchicalDatasource buildHierarchicalDatasource() {

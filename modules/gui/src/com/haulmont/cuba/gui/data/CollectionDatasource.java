@@ -52,8 +52,7 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     Collection<T> getItems();
 
     /**
-     * @return size of the underlying collection. For {@link FetchMode#LAZY} datasource it is not equal
-     * to the size of currently loaded data. 
+     * @return size of the underlying collection.
      */
     int size();
 
@@ -361,16 +360,5 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     interface SupportsRefreshMode<T extends Entity<K>, K> extends CollectionDatasource<T,K> {
         RefreshMode getRefreshMode();
         void setRefreshMode(RefreshMode refreshMode);
-    }
-
-    /** Mode of fetching data from database: {@link #ALL}, {@link #LAZY} */
-    @Deprecated
-    enum FetchMode {
-        /** Datasource will load all data at once */
-        ALL,
-        /** Datasource will try to load data by chunks per UI component request */
-        LAZY,
-        /** ALL or LAZY will be choosen on the basis of <code>PersistenceManager<code/> statistics */
-        AUTO
     }
 }
