@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.web.gui;
 
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.ComponentPalette;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.mainwindow.*;
@@ -14,6 +15,7 @@ import com.haulmont.cuba.web.gui.components.mainwindow.*;
 import javax.annotation.ManagedBean;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author krivopustov
@@ -23,6 +25,8 @@ import java.util.Map;
 public class WebComponentsFactory implements ComponentsFactory {
 
     private static Map<String, Class<? extends Component>> classes = new HashMap<>();
+
+    private static Map<Class, String> names = new ConcurrentHashMap<>();
 
     static {
         classes.put(Window.NAME, WebWindow.class);
@@ -124,21 +128,20 @@ public class WebComponentsFactory implements ComponentsFactory {
 
     @Override
     public <T extends Component> T createComponent(Class<T> type) {
-        // TODO Java8: replace with MethodHandle
-        String name = null;
-        java.lang.reflect.Field nameField;
-        try {
-            nameField = type.getField("NAME");
-            name = (String) nameField.get(null);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            //ignore
+        String name = names.get(type);
+        if (name == null) {
+            java.lang.reflect.Field nameField;
+            try {
+                nameField = type.getField("NAME");
+                name = (String) nameField.get(null);
+            } catch (NoSuchFieldException | IllegalAccessException ignore) {
+            }
+            if (name == null)
+                throw new DevelopmentException(String.format("Class '%s' doesn't have NAME field", type.getName()));
+            else
+                names.put(type, name);
         }
-
-        if (name != null) {
-            return type.cast(createComponent(name));
-        } else {
-            throw new IllegalStateException(String.format("Class '%s' doesn't have NAME property", type.getName()));
-        }
+        return type.cast(createComponent(name));
     }
 
     @Override

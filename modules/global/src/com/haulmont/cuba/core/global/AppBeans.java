@@ -10,6 +10,8 @@ import com.haulmont.cuba.core.sys.AppContext;
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Provides access to all managed beans of the application.
@@ -19,6 +21,8 @@ import java.util.Map;
  */
 public class AppBeans {
 
+    private static Map<Class, Optional<String>> names = new ConcurrentHashMap<>();
+
     /**
      * Return the bean instance that matches the given object type.
      * If the provided bean class contains a public static field <code>NAME</code>, this name is used to look up the
@@ -27,15 +31,20 @@ public class AppBeans {
      * @return an instance of the single bean matching the required type
      */
     public static <T> T get(Class<T> beanType) {
-        // Try to find bean name defined in its NAME static field
         String name = null;
-        try {
-            Field nameField = beanType.getField("NAME");
-            name = (String) nameField.get(null);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            // ignore
+        Optional<String> optName = names.get(beanType);
+        if (optName == null) {
+            // Try to find a bean name defined in its NAME static field
+            try {
+                Field nameField = beanType.getField("NAME");
+                name = (String) nameField.get(null);
+            } catch (NoSuchFieldException | IllegalAccessException ignore) {
+            }
+            names.put(beanType, Optional.ofNullable(name));
+        } else {
+            name = optName.orElse(null);
         }
-        // If the name found, look up the bean by name because it is much faster
+        // If the name is found, look up the bean by name because it is much faster
         if (name == null)
             return AppContext.getApplicationContext().getBean(beanType);
         else
