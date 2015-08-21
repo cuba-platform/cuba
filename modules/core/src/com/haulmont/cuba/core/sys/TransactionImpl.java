@@ -92,4 +92,9 @@ public class TransactionImpl implements Transaction {
         if (!ts.isCompleted())
             tm.rollback(ts);
     }
+
+    @Override
+    public void close() throws Exception {
+        end();
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Copyright (c) 2008-2015 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.core;
@@ -7,7 +7,15 @@ package com.haulmont.cuba.core;
 /**
  * Programmatic transaction control interface. Supports the following usage scenarios.
  *
- * <p/> Plain scenario:
+ * <p> Try-with-resources scenario:
+ * <pre>
+ *     try (Transaction tx = persistence.createTransaction()) {
+ *         // transactional code here
+ *         tx.commit();
+ *     }
+ * </pre>
+ *
+ * <p> Plain scenario:
  * <pre>
  *     Transaction tx = persistence.createTransaction();
  *     try {
@@ -18,7 +26,7 @@ package com.haulmont.cuba.core;
  *     }
  * </pre>
  *
- * <p/> Action-like scenario:
+ * <p> Action-like scenario:
  * <pre>
  *     persistence.createTransaction().execute(new Transaction.Runnable() {
  *         public void run(EntityManager em) {
@@ -30,14 +38,14 @@ package com.haulmont.cuba.core;
  * @author krivopustov
  * @version $Id$
  */
-public interface Transaction {
+public interface Transaction extends AutoCloseable {
 
     /**
      * Interface for transactional code.
      * Implementors should be passed to {@link Transaction#execute(com.haulmont.cuba.core.Transaction.Callable)} method.
      * @param <T>   result type
      */
-    public interface Callable<T> {
+    interface Callable<T> {
         /**
          * Gets called within a transaction.
          * @param em    current EntityManager instance
@@ -49,7 +57,7 @@ public interface Transaction {
     /**
      * Simplified version of {@link Callable} that is not intended to return a result from transactional code.
      */
-    public abstract class Runnable implements Callable<Object> {
+    abstract class Runnable implements Callable<Object> {
         @Override
         public final Object call(EntityManager em) {
             run(em);
