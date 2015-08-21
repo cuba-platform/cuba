@@ -51,7 +51,7 @@ public class EditorWindowDelegate extends WindowDelegate {
     }
 
     @Override
-    public Window wrapBy(Class<Window> wrapperClass) {
+    public Window wrapBy(Class<?> wrapperClass) {
         final Window.Editor editor = (Window.Editor) super.wrapBy(wrapperClass);
 
         final Component commitAndCloseButton = ComponentsHelper.findComponent(editor,

@@ -408,7 +408,7 @@ public abstract class AbstractTableLoader extends ActionsHolderLoader {
 
             String strategyClass = aggregationElement.attributeValue("strategyClass");
             if (StringUtils.isNotEmpty(strategyClass)) {
-                Class<Object> aggregationClass = scripting.loadClass(strategyClass);
+                Class<?> aggregationClass = scripting.loadClass(strategyClass);
                 if (aggregationClass == null) {
                     throw new GuiDevelopmentException(String.format("Class %s is not found", strategyClass), context.getFullFrameId());
                 }
@@ -450,21 +450,21 @@ public abstract class AbstractTableLoader extends ActionsHolderLoader {
                 throw new GuiDevelopmentException("Formatter's attribute 'class' is not specified", context.getCurrentFrameId());
             }
 
-            Class<Formatter> aClass = scripting.loadClass(className);
+            Class<?> aClass = scripting.loadClass(className);
             if (aClass == null) {
                 throw new GuiDevelopmentException(String.format("Class %s is not found", className), context.getFullFrameId());
             }
 
             try {
-                final Constructor<Formatter> constructor = aClass.getConstructor(Element.class);
+                final Constructor<?> constructor = aClass.getConstructor(Element.class);
                 try {
-                    return constructor.newInstance(formatterElement);
+                    return (Formatter) constructor.newInstance(formatterElement);
                 } catch (Throwable e) {
                     throw new RuntimeException(e);
                 }
             } catch (NoSuchMethodException e) {
                 try {
-                    return aClass.newInstance();
+                    return (Formatter) aClass.newInstance();
                 } catch (Exception e1) {
                     throw new RuntimeException(e1);
                 }

@@ -117,11 +117,11 @@ public class DsContextLoader {
     protected DsContextImplementation createDsContext(String contextClass, Element element) {
         DsContextImplementation context;
 
-        final Class<Object> aClass = scripting.loadClass(contextClass);
+        final Class<?> aClass = scripting.loadClass(contextClass);
         if (aClass == null)
             throw new IllegalStateException("DsContext class " + contextClass + " is not found");
         try {
-            final Constructor<Object> constructor = aClass.getConstructor(DataSupplier.class);
+            final Constructor<?> constructor = aClass.getConstructor(DataSupplier.class);
             context = (DsContextImplementation) constructor.newInstance(dataservice);
         } catch (Throwable e) {
             throw new RuntimeException(e);
@@ -154,7 +154,7 @@ public class DsContextLoader {
     }
 
     @Nullable
-    private Class<? extends Datasource> getDatasourceClass(Element element) {
+    private Class<?> getDatasourceClass(Element element) {
         String datasourceClass = element.attributeValue("datasourceClass");
         if (StringUtils.isEmpty(datasourceClass)) {
             Element datasourceClassElement = element.element("datasourceClass");
@@ -164,7 +164,7 @@ public class DsContextLoader {
         if (StringUtils.isEmpty(datasourceClass)) {
             return null;
         } else {
-            Class<HierarchicalDatasource> aClass = scripting.loadClass(datasourceClass);
+            Class<?> aClass = scripting.loadClass(datasourceClass);
             if (aClass == null)
                 throw new IllegalStateException("Datasource class " + datasourceClass + " is not found");
             return aClass;

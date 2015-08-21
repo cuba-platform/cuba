@@ -64,7 +64,7 @@ public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
     }
 
     @Override
-    public Frame wrapBy(Class<? extends Frame> aClass) {
+    public Frame wrapBy(Class<?> aClass) {
         try {
             // First try to find an old-style constructor with Frame parameter
             Constructor<?> constructor = null;

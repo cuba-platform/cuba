@@ -339,21 +339,21 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         if (StringUtils.isNotBlank(scriptPath) || StringUtils.isNotBlank(script)) {
             validator = new ScriptValidator(validatorElement, getMessagesPack());
         } else {
-            final Class<Field.Validator> aClass = scripting.loadClass(className);
+            Class aClass = scripting.loadClass(className);
             if (aClass == null)
                 throw new GuiDevelopmentException("Class " + className + " is not found", context.getFullFrameId());
             if (!StringUtils.isBlank(getMessagesPack()))
                 try {
-                    validator = ReflectionHelper.newInstance(aClass, validatorElement, getMessagesPack());
+                    validator = (Field.Validator) ReflectionHelper.newInstance(aClass, validatorElement, getMessagesPack());
                 } catch (NoSuchMethodException e) {
                     //
                 }
             if (validator == null) {
                 try {
-                    validator = ReflectionHelper.newInstance(aClass, validatorElement);
+                    validator = (Field.Validator) ReflectionHelper.newInstance(aClass, validatorElement);
                 } catch (NoSuchMethodException e) {
                     try {
-                        validator = ReflectionHelper.newInstance(aClass);
+                        validator = (Field.Validator) ReflectionHelper.newInstance(aClass);
                     } catch (NoSuchMethodException e1) {
                         //
                     }

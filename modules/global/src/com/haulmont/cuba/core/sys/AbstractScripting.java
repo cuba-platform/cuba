@@ -5,7 +5,9 @@
 
 package com.haulmont.cuba.core.sys;
 
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.sys.javacl.JavaClassLoader;
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
@@ -28,7 +30,6 @@ import org.codehaus.groovy.control.CompilerConfiguration;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -250,25 +251,21 @@ public abstract class AbstractScripting implements Scripting {
     }
 
     @Override
-    public <T> Class<T> loadClass(String name) {
+    public Class<?> loadClass(String name) {
         try {
-            //noinspection unchecked
             return getGroovyClassLoader().loadClass(name, true, false);
         } catch (ClassNotFoundException e) {
             return null;
         }
     }
 
-    @Deprecated
     @Override
-    public InputStream getResourceAsStream(String name) {
-        return AppBeans.get(Resources.class).getResourceAsStream(name);
-    }
-
-    @Deprecated
-    @Override
-    public String getResourceAsString(String name) {
-        return AppBeans.get(Resources.class).getResourceAsString(name);
+    public Class<?> loadClassNN(String name) {
+        try {
+            return getGroovyClassLoader().loadClass(name, true, false);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException("Unable to load class", e);
+        }
     }
 
     @Override

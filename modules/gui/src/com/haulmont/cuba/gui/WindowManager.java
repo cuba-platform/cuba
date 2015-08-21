@@ -659,7 +659,7 @@ public abstract class WindowManager {
     protected Window wrapByCustomClass(Window window, Element element, Map<String, Object> params) {
         final String screenClass = element.attributeValue("class");
         if (!StringUtils.isBlank(screenClass)) {
-            Class<Window> aClass = scripting.loadClass(screenClass);
+            Class<?> aClass = scripting.loadClass(screenClass);
             if (aClass == null) {
                 String msg = messages.getMainMessage("unableToLoadControllerClass");
                 throw new GuiDevelopmentException(msg, window.getId());
@@ -713,9 +713,7 @@ public abstract class WindowManager {
         if (element != null) {
             String className = element.attributeValue("class");
             if (!StringUtils.isBlank(className)) {
-                Class aClass = scripting.loadClass(className);
-                if (aClass == null)
-                    throw new IllegalStateException("Class " + className + " is not found");
+                Class aClass = scripting.loadClassNN(className);
                 Object companion;
                 try {
                     companion = aClass.newInstance();

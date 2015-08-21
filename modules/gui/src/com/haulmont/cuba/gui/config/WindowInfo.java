@@ -9,6 +9,8 @@ import com.haulmont.cuba.core.global.Scripting;
 import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
+
 /**
  * Screen's registration information.
  *
@@ -45,6 +47,7 @@ public class WindowInfo {
     /**
      * Screen class as set in <code>screens.xml</code>
      */
+    @Nullable
     public Class getScreenClass() {
         if (screenClass == null) {
             String className = descriptor.attributeValue("class");

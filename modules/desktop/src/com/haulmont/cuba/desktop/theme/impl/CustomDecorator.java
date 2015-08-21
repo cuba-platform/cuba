@@ -12,9 +12,8 @@ import com.haulmont.cuba.desktop.theme.ComponentDecorator;
 import java.util.Set;
 
 /**
- * <p>$Id$</p>
- *
  * @author Alexander Budarov
+ * @version $Id$
  */
 public class CustomDecorator implements ComponentDecorator {
 
@@ -26,7 +25,7 @@ public class CustomDecorator implements ComponentDecorator {
 
     @Override
     public void decorate(Object component, Set<String> state) {
-        Class decoratorClass = AppBeans.get(Scripting.class).loadClass(className);
+        Class decoratorClass = AppBeans.get(Scripting.class).loadClassNN(className);
         try {
             ComponentDecorator delegate = (ComponentDecorator) decoratorClass.newInstance();
             delegate.decorate(component, state);

@@ -58,7 +58,7 @@ public class DsBuilder {
 
     private String property;
 
-    private Class<? extends Datasource> dsClass;
+    private Class<?> dsClass;
 
     private CollectionDatasource.FetchMode fetchMode;
 
@@ -214,11 +214,11 @@ public class DsBuilder {
         return this;
     }
 
-    public Class<? extends Datasource> getDsClass() {
+    public Class<?> getDsClass() {
         return dsClass;
     }
 
-    public DsBuilder setDsClass(Class<? extends Datasource> dsClass) {
+    public DsBuilder setDsClass(Class<?> dsClass) {
         this.dsClass = dsClass;
         return this;
     }
@@ -256,7 +256,7 @@ public class DsBuilder {
                 if (dsClass == null) {
                     datasource = new DatasourceImpl();
                 } else {
-                    datasource = dsClass.newInstance();
+                    datasource = (Datasource) dsClass.newInstance();
                 }
                 datasource.setup(dsContext, dataSupplier, id, metaClass, view);
             } else {
@@ -270,7 +270,7 @@ public class DsBuilder {
                 if (dsClass == null) {
                     datasource = isEmbedded ? new EmbeddedDatasourceImpl() : new PropertyDatasourceImpl();
                 } else {
-                    datasource = dsClass.newInstance();
+                    datasource = (Datasource) dsClass.newInstance();
                 }
                 ((NestedDatasource) datasource).setup(id, master, property);
             }

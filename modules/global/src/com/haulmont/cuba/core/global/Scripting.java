@@ -91,21 +91,16 @@ public interface Scripting {
      * @return      class or null if not found
      */
     @Nullable
-    <T> Class<T> loadClass(String name);
+    Class<?> loadClass(String name);
 
     /**
-     * DEPRECATED - use {@link Resources#getResourceAsStream(String)}
+     * Loads a class by name using the sequence described in {@link #loadClass(String)}.
+     *
+     * @param name  fully qualified class name
+     * @return      class
+     * @throws IllegalStateException if the class is not found
      */
-    @Deprecated
-    @Nullable
-    InputStream getResourceAsStream(String name);
-
-    /**
-     * DEPRECATED - use {@link Resources#getResourceAsString(String)}
-     */
-    @Deprecated
-    @Nullable
-    String getResourceAsString(String name);
+    Class<?> loadClassNN(String name);
 
     /**
      * Clears compiled classes cache

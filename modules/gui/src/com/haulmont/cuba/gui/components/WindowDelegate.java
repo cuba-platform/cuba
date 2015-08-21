@@ -47,7 +47,7 @@ public class WindowDelegate {
         this.window = window;
     }
 
-    public Window wrapBy(Class<Window> wrapperClass) {
+    public Window wrapBy(Class<?> wrapperClass) {
         try {
             Constructor<?> constructor = null;
             // First try to find an old-style constructor with Frame parameter

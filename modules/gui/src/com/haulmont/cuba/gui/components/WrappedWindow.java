@@ -10,7 +10,7 @@ package com.haulmont.cuba.gui.components;
  */
 public interface WrappedWindow {
 
-    Window wrapBy(Class<Window> wrapperClass);
+    Window wrapBy(Class<?> wrapperClass);
 
     Window getWrapper();
 }

@@ -983,7 +983,7 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     @Override
-    public Window wrapBy(Class<Window> wrapperClass) {
+    public Window wrapBy(Class<?> wrapperClass) {
         return delegate.wrapBy(wrapperClass);
     }
 

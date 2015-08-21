@@ -108,7 +108,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         final String screenClass = element.attributeValue("class");
         if (!StringUtils.isBlank(screenClass)) {
             try {
-                Class<Window> aClass = scripting.loadClass(screenClass);
+                Class<?> aClass = scripting.loadClass(screenClass);
                 if (aClass == null)
                     aClass = ReflectionHelper.getClass(screenClass);
                 Frame wrappingFrame = ((WrappedFrame) frame).wrapBy(aClass);
@@ -153,9 +153,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         if (element != null) {
             String className = element.attributeValue("class");
             if (!StringUtils.isBlank(className)) {
-                Class aClass = scripting.loadClass(className);
-                if (aClass == null)
-                    throw new IllegalStateException("Class " + className + " is not found");
+                Class aClass = scripting.loadClassNN(className);
                 Object companion;
                 try {
                     companion = aClass.newInstance();

@@ -1034,7 +1034,7 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     @Override
-    public Window wrapBy(Class<Window> wrapperClass) {
+    public Window wrapBy(Class<?> wrapperClass) {
         return delegate.wrapBy(wrapperClass);
     }
 

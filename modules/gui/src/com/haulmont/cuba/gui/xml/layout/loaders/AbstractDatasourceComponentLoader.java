@@ -45,20 +45,20 @@ public abstract class AbstractDatasourceComponentLoader extends ComponentLoader 
         final Element formatterElement = element.element("formatter");
         if (formatterElement != null) {
             final String className = formatterElement.attributeValue("class");
-            final Class<Formatter> aClass = scripting.loadClass(className);
+            final Class<?> aClass = scripting.loadClass(className);
             if (aClass == null)
                 throw new GuiDevelopmentException("Class " + className + " is not found", context.getFullFrameId());
             try {
-                final Constructor<Formatter> constructor = aClass.getConstructor(Element.class);
+                final Constructor<?> constructor = aClass.getConstructor(Element.class);
                 try {
-                    return constructor.newInstance(formatterElement);
+                    return (Formatter) constructor.newInstance(formatterElement);
                 } catch (Throwable e) {
                     throw new GuiDevelopmentException("Unable to instatiate class " + className + ": " + e.toString(),
                             context.getFullFrameId());
                 }
             } catch (NoSuchMethodException e) {
                 try {
-                    return aClass.newInstance();
+                    return (Formatter) aClass.newInstance();
                 } catch (Exception e1) {
                     throw new GuiDevelopmentException("Unable to instatiate class " + className + ": " + e1.toString(),
                             context.getFullFrameId());
