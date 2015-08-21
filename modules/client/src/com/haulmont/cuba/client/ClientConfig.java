@@ -35,15 +35,6 @@ public interface ClientConfig extends Config {
     List<String> getConnectionUrlList();
 
     /**
-     * DEPRECATED! Use {@link #getConnectionUrlList()} to avoid mistakes when connecting to the cluster.
-     * @return middleware connection URL as it is defined in app.properties, i.e. in case of several URLs it will
-     * be a comma-separated list.
-     */
-    @Deprecated
-    @Property("cuba.connectionUrl")
-    String getConnectionUrl();
-
-    /**
      * @return Context of the middleware file download controller.
      */
     @Property("cuba.fileDownloadContext")

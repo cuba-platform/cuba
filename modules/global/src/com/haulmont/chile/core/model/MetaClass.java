@@ -59,16 +59,6 @@ public interface MetaClass extends MetadataObject {
     MetaProperty getPropertyNN(String name);
 
     /**
-     * DEPRECATED - use {@link #getPropertyPath(String)} instead
-     * Returns MetaPropertyPath object, representing path to the property from the current class
-     * @param propertyPath dot-separated string
-     * @return MetaPropertyPath instance. If the input parameter is wrong, an instance of
-     * MetaPropertyPath will be returned anyway.
-     */
-    @Deprecated
-    MetaPropertyPath getPropertyEx(String propertyPath);
-
-    /**
      * Returns MetaPropertyPath object, representing path to the property from the current class
      * @param propertyPath dot-separated string
      * @return MetaPropertyPath instance, or null if the input parameter doesn't represent a valid path.

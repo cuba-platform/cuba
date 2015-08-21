@@ -12,8 +12,6 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 
-import javax.annotation.Nullable;
-import javax.persistence.Table;
 import java.lang.annotation.Annotation;
 
 /**
@@ -130,17 +128,5 @@ public class PersistenceHelper {
         } else {
             throw new IllegalArgumentException("Unable to check if the attribute is loaded: the entity is of unknown type");
         }
-    }
-
-    /**
-     * @param entityClass entity class
-     * @return table name as defined in {@link Table} annotation, or <code>null</code> if there is no such annotation
-     * @deprecated please use com.haulmont.cuba.core.global.MetadataTools#getDatabaseTable instead
-     */
-    @Deprecated
-    @Nullable
-    public static String getTableName(Class<?> entityClass) {
-        Table annotation = entityClass.getAnnotation(Table.class);
-        return annotation == null ? null : annotation.name();
     }
 }

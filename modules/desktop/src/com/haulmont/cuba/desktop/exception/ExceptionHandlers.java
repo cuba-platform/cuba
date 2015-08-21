@@ -78,15 +78,6 @@ public class ExceptionHandlers {
     }
 
     /**
-     * Return all registered handlers.
-     * @return  modifiable handlers list
-     */
-    @Deprecated
-    public LinkedList<ExceptionHandler> getHandlers() {
-        return handlers;
-    }
-
-    /**
      * Delegates exception handling to registered handlers.
      * @param thread    current thread
      * @param exception exception instance

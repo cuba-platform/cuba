@@ -188,12 +188,6 @@ public class QueryTransformerAstBased implements QueryTransformer {
         return queryTreeTransformer.removeDistinct();
     }
 
-    @Deprecated
-    @Override
-    public void replaceOrderBy(String newOrderingFieldPath, boolean desc) {
-        replaceOrderBy(desc, newOrderingFieldPath);
-    }
-
     @Override
     public void replaceOrderBy(boolean desc, String... properties) {
         EntityReferenceInferer inferer = new EntityReferenceInferer(entityName);

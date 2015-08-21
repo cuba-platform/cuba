@@ -761,13 +761,13 @@ public class QueryTransformerAstBasedTest {
         QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
                         "group by h.level having h.level > 0 order by h.level", "sec$GroupHierarchy");
-        transformer.replaceOrderBy("group", false);
+        transformer.replaceOrderBy(false, "group");
         String res = transformer.getResult();
         assertEquals(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
                         "group by h.level having h.level > 0 order by h.group",
                 res);
-        transformer.replaceOrderBy("group", true);
+        transformer.replaceOrderBy(true, "group");
         res = transformer.getResult();
         assertEquals(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
@@ -779,14 +779,14 @@ public class QueryTransformerAstBasedTest {
         DomainModel model = prepareDomainModel();
         QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
                 "select h from sec$GroupHierarchy h", "sec$GroupHierarchy");
-        transformer.replaceOrderBy("parent.group", false);
+        transformer.replaceOrderBy(false, "parent.group");
         String res = transformer.getResult();
         assertEquals(
                 "select h from sec$GroupHierarchy h left join h.parent h_parent order by h_parent.group",
                 res);
         transformer.reset();
 
-        transformer.replaceOrderBy("parent.other.group", true);
+        transformer.replaceOrderBy(true, "parent.other.group");
         res = transformer.getResult();
         assertEquals(
                 "select h from sec$GroupHierarchy h left join h.parent.other h_parent_other order by h_parent_other.group DESC",
@@ -879,7 +879,7 @@ public class QueryTransformerAstBasedTest {
 
         transformer = new QueryTransformerAstBased(model,
                 "select c.colour from sec$Car c where c.colour.createdBy = :p order by c.colour.name", "sec$Colour");
-        transformer.replaceOrderBy("version", true);
+        transformer.replaceOrderBy(true, "version");
 
         res = transformer.getResult();
         assertEquals(

@@ -204,26 +204,6 @@ public abstract class AbstractConnection implements Connection {
         usListeners.remove(listener);
     }
 
-    @Override
-    public void addListener(ConnectionListener listener) {
-        addConnectionListener(listener);
-    }
-
-    @Override
-    public void removeListener(ConnectionListener listener) {
-        removeConnectionListener(listener);
-    }
-
-    @Override
-    public void addListener(UserSubstitutionListener listener) {
-        addSubstitutionListener(listener);
-    }
-
-    @Override
-    public void removeListener(UserSubstitutionListener listener) {
-        removeSubstitutionListener(listener);
-    }
-
     protected void fireConnectionListeners() throws LoginException {
         for (ConnectionListener listener : connListeners.keySet()) {
             listener.connectionStateChanged(this);

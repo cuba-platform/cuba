@@ -10,7 +10,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -80,44 +79,6 @@ public class AppContext {
      */
     public static void setApplicationContext(@Nullable ApplicationContext applicationContext) {
         context = applicationContext;
-    }
-
-    /**
-     * DEPRECATED because this class is considered system-level and should not be called from application code.
-     * Use {@link com.haulmont.cuba.core.global.AppBeans} instead.
-     */
-    @Deprecated
-    @Nonnull
-    public static <T> T getBean(String name) {
-        return (T) context.getBean(name);
-    }
-
-    /**
-     * DEPRECATED because this class is considered system-level and should not be called from application code.
-     * Use {@link com.haulmont.cuba.core.global.AppBeans} instead.
-     */
-    @Deprecated
-    @Nonnull
-    public static <T> T getBean(String name, Class<T> beanType) {
-        return context.getBean(name, beanType);
-    }
-
-    /**
-     * DEPRECATED because this class is considered system-level and should not be called from application code.
-     * Use {@link com.haulmont.cuba.core.global.AppBeans} instead.
-     */
-    @Deprecated
-    public static <T> T getBean(Class<T> beanType) {
-        return context.getBean(beanType);
-    }
-
-    /**
-     * DEPRECATED because this class is considered system-level and should not be called from application code.
-     * Use {@link com.haulmont.cuba.core.global.AppBeans} instead.
-     */
-    @Deprecated
-    public static <T> Map<String, T> getBeansOfType(Class<T> beanType) {
-        return context.getBeansOfType(beanType);
     }
 
     /**

@@ -7,7 +7,10 @@ package com.haulmont.cuba.core.app.dynamicattributes;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
-import com.haulmont.chile.core.model.*;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaModel;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.impl.MetadataObjectImpl;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
@@ -67,11 +70,6 @@ public class DynamicAttributesMetaClass extends MetadataObjectImpl implements Me
         if (property == null)
             throw new IllegalArgumentException("Property '" + name + "' not found in " + getName());
         return property;
-    }
-
-    @Override
-    public MetaPropertyPath getPropertyEx(String propertyPath) {
-        return new MetaPropertyPath(this, properties.get(propertyPath));
     }
 
     @Override

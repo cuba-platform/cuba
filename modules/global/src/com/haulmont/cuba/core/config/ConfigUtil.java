@@ -130,9 +130,8 @@ public final class ConfigUtil {
     }
 
     /**
-     * Get the prefix associated with a configuration interface. If a
-     * {@link Prefix} annotation is present, that value is returned.
-     * Otherwise, if the interface has an enclosing class, the
+     * Get the prefix associated with a configuration interface.
+     * If the interface has an enclosing class, the
      * fully-qualified name of that class is used, or else the name of the
      * package containing the interface. In either of the latter two
      * cases, a '.' is appended to the name.
@@ -144,20 +143,15 @@ public final class ConfigUtil {
         // Foo -> ""
         // foo.Bar -> "foo."
         // foo.Bar$Baz -> "foo.Bar."
-        Prefix prefix = configInterface.getAnnotation(Prefix.class);
-        if (prefix != null) {
-            return prefix.value();
+        Class<?> enclosingClass = configInterface.getEnclosingClass();
+        if (enclosingClass != null) {
+            return enclosingClass.getName() + '.';
         } else {
-            Class<?> enclosingClass = configInterface.getEnclosingClass();
-            if (enclosingClass != null) {
-                return enclosingClass.getName() + '.';
+            Package pkg = configInterface.getPackage();
+            if (pkg != null) {
+                return pkg.getName() + '.';
             } else {
-                Package pkg = configInterface.getPackage();
-                if (pkg != null) {
-                    return pkg.getName() + '.';
-                } else {
-                    return "";
-                }
+                return "";
             }
         }
     }

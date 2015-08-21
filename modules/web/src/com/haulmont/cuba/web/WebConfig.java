@@ -141,16 +141,6 @@ public interface WebConfig extends Config {
     String getAppWindowTheme();
 
     /**
-     * @deprecated Replaced with cuba.themeConfig app property
-     * @return Supported web themes
-     */
-    @Property("cuba.web.availableAppThemes")
-    @Factory(factory = StringListTypeFactory.class)
-    @Default("havana|halo")
-    @Deprecated
-    List<String> getAvailableAppThemes();
-
-    /**
      * @return Whether to use inverse header colors if it is supported by theme.
      */
     @DefaultBoolean(true)

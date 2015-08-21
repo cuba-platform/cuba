@@ -139,7 +139,7 @@ public class QueryResultTest extends CubaTestCase {
     public void testFirstQuery() throws SQLException {
         DataService dataService = AppBeans.get(DataService.class);
         LoadContext context = new LoadContext(User.class).setView(View.LOCAL);
-        context.setQueryString("select u from sec$User u where u.name like :name").addParameter("name", "A-%");
+        context.setQueryString("select u from sec$User u where u.name like :name").setParameter("name", "A-%");
         List<Entity> entities = dataService.loadList(context);
         assertEquals(20, entities.size());
 

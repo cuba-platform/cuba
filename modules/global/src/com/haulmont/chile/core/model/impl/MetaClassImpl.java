@@ -113,28 +113,6 @@ public class MetaClassImpl extends MetadataObjectImpl implements MetaClass {
     }
 
     @Override
-    public MetaPropertyPath getPropertyEx(String propertyPath) {
-        String[] properties = propertyPath.split("[.]");
-        List<MetaProperty> metaProperties = new ArrayList<>();
-
-		MetaProperty currentProperty;
-		MetaClass currentClass = this;
-
-		for (String property : properties) {
-			if (currentClass == null) break;
-			currentProperty = currentClass.getProperty(property);
-			if (currentProperty == null) break;
-			
-			final Range range = currentProperty.getRange();
-			currentClass = range.isClass() ? range.asClass() : null;
-
-            metaProperties.add(currentProperty);
-		}
-		
-		return new MetaPropertyPath(this, metaProperties.toArray(new MetaProperty[metaProperties.size()]));
-	}
-
-    @Override
     public MetaPropertyPath getPropertyPath(String propertyPath) {
         String[] properties = propertyPath.split("[.]");
         List<MetaProperty> metaProperties = new ArrayList<>();

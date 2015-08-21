@@ -1506,14 +1506,6 @@ public class DesktopWindowManager extends WindowManager {
         }
     }
 
-    /**
-     * @deprecated Use {@link WindowManager#setWindowCaption(com.haulmont.cuba.gui.components.Window, String, String)}
-     */
-    @Deprecated
-    public void setCurrentWindowCaption(Window window, String caption, String description) {
-        setWindowCaption(window, caption, description);
-    }
-
     protected JComponent findTab(Integer hashCode) {
         Set<Map.Entry<JComponent, WindowBreadCrumbs>> set = tabs.entrySet();
         for (Map.Entry<JComponent, WindowBreadCrumbs> entry : set) {

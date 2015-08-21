@@ -239,14 +239,6 @@ public class LoadContext implements Serializable {
         }
 
         /**
-         * DEPRECATED because of bad name. Use {@link #setParameter(String, Object)}
-         */
-        @Deprecated
-        public Query addParameter(String name, Object value) {
-            return setParameter(name, value);
-        }
-
-        /**
          * Set value for a query parameter.
          * @param name  parameter name
          * @param value parameter value

@@ -250,12 +250,6 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
     }
 
     @Override
-    @Deprecated
-    public void replaceOrderBy(String property, boolean desc) {
-        replaceOrderBy(desc, property);
-    }
-
-    @Override
     public void replaceOrderBy(boolean desc, String... properties) {
         Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(buffer);
         String alias = findAlias(entityMatcher);

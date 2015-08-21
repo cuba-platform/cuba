@@ -94,11 +94,6 @@ public final class Datatypes {
             useLocaleLanguageOnly = false;
     }
 
-    @Deprecated
-    public static Datatypes getInstance() {
-        return instance;
-    }
-
     /**
      * Returns localized format strings.
      * @param locale selected locale

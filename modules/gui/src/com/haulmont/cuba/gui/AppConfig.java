@@ -57,14 +57,6 @@ public abstract class AppConfig {
     }
 
     /**
-     * DEPRECATED! Use {@link #createExportDisplay(Frame)}.
-     */
-    @Deprecated
-    public static ExportDisplay createExportDisplay() {
-        return AppBeans.get(ExportDisplay.NAME);
-    }
-
-    /**
      * Create an ExportDisplay implementation.
      *
      * @param frame current frame. It is needed for desktop implementation to correctly show dialog inside of currently
