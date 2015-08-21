@@ -17,9 +17,7 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.components.DateField;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.TimeField;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.ObjectUtils;
@@ -110,7 +108,7 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
         Messages messages = AppBeans.get(Messages.NAME);
         DesktopComponentsHelper.getTopLevelFrame(this).showNotification(
                 messages.getMessage(AppConfig.getMessagesPack(), "validationFail"),
-                IFrame.NotificationType.TRAY
+                com.haulmont.cuba.gui.components.Frame.NotificationType.TRAY
         );
     }
 

@@ -11,7 +11,7 @@ import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
@@ -101,7 +101,7 @@ public class AppFolderEditWindow extends FolderEditWindow {
         AppFolder folder = (AppFolder) AppFolderEditWindow.this.folder;
         if (StringUtils.trimToNull(nameField.getValue()) == null) {
             String msg = messages.getMessage(messagesPack, "folders.folderEditWindow.emptyName");
-            App.getInstance().getWindowManager().showNotification(msg, IFrame.NotificationType.TRAY);
+            App.getInstance().getWindowManager().showNotification(msg, Frame.NotificationType.TRAY);
             return;
         }
         folder.setName(nameField.getValue());
@@ -116,7 +116,7 @@ public class AppFolderEditWindow extends FolderEditWindow {
                 sortOrder = Integer.parseInt((String) value);
             } catch (NumberFormatException e) {
                 String msg = messages.getMessage(messagesPack, "folders.folderEditWindow.invalidSortOrder");
-                App.getInstance().getWindowManager().showNotification(msg, IFrame.NotificationType.TRAY);
+                App.getInstance().getWindowManager().showNotification(msg, Frame.NotificationType.TRAY);
                 return;
             }
             folder.setSortOrder(sortOrder);

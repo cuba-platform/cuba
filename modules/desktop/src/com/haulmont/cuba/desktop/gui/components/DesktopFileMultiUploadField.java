@@ -14,7 +14,7 @@ import com.haulmont.cuba.desktop.DesktopResources;
 import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.components.FileMultiUploadField;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import org.apache.commons.io.FileUtils;
 
@@ -89,7 +89,7 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
                             "multiupload.uploadError", file.getName());
 
                     TopLevelFrame topLevelFrame = DesktopComponentsHelper.getTopLevelFrame(this);
-                    topLevelFrame.showNotification(uploadError, IFrame.NotificationType.ERROR);
+                    topLevelFrame.showNotification(uploadError, Frame.NotificationType.ERROR);
                 }
                 return;
             }
@@ -143,7 +143,7 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
 
         String warningMsg = messages.formatMainMessage("upload.fileTooBig.message", file.getName(), maxUploadSizeMb);
 
-        getFrame().showNotification(warningMsg, IFrame.NotificationType.WARNING);
+        getFrame().showNotification(warningMsg, Frame.NotificationType.WARNING);
     }
 
     @Override

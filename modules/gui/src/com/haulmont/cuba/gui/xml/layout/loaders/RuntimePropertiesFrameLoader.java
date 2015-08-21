@@ -8,7 +8,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
@@ -26,7 +26,7 @@ import java.io.InputStream;
  * @author devyatkin
  * @version $Id$
  */
-public class RuntimePropertiesFrameLoader extends IFrameLoader {
+public class RuntimePropertiesFrameLoader extends FrameComponentLoader {
 
     private static final String DEFAULT_DESCRIPTOR = "/com/haulmont/cuba/gui/app/core/dynamicattributes/runtime-properties-frame.xml";
 
@@ -85,13 +85,13 @@ public class RuntimePropertiesFrameLoader extends IFrameLoader {
                 throw new GuiDevelopmentException("Template is not found", context.getFullFrameId(), "src", src);
         }
 
-        final IFrame component;
-        String currentIFrameId = context.getCurrentIFrameId();
+        final Frame component;
+        String currentFrameId = context.getCurrentFrameId();
         try {
-            context.setCurrentIFrameId(frameId);
-            component = (IFrame) loader.loadComponent(stream, parent, context.getParams());
+            context.setCurrentFrameId(frameId);
+            component = (Frame) loader.loadComponent(stream, parent, context.getParams());
         } finally {
-            context.setCurrentIFrameId(currentIFrameId);
+            context.setCurrentFrameId(currentFrameId);
             IOUtils.closeQuietly(stream);
         }
 

@@ -13,7 +13,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.app.core.dev.LayoutAnalyzer;
 import com.haulmont.cuba.gui.app.core.dev.LayoutTip;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.ShowInfoAction;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.security.global.UserSession;
@@ -132,7 +132,7 @@ public class MainTabSheetActionHandler implements Action.Handler {
             List<LayoutTip> tipsList = analyzer.analyze(window);
 
             if (tipsList.isEmpty()) {
-                window.showNotification("No layout problems found", IFrame.NotificationType.HUMANIZED);
+                window.showNotification("No layout problems found", Frame.NotificationType.HUMANIZED);
             } else {
                 window.openWindow("layoutAnalyzer", WindowManager.OpenType.DIALOG, ParamsMap.of("tipsList", tipsList));
             }

@@ -19,16 +19,16 @@ public class AssignActionPostInitTask implements ComponentLoader.PostInitTask {
 
     protected Component.ActionOwner component;
     protected String actionName;
-    private IFrame frame;
+    private Frame frame;
 
-    public AssignActionPostInitTask(Component.ActionOwner component, String actionName, IFrame frame) {
+    public AssignActionPostInitTask(Component.ActionOwner component, String actionName, Frame frame) {
         this.component = component;
         this.actionName = actionName;
         this.frame = frame;
     }
 
     @Override
-    public void execute(ComponentLoader.Context context, IFrame window) {
+    public void execute(ComponentLoader.Context context, Frame window) {
         final String[] elements = ValuePathHelper.parse(actionName);
         if (elements.length > 1) {
             final String id = elements[elements.length - 1];

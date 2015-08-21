@@ -6,7 +6,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
@@ -104,7 +104,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         timer.setId(element.attributeValue("id"));
         String delay = element.attributeValue("delay");
         if (StringUtils.isEmpty(delay)) {
-            throw new GuiDevelopmentException("Timer 'delay' can't be empty", context.getCurrentIFrameId(),
+            throw new GuiDevelopmentException("Timer 'delay' can't be empty", context.getCurrentFrameId(),
                     "Timer ID", timer.getId());
         }
 
@@ -154,7 +154,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
     protected void addInitTimerMethodTask(final Timer timer, final String timerMethodName) {
         context.addPostInitTask(new PostInitTask() {
             @Override
-            public void execute(Context context, final IFrame window) {
+            public void execute(Context context, final Frame window) {
                 Method timerMethod;
                 try {
                     timerMethod = window.getClass().getMethod(timerMethodName, Timer.class);
@@ -191,7 +191,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
     protected void addAutoStartTimerTask(final Timer timer) {
         context.addPostInitTask(new PostInitTask() {
             @Override
-            public void execute(Context context, IFrame window) {
+            public void execute(Context context, Frame window) {
                 timer.start();
             }
         });

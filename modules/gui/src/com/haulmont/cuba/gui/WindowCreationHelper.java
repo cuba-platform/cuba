@@ -49,7 +49,7 @@ public final class WindowCreationHelper {
      *
      * @param container frame
      */
-    public static void applyUiPermissions(IFrame container) {
+    public static void applyUiPermissions(Frame container) {
         Window window = container instanceof Window ? (Window) container : ComponentsHelper.getWindow(container);
         if (window == null) {
             log.warn(String.format("Unable to find window for container %s with id '%s'", container.getClass(), container.getId()));

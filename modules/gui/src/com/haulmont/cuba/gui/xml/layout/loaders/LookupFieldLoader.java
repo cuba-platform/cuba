@@ -64,10 +64,10 @@ public class LookupFieldLoader extends AbstractFieldLoader {
         if (StringUtils.isNotEmpty(newOptionHandlerMethod)) {
             context.addPostInitTask(new PostInitTask() {
                 @Override
-                public void execute(Context context, final IFrame window) {
+                public void execute(Context context, final Frame window) {
                     final Method newOptionHandler;
                     try {
-                        Class<? extends IFrame> windowClass = window.getClass();
+                        Class<? extends Frame> windowClass = window.getClass();
                         newOptionHandler = windowClass.getMethod(newOptionHandlerMethod, LookupField.class, String.class);
                     } catch (NoSuchMethodException e) {
                         Map<String, Object> params = new HashMap<>(2);

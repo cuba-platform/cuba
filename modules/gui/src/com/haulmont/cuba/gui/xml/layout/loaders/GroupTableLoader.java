@@ -5,8 +5,8 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.GroupTable;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -53,7 +53,7 @@ public class GroupTableLoader extends TableLoader {
                 }
             }
             context.addPostInitTask(new PostInitTask() {
-                public void execute(Context context, IFrame window) {
+                public void execute(Context context, Frame window) {
                     ((GroupTable) component).groupBy(groupProperties.toArray());
                 }
             });
@@ -69,7 +69,7 @@ public class GroupTableLoader extends TableLoader {
                 }
             }
             context.addPostInitTask(new PostInitTask() {
-                public void execute(Context context, IFrame window) {
+                public void execute(Context context, Frame window) {
                     ((GroupTable) component).disableGroupBy(groupDisallowedProperties);
                 }
             });

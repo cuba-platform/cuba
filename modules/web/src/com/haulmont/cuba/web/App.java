@@ -9,7 +9,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.settings.SettingsClient;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
@@ -233,7 +233,7 @@ public abstract class App {
                 String message = service.getMessages();
                 if (message != null) {
                     message = message.replace("\n", "<br/>");
-                    getWindowManager().showNotification(message, IFrame.NotificationType.ERROR_HTML);
+                    getWindowManager().showNotification(message, Frame.NotificationType.ERROR_HTML);
                 }
             } catch (NoUserSessionException ignored) {
                 // ignore no user session exception

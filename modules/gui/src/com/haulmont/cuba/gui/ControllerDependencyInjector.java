@@ -13,7 +13,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -37,12 +37,12 @@ import java.util.*;
  */
 public class ControllerDependencyInjector {
 
-    private IFrame frame;
+    private Frame frame;
     private Map<String,Object> params;
 
     private Log log = LogFactory.getLog(getClass());
 
-    public ControllerDependencyInjector(IFrame frame, Map<String,Object> params) {
+    public ControllerDependencyInjector(Frame frame, Map<String,Object> params) {
         this.frame = frame;
         this.params = params;
     }
@@ -135,7 +135,7 @@ public class ControllerDependencyInjector {
             assignValue(element, instance);
         } else if (required) {
             Class<?> declaringClass = ((Member) element).getDeclaringClass();
-            Class<? extends IFrame> frameClass = frame.getClass();
+            Class<? extends Frame> frameClass = frame.getClass();
 
             String msg;
             if (frameClass == declaringClass) {

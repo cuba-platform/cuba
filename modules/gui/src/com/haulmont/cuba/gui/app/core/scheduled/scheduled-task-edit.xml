@@ -142,6 +142,6 @@
                 </rows>
             </grid>
         </scrollBox>
-        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        <frame id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>

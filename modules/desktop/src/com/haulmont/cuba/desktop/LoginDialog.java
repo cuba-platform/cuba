@@ -9,7 +9,6 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.LoginProperties;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.security.global.LoginException;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.StringUtils;
@@ -151,7 +150,7 @@ public class LoginDialog extends JDialog {
             App.getInstance().getMainFrame().showNotification(
                     caption,
                     ex.getMessage(),
-                    IFrame.NotificationType.ERROR
+                    com.haulmont.cuba.gui.components.Frame.NotificationType.ERROR
             );
         }
     }

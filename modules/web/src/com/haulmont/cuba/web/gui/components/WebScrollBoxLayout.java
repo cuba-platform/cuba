@@ -6,7 +6,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.ScrollBoxLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
@@ -174,7 +174,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
     }
 
     @Override
-    public void setFrame(IFrame frame) {
+    public void setFrame(Frame frame) {
         super.setFrame(frame);
 
         if (frame != null) {

@@ -28,7 +28,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(Window.Editor.NAME, DesktopWindow.Editor.class);
         classes.put(Window.Lookup.NAME, DesktopWindow.Lookup.class);
 
-        classes.put(IFrame.NAME, DesktopFrame.class);
+        classes.put(Frame.NAME, DesktopFrame.class);
         classes.put(HBoxLayout.NAME, DesktopHBox.class);
         classes.put(VBoxLayout.NAME, DesktopVBox.class);
         classes.put(GridLayout.NAME, DesktopGridLayout.class);

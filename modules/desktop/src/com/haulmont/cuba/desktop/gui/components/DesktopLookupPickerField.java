@@ -7,7 +7,7 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.LookupPickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -117,7 +117,7 @@ public class DesktopLookupPickerField extends DesktopLookupField implements Look
     }
 
     @Override
-    public void setFrame(IFrame frame) {
+    public void setFrame(Frame frame) {
         super.setFrame(frame);
         pickerField.setFrame(frame);
     }

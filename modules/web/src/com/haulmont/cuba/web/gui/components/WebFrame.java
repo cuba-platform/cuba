@@ -32,13 +32,13 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  * @author abramov
  * @version $Id$
  */
-public class WebFrame extends WebVBoxLayout implements IFrame, WrappedFrame {
+public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
 
     protected String messagePack;
     protected FrameContext context;
     protected DsContext dsContext;
 
-    protected IFrame wrapper;
+    protected Frame wrapper;
 
     protected Map<String, com.haulmont.cuba.gui.components.Component> allComponents = new HashMap<>();
 
@@ -64,21 +64,21 @@ public class WebFrame extends WebVBoxLayout implements IFrame, WrappedFrame {
     }
 
     @Override
-    public IFrame wrapBy(Class<? extends IFrame> aClass) {
+    public Frame wrapBy(Class<? extends Frame> aClass) {
         try {
-            // First try to find an old-style constructor with IFrame parameter
+            // First try to find an old-style constructor with Frame parameter
             Constructor<?> constructor = null;
             try {
-                constructor = aClass.getConstructor(IFrame.class);
+                constructor = aClass.getConstructor(Frame.class);
             } catch (NoSuchMethodException e) {
                 //
             }
             if (constructor != null) {
-                wrapper = (IFrame) constructor.newInstance(this);
+                wrapper = (Frame) constructor.newInstance(this);
             } else {
                 // If not found, get the default constructor
                 constructor = aClass.getConstructor();
-                wrapper = (IFrame) constructor.newInstance();
+                wrapper = (Frame) constructor.newInstance();
                 ((AbstractFrame) wrapper).setWrappedFrame(this);
             }
             return wrapper;
@@ -88,7 +88,7 @@ public class WebFrame extends WebVBoxLayout implements IFrame, WrappedFrame {
     }
 
     @Override
-    public IFrame getWrapper() {
+    public Frame getWrapper() {
         return wrapper;
     }
 
@@ -221,13 +221,13 @@ public class WebFrame extends WebVBoxLayout implements IFrame, WrappedFrame {
     }
 
     @Override
-    public IFrame openFrame(Component parent, String windowAlias) {
+    public Frame openFrame(Component parent, String windowAlias) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().openFrame(wrapper, parent, windowInfo);
     }
 
     @Override
-    public IFrame openFrame(Component parent, String windowAlias, Map<String, Object> params) {
+    public Frame openFrame(Component parent, String windowAlias, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().openFrame(wrapper, parent, windowInfo, params);
     }

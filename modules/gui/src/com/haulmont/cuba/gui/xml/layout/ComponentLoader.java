@@ -5,7 +5,7 @@
 package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.DsContext;
 import groovy.lang.Binding;
 import org.dom4j.Element;
@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public interface ComponentLoader {
 
-    public interface Context {
+    interface Context {
         Map<String, Object> getParams();
         DsContext getDsContext();
         Binding getBinding();
@@ -29,14 +29,14 @@ public interface ComponentLoader {
         void addPostInitTask(PostInitTask task);
         void executePostInitTasks();
 
-        IFrame getFrame();
-        void setFrame(IFrame frame);
+        Frame getFrame();
+        void setFrame(Frame frame);
 
         String getFullFrameId();
         void setFullFrameId(String frameId);
 
-        String getCurrentIFrameId();
-        void setCurrentIFrameId(String currentFrameId);
+        String getCurrentFrameId();
+        void setCurrentFrameId(String currentFrameId);
 
         Context getParent();
         void setParent(Context parent);
@@ -45,13 +45,13 @@ public interface ComponentLoader {
     /**
      * PostInitTasks are used to perform deferred initialization of visual components
      */
-    public interface PostInitTask {
+    interface PostInitTask {
         /**
          * This method will be invoked after window initialization
          * @param context loader context
          * @param window top-most window
          */
-        void execute(Context context, IFrame window);
+        void execute(Context context, Frame window);
     }
 
     Context getContext();

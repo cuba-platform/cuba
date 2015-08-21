@@ -82,7 +82,8 @@ public class LayoutLoaderConfig {
         config.register(TreeTable.NAME, TableLoader.class);
         config.register(GroupTable.NAME, GroupTableLoader.class);
 
-        config.register(IFrame.NAME, IFrameLoader.class);
+        config.register(Frame.NAME, FrameComponentLoader.class);
+        config.register("iframe", FrameComponentLoader.class); // for backward compatibility
         config.register(RuntimePropertiesFrame.NAME, RuntimePropertiesFrameLoader.class);
         config.register(SplitPanel.NAME, SplitPanelLoader.class);
         config.register(Tree.NAME, TreeLoader.class);

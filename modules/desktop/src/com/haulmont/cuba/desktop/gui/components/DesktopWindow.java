@@ -538,12 +538,12 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     @Override
-    public IFrame openFrame(Component parent, String windowAlias) {
+    public Frame openFrame(Component parent, String windowAlias) {
         return delegate.openFrame(parent, windowAlias);
     }
 
     @Override
-    public IFrame openFrame(Component parent, String windowAlias, Map<String, Object> params) {
+    public Frame openFrame(Component parent, String windowAlias, Map<String, Object> params) {
         return delegate.openFrame(parent, windowAlias, params);
     }
 
@@ -588,12 +588,12 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     @Override
-    public IFrame getFrame() {
+    public Frame getFrame() {
         return this;
     }
 
     @Override
-    public void setFrame(IFrame frame) {
+    public void setFrame(Frame frame) {
         throw new UnsupportedOperationException();
     }
 

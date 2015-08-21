@@ -8,7 +8,7 @@ package com.haulmont.cuba.desktop.exception;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.App;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.remoting.RemoteAccessException;
 
@@ -29,11 +29,11 @@ public class ConnectExceptionHandler implements ExceptionHandler {
                 Messages messages = AppBeans.get(Messages.NAME);
                 String msg = messages.getMessage(getClass(), "connectException.message");
                 if (throwable.getCause() == null) {
-                    App.getInstance().getMainFrame().showNotification(msg, IFrame.NotificationType.ERROR);
+                    App.getInstance().getMainFrame().showNotification(msg, Frame.NotificationType.ERROR);
                 } else {
                     String description = messages.formatMessage(getClass(), "connectException.description",
                             throwable.getCause().toString());
-                    App.getInstance().getMainFrame().showNotification(msg, description, IFrame.NotificationType.ERROR);
+                    App.getInstance().getMainFrame().showNotification(msg, description, Frame.NotificationType.ERROR);
                 }
                 return true;
             }

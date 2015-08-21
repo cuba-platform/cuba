@@ -9,7 +9,7 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.User;
@@ -199,7 +199,7 @@ public class WebUserIndicator extends WebAbstractComponent<HorizontalLayout> imp
                 getFrame().showOptionDialog(
                         messages.getMainMessage("substUserSelectDialog.title"),
                         messages.formatMainMessage("substUserSelectDialog.msg", newUserName),
-                        IFrame.MessageType.WARNING,
+                        Frame.MessageType.WARNING,
                         new Action[]{new ChangeSubstUserAction((User) userComboBox.getValue()) {
                             @Override
                             public void doRevert() {

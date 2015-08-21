@@ -14,7 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import javax.annotation.Nullable;
 import javax.swing.*;
 
-import static com.haulmont.cuba.gui.components.IFrame.NotificationType;
+import static com.haulmont.cuba.gui.components.Frame.NotificationType;
 
 /**
  * Represents Top level application frame

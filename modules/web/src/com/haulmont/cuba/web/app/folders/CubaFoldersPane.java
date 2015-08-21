@@ -14,7 +14,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.app.core.file.FileUploadDialog;
 import com.haulmont.cuba.gui.components.DialogAction;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskWrapper;
@@ -863,7 +863,7 @@ public class CubaFoldersPane extends VerticalLayout {
             App.getInstance().getWindowManager().showOptionDialog(
                     messages.getMainMessage("dialogs.Confirmation"),
                     messages.getMainMessage("folders.removeFolderConfirmation"),
-                    IFrame.MessageType.CONFIRMATION,
+                    Frame.MessageType.CONFIRMATION,
                     new com.haulmont.cuba.gui.components.Action[]{
                             new DialogAction(DialogAction.Type.YES) {
                                 @Override
@@ -922,7 +922,7 @@ public class CubaFoldersPane extends VerticalLayout {
                             dialog.showNotification(
                                     messages.getMainMessage("folders.importFailedNotification"),
                                     ex.getMessage(),
-                                    IFrame.NotificationType.ERROR
+                                    Frame.NotificationType.ERROR
                             );
                         }
                         refreshFolders();

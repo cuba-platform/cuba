@@ -7,7 +7,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.FlowBoxLayout;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.web.toolkit.ui.CubaFlowLayout;
 import com.vaadin.shared.ui.MarginInfo;
 
@@ -107,7 +107,7 @@ public class WebFlowBoxLayout extends WebAbstractComponent<CubaFlowLayout> imple
     }
 
     @Override
-    public void setFrame(IFrame frame) {
+    public void setFrame(Frame frame) {
         super.setFrame(frame);
 
         if (frame != null) {

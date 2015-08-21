@@ -9,7 +9,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -57,7 +57,7 @@ public abstract class AppConfig {
     }
 
     /**
-     * DEPRECATED! Use {@link #createExportDisplay(com.haulmont.cuba.gui.components.IFrame)}.
+     * DEPRECATED! Use {@link #createExportDisplay(Frame)}.
      */
     @Deprecated
     public static ExportDisplay createExportDisplay() {
@@ -71,7 +71,7 @@ public abstract class AppConfig {
      *              active main window. Can be null, but in this case a position of the dialog is not guaranteed.
      * @return  a new ExportDisplay instance
      */
-    public static ExportDisplay createExportDisplay(@Nullable IFrame frame) {
+    public static ExportDisplay createExportDisplay(@Nullable Frame frame) {
         ExportDisplay exportDisplay = AppBeans.get(ExportDisplay.NAME);
         exportDisplay.setFrame(frame);
         return exportDisplay;

@@ -5,7 +5,7 @@
 
 package com.haulmont.cuba.gui.executors;
 
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Window;
 
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("unused")
 public abstract class BackgroundTask<T, V> {
 
-    private final IFrame ownerFrame;
+    private final Frame ownerFrame;
 
     private final long timeoutMilliseconds;
 
@@ -56,7 +56,7 @@ public abstract class BackgroundTask<T, V> {
      * @param timeUnit    timeout time unit
      * @param ownerFrame
      */
-    protected BackgroundTask(long timeout, TimeUnit timeUnit, IFrame ownerFrame) {
+    protected BackgroundTask(long timeout, TimeUnit timeUnit, Frame ownerFrame) {
         this.ownerFrame = ownerFrame;
         this.timeoutMilliseconds = timeUnit.toMillis(timeout);
     }
@@ -169,7 +169,7 @@ public abstract class BackgroundTask<T, V> {
     /**
      * @return owner window
      */
-    public final IFrame getOwnerFrame() {
+    public final Frame getOwnerFrame() {
         return ownerFrame;
     }
 

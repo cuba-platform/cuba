@@ -52,26 +52,26 @@
 
         <tabSheet id="permissionsTabsheet">
             <tab id="screenPermissionsTab" caption="msg://screen-permissions">
-                <iframe src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/screens-permission-tab.xml"
+                <frame src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/screens-permission-tab.xml"
                         id="screensTabFrame" width="100%" height="100%"/>
             </tab>
             <tab id="entityPermissionsTab" caption="msg://entity-permissions" lazy="true">
-                <iframe src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/entities-permission-tab.xml"
+                <frame src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/entities-permission-tab.xml"
                         id="entitiesTabFrame" width="100%" height="100%"/>
             </tab>
             <tab id="propertyPermissionsTab" caption="msg://property-permissions" lazy="true">
-                <iframe src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/attributes-permission-tab.xml"
+                <frame src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/attributes-permission-tab.xml"
                         id="attributesTabFrame" width="100%" height="100%"/>
             </tab>
             <tab id="specificPermissionsTab" caption="msg://specific-permissions" lazy="true">
-                <iframe src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/specific-permission-tab.xml"
+                <frame src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/specific-permission-tab.xml"
                         id="specificTabFrame" width="100%" height="100%"/>
             </tab>
             <tab id="uiPermissionsTab" caption="msg://ui-permissions" lazy="true">
-                <iframe src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/ui-permission-tab.xml"
+                <frame src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/ui-permission-tab.xml"
                         id="uiTabFrame" width="100%" height="100%"/>
             </tab>
         </tabSheet>
-        <iframe id="windowActions" screen="editWindowActions"/>
+        <frame id="windowActions" screen="editWindowActions"/>
     </layout>
 </window>

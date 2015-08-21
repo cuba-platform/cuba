@@ -7,7 +7,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractOrderedLayout;
 
@@ -110,7 +110,7 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
     }
 
     @Override
-    public void setFrame(IFrame frame) {
+    public void setFrame(Frame frame) {
         super.setFrame(frame);
 
         if (frame != null) {

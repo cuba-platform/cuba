@@ -6,7 +6,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SplitPanel;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalSplitPanel;
 import com.vaadin.server.Sizeable;
@@ -124,7 +124,7 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     }
 
     @Override
-    public void setFrame(IFrame frame) {
+    public void setFrame(Frame frame) {
         super.setFrame(frame);
 
         if (frame != null) {

@@ -216,7 +216,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         if (!StringUtils.isBlank(align)) {
             context.addPostInitTask(new PostInitTask() {
                 @Override
-                public void execute(Context context, IFrame window) {
+                public void execute(Context context, Frame window) {
                     component.setAlignment(Component.Alignment.valueOf(align));
                 }
             });

@@ -9,7 +9,7 @@ import com.haulmont.cuba.core.global.DeletePolicyException;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.core.Ordered;
 
@@ -71,7 +71,7 @@ public class DeletePolicyHandler implements GenericExceptionHandler, Ordered {
             msg += "\n" + references + " \"" + localizedEntityName + "\"";
         }
 
-        windowManager.showNotification(msg, IFrame.NotificationType.ERROR);
+        windowManager.showNotification(msg, Frame.NotificationType.ERROR);
     }
 
     @Nullable

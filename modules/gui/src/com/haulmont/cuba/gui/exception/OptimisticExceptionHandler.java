@@ -6,7 +6,7 @@ package com.haulmont.cuba.gui.exception;
 
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import org.springframework.core.Ordered;
 
 import javax.annotation.ManagedBean;
@@ -53,7 +53,7 @@ public class OptimisticExceptionHandler extends AbstractGenericExceptionHandler 
         } else {
             msg = messages.getMessage(messages.getMainMessagePack(), "optimisticExceptionUnknownObject.message");
         }
-        windowManager.showNotification(msg, IFrame.NotificationType.ERROR);
+        windowManager.showNotification(msg, Frame.NotificationType.ERROR);
     }
 
     @Override

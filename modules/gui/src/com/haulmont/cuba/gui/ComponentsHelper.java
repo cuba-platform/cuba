@@ -68,7 +68,7 @@ public abstract class ComponentsHelper {
     }
 
     @Nullable
-    public static Component getFrameComponent(IFrame frame, String id) {
+    public static Component getFrameComponent(Frame frame, String id) {
         final String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1) {
             Component component = frame.getRegisteredComponent(id);
@@ -164,18 +164,18 @@ public abstract class ComponentsHelper {
      * @return      component instance or null if not found
      */
     @Nullable
-    public static Component findComponent(IFrame frame, String id) {
+    public static Component findComponent(Frame frame, String id) {
         Component find = frame.getComponent(id);
         if (find != null) {
             return find;
         } else {
             for (Component c : frame.getComponents()) {
-                if (c instanceof IFrame) {
-                    Component comp = ((IFrame) c).getComponent(id);
+                if (c instanceof Frame) {
+                    Component comp = ((Frame) c).getComponent(id);
                     if (comp != null) {
                         return comp;
                     } else {
-                        findComponent((IFrame) c, id);
+                        findComponent((Frame) c, id);
                     }
                 }
             }
@@ -212,7 +212,7 @@ public abstract class ComponentsHelper {
             visitor.visit(component, path + id);
 
             if (component instanceof com.haulmont.cuba.gui.components.Component.Container) {
-                String p = component instanceof IFrame ?
+                String p = component instanceof Frame ?
                         path + id + "." :
                         path;
                 __walkComponents(((com.haulmont.cuba.gui.components.Component.Container) component), visitor, p);
@@ -256,7 +256,7 @@ public abstract class ComponentsHelper {
 
     public static String getFilterComponentPath(Filter filter) {
         StringBuilder sb = new StringBuilder(filter.getId() != null ? filter.getId() : "filterWithoutId");
-        IFrame frame = filter.getFrame();
+        Frame frame = filter.getFrame();
         while (frame != null) {
             sb.insert(0, ".");
             String s = frame.getId() != null ? frame.getId() : "frameWithoutId";
@@ -281,7 +281,7 @@ public abstract class ComponentsHelper {
      */
     @Nullable
     public static Window getWindow(Component.BelongToFrame component) {
-        IFrame frame = component.getFrame();
+        Frame frame = component.getFrame();
         while (frame != null) {
             if (frame instanceof Window && frame.getFrame() == frame) {
                 Window window = (Window) frame;
@@ -301,7 +301,7 @@ public abstract class ComponentsHelper {
      */
     @Nullable
     public static Window getWindowImplementation(Component.BelongToFrame component) {
-        IFrame frame = component.getFrame();
+        Frame frame = component.getFrame();
         while (frame != null) {
             if (frame instanceof Window && frame.getFrame() == frame) {
                 Window window = (Window) frame;
@@ -312,7 +312,7 @@ public abstract class ComponentsHelper {
         return null;
     }
 
-    public static IFrame getFrameController(IFrame frame) {
+    public static Frame getFrameController(Frame frame) {
         if (frame instanceof WrappedFrame) {
             return  ((WrappedFrame) frame).getWrapper();
         } else if (frame instanceof WrappedWindow) {
@@ -322,7 +322,7 @@ public abstract class ComponentsHelper {
         }
     }
 
-    public static String getFullFrameId(IFrame frame) {
+    public static String getFullFrameId(Frame frame) {
         LinkedList<String> frameIds = new LinkedList<>();
         frameIds.addFirst(frame.getId());
         while (frame != null && !(frame instanceof Window) && frame != frame.getFrame()) {
@@ -341,7 +341,7 @@ public abstract class ComponentsHelper {
      * @throws IllegalStateException    if the component denoted by the path doesn't exist or is not an ActionsHolder
      */
     @Nullable
-    public static Action findAction(String actionName, IFrame frame) {
+    public static Action findAction(String actionName, Frame frame) {
         String[] elements = ValuePathHelper.parse(actionName);
         if (elements.length > 1) {
             String id = elements[elements.length - 1];
@@ -370,7 +370,7 @@ public abstract class ComponentsHelper {
     public static String getComponentPath(Component c) {
         StringBuilder sb = new StringBuilder(c.getId() == null ? "" : c.getId());
         if (c instanceof Component.BelongToFrame) {
-            IFrame frame = ((Component.BelongToFrame) c).getFrame();
+            Frame frame = ((Component.BelongToFrame) c).getFrame();
             while (frame != null) {
                 sb.insert(0, ".");
                 String s = frame.getId();

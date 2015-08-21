@@ -6,7 +6,7 @@
 package com.haulmont.cuba.desktop.gui.components.filter.edit;
 
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.filter.edit.FilterEditor;
 
 /**
@@ -18,6 +18,6 @@ public class DesktopFilterEditorCompanion implements FilterEditor.Companion {
     public void showComponentName(WindowManager windowManager, String title, String message) {
         windowManager.showMessageDialog(title,
                 String.format("<input value=\"%s\" size=\"40\"/>", message),
-                IFrame.MessageType.CONFIRMATION_HTML);
+                Frame.MessageType.CONFIRMATION_HTML);
     }
 }

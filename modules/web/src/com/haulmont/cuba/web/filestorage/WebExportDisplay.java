@@ -8,7 +8,7 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.FileTypesHelper;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.export.*;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
@@ -145,7 +145,7 @@ public class WebExportDisplay implements ExportDisplay {
     }
 
     @Override
-    public void setFrame(IFrame frame) {
+    public void setFrame(Frame frame) {
     }
 
     @Override

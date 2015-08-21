@@ -15,8 +15,8 @@ import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.SearchAutoCompleteSupport;
 import com.haulmont.cuba.desktop.sys.vcl.SearchComboBox;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.SearchField;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -26,6 +26,7 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
+import java.awt.Component;
 import java.awt.event.*;
 import java.util.Collections;
 import java.util.Map;
@@ -63,7 +64,7 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
 
     protected int minSearchStringLength = 0;
 
-    protected IFrame.NotificationType defaultNotificationType = IFrame.NotificationType.TRAY;
+    protected Frame.NotificationType defaultNotificationType = Frame.NotificationType.TRAY;
 
     protected Color searchEditBgColor = (Color) UIManager.get("cubaSearchEditBackground");
 
@@ -613,12 +614,12 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     }
 
     @Override
-    public IFrame.NotificationType getDefaultNotificationType() {
+    public Frame.NotificationType getDefaultNotificationType() {
         return defaultNotificationType;
     }
 
     @Override
-    public void setDefaultNotificationType(IFrame.NotificationType defaultNotificationType) {
+    public void setDefaultNotificationType(com.haulmont.cuba.gui.components.Frame.NotificationType defaultNotificationType) {
         this.defaultNotificationType = defaultNotificationType;
     }
 

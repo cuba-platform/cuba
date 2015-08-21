@@ -7,7 +7,7 @@ package com.haulmont.cuba.web.exception;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.web.App;
 import com.vaadin.data.Validator;
 import com.vaadin.server.DefaultErrorHandler;
@@ -57,7 +57,7 @@ public class InvalidValueExceptionHandler extends AbstractExceptionHandler {
         app.getWindowManager().showNotification(
                 messages.getMessage(getClass(), "validationFail.caption"),
                 messages.getMessage(getClass(), "validationFail"),
-                IFrame.NotificationType.TRAY
+                Frame.NotificationType.TRAY
         );
     }
 }

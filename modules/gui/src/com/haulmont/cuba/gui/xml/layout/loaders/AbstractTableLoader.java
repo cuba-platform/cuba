@@ -98,7 +98,7 @@ public abstract class AbstractTableLoader extends ActionsHolderLoader {
         final Element rowsElement = element.element("rows");
 
         if (rowsElement == null) {
-            throw new GuiDevelopmentException("Table doesn't have 'rows' element", context.getCurrentIFrameId(),
+            throw new GuiDevelopmentException("Table doesn't have 'rows' element", context.getCurrentFrameId(),
                     "Table ID", element.attributeValue("id"));
         }
 
@@ -121,17 +121,17 @@ public abstract class AbstractTableLoader extends ActionsHolderLoader {
         final String datasource = rowsElement.attributeValue("datasource");
         if (StringUtils.isBlank(datasource)) {
             throw new GuiDevelopmentException("Table 'rows' element doesn't have 'datasource' attribute",
-                    context.getCurrentIFrameId(), "Table ID", element.attributeValue("id"));
+                    context.getCurrentFrameId(), "Table ID", element.attributeValue("id"));
         }
         context.getFullFrameId();
 
         Datasource ds = context.getDsContext().get(datasource);
         if (ds == null) {
-            throw new GuiDevelopmentException("Can't find datasource by name: " + datasource, context.getCurrentIFrameId());
+            throw new GuiDevelopmentException("Can't find datasource by name: " + datasource, context.getCurrentFrameId());
         }
 
         if (!(ds instanceof CollectionDatasource)) {
-            throw new GuiDevelopmentException("Not a CollectionDatasource: " + datasource, context.getCurrentIFrameId());
+            throw new GuiDevelopmentException("Not a CollectionDatasource: " + datasource, context.getCurrentFrameId());
         }
 
         CollectionDatasource cds = (CollectionDatasource) ds;
@@ -375,7 +375,7 @@ public abstract class AbstractTableLoader extends ActionsHolderLoader {
                 column.setWidth(Integer.parseInt(width));
             } catch (NumberFormatException e) {
                 throw new GuiDevelopmentException("Property 'width' must contain only numeric value",
-                        context.getCurrentIFrameId(), "width", element.attributeValue("width"));
+                        context.getCurrentFrameId(), "width", element.attributeValue("width"));
             }
         }
         String align = element.attributeValue("align");
@@ -447,7 +447,7 @@ public abstract class AbstractTableLoader extends ActionsHolderLoader {
             final String className = formatterElement.attributeValue("class");
 
             if (StringUtils.isEmpty(className)) {
-                throw new GuiDevelopmentException("Formatter's attribute 'class' is not specified", context.getCurrentIFrameId());
+                throw new GuiDevelopmentException("Formatter's attribute 'class' is not specified", context.getCurrentFrameId());
             }
 
             Class<Formatter> aClass = scripting.loadClass(className);

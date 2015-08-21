@@ -8,7 +8,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
@@ -29,9 +29,9 @@ import java.io.InputStream;
  * @author abramov
  * @version $Id$
  */
-public class IFrameLoader extends ContainerLoader implements ComponentLoader {
+public class FrameComponentLoader extends ContainerLoader implements ComponentLoader {
 
-    public IFrameLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
+    public FrameComponentLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
 
@@ -40,7 +40,7 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
         String src = element.attributeValue("src");
         final String screenId = element.attributeValue("screen");
         if (src == null && screenId == null)
-            throw new GuiDevelopmentException("Either 'src' or 'screen' must be specified for 'iframe'", context.getFullFrameId());
+            throw new GuiDevelopmentException("Either 'src' or 'screen' must be specified for 'frame'", context.getFullFrameId());
         if (src == null) {
             WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
             WindowInfo windowInfo = windowConfig.getWindowInfo(screenId);
@@ -77,13 +77,13 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
                 UIPerformanceLogger.LifeCycle.LOAD_DESCRIPTOR,
                 Logger.getLogger(UIPerformanceLogger.class));
 
-        final IFrame component;
-        String currentIFrameId = context.getCurrentIFrameId();
+        final Frame component;
+        String currentFrameId = context.getCurrentFrameId();
         try {
-            context.setCurrentIFrameId(frameId);
-            component = (IFrame) loader.loadComponent(stream, parent, context.getParams());
+            context.setCurrentFrameId(frameId);
+            component = (Frame) loader.loadComponent(stream, parent, context.getParams());
         } finally {
-            context.setCurrentIFrameId(currentIFrameId);
+            context.setCurrentFrameId(currentFrameId);
             IOUtils.closeQuietly(stream);
         }
 

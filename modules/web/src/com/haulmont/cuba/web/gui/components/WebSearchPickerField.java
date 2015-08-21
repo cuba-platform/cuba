@@ -7,7 +7,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SearchPickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -188,7 +188,7 @@ public class WebSearchPickerField extends WebSearchField implements SearchPicker
     }
 
     @Override
-    public void setFrame(IFrame frame) {
+    public void setFrame(Frame frame) {
         super.setFrame(frame);
         pickerField.setFrame(frame);
     }

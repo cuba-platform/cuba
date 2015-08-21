@@ -6,7 +6,7 @@ package com.haulmont.cuba.web.exception;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebWindowManager;
@@ -89,7 +89,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
             windowManager.showNotification(
                     messages.getMessage(DefaultExceptionHandler.class, "exceptionDialog.caption", app.getLocale()),
                     rootCause.getClass().getSimpleName() + (rootCause.getMessage() != null ? "\n" + rootCause.getMessage() : ""),
-                    IFrame.NotificationType.ERROR
+                    Frame.NotificationType.ERROR
             );
         }
     }

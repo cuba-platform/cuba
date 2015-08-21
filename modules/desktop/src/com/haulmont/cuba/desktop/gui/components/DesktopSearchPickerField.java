@@ -13,7 +13,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
-import javax.swing.Action;
 import java.util.Collection;
 
 /**
@@ -116,7 +115,7 @@ public class DesktopSearchPickerField extends DesktopSearchField implements Sear
     }
 
     @Override
-    public void setFrame(IFrame frame) {
+    public void setFrame(Frame frame) {
         super.setFrame(frame);
         pickerField.setFrame(frame);
     }

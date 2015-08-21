@@ -21,7 +21,7 @@ import com.haulmont.cuba.desktop.theme.DesktopThemeLoader;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
@@ -669,12 +669,12 @@ public class App implements ConnectionListener {
         Integer licensed = (Integer) info.get("licensedSessions");
         if (licensed < 0) {
             mainFrame.showNotification("Invalid CUBA platform license. See server log for details.",
-                    IFrame.NotificationType.ERROR);
+                    Frame.NotificationType.ERROR);
         } else {
             Integer active = (Integer) info.get("activeSessions");
             if (licensed != 0 && active > licensed) {
                 mainFrame.showNotification("Number of licensed sessions exceeded", "active: " + active + ", licensed: " + licensed,
-                        IFrame.NotificationType.ERROR);
+                        Frame.NotificationType.ERROR);
             }
         }
     }

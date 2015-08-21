@@ -23,7 +23,7 @@ import java.util.Map;
  * @author abramov
  * @version $Id$
  */
-public interface IFrame
+public interface Frame
         extends ExpandingLayout,
                 Component.OrderedContainer,
                 Component.BelongToFrame,
@@ -32,7 +32,7 @@ public interface IFrame
                 Component.ActionsHolder {
 
     /** XML element name used to show a frame in an enclosing screen. */
-    String NAME = "iframe";
+    String NAME = "frame";
 
     /**
      * @return current frame context
@@ -185,7 +185,7 @@ public interface IFrame
      * @param windowAlias   frame ID as defined in <code>screens.xml</code>
      * @return              frame's controller instance
      */
-    IFrame openFrame(@Nullable Component parent, String windowAlias);
+    Frame openFrame(@Nullable Component parent, String windowAlias);
 
     /**
      * Load a frame registered in <code>screens.xml</code> and optionally show it inside a parent component of this
@@ -195,7 +195,7 @@ public interface IFrame
      * @param params        parameters to be passed into the frame's controller <code>init</code> method
      * @return              frame's controller instance
      */
-    IFrame openFrame(@Nullable Component parent, String windowAlias, Map<String, Object> params);
+    Frame openFrame(@Nullable Component parent, String windowAlias, Map<String, Object> params);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

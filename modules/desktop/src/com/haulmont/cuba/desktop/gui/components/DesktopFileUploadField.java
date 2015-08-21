@@ -13,7 +13,7 @@ import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.components.FileUploadField;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -77,7 +77,7 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
         if (file.length() > maxSize) {
             String warningMsg = messages.formatMainMessage("upload.fileTooBig.message", file.getName(), maxUploadSizeMb);
 
-            getFrame().showNotification(warningMsg, IFrame.NotificationType.WARNING);
+            getFrame().showNotification(warningMsg, Frame.NotificationType.WARNING);
         } else {
             boolean succcess = true;
             try {

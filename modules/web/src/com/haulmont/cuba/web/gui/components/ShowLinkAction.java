@@ -6,7 +6,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.App;
@@ -46,7 +46,7 @@ public class ShowLinkAction extends BaseAction {
         App.getInstance().getWindowManager().showMessageDialog(
                 messages.getMainMessage("table.showLinkAction"),
                 compileLink(ds),
-                IFrame.MessageType.CONFIRMATION_HTML
+                Frame.MessageType.CONFIRMATION_HTML
         );
     }
 

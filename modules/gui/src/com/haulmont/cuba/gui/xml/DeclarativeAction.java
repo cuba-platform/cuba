@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
  */
 public class DeclarativeAction extends BaseAction {
 
-    private IFrame frame;
+    private Frame frame;
     private String methodName;
 
     public DeclarativeAction(String id, String caption, String description, String icon, String enable, String visible,
@@ -31,8 +31,8 @@ public class DeclarativeAction extends BaseAction {
         this.enabled = enable == null ? true : Boolean.valueOf(enable);
         this.visible = visible == null ? true : Boolean.valueOf(visible);
         this.methodName = methodName;
-        if (holder instanceof IFrame) {
-            frame = (IFrame) holder;
+        if (holder instanceof Frame) {
+            frame = (Frame) holder;
         } else if (holder instanceof Component.BelongToFrame) {
             frame = ((Component.BelongToFrame) holder).getFrame();
         } else {
@@ -50,8 +50,8 @@ public class DeclarativeAction extends BaseAction {
         this.enabled = enabled;
         this.visible = visible;
         this.methodName = methodName;
-        if (holder instanceof IFrame) {
-            frame = (IFrame) holder;
+        if (holder instanceof Frame) {
+            frame = (Frame) holder;
         } else if (holder instanceof Component.BelongToFrame) {
             frame = ((Component.BelongToFrame) holder).getFrame();
         } else {

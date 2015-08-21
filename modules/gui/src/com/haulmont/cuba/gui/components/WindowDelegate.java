@@ -50,12 +50,12 @@ public class WindowDelegate {
     public Window wrapBy(Class<Window> wrapperClass) {
         try {
             Constructor<?> constructor = null;
-            // First try to find an old-style constructor with IFrame parameter
+            // First try to find an old-style constructor with Frame parameter
             try {
                 constructor = wrapperClass.getConstructor(Window.class);
             } catch (NoSuchMethodException e) {
                 try {
-                    constructor = wrapperClass.getConstructor(IFrame.class);
+                    constructor = wrapperClass.getConstructor(Frame.class);
                 } catch (NoSuchMethodException e1) {
                     //
                 }
@@ -251,12 +251,12 @@ public class WindowDelegate {
         return window.getWindowManager().openLookup(windowInfo, handler, openType);
     }
 
-    public IFrame openFrame(Component parent, String windowAlias) {
+    public Frame openFrame(Component parent, String windowAlias) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return window.getWindowManager().openFrame(wrapper, parent, windowInfo);
     }
 
-    public IFrame openFrame(Component parent, String windowAlias, Map<String, Object> params) {
+    public Frame openFrame(Component parent, String windowAlias, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return window.getWindowManager().openFrame(wrapper, parent, windowInfo, params);
     }

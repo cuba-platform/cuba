@@ -10,7 +10,7 @@ import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import net.miginfocom.layout.CC;
 import org.apache.commons.lang.StringUtils;
 
@@ -216,7 +216,7 @@ public abstract class DesktopAbstractBox
     }
 
     @Override
-    public void setFrame(IFrame frame) {
+    public void setFrame(Frame frame) {
         super.setFrame(frame);
 
         if (frame != null) {

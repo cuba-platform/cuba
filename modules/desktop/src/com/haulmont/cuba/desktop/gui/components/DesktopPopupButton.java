@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Frame;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
@@ -242,12 +243,12 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
         }
 
         @Override
-        public IFrame getFrame() {
+        public Frame getFrame() {
             return DesktopPopupButton.this.getFrame();
         }
 
         @Override
-        public void setFrame(IFrame frame) {
+        public void setFrame(Frame frame) {
         }
 
         @Override

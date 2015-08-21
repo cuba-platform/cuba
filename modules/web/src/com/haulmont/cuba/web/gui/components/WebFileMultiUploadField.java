@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.FileMultiUploadField;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.web.App;
@@ -87,14 +87,14 @@ public class WebFileMultiUploadField extends WebAbstractComponent<CubaMultiUploa
             public void loadWebResourcesFailed() {
                 String resourcesLoadFailed = messages.getMessage(WebFileMultiUploadField.class, "multiupload.resources.notLoaded");
                 WebWindowManager wm = App.getInstance().getWindowManager();
-                wm.showNotification(resourcesLoadFailed, IFrame.NotificationType.ERROR);
+                wm.showNotification(resourcesLoadFailed, Frame.NotificationType.ERROR);
             }
 
             @Override
             public void flashNotInstalled() {
                 String swfNotSupported = messages.getMessage(WebFileMultiUploadField.class, "multiupload.resources.swfNotSupported");
                 WebWindowManager wm = App.getInstance().getWindowManager();
-                wm.showNotification(swfNotSupported, IFrame.NotificationType.ERROR);
+                wm.showNotification(swfNotSupported, Frame.NotificationType.ERROR);
             }
         });
 
@@ -145,7 +145,7 @@ public class WebFileMultiUploadField extends WebAbstractComponent<CubaMultiUploa
                 switch (errorCode) {
                     case QUEUE_LIMIT_EXCEEDED:
                         wm.showNotification(messages.getMessage(WebFileMultiUploadField.class, "multiupload.queueLimitExceed"),
-                                IFrame.NotificationType.WARNING);
+                                Frame.NotificationType.WARNING);
                         break;
                     case FILE_EXCEEDS_SIZE_LIMIT:
 
@@ -153,15 +153,15 @@ public class WebFileMultiUploadField extends WebAbstractComponent<CubaMultiUploa
                         final int maxUploadSizeMb = clientConfig.getMaxUploadSizeMb();
 
                         wm.showNotification(messages.formatMessage(WebFileMultiUploadField.class, "multiupload.filesizeLimitExceed", fileName, maxUploadSizeMb),
-                                IFrame.NotificationType.WARNING);
+                                Frame.NotificationType.WARNING);
                         break;
                     case SECURITY_ERROR:
                         wm.showNotification(messages.getMessage(WebFileMultiUploadField.class, "multiupload.securityError"),
-                                IFrame.NotificationType.WARNING);
+                                Frame.NotificationType.WARNING);
                         break;
                     case ZERO_BYTE_FILE:
                         wm.showNotification(messages.formatMessage(WebFileMultiUploadField.class, "multiupload.zerobyteFile", fileName),
-                                IFrame.NotificationType.WARNING);
+                                Frame.NotificationType.WARNING);
                         break;
                     default:
                         boolean handled = false;
@@ -169,7 +169,7 @@ public class WebFileMultiUploadField extends WebAbstractComponent<CubaMultiUploa
                             handled = handled | listener.uploadError(fileName);
                         if (!handled) {
                             String uploadError = messages.formatMessage(WebFileMultiUploadField.class, "multiupload.uploadError", fileName);
-                            wm.showNotification(uploadError, IFrame.NotificationType.ERROR);
+                            wm.showNotification(uploadError, Frame.NotificationType.ERROR);
                         }
                         break;
 

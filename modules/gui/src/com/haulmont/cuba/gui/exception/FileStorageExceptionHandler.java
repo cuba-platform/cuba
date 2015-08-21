@@ -5,11 +5,10 @@
 
 package com.haulmont.cuba.gui.exception;
 
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
@@ -43,6 +42,6 @@ public class FileStorageExceptionHandler extends AbstractGenericExceptionHandler
         if (msg == null) {
             msg = messages.getMessage(getClass(), "fileStorageException.message");
         }
-        windowManager.showNotification(msg, IFrame.NotificationType.ERROR);
+        windowManager.showNotification(msg, Frame.NotificationType.ERROR);
     }
 }

@@ -12,7 +12,7 @@ import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.export.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -38,7 +38,7 @@ import java.io.InputStream;
 @SuppressWarnings({"UnusedDeclaration"})
 public class DesktopExportDisplay implements ExportDisplay {
 
-    private IFrame frame;
+    private Frame frame;
 
     private Messages messages;
 
@@ -70,7 +70,7 @@ public class DesktopExportDisplay implements ExportDisplay {
         dialogMessage = String.format(dialogMessage, fileName);
 
         final String finalFileName = fileName;
-        getFrame().getWindowManager().showOptionDialog(fileCaption, dialogMessage, IFrame.MessageType.CONFIRMATION,
+        getFrame().getWindowManager().showOptionDialog(fileCaption, dialogMessage, Frame.MessageType.CONFIRMATION,
                 new com.haulmont.cuba.gui.components.Action[]{
                         new AbstractAction("action.openFile") {
                             @Override
@@ -108,7 +108,7 @@ public class DesktopExportDisplay implements ExportDisplay {
             destFile = File.createTempFile("get_" + FilenameUtils.getBaseName(finalFileName), "." + getFileExt(finalFileName));
         } catch (IOException e) {
             String message = messages.getMessage(DesktopExportDisplay.class, "export.tempFileError");
-            getFrame().getWindowManager().showNotification(message, IFrame.NotificationType.WARNING);
+            getFrame().getWindowManager().showNotification(message, Frame.NotificationType.WARNING);
         }
 
         if (destFile != null) {
@@ -118,7 +118,7 @@ public class DesktopExportDisplay implements ExportDisplay {
                 } catch (IOException ex) {
                     String message = messages.getMessage(DesktopExportDisplay.class, "export.openError");
                     getFrame().getWindowManager().showNotification(message,
-                            IFrame.NotificationType.WARNING);
+                            Frame.NotificationType.WARNING);
                 }
             }
         }
@@ -157,7 +157,7 @@ public class DesktopExportDisplay implements ExportDisplay {
     }
 
     @Override
-    public void setFrame(IFrame frame) {
+    public void setFrame(Frame frame) {
         this.frame = frame;
     }
 
@@ -183,11 +183,11 @@ public class DesktopExportDisplay implements ExportDisplay {
             }
         } catch (IOException e) {
             String message = messages.getMessage(DesktopExportDisplay.class, "export.saveError");
-            getFrame().getWindowManager().showNotification(message, IFrame.NotificationType.WARNING);
+            getFrame().getWindowManager().showNotification(message, com.haulmont.cuba.gui.components.Frame.NotificationType.WARNING);
             return false;
         } catch (ClosedDataProviderException e) {
             String message = messages.getMessage(DesktopExportDisplay.class, "export.dataProviderError");
-            getFrame().getWindowManager().showNotification(message, IFrame.NotificationType.WARNING);
+            getFrame().getWindowManager().showNotification(message, Frame.NotificationType.WARNING);
             return false;
         }
         return true;

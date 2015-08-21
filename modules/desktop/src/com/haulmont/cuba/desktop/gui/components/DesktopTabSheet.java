@@ -14,7 +14,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.TabSheet;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
@@ -153,7 +153,7 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
     }
 
     @Override
-    public void setFrame(IFrame frame) {
+    public void setFrame(Frame frame) {
         super.setFrame(frame);
 
         if (frame != null) {
@@ -249,7 +249,7 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
         if (!postInitTaskAdded) {
             context.addPostInitTask(new ComponentLoader.PostInitTask() {
                 @Override
-                public void execute(ComponentLoader.Context context, IFrame window) {
+                public void execute(ComponentLoader.Context context, Frame window) {
                     initComponentTabChangeListener();
                 }
             });

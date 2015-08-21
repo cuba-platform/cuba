@@ -14,7 +14,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DialogAction;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.exception.AccessDeniedHandler;
@@ -152,7 +152,7 @@ public class LinkHandler {
             app.getWindowManager().showOptionDialog(
                     messages.getMessage(getClass(), "toSubstitutedUser.title"),
                     getDialogMessage(substitutedUser),
-                    IFrame.MessageType.CONFIRMATION_HTML,
+                    Frame.MessageType.CONFIRMATION_HTML,
                     new Action[]{
                             new ChangeSubstUserAction(substitutedUser) {
                                 @Override
@@ -194,7 +194,7 @@ public class LinkHandler {
             app.getWindowManager().showOptionDialog(
                     messages.getMessage(getClass(), "warning.title"),
                     getWarningMessage(user),
-                    IFrame.MessageType.WARNING_HTML,
+                    Frame.MessageType.WARNING_HTML,
                     new Action[]{
                             new DialogAction(DialogAction.Type.OK) {
                                 @Override

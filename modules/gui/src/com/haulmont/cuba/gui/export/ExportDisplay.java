@@ -5,7 +5,7 @@
 package com.haulmont.cuba.gui.export;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 
 import javax.annotation.Nullable;
 
@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
  * Generic interace to show data exported from the system.
  *
  * <p/> Use client-specific implementation obtained by
- * {@link com.haulmont.cuba.gui.AppConfig#createExportDisplay(com.haulmont.cuba.gui.components.IFrame)} or by
+ * {@link com.haulmont.cuba.gui.AppConfig#createExportDisplay(Frame)} or by
  * injection into a screen controller.
  *
  * @author krivopustov
@@ -56,5 +56,5 @@ public interface ExportDisplay {
     void show(FileDescriptor fileDescriptor);
 
     /** For internal use only. Don't call from application code. */
-    void setFrame(IFrame frame);
+    void setFrame(Frame frame);
 }

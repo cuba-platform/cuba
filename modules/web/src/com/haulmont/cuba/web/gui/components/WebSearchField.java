@@ -4,7 +4,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SearchField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.App;
@@ -24,7 +24,7 @@ public class WebSearchField extends WebLookupField implements SearchField {
     protected int minSearchStringLength = 0;
     protected Mode mode = Mode.CASE_SENSITIVE;
 
-    protected IFrame.NotificationType defaultNotificationType = IFrame.NotificationType.TRAY;
+    protected Frame.NotificationType defaultNotificationType = Frame.NotificationType.TRAY;
 
     protected SearchNotifications searchNotifications = new SearchNotifications() {
         @Override
@@ -128,12 +128,12 @@ public class WebSearchField extends WebLookupField implements SearchField {
     }
 
     @Override
-    public IFrame.NotificationType getDefaultNotificationType() {
+    public Frame.NotificationType getDefaultNotificationType() {
         return defaultNotificationType;
     }
 
     @Override
-    public void setDefaultNotificationType(IFrame.NotificationType defaultNotificationType) {
+    public void setDefaultNotificationType(Frame.NotificationType defaultNotificationType) {
         this.defaultNotificationType = defaultNotificationType;
     }
 

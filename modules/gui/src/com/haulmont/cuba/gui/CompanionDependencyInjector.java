@@ -12,7 +12,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -42,9 +42,9 @@ public class CompanionDependencyInjector {
     private static final Log log = LogFactory.getLog(CompanionDependencyInjector.class);
 
     protected Object companion;
-    protected IFrame frame;
+    protected Frame frame;
 
-    public CompanionDependencyInjector(IFrame frame, Object companion) {
+    public CompanionDependencyInjector(Frame frame, Object companion) {
         this.companion = companion;
         this.frame = frame;
     }
@@ -198,7 +198,7 @@ public class CompanionDependencyInjector {
                     return beans.values().iterator().next();
             }
             // There are no Spring beans of required type - the last option is Frame
-            if (type.isAssignableFrom(IFrame.class)) {
+            if (type.isAssignableFrom(Frame.class)) {
                 return frame;
             }
             return null;

@@ -4,7 +4,7 @@
  */
 package com.haulmont.cuba.gui;
 
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.ValueListener;
 
 import java.util.Map;
@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public interface FrameContext {
 
-    IFrame getFrame();
+    Frame getFrame();
 
     /**
      * For a window contains parameters passed to the window on opening.

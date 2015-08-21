@@ -6,9 +6,8 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.SplitPanel;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -187,7 +186,7 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
     }
 
     @Override
-    public void setFrame(IFrame frame) {
+    public void setFrame(com.haulmont.cuba.gui.components.Frame frame) {
         super.setFrame(frame);
 
         if (frame != null) {

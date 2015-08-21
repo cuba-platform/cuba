@@ -177,7 +177,7 @@ public class AccessControlLoader extends ContainerLoader {
         }
 
         @Override
-        public void execute(Context context, IFrame window) {
+        public void execute(Context context, Frame window) {
 
             component.setEnabled(false);
             if (component instanceof Component.ActionOwner) {

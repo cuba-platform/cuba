@@ -7,7 +7,7 @@ package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
 import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
@@ -221,11 +221,11 @@ public class ParamWrapper implements Component.HasValue {
     }
 
     @Override
-    public IFrame getFrame() {
+    public Frame getFrame() {
         return null;
     }
 
     @Override
-    public void setFrame(IFrame frame) {
+    public void setFrame(Frame frame) {
     }
 }

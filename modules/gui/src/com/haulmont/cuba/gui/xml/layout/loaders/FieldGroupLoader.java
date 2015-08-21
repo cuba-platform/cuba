@@ -17,7 +17,7 @@ import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.FieldGroup;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -152,7 +152,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         // deffer attribute loading for custom fields
         context.addPostInitTask(new PostInitTask() {
             @Override
-            public void execute(Context context, IFrame window) {
+            public void execute(Context context, Frame window) {
                 final List<FieldGroup.FieldConfig> fields = component.getFields();
                 for (final FieldGroup.FieldConfig field : fields) {
                     if (field.isCustom()) {

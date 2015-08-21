@@ -27,9 +27,9 @@ import java.util.Map;
  * @author abramov
  * @version $Id$
  */
-public class AbstractFrame implements IFrame, Component.Wrapper, Component.OrderedContainer {
+public class AbstractFrame implements Frame, Component.Wrapper, Component.OrderedContainer {
 
-    protected IFrame frame;
+    protected Frame frame;
     private String styleName;
     private Object _companion;
 
@@ -42,7 +42,7 @@ public class AbstractFrame implements IFrame, Component.Wrapper, Component.Order
     }
 
     /** For internal use only. Don't call from application code. */
-    public void setWrappedFrame(IFrame frame) {
+    public void setWrappedFrame(Frame frame) {
         this.frame = frame;
     }
 
@@ -438,12 +438,12 @@ public class AbstractFrame implements IFrame, Component.Wrapper, Component.Order
     }
 
     @Override
-    public IFrame getFrame() {
+    public Frame getFrame() {
         return this.frame.getFrame();
     }
 
     @Override
-    public void setFrame(IFrame frame) {
+    public void setFrame(Frame frame) {
         this.frame.setFrame(frame);
         // register this wrapper instead of underlying frame
         frame.registerComponent(this);

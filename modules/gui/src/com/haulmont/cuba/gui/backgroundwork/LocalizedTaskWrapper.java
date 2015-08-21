@@ -7,7 +7,7 @@ package com.haulmont.cuba.gui.backgroundwork;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
@@ -45,7 +45,7 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
     public boolean handleException(final Exception ex) {
         boolean handled = wrappedTask.handleException(ex);
         if (!handled) {
-            final IFrame ownerFrame = wrappedTask.getOwnerFrame();
+            final Frame ownerFrame = wrappedTask.getOwnerFrame();
             if (ownerFrame != null) {
                 window.closeAndRun("close", new Runnable() {
                     @Override
@@ -64,15 +64,15 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
     }
 
     protected void showExecutionError(Exception ex) {
-        final IFrame ownerFrame = wrappedTask.getOwnerFrame();
+        final Frame ownerFrame = wrappedTask.getOwnerFrame();
         if (ownerFrame != null) {
             String localizedMessage = ex.getLocalizedMessage();
             if (StringUtils.isNotBlank(localizedMessage)) {
                 ownerFrame.showNotification(messages.getMessage(getClass(), "backgroundWorkProgress.executionError"),
-                        localizedMessage, IFrame.NotificationType.WARNING);
+                        localizedMessage, Frame.NotificationType.WARNING);
             } else {
                 ownerFrame.showNotification(messages.getMessage(getClass(), "backgroundWorkProgress.executionError"),
-                        IFrame.NotificationType.WARNING);
+                        Frame.NotificationType.WARNING);
             }
         }
     }
@@ -81,7 +81,7 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
     public boolean handleTimeoutException() {
         boolean handled = wrappedTask.handleTimeoutException();
         if (!handled) {
-            final IFrame ownerFrame = wrappedTask.getOwnerFrame();
+            final Frame ownerFrame = wrappedTask.getOwnerFrame();
             if (ownerFrame != null) {
                 window.closeAndRun("close", new Runnable() {
                     @Override
@@ -89,7 +89,7 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
                         ownerFrame.showNotification(
                                 messages.getMessage(getClass(), "backgroundWorkProgress.timeout"),
                                 messages.getMessage(getClass(), "backgroundWorkProgress.timeoutMessage"),
-                                IFrame.NotificationType.WARNING);
+                                Frame.NotificationType.WARNING);
                     }
                 });
                 handled = true;

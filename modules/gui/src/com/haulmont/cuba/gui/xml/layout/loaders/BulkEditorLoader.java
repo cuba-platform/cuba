@@ -77,7 +77,7 @@ public class BulkEditorLoader extends ComponentLoader {
 
         context.addPostInitTask(new PostInitTask() {
             @Override
-            public void execute(Context context, IFrame window) {
+            public void execute(Context context, Frame window) {
                 if (component.getListComponent() == null) {
                     Component bindComponent = component.getFrame().getComponent(listComponent);
                     if (!(bindComponent instanceof ListComponent)) {

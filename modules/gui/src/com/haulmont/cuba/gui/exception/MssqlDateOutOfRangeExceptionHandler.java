@@ -8,7 +8,7 @@ package com.haulmont.cuba.gui.exception;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import javax.annotation.ManagedBean;
@@ -62,6 +62,6 @@ public class MssqlDateOutOfRangeExceptionHandler implements GenericExceptionHand
 
     protected void doHandle(WindowManager windowManager) {
         String msg = messages.formatMessage(getClass(), "mssqlDateOutOfRangeException.message");
-        windowManager.showNotification(msg, IFrame.NotificationType.WARNING);
+        windowManager.showNotification(msg, Frame.NotificationType.WARNING);
     }
 }

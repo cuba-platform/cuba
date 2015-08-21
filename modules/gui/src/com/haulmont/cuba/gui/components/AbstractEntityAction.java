@@ -30,7 +30,7 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
 
     private static final long serialVersionUID = 4263878244286411498L;
     private T entity;
-    protected IFrame frame;
+    protected Frame frame;
     protected Table<T> table;
     protected Datasource<T> datasource;
 
@@ -42,7 +42,7 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
      * @param entity selected entity
      * @param frame  frame containing this action
      */
-    public AbstractEntityAction(String id, T entity, IFrame frame) {
+    public AbstractEntityAction(String id, T entity, Frame frame) {
         super(id);
         this.entity = entity;
         initAction(frame);
@@ -67,13 +67,13 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
      * @param datasource datasource with entity
      * @param frame      frame containing this action
      */
-    public AbstractEntityAction(String id, Datasource<T> datasource, IFrame frame) {
+    public AbstractEntityAction(String id, Datasource<T> datasource, Frame frame) {
         super(id);
         this.datasource = datasource;
         initAction(frame);
     }
 
-    protected void initAction(IFrame frame) {
+    protected void initAction(Frame frame) {
         this.frame = frame;
     }
 
@@ -191,7 +191,7 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
 
     protected boolean entityIsNotSelected() {
         if (getEntities() == null || getEntities().isEmpty()) {
-            frame.showOptionDialog(getActionMessage("notification.warning"), getNoEntityMessage(), IFrame.MessageType.WARNING, Arrays.<Action>asList(new DialogAction(DialogAction.Type.OK)));
+            frame.showOptionDialog(getActionMessage("notification.warning"), getNoEntityMessage(), Frame.MessageType.WARNING, Arrays.<Action>asList(new DialogAction(DialogAction.Type.OK)));
             return true;
         }
         return false;
@@ -202,7 +202,7 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
     }
 
     protected void showAfterActionNotification() {
-        frame.showNotification(getNotificationMessage(), IFrame.NotificationType.HUMANIZED);
+        frame.showNotification(getNotificationMessage(), Frame.NotificationType.HUMANIZED);
     }
 
     protected String getNotificationMessage() {
@@ -211,7 +211,7 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
 
     protected boolean supportMultiselect() {
         if (!isSupportMultiselect() && getEntities().size() != 1) {
-            frame.showOptionDialog(getActionMessage("notification.warning"), getNotSupportMultiselect(), IFrame.MessageType.WARNING, Arrays.<Action>asList(new DialogAction(DialogAction.Type.OK)));
+            frame.showOptionDialog(getActionMessage("notification.warning"), getNotSupportMultiselect(), Frame.MessageType.WARNING, Arrays.<Action>asList(new DialogAction(DialogAction.Type.OK)));
             return true;
         }
         return false;
@@ -228,7 +228,7 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
         if (supportMultiselect()) return;
         if (isConfirmation()) {
             frame.showOptionDialog(getConfirmationCaption(), getConfirmationText(),
-                    IFrame.MessageType.CONFIRMATION, Arrays.<Action>asList(new DialogAction(DialogAction.Type.OK) {
+                    Frame.MessageType.CONFIRMATION, Arrays.<Action>asList(new DialogAction(DialogAction.Type.OK) {
                 @Override
                 public void actionPerform(Component component) {
                     execute(buttonComponent);

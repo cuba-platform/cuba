@@ -48,8 +48,8 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE;
-import static com.haulmont.cuba.gui.components.IFrame.MessageType;
-import static com.haulmont.cuba.gui.components.IFrame.NotificationType;
+import static com.haulmont.cuba.gui.components.Frame.MessageType;
+import static com.haulmont.cuba.gui.components.Frame.NotificationType;
 import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertNotificationType;
 import static com.vaadin.server.Sizeable.Unit;
 
@@ -914,7 +914,7 @@ public class WebWindowManager extends WindowManager {
     }
 
     @Override
-    public void showFrame(com.haulmont.cuba.gui.components.Component parent, IFrame frame) {
+    public void showFrame(com.haulmont.cuba.gui.components.Component parent, Frame frame) {
         if (parent instanceof com.haulmont.cuba.gui.components.Component.Container) {
             com.haulmont.cuba.gui.components.Component.Container container =
                     (com.haulmont.cuba.gui.components.Component.Container) parent;
@@ -939,19 +939,19 @@ public class WebWindowManager extends WindowManager {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    public void showNotification(String caption, IFrame.NotificationType type) {
+    public void showNotification(String caption, Frame.NotificationType type) {
         showNotification(caption, null, type);
     }
 
     @Override
-    public void showNotification(String caption, String description, IFrame.NotificationType type) {
+    public void showNotification(String caption, String description, Frame.NotificationType type) {
         Notification notification = new Notification(caption, description, convertNotificationType(type));
         notification.setHtmlContentAllowed(NotificationType.isHTML(type));
         setNotificationDelayMsec(notification, type);
         notification.show(Page.getCurrent());
     }
 
-    protected void setNotificationDelayMsec(Notification notification, IFrame.NotificationType type) {
+    protected void setNotificationDelayMsec(Notification notification, Frame.NotificationType type) {
         switch (type) {
             case HUMANIZED:
             case HUMANIZED_HTML:
@@ -1179,13 +1179,13 @@ public class WebWindowManager extends WindowManager {
     }
 
     @Override
-    public void initDebugIds(final IFrame frame) {
+    public void initDebugIds(final Frame frame) {
         if (ui.isTestMode()) {
             com.haulmont.cuba.gui.ComponentsHelper.walkComponents(frame, new ComponentVisitor() {
                 @Override
                 public void visit(com.haulmont.cuba.gui.components.Component component, String name) {
                     if (component.getDebugId() == null) {
-                        IFrame componentFrame = null;
+                        Frame componentFrame = null;
                         if (component instanceof com.haulmont.cuba.gui.components.Component.BelongToFrame) {
                             componentFrame = ((com.haulmont.cuba.gui.components.Component.BelongToFrame) component).getFrame();
                         }

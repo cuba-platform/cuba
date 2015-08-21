@@ -22,6 +22,6 @@
                 <field id="stringValue"/>
             </column>
         </fieldGroup>
-        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        <frame id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>

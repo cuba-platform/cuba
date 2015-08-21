@@ -111,10 +111,10 @@ public class RelatedAction extends AbstractAction {
                 }
             });
             if (!found) {
-                target.getFrame().showNotification(messages.getMainMessage("actions.Related.FilterNotFound"), IFrame.NotificationType.WARNING);
+                target.getFrame().showNotification(messages.getMainMessage("actions.Related.FilterNotFound"), Frame.NotificationType.WARNING);
             }
         } else {
-            target.getFrame().showNotification(messages.getMainMessage("actions.Related.NotSelected"), IFrame.NotificationType.HUMANIZED);
+            target.getFrame().showNotification(messages.getMainMessage("actions.Related.NotSelected"), Frame.NotificationType.HUMANIZED);
         }
     }
 

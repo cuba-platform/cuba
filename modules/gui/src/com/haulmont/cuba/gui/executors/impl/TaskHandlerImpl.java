@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
@@ -51,7 +51,7 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
         BackgroundTask<T, V> task = taskExecutor.getTask();
         if (task.getOwnerFrame() != null) {
-            IFrame ownerFrame = task.getOwnerFrame();
+            Frame ownerFrame = task.getOwnerFrame();
             if (ownerFrame.getFrame() != null) {
                 closeListener = new Window.CloseListener() {
                     @Override
@@ -75,7 +75,7 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
     private void ownerWindowClosed() {
         if (isAlive()) {
             UUID userId = getUserSession().getId();
-            IFrame ownerFrame = getTask().getOwnerFrame();
+            Frame ownerFrame = getTask().getOwnerFrame();
             String windowClass = ownerFrame.getClass().getCanonicalName();
             log.trace("Window closed. User: " + userId + " Window: " + windowClass);
 
@@ -126,7 +126,7 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
     private void disposeResources() {
         // force remove close listener
-        IFrame ownerFrame = getTask().getOwnerFrame();
+        Frame ownerFrame = getTask().getOwnerFrame();
         if (ownerFrame != null) {
             Window ownerWindow = ComponentsHelper.getWindowImplementation(ownerFrame);
             ownerWindow.removeListener(closeListener);
@@ -153,7 +153,7 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
     public final void close() {
         if (AppContext.isStarted()) {
             UUID userId = getUserSession().getId();
-            IFrame ownerFrame = getTask().getOwnerFrame();
+            Frame ownerFrame = getTask().getOwnerFrame();
 
             disposeResources();
 

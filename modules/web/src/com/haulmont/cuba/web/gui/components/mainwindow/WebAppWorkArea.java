@@ -7,8 +7,7 @@ package com.haulmont.cuba.web.gui.components.mainwindow;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.components.BoxLayout;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.VBoxLayout;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -89,7 +88,7 @@ public class WebAppWorkArea extends WebAbstractComponent<VerticalLayout> impleme
     }
 
     @Override
-    public void setFrame(IFrame frame) {
+    public void setFrame(Frame frame) {
         super.setFrame(frame);
 
         initialLayout.setFrame(frame);

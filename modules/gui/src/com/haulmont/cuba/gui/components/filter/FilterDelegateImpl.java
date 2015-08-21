@@ -1114,7 +1114,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             } else {
 
                 windowManager.showOptionDialog(messages.getMainMessage("removeApplied.title"),
-                        messages.getMainMessage("removeApplied.message"), IFrame.MessageType.WARNING,
+                        messages.getMainMessage("removeApplied.message"), Frame.MessageType.WARNING,
                         new Action[]{
                                 new DialogAction(DialogAction.Type.YES) {
                                     @Override
@@ -1286,7 +1286,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 if (!haveCorrectCondition) {
                     if (!isNewWindow) {
                         windowManager.showNotification(messages.getMainMessage("filter.emptyConditions"),
-                                IFrame.NotificationType.HUMANIZED);
+                                Frame.NotificationType.HUMANIZED);
                     }
                     return false;
                 }
@@ -1304,7 +1304,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             if (!haveRequiredConditions) {
                 if (!isNewWindow) {
                     windowManager.showNotification(messages.getMainMessage("filter.emptyRequiredConditions"),
-                            IFrame.NotificationType.HUMANIZED);
+                            Frame.NotificationType.HUMANIZED);
                 }
                 return false;
             }
@@ -1328,7 +1328,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         String searchTerm = ftsSearchCriteriaField.getValue();
         if (Strings.isNullOrEmpty(searchTerm) && clientConfig.getGenericFilterChecking()) {
-            windowManager.showNotification(getMessage("Filter.fillSearchCondition"), IFrame.NotificationType.TRAY);
+            windowManager.showNotification(getMessage("Filter.fillSearchCondition"), Frame.NotificationType.TRAY);
             return;
         }
 
@@ -2017,7 +2017,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             windowManager.showOptionDialog(
                     getMessage("Filter.removeDialogTitle"),
                     getMessage("Filter.removeDialogMessage"),
-                    IFrame.MessageType.CONFIRMATION,
+                    Frame.MessageType.CONFIRMATION,
                     new Action[]{
                             new DialogAction(DialogAction.Type.YES) {
                                 @Override
@@ -2186,7 +2186,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 return;
             }
 
-            IFrame frame = filter.getFrame();
+            Frame frame = filter.getFrame();
             String[] strings = ValuePathHelper.parse(ComponentsHelper.getFilterComponentPath(filter));
             String windowAlias = strings[0];
             StringBuilder lookupAlias = new StringBuilder(windowAlias);

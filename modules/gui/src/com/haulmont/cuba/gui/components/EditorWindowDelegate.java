@@ -178,7 +178,7 @@ public class EditorWindowDelegate extends WindowDelegate {
                                 lockInfo.getUser().getLogin(),
                                 Datatypes.getNN(Date.class).format(lockInfo.getSince(), userSessionSource.getLocale())
                         ),
-                        IFrame.NotificationType.HUMANIZED
+                        Frame.NotificationType.HUMANIZED
                 );
                 Action action = window.getAction(Window.Editor.WINDOW_COMMIT);
                 if (action != null)

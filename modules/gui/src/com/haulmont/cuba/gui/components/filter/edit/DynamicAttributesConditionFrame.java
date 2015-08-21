@@ -14,7 +14,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.filter.Op;
@@ -109,7 +109,7 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
 
         String error = checkCondition();
         if (error != null) {
-            showNotification(getMessage(error), IFrame.NotificationType.TRAY);
+            showNotification(getMessage(error), Frame.NotificationType.TRAY);
             return false;
         }
 

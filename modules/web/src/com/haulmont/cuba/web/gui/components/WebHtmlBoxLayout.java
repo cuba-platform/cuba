@@ -6,8 +6,8 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.HtmlBoxLayout;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.vaadin.ui.CustomLayout;
 
 import javax.annotation.Nonnull;
@@ -93,7 +93,7 @@ public class WebHtmlBoxLayout extends WebAbstractComponent<CustomLayout> impleme
     }
 
     @Override
-    public void setFrame(IFrame frame) {
+    public void setFrame(Frame frame) {
         super.setFrame(frame);
 
         if (frame != null) {

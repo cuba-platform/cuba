@@ -9,7 +9,7 @@ import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.FilterImplementation;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.BooleanUtils;
@@ -69,18 +69,18 @@ public class FilterLoader extends ComponentLoader {
         if (!StringUtils.isBlank(datasource)) {
             CollectionDatasource ds = (CollectionDatasource) context.getDsContext().get(datasource);
             if (ds == null)
-                throw new GuiDevelopmentException("Can't find datasource by name: " + datasource, context.getCurrentIFrameId());
+                throw new GuiDevelopmentException("Can't find datasource by name: " + datasource, context.getCurrentFrameId());
             filter.setDatasource(ds);
         }
 
         assignFrame(filter);
 
-        final IFrame frame = context.getFrame();
+        final Frame frame = context.getFrame();
         final String applyTo = element.attributeValue("applyTo");
         if (!StringUtils.isEmpty(applyTo)) {
             context.addPostInitTask(new PostInitTask() {
                 @Override
-                public void execute(Context context, IFrame window) {
+                public void execute(Context context, Frame window) {
                     Component c = frame.getComponent(applyTo);
                     if (c == null) {
                         throw new GuiDevelopmentException("Can't apply filter to component with ID: " + applyTo, context.getFullFrameId());
@@ -93,7 +93,7 @@ public class FilterLoader extends ComponentLoader {
         context.addPostInitTask(
                 new PostInitTask() {
                     @Override
-                    public void execute(Context context, IFrame window) {
+                    public void execute(Context context, Frame window) {
                         ((FilterImplementation)filter).loadFiltersAndApplyDefault();
                     }
                 }

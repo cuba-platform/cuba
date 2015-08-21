@@ -56,7 +56,7 @@ public class ShowInfoAction extends BaseAction {
         Map<String, Object> params = new HashMap<>();
         params.put("metaClass", metaClass);
         params.put("item", entity);
-        IFrame frame = (component).getFrame();
+        Frame frame = (component).getFrame();
         frame.openWindow("sysInfoWindow", WindowManager.OpenType.DIALOG, params);
     }
 }

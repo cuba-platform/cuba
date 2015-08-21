@@ -11,7 +11,7 @@ import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.DialogAction;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.User;
@@ -325,7 +325,7 @@ public class ExceptionDialog extends CubaWindow {
         wm.showOptionDialog(
                 messages.getMessage(ExceptionDialog.class, "exceptionDialog.logoutCaption"),
                 messages.getMessage(ExceptionDialog.class, "exceptionDialog.logoutMessage"),
-                IFrame.MessageType.WARNING,
+                Frame.MessageType.WARNING,
                 new Action[]{
                         new AbstractAction(messages.getMessage(WebWindow.class, "closeApplication")) {
                             @Override

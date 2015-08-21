@@ -18,7 +18,7 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.validation.ValidationAlertHolder;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.TextInputField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
@@ -265,7 +265,7 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
         Messages messages = AppBeans.get(Messages.NAME);
         DesktopComponentsHelper.getTopLevelFrame(this).showNotification(
                 messages.getMessage(AppConfig.getMessagesPack(), "validationFail"),
-                IFrame.NotificationType.TRAY
+                Frame.NotificationType.TRAY
         );
     }
 

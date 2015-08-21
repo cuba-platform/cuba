@@ -11,12 +11,12 @@ import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.sys.validation.ValidationAwareAction;
 import com.haulmont.cuba.desktop.sys.vcl.CollapsiblePanel;
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
-import com.haulmont.cuba.gui.components.AbstractFrame;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.KeyCombination;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Frame;
 
 import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.BoxLayout;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
@@ -67,7 +67,7 @@ public class DesktopComponentsHelper {
         return (JComponent) comp;
     }
 
-    public static int convertMessageType(IFrame.MessageType messageType) {
+    public static int convertMessageType(Frame.MessageType messageType) {
         switch (messageType) {
             case CONFIRMATION:
             case CONFIRMATION_HTML:
@@ -80,7 +80,7 @@ public class DesktopComponentsHelper {
         }
     }
 
-    public static int convertNotificationType(IFrame.NotificationType type) {
+    public static int convertNotificationType(com.haulmont.cuba.gui.components.Frame.NotificationType type) {
         switch (type) {
             case WARNING:
             case WARNING_HTML:
@@ -261,7 +261,7 @@ public class DesktopComponentsHelper {
      * @param frame
      * @return {@link TopLevelFrame} of component
      */
-    public static TopLevelFrame getTopLevelFrame(IFrame frame) {
+    public static TopLevelFrame getTopLevelFrame(Frame frame) {
         if (frame instanceof DesktopWindow) {
             return ((DesktopWindow) frame).getWindowManager().getFrame();
         } else if (frame instanceof DesktopFrame) {

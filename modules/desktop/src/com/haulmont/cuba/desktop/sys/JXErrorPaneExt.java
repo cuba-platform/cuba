@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.app.EmailService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.TopLevelFrame;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -97,10 +97,10 @@ public class JXErrorPaneExt extends JXErrorPane {
             emailService.sendEmail(info);
 
             mainFrame.showNotification(messages.getMainMessage("errorPane.emailSent", locale),
-                    IFrame.NotificationType.TRAY);
+                    Frame.NotificationType.TRAY);
         } catch (Throwable e) {
             mainFrame.showNotification(messages.getMainMessage("errorPane.emailSendingErr", locale),
-                    IFrame.NotificationType.ERROR);
+                    Frame.NotificationType.ERROR);
         }
     }
 

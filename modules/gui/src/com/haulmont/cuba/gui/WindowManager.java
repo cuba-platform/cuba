@@ -151,7 +151,7 @@ public abstract class WindowManager {
         final DsContext dsContext = loadDsContext(element);
         final ComponentLoaderContext componentLoaderContext = new ComponentLoaderContext(dsContext, params);
         componentLoaderContext.setFullFrameId(windowInfo.getId());
-        componentLoaderContext.setCurrentIFrameId(windowInfo.getId());
+        componentLoaderContext.setCurrentFrameId(windowInfo.getId());
 
         final Window window = loadLayout(windowInfo.getTemplate(), element, componentLoaderContext, layoutConfig);
 
@@ -195,7 +195,7 @@ public abstract class WindowManager {
         }
     }
 
-    protected void initDebugIds(final IFrame frame) {
+    protected void initDebugIds(final Frame frame) {
     }
 
     private void checkPermission(WindowInfo windowInfo) {
@@ -518,11 +518,11 @@ public abstract class WindowManager {
         return openLookup(windowInfo, handler, openType, Collections.<String, Object>emptyMap());
     }
 
-    public IFrame openFrame(IFrame parentFrame, Component parent, WindowInfo windowInfo) {
+    public Frame openFrame(Frame parentFrame, Component parent, WindowInfo windowInfo) {
         return openFrame(parentFrame, parent, windowInfo, Collections.<String, Object>emptyMap());
     }
 
-    public IFrame openFrame(IFrame parentFrame, Component parent, WindowInfo windowInfo,
+    public Frame openFrame(Frame parentFrame, Component parent, WindowInfo windowInfo,
                                           Map<String, Object> params) {
         if (params == null) {
             params = Collections.emptyMap();
@@ -550,10 +550,10 @@ public abstract class WindowManager {
                 UIPerformanceLogger.LifeCycle.LOAD_DESCRIPTOR,
                 Logger.getLogger(UIPerformanceLogger.class));
 
-        final IFrame component;
+        final Frame component;
         try {
-            context.setCurrentIFrameId(windowInfo.getId());
-            component = (IFrame) loader.loadComponent(stream, parent, context.getParams());
+            context.setCurrentFrameId(windowInfo.getId());
+            component = (Frame) loader.loadComponent(stream, parent, context.getParams());
         } finally {
             IOUtils.closeQuietly(stream);
         }
@@ -623,7 +623,7 @@ public abstract class WindowManager {
 
     protected abstract void showWindow(Window window, String caption, String description, OpenType openType, boolean multipleOpen);
 
-    protected abstract void showFrame(Component parent, IFrame frame);
+    protected abstract void showFrame(Component parent, Frame frame);
 
     protected Settings getSettingsImpl(String id) {
         return new SettingsImpl(id);
@@ -740,7 +740,7 @@ public abstract class WindowManager {
      * @param type    defines how to display the notification.
      *                Don't forget to escape data from the database in case of <code>*_HTML</code> types!
      */
-    public abstract void showNotification(String caption, IFrame.NotificationType type);
+    public abstract void showNotification(String caption, Frame.NotificationType type);
 
     /**
      * Show notification with caption description. <br/>
@@ -751,7 +751,7 @@ public abstract class WindowManager {
      * @param type        defines how to display the notification.
      *                    Don't forget to escape data from the database in case of <code>*_HTML</code> types!
      */
-    public abstract void showNotification(String caption, String description, IFrame.NotificationType type);
+    public abstract void showNotification(String caption, String description, Frame.NotificationType type);
 
     /**
      * Show message dialog with title and message. <br/>
@@ -762,7 +762,7 @@ public abstract class WindowManager {
      * @param messageType defines how to display the dialog.
      *                    Don't forget to escape data from the database in case of <code>*_HTML</code> types!
      */
-    public abstract void showMessageDialog(String title, String message, IFrame.MessageType messageType);
+    public abstract void showMessageDialog(String title, String message, Frame.MessageType messageType);
 
     /**
      * Show options dialog with title and message. <br/>
@@ -774,7 +774,7 @@ public abstract class WindowManager {
      *                    Don't forget to escape data from the database in case of <code>*_HTML</code> types!
      * @param actions     available actions
      */
-    public abstract void showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions);
+    public abstract void showOptionDialog(String title, String message, Frame.MessageType messageType, Action[] actions);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

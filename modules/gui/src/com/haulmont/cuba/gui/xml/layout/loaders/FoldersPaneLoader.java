@@ -6,7 +6,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.dom4j.Element;
@@ -45,7 +45,7 @@ public class FoldersPaneLoader extends ComponentLoader {
 
         context.addPostInitTask(new PostInitTask() {
             @Override
-            public void execute(Context context, IFrame window) {
+            public void execute(Context context, Frame window) {
                 if (component.isVisible() && component.isEnabled()) {
                     component.loadFolders();
                 }

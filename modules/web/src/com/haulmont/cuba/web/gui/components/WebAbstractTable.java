@@ -1750,7 +1750,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {
                 Messages messages = AppBeans.get(Messages.NAME);
                 wm.showNotification(messages.getMessage(EntityLinkField.class, "OpenAction.objectIsDeleted"),
-                        IFrame.NotificationType.HUMANIZED);
+                        Frame.NotificationType.HUMANIZED);
                 return;
             }
 

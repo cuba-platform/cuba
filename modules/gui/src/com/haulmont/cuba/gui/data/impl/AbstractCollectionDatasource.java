@@ -14,7 +14,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.FrameContext;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
@@ -560,7 +560,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         if (dsContext != null) {
             FrameContext windowContext = dsContext.getFrameContext();
             if (windowContext != null) {
-                IFrame frame = windowContext.getFrame();
+                Frame frame = windowContext.getFrame();
                 if (frame != null) {
                     windowId = ComponentsHelper.getFullFrameId(windowContext.getFrame());
                 }

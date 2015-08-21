@@ -30,11 +30,11 @@ public class AttributeEditor {
     protected BoxLayout layout;
     protected String type;
 
-    public AttributeEditor(IFrame frame, String type) {
+    public AttributeEditor(Frame frame, String type) {
         this(frame, type, null, false);
     }
 
-    public AttributeEditor(IFrame frame, String type, Object value, boolean requestFocus) {
+    public AttributeEditor(Frame frame, String type, Object value, boolean requestFocus) {
         this.type = type;
         if (AttributeHelper.isBoolean(type)) {
             checkBox = new WebCheckBox();

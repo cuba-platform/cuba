@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.Presentation;
@@ -117,7 +117,7 @@ public class PresentationEditor extends CubaWindow {
                     App.getInstance().getWindowManager().showNotification(
                             getMessage("PresentationsEditor.error"),
                             getMessage("PresentationsEditor.error.nameRequired"),
-                            IFrame.NotificationType.HUMANIZED);
+                            Frame.NotificationType.HUMANIZED);
                     return;
                 }
 
@@ -127,7 +127,7 @@ public class PresentationEditor extends CubaWindow {
                     App.getInstance().getWindowManager().showNotification(
                             getMessage("PresentationsEditor.error"),
                             getMessage("PresentationsEditor.error.nameAlreadyExists"),
-                            IFrame.NotificationType.HUMANIZED);
+                            Frame.NotificationType.HUMANIZED);
                     return;
                 }
 

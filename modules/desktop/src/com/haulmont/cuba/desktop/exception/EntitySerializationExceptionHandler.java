@@ -12,7 +12,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.desktop.App;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import org.springframework.remoting.RemoteAccessException;
 import org.springframework.remoting.RemoteInvocationFailureException;
 
@@ -43,7 +43,7 @@ public class EntitySerializationExceptionHandler extends AbstractExceptionHandle
         Messages messages = AppBeans.get(Messages.NAME);
         String title = messages.getMessage(getClass(), "entitySerializationException.title");
         String msg = messages.getMessage(getClass(), "entitySerializationException.description");
-        App.getInstance().getMainFrame().showNotification(title, msg, IFrame.NotificationType.ERROR_HTML);
+        App.getInstance().getMainFrame().showNotification(title, msg, Frame.NotificationType.ERROR_HTML);
     }
 
     @Override

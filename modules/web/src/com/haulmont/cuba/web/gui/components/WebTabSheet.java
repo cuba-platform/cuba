@@ -9,7 +9,7 @@ import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.TabSheet;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
@@ -290,7 +290,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         if (!postInitTaskAdded) {
             context.addPostInitTask(new ComponentLoader.PostInitTask() {
                 @Override
-                public void execute(ComponentLoader.Context context, IFrame window) {
+                public void execute(ComponentLoader.Context context, Frame window) {
                     initComponentTabChangeListener();
                 }
             });
@@ -347,7 +347,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
     }
 
     @Override
-    public void setFrame(IFrame frame) {
+    public void setFrame(Frame frame) {
         super.setFrame(frame);
 
         if (frame != null) {
@@ -494,7 +494,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
                     if (AppUI.getCurrent().isTestMode()) {
                         context.addPostInitTask(new ComponentLoader.PostInitTask() {
                             @Override
-                            public void execute(ComponentLoader.Context context, IFrame window) {
+                            public void execute(ComponentLoader.Context context, Frame window) {
                                 AppWindow appWindow = AppUI.getCurrent().getAppWindow();
                                 appWindow.getWindowManager().initDebugIds(window);
                             }

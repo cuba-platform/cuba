@@ -20,7 +20,7 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.EntityLinkField;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -307,7 +307,7 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
             Messages messages = AppBeans.get(Messages.NAME);
             wm.showNotification(
                     messages.getMessage(EntityLinkField.class, "OpenAction.objectIsDeleted"),
-                    IFrame.NotificationType.HUMANIZED);
+                    Frame.NotificationType.HUMANIZED);
             return;
         }
 

@@ -12,7 +12,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
 import org.apache.commons.lang.ObjectUtils;
@@ -404,9 +404,9 @@ public class DsContextImpl implements DsContextImplementation {
             if (windowContext != null) {
                 String nestedFramePath = id.substring(0, id.indexOf("."));
                 Component nestedFrame = getFrameContext().getFrame().getComponent(nestedFramePath);
-                if ((nestedFrame) != null && (nestedFrame instanceof IFrame)) {
+                if ((nestedFrame) != null && (nestedFrame instanceof Frame)) {
                     String nestedDsId = id.substring(id.indexOf(".") + 1);
-                    ds = ((IFrame) nestedFrame).getDsContext().get(nestedDsId);
+                    ds = ((Frame) nestedFrame).getDsContext().get(nestedDsId);
                 }
             }
         }

@@ -23,7 +23,7 @@ import java.util.List;
  * @author Abramov
  * @version $Id$
  */
-public interface Window extends IFrame, Component.HasCaption {
+public interface Window extends Frame, Component.HasCaption {
 
     /**
      * Name that is used to register a client type specific screen implementation in

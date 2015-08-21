@@ -41,7 +41,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         XmlInheritanceProcessor processor = new XmlInheritanceProcessor(element.getDocument(), params);
         element = processor.getResultRoot();
 
-        IFrame component = (IFrame) factory.createComponent("iframe");
+        Frame component = (Frame) factory.createComponent("frame");
 
         WindowCreationHelper.deployViews(element);
 
@@ -52,13 +52,13 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
 
         ComponentLoaderContext parentContext = (ComponentLoaderContext) getContext();
 
-        String frameId = parentContext.getCurrentIFrameId();
+        String frameId = parentContext.getCurrentFrameId();
         if (parentContext.getFullFrameId() != null)
             frameId = parentContext.getFullFrameId() + "." + frameId;
 
         ComponentLoaderContext newContext = new ComponentLoaderContext(dsContext, params);
 
-        newContext.setCurrentIFrameId(parentContext.getCurrentIFrameId());
+        newContext.setCurrentFrameId(parentContext.getCurrentFrameId());
         newContext.setFullFrameId(frameId);
         newContext.setFrame(component);
         newContext.setParent(parentContext);
@@ -103,7 +103,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         return component;
     }
 
-    protected IFrame wrapByCustomClass(IFrame frame, Element element, Map<String, Object> params,
+    protected Frame wrapByCustomClass(Frame frame, Element element, Map<String, Object> params,
                                        ComponentLoaderContext parentContext) {
         final String screenClass = element.attributeValue("class");
         if (!StringUtils.isBlank(screenClass)) {
@@ -111,7 +111,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
                 Class<Window> aClass = scripting.loadClass(screenClass);
                 if (aClass == null)
                     aClass = ReflectionHelper.getClass(screenClass);
-                IFrame wrappingFrame = ((WrappedFrame) frame).wrapBy(aClass);
+                Frame wrappingFrame = ((WrappedFrame) frame).wrapBy(aClass);
 
                 String loggingId = context.getFullFrameId();
 
@@ -170,7 +170,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         }
     }
 
-    protected void loadMessagesPack(IFrame frame, Element element) {
+    protected void loadMessagesPack(Frame frame, Element element) {
         String msgPack = element.attributeValue("messagesPack");
         if (msgPack != null) {
             frame.setMessagesPack(msgPack);
@@ -183,18 +183,18 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
 
     protected class FrameLoaderPostInitTask implements PostInitTask {
 
-        private IFrame frame;
+        private Frame frame;
         private Map<String, Object> params;
         private boolean wrapped;
 
-        public FrameLoaderPostInitTask(IFrame frame, Map<String, Object> params, boolean wrapped) {
+        public FrameLoaderPostInitTask(Frame frame, Map<String, Object> params, boolean wrapped) {
             this.frame = frame;
             this.params = params;
             this.wrapped = wrapped;
         }
 
         @Override
-        public void execute(Context context, IFrame window) {
+        public void execute(Context context, Frame window) {
             if (wrapped) {
                 String loggingId = ComponentsHelper.getFullFrameId(this.frame);
 

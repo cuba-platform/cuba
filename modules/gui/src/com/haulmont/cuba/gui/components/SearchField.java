@@ -21,8 +21,8 @@ public interface SearchField extends LookupField {
     void setSearchNotifications(SearchNotifications searchNotifications);
     SearchNotifications getSearchNotifications();
 
-    IFrame.NotificationType getDefaultNotificationType();
-    void setDefaultNotificationType(IFrame.NotificationType defaultNotificationType);
+    Frame.NotificationType getDefaultNotificationType();
+    void setDefaultNotificationType(Frame.NotificationType defaultNotificationType);
 
     Mode getMode();
     void setMode(Mode mode);

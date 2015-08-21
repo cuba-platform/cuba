@@ -91,8 +91,8 @@ public class ExcelAction extends BaseAction {
                     },
                     new DialogAction(DialogAction.Type.CANCEL)
             };
-            IFrame frame = table.getFrame();
-            frame.showOptionDialog(title, caption, IFrame.MessageType.CONFIRMATION, actions);
+            Frame frame = table.getFrame();
+            frame.showOptionDialog(title, caption, Frame.MessageType.CONFIRMATION, actions);
         } else {
             export(ExportMode.ALL_ROWS);
         }

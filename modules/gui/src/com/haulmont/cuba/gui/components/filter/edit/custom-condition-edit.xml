@@ -13,7 +13,7 @@
         <action id="commit" icon="icons/ok.png" caption="msg://actions.Ok" invoke="commit" shortcut="CTRL-ENTER"/>
     </actions>
     <layout spacing="true">
-        <iframe id="customConditionFrame" screen="customConditionFrame"/>
+        <frame id="customConditionFrame" screen="customConditionFrame"/>
         <hbox spacing="true">
             <button id="commit" action="commit"/>
             <button id="cancel" invoke="cancel" caption="msg://actions.Cancel" icon="icons/cancel.png"/>

@@ -122,7 +122,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
     }
 
     @Override
-    public void setFrame(IFrame frame) {
+    public void setFrame(Frame frame) {
         super.setFrame(frame);
         lookupPickerField.setFrame(frame);
     }

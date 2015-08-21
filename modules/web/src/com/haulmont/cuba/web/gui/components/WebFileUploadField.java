@@ -12,7 +12,7 @@ import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.FileUploadField;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.web.toolkit.ui.CubaUpload;
 import com.vaadin.ui.Upload;
@@ -80,7 +80,7 @@ public class WebFileUploadField extends WebAbstractComponent<CubaUpload> impleme
                     component.interruptUpload();
 
                     String warningMsg = messages.formatMainMessage("upload.fileTooBig.message", event.getFilename(), maxUploadSizeMb);
-                    getFrame().showNotification(warningMsg, IFrame.NotificationType.WARNING);
+                    getFrame().showNotification(warningMsg, Frame.NotificationType.WARNING);
                 } else {
                     final Listener.Event e = new Listener.Event(event.getFilename());
                     for (Listener listener : listeners) {

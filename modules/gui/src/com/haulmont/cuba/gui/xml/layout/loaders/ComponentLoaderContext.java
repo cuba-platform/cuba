@@ -5,7 +5,7 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import groovy.lang.Binding;
@@ -21,7 +21,7 @@ import java.util.Map;
 public class ComponentLoaderContext implements ComponentLoader.Context {
 
     protected DsContext dsContext;
-    protected IFrame frame;
+    protected Frame frame;
     protected String fullFrameId;
     protected String currentFrameId;
     protected transient Binding binding;
@@ -59,12 +59,12 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
     }
 
     @Override
-    public IFrame getFrame() {
+    public Frame getFrame() {
         return frame;
     }
 
     @Override
-    public void setFrame(IFrame frame) {
+    public void setFrame(Frame frame) {
         this.frame = frame;
     }
 
@@ -79,12 +79,12 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
     }
 
     @Override
-    public String getCurrentIFrameId() {
+    public String getCurrentFrameId() {
         return currentFrameId;
     }
 
     @Override
-    public void setCurrentIFrameId(String currentFrameId) {
+    public void setCurrentFrameId(String currentFrameId) {
         this.currentFrameId = currentFrameId;
     }
 

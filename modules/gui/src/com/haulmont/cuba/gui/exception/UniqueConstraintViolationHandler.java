@@ -8,7 +8,7 @@ package com.haulmont.cuba.gui.exception;
 import com.haulmont.cuba.core.global.ExceptionHandlersConfig;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.core.Ordered;
 
@@ -74,7 +74,7 @@ public class UniqueConstraintViolationHandler implements GenericExceptionHandler
                 }
             }
 
-            windowManager.showNotification(msg, IFrame.NotificationType.ERROR);
+            windowManager.showNotification(msg, Frame.NotificationType.ERROR);
             return true;
         }
         return false;

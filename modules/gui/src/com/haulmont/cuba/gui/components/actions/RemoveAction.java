@@ -137,7 +137,7 @@ public class RemoveAction extends ItemTrackingAction {
         target.getFrame().showOptionDialog(
                 getConfirmationTitle(messagesPackage),
                 getConfirmationMessage(messagesPackage),
-                IFrame.MessageType.CONFIRMATION,
+                Frame.MessageType.CONFIRMATION,
                 new Action[]{
                         new DialogAction(DialogAction.Type.OK) {
                             @Override

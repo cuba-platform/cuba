@@ -20,10 +20,10 @@ import java.util.List;
  */
 public class FrameContextImpl implements FrameContext {
 
-    private final IFrame frame;
+    private final Frame frame;
     private Map<String, Object> params;
 
-    public FrameContextImpl(IFrame window, Map<String, Object> params) {
+    public FrameContextImpl(Frame window, Map<String, Object> params) {
         this.frame = window;
         this.params = params;
 
@@ -44,7 +44,7 @@ public class FrameContextImpl implements FrameContext {
     }
 
     @Override
-    public IFrame getFrame() {
+    public Frame getFrame() {
         return frame;
     }
 

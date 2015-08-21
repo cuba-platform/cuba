@@ -11,7 +11,7 @@ package com.haulmont.cuba.gui.components;
  * @author devyatkin
  * @version $Id$
  */
-public interface DetachableFrame extends IFrame {
+public interface DetachableFrame extends Frame {
 
     /**
      * Listener for frame attach/detach
@@ -23,14 +23,14 @@ public interface DetachableFrame extends IFrame {
          *
          * @param frame
          */
-        void frameAttached(IFrame frame);
+        void frameAttached(Frame frame);
 
         /**
          * Invoked after frame detached
          *
          * @param frame
          */
-        void frameDetached(IFrame frame);
+        void frameDetached(Frame frame);
     }
 
     /**

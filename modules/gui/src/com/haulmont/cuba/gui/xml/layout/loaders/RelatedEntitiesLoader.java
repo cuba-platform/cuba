@@ -9,7 +9,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.RelatedEntities;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -90,7 +90,7 @@ public class RelatedEntitiesLoader extends ComponentLoader {
 
         context.addPostInitTask(new PostInitTask() {
             @Override
-            public void execute(Context context, IFrame window) {
+            public void execute(Context context, Frame window) {
                 if (component.getListComponent() == null) {
                     Component bindComponent = component.getFrame().getComponent(listComponent);
                     if (!(bindComponent instanceof ListComponent)) {

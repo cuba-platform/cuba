@@ -7,7 +7,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.web.AppUI;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Layout;
@@ -36,7 +36,7 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
     protected T component;
 
     protected Element element;
-    protected com.haulmont.cuba.gui.components.IFrame frame;
+    protected Frame frame;
     protected Component parent;
 
     protected Alignment alignment = Alignment.TOP_LEFT;
@@ -44,12 +44,12 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
     protected boolean expandable = true;
 
     @Override
-    public IFrame getFrame() {
+    public Frame getFrame() {
         return frame;
     }
 
     @Override
-    public void setFrame(IFrame frame) {
+    public void setFrame(Frame frame) {
         this.frame = frame;
         if (frame != null) {
             frame.registerComponent(this);

@@ -196,7 +196,7 @@ public class WebComponentsHelper {
         }
     }
 
-    public static Notification.Type convertNotificationType(IFrame.NotificationType type) {
+    public static Notification.Type convertNotificationType(Frame.NotificationType type) {
         switch (type) {
             case TRAY:
             case TRAY_HTML:
@@ -276,16 +276,16 @@ public class WebComponentsHelper {
         return (Button) unwrap(button);
     }
 
-    public static IFrame getControllerFrame(IFrame frame) {
+    public static Frame getControllerFrame(Frame frame) {
         if (frame instanceof AbstractFrame) {
             return frame;
         } else if (frame instanceof WrappedWindow) {
-            IFrame wrapper = ((WrappedWindow) frame).getWrapper();
+            Frame wrapper = ((WrappedWindow) frame).getWrapper();
             if (wrapper != null) {
                 return wrapper;
             }
         } else if (frame instanceof WrappedFrame) {
-            IFrame wrapper = ((WrappedFrame) frame).getWrapper();
+            Frame wrapper = ((WrappedFrame) frame).getWrapper();
             if (wrapper != null) {
                 return wrapper;
             }

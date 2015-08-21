@@ -12,7 +12,7 @@ import com.haulmont.cuba.desktop.sys.layout.GridLayoutAdapter;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GridLayout;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import net.miginfocom.layout.CC;
 
 import javax.annotation.Nonnull;
@@ -129,7 +129,7 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
     }
 
     @Override
-    public void setFrame(IFrame frame) {
+    public void setFrame(Frame frame) {
         super.setFrame(frame);
 
         if (frame != null) {

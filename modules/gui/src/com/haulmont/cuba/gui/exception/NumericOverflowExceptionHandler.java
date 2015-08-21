@@ -8,7 +8,7 @@ package com.haulmont.cuba.gui.exception;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 
@@ -38,6 +38,6 @@ public class NumericOverflowExceptionHandler extends AbstractGenericExceptionHan
     protected void doHandle(String className, String message, @Nullable Throwable throwable, WindowManager windowManager) {
         Messages messages = AppBeans.get(Messages.NAME);
         String msg = messages.getMessage(getClass(), "numericFieldOverflow.message");
-        windowManager.showNotification(msg, IFrame.NotificationType.ERROR);
+        windowManager.showNotification(msg, Frame.NotificationType.ERROR);
     }
 }

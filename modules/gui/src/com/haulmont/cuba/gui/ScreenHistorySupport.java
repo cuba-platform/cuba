@@ -11,7 +11,7 @@ import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.TrackEditScreenHistory;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -69,7 +69,7 @@ public class ScreenHistorySupport {
         {
             String caption = window.getCaption();
             UUID entityId = null;
-            IFrame frame = window.getFrame();
+            Frame frame = window.getFrame();
             Entity entity = null;
             if (frame instanceof Window.Editor) {
                 entity = ((Window.Editor) frame).getItem();

@@ -7,7 +7,6 @@ package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.DateDatatype;
 import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
@@ -525,7 +524,7 @@ public class Param {
                                 p = datatype.parse(part, userSessionSource.getLocale());
                             } catch (ParseException e) {
                                 AppBeans.get(WindowManagerProvider.class).get().showNotification(messages.getMessage(Param.class,
-                                        "Param.numberInvalid"), IFrame.NotificationType.ERROR);
+                                        "Param.numberInvalid"), Frame.NotificationType.ERROR);
                                 return;
                             }
                             ((List) v).add(p);
@@ -535,7 +534,7 @@ public class Param {
                             v = datatype.parse((String) value, userSessionSource.getLocale());
                         } catch (ParseException e) {
                             AppBeans.get(WindowManagerProvider.class).get().showNotification(messages.getMessage(Param.class,
-                                    "Param.numberInvalid"), IFrame.NotificationType.ERROR);
+                                    "Param.numberInvalid"), Frame.NotificationType.ERROR);
                             return;
                         }
                     }
@@ -598,7 +597,7 @@ public class Param {
                             _setValue(list, valueProperty);
                         } catch (IllegalArgumentException ie) {
                             AppBeans.get(WindowManagerProvider.class).get().showNotification(messages.getMessage(Param.class,
-                                    "Param.uuid.Err"), IFrame.NotificationType.TRAY);
+                                    "Param.uuid.Err"), Frame.NotificationType.TRAY);
                             _setValue(null, valueProperty);
                         }
                     } else {
@@ -606,7 +605,7 @@ public class Param {
                             _setValue(UUID.fromString(strValue), valueProperty);
                         } catch (IllegalArgumentException ie) {
                             AppBeans.get(WindowManagerProvider.class).get().showNotification(messages.getMessage(Param.class,
-                                    "Param.uuid.Err"), IFrame.NotificationType.TRAY);
+                                    "Param.uuid.Err"), Frame.NotificationType.TRAY);
                         }
                     }
                 } else if (StringUtils.isBlank(strValue))

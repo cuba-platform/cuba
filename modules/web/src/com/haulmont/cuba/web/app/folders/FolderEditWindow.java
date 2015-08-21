@@ -14,8 +14,6 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.Presentation;
@@ -34,7 +32,6 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.Window;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -218,7 +215,7 @@ public class FolderEditWindow extends CubaWindow {
         SearchFolder folder = (SearchFolder)FolderEditWindow.this.folder;
         if (StringUtils.trimToNull(nameField.getValue()) == null) {
             String msg = messages.getMainMessage("folders.folderEditWindow.emptyName");
-            App.getInstance().getWindowManager().showNotification(msg, IFrame.NotificationType.TRAY);
+            App.getInstance().getWindowManager().showNotification(msg, Frame.NotificationType.TRAY);
             return;
         }
         folder.setName(nameField.getValue());
@@ -233,7 +230,7 @@ public class FolderEditWindow extends CubaWindow {
                 sortOrder = Integer.parseInt(value);
             } catch (NumberFormatException e) {
                 String msg = messages.getMainMessage("folders.folderEditWindow.invalidSortOrder");
-                App.getInstance().getWindowManager().showNotification(msg, IFrame.NotificationType.WARNING);
+                App.getInstance().getWindowManager().showNotification(msg, Frame.NotificationType.WARNING);
                 return;
             }
             folder.setSortOrder(sortOrder);

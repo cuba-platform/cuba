@@ -30,8 +30,8 @@
         </hbox>
         <label value="msg://attributes" stylename="h2"/>
 
-        <iframe id="categoryAttrsFrame" src="/com/haulmont/cuba/gui/app/core/categories/category-attrs-frame.xml"/>
+        <frame id="categoryAttrsFrame" src="/com/haulmont/cuba/gui/app/core/categories/category-attrs-frame.xml"/>
 
-        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        <frame id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>

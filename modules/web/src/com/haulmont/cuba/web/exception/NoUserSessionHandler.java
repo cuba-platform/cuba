@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DialogAction;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.Connection;
@@ -62,7 +62,7 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
             wm.showOptionDialog(
                     messages.getMessage(getClass(), "dialogs.Information", locale),
                     messages.getMessage(getClass(), "noUserSession.message", locale),
-                    IFrame.MessageType.CONFIRMATION,
+                    Frame.MessageType.CONFIRMATION,
                     new Action[]{new LoginAction()}
             );
 

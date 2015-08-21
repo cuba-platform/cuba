@@ -74,10 +74,10 @@
             </vbox>
             <groupBox id="conditionPropertiesLayout" caption="msg://conditionProperties" height="100%" width="theme://cuba.gui.filterEditor.dialog.rightPanel.width">
                 <scrollBox scrollBars="vertical" height="100%" width="100%">
-                    <iframe id="customConditionFrame" screen="customConditionFrame" visible="false"/>
-                    <iframe id="dynamicAttributesConditionFrame" screen="dynamicAttributesConditionFrame" visible="false"/>
-                    <iframe id="propertyConditionFrame" screen="propertyConditionFrame" visible="false"/>
-                    <iframe id="groupConditionFrame" screen="groupConditionFrame" visible="false"/>
+                    <frame id="customConditionFrame" screen="customConditionFrame" visible="false"/>
+                    <frame id="dynamicAttributesConditionFrame" screen="dynamicAttributesConditionFrame" visible="false"/>
+                    <frame id="propertyConditionFrame" screen="propertyConditionFrame" visible="false"/>
+                    <frame id="groupConditionFrame" screen="groupConditionFrame" visible="false"/>
                 </scrollBox>
             </groupBox>
         </hbox>

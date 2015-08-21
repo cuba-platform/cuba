@@ -22,6 +22,6 @@
                    width="theme://cuba.gui.group-edit.nameField.width"/>
         </fieldGroup>
 
-        <iframe id="windowActions" screen="editWindowActions" width="AUTO"/>
+        <frame id="windowActions" screen="editWindowActions" width="AUTO"/>
     </layout>
 </window>

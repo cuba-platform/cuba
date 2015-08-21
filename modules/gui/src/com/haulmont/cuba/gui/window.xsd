@@ -1351,8 +1351,8 @@
         <xs:attribute name="orientation" type="orientation"/>
     </xs:complexType>
 
-    <!-- IFrame -->
-    <xs:complexType name="iframeContainer">
+    <!-- Frame -->
+    <xs:complexType name="frameContainer">
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
@@ -1582,7 +1582,7 @@
 
                 <xs:element name="split" type="splitContainer"/>
                 <xs:element name="tabSheet" type="tabsheetContainer"/>
-                <xs:element name="iframe" type="iframeContainer"/>
+                <xs:element name="frame" type="frameContainer"/>
 
                 <xs:element name="runtimeProperties" type="runtimePropertiesContainer"/>
 

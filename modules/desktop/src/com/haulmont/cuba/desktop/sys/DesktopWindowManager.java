@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.executors.*;
@@ -54,8 +55,8 @@ import java.util.List;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.preprocessHtmlMessage;
 import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE;
-import static com.haulmont.cuba.gui.components.IFrame.MessageType;
-import static com.haulmont.cuba.gui.components.IFrame.NotificationType;
+import static com.haulmont.cuba.gui.components.Frame.MessageType;
+import static com.haulmont.cuba.gui.components.Frame.NotificationType;
 import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
 /**
@@ -975,7 +976,7 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     @Override
-    protected void showFrame(Component parent, IFrame frame) {
+    protected void showFrame(Component parent, Frame frame) {
         // the same as web window manager does
         if (parent instanceof Component.Container) {
             Component.Container container = (Component.Container) parent;
@@ -1542,7 +1543,7 @@ public class DesktopWindowManager extends WindowManager {
 
         // Dispose windows
         for (Window window : windowOpenMode.keySet()) {
-            IFrame frame = window.getFrame();
+            Frame frame = window.getFrame();
             if (frame instanceof Component.Disposable)
                 ((Component.Disposable) frame).dispose();
         }
@@ -1733,13 +1734,13 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     @Override
-    protected void initDebugIds(IFrame frame) {
+    protected void initDebugIds(Frame frame) {
         if (App.getInstance().isTestMode()) {
             ComponentsHelper.walkComponents(frame, new ComponentVisitor() {
                 @Override
                 public void visit(com.haulmont.cuba.gui.components.Component component, String name) {
                     if (component.getDebugId() == null) {
-                        IFrame componentFrame = null;
+                        Frame componentFrame = null;
                         if (component instanceof com.haulmont.cuba.gui.components.Component.BelongToFrame) {
                             componentFrame = ((com.haulmont.cuba.gui.components.Component.BelongToFrame) component).getFrame();
                         }

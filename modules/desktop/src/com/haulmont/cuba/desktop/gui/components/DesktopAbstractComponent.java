@@ -14,7 +14,7 @@ import com.haulmont.cuba.desktop.gui.data.ComponentSize;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -40,7 +40,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     protected DesktopContainer container;
 
     protected String id;
-    protected IFrame frame;
+    protected Frame frame;
     protected Component parent;
 
     protected Element xmlDescriptor;
@@ -76,12 +76,12 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     }
 
     @Override
-    public IFrame getFrame() {
+    public Frame getFrame() {
         return frame;
     }
 
     @Override
-    public void setFrame(IFrame frame) {
+    public void setFrame(Frame frame) {
         this.frame = frame;
         if (frame != null) {
             frame.registerComponent(this);

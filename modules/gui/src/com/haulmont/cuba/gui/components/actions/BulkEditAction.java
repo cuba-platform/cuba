@@ -73,13 +73,13 @@ public class BulkEditAction extends ItemTrackingAction {
     @Override
     public void actionPerform(Component component) {
         if (!userSession.isSpecificPermitted(BulkEditor.PERMISSION)) {
-            target.getFrame().showNotification(messages.getMainMessage("accessDenied.message"), IFrame.NotificationType.ERROR);
+            target.getFrame().showNotification(messages.getMainMessage("accessDenied.message"), Frame.NotificationType.ERROR);
             return;
         }
 
         if (target.getSelected().isEmpty()) {
             target.getFrame().showNotification(messages.getMainMessage("actions.BulkEdit.emptySelection"),
-                    IFrame.NotificationType.HUMANIZED);
+                    Frame.NotificationType.HUMANIZED);
             return;
         }
 

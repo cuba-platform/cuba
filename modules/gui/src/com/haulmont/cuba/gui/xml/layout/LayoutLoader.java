@@ -116,7 +116,7 @@ public class LayoutLoader {
     }
 
     public Component loadComponent(InputStream stream, Component parent, Map<String, Object> params) {
-        StopWatch xmlLoadWatch = new Log4JStopWatch(context.getCurrentIFrameId() + "#" +
+        StopWatch xmlLoadWatch = new Log4JStopWatch(context.getCurrentFrameId() + "#" +
                 UIPerformanceLogger.LifeCycle.XML,
                 Logger.getLogger(UIPerformanceLogger.class));
 

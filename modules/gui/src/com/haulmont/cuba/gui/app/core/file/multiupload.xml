@@ -31,6 +31,6 @@
             </columns>
             <rows datasource="filesDs"/>
         </table>
-        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        <frame id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>
