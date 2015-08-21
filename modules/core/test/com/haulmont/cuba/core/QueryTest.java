@@ -9,19 +9,20 @@ import com.google.common.collect.Iterables;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 public class QueryTest extends CubaTestCase {
 
     private UUID userId;
+    private UUID user2Id;
     private UUID groupId;
 
     protected void setUp() throws Exception {
         super.setUp();
 
-        Transaction tx = persistence.createTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
 
             User user = new User();
@@ -31,19 +32,24 @@ public class QueryTest extends CubaTestCase {
             user.setGroup(em.find(Group.class, UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93")));
             em.persist(user);
 
+            user = new User();
+            user2Id = user.getId();
+            user.setName("testUser2");
+            user.setLogin("testLogin2");
+            user.setGroup(em.find(Group.class, UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93")));
+            em.persist(user);
+
             Group group = new Group();
             groupId = group.getId();
             group.setName("testGroup");
             em.persist(group);
 
             tx.commit();
-        } finally {
-            tx.end();
         }
     }
 
     protected void tearDown() throws Exception {
-        deleteRecord("SEC_USER", userId);
+        deleteRecord("SEC_USER", userId, user2Id);
         deleteRecord("SEC_GROUP", groupId);
         super.tearDown();
     }
@@ -288,5 +294,17 @@ public class QueryTest extends CubaTestCase {
             tx.end();
         }
 
+    }
+
+    public void testListParameter() throws Exception {
+        try (Transaction tx = persistence.createTransaction()) {
+            TypedQuery<User> query = persistence.getEntityManager().createQuery(
+                    "select u from sec$User u where u.id in (:ids) order by u.createTs", User.class);
+            query.setParameter("ids", Arrays.asList(UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"), userId, user2Id));
+            List<User> list = query.getResultList();
+            assertEquals(3, list.size());
+
+            tx.commit();
+        }
     }
 }

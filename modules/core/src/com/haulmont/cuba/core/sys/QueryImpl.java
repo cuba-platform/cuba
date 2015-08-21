@@ -24,7 +24,7 @@ import javax.persistence.TemporalType;
 import java.util.*;
 
 /**
- * Implementation of {@link TypedQuery} interface based on OpenJPA.
+ * Implementation of {@link TypedQuery} interface based on EclipseLink.
  *
  * @author krivopustov
  * @version $Id$
@@ -33,7 +33,6 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
     private Log log = LogFactory.getLog(QueryImpl.class);
 
-//    private EntityManagerImpl em;
     private Metadata metadata;
     private javax.persistence.EntityManager emDelegate;
     private JpaQuery query;
@@ -51,7 +50,6 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
     public QueryImpl(EntityManagerImpl entityManager, boolean isNative, @Nullable Class resultClass,
                      Metadata metadata, FetchGroupManager fetchGroupMgr) {
-//        this.em = entityManager;
         this.metadata = metadata;
         this.emDelegate = entityManager.getDelegate();
         this.isNative = isNative;
@@ -135,8 +133,9 @@ public class QueryImpl<T> implements TypedQuery<T> {
         for (Param param : params) {
             if (param.value instanceof String && ((String) param.value).startsWith("(?i)"))
                 result = replaceCaseInsensitiveParam(result, param);
+            if (param.value instanceof Collection)
+                result = replaceCollectionParam(result, param);
         }
-
 
         return result;
     }
@@ -163,13 +162,27 @@ public class QueryImpl<T> implements TypedQuery<T> {
         return result;
     }
 
+    private String replaceCollectionParam(String queryStr, Param param) {
+        if (!(param.name instanceof String))
+            throw new UnsupportedOperationException("Only named collection parameters are supported");
+
+        Collection collection = (Collection) param.value;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < collection.size(); i++) {
+            sb.append(":").append(param.name).append(i+1);
+            if (i < collection.size() - 1)
+                sb.append(",");
+        }
+        return queryStr.replace(":" + param.name, sb.toString());
+    }
+
     private void addMacroParams(javax.persistence.TypedQuery jpaQuery) {
         if (macroHandlers != null) {
             for (QueryMacroHandler handler : macroHandlers) {
 
                 Map<String, Object> namedParams = new HashMap<>();
                 for (Param param : params) {
-                    if (param.name instanceof String)
+                    if (param.name instanceof String && !(param.value instanceof Collection))
                         namedParams.put((String) param.name, param.value);
                 }
                 handler.setQueryParams(namedParams);
@@ -214,7 +227,6 @@ public class QueryImpl<T> implements TypedQuery<T> {
     @Override
     public TypedQuery<T> setMaxResults(int maxResults) {
         this.maxResults = maxResults;
-//        getQuery().setMaxResults(maxResults);
         if (query != null)
             query.setMaxResults(maxResults);
         return this;
@@ -223,7 +235,6 @@ public class QueryImpl<T> implements TypedQuery<T> {
     @Override
     public TypedQuery<T> setFirstResult(int firstResult) {
         this.firstResult = firstResult;
-//        getQuery().setFirstResult(firstResult);
         if (query != null)
             query.setFirstResult(firstResult);
         return this;
@@ -242,7 +253,6 @@ public class QueryImpl<T> implements TypedQuery<T> {
             value = ((BaseEntity) value).getId();
 
         params.add(new Param(name, value));
-//        getQuery().setParameter(name, value);
         return this;
     }
 
@@ -250,7 +260,6 @@ public class QueryImpl<T> implements TypedQuery<T> {
     public TypedQuery<T> setParameter(String name, Date value, TemporalType temporalType) {
         checkState();
         params.add(new Param(name, value, temporalType));
-//        getQuery().setParameter(name, value, temporalType);
         return this;
     }
 
@@ -273,7 +282,6 @@ public class QueryImpl<T> implements TypedQuery<T> {
             value = ((BaseEntity) value).getId();
 
         params.add(new Param(position, value));
-//        getQuery().setParameter(position, value);
         return this;
     }
 
@@ -281,7 +289,6 @@ public class QueryImpl<T> implements TypedQuery<T> {
     public TypedQuery<T> setParameter(int position, Date value, TemporalType temporalType) {
         checkState();
         params.add(new Param(position, value, temporalType));
-//        getQuery().setParameter(position, value, temporalType);
         return this;
     }
 
@@ -289,7 +296,6 @@ public class QueryImpl<T> implements TypedQuery<T> {
     public TypedQuery<T> setLockMode(LockModeType lockMode) {
         checkState();
         this.lockMode = lockMode;
-//        getQuery().setLockMode(lockMode);
         return this;
     }
 
@@ -298,7 +304,6 @@ public class QueryImpl<T> implements TypedQuery<T> {
         checkState();
         views.clear();
         views.add(view);
-//        fetchGroupMgr.setView(getQuery(), queryString, view);
         return this;
     }
 
@@ -321,7 +326,6 @@ public class QueryImpl<T> implements TypedQuery<T> {
     public TypedQuery<T> addView(View view) {
         checkState();
         views.add(view);
-//        fetchGroupMgr.addView(getQuery(), queryString, view);
         return this;
     }
 
@@ -375,15 +379,29 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
         public void apply(JpaQuery query) {
             if (temporalType != null) {
-                if (name instanceof Integer)
+                if (name instanceof Integer) {
                     query.setParameter((int) name, (Date) value, temporalType);
-                else
+                } else {
                     query.setParameter((String) name, (Date) value, temporalType);
+                }
             } else {
-                if (name instanceof Integer)
+                if (name instanceof Integer) {
                     query.setParameter((int) name, value);
-                else
-                    query.setParameter((String) name, value);
+                } else {
+                    if (value instanceof Collection) {
+                        applyCollection(query, (String) name, (Collection) value);
+                    } else {
+                        query.setParameter((String) name, value);
+                    }
+                }
+            }
+        }
+
+        private void applyCollection(JpaQuery query, String name, Collection collection) {
+            int i = 1;
+            for (Object value : collection) {
+                query.setParameter(name + i, value);
+                i++;
             }
         }
 

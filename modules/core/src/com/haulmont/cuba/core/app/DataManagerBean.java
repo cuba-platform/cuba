@@ -398,20 +398,10 @@ public class DataManagerBean implements DataManager {
         View view = new View(baseAttributeValueView, null, false)
                 .addProperty("categoryAttribute", new View(baseAttributeView, null, false).addProperty("category"));
 
-        StringBuilder params = new StringBuilder();
-        for (int i = 1; i <= entityIds.size(); i++) {
-            params.append("?").append(i);
-            if (i < entityIds.size())
-                params.append(",");
-        }
-        TypedQuery<CategoryAttributeValue> query = em.createQuery(
-                "select cav from sys$CategoryAttributeValue cav where cav.entityId in (" + params + ")",
-                CategoryAttributeValue.class);
-        for (int i = 1; i <= entityIds.size(); i++) {
-            query.setParameter(i, entityIds.get(i-1));
-        }
-        query.setView(view);
-        return query.getResultList();
+        return em.createQuery("select cav from sys$CategoryAttributeValue cav where cav.entityId in (:ids)", CategoryAttributeValue.class)
+                .setParameter("ids", entityIds)
+                .setView(view)
+                .getResultList();
     }
 
     protected void persistOrMergeNotDetached(NotDetachedCommitContext context, EntityManager em, Set<Entity> result) {
