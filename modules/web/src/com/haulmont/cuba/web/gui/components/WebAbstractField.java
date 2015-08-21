@@ -16,7 +16,6 @@ import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.vaadin.data.Property;
@@ -42,7 +41,6 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends We
     protected MetaPropertyPath metaPropertyPath;
 
     protected List<ValueListener> listeners = new ArrayList<>();
-    protected ValueChangingListener valueChangingListener;
     protected List<Field.Validator> validators = new ArrayList<>();
 
     protected boolean settingValue = false;
@@ -196,39 +194,20 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends We
                     return;
 
                 final Object value = getValue();
-                Object newValue = fireValueChanging(prevValue, value);
-
                 final Object oldValue = prevValue;
-                prevValue = newValue;
+                prevValue = value;
 
                 // use setting block value only for ValueChangingListener
                 settingValue = true;
-                if (!ObjectUtils.equals(value, newValue)) {
+                if (!ObjectUtils.equals(value, value)) {
                     //noinspection unchecked
-                    WebAbstractField.this.component.setValue(newValue);
+                    WebAbstractField.this.component.setValue(value);
                 }
                 settingValue = false;
 
-                fireValueChanged(oldValue, newValue);
+                fireValueChanged(oldValue, value);
             }
         });
-    }
-
-    @Override
-    public void setValueChangingListener(ValueChangingListener listener) {
-        valueChangingListener = listener;
-    }
-
-    @Override
-    public void removeValueChangingListener() {
-        valueChangingListener = null;
-    }
-
-    protected Object fireValueChanging(Object prevValue, Object value) {
-        if (valueChangingListener != null)
-            return valueChangingListener.valueChanging(this, "value", prevValue, value);
-        else
-            return value;
     }
 
     protected void fireValueChanged(Object prevValue, Object value) {

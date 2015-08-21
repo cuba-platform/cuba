@@ -21,7 +21,6 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 
@@ -429,16 +428,6 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
     @Override
     public void removeListener(ValueListener listener) {
         // todo
-    }
-
-    @Override
-    public void setValueChangingListener(ValueChangingListener listener) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void removeValueChangingListener() {
-        throw new UnsupportedOperationException();
     }
 
     @Override

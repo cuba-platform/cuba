@@ -19,10 +19,8 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
-import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -232,14 +230,6 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     @Override
     public void removeListener(ValueListener listener) {
         listeners.remove(listener);
-    }
-
-    @Override
-    public void setValueChangingListener(ValueChangingListener listener) {
-    }
-
-    @Override
-    public void removeValueChangingListener() {
     }
 
     protected void fireValueChanged(Object prevValue, Object value) {

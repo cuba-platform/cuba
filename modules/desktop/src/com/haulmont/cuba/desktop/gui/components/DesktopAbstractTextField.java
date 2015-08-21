@@ -158,12 +158,6 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
     @Override
     public void setValue(Object value) {
         if (!ObjectUtils.equals(prevValue, value)) {
-            if (valueChangingListener != null) {
-                value = fireValueChanging(prevValue, value);
-            }
-        }
-
-        if (!ObjectUtils.equals(prevValue, value)) {
             updateInstance(value);
             updateComponent(value);
             fireChangeListeners(value);

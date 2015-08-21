@@ -16,7 +16,6 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -220,16 +219,6 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
     @Override
     public void removeListener(ValueListener listener) {
         // todo
-    }
-
-    @Override
-    public void setValueChangingListener(ValueChangingListener listener) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void removeValueChangingListener() {
-        throw new UnsupportedOperationException();
     }
 
     @Override

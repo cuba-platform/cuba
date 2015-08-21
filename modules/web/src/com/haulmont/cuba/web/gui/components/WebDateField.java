@@ -20,7 +20,6 @@ import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.global.UserSession;
@@ -301,14 +300,6 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     @Override
     public boolean isEnabled() {
         return enabled;
-    }
-
-    @Override
-    public void setValueChangingListener(ValueChangingListener listener) {
-    }
-
-    @Override
-    public void removeValueChangingListener() {
     }
 
     @Override

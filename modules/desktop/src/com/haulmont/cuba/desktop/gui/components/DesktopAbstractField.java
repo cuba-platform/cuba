@@ -15,7 +15,6 @@ import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import org.apache.commons.lang.StringUtils;
 
@@ -37,7 +36,6 @@ public abstract class DesktopAbstractField<C extends JComponent>
             Field {
 
     protected List<ValueListener> listeners = new ArrayList<>();
-    protected ValueChangingListener valueChangingListener;
 
     protected boolean required;
     protected String requiredMessage;
@@ -60,23 +58,6 @@ public abstract class DesktopAbstractField<C extends JComponent>
     @Override
     public void removeListener(ValueListener listener) {
         listeners.remove(listener);
-    }
-
-    @Override
-    public void setValueChangingListener(ValueChangingListener listener) {
-        valueChangingListener = listener;
-    }
-
-    @Override
-    public void removeValueChangingListener() {
-        valueChangingListener = null;
-    }
-
-    protected Object fireValueChanging(Object prevValue, Object value) {
-        if (valueChangingListener != null)
-            return valueChangingListener.valueChanging(this, "value", prevValue, value);
-        else
-            return value;
     }
 
     protected void fireValueChanged(Object prevValue, Object value) {

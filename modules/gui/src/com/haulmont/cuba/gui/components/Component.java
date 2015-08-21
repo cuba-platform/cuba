@@ -4,7 +4,6 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import org.dom4j.Element;
@@ -197,14 +196,6 @@ public interface Component {
 
         void addListener(ValueListener listener);
         void removeListener(ValueListener listener);
-
-        /**
-         * @deprecated Use normal {@link com.haulmont.cuba.gui.data.ValueListener} with setValue
-         */
-        @Deprecated
-        void setValueChangingListener(ValueChangingListener listener);
-        @Deprecated
-        void removeValueChangingListener();
     }
 
     /**

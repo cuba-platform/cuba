@@ -169,23 +169,20 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
                     return;
 
                 final Object value = getValue();
-
-                Object newValue = fireValueChanging(prevValue, value);
-
                 final Object oldValue = prevValue;
-                prevValue = newValue;
+                prevValue = value;
 
                 // use setting block value only for ValueChangingListener
                 settingValue = true;
-                if (!ObjectUtils.equals(value, newValue)) {
-                    WebLookupField.this.component.setValue(newValue);
+                if (!ObjectUtils.equals(value, value)) {
+                    WebLookupField.this.component.setValue(value);
                 }
                 settingValue = false;
 
                 if (optionsDatasource != null) {
                     optionsDatasource.setItem((Entity) value);
                 }
-                fireValueChanged(oldValue, newValue);
+                fireValueChanged(oldValue, value);
             }
         });
     }
