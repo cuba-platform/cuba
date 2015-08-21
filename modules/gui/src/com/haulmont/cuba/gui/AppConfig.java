@@ -28,12 +28,6 @@ public abstract class AppConfig {
     public static final String CLIENT_TYPE_PROP = "cuba.clientType";
 
     /**
-     * DEPRECATED. To obtain a message from the main message pack use {@link com.haulmont.cuba.core.global.Messages#getMainMessage(String)}.
-     */
-    @Deprecated
-    public static final String MESSAGES_PACK_PROP = "cuba.messagePack";
-
-    /**
      * Current client type.
      * <p/> Set up through the app property {@link #CLIENT_TYPE_PROP} on a client tier.
      * @return  current client type

@@ -47,12 +47,9 @@ public class LayoutLoaderConfig {
         config.register(BoxLayout.VBOX, VBoxLoader.class);
         config.register(GridLayout.NAME, GridLayoutLoader.class);
         config.register(ScrollBoxLayout.NAME, ScrollBoxLayoutLoader.class);
-        config.register("scrollbox", ScrollBoxLayoutLoader.class); // for backward compatibility
         config.register(GroupBoxLayout.NAME, GroupBoxLayoutLoader.class);
         config.register(HtmlBoxLayout.NAME, HtmlBoxLayoutLoader.class);
-        config.register("htmlbox", HtmlBoxLayoutLoader.class); // for backward compatibility
         config.register(FlowBoxLayout.NAME, FlowBoxLayoutLoader.class);
-        config.register("flowbox", FlowBoxLayoutLoader.class); // for backward compatibility
 
         config.register(Button.NAME, ButtonLoader.class);
         config.register(LinkButton.NAME, ButtonLoader.class);
@@ -76,7 +73,6 @@ public class LayoutLoaderConfig {
         config.register(OptionsGroup.NAME, OptionsGroupLoader.class);
         config.register(FileUploadField.NAME, FileUploadFieldLoader.class);
         config.register(FileMultiUploadField.NAME, FileUploadFieldLoader.class);
-        config.register("multiupload", FileUploadFieldLoader.class); // for backward compatibility
 
         config.register(Table.NAME, TableLoader.class);
         config.register(TreeTable.NAME, TableLoader.class);
@@ -88,10 +84,8 @@ public class LayoutLoaderConfig {
         config.register(SplitPanel.NAME, SplitPanelLoader.class);
         config.register(Tree.NAME, TreeLoader.class);
         config.register(TabSheet.NAME, TabSheetLoader.class);
-        config.register("tabsheet", TabSheetLoader.class); // for backward compatibility
         config.register(Embedded.NAME, EmbeddedLoader.class);
         config.register(Filter.NAME, FilterLoader.class);
-        config.register(AccessControl.NAME, AccessControlLoader.class);
         config.register(ButtonsPanel.NAME, ButtonsPanelLoader.class);
         config.register(PopupButton.NAME, PopupButtonLoader.class);
         config.register(FieldGroup.NAME, FieldGroupLoader.class);

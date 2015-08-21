@@ -7,7 +7,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ExpandingLayout;
-import com.haulmont.cuba.gui.components.QuasiComponent;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
@@ -43,18 +42,11 @@ public abstract class ContainerLoader extends ComponentLoader {
         loader.setMessagesPack(getMessagesPack());
 
         for (Element subElement : (Collection<Element>) element.elements()) {
-            final String name = subElement.getName();
+            String name = subElement.getName();
             if (exceptTags != null && Arrays.binarySearch(exceptTags, name) < 0) {
-                final Component subComponent = loader.loadComponent(subElement, component);
-                if (subComponent instanceof QuasiComponent) {
-                    for (Component realSubComponent : ((QuasiComponent) subComponent).getRealComponents()) {
-                        component.add(realSubComponent);
-                        res.add(realSubComponent);
-                    }
-                } else {
-                    component.add(subComponent);
-                    res.add(subComponent);
-                }
+                Component subComponent = loader.loadComponent(subElement, component);
+                component.add(subComponent);
+                res.add(subComponent);
             }
         }
 

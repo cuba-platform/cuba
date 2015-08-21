@@ -73,7 +73,6 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(TabSheet.NAME, WebTabSheet.class);
         classes.put(Embedded.NAME, WebEmbedded.class);
         classes.put(Filter.NAME, WebFilter.class);
-        classes.put(AccessControl.NAME, WebAccessControl.class);
         classes.put(ButtonsPanel.NAME, WebButtonsPanel.class);
         classes.put(PopupButton.NAME, WebPopupButton.class);
 

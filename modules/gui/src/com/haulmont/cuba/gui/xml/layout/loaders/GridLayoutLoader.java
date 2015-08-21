@@ -7,13 +7,11 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GridLayout;
-import com.haulmont.cuba.gui.components.Label;
-import com.haulmont.cuba.gui.components.QuasiComponent;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
@@ -209,19 +207,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
     }
 
     protected void addSubComponent(GridLayout grid, Component subComponent, int c1, int r1, int c2, int r2) {
-        if (subComponent instanceof QuasiComponent) {
-            Collection<Component> realComponents = ((QuasiComponent) subComponent).getRealComponents();
-            if (realComponents.size() == 1) {
-                Component comp = realComponents.iterator().next();
-                grid.remove(comp);
-                grid.add(comp, c1, r1, c2, r2);
-            } else {
-                Label label = factory.createComponent(Label.class);
-                grid.add(label, c1, r1, c2, r2);
-            }
-        } else {
-            grid.add(subComponent, c1, r1, c2, r2);
-        }
+        grid.add(subComponent, c1, r1, c2, r2);
     }
 
     protected void fillSpanMatrix(int col, int row, int cspan, int rspan) {
