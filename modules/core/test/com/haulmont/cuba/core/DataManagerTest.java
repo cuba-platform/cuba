@@ -8,7 +8,7 @@ import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.security.entity.Group;
+import com.haulmont.cuba.security.entity.User;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,8 +34,7 @@ public class DataManagerTest extends CubaTestCase {
 
         dataManager.commit(new CommitContext(Collections.<Entity>singleton(server)));
 
-        final LoadContext<Server> loadContext = new LoadContext<>(Server.class);
-        loadContext.setId(id);
+        LoadContext<Server> loadContext = LoadContext.create(Server.class).setId(id);
 
         server = dataManager.load(loadContext);
         assertEquals("localhost", server.getName());
@@ -52,8 +51,7 @@ public class DataManagerTest extends CubaTestCase {
 
         dataManager.commit(new CommitContext(Collections.<Entity>singleton(server)));
 
-        final LoadContext<Server> loadContext = new LoadContext<>(Server.class);
-        loadContext.setId(id);
+        LoadContext<Server> loadContext = LoadContext.create(Server.class).setId(id);
 
         server = dataManager.load(loadContext);
         assertEquals("localhost", server.getName());
@@ -66,8 +64,7 @@ public class DataManagerTest extends CubaTestCase {
 
         dataManager.commit(new CommitContext(Collections.<Entity>singleton(server)));
 
-        final LoadContext loadContext =
-                new LoadContext(Server.class);
+        LoadContext<Server> loadContext = LoadContext.create(Server.class);
         loadContext.setQueryString("select s from " + PersistenceHelper.getEntityName(Server.class) + " s");
         
         List<Server> list = dataManager.loadList(loadContext);
@@ -82,19 +79,18 @@ public class DataManagerTest extends CubaTestCase {
 
         dataManager.commit(new CommitContext(Collections.<Entity>singleton(server)));
 
-        LoadContext loadContext = new LoadContext(Server.class);
-        loadContext.setId(id);
+        LoadContext<Server> loadContext = LoadContext.create(Server.class).setId(id);
 
         List<Server> list = dataManager.loadList(loadContext);
         assertTrue(list.size() == 1);
     }
 
     public void testAssociatedResult() throws Exception {
-        LoadContext loadContext = new LoadContext(Group.class);
+        LoadContext<User> loadContext = LoadContext.create(User.class);
         loadContext.setQueryString("select u.group from sec$User u where u.id = :userId")
                 .setParameter("userId", UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
 
-        List<Server> list = dataManager.loadList(loadContext);
+        List<User> list = dataManager.loadList(loadContext);
         assertTrue(list.size() == 1);
     }
 
@@ -105,8 +101,7 @@ public class DataManagerTest extends CubaTestCase {
 
         dataManager.commit(new CommitContext(Collections.<Entity>singleton(server)));
 
-        final LoadContext loadContext =
-                new LoadContext(Server.class);
+        LoadContext<Server> loadContext = LoadContext.create(Server.class);
         loadContext.setQueryString("select s from sys$Server s where s.name like :name")
                 .setParameter("name", "(?i)%loc%host%");
 
@@ -115,9 +110,8 @@ public class DataManagerTest extends CubaTestCase {
     }
 
     public void testUnexistingQueryParameters() throws Exception {
-        LoadContext loadContext = new LoadContext(Server.class);
-        loadContext.setQueryString("select u from sec$User u where u.login = :login")
-                .setParameter("name", "admin");
+        LoadContext<User> loadContext = LoadContext.create(User.class).setQuery(
+                LoadContext.createQuery("select u from sec$User u where u.login = :login").setParameter("name", "admin"));
 
         try {
             dataManager.loadList(loadContext);
@@ -126,10 +120,9 @@ public class DataManagerTest extends CubaTestCase {
             // ok
         }
 
-        loadContext = new LoadContext(Server.class);
-        loadContext.setQueryString("select u from sec$User u where u.login = :login")
-                .setParameter("login", "admin");
-        List<Entity> list = dataManager.loadList(loadContext);
+        loadContext = LoadContext.create(User.class).setQuery(
+                LoadContext.createQuery("select u from sec$User u where u.login = :login").setParameter("login", "admin"));
+        List<User> list = dataManager.loadList(loadContext);
         assertEquals(1, list.size());
     }
 }

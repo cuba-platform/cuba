@@ -11,8 +11,16 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * Class that defines parameters for loading entities from the database.
- * <p>Used by {@link DataManager}.</p>
+ * Class that defines parameters for loading entities from the database via {@link DataManager}.
+ * <p>Typical usage:
+ * <pre>
+    LoadContext&lt;User&gt; context = LoadContext.create(User.class).setQuery(
+            LoadContext.createQuery("select u from sec$User u where u.login like :login")
+                    .setParameter("login", "a%")
+                    .setMaxResults(10))
+            .setView("user.browse");
+    List&lt;User&gt; users = dataManager.loadList(context);
+ * </pre>
  *
  * @author krivopustov
  * @version $Id$
@@ -30,6 +38,24 @@ public class LoadContext<E extends Entity> implements Serializable {
     protected int queryKey;
     protected Map<String, Object> dbHints = new HashMap<>();
     protected boolean loadDynamicAttributes;
+
+    /**
+     * Factory method to create a LoadContext instance.
+     *
+     * @param entityClass   class of the loaded entities
+     */
+    public static <E extends Entity> LoadContext<E> create(Class<E> entityClass) {
+        return new LoadContext<E>(entityClass);
+    }
+
+    /**
+     * Factory method to create a LoadContext.Query instance for passing into {@link #setQuery(Query)} method.
+     *
+     * @param queryString   JPQL query string. Only named parameters are supported.
+     */
+    public static LoadContext.Query createQuery(String queryString) {
+        return new LoadContext.Query(queryString);
+    }
 
     /**
      * @param metaClass metaclass of the loaded entities
