@@ -232,7 +232,7 @@ public class UserManagementServiceBean implements UserManagementService {
         try {
             EntityManager em = persistence.getEntityManager();
 
-            Query query = em.createQuery("delete from sec$RememberMeToken rt where rt.user.id in :userIds");
+            Query query = em.createQuery("delete from sec$RememberMeToken rt where rt.user.id in (:userIds)");
             query.setParameter("userIds", userIds);
             query.executeUpdate();
 
