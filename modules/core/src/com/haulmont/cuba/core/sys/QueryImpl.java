@@ -249,9 +249,17 @@ public class QueryImpl<T> implements TypedQuery<T> {
     public TypedQuery<T> setParameter(String name, Object value, boolean implicitConversions) {
         checkState();
 
-        if (implicitConversions && value instanceof Entity)
-            value = ((BaseEntity) value).getId();
-
+        if (implicitConversions) {
+            if (value instanceof Entity)
+                value = ((BaseEntity) value).getId();
+            else if (value instanceof Collection) {
+                List<Object> list = new ArrayList<>(((Collection) value).size());
+                for (Object obj : ((Collection) value)) {
+                    list.add(obj instanceof Entity ? ((Entity) obj).getId() : obj);
+                }
+                value = list;
+            }
+        }
         params.add(new Param(name, value));
         return this;
     }

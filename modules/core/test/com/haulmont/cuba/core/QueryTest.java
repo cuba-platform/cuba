@@ -6,10 +6,15 @@ package com.haulmont.cuba.core;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
+import org.apache.commons.lang.time.DateUtils;
 
+import javax.persistence.TemporalType;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -303,6 +308,44 @@ public class QueryTest extends CubaTestCase {
             query.setParameter("ids", Arrays.asList(UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"), userId, user2Id));
             List<User> list = query.getResultList();
             assertEquals(3, list.size());
+
+            tx.commit();
+        }
+
+        // Implicit conversion
+
+        User user1, user2, user3;
+        try (Transaction tx = persistence.createTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+            user1 = em.find(User.class, userId);
+            user2 = em.find(User.class, user2Id);
+            user3 = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
+
+            tx.commit();
+        }
+
+        try (Transaction tx = persistence.createTransaction()) {
+            TypedQuery<User> query = persistence.getEntityManager().createQuery(
+                    "select u from sec$User u where u.id in (:ids) order by u.createTs", User.class);
+            query.setParameter("ids", Arrays.asList(user1, user2, user3));
+            List<User> list = query.getResultList();
+            assertEquals(3, list.size());
+
+            tx.commit();
+        }
+
+        // Positional parameters are not supported
+
+        try (Transaction tx = persistence.createTransaction()) {
+            TypedQuery<User> query = persistence.getEntityManager().createQuery(
+                    "select u from sec$User u where u.id in (?1) order by u.createTs", User.class);
+            query.setParameter(1, Arrays.asList(user1, user2, user3));
+            try {
+                query.getResultList();
+                fail();
+            } catch (UnsupportedOperationException e) {
+                // ok
+            }
 
             tx.commit();
         }
