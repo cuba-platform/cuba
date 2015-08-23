@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.security.listener;
 
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
 import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
 import com.haulmont.cuba.security.entity.User;
@@ -23,7 +24,9 @@ public class UserEntityListener implements
      */
     @Override
     public void onBeforeInsert(User entity) {
-        entity.setLoginLowerCase(entity.getLogin() != null ? entity.getLogin().toLowerCase() : null);
+        if (PersistenceHelper.isLoaded(entity, "login")) {
+            entity.setLoginLowerCase(entity.getLogin() != null ? entity.getLogin().toLowerCase() : null);
+        }
     }
 
     /**
@@ -31,6 +34,8 @@ public class UserEntityListener implements
      */
     @Override
     public void onBeforeUpdate(User entity) {
-        entity.setLoginLowerCase(entity.getLogin() != null ? entity.getLogin().toLowerCase() : null);
+        if (PersistenceHelper.isLoaded(entity, "login")) {
+            entity.setLoginLowerCase(entity.getLogin() != null ? entity.getLogin().toLowerCase() : null);
+        }
     }
 }

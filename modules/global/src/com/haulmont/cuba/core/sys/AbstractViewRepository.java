@@ -414,7 +414,8 @@ public class AbstractViewRepository implements ViewRepository {
             viewParam.src(ancestorView)
                     .includeSystemProperties(includeSystemProperties);
         } else {
-            viewParam.includeSystemProperties(Boolean.valueOf(systemProperties));
+            // system properties are included by default since v.6
+            viewParam.includeSystemProperties(systemProperties == null || Boolean.valueOf(systemProperties));
         }
         View view = new View(viewParam);
 
