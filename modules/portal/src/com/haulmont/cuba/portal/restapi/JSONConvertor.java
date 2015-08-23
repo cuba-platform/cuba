@@ -29,7 +29,6 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.portal.config.RestConfig;
@@ -305,7 +304,7 @@ public class JSONConvertor implements Convertor {
                                 EntityLoadInfo loadInfo = EntityLoadInfo.parse(id);
                                 if (loadInfo == null)
                                     throw new IllegalArgumentException("Unable to parse ID: " + id);
-                                BaseUuidEntity ref = loadInfo.getMetaClass().createInstance();
+                                Entity ref = metadata.create(loadInfo.getMetaClass());
                                 ref.setValue("id", loadInfo.getId());
                                 setField(entity, propertyName, ref);
                                 break;
@@ -316,7 +315,7 @@ public class JSONConvertor implements Convertor {
                             child = ref.getInstance();
                         } else {
                             childMetaClass = property.getRange().asClass();
-                            child = childMetaClass.createInstance();
+                            child = metadata.create(childMetaClass);
                         }
                         asJavaTree(commitRequest, child, childMetaClass, jsonChild);
                         setField(entity, propertyName, child);
@@ -477,7 +476,7 @@ public class JSONConvertor implements Convertor {
      */
     protected Entity createEmptyInstance(EntityLoadInfo loadInfo) throws IllegalAccessException, InstantiationException {
         MetaClass metaClass = loadInfo.getMetaClass();
-        Entity instance = metaClass.createInstance();
+        Entity instance = metadata.create(metaClass);
         for (MetaProperty metaProperty : metaClass.getProperties()) {
             instance.setValue(metaProperty.getName(), null);
         }

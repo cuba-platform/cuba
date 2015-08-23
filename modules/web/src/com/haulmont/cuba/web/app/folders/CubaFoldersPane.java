@@ -812,8 +812,7 @@ public class CubaFoldersPane extends VerticalLayout {
 
         @Override
         public void perform(final Folder folder) {
-            final AbstractSearchFolder newFolder;
-            newFolder = metadata.create(folder.getMetaClass());
+            AbstractSearchFolder newFolder = (AbstractSearchFolder) metadata.create(folder.getMetaClass());
             newFolder.copyFrom((AbstractSearchFolder) folder);
             new EditAction().perform(newFolder);
         }

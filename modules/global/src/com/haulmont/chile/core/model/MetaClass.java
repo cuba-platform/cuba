@@ -75,9 +75,4 @@ public interface MetaClass extends MetadataObject {
      * @return collection of meta properties owned by this metaclass and all its ancestors.
      */
     Collection<MetaProperty> getProperties();
-
-    /**
-     * Create an instance of the corresponding Java class.
-     */
-    <T> T createInstance() throws InstantiationException, IllegalAccessException;
 }

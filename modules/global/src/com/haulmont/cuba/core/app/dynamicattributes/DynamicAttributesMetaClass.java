@@ -92,11 +92,6 @@ public class DynamicAttributesMetaClass extends MetadataObjectImpl implements Me
         return properties.values();
     }
 
-    @Override
-    public <T> T createInstance() throws InstantiationException, IllegalAccessException {
-        throw new UnsupportedOperationException();
-    }
-
     public Collection<MetaProperty> getPropertiesFilteredByCategory(final Category category) {
         return Collections2.filter(getProperties(), new Predicate<MetaProperty>() {
             @Override

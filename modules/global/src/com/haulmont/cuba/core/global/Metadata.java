@@ -7,6 +7,7 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.Session;
+import com.haulmont.cuba.core.entity.Entity;
 
 /**
  * Central interface to provide metadata-related functionality.
@@ -54,12 +55,12 @@ public interface Metadata extends Session {
      * @param metaClass     entity MetaClass
      * @return              entity instance
      */
-    <T> T create(MetaClass metaClass);
+    Entity create(MetaClass metaClass);
 
     /**
      * Instantiate an entity, taking into account extended entities.
      * @param entityName    entity name
      * @return              entity instance
      */
-    <T> T create(String entityName);
+    Entity create(String entityName);
 }

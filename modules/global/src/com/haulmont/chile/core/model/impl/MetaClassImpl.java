@@ -73,18 +73,6 @@ public class MetaClassImpl extends MetadataObjectImpl implements MetaClass {
     }
 
 	@Override
-    public <T> T createInstance() throws InstantiationException, IllegalAccessException {
-        final Class aClass = getJavaClass();
-        if (aClass == null) throw new IllegalStateException(String.format("Can't find java class for metaClass '%s'", this));
-
-        return (T) aClass.newInstance();
-	}
-
-	public <T> T createInstance(Class<T> clazz) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
     public MetaModel getModel() {
 		return model;
 	}

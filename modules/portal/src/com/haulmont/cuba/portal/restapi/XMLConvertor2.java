@@ -14,7 +14,6 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.portal.config.RestConfig;
@@ -404,7 +403,7 @@ public class XMLConvertor2 implements Convertor {
                             Element refInstanceEl = propertyEl.element("instance");
                             if (metadataTools.isEmbedded(property)) {
                                 MetaClass embeddedMetaClass = property.getRange().asClass();
-                                Entity embeddedEntity = embeddedMetaClass.createInstance();
+                                Entity embeddedEntity = metadata.create(embeddedMetaClass);
                                 value = parseEntity(refInstanceEl, embeddedEntity, commitRequest);
                             } else {
                                 String id = refInstanceEl.attributeValue("id");
@@ -413,7 +412,7 @@ public class XMLConvertor2 implements Convertor {
                                 //will be registered later
                                 if (commitRequest != null && commitRequest.getCommitIds().contains(id)) {
                                     EntityLoadInfo loadInfo = EntityLoadInfo.parse(id);
-                                    BaseUuidEntity ref = loadInfo.getMetaClass().createInstance();
+                                    Entity ref = metadata.create(loadInfo.getMetaClass());
                                     ref.setValue("id", loadInfo.getId());
                                     entity.setValue(propertyName, ref);
                                     break;
@@ -458,7 +457,7 @@ public class XMLConvertor2 implements Convertor {
      */
     protected Entity createEmptyInstance(EntityLoadInfo loadInfo) throws IllegalAccessException, InstantiationException {
         MetaClass metaClass = loadInfo.getMetaClass();
-        Entity instance = metaClass.createInstance();
+        Entity instance = metadata.create(metaClass);
         for (MetaProperty metaProperty : metaClass.getProperties()) {
             instance.setValue(metaProperty.getName(), null);
         }

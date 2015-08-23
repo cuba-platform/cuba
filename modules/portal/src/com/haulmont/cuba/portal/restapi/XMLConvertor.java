@@ -24,7 +24,6 @@ package com.haulmont.cuba.portal.restapi;
 import com.haulmont.chile.core.datatypes.impl.StringDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.portal.config.RestConfig;
@@ -297,7 +296,7 @@ public class XMLConvertor implements Convertor {
                     if (!property.getRange().getCardinality().isMany()) {
                         if (property.getAnnotatedElement().isAnnotationPresent(Embedded.class)) {
                             MetaClass embeddedMetaClass = property.getRange().asClass();
-                            value = embeddedMetaClass.createInstance();
+                            value = metadata.create(embeddedMetaClass);
                             parseEntity(commitRequest, value, embeddedMetaClass, fieldNode);
                         } else {
                             String id = getRefId(fieldNode);
@@ -306,7 +305,7 @@ public class XMLConvertor implements Convertor {
                             //will be registered later
                             if (commitRequest.getCommitIds().contains(id)) {
                                 EntityLoadInfo loadInfo = EntityLoadInfo.parse(id);
-                                BaseUuidEntity ref = loadInfo.getMetaClass().createInstance();
+                                Entity ref = metadata.create(loadInfo.getMetaClass());
                                 ref.setValue("id", loadInfo.getId());
                                 setField(bean, fieldName, ref);
                                 break;

@@ -10,13 +10,11 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.cuba.core.global.LoadContext;
-
-import java.util.UUID;
+import com.haulmont.cuba.core.global.Metadata;
 
 /**
  * @author chevelev
@@ -41,7 +39,8 @@ public class InstanceRef {
                 throw new RuntimeException("Entity with loadInfo " + loadInfo + " not found");
             }
         } else {
-            instance = childMetaClass.createInstance();
+            //noinspection unchecked
+            instance = (BaseGenericIdEntity<Object>) AppBeans.get(Metadata.class).create(childMetaClass);
             if (!loadInfo.isNewEntity()) {
                 for (MetaProperty metaProperty : childMetaClass.getProperties()) {
                     if (!metaProperty.getRange().isClass()) {
