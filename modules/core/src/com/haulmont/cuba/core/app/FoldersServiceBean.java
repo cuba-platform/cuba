@@ -188,9 +188,8 @@ public class FoldersServiceBean implements FoldersService {
             EntityManager em = persistence.getEntityManager();
             MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(SearchFolder.class);
             TypedQuery<SearchFolder> q = em.createQuery("select f from "+ effectiveMetaClass.getName() +" f " +
-                    "left join fetch f.user " +
+                    "left join fetch f.user u on u.id = ?1 " +
                     "left join fetch f.presentation " +
-                    "where (f.user.id = ?1 or f.user is null) " +
                     "order by f.sortOrder, f.name",
                     SearchFolder.class);
             q.setParameter(1, userSessionSource.currentOrSubstitutedUserId());
