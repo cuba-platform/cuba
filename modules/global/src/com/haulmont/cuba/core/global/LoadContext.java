@@ -5,6 +5,7 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.Entity;
 
 import java.io.Serializable;
 import java.util.*;
@@ -16,7 +17,7 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-public class LoadContext implements Serializable {
+public class LoadContext<E extends Entity> implements Serializable {
 
     private static final long serialVersionUID = -8808320502197308698L;
 
@@ -42,7 +43,7 @@ public class LoadContext implements Serializable {
     /**
      * @param javaClass class of the loaded entities
      */
-    public LoadContext(Class javaClass) {
+    public LoadContext(Class<E> javaClass) {
         Metadata metadata = AppBeans.get(Metadata.NAME);
         this.metaClass = metadata.getSession().getClassNN(javaClass).getName();
     }
@@ -65,7 +66,7 @@ public class LoadContext implements Serializable {
      * @param query query definition
      * @return this instance for chaining
      */
-    public LoadContext setQuery(Query query) {
+    public LoadContext<E> setQuery(Query query) {
         this.query = query;
         return this;
     }
@@ -91,7 +92,7 @@ public class LoadContext implements Serializable {
      * @param view view that is used for loading entities
      * @return this instance for chaining
      */
-    public LoadContext setView(View view) {
+    public LoadContext<E> setView(View view) {
         this.view = view;
         return this;
     }
@@ -100,7 +101,7 @@ public class LoadContext implements Serializable {
      * @param viewName view that is used for loading entities
      * @return this instance for chaining
      */
-    public LoadContext setView(String viewName) {
+    public LoadContext<E> setView(String viewName) {
         Metadata metadata = AppBeans.get(Metadata.NAME);
         this.view = metadata.getViewRepository().getView(metadata.getSession().getClass(metaClass), viewName);
         return this;
@@ -117,7 +118,7 @@ public class LoadContext implements Serializable {
      * @param id id of an entity to be loaded
      * @return this instance for chaining
      */
-    public LoadContext setId(Object id) {
+    public LoadContext<E> setId(Object id) {
         this.id = id;
         return this;
     }

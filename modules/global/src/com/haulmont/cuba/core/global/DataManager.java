@@ -26,44 +26,44 @@ public interface DataManager {
     String NAME = "cuba_DataManager";
 
     /**
-     * Load a single entity instance.
+     * Loads a single entity instance.
      * <p>The depth of object graphs, starting from loaded instances, defined by {@link com.haulmont.cuba.core.global.View}
      * object passed in {@link com.haulmont.cuba.core.global.LoadContext}.</p>
      * @param context   {@link com.haulmont.cuba.core.global.LoadContext} object, defining what and how to load
      * @return          the loaded detached object, or null if not found
      */
     @Nullable
-    <A extends Entity> A load(LoadContext context);
+    <E extends Entity> E load(LoadContext<E> context);
 
     /**
-     * Load collection of entity instances.
+     * Loads collection of entity instances.
      * <p>The depth of object graphs, starting from loaded instances, defined by {@link com.haulmont.cuba.core.global.View}
      * object passed in {@link LoadContext}.</p>
      * @param context   {@link LoadContext} object, defining what and how to load
      * @return          a list of detached instances, or empty list if nothing found
      */
-    <A extends Entity> List<A> loadList(LoadContext context);
+    <E extends Entity> List<E> loadList(LoadContext<E> context);
 
     /**
-     * Reload the entity instance from database with the view specified.
+     * Reloads the entity instance from database with the view specified.
      * @param entity        reloading instance
      * @param viewName      view name
      * @return              reloaded instance
      * @throws EntityAccessException if the entity cannot be reloaded because it was deleted or access restrictions has been changed
      */
-    <A extends Entity> A reload(A entity, String viewName);
+    <E extends Entity> E reload(E entity, String viewName);
 
     /**
-     * Reload the entity instance from database with the view specified.
+     * Reloads the entity instance from database with the view specified.
      * @param entity        reloading instance
      * @param view          view object
      * @return              reloaded instance
      * @throws EntityAccessException if the entity cannot be reloaded because it was deleted or access restrictions has been changed
      */
-    <A extends Entity> A reload(A entity, View view);
+    <E extends Entity> E reload(E entity, View view);
 
     /**
-     * Reload the entity instance from database with the view specified. Loading instance class may differ from original
+     * Reloads the entity instance from database with the view specified. Loading instance class may differ from original
      * instance if we want to load an ancestor or a descendant.
      * @param entity        reloading instance
      * @param view          view object
@@ -71,10 +71,10 @@ public interface DataManager {
      * @return              reloaded instance
      * @throws EntityAccessException if the entity cannot be reloaded because it was deleted or access restrictions has been changed
      */
-    <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass);
+    <E extends Entity> E reload(E entity, View view, @Nullable MetaClass metaClass);
 
     /**
-     * Reload the entity instance from database with the view specified. Loading instance class may differ from original
+     * Reloads the entity instance from database with the view specified. Loading instance class may differ from original
      * instance if we want to load an ancestor or a descendant.
      * @param entity                    reloading instance
      * @param view                      view object
@@ -83,10 +83,10 @@ public interface DataManager {
      * @return                          reloaded instance
      * @throws EntityAccessException if the entity cannot be reloaded because it was deleted or access restrictions has been changed
      */
-    <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints);
+    <E extends Entity> E reload(E entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints);
 
     /**
-     * Reload the entity instance from database with the view specified. Loading instance class may differ from original
+     * Reloads the entity instance from database with the view specified. Loading instance class may differ from original
      * instance if we want to load an ancestor or a descendant.
      * @param entity                    reloading instance
      * @param view                      view object
@@ -96,32 +96,33 @@ public interface DataManager {
      * @return                          reloaded instance
      * @throws EntityAccessException if the entity cannot be reloaded because it was deleted or access restrictions has been changed
      */
-    public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints, boolean loadDynamicAttributes);
+    <E extends Entity> E reload(E entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints, boolean loadDynamicAttributes);
 
     /**
-     * Commit a collection of new or detached entity instances to the database.
+     * Commits a collection of new or detached entity instances to the database.
      * @param context   {@link com.haulmont.cuba.core.global.CommitContext} object, containing committing entities and other information
      * @return          set of committed instances
      */
     Set<Entity> commit(CommitContext context);
 
     /**
-     * Commit the entity to the database.
+     * Commits the entity to the database.
      * @param entity    entity instance
      * @param view      view object, affects returning committed instance
      * @return          committed instance
      */
-    <A extends Entity> A commit(A entity, @Nullable View view);
+    <E extends Entity> E commit(E entity, @Nullable View view);
 
     /**
-     * Commit the entity to the database.
+     * Commits the entity to the database.
      * @param entity    entity instance
      * @return          committed instance
      */
-    <A extends Entity> A commit(A entity);
+    <E extends Entity> E commit(E entity);
 
     /**
-     * Remove the entity instance from the database.
+     * Removes the entity instance from the database.
      * @param entity    entity instance
      */
-    void remove(Entity entity);}
+    void remove(Entity entity);
+}

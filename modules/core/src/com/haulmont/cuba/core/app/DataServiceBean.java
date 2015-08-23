@@ -32,12 +32,12 @@ public class DataServiceBean implements DataService {
 
     @Override
     @Nullable
-    public <A extends Entity> A load(LoadContext context) {
+    public <E extends Entity> E load(LoadContext<E> context) {
         return dataManager.load(context);
     }
 
     @Override
-    public <A extends Entity> List<A> loadList(LoadContext context) {
+    public <E extends Entity> List<E> loadList(LoadContext<E> context) {
         return dataManager.loadList(context);
     }
 }

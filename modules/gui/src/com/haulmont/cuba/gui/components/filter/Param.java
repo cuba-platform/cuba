@@ -751,11 +751,13 @@ public class Param {
 
     private Component createRuntimeEnumLookup(final ValueProperty valueProperty) {
         DataService dataService = AppBeans.get(DataService.NAME);
-        LoadContext context = new LoadContext(CategoryAttribute.class);
+        LoadContext<CategoryAttribute> context = new LoadContext<>(CategoryAttribute.class);
         LoadContext.Query q = context.setQueryString("select a from sys$CategoryAttribute a where a.id = :id");
         context.setView("_local");
         q.setParameter("id", categoryAttrId);
         CategoryAttribute categoryAttribute = dataService.load(context);
+        if (categoryAttribute == null)
+            throw new EntityAccessException();
 
         runtimeEnum = new LinkedList<>();
         String enumerationString = categoryAttribute.getEnumeration();

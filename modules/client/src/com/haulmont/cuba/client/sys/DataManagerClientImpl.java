@@ -34,49 +34,49 @@ public class DataManagerClientImpl implements DataManager {
 
     @Nullable
     @Override
-    public <A extends Entity> A load(LoadContext context) {
+    public <E extends Entity> E load(LoadContext<E> context) {
         return dataService.load(context);
     }
 
     @Nonnull
     @Override
-    public <A extends Entity> List<A> loadList(LoadContext context) {
+    public <E extends Entity> List<E> loadList(LoadContext<E> context) {
         return dataService.loadList(context);
     }
 
     @Override
-    public <A extends Entity> A reload(A entity, String viewName) {
+    public <E extends Entity> E reload(E entity, String viewName) {
         Objects.requireNonNull(viewName, "viewName is null");
         return reload(entity, metadata.getViewRepository().getView(entity.getClass(), viewName));
     }
 
     @Override
-    public <A extends Entity> A reload(A entity, View view) {
+    public <E extends Entity> E reload(E entity, View view) {
         return reload(entity, view, null);
     }
 
     @Override
-    public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass) {
+    public <E extends Entity> E reload(E entity, View view, @Nullable MetaClass metaClass) {
         return reload(entity, view, metaClass, true);
     }
 
     @Override
-    public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints) {
+    public <E extends Entity> E reload(E entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints) {
         return reload(entity, view, metaClass, useSecurityConstraints, false);
     }
 
     @Override
-    public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints, boolean loadDynamicAttributes) {
+    public <E extends Entity> E reload(E entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints, boolean loadDynamicAttributes) {
         if (metaClass == null) {
             metaClass = metadata.getSession().getClass(entity.getClass());
         }
-        final LoadContext context = new LoadContext(metaClass);
+        final LoadContext<E> context = new LoadContext<>(metaClass);
         context.setUseSecurityConstraints(useSecurityConstraints);
         context.setId(entity.getId());
         context.setView(view);
         context.setLoadDynamicAttributes(loadDynamicAttributes);
 
-        A reloaded = load(context);
+        E reloaded = load(context);
         if (reloaded == null)
             throw new EntityAccessException();
 
@@ -89,7 +89,7 @@ public class DataManagerClientImpl implements DataManager {
     }
 
     @Override
-    public <A extends Entity> A commit(A entity, @Nullable View view) {
+    public <E extends Entity> E commit(E entity, @Nullable View view) {
         CommitContext context = new CommitContext(
                         Collections.singleton((Entity) entity),
                         Collections.<Entity>emptyList());
@@ -101,14 +101,14 @@ public class DataManagerClientImpl implements DataManager {
         for (Entity e : res) {
             if (e.equals(entity)) {
                 //noinspection unchecked
-                return (A) e;
+                return (E) e;
             }
         }
         return null;
     }
 
     @Override
-    public <A extends Entity> A commit(A entity) {
+    public <E extends Entity> E commit(E entity) {
         return commit(entity, null);
     }
 

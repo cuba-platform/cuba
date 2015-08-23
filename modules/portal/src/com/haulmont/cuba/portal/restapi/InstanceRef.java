@@ -34,9 +34,8 @@ public class InstanceRef {
         MetaClass childMetaClass = loadInfo.getMetaClass();
         if (!Strings.isNullOrEmpty(loadInfo.getViewName()) && !loadInfo.isNewEntity()) {
             DataService dataService = AppBeans.get(DataService.class);
-            LoadContext ctx = new LoadContext(loadInfo.getMetaClass())
-                    .setId(loadInfo.getId())
-                    .setView(loadInfo.getViewName());
+            LoadContext<BaseGenericIdEntity<Object>> ctx = new LoadContext<>(loadInfo.getMetaClass());
+            ctx.setId(loadInfo.getId()).setView(loadInfo.getViewName());
             instance = dataService.load(ctx);
             if (instance == null) {
                 throw new RuntimeException("Entity with loadInfo " + loadInfo + " not found");

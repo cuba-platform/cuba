@@ -53,14 +53,14 @@ public class ConvertorHelper {
 
     public static void fetchDynamicAttributes(Entity entity){
         if (entity instanceof BaseGenericIdEntity) {
-            LoadContext loadContext = new LoadContext(entity.getMetaClass());
+            LoadContext<BaseGenericIdEntity> loadContext = new LoadContext<>(entity.getMetaClass());
             loadContext.setId(entity.getId()).setLoadDynamicAttributes(true);
-            BaseGenericIdEntity reloaded = AppBeans.get(DataService.NAME, DataService.class)
-                    .load(loadContext);
+            DataService dataService = AppBeans.get(DataService.NAME, DataService.class);
+            BaseGenericIdEntity reloaded = dataService.load(loadContext);
             if (reloaded != null) {
                 ((BaseGenericIdEntity) entity).setDynamicAttributes(reloaded.getDynamicAttributes());
             } else {
-                ((BaseGenericIdEntity) entity).setDynamicAttributes(new HashMap<String, CategoryAttributeValue>());
+                ((BaseGenericIdEntity) entity).setDynamicAttributes(new HashMap<>());
             }
         }
     }

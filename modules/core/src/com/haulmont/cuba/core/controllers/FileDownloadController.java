@@ -122,7 +122,7 @@ public class FileDownloadController {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return null;
         }
-        FileDescriptor fileDescriptor = dataService.load(new LoadContext(FileDescriptor.class).setId(fileId));
+        FileDescriptor fileDescriptor = dataService.load(new LoadContext<>(FileDescriptor.class).setId(fileId));
         if (fileDescriptor == null)
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
         return fileDescriptor;

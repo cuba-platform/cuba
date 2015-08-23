@@ -90,7 +90,7 @@ public class FileDownloadController {
                 return null;
             }
 
-            FileDescriptor fd = dataService.load(new LoadContext(FileDescriptor.class).setId(fileId));
+            FileDescriptor fd = dataService.load(new LoadContext<>(FileDescriptor.class).setId(fileId));
             if (fd == null) {
                 log.warn("Unable to find file with id " + fileId);
                 error(response);

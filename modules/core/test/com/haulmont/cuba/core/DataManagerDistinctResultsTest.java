@@ -180,13 +180,13 @@ public class DataManagerDistinctResultsTest extends CubaTestCase {
 
     private LinkedHashSet<User> load(int firstResult, int maxResults, String queryString) {
         DataManager ds = AppBeans.get(DataManager.NAME);
-        LoadContext lc = new LoadContext(User.class);
+        LoadContext<User> lc = new LoadContext<>(User.class);
         LoadContext.Query q = lc.setQueryString(queryString);
         q.setParameter("groupId", groupId);
         q.setFirstResult(firstResult);
         q.setMaxResults(maxResults);
-        List list = ds.loadList(lc);
-        return new LinkedHashSet(list);
+        List<User> list = ds.loadList(lc);
+        return new LinkedHashSet<>(list);
     }
 
     private void checkSetup() {

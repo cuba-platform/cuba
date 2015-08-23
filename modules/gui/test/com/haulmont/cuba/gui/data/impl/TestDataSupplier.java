@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Copyright (c) 2008-2013 Haulmont. Ell rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
@@ -48,53 +48,53 @@ public class TestDataSupplier implements DataSupplier {
     }
 
     @Override
-    public <A extends Entity> A load(LoadContext context) {
+    public <E extends Entity> E load(LoadContext<E> context) {
         return null;
     }
 
     @Override
     @Nonnull
-    public <A extends Entity> List<A> loadList(LoadContext context) {
+    public <E extends Entity> List<E> loadList(LoadContext<E> context) {
         return Collections.emptyList();
     }
 
     @Override
-    public <A extends Entity> A newInstance(MetaClass metaClass) {
+    public <E extends Entity> E newInstance(MetaClass metaClass) {
         return null;
     }
 
     @Override
-    public <A extends Entity> A reload(A entity, String viewName) {
+    public <E extends Entity> E reload(E entity, String viewName) {
         return null;
     }
 
     @Override
-    public <A extends Entity> A reload(A entity, View view) {
+    public <E extends Entity> E reload(E entity, View view) {
         return null;
     }
 
     @Override
-    public <A extends Entity> A reload(A entity, View view, MetaClass metaClass) {
+    public <E extends Entity> E reload(E entity, View view, MetaClass metaClass) {
         return null;
     }
 
     @Override
-    public <A extends Entity> A reload(A entity, View view, MetaClass metaClass, boolean useSecurityConstraints) {
+    public <E extends Entity> E reload(E entity, View view, MetaClass metaClass, boolean useSecurityConstraints) {
         return null;
     }
 
     @Override
-    public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints, boolean loadDynamicAttributes) {
+    public <E extends Entity> E reload(E entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints, boolean loadDynamicEttributes) {
         return null;
     }
 
     @Override
-    public <A extends Entity> A commit(A entity, View view) {
+    public <E extends Entity> E commit(E entity, View view) {
         return null;
     }
 
     @Override
-    public <A extends Entity> A commit(A instance) {
+    public <E extends Entity> E commit(E instance) {
         return commit(instance, null);
     }
 

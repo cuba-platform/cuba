@@ -26,42 +26,42 @@ public class GenericDataSupplier implements DataSupplier {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <A extends Entity> A newInstance(MetaClass metaClass) {
-        return (A) metadata.create(metaClass);
+    public <E extends Entity> E newInstance(MetaClass metaClass) {
+        return (E) metadata.create(metaClass);
     }
 
     @Override
-    public <A extends Entity> A reload(A entity, String viewName) {
+    public <E extends Entity> E reload(E entity, String viewName) {
         return dataManager.reload(entity, viewName);
     }
 
     @Override
-    public <A extends Entity> A reload(A entity, View view) {
+    public <E extends Entity> E reload(E entity, View view) {
         return dataManager.reload(entity, view);
     }
 
     @Override
-    public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass) {
+    public <E extends Entity> E reload(E entity, View view, @Nullable MetaClass metaClass) {
         return dataManager.reload(entity, view, metaClass);
     }
 
     @Override
-    public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints) {
+    public <E extends Entity> E reload(E entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints) {
         return dataManager.reload(entity, view, metaClass, useSecurityConstraints);
     }
 
     @Override
-    public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints, boolean loadDynamicAttributes) {
+    public <E extends Entity> E reload(E entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints, boolean loadDynamicAttributes) {
         return dataManager.reload(entity, view, metaClass, useSecurityConstraints, loadDynamicAttributes);
     }
 
     @Override
-    public <A extends Entity> A commit(A instance, @Nullable View view) {
+    public <E extends Entity> E commit(E instance, @Nullable View view) {
         return dataManager.commit(instance, view);
     }
 
     @Override
-    public <A extends Entity> A commit(A instance) {
+    public <E extends Entity> E commit(E instance) {
         return dataManager.commit(instance);
     }
 
@@ -77,13 +77,13 @@ public class GenericDataSupplier implements DataSupplier {
 
     @Override
     @Nullable
-    public <A extends Entity> A load(LoadContext context) {
+    public <E extends Entity> E load(LoadContext<E> context) {
         return dataManager.load(context);
     }
 
     @Override
     @Nonnull
-    public <A extends Entity> List<A> loadList(LoadContext context) {
+    public <E extends Entity> List<E> loadList(LoadContext<E> context) {
         return dataManager.loadList(context);
     }
 }

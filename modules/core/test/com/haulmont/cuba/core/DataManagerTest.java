@@ -34,7 +34,7 @@ public class DataManagerTest extends CubaTestCase {
 
         dataManager.commit(new CommitContext(Collections.<Entity>singleton(server)));
 
-        final LoadContext loadContext = new LoadContext(Server.class);
+        final LoadContext<Server> loadContext = new LoadContext<>(Server.class);
         loadContext.setId(id);
 
         server = dataManager.load(loadContext);
@@ -52,7 +52,7 @@ public class DataManagerTest extends CubaTestCase {
 
         dataManager.commit(new CommitContext(Collections.<Entity>singleton(server)));
 
-        final LoadContext loadContext = new LoadContext(Server.class);
+        final LoadContext<Server> loadContext = new LoadContext<>(Server.class);
         loadContext.setId(id);
 
         server = dataManager.load(loadContext);

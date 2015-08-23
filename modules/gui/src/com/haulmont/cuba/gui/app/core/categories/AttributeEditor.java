@@ -10,8 +10,10 @@ import com.google.common.collect.Multimap;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
+import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
@@ -277,12 +279,12 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected void fillDefaultEntities(Class entityClass) {
         String entityClassName = metadata.getClassNN(entityClass).getName();
         if (attribute.getDefaultEntityId() != null) {
-            LoadContext entityContext = new LoadContext(entityClass);
+            LoadContext<BaseEntity> entityContext = new LoadContext<>(entityClass);
             LoadContext.Query query2 = entityContext.setQueryString("select a from " + entityClassName + " a where a.id =:e");
             query2.setParameter("e", attribute.getDefaultEntityId());
             entityContext.setView("_minimal");
 
-            BaseUuidEntity entity = dataSupplier.load(entityContext);
+            BaseEntity entity = dataSupplier.load(entityContext);
             if (entity != null) {
                 defaultEntityField.setValue(entity);
             } else {

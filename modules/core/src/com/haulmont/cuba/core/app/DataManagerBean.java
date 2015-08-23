@@ -38,6 +38,7 @@ import java.util.*;
  */
 @ManagedBean(DataManager.NAME)
 public class DataManagerBean implements DataManager {
+
     public static final int MAX_ENTITIES_FOR_ATTRIBUTE_VALUES_BATCH = 100;
 
     private Log log = LogFactory.getLog(DataManagerBean.class);
@@ -74,8 +75,7 @@ public class DataManagerBean implements DataManager {
 
     @Nullable
     @Override
-    @SuppressWarnings("unchecked")
-    public <A extends Entity> A load(LoadContext context) {
+    public <E extends Entity> E load(LoadContext<E> context) {
         if (log.isDebugEnabled())
             log.debug("load: metaClass=" + context.getMetaClass() + ", id=" + context.getId() + ", view=" + context.getView());
 
@@ -86,7 +86,7 @@ public class DataManagerBean implements DataManager {
             return null;
         }
 
-        A result = null;
+        E result = null;
 
         Transaction tx = persistence.createTransaction();
         try {
@@ -97,7 +97,8 @@ public class DataManagerBean implements DataManager {
             persistence.getEntityManagerContext().setDbHints(context.getDbHints());
 
             com.haulmont.cuba.core.Query query = createQuery(em, context);
-            final List<A> resultList = query.getResultList();
+            //noinspection unchecked
+            List<E> resultList = query.getResultList();
             if (!resultList.isEmpty())
                 result = resultList.get(0);
 
@@ -118,8 +119,7 @@ public class DataManagerBean implements DataManager {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <A extends Entity> List<A> loadList(LoadContext context) {
+    public <E extends Entity> List<E> loadList(LoadContext<E> context) {
         if (log.isDebugEnabled())
             log.debug("loadList: metaClass=" + context.getMetaClass() + ", view=" + context.getView()
                     + (context.getPrevQueries().isEmpty() ? "" : ", to selected")
@@ -136,7 +136,7 @@ public class DataManagerBean implements DataManager {
 
         queryResultsManager.savePreviousQueryResults(context);
 
-        List<A> resultList;
+        List<E> resultList;
 
         Transaction tx = persistence.createTransaction();
         try {
@@ -180,38 +180,38 @@ public class DataManagerBean implements DataManager {
     }
 
     @Override
-    public <A extends Entity> A reload(A entity, String viewName) {
+    public <E extends Entity> E reload(E entity, String viewName) {
         Objects.requireNonNull(viewName, "viewName is null");
         return reload(entity, metadata.getViewRepository().getView(entity.getClass(), viewName));
     }
 
     @Override
-    public <A extends Entity> A reload(A entity, View view) {
+    public <E extends Entity> E reload(E entity, View view) {
         return reload(entity, view, null);
     }
 
     @Override
-    public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass) {
+    public <E extends Entity> E reload(E entity, View view, @Nullable MetaClass metaClass) {
         return reload(entity, view, metaClass, true);
     }
 
     @Override
-    public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints) {
+    public <E extends Entity> E reload(E entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints) {
         return reload(entity, view, metaClass, useSecurityConstraints, false);
     }
 
     @Override
-    public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints, boolean loadDynamicAttributes) {
+    public <E extends Entity> E reload(E entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints, boolean loadDynamicAttributes) {
         if (metaClass == null) {
             metaClass = metadata.getSession().getClass(entity.getClass());
         }
-        final LoadContext context = new LoadContext(metaClass);
+        LoadContext<E> context = new LoadContext<>(metaClass);
         context.setUseSecurityConstraints(useSecurityConstraints);
         context.setId(entity.getId());
         context.setView(view);
         context.setLoadDynamicAttributes(loadDynamicAttributes);
 
-        A reloaded = load(context);
+        E reloaded = load(context);
         if (reloaded == null)
             throw new EntityAccessException();
 
@@ -343,7 +343,7 @@ public class DataManagerBean implements DataManager {
         }
     }
 
-    protected <A extends BaseGenericIdEntity> void fetchDynamicAttributes(List<A> entities) {
+    protected <E extends BaseGenericIdEntity> void fetchDynamicAttributes(List<E> entities) {
         if (CollectionUtils.isNotEmpty(entities)) {
             Collection<UUID> ids = Collections2.transform(entities, new Function<Entity, UUID>() {
                 @Nullable
@@ -448,7 +448,7 @@ public class DataManagerBean implements DataManager {
     }
 
     @Override
-    public <A extends Entity> A commit(A entity, @Nullable View view) {
+    public <E extends Entity> E commit(E entity, @Nullable View view) {
         CommitContext context = new CommitContext(
                 Collections.singleton((Entity) entity),
                 Collections.<Entity>emptyList());
@@ -460,14 +460,14 @@ public class DataManagerBean implements DataManager {
         for (Entity e : res) {
             if (e.equals(entity)) {
                 //noinspection unchecked
-                return (A) e;
+                return (E) e;
             }
         }
         return null;
     }
 
     @Override
-    public <A extends Entity> A commit(A entity) {
+    public <E extends Entity> E commit(E entity) {
         return commit(entity, null);
     }
 
@@ -512,14 +512,14 @@ public class DataManagerBean implements DataManager {
         return query;
     }
 
-    @SuppressWarnings("unchecked")
-    protected List getResultList(LoadContext context, Query query, boolean ensureDistinct) {
-        List list = query.getResultList();
+    protected <E extends Entity> List<E> getResultList(LoadContext<E> context, Query query, boolean ensureDistinct) {
+        //noinspection unchecked
+        List<E> list = query.getResultList();
         if (!ensureDistinct || list.size() == 0)
             return list;
 
         int requestedFirst = context.getQuery().getFirstResult();
-        LinkedHashSet set = new LinkedHashSet(list);
+        LinkedHashSet<E> set = new LinkedHashSet<>(list);
         if (set.size() == list.size() && requestedFirst == 0) {
             // If this is the first chunk and it has no duplicates, just return it
             return list;
@@ -531,7 +531,7 @@ public class DataManagerBean implements DataManager {
 
         if (requestedMax == 0) {
             // set contains all items if query without paging
-            return new ArrayList(set);
+            return new ArrayList<>(set);
         }
 
         int setSize = list.size() + requestedFirst;
@@ -549,6 +549,7 @@ public class DataManagerBean implements DataManager {
             }
             query.setFirstResult(firstResult);
             query.setMaxResults(maxResults);
+            //noinspection unchecked
             list = query.getResultList();
             if (list.size() == 0)
                 break;
@@ -559,9 +560,9 @@ public class DataManagerBean implements DataManager {
 
         // Copy by iteration because subList() returns non-serializable class
         int max = Math.min(requestedFirst + requestedMax, set.size());
-        List result = new ArrayList(max - requestedFirst);
+        List<E> result = new ArrayList<>(max - requestedFirst);
         int j = 0;
-        for (Object item : set) {
+        for (E item : set) {
             if (j >= max)
                 break;
             if (j >= requestedFirst)

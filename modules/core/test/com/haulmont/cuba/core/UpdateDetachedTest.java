@@ -149,7 +149,7 @@ public class UpdateDetachedTest extends CubaTestCase {
         Permission p;
         DataService ds = AppBeans.get(DataService.NAME);
 
-        LoadContext ctx = new LoadContext(Permission.class);
+        LoadContext<Permission> ctx = new LoadContext<>(Permission.class);
         ctx.setId(permissionId);
         ctx.setView(new View(Permission.class)
                 .addProperty("target")

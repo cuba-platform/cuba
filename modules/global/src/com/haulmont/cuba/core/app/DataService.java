@@ -24,28 +24,28 @@ public interface DataService {
     String NAME = "cuba_DataService";
 
     /**
-     * Commit a collection of new or detached entity instances to the database.
+     * Commits a collection of new or detached entity instances to the database.
      * @param context   {@link CommitContext} object, containing committing entities and other information
      * @return          set of committed instances
      */
     Set<Entity> commit(CommitContext context);
 
     /**
-     * Load a single entity instance.
+     * Loads a single entity instance.
      * <p>The depth of object graphs, starting from loaded instances, defined by {@link com.haulmont.cuba.core.global.View}
      * object passed in {@link LoadContext}.</p>
      * @param context   {@link LoadContext} object, defining what and how to load
      * @return          the loaded detached object, or null if not found
      */
     @Nullable
-    <A extends Entity> A load(LoadContext context);
+    <E extends Entity> E load(LoadContext<E> context);
 
     /**
-     * Load collection of entity instances.
+     * Loads collection of entity instances.
      * <p>The depth of object graphs, starting from loaded instances, defined by {@link com.haulmont.cuba.core.global.View}
      * object passed in {@link LoadContext}.</p>
      * @param context   {@link LoadContext} object, defining what and how to load
      * @return          a list of detached instances, or empty list if nothing found
      */
-    <A extends Entity> List<A> loadList(LoadContext context);
+    <E extends Entity> List<E> loadList(LoadContext<E> context);
 }
