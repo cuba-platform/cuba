@@ -26,7 +26,6 @@ public class LoadContext<E extends Entity> implements Serializable {
     protected View view;
     protected Object id;
     protected boolean softDeletion = true;
-    protected boolean useSecurityConstraints = true;
     protected List<Query> prevQueries = new ArrayList<>();
     protected int queryKey;
     protected Map<String, Object> dbHints = new HashMap<>();
@@ -138,20 +137,6 @@ public class LoadContext<E extends Entity> implements Serializable {
     }
 
     /**
-     * @return whether to use security constraints (row-level security) when loading entities
-     */
-    public boolean isUseSecurityConstraints() {
-        return useSecurityConstraints;
-    }
-
-    /**
-     * @param useSecurityConstraints whether to use security constraints (row-level security) when loading entities
-     */
-    public void setUseSecurityConstraints(boolean useSecurityConstraints) {
-        this.useSecurityConstraints = useSecurityConstraints;
-    }
-
-    /**
      * Allows to execute query on a previous query result.
      * @return editable list of previous queries
      */
@@ -202,7 +187,6 @@ public class LoadContext<E extends Entity> implements Serializable {
                 ", view=" + view +
                 ", id=" + id +
                 ", softDeletion=" + softDeletion +
-                ", useSecurityConstraints=" + useSecurityConstraints +
                 '}';
     }
 

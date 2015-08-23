@@ -8,7 +8,6 @@ package com.haulmont.cuba.core.app;
 import com.haulmont.bali.util.StringHelper;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.PersistenceSecurity;
 import com.haulmont.cuba.core.Query;
@@ -41,7 +40,6 @@ public class DataServiceQueryBuilder {
     protected String queryString;
     protected Map<String, Object> queryParams;
     protected String entityName;
-    protected boolean useSecurityConstraints;
 
     @Inject
     protected Metadata metadata;
@@ -50,11 +48,9 @@ public class DataServiceQueryBuilder {
     private PersistenceSecurity security;
 
     public void init(String queryString, Map<String, Object> queryParams,
-                     Object id, String entityName,
-                     boolean useSecurityConstraints)
+                     Object id, String entityName)
     {
         this.entityName = entityName;
-        this.useSecurityConstraints = useSecurityConstraints;
         if (!StringUtils.isBlank(queryString)) {
             this.queryString = queryString;
             this.queryParams = queryParams;
@@ -86,9 +82,7 @@ public class DataServiceQueryBuilder {
         //we need to replace a parameter with number of days with its value before macros is expanded to JPQL expression
         replaceParamsInMacros(query);
 
-        if (useSecurityConstraints) {
-            applyConstraints(query);
-        }
+        applyConstraints(query);
 
         QueryParser parser = QueryTransformerFactory.createParser(queryString);
         Set<String> paramNames = parser.getParamNames();

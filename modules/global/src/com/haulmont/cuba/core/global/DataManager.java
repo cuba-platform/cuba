@@ -79,24 +79,11 @@ public interface DataManager {
      * @param entity                    reloading instance
      * @param view                      view object
      * @param metaClass                 desired MetaClass, if null - original entity's metaclass is used
-     * @param useSecurityConstraints    whether to apply security constraints when loading the instnace
-     * @return                          reloaded instance
-     * @throws EntityAccessException if the entity cannot be reloaded because it was deleted or access restrictions has been changed
-     */
-    <E extends Entity> E reload(E entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints);
-
-    /**
-     * Reloads the entity instance from database with the view specified. Loading instance class may differ from original
-     * instance if we want to load an ancestor or a descendant.
-     * @param entity                    reloading instance
-     * @param view                      view object
-     * @param metaClass                 desired MetaClass, if null - original entity's metaclass is used
-     * @param useSecurityConstraints    whether to apply security constraints when loading the instnace
      * @param loadDynamicAttributes     whether to load dynamic attributes for the entity
      * @return                          reloaded instance
      * @throws EntityAccessException if the entity cannot be reloaded because it was deleted or access restrictions has been changed
      */
-    <E extends Entity> E reload(E entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints, boolean loadDynamicAttributes);
+    <E extends Entity> E reload(E entity, View view, @Nullable MetaClass metaClass, boolean loadDynamicAttributes);
 
     /**
      * Commits a collection of new or detached entity instances to the database.

@@ -102,7 +102,6 @@ public class DataServiceController {
             LoadContext loadCtx = new LoadContext(metaClass);
             loadCtx.setLoadDynamicAttributes(Boolean.TRUE.equals(dynamicAttributes));
             loadCtx.setId(objectId);
-            loadCtx.setUseSecurityConstraints(true);
             if (loadInfo.getViewName() != null) {
                 loadCtx.setView(loadInfo.getViewName());
             } else {
@@ -165,7 +164,6 @@ public class DataServiceController {
 
             LoadContext loadCtx = new LoadContext(metaClass);
             loadCtx.setLoadDynamicAttributes(Boolean.TRUE.equals(dynamicAttributes));
-            loadCtx.setUseSecurityConstraints(true);
             LoadContext.Query query = new LoadContext.Query(queryStr);
             loadCtx.setQuery(query);
             if (firstResult != null)

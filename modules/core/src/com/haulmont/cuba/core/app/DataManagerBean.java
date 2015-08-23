@@ -196,17 +196,11 @@ public class DataManagerBean implements DataManager {
     }
 
     @Override
-    public <E extends Entity> E reload(E entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints) {
-        return reload(entity, view, metaClass, useSecurityConstraints, false);
-    }
-
-    @Override
-    public <E extends Entity> E reload(E entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints, boolean loadDynamicAttributes) {
+    public <E extends Entity> E reload(E entity, View view, @Nullable MetaClass metaClass, boolean loadDynamicAttributes) {
         if (metaClass == null) {
             metaClass = metadata.getSession().getClass(entity.getClass());
         }
         LoadContext<E> context = new LoadContext<>(metaClass);
-        context.setUseSecurityConstraints(useSecurityConstraints);
         context.setId(entity.getId());
         context.setView(view);
         context.setLoadDynamicAttributes(loadDynamicAttributes);
@@ -489,7 +483,7 @@ public class DataManagerBean implements DataManager {
         queryBuilder.init(
                 contextQuery == null ? null : contextQuery.getQueryString(),
                 contextQuery == null ? null : contextQuery.getParameters(),
-                context.getId(), context.getMetaClass(), context.isUseSecurityConstraints()
+                context.getId(), context.getMetaClass()
         );
 
         if (!context.getPrevQueries().isEmpty()) {
