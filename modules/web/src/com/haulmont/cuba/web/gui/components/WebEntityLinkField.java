@@ -26,7 +26,6 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
@@ -350,7 +349,7 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
                 boolean ownerDsModified = false;
                 boolean nonModifiedInTable = false;
                 if (owner != null && owner.getDatasource() != null) {
-                    DatasourceImpl ownerDs = ((DatasourceImpl) owner.getDatasource());
+                    DatasourceImplementation ownerDs = ((DatasourceImplementation) owner.getDatasource());
                     nonModifiedInTable = !ownerDs.getItemsToUpdate().contains(getDatasource().getItem());
 
                     ownerDsModified = ownerDs.isModified();
@@ -364,7 +363,7 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
                 // restore modified for owner datasource
                 // remove from items to update if it was not modified before setValue
                 if (owner != null && owner.getDatasource() != null) {
-                    DatasourceImpl ownerDs = ((DatasourceImpl) owner.getDatasource());
+                    DatasourceImplementation ownerDs = ((DatasourceImplementation) owner.getDatasource());
                     if (nonModifiedInTable) {
                         ownerDs.getItemsToUpdate().remove(getDatasource().getItem());
                     }

@@ -27,7 +27,6 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
-import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
@@ -1803,7 +1802,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             }
 
             if (mpp.getRange().isClass()) {
-                DatasourceImpl ds = ((DatasourceImpl) getDatasource());
+                DatasourceImplementation ds = ((DatasourceImplementation) getDatasource());
                 boolean modifiedInTable = ds.getItemsToUpdate().contains(rowItem);
                 boolean ownerDsModified = ds.isModified();
 
