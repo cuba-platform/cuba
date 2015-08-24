@@ -27,18 +27,12 @@ import org.dom4j.Element;
 
 import java.util.*;
 
-import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.isComponentEnabled;
-import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.isComponentVisible;
-
 /**
  * @author gorodnov
  * @version $Id$
  */
-public class WebFieldGroup
-        extends
-        WebAbstractComponent<CubaFieldGroup>
-        implements
-        com.haulmont.cuba.gui.components.FieldGroup {
+public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup>
+        implements com.haulmont.cuba.gui.components.FieldGroup {
 
     protected Map<String, FieldConfig> fields = new LinkedHashMap<>();
     protected Map<FieldConfig, Integer> fieldsColumn = new HashMap<>();
