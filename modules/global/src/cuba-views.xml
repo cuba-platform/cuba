@@ -187,6 +187,14 @@
         <property name="isDefault"/>
     </view>
 
+    <view class="com.haulmont.cuba.core.entity.Category" name="for.cache" extends="_local">
+        <property name="categoryAttrs" view="for.cache"/>
+    </view>
+
+    <view class="com.haulmont.cuba.core.entity.CategoryAttribute" name="for.cache" extends="_local">
+        <property name="category" view="_local"/>
+    </view>
+
     <view class="com.haulmont.cuba.core.entity.EntitySnapshot" name="entitySnapshot.browse" extends="_local">
         <property name="createTs"/>
         <property name="author" view="_minimal"/>

@@ -18,7 +18,6 @@ import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.TimeSource;
-import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewRepository;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -86,9 +85,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
 
             EntityManager entityManager = persistence.getEntityManager();
             TypedQuery<Category> query = entityManager.createQuery("select c from sys$Category c", Category.class);
-            View categoryView = new View(viewRepository.getView(Category.class, View.LOCAL), null, false)
-                    .addProperty("categoryAttrs", viewRepository.getView(CategoryAttribute.class, View.LOCAL));
-            query.setView(categoryView);
+            query.setViewName("for.cache");
             List<Category> resultList = query.getResultList();
 
             Multimap<String, Category> categoriesCache = HashMultimap.create();

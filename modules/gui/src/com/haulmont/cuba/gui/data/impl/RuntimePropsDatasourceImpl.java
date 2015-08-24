@@ -220,6 +220,7 @@ public class RuntimePropsDatasourceImpl
         try {
             Class clazz = Class.forName(entityType);
             LoadContext entitiesContext = new LoadContext(clazz);
+            entitiesContext.setSoftDeletion(false);
             String entityClassName = metadata.getSession().getClassNN(clazz).getName();
             LoadContext.Query query = entitiesContext.setQueryString("select a from " + entityClassName + " a where a.id =:e");
             query.setParameter("e", uuid);

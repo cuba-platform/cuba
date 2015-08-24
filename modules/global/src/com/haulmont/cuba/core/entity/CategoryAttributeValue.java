@@ -176,7 +176,8 @@ public class CategoryAttributeValue extends StandardEntity {
             Preconditions.checkState(StringUtils.isNotBlank(categoryAttribute.getEntityClass()),
                     "Could not resolve class by empty dataType. Attribute value " + id);
             return AppBeans.get(DataManager.class)
-                    .load(new LoadContext(categoryAttribute.getJavaClassForEntity()).setId(entityValue));
+                    .load(new LoadContext(categoryAttribute.getJavaClassForEntity())
+                            .setSoftDeletion(false).setId(entityValue));
         }
 
         return null;
