@@ -14,7 +14,7 @@ import java.util.Set;
  * @author abramov
  * @version $Id$
  */
-public interface DatasourceImplementation<T extends Entity> extends Datasource {
+public interface DatasourceImplementation<T extends Entity> extends Datasource<T> {
     void initialized();
     void valid();
     void setModified(boolean modified);
