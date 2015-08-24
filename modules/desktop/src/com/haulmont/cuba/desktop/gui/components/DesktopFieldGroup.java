@@ -163,10 +163,12 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             @Override
             public void run() {
                 for (Component component : fieldComponents.values()) {
-                    JComponent jComponent = DesktopComponentsHelper.unwrap(component);
-                    if (jComponent.isFocusable()) {
-                        jComponent.requestFocus();
-                        break;
+                    if (component.isEnabled() && component.isVisible()) {
+                        JComponent jComponent = DesktopComponentsHelper.unwrap(component);
+                        if (jComponent.isFocusable()) {
+                            jComponent.requestFocus();
+                            break;
+                        }
                     }
                 }
             }

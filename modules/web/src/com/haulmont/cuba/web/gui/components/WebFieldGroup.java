@@ -27,6 +27,9 @@ import org.dom4j.Element;
 
 import java.util.*;
 
+import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.isComponentEnabled;
+import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.isComponentVisible;
+
 /**
  * @author gorodnov
  * @version $Id$
@@ -858,10 +861,13 @@ public class WebFieldGroup
     @Override
     public void requestFocus() {
         for (Component component : fieldComponents.values()) {
-            com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(component);
-            if (vComponent instanceof com.vaadin.ui.Component.Focusable) {
-                ((com.vaadin.ui.Component.Focusable) vComponent).focus();
-                break;
+            if (component.isEnabled() && component.isVisible()) {
+                com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(component);
+
+                if (vComponent instanceof com.vaadin.ui.Component.Focusable) {
+                    ((com.vaadin.ui.Component.Focusable) vComponent).focus();
+                    break;
+                }
             }
         }
     }
