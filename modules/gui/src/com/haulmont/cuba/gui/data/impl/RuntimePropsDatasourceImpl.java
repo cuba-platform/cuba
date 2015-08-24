@@ -216,21 +216,19 @@ public class RuntimePropsDatasourceImpl
     }
 
     protected Entity parseEntity(String entityType, UUID uuid) {
-        Entity entity;
         try {
             Class clazz = Class.forName(entityType);
-            LoadContext entitiesContext = new LoadContext(clazz);
-            entitiesContext.setSoftDeletion(false);
             String entityClassName = metadata.getSession().getClassNN(clazz).getName();
-            LoadContext.Query query = entitiesContext.setQueryString("select a from " + entityClassName + " a where a.id =:e");
-            query.setParameter("e", uuid);
-            entitiesContext.setView("_local");
-            entity = dataSupplier.load(entitiesContext);
-
+            LoadContext entitiesContext = LoadContext.create(clazz)
+                    .setQuery(LoadContext.createQuery("select a from " + entityClassName + " a where a.id =:e")
+                            .setParameter("e", uuid))
+                    .setView(View.LOCAL)
+                    .setSoftDeletion(false);
+            Entity entity = dataSupplier.load(entitiesContext);
+            return entity;
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("can't parse entity " + entityType + " " + uuid, e);
         }
-        return entity;
     }
 
     @Override
