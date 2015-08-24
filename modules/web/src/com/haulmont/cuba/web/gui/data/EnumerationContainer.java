@@ -6,21 +6,27 @@ package com.haulmont.cuba.web.gui.data;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
+import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.ui.UI;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * @author abramov
  * @version $Id$
  */
-public class EnumerationContainer implements com.vaadin.data.Container {
+public class EnumerationContainer implements com.vaadin.data.Container, Container.ItemSetChangeNotifier {
 
     protected List<Enum> values;
+    // lazily initialized listeners list
+    protected List<ItemSetChangeListener> itemSetChangeListeners = null;
+    protected boolean ignoreListeners;
 
     public EnumerationContainer(List<Enum> values) {
         this.values = values;
@@ -90,6 +96,59 @@ public class EnumerationContainer implements com.vaadin.data.Container {
     @Override
     public boolean removeAllItems() throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void addItemSetChangeListener(ItemSetChangeListener listener) {
+        if (itemSetChangeListeners == null) {
+            itemSetChangeListeners = new LinkedList<>();
+        }
+
+        itemSetChangeListeners.add(listener);
+    }
+
+    @Override
+    public void addListener(ItemSetChangeListener listener) {
+        addItemSetChangeListener(listener);
+    }
+
+    @Override
+    public void removeItemSetChangeListener(ItemSetChangeListener listener) {
+        if (itemSetChangeListeners != null) {
+            itemSetChangeListeners.remove(listener);
+
+            if (itemSetChangeListeners.isEmpty()) {
+                itemSetChangeListeners = null;
+            }
+        }
+    }
+
+    @Override
+    public void removeListener(ItemSetChangeListener listener) {
+        removeItemSetChangeListener(listener);
+    }
+
+    protected void fireItemSetChanged() {
+        if (ignoreListeners) {
+            return;
+        }
+
+        ignoreListeners = true;
+
+        if (UI.getCurrent().getConnectorTracker().isWritingResponse()) {
+            // Suppress containerItemSetChange listeners during painting, undefined behavior may be occurred
+            return;
+        }
+
+        if (itemSetChangeListeners != null) {
+            StaticItemSetChangeEvent event = new StaticItemSetChangeEvent(this);
+
+            for (ItemSetChangeListener listener : itemSetChangeListeners) {
+                listener.containerItemSetChange(event);
+            }
+        }
+
+        ignoreListeners = false;
     }
 
     protected static class EnumerationItem implements Item {
