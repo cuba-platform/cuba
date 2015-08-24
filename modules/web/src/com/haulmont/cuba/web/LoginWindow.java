@@ -190,30 +190,33 @@ public class LoginWindow extends UIView {
     protected void initStandartUI(int formWidth, int formHeight, int fieldWidth, boolean localesSelectVisible) {
         setStyleName("cuba-login-main-layout");
 
-        FormLayout loginFormLayout = new FormLayout();
-        loginFormLayout.setStyleName("cuba-login-form");
-        loginFormLayout.setSpacing(true);
-        loginFormLayout.setSizeUndefined();
+        VerticalLayout centerLayout = createCenterLayout(formWidth, formHeight, fieldWidth, localesSelectVisible);
 
-        HorizontalLayout welcomeLayout = new HorizontalLayout();
-        welcomeLayout.setStyleName("cuba-login-form-caption");
-        welcomeLayout.setWidthUndefined();
-        welcomeLayout.setHeightUndefined();
-        welcomeLayout.setSpacing(true);
+        addComponent(centerLayout);
+        setSizeFull();
+        setComponentAlignment(centerLayout, Alignment.MIDDLE_CENTER);
 
-        String welcomeMsg = messages.getMainMessage("loginWindow.welcomeLabel", resolvedLocale);
-        Label label = new Label(welcomeMsg.replace("\n", "<br/>"));
-        label.setContentMode(ContentMode.HTML);
-        label.setWidthUndefined();
-        label.setStyleName("cuba-login-caption");
+        initFields();
+        loginField.focus();
+    }
 
+    protected VerticalLayout createCenterLayout(int formWidth, int formHeight, int fieldWidth, boolean localesSelectVisible) {
         VerticalLayout centerLayout = new VerticalLayout();
         centerLayout.setStyleName("cuba-login-bottom");
         centerLayout.setWidth(formWidth + "px");
         centerLayout.setHeight(formHeight + "px");
 
-        centerLayout.setHeight(formHeight + "px");
+        HorizontalLayout titleLayout = createTitleLayout();
+        centerLayout.addComponent(titleLayout);
+        centerLayout.setComponentAlignment(titleLayout, Alignment.MIDDLE_CENTER);
 
+        FormLayout loginFormLayout = createLoginFormLayout(fieldWidth, localesSelectVisible);
+        centerLayout.addComponent(loginFormLayout);
+        centerLayout.setComponentAlignment(loginFormLayout, Alignment.MIDDLE_CENTER);
+        return centerLayout;
+    }
+
+    protected HorizontalLayout createTitleLayout() {
         HorizontalLayout titleLayout = new HorizontalLayout();
         titleLayout.setStyleName("cuba-login-title");
         titleLayout.setSpacing(true);
@@ -224,16 +227,26 @@ public class LoginWindow extends UIView {
             titleLayout.addComponent(logoImage);
             titleLayout.setComponentAlignment(logoImage, Alignment.MIDDLE_LEFT);
         }
+
+        String welcomeMsg = messages.getMainMessage("loginWindow.welcomeLabel", resolvedLocale);
+        Label label = new Label(welcomeMsg.replace("\n", "<br/>"));
+        label.setContentMode(ContentMode.HTML);
+        label.setWidthUndefined();
+        label.setStyleName("cuba-login-caption");
+
         if (!StringUtils.isBlank(label.getValue())) {
             titleLayout.addComponent(label);
             titleLayout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
         }
+        return titleLayout;
+    }
 
-        centerLayout.addComponent(titleLayout);
-        centerLayout.setComponentAlignment(titleLayout, Alignment.MIDDLE_CENTER);
+    protected FormLayout createLoginFormLayout(int fieldWidth, boolean localesSelectVisible) {
+        FormLayout loginFormLayout = new FormLayout();
+        loginFormLayout.setStyleName("cuba-login-form");
+        loginFormLayout.setSpacing(true);
+        loginFormLayout.setSizeUndefined();
 
-        centerLayout.addComponent(loginFormLayout);
-        centerLayout.setComponentAlignment(loginFormLayout, Alignment.MIDDLE_CENTER);
 
         loginField.setCaption(messages.getMainMessage("loginWindow.loginField", resolvedLocale));
         loginFormLayout.addComponent(loginField);
@@ -269,13 +282,7 @@ public class LoginWindow extends UIView {
 
         loginFormLayout.addComponent(okButton);
         loginFormLayout.setComponentAlignment(okButton, Alignment.MIDDLE_CENTER);
-
-        addComponent(centerLayout);
-        setSizeFull();
-        setComponentAlignment(centerLayout, Alignment.MIDDLE_CENTER);
-
-        initFields();
-        loginField.focus();
+        return loginFormLayout;
     }
 
     @Nullable
