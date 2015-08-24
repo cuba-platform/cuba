@@ -221,6 +221,13 @@ public class CubaMultiUpload extends AbstractComponent implements LegacyComponen
         return getState(false).buttonEnabled;
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+
+        setButtonEnabled(enabled);
+    }
+
     public void setButtonTextLeft(int buttonTextLeft) {
         getState().buttonTextLeft = buttonTextLeft;
     }

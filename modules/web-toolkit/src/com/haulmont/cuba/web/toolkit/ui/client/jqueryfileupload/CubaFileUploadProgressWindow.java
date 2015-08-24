@@ -411,6 +411,10 @@ public class CubaFileUploadProgressWindow extends VOverlay implements KeyDownHan
         currentFileLabel.setText(currentFileName);
     }
 
+    public String getCurrentFileName() {
+        return currentFileLabel.getText();
+    }
+
     public void setProgress(float state) {
         progressBar.setState(state);
     }

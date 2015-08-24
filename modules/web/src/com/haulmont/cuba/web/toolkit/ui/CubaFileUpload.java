@@ -39,15 +39,14 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
      */
     protected Receiver receiver;
 
-    private boolean isUploading;
+    protected boolean isUploading;
 
-    private long contentLength = -1;
+    protected long contentLength = -1;
 
-    private boolean interrupted = false;
+    protected boolean interrupted = false;
 
     /*
-     * Handle to terminal via Upload monitors and controls the upload during it
-     * is being streamed.
+     * Handle to terminal via Upload monitors and controls the upload during it is being streamed.
      */
     protected com.vaadin.server.StreamVariable streamVariable;
 
@@ -64,6 +63,8 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
             public void queueUploadFinished() {
                 // trigger UI update after uploading
                 markAsDirty();
+
+                fireQueueUploadFinished();
             }
         });
 
@@ -74,7 +75,7 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
                 //noinspection ThrowableResultOfMethodCallIgnored
                 Throwable ex = event.getThrowable();
                 if (StringUtils.contains(ExceptionUtils.getRootCauseMessage(ex), "The multipart stream ended unexpectedly")) {
-                    log.warn("Unable to upload file, it seems upload canceled or network error occured");
+                    log.warn("Unable to upload file, it seems upload canceled or network error occurred");
                 } else {
                     log.warn("Unexpected error in CubaFileUpload", ex);
                 }
@@ -128,24 +129,20 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
     /**
      * Return HTML rendering setting
      *
-     * @return <code>true</code> if the caption text is to be rendered as HTML,
-     *         <code>false</code> otherwise
+     * @return <code>true</code> if the caption text is to be rendered as HTML, <code>false</code> otherwise
      */
     public boolean isHtmlContentAllowed() {
         return getState(false).captionAsHtml;
     }
 
     /**
-     * Set whether the caption text is rendered as HTML or not. You might need
-     * to re-theme button to allow higher content than the original text style.
+     * Set whether the caption text is rendered as HTML or not. You might need to re-theme button to allow higher
+     * content than the original text style.
+     * <p/>
+     * If set to true, the captions are passed to the browser as html and the developer is responsible for ensuring no
+     * harmful html is used. If set to false, the content is passed to the browser as plain text.
      *
-     * If set to true, the captions are passed to the browser as html and the
-     * developer is responsible for ensuring no harmful html is used. If set to
-     * false, the content is passed to the browser as plain text.
-     *
-     * @param htmlContentAllowed
-     *            <code>true</code> if caption is rendered as HTML,
-     *            <code>false</code> otherwise
+     * @param htmlContentAllowed <code>true</code> if caption is rendered as HTML, <code>false</code> otherwise
      */
     public void setHtmlContentAllowed(boolean htmlContentAllowed) {
         if (isHtmlContentAllowed() != htmlContentAllowed) {
@@ -155,14 +152,11 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
 
     /**
      * Sets the component's icon and alt text.
+     * <p/>
+     * An alt text is shown when an image could not be loaded, and read by assistive devices.
      *
-     * An alt text is shown when an image could not be loaded, and read by
-     * assisitve devices.
-     *
-     * @param icon
-     *            the icon to be shown with the component's caption.
-     * @param iconAltText
-     *            String to use as alt text
+     * @param icon        the icon to be shown with the component's caption.
+     * @param iconAltText String to use as alt text
      */
     public void setIcon(Resource icon, String iconAltText) {
         super.setIcon(icon);
@@ -229,11 +223,11 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
         if (permittedExtensions == null) {
             return Collections.emptySet();
         }
-        return permittedExtensions;
+        return Collections.unmodifiableSet(permittedExtensions);
     }
 
     public void setPermittedExtensions(Set<String> permittedExtensions) {
-        this.permittedExtensions = permittedExtensions;
+        this.permittedExtensions = permittedExtensions == null ? null : new HashSet<>(permittedExtensions);
     }
 
     public void setPermittedExtensions(String... permittedExtensions) {
@@ -300,7 +294,7 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
                     lastStartedEvent = event;
 
                     double fileSizeLimit = getFileSizeLimit();
-                    if (fileSizeLimit >0 && event.getContentLength() > fileSizeLimit) {
+                    if (fileSizeLimit > 0 && event.getContentLength() > fileSizeLimit) {
                         Log log = LogFactory.getLog(CubaFileUpload.class);
                         log.warn("Unable to start upload. File size limit exceeded, but client-side checks ignored.");
 
@@ -315,6 +309,7 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
                 @Override
                 public void streamingFinished(StreamingEndEvent event) {
                     fireUploadSuccess(event.getFileName(), event.getMimeType(), event.getContentLength());
+
                     endUpload();
                 }
 
@@ -323,14 +318,11 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
                     try {
                         Exception exception = event.getException();
                         if (exception instanceof NoInputStreamException) {
-                            fireNoInputStream(event.getFileName(),
-                                    event.getMimeType(), 0);
+                            fireNoInputStream(event.getFileName(), event.getMimeType(), 0);
                         } else if (exception instanceof NoOutputStreamException) {
-                            fireNoOutputStream(event.getFileName(),
-                                    event.getMimeType(), 0);
+                            fireNoOutputStream(event.getFileName(), event.getMimeType(), 0);
                         } else {
-                            fireUploadInterrupted(event.getFileName(),
-                                    event.getMimeType(), 0, exception);
+                            fireUploadInterrupted(event.getFileName(), event.getMimeType(), 0, exception);
                         }
                     } finally {
                         endUpload();
@@ -344,7 +336,7 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
     /**
      * Go into upload state. This is to prevent double uploading on same
      * component.
-     *
+     * <p/>
      * Warning: this is an internal method used by the framework and should not
      * be used by user of the Upload component. Using it results in the Upload
      * component going in wrong state and not working. It is currently public
@@ -358,9 +350,8 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
     }
 
     /**
-     * Interrupts the upload currently being received. The interruption will be
-     * done by the receiving thread so this method will return immediately and
-     * the actual interrupt will happen a bit later.
+     * Interrupts the upload currently being received. The interruption will be done by the receiving thread so this
+     * method will return immediately and the actual interrupt will happen a bit later.
      */
     public void interruptUpload() {
         if (isUploading) {
@@ -370,11 +361,10 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
 
     /**
      * Go into state where new uploading can begin.
-     *
-     * Warning: this is an internal method used by the framework and should not
-     * be used by user of the Upload component.
+     * <p/>
+     * Warning: this is an internal method used by the framework and should not be used by user of the Upload component.
      */
-    private void endUpload() {
+    protected void endUpload() {
         isUploading = false;
         contentLength = -1;
         interrupted = false;
@@ -383,7 +373,7 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
 
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
-        // Post file to this strean variable
+        // Post file to this stream variable
         target.addVariable(this, "uploadUrl", getStreamVariable());
     }
 
@@ -391,67 +381,58 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
     public void changeVariables(Object source, Map<String, Object> variables) {
     }
 
-    protected void fireStarted(String filename, String MIMEType) {
-        fireEvent(new StartedEvent(this, filename, MIMEType,
+    protected void fireStarted(String fileName, String MIMEType) {
+        fireEvent(new StartedEvent(this, fileName, MIMEType,
                 contentLength));
     }
 
-    protected void fireNoInputStream(String filename, String MIMEType,
-                                     long length) {
-        fireEvent(new NoInputStreamEvent(this, filename, MIMEType,
+    protected void fireNoInputStream(String fileName, String MIMEType, long length) {
+        fireEvent(new NoInputStreamEvent(this, fileName, MIMEType,
                 length));
     }
 
-    protected void fireNoOutputStream(String filename, String MIMEType,
-                                      long length) {
-        fireEvent(new NoOutputStreamEvent(this, filename, MIMEType,
+    protected void fireNoOutputStream(String fileName, String MIMEType, long length) {
+        fireEvent(new NoOutputStreamEvent(this, fileName, MIMEType,
                 length));
     }
 
-    protected void fireUploadInterrupted(String filename, String MIMEType,
-                                         long length, Exception e) {
-        fireEvent(new FailedEvent(this, filename, MIMEType, length, e));
+    protected void fireUploadInterrupted(String fileName, String MIMEType, long length, Exception e) {
+        fireEvent(new FailedEvent(this, fileName, MIMEType, length, e));
     }
 
-    protected void fireUploadSuccess(String filename, String MIMEType,
-                                     long length) {
-        fireEvent(new SucceededEvent(this, filename, MIMEType, length));
+    protected void fireUploadSuccess(String fileName, String MIMEType, long length) {
+        fireEvent(new SucceededEvent(this, fileName, MIMEType, length));
     }
 
-    protected void fireFileSizeLimitExceeded(String filename) {
-        fireEvent(new FileSizeLimitExceededEvent(this, filename));
+    protected void fireFileSizeLimitExceeded(String fileName) {
+        fireEvent(new FileSizeLimitExceededEvent(this, fileName));
+    }
+
+    protected void fireQueueUploadFinished() {
+        fireEvent(new QueueFinishedEvent(this));
     }
 
     /**
-     * Interface that must be implemented by the upload receivers to provide the
-     * Upload component an output stream to write the uploaded data.
-     *
-     * @author Vaadin Ltd.
-     * @since 3.0
+     * Interface that must be implemented by the upload receivers to provide the CubaFileUpload component an output
+     * stream to write the uploaded data.
      */
     public interface Receiver extends Serializable {
 
         /**
          * Invoked when a new upload arrives.
          *
-         * @param filename
-         *            the desired filename of the upload, usually as specified
-         *            by the client.
-         * @param mimeType
-         *            the MIME type of the uploaded file.
+         * @param fileName the desired fileName of the upload, usually as specified
+         *                 by the client.
+         * @param mimeType the MIME type of the uploaded file.
          * @return Stream to which the uploaded file should be written.
          */
-        OutputStream receiveUpload(String filename, String mimeType);
+        OutputStream receiveUpload(String fileName, String mimeType);
     }
 
     /**
-     * Upload.FinishedEvent is sent when the upload receives a file, regardless
-     * of whether the reception was successful or failed. If you wish to
-     * distinguish between the two cases, use either SucceededEvent or
-     * FailedEvent, which are both subclasses of the FinishedEvent.
-     *
-     * @author Vaadin Ltd.
-     * @since 3.0
+     * CubaFileUpload.FinishedEvent is sent when the upload receives a file, regardless of whether the reception was
+     * successful or failed. If you wish to distinguish between the two cases, use either SucceededEvent or FailedEvent,
+     * which are both subclasses of the FinishedEvent.
      */
     public static class FinishedEvent extends Component.Event {
 
@@ -468,24 +449,19 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
         /**
          * Received file name.
          */
-        private final String filename;
+        private final String fileName;
 
         /**
-         *
-         * @param source
-         *            the source of the file.
-         * @param filename
-         *            the received file name.
-         * @param MIMEType
-         *            the MIME type of the received file.
-         * @param length
-         *            the length of the received file.
+         * @param source   the source of the file.
+         * @param fileName the received file name.
+         * @param MIMEType the MIME type of the received file.
+         * @param length   the length of the received file.
          */
-        public FinishedEvent(CubaFileUpload source, String filename, String MIMEType,
+        public FinishedEvent(CubaFileUpload source, String fileName, String MIMEType,
                              long length) {
             super(source);
             type = MIMEType;
-            this.filename = filename;
+            this.fileName = fileName;
             this.length = length;
         }
 
@@ -501,10 +477,10 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
         /**
          * Gets the file name.
          *
-         * @return the filename.
+         * @return the fileName.
          */
-        public String getFilename() {
-            return filename;
+        public String getFileName() {
+            return fileName;
         }
 
         /**
@@ -527,25 +503,21 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
     }
 
     /**
-     * Upload.FailedEvent event is sent when the upload is received, but the
-     * reception is interrupted for some reason.
-     *
-     * @author Vaadin Ltd.
-     * @since 3.0
+     * CubaFileUpload.FailedEvent event is sent when the upload is received, but the reception is interrupted for some
+     * reason.
      */
     public static class FailedEvent extends FinishedEvent {
-
         private Exception reason = null;
 
-        public FailedEvent(CubaFileUpload source, String filename, String MIMEType,
+        public FailedEvent(CubaFileUpload source, String fileName, String MIMEType,
                            long length, Exception reason) {
-            this(source, filename, MIMEType, length);
+            this(source, fileName, MIMEType, length);
             this.reason = reason;
         }
 
-        public FailedEvent(CubaFileUpload source, String filename, String MIMEType,
+        public FailedEvent(CubaFileUpload source, String fileName, String MIMEType,
                            long length) {
-            super(source, filename, MIMEType, length);
+            super(source, fileName, MIMEType, length);
         }
 
         /**
@@ -560,16 +532,20 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
 
     public static class FileSizeLimitExceededEvent extends Component.Event {
 
-        private String filename;
+        private String fileName;
 
         /**
          * @param source   the source of the file.
-         * @param filename the received file name.
+         * @param fileName the received file name.
          */
-        public FileSizeLimitExceededEvent(CubaFileUpload source, String filename) {
+        public FileSizeLimitExceededEvent(CubaFileUpload source, String fileName) {
             super(source);
 
-            this.filename = filename;
+            this.fileName = fileName;
+        }
+
+        public String getFileName() {
+            return fileName;
         }
     }
 
@@ -578,9 +554,9 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
      */
     public static class NoOutputStreamEvent extends FailedEvent {
 
-        public NoOutputStreamEvent(CubaFileUpload source, String filename,
+        public NoOutputStreamEvent(CubaFileUpload source, String fileName,
                                    String MIMEType, long length) {
-            super(source, filename, MIMEType, length);
+            super(source, fileName, MIMEType, length);
         }
     }
 
@@ -589,46 +565,39 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
      */
     public static class NoInputStreamEvent extends FailedEvent {
 
-        public NoInputStreamEvent(CubaFileUpload source, String filename,
+        public NoInputStreamEvent(CubaFileUpload source, String fileName,
                                   String MIMEType, long length) {
-            super(source, filename, MIMEType, length);
+            super(source, fileName, MIMEType, length);
         }
     }
 
     /**
-     * Upload.SucceededEvent event is sent when the upload is received
-     * successfully.
-     *
-     * @author Vaadin Ltd.
-     * @since 3.0
+     * CubaFileUpload.SucceededEvent event is sent when the upload is received successfully.
      */
     public static class SucceededEvent extends FinishedEvent {
 
-        public SucceededEvent(CubaFileUpload source, String filename, String MIMEType,
+        public SucceededEvent(CubaFileUpload source, String fileName, String MIMEType,
                               long length) {
-            super(source, filename, MIMEType, length);
+            super(source, fileName, MIMEType, length);
         }
     }
 
     /**
-     * Upload.StartedEvent event is sent when the upload is started to received.
-     *
-     * @author Vaadin Ltd.
-     * @since 5.0
+     * CubaFileUpload.StartedEvent event is sent when the upload is started to received.
      */
     public static class StartedEvent extends Component.Event {
 
-        private final String filename;
+        private final String fileName;
         private final String type;
         /**
          * Length of the received file.
          */
         private final long length;
 
-        public StartedEvent(CubaFileUpload source, String filename, String MIMEType,
+        public StartedEvent(CubaFileUpload source, String fileName, String MIMEType,
                             long contentLength) {
             super(source);
-            this.filename = filename;
+            this.fileName = fileName;
             type = MIMEType;
             length = contentLength;
         }
@@ -645,10 +614,10 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
         /**
          * Gets the file name.
          *
-         * @return the filename.
+         * @return the fileName.
          */
-        public String getFilename() {
-            return filename;
+        public String getFileName() {
+            return fileName;
         }
 
         /**
@@ -669,79 +638,93 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
     }
 
     /**
+     * CubaFileUpload.StartedEvent event is sent when the queue upload is finished.
+     */
+    public static class QueueFinishedEvent extends Component.Event {
+
+        /**
+         * Constructs a new event with the specified source component.
+         *
+         * @param source the source component of the event
+         */
+        public QueueFinishedEvent(CubaFileUpload source) {
+            super(source);
+        }
+    }
+
+    /**
      * Receives the events when the upload starts.
-     *
-     * @author Vaadin Ltd.
-     * @since 5.0
      */
     public interface StartedListener extends Serializable {
 
         /**
          * Upload has started.
          *
-         * @param event
-         *            the Upload started event.
+         * @param event the Upload started event.
          */
         void uploadStarted(StartedEvent event);
     }
 
     /**
      * Receives the events when the uploads are ready.
-     *
-     * @author Vaadin Ltd.
-     * @since 3.0
      */
     public interface FinishedListener extends Serializable {
 
         /**
          * Upload has finished.
          *
-         * @param event
-         *            the Upload finished event.
+         * @param event the Upload finished event.
          */
         void uploadFinished(FinishedEvent event);
     }
 
+    public interface QueueFinishedListener extends Serializable {
+
+        /**
+         * Upload has finished.
+         *
+         * @param event the Upload finished event.
+         */
+        void queueUploadFinished(QueueFinishedEvent event);
+    }
+
     /**
      * Receives events when the uploads are finished, but unsuccessful.
-     *
-     * @author Vaadin Ltd.
-     * @since 3.0
      */
     public interface FailedListener extends Serializable {
 
         /**
          * Upload has finished unsuccessfully.
          *
-         * @param event
-         *            the Upload failed event.
+         * @param event the Upload failed event.
          */
         void uploadFailed(FailedEvent event);
     }
 
     /**
      * Receives events when the uploads are successfully finished.
-     *
-     * @author Vaadin Ltd.
-     * @since 3.0
      */
     public interface SucceededListener extends Serializable {
 
         /**
-         * Upload successfull..
+         * Upload successful.
          *
-         * @param event
-         *            the Upload successfull event.
+         * @param event the Upload successful event.
          */
         void uploadSucceeded(SucceededEvent event);
     }
 
+    /**
+     * Receives events when the file size is greater than {@link #getFileSizeLimit()}.
+     */
     public interface FileSizeLimitExceededListener extends Serializable {
 
         void fileSizeLimitExceeded(FileSizeLimitExceededEvent e);
     }
 
     private static final Method UPLOAD_FINISHED_METHOD;
+
+    private static final Method QUEUE_UPLOAD_FINISHED_METHOD;
 
     private static final Method UPLOAD_FAILED_METHOD;
 
@@ -754,93 +737,45 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
     static {
         try {
             UPLOAD_FINISHED_METHOD = FinishedListener.class.getDeclaredMethod("uploadFinished", FinishedEvent.class);
+            QUEUE_UPLOAD_FINISHED_METHOD = QueueFinishedListener.class.getDeclaredMethod("queueUploadFinished", QueueFinishedEvent.class);
             UPLOAD_FAILED_METHOD = FailedListener.class.getDeclaredMethod("uploadFailed", FailedEvent.class);
             UPLOAD_STARTED_METHOD = StartedListener.class.getDeclaredMethod("uploadStarted", StartedEvent.class);
             UPLOAD_SUCCEEDED_METHOD = SucceededListener.class.getDeclaredMethod("uploadSucceeded", SucceededEvent.class);
             FILESIZE_LIMIT_EXCEEDED_METHOD = FileSizeLimitExceededListener.class.getDeclaredMethod("fileSizeLimitExceeded", FileSizeLimitExceededEvent.class);
         } catch (final java.lang.NoSuchMethodException e) {
             // This should never happen
-            throw new java.lang.RuntimeException(
-                    "Internal error finding methods in CubaFileUpload");
+            throw new java.lang.RuntimeException("Internal error finding methods in CubaFileUpload", e);
         }
     }
 
-    /**
-     * Adds the upload started event listener.
-     *
-     * @param listener
-     *            the Listener to be added.
-     */
     public void addStartedListener(StartedListener listener) {
         addListener(StartedEvent.class, listener, UPLOAD_STARTED_METHOD);
     }
 
-    /**
-     * Removes the upload started event listener.
-     *
-     * @param listener
-     *            the Listener to be removed.
-     */
     public void removeStartedListener(StartedListener listener) {
         removeListener(StartedEvent.class, listener, UPLOAD_STARTED_METHOD);
     }
 
-    /**
-     * Adds the upload received event listener.
-     *
-     * @param listener
-     *            the Listener to be added.
-     */
     public void addFinishedListener(FinishedListener listener) {
         addListener(FinishedEvent.class, listener, UPLOAD_FINISHED_METHOD);
     }
 
-    /**
-     * Removes the upload received event listener.
-     *
-     * @param listener
-     *            the Listener to be removed.
-     */
     public void removeFinishedListener(FinishedListener listener) {
         removeListener(FinishedEvent.class, listener, UPLOAD_FINISHED_METHOD);
     }
 
-    /**
-     * Adds the upload interrupted event listener.
-     *
-     * @param listener
-     *            the Listener to be added.
-     */
     public void addFailedListener(FailedListener listener) {
         addListener(FailedEvent.class, listener, UPLOAD_FAILED_METHOD);
     }
 
-    /**
-     * Removes the upload interrupted event listener.
-     *
-     * @param listener
-     *            the Listener to be removed.
-     */
     public void removeFailedListener(FailedListener listener) {
         removeListener(FailedEvent.class, listener, UPLOAD_FAILED_METHOD);
     }
 
-    /**
-     * Adds the upload success event listener.
-     *
-     * @param listener
-     *            the Listener to be added.
-     */
     public void addSucceededListener(SucceededListener listener) {
         addListener(SucceededEvent.class, listener, UPLOAD_SUCCEEDED_METHOD);
     }
 
-    /**
-     * Removes the upload success event listener.
-     *
-     * @param listener
-     *            the Listener to be removed.
-     */
     public void removeSucceededListener(SucceededListener listener) {
         removeListener(SucceededEvent.class, listener, UPLOAD_SUCCEEDED_METHOD);
     }
@@ -851,5 +786,13 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
 
     public void removeFileSizeLimitExceededListener(FileSizeLimitExceededListener listener) {
         removeListener(FileSizeLimitExceededEvent.class, listener, FILESIZE_LIMIT_EXCEEDED_METHOD);
+    }
+
+    public void addQueueUploadFinishedListener(QueueFinishedListener listener) {
+        addListener(QueueFinishedEvent.class, listener, QUEUE_UPLOAD_FINISHED_METHOD);
+    }
+
+    public void removeQueueUploadFinishedListener(QueueFinishedListener listener) {
+        removeListener(QueueFinishedEvent.class, listener, QUEUE_UPLOAD_FINISHED_METHOD);
     }
 }

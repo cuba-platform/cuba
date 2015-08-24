@@ -12,7 +12,7 @@ import java.util.UUID;
  * @author abramov
  * @version $Id$
  */
-public interface FileUploadField extends Component, Component.HasCaption, Component.BelongToFrame {
+public interface FileUploadField extends Component, Component.HasCaption, Component.BelongToFrame, Component.HasIcon {
     String NAME = "upload";
 
     interface Listener {

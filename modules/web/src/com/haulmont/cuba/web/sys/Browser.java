@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.http.HttpServletRequest;
 
+@Deprecated
 public class Browser {
 
     private boolean gecko;

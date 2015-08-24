@@ -148,7 +148,12 @@ public class CubaFileUploadWidget extends FlowPanel {
                     if (unableToUploadFileMessage != null) {
                         // show notification without server round trip, server may be unreachable
                         VNotification notification = VNotification.createNotification(-1, CubaFileUploadWidget.this);
-                        String message = "<h1>" + WidgetUtil.escapeHTML(unableToUploadFileMessage) + "</h1>";
+                        String fileName = "";
+                        if (progressWindow != null) {
+                            fileName = progressWindow.getCurrentFileName();
+                        }
+
+                        String message = "<h1>" + WidgetUtil.escapeHTML(unableToUploadFileMessage.replace("%s", fileName)) + "</h1>";
                         notification.show(message, Position.MIDDLE_CENTER, "error");
                     }
 

@@ -44,7 +44,7 @@
             <columns>
                 <column id="name" caption="msg://name"/>
                 <column id="extension" caption="msg://extension"/>
-                <!--<column id="size" caption="msg://size"/>-->
+                <column id="size" caption="msg://size"/>
                 <column id="createDate" caption="msg://createDate"/>
             </columns>
             <rows datasource="filesDs"/>

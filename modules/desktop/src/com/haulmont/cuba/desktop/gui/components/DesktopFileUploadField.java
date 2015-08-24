@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.Frame;
@@ -39,6 +40,8 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
 
     protected FileUploadingAPI fileUploading;
     protected Messages messages;
+
+    protected String icon;
 
     protected volatile boolean isUploadingState = false;
 
@@ -79,7 +82,7 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
 
             getFrame().showNotification(warningMsg, Frame.NotificationType.WARNING);
         } else {
-            boolean succcess = true;
+            boolean success = true;
             try {
                 isUploadingState = true;
 
@@ -96,7 +99,7 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
 
                 isUploadingState = false;
             } catch (Exception ex) {
-                succcess = false;
+                success = false;
                 try {
                     fileUploading.deleteFile(tempFileId);
                     tempFileId = null;
@@ -107,7 +110,7 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
             } finally {
                 notifyListenersFinish(file);
             }
-            if (succcess) {
+            if (success) {
                 notifyListenersSuccess(file);
             }
         }
@@ -207,5 +210,19 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
     public void setDescription(String description) {
         impl.setToolTipText(description);
         DesktopToolTipManager.getInstance().registerTooltip(impl);
+    }
+
+    @Override
+    public String getIcon() {
+        return icon;
+    }
+
+    @Override
+    public void setIcon(String icon) {
+        this.icon = icon;
+        if (icon != null)
+            impl.setIcon(App.getInstance().getResources().getIcon(icon));
+        else
+            impl.setIcon(null);
     }
 }

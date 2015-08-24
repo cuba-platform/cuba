@@ -18,7 +18,7 @@
     </dsContext>
 
     <layout spacing="true">
-        <upload id="uploadField"/>
+        <upload id="uploadField" icon="icons/upload.png"/>
         <grid spacing="true">
             <columns count="2"/>
             <rows>

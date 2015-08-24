@@ -40,6 +40,7 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
     protected List<UploadListener> listeners = new ArrayList<>();
 
     protected Map<UUID, String> filesMap = new HashMap<>();
+    protected String icon;
 
     public DesktopFileMultiUploadField() {
         fileUploading = AppBeans.get(FileUploadingAPI.NAME);
@@ -185,5 +186,19 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
     public void setDescription(String description) {
         impl.setToolTipText(description);
         DesktopToolTipManager.getInstance().registerTooltip(impl);
+    }
+
+    @Override
+    public String getIcon() {
+        return icon;
+    }
+
+    @Override
+    public void setIcon(String icon) {
+        this.icon = icon;
+        if (icon != null)
+            impl.setIcon(App.getInstance().getResources().getIcon(icon));
+        else
+            impl.setIcon(null);
     }
 }

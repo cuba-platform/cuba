@@ -45,6 +45,8 @@ public class MultiUploader extends AbstractEditor {
     public void init(Map<String, Object> params) {
         super.init(params);
 
+        getDialogParams().setResizable(true);
+
         filesDs = uploadsTable.getDatasource();
         filesDs.refresh();
 

@@ -18,7 +18,7 @@
 
     <layout spacing="true">
         <hbox spacing="true">
-            <multiUpload id="multiUpload"/>
+            <multiUpload id="multiUpload" icon="icons/upload.png"/>
             <button action="uploadsTable.remove" icon="icons/remove.png"/>
         </hbox>
 

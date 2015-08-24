@@ -28,15 +28,12 @@ public class JQueryFileUploadOverlay {
         init(fileInput);
     }
 
-    public String getUploadUrl() {
-        return uploadUrl;
-    }
-
     public void setUploadUrl(String uploadUrl) {
         this.uploadUrl = uploadUrl;
     }
 
     protected native void init(Element fileInput) /*-{
+        //noinspection JSUnresolvedFunction
         var upload = $wnd.jQuery(fileInput);
 
         upload.fileupload({
@@ -48,8 +45,6 @@ public class JQueryFileUploadOverlay {
         var self = this;
 
         upload.bind('fileuploadadd', $entry(function (e, data) {
-            console.log(">> File add");
-
             data.url = self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::uploadUrl;
 
             var file = data.files[0];
@@ -63,38 +58,26 @@ public class JQueryFileUploadOverlay {
         }));
 
         upload.bind('fileuploaddone', $entry(function (e, data) {
-            console.log(">> File done");
-
             self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::removePendingUpload(*)(data)
         }));
 
         upload.bind('fileuploadsend', $entry(function (e, data) {
-            console.log(">> File send");
-
             self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::fileUploadStart(*)(data.files[0].name)
         }));
 
         upload.bind('fileuploadprogress', $entry(function (e, data) {
-            console.log('Upload progress ' + data.loaded + ' / ' + data.total);
-
             self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::uploadProgress(*)(data.loaded, data.total)
         }));
 
         upload.bind('fileuploadstart', $entry(function (e, data) {
-            console.log(">> queue start");
-
             self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::queueUploadStart()()
         }));
 
         upload.bind('fileuploadstop', $entry(function (e, data) {
-            console.log(">> queue stop");
-
             self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::queueUploadStop()()
         }));
 
         upload.bind('fileuploadfail', $entry(function (e, data) {
-            console.log(">> fail");
-
             self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::uploadFailed(*)(data.textStatus, data.errorThrown)
         }));
     }-*/;

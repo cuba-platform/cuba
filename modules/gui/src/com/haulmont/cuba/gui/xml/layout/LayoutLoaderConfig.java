@@ -72,7 +72,7 @@ public class LayoutLoaderConfig {
         config.register(SearchPickerField.NAME, SearchPickerFieldLoader.class);
         config.register(OptionsGroup.NAME, OptionsGroupLoader.class);
         config.register(FileUploadField.NAME, FileUploadFieldLoader.class);
-        config.register(FileMultiUploadField.NAME, FileUploadFieldLoader.class);
+        config.register(FileMultiUploadField.NAME, FileMultiUploadFieldLoader.class);
 
         config.register(Table.NAME, TableLoader.class);
         config.register(TreeTable.NAME, TableLoader.class);
