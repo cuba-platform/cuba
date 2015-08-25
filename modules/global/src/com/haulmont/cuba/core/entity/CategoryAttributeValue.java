@@ -6,7 +6,6 @@
 package com.haulmont.cuba.core.entity;
 
 import com.google.common.base.Preconditions;
-import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DataManager;
@@ -177,7 +176,7 @@ public class CategoryAttributeValue extends StandardEntity {
                     "Could not resolve class by empty dataType. Attribute value " + id);
             return AppBeans.get(DataManager.NAME, DataManager.class)
                     .load(LoadContext.create(categoryAttribute.getJavaClassForEntity())
-                    .setSoftDeletion(false).setId(entityValue));
+                            .setSoftDeletion(false).setId(entityValue));
         }
 
         return null;
