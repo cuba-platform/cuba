@@ -23,10 +23,8 @@
                 <rows>
                     <row>
                         <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.definedBy" align="MIDDLE_LEFT"/>
-                        <hbox id="definedByBox">
-                            <optionsGroup id="definedByField" datasource="taskDs" property="definedBy"
-                                          required="true" multiselect="false" orientation="horizontal"/>
-                        </hbox>
+                        <optionsGroup id="definedByField" datasource="taskDs" property="definedBy"
+                                      required="true" multiselect="false" orientation="horizontal"/>
                     </row>
                     <row>
                         <label id="beanNameLabel" value="msg://com.haulmont.cuba.core.entity/ScheduledTask.beanName"
@@ -72,10 +70,8 @@
                     <row>
                         <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.schedulingType"
                                align="MIDDLE_LEFT"/>
-                        <hbox id="schedulingTypeBox">
-                            <optionsGroup id="schedulingTypeField" datasource="taskDs" property="schedulingType"
-                                          required="true" multiselect="false" orientation="horizontal"/>
-                        </hbox>
+                        <optionsGroup id="schedulingTypeField" datasource="taskDs" property="schedulingType"
+                                      required="true" multiselect="false" orientation="horizontal"/>
                     </row>
                     <!--scheduling type options start-->
                     <row>
@@ -94,10 +90,7 @@
                     <row>
                         <label id="periodLabel" value="msg://com.haulmont.cuba.core.entity/ScheduledTask.period"
                                align="MIDDLE_LEFT"/>
-                        <hbox id="periodBox">
-                            <textField id="periodField" datasource="taskDs" property="period" width="${smallFieldWidth}"
-                                       required="true"/>
-                        </hbox>
+                        <textField id="periodField" datasource="taskDs" property="period" width="${smallFieldWidth}" required="true"/>
                     </row>
                     <row>
                         <label id="startDateLabel" value="msg://com.haulmont.cuba.core.entity/ScheduledTask.startDate"

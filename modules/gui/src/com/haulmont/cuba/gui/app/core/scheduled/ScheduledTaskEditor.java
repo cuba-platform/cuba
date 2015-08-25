@@ -33,9 +33,6 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
     protected LookupField beanNameField;
 
     @Inject
-    protected BoxLayout beanNameBox;
-
-    @Inject
     protected LookupField methodNameField;
 
     @Inject
@@ -43,9 +40,6 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
 
     @Inject
     protected OptionsGroup definedByField;
-
-    @Inject
-    protected BoxLayout definedByBox;
 
     @Inject
     protected TextField classNameField;
@@ -85,9 +79,6 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
 
     @Inject
     protected TextField periodField;
-
-    @Inject
-    protected BoxLayout periodBox;
 
     @Inject
     protected DateField startDateField;
@@ -151,7 +142,7 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
                 if (ScheduledTaskDefinedBy.BEAN == value) {
                     clear(classNameField, scriptNameField);
                     hideAll();
-                    show(beanNameBox, beanNameLabel, methodNameField, methodNameLabel, methodNameHbox, methodParamsBox);
+                    show(beanNameField, beanNameLabel, methodNameField, methodNameLabel, methodNameHbox, methodParamsBox);
                 } else if (ScheduledTaskDefinedBy.CLASS == value) {
                     clear(beanNameField, methodNameField, scriptNameField);
                     hideAll();
@@ -167,7 +158,7 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
             }
 
             private void hideAll() {
-                hide(classNameField, classNameLabel, scriptNameField, scriptNameLabel, beanNameBox, beanNameLabel,
+                hide(classNameField, classNameLabel, scriptNameField, scriptNameLabel, beanNameField, beanNameLabel,
                         methodNameField, methodNameLabel, methodNameHbox, methodParamsBox);
             }
         });
@@ -215,13 +206,13 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
 
     private void setSchedulingTypeField(SchedulingType value) {
         if (SchedulingType.CRON == value) {
-            hide(periodBox, periodLabel, startDateField, startDateLabel);
+            hide(periodField, periodLabel, startDateField, startDateLabel);
             clear(periodField, startDateField);
             show(cronField, cronLabel, cronHelpButton, cronHbox);
         } else {
             hide(cronField, cronLabel, cronHelpButton, cronHbox);
             clear(cronField);
-            show(periodBox, periodLabel, startDateField, startDateLabel);
+            show(periodField, periodLabel, startDateField, startDateLabel);
         }
     }
 
