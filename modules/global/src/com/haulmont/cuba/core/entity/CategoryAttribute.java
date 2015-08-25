@@ -263,7 +263,7 @@ public class CategoryAttribute extends StandardEntity {
         Preconditions.checkState(getDataType() == PropertyType.ENUMERATION, "Only enumeration attributes have options");
         String enumeration = getEnumeration();
         String[] values = StringUtils.split(enumeration, ',');
-        return Arrays.asList(values);
+        return values != null ? Arrays.asList(values) : Collections.<String>emptyList();
     }
 
     public String getEntityClass() {

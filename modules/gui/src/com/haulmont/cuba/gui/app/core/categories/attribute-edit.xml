@@ -33,7 +33,7 @@
                         <field id="lookup"/>
                         <field id="defaultEntityId" custom="true"/>
 
-                        <field id="enumeration"/>
+                        <field id="enumeration" required="true"/>
                         <field id="defaultString"/>
                         <field id="defaultInt"/>
                         <field id="defaultDouble"/>
