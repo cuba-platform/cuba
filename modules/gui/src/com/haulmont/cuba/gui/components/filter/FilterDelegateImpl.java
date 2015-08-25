@@ -172,6 +172,12 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected SaveAsFolderAction saveAsSearchFolderAction;
     protected LookupField filtersLookup;
 
+    protected enum ConditionsFocusType {
+        NONE,
+        FIRST,
+        LAST
+    }
+
     @PostConstruct
     public void init() {
         theme = themeConstantsManager.getConstants();
@@ -350,7 +356,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 createLayout();
                 initMaxResults();
                 if (filterMode == FilterMode.GENERIC_MODE) {
-                    fillConditionsLayout(true);
+                    fillConditionsLayout(ConditionsFocusType.FIRST);
                     setFilterActionsEnabled();
                     initFilterSelectComponents();
                 }
@@ -460,7 +466,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         setFilterActionsEnabled();
-        fillConditionsLayout(true);
+        fillConditionsLayout(ConditionsFocusType.FIRST);
         setConditionsLayoutVisible(true);
 
         if (!filterEntity.equals(adHocFilter) && (BooleanUtils.isTrue(filterEntity.getApplyDefault()) ||
@@ -651,9 +657,9 @@ public class FilterDelegateImpl implements FilterDelegate {
     /**
      * Removes all components from conditionsLayout and fills it with components for editing filter conditions
      *
-     * @param focusOnConditions whether to set focus on first condition parameter edit component
+     * @param conditionsFocusType where to set focus (first condition, last condition, no focus)
      */
-    protected void fillConditionsLayout(boolean focusOnConditions) {
+    protected void fillConditionsLayout(ConditionsFocusType conditionsFocusType) {
         layout.setSpacing(false);
         for (Component component : conditionsLayout.getComponents()) {
             conditionsLayout.remove(component);
@@ -672,15 +678,16 @@ public class FilterDelegateImpl implements FilterDelegate {
             groupBox.setWidth("100%");
             groupBox.setCaption(getMessage("GroupType.AND"));
             conditionsLayout.add(groupBox);
-            recursivelyCreateConditionsLayout(focusOnConditions, conditions.getRootNodes(), groupBox, 0);
+            recursivelyCreateConditionsLayout(conditionsFocusType, false, conditions.getRootNodes(), groupBox, 0);
         } else {
-            recursivelyCreateConditionsLayout(focusOnConditions, conditions.getRootNodes(), conditionsLayout, 0);
+            recursivelyCreateConditionsLayout(conditionsFocusType, false, conditions.getRootNodes(), conditionsLayout, 0);
         }
 
         if (!conditionsLayout.getComponents().isEmpty()) layout.setSpacing(true);
     }
 
-    protected void recursivelyCreateConditionsLayout(boolean focusOnConditions,
+    protected void recursivelyCreateConditionsLayout(ConditionsFocusType conditionsFocusType,
+                                                     boolean initialFocusSet,
                                                      List<Node<AbstractCondition>> nodes,
                                                      Component.Container parentContainer,
                                                      int level) {
@@ -706,7 +713,10 @@ public class FilterDelegateImpl implements FilterDelegate {
         grid.setSpacing(true);
         grid.setWidth("100%");
 
-        boolean focusSet = false;
+        ParamEditor firstParamEditor = null;
+        ParamEditor lastParamEditor = null;
+
+        boolean currentFocusSet = initialFocusSet;
 
         for (int i = 0; i < visibleConditionNodes.size(); i++) {
             Node<AbstractCondition> node = visibleConditionNodes.get(i);
@@ -715,16 +725,15 @@ public class FilterDelegateImpl implements FilterDelegate {
             Component paramEditComponentCellContent = null;
             Component groupCellContent = null;
             if (condition.isGroup()) {
-                groupCellContent = createGroupConditionBox(condition, node, focusOnConditions, focusSet, level);
+                groupCellContent = createGroupConditionBox(condition, node, conditionsFocusType, currentFocusSet, level);
                 level++;
             } else {
                 if (condition.getParam().getJavaClass() != null) {
                     ParamEditor paramEditor = createParamEditor(condition);
 
-                    if (focusOnConditions && !focusSet) {
-                        paramEditor.requestFocus();
-                        focusSet = true;
-                    }
+                    if (firstParamEditor == null) firstParamEditor = paramEditor;
+                    lastParamEditor = paramEditor;
+                    currentFocusSet = true;
 
                     labelAndOperationCellContent = paramEditor.getLabelAndOperationLayout();
                     paramEditComponentCellContent = paramEditor.getParamEditComponentLayout();
@@ -775,6 +784,18 @@ public class FilterDelegateImpl implements FilterDelegate {
             }
         }
 
+        if (!initialFocusSet) {
+            switch (conditionsFocusType) {
+                case FIRST:
+                    if (firstParamEditor != null)
+                        firstParamEditor.requestFocus();
+                    break;
+                case LAST:
+                    if (lastParamEditor != null)
+                        lastParamEditor.requestFocus();
+            }
+        }
+
         //complete last row in grid with gaps
         completeGridRowWithGaps(grid, row, nextColumnStart, true);
 
@@ -796,15 +817,14 @@ public class FilterDelegateImpl implements FilterDelegate {
         return visibleConditionNodes;
     }
 
-    protected Component createGroupConditionBox(AbstractCondition condition, Node<AbstractCondition> node, boolean focusOnConditions, boolean focusSet, int level) {
+    protected Component createGroupConditionBox(AbstractCondition condition, Node<AbstractCondition> node, ConditionsFocusType conditionsFocusType, boolean focusSet, int level) {
         Component groupCellContent;
         GroupBoxLayout groupBox = componentsFactory.createComponent(GroupBoxLayout.class);
         groupBox.setWidth("100%");
         groupBox.setCaption(condition.getLocCaption());
 
         if (!node.getChildren().isEmpty()) {
-            recursivelyCreateConditionsLayout(
-                    focusOnConditions && !focusSet, node.getChildren(), groupBox, level);
+            recursivelyCreateConditionsLayout(conditionsFocusType, focusSet, node.getChildren(), groupBox, level);
         }
         groupCellContent = groupBox;
         return groupCellContent;
@@ -817,7 +837,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             @Override
             public void actionPerform(Component component) {
                 conditions.removeCondition(condition);
-                fillConditionsLayout(false);
+                fillConditionsLayout(ConditionsFocusType.NONE);
                 updateFilterModifiedIndicator();
             }
         };
@@ -1761,7 +1781,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected void addCondition(AbstractCondition condition) {
         conditions.getRootNodes().add(new Node<>(condition));
-        fillConditionsLayout(false);
+        fillConditionsLayout(ConditionsFocusType.LAST);
         updateFilterModifiedIndicator();
         condition.addListener(new AbstractCondition.Listener() {
             @Override
@@ -1869,7 +1889,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
                             //recreate layout to remove delete conditions buttons
                             initialConditions = conditions.toConditionsList();
-                            fillConditionsLayout(false);
+                            fillConditionsLayout(ConditionsFocusType.NONE);
                         }
                     }
                 });
@@ -1927,7 +1947,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
                         //recreate layout to remove delete conditions buttons
                         initialConditions = conditions.toConditionsList();
-                        fillConditionsLayout(false);
+                        fillConditionsLayout(ConditionsFocusType.NONE);
                     }
                 }
             });
@@ -1960,7 +1980,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                         conditions = window.getConditions();
                         initFilterSelectComponents();
                         updateWindowCaption();
-                        fillConditionsLayout(true);
+                        fillConditionsLayout(ConditionsFocusType.FIRST);
                         updateFilterModifiedIndicator();
                     }
                 }
