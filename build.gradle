@@ -243,7 +243,7 @@ configure(coreModule) {
         compile(group: 'org.jgroups', name: 'jgroups', version: '3.6.1.Final')
         compile('org.aspectj:aspectjrt:1.8.6')
         compile('org.aspectj:aspectjweaver:1.8.6')
-        compile('org.mybatis:mybatis:3.3.0')
+        compile('org.mybatis:mybatis:3.2.7')
         compile('org.mybatis:mybatis-spring:1.2.3')
         compile(group: 'org.springframework', name: 'spring-context-support', version: springVersion)
         compile(group: 'org.springframework', name: 'spring-orm', version: springVersion)
