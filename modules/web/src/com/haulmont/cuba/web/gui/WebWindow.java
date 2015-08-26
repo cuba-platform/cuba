@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Tree;
@@ -895,7 +896,7 @@ public class WebWindow implements Window, Component.Wrapper,
                         messages.getMainMessage("saveUnsaved"),
                         MessageType.WARNING,
                         new Action[]{
-                                new DialogAction(DialogAction.Type.OK) {
+                                new DialogAction(DialogAction.Type.OK, Status.PRIMARY) {
                                     @Override
                                     public String getCaption() {
                                         return messages.getMainMessage("closeUnsaved.save");
@@ -946,7 +947,7 @@ public class WebWindow implements Window, Component.Wrapper,
                                         close(actionId);
                                     }
                                 },
-                                new DialogAction(DialogAction.Type.NO) {
+                                new DialogAction(DialogAction.Type.NO, Status.PRIMARY) {
                                     @Override
                                     public void actionPerform(Component component) {
                                         doAfterClose = null;

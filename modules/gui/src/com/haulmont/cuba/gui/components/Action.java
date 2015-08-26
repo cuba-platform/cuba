@@ -18,12 +18,12 @@ import java.util.Collection;
  */
 public interface Action {
 
-    public static final String PROP_CAPTION = "caption";
-    public static final String PROP_DESCRIPTION = "description";
-    public static final String PROP_SHORTCUT = "shortcut";
-    public static final String PROP_ICON = "icon";
-    public static final String PROP_ENABLED = "enabled";
-    public static final String PROP_VISIBLE = "visible";
+    String PROP_CAPTION = "caption";
+    String PROP_DESCRIPTION = "description";
+    String PROP_SHORTCUT = "shortcut";
+    String PROP_ICON = "icon";
+    String PROP_ENABLED = "enabled";
+    String PROP_VISIBLE = "visible";
 
     /**
      * @return  action's identifier
@@ -115,9 +115,9 @@ public interface Action {
     /**
      * Adds a listener to be notified about Enabled, Caption or Icon property changes.
      *
-     * @param listener  a <code>PropertyChangeListener</code> object
+     * @param listener a <code>PropertyChangeListener</code> object
      */
-    public void addPropertyChangeListener(PropertyChangeListener listener);
+    void addPropertyChangeListener(PropertyChangeListener listener);
 
     /**
      * Removes a listener.
@@ -125,16 +125,14 @@ public interface Action {
      * @param listener  a <code>PropertyChangeListener</code> object
      * @see #addPropertyChangeListener
      */
-    public void removePropertyChangeListener(PropertyChangeListener listener);
+    void removePropertyChangeListener(PropertyChangeListener listener);
 
-    public interface HasOpenType extends Action {
-
+    interface HasOpenType extends Action {
         WindowManager.OpenType getOpenType();
         void setOpenType(WindowManager.OpenType openType);
     }
 
-    public interface UiPermissionAware extends Action {
-
+    interface UiPermissionAware extends Action {
         boolean isEnabledByUiPermissions();
         void setEnabledByUiPermissions(boolean enabledByUiPermissions);
 
@@ -142,9 +140,15 @@ public interface Action {
         void setVisibleByUiPermissions(boolean visibleByUiPermissions);
     }
 
-    public interface HasTarget extends Action {
+    interface HasTarget extends Action {
         ListComponent getTarget();
 
         void setTarget(ListComponent target);
+    }
+
+    enum Status {
+        NORMAL,
+
+        PRIMARY
     }
 }

@@ -59,7 +59,7 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
 
     private class LoginAction extends DialogAction {
         protected LoginAction() {
-            super(DialogAction.Type.OK);
+            super(DialogAction.Type.OK, Status.PRIMARY);
         }
 
         @Override

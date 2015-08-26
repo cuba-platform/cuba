@@ -28,6 +28,8 @@ import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action.Status;
+import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -251,7 +253,7 @@ public class DesktopWindow implements Window, Component.Disposable,
                         messages.getMainMessage("saveUnsaved"),
                         MessageType.WARNING,
                         new Action[]{
-                                new DialogAction(DialogAction.Type.OK) {
+                                new DialogAction(Type.OK, Status.PRIMARY) {
                                     @Override
                                     public String getCaption() {
                                         return messages.getMainMessage("closeUnsaved.save");
@@ -275,7 +277,7 @@ public class DesktopWindow implements Window, Component.Disposable,
                                         close(actionId, true);
                                     }
                                 },
-                                new DialogAction(DialogAction.Type.CANCEL) {
+                                new DialogAction(Type.CANCEL) {
                                     @Override
                                     public String getIcon() {
                                         return null;
@@ -293,7 +295,7 @@ public class DesktopWindow implements Window, Component.Disposable,
                         messages.getMessage(AppConfig.getMessagesPack(), "closeUnsaved"),
                         MessageType.WARNING,
                         new Action[]{
-                                new DialogAction(DialogAction.Type.YES) {
+                                new DialogAction(Type.YES) {
                                     @Override
                                     public void actionPerform(Component component) {
                                         forceClose = true;
@@ -301,7 +303,7 @@ public class DesktopWindow implements Window, Component.Disposable,
                                     }
 
                                 },
-                                new DialogAction(DialogAction.Type.NO) {
+                                new DialogAction(Type.NO, Status.PRIMARY) {
                                     @Override
                                     public void actionPerform(Component component) {
                                         doAfterClose = null;

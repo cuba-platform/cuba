@@ -52,6 +52,12 @@ public class DialogAction extends AbstractAction {
         this.primary = primary;
     }
 
+    public DialogAction(Type type, Status status) {
+        this(type);
+
+        this.primary = status == Status.PRIMARY;
+    }
+
     @Override
     public String getCaption() {
         return messages.getMainMessage(type.msgKey);

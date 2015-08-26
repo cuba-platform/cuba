@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.app.core.dev.LayoutAnalyzer;
 import com.haulmont.cuba.gui.app.core.dev.LayoutTip;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Frame;
@@ -1654,7 +1655,7 @@ public class DesktopWindowManager extends WindowManager {
                                 }
                             },
                             new com.haulmont.cuba.gui.components.AbstractAction(
-                                    messages.getMainMessage("actions.Cancel")) {
+                                    messages.getMainMessage("actions.Cancel"), Status.PRIMARY) {
                                 @Override
                                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                                     if (runIfCancel != null)

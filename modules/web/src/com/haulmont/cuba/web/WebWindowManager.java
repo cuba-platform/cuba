@@ -11,6 +11,7 @@ import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.app.core.dev.LayoutAnalyzer;
 import com.haulmont.cuba.gui.app.core.dev.LayoutTip;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
@@ -38,7 +39,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -771,7 +771,7 @@ public class WebWindowManager extends WindowManager {
                                     return "icons/ok.png";
                                 }
                             },
-                            new AbstractAction(messages.getMessage(WebWindow.class, "actions.Cancel")) {
+                            new AbstractAction(messages.getMessage(WebWindow.class, "actions.Cancel"), Status.PRIMARY) {
                                 @Override
                                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                                     if (runIfCancel != null) {
@@ -1124,7 +1124,7 @@ public class WebWindowManager extends WindowManager {
             }
 
             if (action instanceof AbstractAction && ((AbstractAction)action).isPrimary()) {
-                button.addStyleName(ValoTheme.BUTTON_PRIMARY);
+                button.addStyleName("primary");
                 button.focus();
             }
 
@@ -1135,7 +1135,7 @@ public class WebWindowManager extends WindowManager {
 
             buttonsContainer.addComponent(button);
         }
-        if (buttonsContainer.getComponentCount() > 0) {
+        if (buttonsContainer.getComponentCount() == 1) {
             ((Button) buttonsContainer.getComponent(0)).focus();
         }
 

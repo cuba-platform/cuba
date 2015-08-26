@@ -62,6 +62,12 @@ public abstract class AbstractAction implements Action {
         }
     }
 
+    protected AbstractAction(String id, Status status) {
+        this(id);
+
+        this.primary = status == Status.PRIMARY;
+    }
+
     @Override
     public String getId() {
         return id;

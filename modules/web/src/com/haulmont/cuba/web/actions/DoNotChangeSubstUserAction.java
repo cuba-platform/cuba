@@ -14,7 +14,7 @@ import com.haulmont.cuba.gui.components.AbstractAction;
 public class DoNotChangeSubstUserAction extends AbstractAction {
 
     protected DoNotChangeSubstUserAction() {
-        super("doNotChangeSubstUserAction");
+        super("doNotChangeSubstUserAction", Status.PRIMARY);
     }
 
     @Override

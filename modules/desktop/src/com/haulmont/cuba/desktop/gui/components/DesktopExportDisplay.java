@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.gui.components.AbstractAction;
+import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.export.*;
@@ -72,7 +73,7 @@ public class DesktopExportDisplay implements ExportDisplay {
         final String finalFileName = fileName;
         getFrame().getWindowManager().showOptionDialog(fileCaption, dialogMessage, Frame.MessageType.CONFIRMATION,
                 new com.haulmont.cuba.gui.components.Action[]{
-                        new AbstractAction("action.openFile") {
+                        new AbstractAction("action.openFile", Status.PRIMARY) {
                             @Override
                             public void actionPerform(Component component) {
                                 openFileAction(finalFileName, dataProvider);

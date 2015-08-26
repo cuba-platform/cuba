@@ -10,7 +10,9 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.DialogAction;
+import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -338,7 +340,7 @@ public class ExceptionDialog extends CubaWindow {
                                 return "icons/ok.png";
                             }
                         },
-                        new DialogAction(DialogAction.Type.CANCEL)
+                        new DialogAction(Type.CANCEL, Status.PRIMARY)
                 }
         );
     }

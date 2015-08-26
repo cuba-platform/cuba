@@ -13,7 +13,9 @@ import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.app.core.file.FileUploadDialog;
+import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.DialogAction;
+import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
@@ -864,14 +866,14 @@ public class CubaFoldersPane extends VerticalLayout {
                     messages.getMainMessage("folders.removeFolderConfirmation"),
                     Frame.MessageType.CONFIRMATION,
                     new com.haulmont.cuba.gui.components.Action[]{
-                            new DialogAction(DialogAction.Type.YES) {
+                            new DialogAction(Type.YES) {
                                 @Override
                                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                                     removeFolder(folder);
                                     refreshFolders();
                                 }
                             },
-                            new DialogAction(DialogAction.Type.NO)
+                            new DialogAction(Type.NO, Status.PRIMARY)
                     }
             );
         }
