@@ -10,6 +10,7 @@ import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
 import com.haulmont.cuba.gui.components.filter.Op;
 import com.haulmont.cuba.gui.components.filter.Param;
@@ -70,20 +71,6 @@ public class PropertyCondition extends AbstractCondition {
     }
 
     @Override
-    protected Param createParam() {
-        if (unary)
-            return new Param(paramName, Boolean.class, null, null, null, false, required);
-
-        if (Strings.isNullOrEmpty(paramName)) {
-            paramName = createParamName();
-        }
-
-        MetaProperty metaProperty = datasource.getMetaClass().getProperty(name);
-        return new Param(paramName, javaClass, entityParamWhere, entityParamView,
-                datasource, metaProperty, inExpr, required);
-    }
-
-    @Override
     protected void updateText() {
         StringBuilder sb = new StringBuilder();
         if (operator == Op.NOT_IN) {
@@ -141,7 +128,7 @@ public class PropertyCondition extends AbstractCondition {
         if (!ObjectUtils.equals(this.operator, operator)) {
             this.operator = operator;
             String paramName = param.getName();
-
+            ConditionParamBuilder paramBuilder = AppBeans.get(ConditionParamBuilder.class);
             if (operator.isUnary()) {
                 unary = true;
                 inExpr = false;
@@ -149,8 +136,8 @@ public class PropertyCondition extends AbstractCondition {
             } else {
                 unary = false;
                 inExpr = operator.equals(Op.IN) || operator.equals(Op.NOT_IN);
-                setParam(new Param(
-                        paramName, javaClass, entityParamWhere, entityParamView, datasource, param.getProperty(), inExpr, required));
+                Param param = paramBuilder.createParam(this);
+                setParam(param);
             }
         }
     }

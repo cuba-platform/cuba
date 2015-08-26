@@ -20,10 +20,7 @@ import com.haulmont.cuba.gui.ComponentFinder;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.filter.ConditionsTree;
-import com.haulmont.cuba.gui.components.filter.FilterParser;
-import com.haulmont.cuba.gui.components.filter.Op;
-import com.haulmont.cuba.gui.components.filter.Param;
+import com.haulmont.cuba.gui.components.filter.*;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
 import com.haulmont.cuba.gui.components.filter.descriptor.PropertyConditionDescriptor;
@@ -162,7 +159,8 @@ public class RelatedAction extends AbstractAction {
         condition.setHidden(true);
         condition.setOperator(Op.IN);
 
-        Param param = new Param(condition.createParamName(), UUID.class, "", "", component.getDatasource(), metaClass.getProperty("id"), true, true);
+        ConditionParamBuilder paramBuilder = AppBeans.get(ConditionParamBuilder.class);
+        Param param = new Param(paramBuilder.createParamName(condition), UUID.class, "", "", component.getDatasource(), metaClass.getProperty("id"), true, true);
         param.setValue(ids);
 
         condition.setParam(param);

@@ -18,7 +18,9 @@ import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.filter.Op;
+import com.haulmont.cuba.gui.components.filter.OpManager;
 import com.haulmont.cuba.gui.components.filter.Param;
+import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondition;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -152,7 +154,8 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
                 operation +
                 (op.isUnary() ? " " : paramStr) + "and " + cavAlias + ".categoryAttribute.id='" +
                 attributeLookup.<CategoryAttribute>getValue().getId() + "'";
-        paramName = condition.createParamName();
+        ConditionParamBuilder paramBuilder = AppBeans.get(ConditionParamBuilder.class);
+        paramName = paramBuilder.createParamName(condition);
         where = where.replace("?", ":" + paramName);
 
         condition.setWhere(where);
@@ -222,7 +225,8 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
     }
 
     protected void fillOperationSelect(Class clazz) {
-        List<Op> ops = new LinkedList<>(Op.availableOps(clazz));
+        OpManager opManager = AppBeans.get(OpManager.class);
+        List<Op> ops = new LinkedList<>(opManager.availableOps(clazz));
         operationLookup.setOptionsList(ops);
         Op operator = condition.getOperator();
         if (operator != null) {

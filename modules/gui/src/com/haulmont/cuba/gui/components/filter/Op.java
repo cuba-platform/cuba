@@ -57,26 +57,6 @@ public enum Op {
         throw new UnsupportedOperationException("Unsupported operation: " + str);
     }
 
-    public static EnumSet<Op> availableOps(Class javaClass) {
-        if (String.class.equals(javaClass))
-            return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, CONTAINS, DOES_NOT_CONTAIN, NOT_EMPTY, STARTS_WITH, ENDS_WITH);
-
-        else if (Date.class.isAssignableFrom(javaClass)
-                || Number.class.isAssignableFrom(javaClass))
-            return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESSER, LESSER_OR_EQUAL, NOT_EMPTY);
-
-        else if (Boolean.class.equals(javaClass))
-            return EnumSet.of(EQUAL, NOT_EQUAL, NOT_EMPTY);
-
-        else if (UUID.class.equals(javaClass)
-                || Enum.class.isAssignableFrom(javaClass)
-                || Entity.class.isAssignableFrom(javaClass))
-            return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, NOT_EMPTY);
-
-        else
-            throw new UnsupportedOperationException("Unsupported java class: " + javaClass);
-    }
-
     public String toString() {
         return AppBeans.get(Messages.class).getMessage(this);
     }

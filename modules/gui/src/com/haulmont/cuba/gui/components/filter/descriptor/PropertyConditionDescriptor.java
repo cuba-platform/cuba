@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.filter.Op;
+import com.haulmont.cuba.gui.components.filter.OpManager;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.FilterConditionUtils;
 import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
@@ -20,6 +21,8 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
+
+import java.util.EnumSet;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
@@ -86,7 +89,8 @@ public class PropertyConditionDescriptor extends AbstractConditionDescriptor {
     @Override
     public AbstractCondition createCondition() {
         PropertyCondition propertyCondition = new PropertyCondition(this, entityAlias);
-        propertyCondition.setOperator(Op.EQUAL);
+        EnumSet<Op> ops = AppBeans.get(OpManager.class).availableOps(propertyCondition.getJavaClass());
+        propertyCondition.setOperator(ops.iterator().next());
         return propertyCondition;
     }
 

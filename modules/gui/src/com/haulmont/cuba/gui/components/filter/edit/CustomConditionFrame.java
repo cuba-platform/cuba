@@ -20,10 +20,7 @@ import com.haulmont.cuba.gui.components.autocomplete.impl.HintProvider;
 import com.haulmont.cuba.gui.components.autocomplete.impl.HintRequest;
 import com.haulmont.cuba.gui.components.autocomplete.impl.HintResponse;
 import com.haulmont.cuba.gui.components.autocomplete.impl.Option;
-import com.haulmont.cuba.gui.components.filter.ConditionsTree;
-import com.haulmont.cuba.gui.components.filter.FilterHelper;
-import com.haulmont.cuba.gui.components.filter.Param;
-import com.haulmont.cuba.gui.components.filter.ParamType;
+import com.haulmont.cuba.gui.components.filter.*;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -344,7 +341,8 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
 
         condition.setJoin(joinField.<String>getValue());
 
-        String paramName = condition.createParamName();
+        ConditionParamBuilder paramBuilder = AppBeans.get(ConditionParamBuilder.class);
+        String paramName = paramBuilder.createParamName(condition);
         String where = whereField.getValue();
         if (where != null) {
             where = where.replace("?", ":" + paramName);

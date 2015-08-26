@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.gui.components.filter.Op;
 import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor;
@@ -126,6 +127,7 @@ public class DynamicAttributesCondition extends AbstractCondition {
         if (!ObjectUtils.equals(this.operator, operator)) {
             this.operator = operator;
             String paramName = param.getName();
+            ConditionParamBuilder paramBuilder = AppBeans.get(ConditionParamBuilder.class);
             if (operator.isUnary()) {
                 unary = true;
                 inExpr = false;
@@ -133,8 +135,8 @@ public class DynamicAttributesCondition extends AbstractCondition {
             } else {
                 unary = false;
                 inExpr = operator.equals(Op.IN) || operator.equals(Op.NOT_IN);
-                setParam(new Param(
-                        paramName, javaClass, entityParamWhere, entityParamView, datasource, param.getProperty(), inExpr, required));
+                Param param = paramBuilder.createParam(this);
+                setParam(param);
             }
         }
     }
@@ -151,20 +153,20 @@ public class DynamicAttributesCondition extends AbstractCondition {
         return operationEditor;
     }
 
-    @Override
-    protected Param createParam() {
-        if (categoryAttributeId != null) {
-            Class paramJavaClass = unary ? Boolean.class : javaClass;
-
-            MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(datasource.getMetaClass(), categoryAttributeId);
-            Param param = new Param(paramName, paramJavaClass, null, null, datasource,
-                    metaPropertyPath != null ? metaPropertyPath.getMetaProperty() : null,
-                    inExpr, required, categoryAttributeId);
-            return param;
-        } else {
-            return super.createParam();
-        }
-    }
+//    @Override
+//    protected Param createParam() {
+//        if (categoryAttributeId != null) {
+//            Class paramJavaClass = unary ? Boolean.class : javaClass;
+//
+//            MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(datasource.getMetaClass(), categoryAttributeId);
+//            Param param = new Param(paramName, paramJavaClass, null, null, datasource,
+//                    metaPropertyPath != null ? metaPropertyPath.getMetaProperty() : null,
+//                    inExpr, required, categoryAttributeId);
+//            return param;
+//        } else {
+//            return super.createParam();
+//        }
+//    }
 
     @Override
     protected void updateText() {

@@ -9,6 +9,7 @@ import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
@@ -70,7 +71,7 @@ public class CustomCondition extends AbstractCondition {
         this.text = where;
         this.inExpr = inExpr;
         //re-create param because at this moment we have a correct value of inExpr
-        param = createParam();
+        param = AppBeans.get(ConditionParamBuilder.class).createParam(this);
         if (param != null)
             text = StringUtils.replace(text, "?", ":" + param.getName());
     }

@@ -10,6 +10,7 @@ import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PopupButton;
 import com.haulmont.cuba.gui.components.filter.Op;
+import com.haulmont.cuba.gui.components.filter.OpManager;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
@@ -35,7 +36,8 @@ public class PropertyOperationEditor extends AbstractOperationEditor {
         messages = AppBeans.get(Messages.NAME);
         popupButton = componentsFactory.createComponent(PopupButton.class);
 
-        for (Op op : Op.availableOps(condition.getJavaClass())) {
+        OpManager opManager = AppBeans.get(OpManager.class);
+        for (Op op : opManager.availableOps(condition.getJavaClass())) {
             OperatorChangeAction operatorChangeAction = new OperatorChangeAction(op);
             popupButton.addAction(operatorChangeAction);
         }

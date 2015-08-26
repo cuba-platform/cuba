@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.gui.components.filter.Op;
 import com.haulmont.cuba.gui.components.filter.Param;
+import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -131,7 +132,11 @@ public abstract class AbstractCondition extends AbstractNotPersistentEntity {
         entityParamView = descriptor.getEntityParamView();
         datasource = descriptor.getDatasource();
         messagesPack = descriptor.getMessagesPack();
-        param = createParam();
+        ConditionParamBuilder paramBuilder = AppBeans.get(ConditionParamBuilder.class);
+        if (Strings.isNullOrEmpty(paramName)) {
+            paramName = paramBuilder.createParamName(this);
+        }
+        param = paramBuilder.createParam(this);
         String operatorType = descriptor.getOperatorType();
         if (operatorType != null) {
             operator = Op.valueOf(operatorType);
@@ -158,7 +163,11 @@ public abstract class AbstractCondition extends AbstractNotPersistentEntity {
                 paramClass = scripting.loadClass(paramElem.attributeValue("javaClass"));
             }
 
-            param = createParam();
+            ConditionParamBuilder paramBuilder = AppBeans.get(ConditionParamBuilder.class);
+            if (Strings.isNullOrEmpty(paramName)) {
+                paramName = paramBuilder.createParamName(this);
+            }
+            param = paramBuilder.createParam(this);
             param.parseValue(paramElem.getText());
             param.setDefaultValue(param.getValue());
         }
@@ -175,18 +184,6 @@ public abstract class AbstractCondition extends AbstractNotPersistentEntity {
 
             operator = Op.valueOf(operatorName);
         }
-    }
-
-    protected Param createParam() {
-        if (Strings.isNullOrEmpty(paramName)) {
-            paramName = createParamName();
-        }
-
-        if (unary)
-            return new Param(paramName, null, null, null, null, false, required);
-
-        return new Param(paramName, paramClass == null ? javaClass : paramClass,
-                entityParamWhere, entityParamView, datasource, inExpr, required);
     }
 
     public void addListener(Listener listener) {
@@ -242,6 +239,14 @@ public abstract class AbstractCondition extends AbstractNotPersistentEntity {
         for (AbstractCondition.Listener listener : listeners) {
             listener.paramChanged(oldParam, param);
         }
+    }
+
+    public String getParamName() {
+        return paramName;
+    }
+
+    public Class getParamClass() {
+        return paramClass;
     }
 
     public String getEntityAlias() {
@@ -378,10 +383,10 @@ public abstract class AbstractCondition extends AbstractNotPersistentEntity {
         this.width = width;
     }
 
-    public String createParamName() {
-        return "component$" + getFilterComponentName() + "." +
-                getName().replace('.', '_') + RandomStringUtils.randomNumeric(5);
-    }
+//    public String createParamName() {
+//        return "component$" + getFilterComponentName() + "." +
+//                getName().replace('.', '_') + RandomStringUtils.randomNumeric(5);
+//    }
 
     public AbstractOperationEditor createOperationEditor() {
         return null;

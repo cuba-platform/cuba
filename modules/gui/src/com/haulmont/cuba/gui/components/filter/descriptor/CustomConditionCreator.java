@@ -8,6 +8,7 @@ import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
@@ -37,11 +38,7 @@ public class CustomConditionCreator extends AbstractConditionDescriptor {
 
         // default editor - text
         customCondition.setJavaClass(String.class);
-
-        Param param = new Param(
-                customCondition.getName(), customCondition.getJavaClass(),
-                customCondition.getWhere(), customCondition.getJoin(), customCondition.getDatasource(),
-                customCondition.getInExpr(), customCondition.getRequired());
+        Param param = AppBeans.get(ConditionParamBuilder.class).createParam(customCondition);
         customCondition.setParam(param);
 
         return customCondition;
