@@ -1883,7 +1883,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         @Override
         public void onClick(Entity item, String columnId) {
             Column column = getColumn(columnId);
-            String value = item.getValue(columnId);
+            String value = item.getValueEx(columnId);
             if (column.getMaxTextLength() != null) {
                 boolean isMultiLineCell = StringUtils.contains(value, "\n");
                 if (value == null || (value.length() <= column.getMaxTextLength() + MAX_TEXT_LENGTH_GAP
@@ -2317,7 +2317,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                                 style = "cuba-table-cell-link";
                             } else if (column.getMaxTextLength() != null) {
                                 Entity item = getDatasource().getItemNN(itemId);
-                                String value = item.getValue(propertyId.toString());
+                                String value = item.getValueEx(propertyId.toString());
                                 if (column.getMaxTextLength() != null) {
                                     boolean isMultiLineCell = StringUtils.contains(value, "\n");
                                     if ((value != null && value.length() > column.getMaxTextLength() + MAX_TEXT_LENGTH_GAP)
