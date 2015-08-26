@@ -18,8 +18,9 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  */
 public class TransactionImpl implements Transaction {
 
-    private PlatformTransactionManager tm;
-    private PersistenceImpl persistence;
+    private final PlatformTransactionManager tm;
+    private final PersistenceImpl persistence;
+    private final DefaultTransactionDefinition td;
     private TransactionStatus ts;
     private boolean committed;
 
@@ -28,7 +29,7 @@ public class TransactionImpl implements Transaction {
         this.tm = transactionManager;
         this.persistence = persistence;
 
-        DefaultTransactionDefinition td = new DefaultTransactionDefinition();
+        td = new DefaultTransactionDefinition();
         if (join)
             td.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
         else
@@ -76,9 +77,9 @@ public class TransactionImpl implements Transaction {
         try {
             tm.commit(ts);
 
-            DefaultTransactionDefinition td = new DefaultTransactionDefinition();
-            td.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
             ts = tm.getTransaction(td);
+            TransactionSynchronizationManager.registerSynchronization(persistence.createSynchronization());
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
