@@ -11,7 +11,7 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.client.VConsole;
+import com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.CubaFileUploadWidget;
 import com.vaadin.client.ui.VButton;
 import com.vaadin.client.ui.VUpload;
 import com.vaadin.client.ui.orderedlayout.Slot;
@@ -64,7 +64,9 @@ public class CubaPopupButtonWidget extends VPopupButton {
                     Widget contentChild = ((Slot) slot).getWidget();
 
                     VButton button = null;
-                    if (contentChild instanceof VUpload) {
+                    if (contentChild instanceof CubaFileUploadWidget) {
+                        button = ((CubaFileUploadWidget) contentChild).getSubmitButton();
+                    } else if (contentChild instanceof VUpload) {
                         button = ((VUpload) contentChild).submitButton;
                     } else if (contentChild instanceof VButton) {
                         button = (VButton) contentChild;
@@ -101,7 +103,9 @@ public class CubaPopupButtonWidget extends VPopupButton {
                     Widget contentChild = ((Slot) slot).getWidget();
 
                     VButton button = null;
-                    if (contentChild instanceof VButton) {
+                    if (contentChild instanceof CubaFileUploadWidget) {
+                        button = ((CubaFileUploadWidget) contentChild).getSubmitButton();
+                    } else if (contentChild instanceof VButton) {
                         button = (VButton) contentChild;
                     } else if (contentChild instanceof VUpload) {
                         button = ((VUpload) contentChild).submitButton;

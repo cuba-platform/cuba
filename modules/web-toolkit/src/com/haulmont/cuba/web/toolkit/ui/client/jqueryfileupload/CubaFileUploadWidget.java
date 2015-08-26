@@ -208,6 +208,10 @@ public class CubaFileUploadWidget extends FlowPanel {
         submitButton.setStyleName(StyleConstants.DISABLED, !enabled);
     }
 
+    public VButton getSubmitButton() {
+        return submitButton;
+    }
+
     public interface FilePermissionsHandler {
 
         void fileSizeLimitExceeded(String filename);

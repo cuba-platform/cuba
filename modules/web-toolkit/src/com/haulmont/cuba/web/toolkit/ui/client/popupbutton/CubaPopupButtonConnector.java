@@ -13,6 +13,7 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaPopupButton;
+import com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.CubaFileUploadWidget;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.communication.StateChangeEvent;
@@ -111,10 +112,15 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
                 case Event.ONKEYDOWN:
                     if (!getState().customLayout && getWidget().popupHasChild(target)) {
                         Widget widget = WidgetUtil.findWidget(target, null);
-                        if (widget instanceof VButton || widget instanceof VUpload) {
+                        if (widget instanceof VButton
+                                || widget instanceof VUpload
+                                || widget instanceof CubaFileUploadWidget) {
                             Widget widgetParent = widget.getParent();
                             if (widgetParent.getParent() instanceof VUpload) {
                                 VUpload upload = (VUpload) widgetParent.getParent();
+                                widgetParent = upload.getParent(); //upload parent is Slot
+                            } else if (widgetParent.getParent() instanceof CubaFileUploadWidget) {
+                                CubaFileUploadWidget upload = (CubaFileUploadWidget) widgetParent.getParent();
                                 widgetParent = upload.getParent(); //upload parent is Slot
                             }
 
@@ -128,11 +134,15 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
                                 focusWidget = findPrevWidget(layout, widgetIndex);
                             }
 
-                            if (focusWidget instanceof VButton || focusWidget instanceof VUpload) {
+                            if (focusWidget instanceof VButton
+                                    || focusWidget instanceof CubaFileUploadWidget
+                                    || focusWidget instanceof VUpload) {
                                 getWidget().childWidgetFocused(focusWidget);
                                 VButton button;
                                 if (focusWidget instanceof VButton) {
                                     button = (VButton) focusWidget;
+                                } else if (focusWidget instanceof CubaFileUploadWidget) {
+                                    button = ((CubaFileUploadWidget) focusWidget).getSubmitButton();
                                 } else {
                                     button = ((VUpload) focusWidget).submitButton;
                                 }
@@ -145,13 +155,17 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
                 case Event.ONMOUSEOVER:
                     if (!getState().customLayout && getWidget().popupHasChild(target)) {
                         Widget widget = WidgetUtil.findWidget(target, null);
-                        if ((widget instanceof VButton || widget instanceof VUpload) &&
+                        if ((widget instanceof VButton
+                                || widget instanceof VUpload
+                                || widget instanceof CubaFileUploadWidget) &&
                                 !widget.getStyleName().contains(SELECTED_ITEM_STYLE)) {
                             getWidget().childWidgetFocused(widget);
 
                             VButton button;
                             if (widget instanceof VButton) {
                                 button = (VButton) widget;
+                            } else if (widget instanceof CubaFileUploadWidget) {
+                                button = ((CubaFileUploadWidget) widget).getSubmitButton();
                             } else {
                                 button = ((VUpload) widget).submitButton;
                             }
@@ -174,30 +188,16 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
     protected Widget findPrevWidget(VAbstractOrderedLayout layout, int widgetIndex) {
         for (int i = widgetIndex - 1; i >= 0; i--) {
             Slot slot = (Slot) layout.getWidget(i);
-            Widget slotWidget = slot.getWidget();
-            if (slotWidget instanceof VButton) {
-                VButton button = (VButton) slotWidget;
-
-                if (button.isEnabled()) {
-                    return button;
-                }
-            } else if (slotWidget instanceof VUpload) {
-                return slotWidget;
+            if (isSuitableWidget(slot.getWidget())) {
+                return slot.getWidget();
             }
         }
 
         // try to find button from last
         for (int i = layout.getWidgetCount() - 1; i > widgetIndex; i--) {
             Slot slot = (Slot) layout.getWidget(i);
-            Widget slotWidget = slot.getWidget();
-            if (slotWidget instanceof VButton) {
-                VButton button = (VButton) slotWidget;
-
-                if (button.isEnabled()) {
-                    return button;
-                }
-            } else if (slotWidget instanceof VUpload) {
-                return slotWidget;
+            if (isSuitableWidget(slot.getWidget())) {
+                return slot.getWidget();
             }
         }
         return null;
@@ -206,33 +206,35 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
     protected Widget findNextWidget(VAbstractOrderedLayout layout, int widgetIndex) {
         for (int i = widgetIndex + 1; i < layout.getWidgetCount(); i++) {
             Slot slot = (Slot) layout.getWidget(i);
-            Widget slotWidget = slot.getWidget();
-            if (slotWidget instanceof VButton) {
-                VButton button = (VButton) slotWidget;
-
-                if (button.isEnabled()) {
-                    return button;
-                }
-            } else if (slotWidget instanceof VUpload) {
-                return slotWidget;
+            if (isSuitableWidget(slot.getWidget())) {
+                return slot.getWidget();
             }
         }
 
         // try to find button from first
         for (int i = 0; i < widgetIndex; i++) {
             Slot slot = (Slot) layout.getWidget(i);
-            Widget slotWidget = slot.getWidget();
-            if (slotWidget instanceof VButton) {
-                VButton button = (VButton) slotWidget;
-
-                if (button.isEnabled()) {
-                    return button;
-                }
-            } else if (slotWidget instanceof VUpload) {
-                return slotWidget;
+            if (isSuitableWidget(slot.getWidget())) {
+                return slot.getWidget();
             }
         }
 
         return null;
+    }
+
+    protected boolean isSuitableWidget(Widget slotWidget) {
+        if (slotWidget instanceof VButton) {
+            VButton button = (VButton) slotWidget;
+
+            if (button.isEnabled()) {
+                return true;
+            }
+        } else if (slotWidget instanceof CubaFileUploadWidget) {
+            return true;
+        } else if (slotWidget instanceof VUpload) {
+            return true;
+        }
+
+        return false;
     }
 }
