@@ -33,7 +33,7 @@ public class CustomConditionCreator extends AbstractConditionDescriptor {
 
     @Override
     public AbstractCondition createCondition() {
-        CustomCondition customCondition = new CustomCondition(this, null, null, entityAlias);
+        CustomCondition customCondition = new CustomCondition(this, null, null, entityAlias, false);
 
         // default editor - text
         customCondition.setJavaClass(String.class);

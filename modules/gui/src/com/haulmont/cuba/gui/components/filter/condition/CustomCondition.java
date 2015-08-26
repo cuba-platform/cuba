@@ -63,11 +63,14 @@ public class CustomCondition extends AbstractCondition {
 
     }
 
-    public CustomCondition(AbstractConditionDescriptor descriptor, String where, String join, String entityAlias) {
+    public CustomCondition(AbstractConditionDescriptor descriptor, String where, String join, String entityAlias, boolean inExpr) {
         super(descriptor);
         this.entityAlias = entityAlias;
         this.join = join;
         this.text = where;
+        this.inExpr = inExpr;
+        //re-create param because at this moment we have a correct value of inExpr
+        param = createParam();
         if (param != null)
             text = StringUtils.replace(text, "?", ":" + param.getName());
     }
