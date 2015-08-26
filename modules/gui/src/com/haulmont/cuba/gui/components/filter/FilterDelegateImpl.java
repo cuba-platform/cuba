@@ -2047,7 +2047,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                                     removeFilterEntity();
                                 }
                             },
-                            new DialogAction(Type.NO)
+                            new DialogAction(Type.NO, Status.PRIMARY)
                     });
         }
 
