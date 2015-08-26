@@ -478,7 +478,8 @@ public class JSONConvertor implements Convertor {
         MetaClass metaClass = loadInfo.getMetaClass();
         Entity instance = metadata.create(metaClass);
         for (MetaProperty metaProperty : metaClass.getProperties()) {
-            instance.setValue(metaProperty.getName(), null);
+            if (!metaProperty.isReadOnly())
+                instance.setValue(metaProperty.getName(), null);
         }
         return instance;
     }
