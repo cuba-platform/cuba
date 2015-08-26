@@ -10,4 +10,10 @@
       overflow-y: visible !important;
     }
   }
+
+  .#{$primary-stylename}.v-readonly {
+    .#{$primary-stylename}-button {
+      display: none;
+    }
+  }
 }
