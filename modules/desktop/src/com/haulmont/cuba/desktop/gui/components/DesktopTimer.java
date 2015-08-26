@@ -8,8 +8,8 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class DesktopTimer extends DesktopAbstractComponent<JLabel> implements com.haulmont.cuba.gui.components.Timer {
 
-    private Log log = LogFactory.getLog(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     protected boolean repeating = false;
     protected int delay = 0;

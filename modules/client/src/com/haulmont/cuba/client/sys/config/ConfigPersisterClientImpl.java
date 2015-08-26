@@ -10,8 +10,8 @@ import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,7 +26,7 @@ public class ConfigPersisterClientImpl implements ConfigPersister {
 
     private volatile boolean cacheLoaded;
 
-    protected static final Log log = LogFactory.getLog(ConfigPersisterClientImpl.class);
+    protected static final Logger log = LoggerFactory.getLogger(ConfigPersisterClientImpl.class);
     private boolean caching;
 
     public ConfigPersisterClientImpl(boolean caching) {

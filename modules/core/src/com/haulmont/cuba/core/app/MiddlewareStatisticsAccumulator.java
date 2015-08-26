@@ -7,8 +7,8 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.sys.StatisticsAccumulator;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -26,7 +26,7 @@ public class MiddlewareStatisticsAccumulator extends StatisticsAccumulator {
 
     public static final String NAME = "cuba_MiddlewareStatisticsAccumulator";
 
-    protected Log log = LogFactory.getLog(MiddlewareStatisticsAccumulator.class);
+    protected Logger log = LoggerFactory.getLogger(MiddlewareStatisticsAccumulator.class);
 
     protected AtomicLong startedTransactionsCount = new AtomicLong();
     protected AtomicLong committedTransactionsCount = new AtomicLong();

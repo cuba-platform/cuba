@@ -16,8 +16,8 @@ import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.lang.text.StrLookup;
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.lang.text.StrTokenizer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class DesktopAppContextLoader extends AbstractAppContextLoader {
     private String defaultAppPropertiesConfig;
     private String[] args;
 
-    private Log log = LogFactory.getLog(DesktopAppContextLoader.class);
+    private Logger log = LoggerFactory.getLogger(DesktopAppContextLoader.class);
 
     public DesktopAppContextLoader(String defaultAppPropertiesConfig, String[] args) {
         this.defaultAppPropertiesConfig = defaultAppPropertiesConfig;
@@ -130,6 +130,6 @@ public class DesktopAppContextLoader extends AbstractAppContextLoader {
             list.add(key + "=" + AppContext.getProperty(key));
         }
         Collections.sort(list);
-        log.info(new StrBuilder("AppProperties:\n").appendWithSeparators(list, "\n"));
+        log.info(new StrBuilder("AppProperties:\n").appendWithSeparators(list, "\n").toString());
     }
 }

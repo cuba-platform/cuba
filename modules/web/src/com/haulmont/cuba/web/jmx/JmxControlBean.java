@@ -12,8 +12,8 @@ import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.NodeIdentifier;
 import com.haulmont.cuba.core.sys.jmx.JmxNodeIdentifierMBean;
 import com.haulmont.cuba.web.jmx.entity.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
@@ -35,7 +35,7 @@ import static com.haulmont.cuba.web.jmx.JmxConnectionHelper.withConnection;
 @ManagedBean(JmxControlAPI.NAME)
 public class JmxControlBean implements JmxControlAPI {
 
-    private final Log log = LogFactory.getLog(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
     private DataService dataService;
@@ -248,7 +248,7 @@ public class JmxControlBean implements JmxControlAPI {
                 Object value = connection.getAttribute(name, mba.getName());
                 setSerializableValue(mba, value);
             } catch (Exception e) {
-                log.error(e);
+                log.error("Error getting attribute", e);
                 mba.setValue(e.getMessage());
                 mba.setWriteable(false);
             }
@@ -272,7 +272,7 @@ public class JmxControlBean implements JmxControlAPI {
                     try {
                         value = connection.getAttribute(name, attribute.getName());
                     } catch (Exception e) {
-                        log.error(e);
+                        log.error("Error getting attribute", e);
                         value = e.getMessage();
                     }
                 }

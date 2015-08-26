@@ -12,8 +12,8 @@ import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.core.model.impl.MetaClassImpl;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.ClassMetadata;
@@ -33,7 +33,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  */
 public class JPAAnnotationsLoader extends ChileAnnotationsLoader {
 
-    private Log log = LogFactory.getLog(JPAMetadataLoader.class);
+    private Logger log = LoggerFactory.getLogger(JPAMetadataLoader.class);
 
     public JPAAnnotationsLoader(Session session) {
         super(session);

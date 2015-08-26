@@ -18,8 +18,8 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nonnull;
@@ -36,7 +36,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 @ManagedBean(BackgroundWorker.NAME)
 public class WebBackgroundWorker implements BackgroundWorker {
-    private Log log = LogFactory.getLog(WebBackgroundWorker.class);
+    private Logger log = LoggerFactory.getLogger(WebBackgroundWorker.class);
 
     private WatchDog watchDog;
 

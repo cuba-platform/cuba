@@ -13,8 +13,8 @@ import com.haulmont.cuba.web.app.WebStatisticsAccumulator;
 import com.haulmont.cuba.web.auth.RequestContext;
 import com.vaadin.server.*;
 import com.vaadin.shared.ApplicationConstants;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -38,7 +38,7 @@ public class CubaApplicationServlet extends VaadinServlet {
 
     private static final long serialVersionUID = -8701539520754293569L;
 
-    private Log log = LogFactory.getLog(CubaApplicationServlet.class);
+    private Logger log = LoggerFactory.getLogger(CubaApplicationServlet.class);
 
     protected WebConfig webConfig;
 

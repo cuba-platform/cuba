@@ -18,8 +18,8 @@ import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -39,7 +39,7 @@ public class PortalConnection implements Connection {
 
     protected volatile PortalSession session;
 
-    protected Log log = LogFactory.getLog(Connection.class);
+    protected Logger log = LoggerFactory.getLogger(Connection.class);
 
     @Inject
     protected Configuration configuration;

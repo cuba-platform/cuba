@@ -12,8 +12,8 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.javacl.RemotingContextHolder;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.context.WebApplicationContext;
@@ -34,7 +34,7 @@ public class RemotingServlet extends DispatcherServlet {
 
     public static final String SPRING_CONTEXT_CONFIG = "cuba.remotingSpringContextConfig";
 
-    private static final Log log = LogFactory.getLog(RemotingServlet.class);
+    private static final Logger log = LoggerFactory.getLogger(RemotingServlet.class);
 
     private volatile boolean checkCompleted;
 

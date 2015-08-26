@@ -18,8 +18,8 @@ import groovy.util.ResourceConnector;
 import groovy.util.ResourceException;
 import groovy.util.ScriptException;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
  */
 public abstract class AbstractScripting implements Scripting {
 
-    private Log log = LogFactory.getLog(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     private static final Pattern IMPORT_PATTERN = Pattern.compile("\\bimport\\b\\s+");
     private static final Pattern PACKAGE_PATTERN = Pattern.compile("\\bpackage\\b\\s+.+");

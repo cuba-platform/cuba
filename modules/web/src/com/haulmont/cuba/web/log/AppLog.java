@@ -11,8 +11,8 @@ import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.ErrorEvent;
 import com.vaadin.ui.AbstractComponent;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.SocketException;
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class AppLog {
 
     private static final int CAPACITY = 100;
 
-    private static Log log = LogFactory.getLog(AppLog.class);
+    private static Logger log = LoggerFactory.getLogger(AppLog.class);
 
     public void log(LogItem item) {
         String msg = item.getMessage() + "\n" + item.getStacktrace();

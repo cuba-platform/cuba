@@ -10,8 +10,8 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -47,7 +47,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
      */
     protected static final int BUFFER_SIZE = 64 * 1024;
 
-    protected Log log = LogFactory.getLog(getClass());
+    protected Logger log = LoggerFactory.getLogger(getClass());
 
     protected static final String CORE_FILE_UPLOAD_CONTEXT = "/upload";
 

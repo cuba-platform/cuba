@@ -24,8 +24,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
@@ -75,7 +75,7 @@ public final class UserSessions implements UserSessionsAPI, AppContext.Listener 
         }
     }
 
-    private Log log = LogFactory.getLog(UserSessions.class);
+    private Logger log = LoggerFactory.getLogger(UserSessions.class);
 
     private Map<UUID, UserSessionInfo> cache = new ConcurrentHashMap<>();
 
@@ -391,11 +391,11 @@ public final class UserSessions implements UserSessionsAPI, AppContext.Listener 
         if (objects != null) {
             int licensed = (int) objects[5];
             if (licensed != 0 && count > licensed) {
-                LogFactory.getLog("com.haulmont.cuba.security.app.LoginWorkerBean").warn(
+                LoggerFactory.getLogger("com.haulmont.cuba.security.app.LoginWorkerBean").warn(
                         String.format("Active sessions: %d, licensed: %d", count, licensed));
             }
         } else {
-            LogFactory.getLog("com.haulmont.cuba.security.app.LoginWorkerBean").error("Invalid license data");
+            LoggerFactory.getLogger("com.haulmont.cuba.security.app.LoginWorkerBean").error("Invalid license data");
         }
     }
 

@@ -26,8 +26,8 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 import org.springframework.stereotype.Service;
@@ -50,7 +50,7 @@ import java.util.zip.CRC32;
 @Service(FoldersService.NAME)
 public class FoldersServiceBean implements FoldersService {
 
-    protected Log log = LogFactory.getLog(getClass());
+    protected Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
     protected UserSessionSource userSessionSource;

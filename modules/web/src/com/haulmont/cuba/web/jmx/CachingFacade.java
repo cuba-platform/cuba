@@ -12,8 +12,8 @@ import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.WindowConfig;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -25,7 +25,7 @@ import javax.inject.Inject;
 @ManagedBean("cuba_CachingFacadeMBean")
 public class CachingFacade implements CachingFacadeMBean {
 
-    private Log log = LogFactory.getLog(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
     private Scripting scripting;

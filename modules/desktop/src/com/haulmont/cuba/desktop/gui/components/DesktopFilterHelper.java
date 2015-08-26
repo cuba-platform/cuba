@@ -13,8 +13,8 @@ import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -31,7 +31,7 @@ import java.util.UUID;
 @ManagedBean(FilterHelper.NAME)
 public class DesktopFilterHelper implements FilterHelper {
 
-    private Log log = LogFactory.getLog(DesktopFilterHelper.class);
+    private Logger log = LoggerFactory.getLogger(DesktopFilterHelper.class);
 
     @Inject
     protected DesktopFilterDragAndDropSupport dragAndDropSupport;

@@ -5,8 +5,8 @@
 
 package com.haulmont.cuba.web.sys;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -18,7 +18,7 @@ import java.util.Set;
  */
 public class BackgroundTaskManager {
 
-    private static Log log = LogFactory.getLog(BackgroundTaskManager.class);
+    private static Logger log = LoggerFactory.getLogger(BackgroundTaskManager.class);
 
     private transient Set<Thread> taskSet;
 

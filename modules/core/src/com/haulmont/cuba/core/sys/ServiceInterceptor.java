@@ -11,9 +11,9 @@ import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Intercepts invocations of the middleware services.
@@ -30,7 +30,7 @@ public class ServiceInterceptor {
 
     private MiddlewareStatisticsAccumulator statisticsAccumulator;
 
-    private Log log = LogFactory.getLog(getClass());
+    private Logger log = LoggerFactory.getLogger(ServiceInterceptor.class);
 
     public void setUserSessions(UserSessionsAPI userSessions) {
         this.userSessions = userSessions;
@@ -51,7 +51,7 @@ public class ServiceInterceptor {
         for (int i = 2; i < stackTrace.length; i++) {
             StackTraceElement element = stackTrace[i];
             if (element.getClassName().equals(ServiceInterceptor.class.getName())) {
-                log.error("Invoking " + ctx.getSignature() + " from another service");
+                log.error("Invoking {} from another service", ctx.getSignature());
                 break;
             }
         }
@@ -59,12 +59,12 @@ public class ServiceInterceptor {
         try {
             UserSession userSession = getUserSession(ctx);
             if (log.isTraceEnabled())
-                log.trace("Invoking: " + ctx.getSignature() + ", session=" + userSession);
+                log.trace("Invoking: {}, session={}", ctx.getSignature(), userSession);
 
             Object res = ctx.proceed();
 
             if (persistence.isInTransaction())
-                log.warn("Open transaction left in " + ctx.getSignature().toShortString());
+                log.warn("Open transaction left in {}", ctx.getSignature().toShortString());
 
             return res;
         } catch (Throwable e) {
@@ -90,13 +90,13 @@ public class ServiceInterceptor {
     private void logException(Throwable e, ProceedingJoinPoint ctx) {
         if (e instanceof NoUserSessionException) {
             // If you don't want NoUserSessionException in log, set level higher than INFO for ServiceInterceptor logger
-            log.info("Exception in " + ctx.getSignature().toShortString() + ": " + e.toString());
+            log.info("Exception in {}: {}", ctx.getSignature().toShortString(), e.toString());
         } else {
             Logging annotation = e.getClass().getAnnotation(Logging.class);
             if (annotation == null || annotation.value() == Logging.Type.FULL) {
                 log.error("Exception: ", e);
             } else if (annotation.value() == Logging.Type.BRIEF) {
-                log.error("Exception in " + ctx.getSignature().toShortString() + ": " + e.toString());
+                log.error("Exception in {}: {}", ctx.getSignature().toShortString(), e.toString());
             }
         }
     }

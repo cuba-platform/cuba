@@ -4,8 +4,8 @@
  */
 package com.haulmont.cuba.core.sys;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
 
 /**
@@ -17,7 +17,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
  */
 public class MBeanInterceptor {
 
-    private Log log = LogFactory.getLog(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     @SuppressWarnings("UnusedDeclaration")
     private Object aroundInvoke(ProceedingJoinPoint ctx) throws Throwable {

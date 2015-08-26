@@ -12,8 +12,8 @@ import com.haulmont.cuba.desktop.sys.LoginProperties;
 import com.haulmont.cuba.security.global.LoginException;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,7 +30,7 @@ import java.util.Map;
  */
 public class LoginDialog extends JDialog {
 
-    protected Log log = LogFactory.getLog(getClass());
+    protected Logger log = LoggerFactory.getLogger(getClass());
 
     protected Connection connection;
     protected Locale resolvedLocale;

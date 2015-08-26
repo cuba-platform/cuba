@@ -22,8 +22,8 @@ import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -41,7 +41,7 @@ import java.util.Locale;
  */
 public class CubaVaadinServletService extends VaadinServletService {
 
-    private Log log = LogFactory.getLog(CubaVaadinServletService.class);
+    private Logger log = LoggerFactory.getLogger(CubaVaadinServletService.class);
 
     protected WebConfig webConfig;
 
@@ -176,7 +176,7 @@ public class CubaVaadinServletService extends VaadinServletService {
     // Add suport for CubaFileUpload component with XHR upload mechanism
     protected static class CubaFileUploadHandler extends FileUploadHandler {
 
-        private Log log = LogFactory.getLog(CubaHeartbeatHandler.class);
+        private Logger log = LoggerFactory.getLogger(CubaHeartbeatHandler.class);
 
         @Override
         protected boolean isSuitableUploadComponent(ClientConnector source) {
@@ -235,7 +235,7 @@ public class CubaVaadinServletService extends VaadinServletService {
     // Add ability to handle hearbeats in App
     protected static class CubaHeartbeatHandler extends HeartbeatHandler {
 
-        private Log log = LogFactory.getLog(CubaHeartbeatHandler.class);
+        private Logger log = LoggerFactory.getLogger(CubaHeartbeatHandler.class);
 
         @Override
         public boolean synchronizedHandleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response)

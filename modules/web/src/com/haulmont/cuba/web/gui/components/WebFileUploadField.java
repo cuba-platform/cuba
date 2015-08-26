@@ -20,8 +20,8 @@ import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Upload;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class WebFileUploadField extends WebAbstractComponent<AbstractComponent> 
 
     private static final int BYTES_IN_MEGABYTE = 1048576;
 
-    protected Log log = LogFactory.getLog(getClass());
+    protected Logger log = LoggerFactory.getLogger(getClass());
 
     protected FileUploadingAPI fileUploading;
     protected Messages messages;

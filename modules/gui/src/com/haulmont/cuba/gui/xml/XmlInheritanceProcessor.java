@@ -12,8 +12,8 @@ import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dom4j.*;
 
 import java.io.InputStream;
@@ -28,7 +28,7 @@ import java.util.*;
  */
 public class XmlInheritanceProcessor {
 
-    private static Log log = LogFactory.getLog(XmlInheritanceProcessor.class);
+    private static Logger log = LoggerFactory.getLogger(XmlInheritanceProcessor.class);
 
     private Document document;
     private Namespace extNs;

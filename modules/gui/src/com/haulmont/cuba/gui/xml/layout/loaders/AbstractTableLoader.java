@@ -24,8 +24,8 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dom4j.Element;
 
 import java.lang.reflect.Constructor;
@@ -41,7 +41,7 @@ import java.util.Set;
  */
 public abstract class AbstractTableLoader extends ActionsHolderLoader {
 
-    private Log log = LogFactory.getLog(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     protected ComponentsFactory factory;
     protected LayoutLoaderConfig config;

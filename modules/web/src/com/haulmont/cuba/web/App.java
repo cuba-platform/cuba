@@ -28,8 +28,8 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -54,7 +54,7 @@ public abstract class App {
 
     public static final String APP_THEME_COOKIE_PREFIX = "APP_THEME_NAME_";
 
-    private static Log log = LogFactory.getLog(App.class);
+    private static Logger log = LoggerFactory.getLogger(App.class);
 
     protected AppLog appLog;
 
@@ -109,7 +109,7 @@ public abstract class App {
                 this.webResourceTimestamp = resourcesTimestamp;
             }
         } catch (Exception e) {
-            log.fatal("Error initializing application", e);
+            log.error("Error initializing application", e);
 
             throw new Error("Error initializing application. See log for details.");
         }

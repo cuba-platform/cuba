@@ -18,8 +18,8 @@ import com.haulmont.cuba.core.global.EmailAttachment;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.app.Authenticated;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -40,7 +40,7 @@ public class Emailer implements EmailerMBean {
 
     protected EmailerConfig config;
 
-    protected Log log = LogFactory.getLog(Emailer.class);
+    protected Logger log = LoggerFactory.getLogger(Emailer.class);
 
     @Inject
     public void setConfiguration(Configuration configuration) {

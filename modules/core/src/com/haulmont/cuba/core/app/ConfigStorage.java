@@ -12,8 +12,8 @@ import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.Config;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -47,7 +47,7 @@ public class ConfigStorage implements ConfigStorageAPI {
     protected Lock readLock = lock.readLock();
     protected Lock writeLock = lock.writeLock();
 
-    private Log log = LogFactory.getLog(ConfigStorage.class);
+    private Logger log = LoggerFactory.getLogger(ConfigStorage.class);
 
     private static class InvalidateCacheMsg implements Serializable {
         private static final long serialVersionUID = -3116358584797500962L;

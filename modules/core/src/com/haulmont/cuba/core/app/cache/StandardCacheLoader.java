@@ -14,8 +14,8 @@ import com.haulmont.cuba.core.app.PersistenceConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.Collection;
@@ -43,7 +43,7 @@ public class StandardCacheLoader implements CacheLoader {
     @Inject
     private Configuration configuration;
 
-    private static Log log = LogFactory.getLog(ObjectsCache.class);
+    private static Logger log = LoggerFactory.getLogger(ObjectsCache.class);
 
     private String viewName;
     private String queryPath;

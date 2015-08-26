@@ -19,8 +19,8 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.ViewRepository;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
@@ -35,7 +35,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 @ManagedBean(DynamicAttributesManagerAPI.NAME)
 public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
-    Log log = LogFactory.getLog(DynamicAttributesManager.class);
+    Logger log = LoggerFactory.getLogger(DynamicAttributesManager.class);
 
     @Inject
     protected Metadata metadata;

@@ -28,8 +28,8 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.UnsupportedEncodingException;
@@ -53,7 +53,7 @@ public class LoginWindow extends UIView {
     public static final String COOKIE_PASSWORD = "rememberMe.Password";
     public static final String COOKIE_REMEMBER_ME = "rememberMe";
 
-    protected static final Log log = LogFactory.getLog(LoginWindow.class);
+    protected static final Logger log = LoggerFactory.getLogger(LoginWindow.class);
 
     protected final App app;
     protected final AppUI ui;

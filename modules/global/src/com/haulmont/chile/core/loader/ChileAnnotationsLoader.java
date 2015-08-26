@@ -16,8 +16,8 @@ import com.haulmont.chile.core.model.impl.*;
 import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -38,7 +38,7 @@ import java.util.*;
  */
 public class ChileAnnotationsLoader implements MetaClassLoader {
 
-    private Log log = LogFactory.getLog(ChileAnnotationsLoader.class);
+    private Logger log = LoggerFactory.getLogger(ChileAnnotationsLoader.class);
 
     protected Session session;
 

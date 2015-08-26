@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.core.sys.jmx;
 
+import ch.qos.logback.classic.Level;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
@@ -15,17 +16,15 @@ import com.haulmont.cuba.core.sys.jmx.exception.UnrecognizedLogLevelException;
 import com.haulmont.cuba.core.sys.jmx.exception.UnrecognizedLogThresholdException;
 import com.haulmont.cuba.core.sys.logging.LogControlException;
 import com.haulmont.cuba.core.sys.logging.LoggingHelper;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Appender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author artamonov
@@ -75,30 +74,26 @@ public class JmxLogControl implements JmxLogControlMBean {
 
     @Override
     public List<String> getLoggerNames() {
-        final List<Logger> loggers = logControl.getLoggers();
-        List<String> loggerNames = new LinkedList<>();
-        for (Logger logger : loggers)
-            loggerNames.add(logger.getName());
-        return loggerNames;
+        return logControl.getLoggers();
     }
 
     @Override
     public Map<String, String> getLoggersLevels() {
         Map<String, String> result = new HashMap<>();
-        for (Logger log : logControl.getLoggers()) {
-            Level level = log.getLevel();
-            result.put(log.getName(), (level == null ? null : level.toString()));
+        for (String logName : logControl.getLoggers()) {
+            Level level = logControl.getLoggerLevel(logName);
+            result.put(logName, (level == null ? null : level.toString()));
         }
         return result;
     }
 
     @Override
     public String getLoggerLevel(String loggerName) throws LogControlException {
-        Logger logger = getLogger(loggerName);
-        if (logger == null)
+        List<String> loggers = logControl.getLoggers();
+        if (!loggers.contains(loggerName))
             throw new LoggerNotFoundException(loggerName);
 
-        Level loggerLevel = logControl.getLoggerLevel(logger);
+        Level loggerLevel = logControl.getLoggerLevel(loggerName);
         if (loggerLevel == null)
             return null;
 
@@ -107,15 +102,15 @@ public class JmxLogControl implements JmxLogControlMBean {
 
     @Override
     public void setLoggerLevel(String loggerName, String level) throws LogControlException {
-        Logger logger = getLogger(loggerName);
-        if (logger == null)
-            logger = Logger.getLogger(loggerName);
+        List<String> loggers = logControl.getLoggers();
+        if (!loggers.contains(loggerName))
+            throw new LoggerNotFoundException(loggerName);
 
         Level logLevel = LoggingHelper.getLevelFromString(level);
         if (logLevel == null)
             throw new UnrecognizedLogLevelException(level);
 
-        logControl.setLoggerLevel(logger, logLevel);
+        logControl.setLoggerLevel(loggerName, logLevel);
     }
 
     @Override
@@ -127,20 +122,16 @@ public class JmxLogControl implements JmxLogControlMBean {
 
     @Override
     public List<String> getAppenders() {
-        final List<Appender> appenders = logControl.getAppenders();
-        List<String> appenderNames = new LinkedList<>();
-        for (Appender appender : appenders)
-            appenderNames.add(appender.getName());
-        return appenderNames;
+        return logControl.getAppenders();
     }
 
     @Override
     public String getAppenderThreshold(String appenderName) throws LogControlException {
-        Appender appender = getAppender(appenderName);
-        if (appender == null)
+        List<String> appenders = logControl.getAppenders();
+        if (!appenders.contains(appenderName))
             throw new AppenderNotFoundException(appenderName);
 
-        Level theshold = (Level) logControl.getAppenderThreshold(appender);
+        Level theshold = logControl.getAppenderThreshold(appenderName);
         if (theshold == null)
             return null;
 
@@ -149,38 +140,14 @@ public class JmxLogControl implements JmxLogControlMBean {
 
     @Override
     public void setAppenderThreshold(String appenderName, String threshold) throws LogControlException {
-        Appender appender = getAppender(appenderName);
-        if (appender == null)
+        List<String> appenders = logControl.getAppenders();
+        if (!appenders.contains(appenderName))
             throw new AppenderNotFoundException(appenderName);
 
         Level appenderThreshold = LoggingHelper.getLevelFromString(threshold);
         if (appenderThreshold == null)
             throw new UnrecognizedLogThresholdException(threshold);
 
-        logControl.setAppenderThreshold(appender, appenderThreshold);
-    }
-
-    protected Logger getLogger(String loggerName) {
-        List<Logger> loggers = logControl.getLoggers();
-        Logger logger = null;
-        Iterator<Logger> loggerIterator = loggers.iterator();
-        while (loggerIterator.hasNext() && logger == null) {
-            Logger nextLogger = loggerIterator.next();
-            if (StringUtils.equals(nextLogger.getName(), loggerName))
-                logger = nextLogger;
-        }
-        return Logger.getLogger(loggerName);
-    }
-
-    protected Appender getAppender(String appenderName) {
-        List<Appender> appenders = logControl.getAppenders();
-        Appender appender = null;
-        Iterator<Appender> appenderIterator = appenders.iterator();
-        while (appenderIterator.hasNext() && appender == null) {
-            Appender nextAppender = appenderIterator.next();
-            if (StringUtils.equals(nextAppender.getName(), appenderName))
-                appender = nextAppender;
-        }
-        return appender;
+        logControl.setAppenderThreshold(appenderName, appenderThreshold);
     }
 }

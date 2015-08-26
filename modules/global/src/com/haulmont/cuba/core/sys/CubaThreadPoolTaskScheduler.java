@@ -5,8 +5,8 @@
 
 package com.haulmont.cuba.core.sys;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import java.util.concurrent.*;
@@ -65,7 +65,7 @@ public class CubaThreadPoolTaskScheduler extends ThreadPoolTaskScheduler {
         protected RunnableScheduledFuture<V> delegate;
         private StatisticsAccumulator statisticsAccumulator;
 
-        protected Log log = LogFactory.getLog(getClass());
+        protected Logger log = LoggerFactory.getLogger(getClass());
 
         public TaskDecorator(RunnableScheduledFuture<V> delegate, StatisticsAccumulator statisticsAccumulator) {
             this.delegate = delegate;

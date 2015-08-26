@@ -10,8 +10,8 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.security.global.NoUserSessionException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 
@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
  */
 public class NoUserSessionHandler extends AbstractExceptionHandler {
 
-    private static Log log = LogFactory.getLog(NoUserSessionHandler.class);
+    private static Logger log = LoggerFactory.getLogger(NoUserSessionHandler.class);
 
     private boolean fired;
 
@@ -48,7 +48,7 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
             );
             fired = true;
         } catch (Throwable th) {
-            log.error(th);
+            log.error("Error handling exception", th);
         }
     }
 

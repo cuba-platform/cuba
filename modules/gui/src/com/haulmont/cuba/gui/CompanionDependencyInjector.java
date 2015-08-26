@@ -21,8 +21,8 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
@@ -39,7 +39,7 @@ import java.util.*;
  */
 public class CompanionDependencyInjector {
 
-    private static final Log log = LogFactory.getLog(CompanionDependencyInjector.class);
+    private static final Logger log = LoggerFactory.getLogger(CompanionDependencyInjector.class);
 
     protected Object companion;
     protected Frame frame;

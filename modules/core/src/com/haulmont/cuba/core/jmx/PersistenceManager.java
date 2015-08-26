@@ -22,8 +22,8 @@ import com.haulmont.cuba.security.app.Authenticated;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.text.StrBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -41,7 +41,7 @@ import java.util.Set;
 @ManagedBean("cuba_PersistenceManagerMBean")
 public class PersistenceManager implements PersistenceManagerMBean {
 
-    protected static final Log log = LogFactory.getLog(PersistenceManager.class);
+    protected static final Logger log = LoggerFactory.getLogger(PersistenceManager.class);
 
     @Inject
     protected PersistenceManagerAPI persistenceManager;

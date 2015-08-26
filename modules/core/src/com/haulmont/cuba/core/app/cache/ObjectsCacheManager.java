@@ -6,8 +6,8 @@
 package com.haulmont.cuba.core.app.cache;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import java.util.Collection;
@@ -29,7 +29,7 @@ public class ObjectsCacheManager implements ObjectsCacheManagerAPI {
     protected ConcurrentMap<String, ObjectsCacheController> controllers =
             new ConcurrentHashMap<String, ObjectsCacheController>();
 
-    protected Log log = LogFactory.getLog(getClass());
+    protected Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
     public void registerCache(ObjectsCacheInstance objectsCache) {

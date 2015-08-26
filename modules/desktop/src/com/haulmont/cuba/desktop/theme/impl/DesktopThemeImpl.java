@@ -11,8 +11,8 @@ import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import net.miginfocom.layout.PlatformDefaults;
 import net.miginfocom.layout.UnitValue;
 import org.apache.commons.lang.text.StrTokenizer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
@@ -34,7 +34,7 @@ public class DesktopThemeImpl implements DesktopTheme {
 
     private DesktopResources resources;
 
-    private Log log = LogFactory.getLog(DesktopThemeImpl.class);
+    private Logger log = LoggerFactory.getLogger(DesktopThemeImpl.class);
 
     /**
      * we can control margin & spacing sizes with help of {@link net.miginfocom.layout.PlatformDefaults} class.

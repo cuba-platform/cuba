@@ -17,8 +17,8 @@ import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.server.WrappedSession;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.Map;
@@ -32,7 +32,7 @@ import java.util.Map;
  */
 public class DefaultApp extends App implements ConnectionListener, UserSubstitutionListener {
 
-    private static Log log = LogFactory.getLog(DefaultApp.class);
+    private static Logger log = LoggerFactory.getLogger(DefaultApp.class);
 
     // Login on start only on first request from user
     protected boolean tryLoginOnStart = true;

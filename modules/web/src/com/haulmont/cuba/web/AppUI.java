@@ -19,8 +19,8 @@ import com.vaadin.server.*;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Locale;
 import java.util.Map;
@@ -40,7 +40,7 @@ public class AppUI extends UI implements ErrorHandler {
 
     public static final String LAST_REQUEST_PARAMS_ATTR = "lastRequestParams";
 
-    private final static Log log = LogFactory.getLog(AppUI.class);
+    private final static Logger log = LoggerFactory.getLogger(AppUI.class);
 
     protected final App app;
 

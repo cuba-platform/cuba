@@ -17,8 +17,8 @@ import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -48,7 +48,7 @@ import java.util.UUID;
 @Controller
 public class FileUploadController {
 
-    private Log log = LogFactory.getLog(FileUploadController.class);
+    private Logger log = LoggerFactory.getLogger(FileUploadController.class);
 
     @Inject
     protected UserSessionService userSessionService;

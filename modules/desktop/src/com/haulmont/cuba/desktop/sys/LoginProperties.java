@@ -10,8 +10,8 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,7 +25,7 @@ import java.util.Properties;
  */
 public class LoginProperties {
 
-    private Log log = LogFactory.getLog(LoginProperties.class);
+    private Logger log = LoggerFactory.getLogger(LoginProperties.class);
 
     protected Properties properties = new Properties();
 

@@ -7,8 +7,8 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaDialect;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
@@ -27,7 +27,7 @@ public class CubaEclipseLinkJpaDialect extends EclipseLinkJpaDialect {
 
     private static final long serialVersionUID = 7560990917358283944L;
 
-    private static final Log log = LogFactory.getLog(CubaEclipseLinkJpaDialect.class);
+    private static final Logger log = LoggerFactory.getLogger(CubaEclipseLinkJpaDialect.class);
 
     @Override
     public Object beginTransaction(EntityManager entityManager, TransactionDefinition definition) throws PersistenceException, SQLException, TransactionException {

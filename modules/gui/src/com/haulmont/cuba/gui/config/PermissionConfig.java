@@ -22,8 +22,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.core.io.Resource;
@@ -289,7 +289,7 @@ public class PermissionConfig {
 
     private List<Item> items = new CopyOnWriteArrayList<>();
 
-    private Log log = LogFactory.getLog(PermissionConfig.class);
+    private Logger log = LoggerFactory.getLogger(PermissionConfig.class);
 
     public PermissionConfig() {
         this.clientType = AppConfig.getClientType();

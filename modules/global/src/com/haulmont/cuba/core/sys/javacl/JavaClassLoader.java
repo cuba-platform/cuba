@@ -12,8 +12,8 @@ import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.CubaClassPathXmlApplicationContext;
 import com.haulmont.cuba.core.sys.javacl.compiler.CharSequenceCompiler;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.perf4j.log4j.Log4JStopWatch;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -50,7 +50,7 @@ public class JavaClassLoader extends URLClassLoader implements BeanFactoryAware,
     private static final String PATH_SEPARATOR = System.getProperty("path.separator");
     private static final String JAR_EXT = ".jar";
 
-    private static Log log = LogFactory.getLog(JavaClassLoader.class);
+    private static Logger log = LoggerFactory.getLogger(JavaClassLoader.class);
 
     protected final String cubaClassPath;
     protected final String classPath;

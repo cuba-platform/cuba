@@ -13,8 +13,8 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.NoUserSessionException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -50,7 +50,7 @@ public class DynamicAttributesCacheStrategy implements CachingStrategy {
     protected volatile boolean needToValidateCache;
     protected volatile AtomicReference<UUID> lastRequestedSessionId = new AtomicReference<>();
 
-    protected Log log = LogFactory.getLog(getClass());
+    protected Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
     public void init() {

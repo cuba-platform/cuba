@@ -12,8 +12,8 @@ import com.haulmont.cuba.gui.export.ClosedDataProviderException;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 import com.haulmont.cuba.gui.export.ResourceException;
 import com.haulmont.cuba.web.jmx.JmxRemoteLoggingAPI;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -33,7 +33,7 @@ import java.io.InputStream;
  */
 public class LogDataProvider implements ExportDataProvider {
 
-    protected Log log = LogFactory.getLog(getClass());
+    protected Logger log = LoggerFactory.getLogger(getClass());
 
     protected InputStream inputStream;
     protected boolean closed = false;

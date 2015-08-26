@@ -16,8 +16,8 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.lang.text.StrTokenizer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
@@ -47,7 +47,7 @@ public abstract class AbstractMessages implements Messages {
     public static final String EXT = ".properties";
     public static final String ENCODING = "UTF-8";
 
-    private Log log = LogFactory.getLog(AbstractMessages.class);
+    private Logger log = LoggerFactory.getLogger(AbstractMessages.class);
 
     @Inject
     protected MessageTools messageTools;

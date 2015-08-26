@@ -12,8 +12,8 @@ import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.swing.*;
@@ -34,7 +34,7 @@ import java.util.Objects;
 @ManagedBean
 public class DesktopFilterDragAndDropSupport {
 
-    private Log log = LogFactory.getLog(DesktopFilterDragAndDropSupport.class);
+    private Logger log = LoggerFactory.getLogger(DesktopFilterDragAndDropSupport.class);
 
     public void initDragAndDrop(Tree tree, ConditionsTree conditions) {
         JTree dTree = (JTree) DesktopComponentsHelper.unwrap(tree);

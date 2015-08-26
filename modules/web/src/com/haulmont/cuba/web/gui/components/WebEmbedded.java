@@ -18,8 +18,8 @@ import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.StreamResource;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -100,7 +100,7 @@ public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> im
                     try {
                         src.reset();
                     } catch (IOException e) {
-                        Log log = LogFactory.getLog(WebEmbedded.this.getClass());
+                        Logger log = LoggerFactory.getLogger(WebEmbedded.this.getClass());
                         log.debug("Ignored IOException on stream reset", e);
                     }
                     return src;

@@ -18,8 +18,8 @@ import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.global.DeletePolicy;
 import com.haulmont.cuba.core.global.Metadata;
 import org.apache.commons.lang.time.DateUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -32,7 +32,7 @@ import java.util.*;
 @Service(EntityRestoreService.NAME)
 public class EntityRestoreServiceBean implements EntityRestoreService {
 
-    private Log log = LogFactory.getLog(EntityRestoreServiceBean.class);
+    private Logger log = LoggerFactory.getLogger(EntityRestoreServiceBean.class);
 
     @Inject
     protected Persistence persistence;

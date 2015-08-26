@@ -10,8 +10,8 @@ import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.entity.annotation.Extends;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dom4j.*;
 
 import javax.annotation.Nullable;
@@ -43,7 +43,7 @@ class MappingFileCreator {
     private Map<String, String> properties;
     private File dir;
 
-    private Log log = LogFactory.getLog(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     MappingFileCreator(Collection<String> classNames, Map<String, String> properties, File dir) {
         this.classNames = classNames;

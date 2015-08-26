@@ -9,8 +9,8 @@ import com.google.common.collect.Iterables;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 public class TriggerFilesProcessor {
     public static final String NAME = "cuba_TriggerFilesProcessor";
 
-    private Log log = LogFactory.getLog(TriggerFilesProcessor.class);
+    private Logger log = LoggerFactory.getLogger(TriggerFilesProcessor.class);
 
     protected String tempDir;
 

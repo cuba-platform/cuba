@@ -6,8 +6,8 @@
 package com.haulmont.cuba.security.sys;
 
 import com.haulmont.cuba.security.app.Authentication;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
 
 /**
@@ -16,7 +16,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
  */
 public class AuthenticationInterceptor {
 
-    private Log log = LogFactory.getLog(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     private Authentication authentication;
 

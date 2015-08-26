@@ -5,11 +5,12 @@
 
 package com.haulmont.cuba.core.sys.logging;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -19,13 +20,13 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class EclipseLinkLog extends AbstractSessionLog {
 
-    protected Map<String, Log> logsCache = new ConcurrentHashMap<>();
+    protected Map<String, Logger> logsCache = new ConcurrentHashMap<>();
 
-    private Log getLog(String category) {
+    private Logger getLog(String category) {
         String logName = "eclipselink." + category;
-        Log log = logsCache.get(logName);
+        Logger log = logsCache.get(logName);
         if (log == null) {
-            log = LogFactory.getLog(logName);
+            log = LoggerFactory.getLogger(logName);
             logsCache.put(logName, log);
         }
         return log;
@@ -33,15 +34,17 @@ public class EclipseLinkLog extends AbstractSessionLog {
 
     @Override
     public void log(SessionLogEntry sessionLogEntry) {
-        Log log = getLog(sessionLogEntry.getNameSpace());
+        Logger log = getLog(sessionLogEntry.getNameSpace());
         if (log.isDebugEnabled()) {
-            log.debug(sessionLogEntry.getMessage());
+            log.debug(sessionLogEntry.getMessage() +
+                    (sessionLogEntry.getParameters() == null ? "" :
+                            " " + Arrays.toString(sessionLogEntry.getParameters())));
         }
     }
 
     @Override
     public boolean shouldLog(int level, String category) {
-        Log log = getLog(category);
+        Logger log = getLog(category);
         return log.isDebugEnabled();
     }
 }

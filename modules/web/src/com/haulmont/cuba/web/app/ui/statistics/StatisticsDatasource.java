@@ -15,8 +15,8 @@ import com.haulmont.cuba.web.jmx.JmxControlAPI;
 import com.haulmont.cuba.web.jmx.JmxControlException;
 import com.haulmont.cuba.web.jmx.entity.ManagedBeanAttribute;
 import com.haulmont.cuba.web.jmx.entity.ManagedBeanInfo;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.management.InstanceNotFoundException;
@@ -30,7 +30,7 @@ import java.util.*;
  */
 public class StatisticsDatasource extends GroupDatasourceImpl<PerformanceParameter, UUID> {
 
-    private Log log = LogFactory.getLog(StatisticsDatasource.class);
+    private Logger log = LoggerFactory.getLogger(StatisticsDatasource.class);
 
     protected JmxInstance node;
 

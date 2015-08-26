@@ -21,8 +21,8 @@ import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.web.App;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -37,7 +37,7 @@ import java.util.Map;
 @ManagedBean(Folders.NAME)
 public class FoldersBean implements Folders {
 
-    private static Log log = LogFactory.getLog(FoldersBean.class);
+    private static Logger log = LoggerFactory.getLogger(FoldersBean.class);
 
     @Inject
     protected Messages messages;

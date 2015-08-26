@@ -5,6 +5,8 @@
 
 package com.haulmont.cuba.core.sys;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.haulmont.cuba.core.CubaTestCase;
@@ -12,7 +14,7 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.TestingService;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.testsupport.TestAppender;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 
@@ -26,7 +28,12 @@ public class ServiceInterceptorTest extends CubaTestCase {
 
     public ServiceInterceptorTest() {
         appender = new TestAppender();
-        Logger.getRootLogger().addAppender(appender);
+        appender.start();
+        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+        Logger logger = context.getLogger("com.haulmont.cuba.core.sys.ServiceInterceptor");
+        logger.addAppender(appender);
+
+//        Logger.getRootLogger().addAppender(appender);
     }
 
     public void testOpenTransaction() throws Exception {

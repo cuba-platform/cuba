@@ -16,8 +16,8 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -43,7 +43,7 @@ import java.util.UUID;
 @Controller
 public class FileDownloadController {
 
-    private static Log log = LogFactory.getLog(FileDownloadController.class);
+    private static Logger log = LoggerFactory.getLogger(FileDownloadController.class);
 
     @Inject
     private UserSessionManager userSessionManager;

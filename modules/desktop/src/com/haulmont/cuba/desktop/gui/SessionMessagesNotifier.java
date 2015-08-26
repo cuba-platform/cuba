@@ -12,8 +12,8 @@ import com.haulmont.cuba.desktop.Connection;
 import com.haulmont.cuba.desktop.DesktopConfig;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.NoUserSessionException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
@@ -31,7 +31,7 @@ public class SessionMessagesNotifier {
 
     public final static String NAME = "cuba_SessionMessagesNotifier";
 
-    private final static Log log = LogFactory.getLog(SessionMessagesNotifier.class);
+    private final static Logger log = LoggerFactory.getLogger(SessionMessagesNotifier.class);
 
     protected Timer timer;
     protected SwingWorker<String, Void> asyncMessageLoader;

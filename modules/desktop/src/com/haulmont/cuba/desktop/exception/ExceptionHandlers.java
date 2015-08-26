@@ -10,8 +10,8 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.gui.exception.GenericExceptionHandler;
 import com.haulmont.cuba.gui.exception.SilentExceptionHandler;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.OrderComparator;
 
 import javax.annotation.ManagedBean;
@@ -37,7 +37,7 @@ public class ExceptionHandlers {
 
     protected ExceptionHandler defaultHandler;
 
-    private Log log = LogFactory.getLog(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     public ExceptionHandlers() {
         this.defaultHandler = new DefaultExceptionHandler();

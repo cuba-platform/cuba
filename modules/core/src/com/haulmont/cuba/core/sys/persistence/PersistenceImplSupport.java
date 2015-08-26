@@ -13,8 +13,8 @@ import com.haulmont.cuba.core.global.FtsConfig;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
 import com.haulmont.cuba.security.app.EntityLogAPI;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -50,7 +50,7 @@ public class PersistenceImplSupport {
 
     protected volatile FtsSender ftsSender;
 
-    private static Log log = LogFactory.getLog(PersistenceImplSupport.class.getName());
+    private static Logger log = LoggerFactory.getLogger(PersistenceImplSupport.class.getName());
 
     public void registerInstance(Entity entity, EntityManager entityManager) {
         if (!TransactionSynchronizationManager.isActualTransactionActive())

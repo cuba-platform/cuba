@@ -18,8 +18,8 @@ import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToEnumConverter;
 import com.vaadin.ui.AbstractTextField;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.text.ParseException;
@@ -36,7 +36,7 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
         implements
             TextInputField {
 
-    private static Log log = LogFactory.getLog(WebAbstractTextField.class);
+    private static Logger log = LoggerFactory.getLogger(WebAbstractTextField.class);
 
     protected Locale locale = AppBeans.<UserSessionSource>get(UserSessionSource.NAME).getLocale();
 

@@ -17,8 +17,8 @@ import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.global.DeletePolicy;
 import com.haulmont.cuba.core.global.DeletePolicyException;
 import com.haulmont.cuba.core.global.Metadata;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 
 import javax.annotation.ManagedBean;
@@ -35,7 +35,7 @@ public class DeletePolicyProcessor {
 
     public static final String NAME = "cuba_DeletePolicyProcessor";
 
-    protected Log log = LogFactory.getLog(getClass());
+    protected Logger log = LoggerFactory.getLogger(getClass());
 
     protected BaseEntity entity;
     protected MetaClass metaClass;

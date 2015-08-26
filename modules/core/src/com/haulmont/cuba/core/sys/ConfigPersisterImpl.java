@@ -9,15 +9,15 @@ import com.haulmont.cuba.core.config.ConfigPersister;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.global.AppBeans;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
 public class ConfigPersisterImpl implements ConfigPersister {
-    protected static final Log log = LogFactory.getLog(ConfigPersisterImpl.class);
+    protected static final Logger log = LoggerFactory.getLogger(ConfigPersisterImpl.class);
 
     @Override
     public String getProperty(SourceType sourceType, String name) {

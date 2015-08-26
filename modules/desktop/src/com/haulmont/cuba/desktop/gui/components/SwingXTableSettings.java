@@ -14,8 +14,8 @@ import com.haulmont.cuba.gui.components.Table;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dom4j.Element;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.table.TableColumnExt;
@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class SwingXTableSettings implements TableSettings {
 
-    protected final Log log = LogFactory.getLog(SwingXTableSettings.class);
+    protected final Logger log = LoggerFactory.getLogger(SwingXTableSettings.class);
 
     protected JXTable table;
     protected List<Table.Column> columns;

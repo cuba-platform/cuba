@@ -11,8 +11,8 @@ import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.MalformedURLException;
@@ -26,7 +26,7 @@ import java.util.UUID;
 public final class ControllerUtils {
     private static final String DISPATCHER = "dispatch";
 
-    private static final Log log = LogFactory.getLog(ControllerUtils.class);
+    private static final Logger log = LoggerFactory.getLogger(ControllerUtils.class);
 
     private ControllerUtils() {
     }

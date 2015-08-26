@@ -12,8 +12,8 @@ import com.haulmont.cuba.web.jmx.JmxControlAPI;
 import com.haulmont.cuba.web.jmx.JmxControlException;
 import com.haulmont.cuba.web.jmx.entity.ManagedBeanAttribute;
 import com.haulmont.cuba.web.jmx.entity.ManagedBeanInfo;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.UUID;
@@ -24,7 +24,7 @@ import java.util.UUID;
  */
 public class ManagedBeanAttributeDatasource extends CollectionDatasourceImpl<ManagedBeanAttribute, UUID> {
 
-    private Log log = LogFactory.getLog(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     private JmxControlAPI jmxControlAPI = AppBeans.get(JmxControlAPI.NAME);
 
@@ -39,7 +39,7 @@ public class ManagedBeanAttributeDatasource extends CollectionDatasourceImpl<Man
             try {
                 jmxControlAPI.loadAttributes(mbean);
             } catch (JmxControlException e) {
-                log.error(e);
+                log.error("Error loading attributes", e);
             }
 
             if (mbean.getAttributes() != null) {

@@ -15,8 +15,8 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.QueryMacroHandler;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 
 import javax.annotation.ManagedBean;
@@ -35,7 +35,7 @@ public class DataServiceQueryBuilder {
 
     public static final String NAME = "cuba_DataServiceQueryBuilder";
 
-    private Log log = LogFactory.getLog(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     protected String queryString;
     protected Map<String, Object> queryParams;

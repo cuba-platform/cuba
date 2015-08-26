@@ -7,8 +7,8 @@ package com.haulmont.cuba.portal.sys.exceptions;
 
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -22,7 +22,7 @@ import javax.servlet.http.HttpSession;
  */
 public class PortalExceptionResolver implements HandlerExceptionResolver {
 
-    private Log log = LogFactory.getLog(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     private String noUserSessionUrl;
 

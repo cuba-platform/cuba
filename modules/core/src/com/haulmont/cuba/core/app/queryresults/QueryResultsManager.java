@@ -18,8 +18,8 @@ import com.haulmont.cuba.core.sys.QueryHolder;
 import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -53,7 +53,7 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
 
     private static final int BATCH_SIZE = 100;
 
-    private Log log = LogFactory.getLog(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
     public void savePreviousQueryResults(LoadContext loadContext) {

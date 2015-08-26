@@ -18,8 +18,8 @@ import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Window;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -33,7 +33,7 @@ import java.util.Locale;
  */
 public class NoUserSessionHandler extends AbstractExceptionHandler {
 
-    private static final Log log = LogFactory.getLog(NoUserSessionHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(NoUserSessionHandler.class);
 
     private Locale locale;
 

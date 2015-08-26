@@ -17,6 +17,6 @@ public class AppenderThresholdNotSupported extends LogControlException {
     private static final long serialVersionUID = 8472207426115530910L;
 
     public AppenderThresholdNotSupported(String appenderName) {
-        super("Threshold for appender '%s' is not supported");
+        super(String.format("Threshold for appender '%s' is not supported", appenderName));
     }
 }

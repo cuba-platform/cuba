@@ -10,8 +10,8 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.entity.LockDescriptor;
 import com.haulmont.cuba.core.global.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -60,7 +60,7 @@ public class LockManager implements LockManagerAPI, ClusterListener<LockInfo> {
         }
     }
 
-    private Log log = LogFactory.getLog(LockManager.class);
+    private Logger log = LoggerFactory.getLogger(LockManager.class);
 
     private volatile Map<String, LockDescriptor> config;
 

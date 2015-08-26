@@ -18,8 +18,8 @@ import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
@@ -39,7 +39,7 @@ public final class WindowCreationHelper {
     private static final Pattern INNER_COMPONENT_PATTERN = Pattern.compile("(.+?)\\[(.+?)\\]");
     private static final Pattern COMPONENT_ACTION_PATTERN = Pattern.compile("(.+?)<(.+?)>");
 
-    private static final Log log = LogFactory.getLog(WindowCreationHelper.class);
+    private static final Logger log = LoggerFactory.getLogger(WindowCreationHelper.class);
 
     private WindowCreationHelper() {
     }

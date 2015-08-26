@@ -5,7 +5,7 @@
 
 package com.haulmont.cuba.core.sys.logging;
 
-import org.apache.log4j.Level;
+import ch.qos.logback.classic.Level;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -18,12 +18,13 @@ public class LoggingHelper {
 
     public static List<Level> getLevels() {
         List<Level> levels = new LinkedList<>();
+        levels.add(Level.ALL);
         levels.add(Level.TRACE);
         levels.add(Level.DEBUG);
         levels.add(Level.INFO);
         levels.add(Level.WARN);
         levels.add(Level.ERROR);
-        levels.add(Level.FATAL);
+        levels.add(Level.OFF);
         return levels;
     }
 

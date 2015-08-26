@@ -11,8 +11,8 @@ import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import groovy.lang.Binding;
 import groovy.lang.Closure;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -39,7 +39,7 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
 
     protected Map<Closure, File> postUpdateScripts = new HashMap<>();
 
-    private static final Log log = LogFactory.getLog(DbUpdaterImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(DbUpdaterImpl.class);
 
     @Inject
     public void setConfigProvider(Configuration configuration) {
@@ -60,7 +60,7 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
     protected boolean executeGroovyScript(final File file) {
         Binding bind = new Binding();
         bind.setProperty("ds", getDataSource());
-        bind.setProperty("log", LogFactory.getLog(file.getName()));
+        bind.setProperty("log", LoggerFactory.getLogger(file.getName()));
         bind.setProperty("postUpdate", new PostUpdateScripts() {
             @Override
             public void add(Closure closure) {

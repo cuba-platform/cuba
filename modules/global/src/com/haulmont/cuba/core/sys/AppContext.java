@@ -5,8 +5,8 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.bali.datastruct.Pair;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class AppContext {
 
-    private static Log log = LogFactory.getLog(AppContext.class);
+    private static Logger log = LoggerFactory.getLogger(AppContext.class);
 
     /**
      * Application startup/shutdown listener.

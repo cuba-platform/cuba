@@ -7,8 +7,8 @@ package com.haulmont.cuba.core.jmx;
 
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -20,7 +20,7 @@ import javax.inject.Inject;
 @ManagedBean("cuba_ClusterManagerMBean")
 public class ClusterManager implements ClusterManagerMBean {
 
-    protected Log log = LogFactory.getLog(getClass());
+    protected Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
     protected ClusterManagerAPI clusterManager;

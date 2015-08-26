@@ -16,8 +16,8 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
@@ -38,7 +38,7 @@ public class ScreensHelper {
     private static final String EMPTY_SCREEN_CAPTION = "";
     private static final Map<String, Object> EMPTY_MAP = new HashMap<>();
 
-    private Log logger = LogFactory.getLog(ScreensHelper.class);
+    private Logger log = LoggerFactory.getLogger(ScreensHelper.class);
 
     @Inject
     protected WindowConfig windowConfig;
@@ -133,7 +133,7 @@ public class ScreensHelper {
                         screensMap.put(windowId, windowId);
                     }
                 } catch (FileNotFoundException e) {
-                    logger.error(e.getMessage());
+                    log.error(e.getMessage());
                 }
             }
         }
@@ -233,7 +233,7 @@ public class ScreensHelper {
                 if (root.getName().equals(Window.NAME))
                     return root;
             } catch (RuntimeException e) {
-                logger.error("Can't parse screen file: " + src);
+                log.error("Can't parse screen file: " + src);
             }
         } else {
             throw new FileNotFoundException("File doesn't exist or empty: " + src);

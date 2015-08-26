@@ -13,8 +13,8 @@ import com.haulmont.cuba.gui.components.KeyCombination;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dom4j.Element;
 import org.springframework.core.io.Resource;
 
@@ -42,7 +42,7 @@ public class MenuConfig {
 
     public static final String MENU_CONFIG_XML_PROP = "cuba.menuConfig";
 
-    private static Log log = LogFactory.getLog(MenuConfig.class);
+    private static Logger log = LoggerFactory.getLogger(MenuConfig.class);
     
     protected List<MenuItem> rootItems = new ArrayList<>();
 

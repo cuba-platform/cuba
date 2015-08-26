@@ -19,8 +19,8 @@ import com.sun.mail.smtp.SMTPAddressFailedException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.mail.MailSendException;
 
@@ -44,7 +44,7 @@ public class Emailer implements EmailerAPI {
     protected static final String BODY_STORAGE_ENCODING = "UTF-8";
     protected static final String BODY_FILE_EXTENSION = "txt";
 
-    private Log log = LogFactory.getLog(Emailer.class);
+    private Logger log = LoggerFactory.getLogger(Emailer.class);
 
     protected EmailerConfig config;
 
@@ -694,7 +694,7 @@ public class Emailer implements EmailerAPI {
     protected static class EmailSendTask implements Runnable {
 
         private SendingMessage sendingMessage;
-        private Log log = LogFactory.getLog(EmailSendTask.class);
+        private Logger log = LoggerFactory.getLogger(EmailSendTask.class);
 
         public EmailSendTask(SendingMessage message) {
             sendingMessage = message;

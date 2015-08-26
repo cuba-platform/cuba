@@ -6,8 +6,8 @@
 package com.haulmont.cuba.core.config.type;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class IntegerListTypeFactory extends TypeFactory {
 
-    private Log log = LogFactory.getLog(IntegerListTypeFactory.class);
+    private Logger log = LoggerFactory.getLogger(IntegerListTypeFactory.class);
 
     @Override
     public Object build(String string) {

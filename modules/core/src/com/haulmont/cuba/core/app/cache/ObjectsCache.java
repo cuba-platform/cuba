@@ -11,8 +11,8 @@ import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -32,7 +32,7 @@ public class ObjectsCache implements ObjectsCacheInstance, ObjectsCacheControlle
     private CacheLoader loader;
     private boolean logUpdateEvent = false;
 
-    private static Log log = LogFactory.getLog(ObjectsCache.class);
+    private static Logger log = LoggerFactory.getLogger(ObjectsCache.class);
 
     private ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
     private ReentrantLock updateDataLock = new ReentrantLock();

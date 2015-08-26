@@ -9,8 +9,8 @@ import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.sys.jmx.JmxLogControl;
 import com.haulmont.cuba.core.sys.jmx.JmxLogControlMBean;
 import com.haulmont.cuba.core.sys.logging.LogControlException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.management.MBeanServerConnection;
@@ -30,7 +30,7 @@ import static com.haulmont.cuba.web.jmx.JmxConnectionHelper.withConnection;
 @ManagedBean(JmxRemoteLoggingAPI.NAME)
 public class JmxRemoteLoggingBean implements JmxRemoteLoggingAPI {
 
-    private static final Log log = LogFactory.getLog(JmxRemoteLoggingBean.class);
+    private static final Logger log = LoggerFactory.getLogger(JmxRemoteLoggingBean.class);
 
     @Override
     public List<String> getLogFileNames(JmxInstance instance) {

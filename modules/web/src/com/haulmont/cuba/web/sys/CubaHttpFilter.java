@@ -10,8 +10,8 @@ import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.auth.CubaAuthProvider;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +25,7 @@ import java.util.List;
  * @version $Id$
  */
 public class CubaHttpFilter implements Filter {
-    private static Log log = LogFactory.getLog(CubaHttpFilter.class);
+    private static Logger log = LoggerFactory.getLogger(CubaHttpFilter.class);
 
     protected List<String> bypassUrls = new ArrayList<>();
     protected CubaAuthProvider authProvider;

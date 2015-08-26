@@ -12,8 +12,8 @@ import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dom4j.Element;
 
 /**
@@ -22,7 +22,7 @@ import org.dom4j.Element;
  */
 public class TextFieldLoader extends AbstractTextFieldLoader {
 
-    private static final Log log = LogFactory.getLog(TextFieldLoader.class);
+    private static final Logger log = LoggerFactory.getLogger(TextFieldLoader.class);
 
     public TextFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);

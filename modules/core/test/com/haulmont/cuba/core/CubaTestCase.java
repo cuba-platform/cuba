@@ -22,8 +22,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrLookup;
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.lang.text.StrTokenizer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
@@ -54,7 +54,7 @@ import java.util.UUID;
  */
 public abstract class CubaTestCase extends TestCase {
 
-    private Log log;
+    private Logger log;
 
     protected static boolean initialized;
 
@@ -63,11 +63,11 @@ public abstract class CubaTestCase extends TestCase {
     protected PasswordEncryption passwordEncryption;
 
     protected CubaTestCase() {
-        String property = System.getProperty("log4j.configuration");
+        String property = System.getProperty("logback.configurationFile");
         if (StringUtils.isBlank(property)) {
-            System.setProperty("log4j.configuration", getTestLog4jConfig());
+            System.setProperty("logback.configurationFile", getTestLogConfig());
         }
-        log = LogFactory.getLog(CubaTestCase.class);
+        log = LoggerFactory.getLogger(CubaTestCase.class);
     }
 
     @Override
@@ -177,8 +177,8 @@ public abstract class CubaTestCase extends TestCase {
         return "test-spring.xml";
     }
 
-    protected String getTestLog4jConfig() {
-        return "test-log4j.xml";
+    protected String getTestLogConfig() {
+        return "test-logback.xml";
     }
 
     protected void deleteRecord(String table, UUID... ids) {

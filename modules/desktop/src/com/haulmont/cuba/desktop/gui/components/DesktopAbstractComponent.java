@@ -15,8 +15,8 @@ import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Frame;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dom4j.Element;
 
 import javax.swing.*;
@@ -33,7 +33,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     public static final String SWING_PROPERTY_CLASS = "cubaClass";
     public static final String SWING_PROPERTY_ID = "cubaId";
 
-    protected Log log = LogFactory.getLog(getClass());
+    protected Logger log = LoggerFactory.getLogger(getClass());
 
     protected C impl;
 

@@ -7,8 +7,8 @@ package com.haulmont.cuba.web.auth;
 
 import com.haulmont.cuba.core.global.Configuration;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -23,7 +23,7 @@ import java.util.Map;
 public class DefaultDomainAliasesResolver implements DomainAliasesResolver {
 
     private Map<String, String> aliases = new HashMap<>();
-    private Log log = LogFactory.getLog(DomainAliasesResolver.class);
+    private Logger log = LoggerFactory.getLogger(DomainAliasesResolver.class);
 
     @Inject
     public DefaultDomainAliasesResolver(Configuration configuration) {

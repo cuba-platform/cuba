@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.web.app.ui.serverlogviewer;
 
+import ch.qos.logback.classic.Level;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -20,7 +21,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.app.ui.jmxinstance.edit.JmxInstanceEditor;
 import com.haulmont.cuba.web.export.LogDataProvider;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
@@ -33,9 +33,9 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Panel;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.Level;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -50,7 +50,7 @@ import java.util.*;
  */
 public class ServerLogWindow extends AbstractWindow {
 
-    private final Log log = LogFactory.getLog(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
     protected CollectionDatasource<JmxInstance, UUID> jmxInstancesDs;
@@ -238,7 +238,7 @@ public class ServerLogWindow extends AbstractWindow {
                     try {
                         jmxRemoteLoggingAPI.setLoggerLevel(getSelectedConnection(), loggerName, level.toString());
                     } catch (LogControlException | JmxControlException e) {
-                        log.error(e);
+                        log.error("Error setting logger level", e);
                         showNotification(getMessage("exception.logControl"), NotificationType.ERROR);
                     }
 
@@ -265,7 +265,7 @@ public class ServerLogWindow extends AbstractWindow {
             try {
                 value = jmxRemoteLoggingAPI.getTail(getSelectedConnection(), logFileName);
             } catch (LogControlException | JmxControlException e) {
-                log.error(e);
+                log.error("Error loading log tail", e);
                 if (!isTimedEvent)
                     showNotification(getMessage("exception.logControl"), NotificationType.ERROR);
                 return;
@@ -301,7 +301,7 @@ public class ServerLogWindow extends AbstractWindow {
                     coloredLog.append(line).append("<br/>");
                 }
             } catch (IOException e) {
-                log.warn(e);
+                log.warn("Error updating log tail", e);
                 return;
             }
             logTailLabel.setValue(coloredLog.toString());
@@ -323,7 +323,7 @@ public class ServerLogWindow extends AbstractWindow {
             try {
                 level = jmxRemoteLoggingAPI.getLoggerLevel(getSelectedConnection(), loggerName);
             } catch (LogControlException | JmxControlException e) {
-                log.error(e);
+                log.error("Error getting logger level", e);
                 showNotification(getMessage("exception.logControl"), NotificationType.ERROR);
                 return;
             }
@@ -345,7 +345,7 @@ public class ServerLogWindow extends AbstractWindow {
                 try {
                     jmxRemoteLoggingAPI.setLoggerLevel(getSelectedConnection(), loggerName, level.toString());
                 } catch (LogControlException | JmxControlException e) {
-                    log.error(e);
+                    log.error("Error setting logger level", e);
                     showNotification(getMessage("exception.logControl"), NotificationType.ERROR);
                     return;
                 }
@@ -367,8 +367,9 @@ public class ServerLogWindow extends AbstractWindow {
             try {
                 threshold = jmxRemoteLoggingAPI.getAppenderThreshold(getSelectedConnection(), appenderName);
             } catch (LogControlException | JmxControlException e) {
-                log.error(e);
-                showNotification(getMessage("exception.logControl"), NotificationType.ERROR);
+                log.error("Error getting appender level", e);
+                Throwable rootCause = ExceptionUtils.getRootCause(e);
+                showNotification(getMessage("exception.logControl"), rootCause.getMessage(), NotificationType.ERROR);
                 return;
             }
 
@@ -389,8 +390,10 @@ public class ServerLogWindow extends AbstractWindow {
                 try {
                     jmxRemoteLoggingAPI.setAppenderThreshold(getSelectedConnection(), appenderName, threshold.toString());
                 } catch (LogControlException | JmxControlException e) {
-                    log.error(e);
-                    showNotification(getMessage("exception.logControl"), NotificationType.ERROR);
+                    log.error("Error setting appender level", e);
+                    Throwable rootCause = ExceptionUtils.getRootCause(e);
+                    showNotification(getMessage("exception.logControl"),
+                            rootCause.getMessage(), NotificationType.ERROR);
                     return;
                 }
 
@@ -427,7 +430,7 @@ public class ServerLogWindow extends AbstractWindow {
                 }
             } catch (RuntimeException | LogControlException e) {
                 showNotification(getMessage("exception.logControl"), NotificationType.ERROR);
-                log.error(e);
+                log.error("Error downloading log", e);
             }
         } else {
             showNotification(getMessage("log.notSelected"), NotificationType.HUMANIZED);
@@ -473,7 +476,7 @@ public class ServerLogWindow extends AbstractWindow {
                             jmxRemoteLoggingAPI.setLoggersLevels(getSelectedConnection(), updates);
                         }
                     } catch (LogControlException | JmxControlException e) {
-                        log.error(e);
+                        log.error("Error setting logger level", e);
                         showNotification(getMessage("exception.logControl"), NotificationType.ERROR);
                     }
                     showNotification(getMessage("logger.control.apply"), NotificationType.HUMANIZED);

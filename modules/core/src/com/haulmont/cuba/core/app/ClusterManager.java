@@ -10,8 +10,8 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.Deserializer;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.SerializationUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jgroups.*;
 import org.jgroups.conf.XmlConfigurator;
 import org.jgroups.jmx.JmxConfigurator;
@@ -37,7 +37,7 @@ import java.util.concurrent.Executors;
 @ManagedBean(ClusterManagerAPI.NAME)
 public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
 
-    protected Log log = LogFactory.getLog(ClusterManager.class);
+    protected Logger log = LoggerFactory.getLogger(ClusterManager.class);
 
     protected Map<String, ClusterListener> listeners = new HashMap<>();
 

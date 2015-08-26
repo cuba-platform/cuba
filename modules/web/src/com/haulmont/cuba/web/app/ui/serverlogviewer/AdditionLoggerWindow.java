@@ -5,12 +5,12 @@
 
 package com.haulmont.cuba.web.app.ui.serverlogviewer;
 
+import ch.qos.logback.classic.Level;
 import com.haulmont.cuba.core.sys.logging.LoggingHelper;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.OptionsField;
 import com.haulmont.cuba.gui.components.TextField;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Level;
 
 import javax.inject.Inject;
 import java.util.Map;

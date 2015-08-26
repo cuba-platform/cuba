@@ -36,8 +36,8 @@ import com.haulmont.cuba.gui.settings.Settings;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dom4j.Element;
 
 import javax.annotation.Nonnull;
@@ -60,7 +60,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 public class DesktopWindow implements Window, Component.Disposable,
         Component.Wrapper, Component.HasXmlDescriptor, Component.SecuredActionsHolder, WrappedWindow, DesktopContainer {
 
-    protected Log log = LogFactory.getLog(getClass());
+    protected Logger log = LoggerFactory.getLogger(getClass());
 
     protected boolean disposed = false;
 

@@ -11,8 +11,8 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.portal.config.PortalConfig;
 import freemarker.template.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +31,7 @@ public class FreeMarkerView extends org.springframework.web.servlet.view.freemar
     @Inject
     protected Messages messages;
 
-    protected Log log = LogFactory.getLog(FreeMarkerView.class);
+    protected Logger log = LoggerFactory.getLogger(FreeMarkerView.class);
 
     @Override
     protected SimpleHash buildTemplateModel(

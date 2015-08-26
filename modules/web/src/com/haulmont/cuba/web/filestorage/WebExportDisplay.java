@@ -16,8 +16,8 @@ import com.haulmont.cuba.web.toolkit.ui.CubaFileDownloader;
 import com.vaadin.server.StreamResource;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 
 import javax.annotation.ManagedBean;
@@ -33,7 +33,7 @@ import java.io.InputStream;
 @Scope("prototype")
 public class WebExportDisplay implements ExportDisplay {
 
-    private static final Log log = LogFactory.getLog(WebExportDisplay.class);
+    private static final Logger log = LoggerFactory.getLogger(WebExportDisplay.class);
 
     protected boolean newWindow;
 

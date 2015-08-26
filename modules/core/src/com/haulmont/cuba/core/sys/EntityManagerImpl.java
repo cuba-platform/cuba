@@ -18,8 +18,8 @@ import com.haulmont.cuba.core.sys.listener.EntityListenerType;
 import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.sql.Connection;
@@ -41,7 +41,7 @@ public class EntityManagerImpl implements EntityManager {
 
     private boolean softDeletion = true;
 
-    private Log log = LogFactory.getLog(EntityManagerImpl.class);
+    private Logger log = LoggerFactory.getLogger(EntityManagerImpl.class);
 
     EntityManagerImpl(javax.persistence.EntityManager jpaEntityManager, UserSession userSession, Metadata metadata,
                       FetchGroupManager fetchGroupMgr, EntityListenerManager entityListenerMgr,

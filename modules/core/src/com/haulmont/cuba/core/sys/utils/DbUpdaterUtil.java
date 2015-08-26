@@ -10,9 +10,8 @@ import com.haulmont.cuba.core.sys.DbUpdaterEngine;
 import org.apache.commons.cli.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.xml.DOMConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -26,7 +25,6 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Logger;
 
 /**
  * @author artamonov
@@ -34,12 +32,15 @@ import java.util.logging.Logger;
  */
 public class DbUpdaterUtil extends DbUpdaterEngine {
 
-    private static final Log log = LogFactory.getLog(DbUpdaterUtil.class);
+    private static final Logger log = LoggerFactory.getLogger(DbUpdaterUtil.class);
 
     private boolean executeGroovy = true;
 
     public static void main(String[] args) {
-        DOMConfigurator.configure(DbUpdaterUtil.class.getResource("/com/haulmont/cuba/core/sys/utils/dbutil-log4j.xml"));
+        String property = System.getProperty("logback.configurationFile");
+        if (StringUtils.isBlank(property)) {
+            System.setProperty("logback.configurationFile", "com/haulmont/cuba/core/sys/utils/dbutil-logback.xml");
+        }
 
         DbUpdaterUtil runner = new DbUpdaterUtil();
         runner.execute(args);
@@ -137,7 +138,7 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
             String dbDirParam = cmd.getOptionValue(dbDirOption.getOpt());
             this.dbDir = new File(dbDirParam);
             if (!this.dbDir.exists()) {
-                log.fatal("Not found db update directory");
+                log.error("Not found db update directory");
                 return;
             }
 
@@ -157,7 +158,7 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
                         dbDriver = "oracle.jdbc.OracleDriver";
                         break;
                     default:
-                        log.fatal("Unable to determine driver class name by DBMS type. Please provide driverClassName option");
+                        log.error("Unable to determine driver class name by DBMS type. Please provide driverClassName option");
                         return;
                 }
             } else {
@@ -167,7 +168,7 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
             try {
                 Class.forName(dbDriver);
             } catch (ClassNotFoundException e) {
-                log.fatal("Unable to load driver class " + dbDriver);
+                log.error("Unable to load driver class " + dbDriver);
                 return;
             }
 
@@ -178,7 +179,7 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
                         cmd.getOptionValue(dbUserOption.getOpt()),
                         cmd.getOptionValue(dbPasswordOption.getOpt()));
             } catch (SQLException e) {
-                log.fatal("Unable to connect to db: " + connectionStringParam);
+                log.error("Unable to connect to db: " + connectionStringParam);
                 return;
             }
 
@@ -289,7 +290,7 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
         }
 
         @Override
-        public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
             throw new SQLFeatureNotSupportedException();
         }
 

@@ -13,8 +13,8 @@ import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.remoting.support.RemoteInvocation;
 import org.springframework.remoting.support.RemoteInvocationExecutor;
 
@@ -30,7 +30,7 @@ import java.util.UUID;
  */
 public class CubaRemoteInvocationExecutor implements RemoteInvocationExecutor {
 
-    private Log log = LogFactory.getLog(CubaRemoteInvocationExecutor.class);
+    private Logger log = LoggerFactory.getLogger(CubaRemoteInvocationExecutor.class);
 
     private UserSessionManager userSessionManager;
 

@@ -8,8 +8,8 @@ package com.haulmont.cuba.core;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
@@ -23,7 +23,7 @@ public class OrmBehaviorTest extends CubaTestCase {
 
     private UUID userId, groupId;
 
-    private Log log = LogFactory.getLog(OrmBehaviorTest.class);
+    private Logger log = LoggerFactory.getLogger(OrmBehaviorTest.class);
 
     protected void tearDown() throws Exception {
         deleteRecord("SEC_USER", userId);

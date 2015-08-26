@@ -24,8 +24,8 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.PermissionType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
@@ -41,7 +41,7 @@ public class DataManagerBean implements DataManager {
 
     public static final int MAX_ENTITIES_FOR_ATTRIBUTE_VALUES_BATCH = 100;
 
-    private Log log = LogFactory.getLog(DataManagerBean.class);
+    private Logger log = LoggerFactory.getLogger(DataManagerBean.class);
 
     @Inject
     protected Metadata metadata;

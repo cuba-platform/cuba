@@ -8,8 +8,8 @@ package com.haulmont.cuba.gui.app.core.file;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.Window;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -22,7 +22,7 @@ import java.util.UUID;
  * @version $Id$
  */
 public class FileUploadDialog extends AbstractWindow {
-    private static Log log = LogFactory.getLog(FileUploadDialog.class);
+    private static Logger log = LoggerFactory.getLogger(FileUploadDialog.class);
 
     @Inject
     private FileUploadField fileUpload;

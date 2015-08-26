@@ -19,8 +19,8 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
 import com.haulmont.cuba.web.toolkit.ui.CubaMenuBar;
 import com.vaadin.ui.MenuBar;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class MenuBuilder {
 
-    private Log log = LogFactory.getLog(MenuBuilder.class);
+    private Logger log = LoggerFactory.getLogger(MenuBuilder.class);
 
     protected UserSession session;
 

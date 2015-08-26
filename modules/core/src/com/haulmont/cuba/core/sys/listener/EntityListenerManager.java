@@ -10,8 +10,8 @@ import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.listener.*;
 import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -63,7 +63,7 @@ public class EntityListenerManager {
         }
     }
 
-    private Log log = LogFactory.getLog(EntityListenerManager.class);
+    private Logger log = LoggerFactory.getLogger(EntityListenerManager.class);
 
     @Inject
     protected Persistence persistence;

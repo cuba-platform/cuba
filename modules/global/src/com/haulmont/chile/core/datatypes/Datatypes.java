@@ -7,8 +7,8 @@ package com.haulmont.chile.core.datatypes;
 
 import com.haulmont.bali.util.ReflectionHelper;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -31,7 +31,7 @@ import java.util.*;
  */
 public final class Datatypes {
 
-    private static Log log = LogFactory.getLog(Datatypes.class);
+    private static Logger log = LoggerFactory.getLogger(Datatypes.class);
 
     private static Datatypes instance = new Datatypes();
 

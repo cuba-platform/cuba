@@ -10,8 +10,8 @@ import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.text.StrTokenizer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dom4j.Element;
 import org.springframework.core.io.Resource;
 
@@ -43,7 +43,7 @@ public class RestServicePermissions {
     @Inject
     protected Resources resources;
 
-    protected static Log log = LogFactory.getLog(RestServicePermissions.class);
+    protected static Logger log = LoggerFactory.getLogger(RestServicePermissions.class);
 
     protected Map<String, Set<String>> serviceMethods = new ConcurrentHashMap<>();
 

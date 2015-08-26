@@ -14,8 +14,8 @@ import com.haulmont.cuba.desktop.theme.DesktopThemeLoader;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -52,7 +52,7 @@ public class DesktopThemeLoaderImpl implements DesktopThemeLoader {
     @Inject
     private Resources resources;
 
-    protected Log log = LogFactory.getLog(getClass());
+    protected Logger log = LoggerFactory.getLogger(getClass());
 
     // like '255 128 0'
     private static final Pattern DECIMAL_COLOR_PATTERN = Pattern.compile("^(\\d+)\\s+(\\d+)\\s+(\\d+)$");

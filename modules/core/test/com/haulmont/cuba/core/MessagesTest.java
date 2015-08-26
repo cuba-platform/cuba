@@ -4,6 +4,9 @@
  */
 package com.haulmont.cuba.core;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -13,8 +16,7 @@ import com.haulmont.cuba.core.mp_test.MpTestObj;
 import com.haulmont.cuba.core.mp_test.nested.MpTestNestedEnum;
 import com.haulmont.cuba.core.mp_test.nested.MpTestNestedObj;
 import com.haulmont.cuba.testsupport.TestAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
@@ -25,8 +27,12 @@ public class MessagesTest extends CubaTestCase {
 
     public MessagesTest() {
         appender = new TestAppender();
-        Logger.getRootLogger().addAppender(appender);
-        Logger.getLogger("com.haulmont.cuba.core.sys.AbstractMessages").setLevel(Level.TRACE);
+        appender.start();
+
+        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+        Logger logger = context.getLogger("com.haulmont.cuba.core.sys.AbstractMessages");
+        logger.addAppender(appender);
+        logger.setLevel(Level.TRACE);
     }
 
     public void test() {
@@ -136,9 +142,6 @@ public class MessagesTest extends CubaTestCase {
     private Messages prepareCachingTest() {
         Messages messages = AppBeans.get(Messages.class);
         messages.clearCache();
-
-        Logger logger = Logger.getLogger(messages.getClass());
-        logger.setLevel(Level.TRACE);
         return messages;
     }
 

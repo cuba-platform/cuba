@@ -7,8 +7,8 @@ package com.haulmont.cuba.core.app;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -22,7 +22,7 @@ import java.io.InputStream;
 @ManagedBean(ServerInfoAPI.NAME)
 public class ServerInfo implements ServerInfoAPI {
 
-    protected Log log = LogFactory.getLog(getClass());
+    protected Logger log = LoggerFactory.getLogger(getClass());
 
     protected String releaseNumber = "?";
     protected String releaseTimestamp = "?";

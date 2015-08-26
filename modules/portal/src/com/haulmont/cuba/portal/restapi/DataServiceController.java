@@ -18,8 +18,8 @@ import com.haulmont.cuba.portal.config.RestConfig;
 import com.haulmont.cuba.security.entity.EntityOp;
 import freemarker.template.TemplateException;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.json.JSONException;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ClassUtils;
@@ -43,7 +43,7 @@ import java.util.*;
 @Controller
 public class DataServiceController {
 
-    private Log log = LogFactory.getLog(DataServiceController.class);
+    private Logger log = LoggerFactory.getLogger(DataServiceController.class);
 
     //todo wire
     protected ConversionFactory conversionFactory = new ConversionFactory();

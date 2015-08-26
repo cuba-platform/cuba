@@ -13,8 +13,8 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nullable;
@@ -32,7 +32,7 @@ import java.util.*;
 public class UserSessionServiceBean implements UserSessionService {
     public static final String MESSAGE_ATTR_PREFIX = "message-";
 
-    private Log log = LogFactory.getLog(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
     private UserSessionManager userSessionManager;

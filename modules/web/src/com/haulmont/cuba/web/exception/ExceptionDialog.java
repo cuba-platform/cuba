@@ -30,8 +30,8 @@ import com.vaadin.ui.*;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.text.SimpleDateFormat;
@@ -46,7 +46,7 @@ import java.util.Map;
  */
 public class ExceptionDialog extends CubaWindow {
 
-    protected Log log = LogFactory.getLog(getClass());
+    protected Logger log = LoggerFactory.getLogger(getClass());
 
     protected VerticalLayout mainLayout;
 

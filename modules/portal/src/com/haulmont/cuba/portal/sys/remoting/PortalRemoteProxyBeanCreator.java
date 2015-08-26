@@ -7,8 +7,8 @@ package com.haulmont.cuba.portal.sys.remoting;
 
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.remoting.RemoteProxyBeanCreator;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -24,7 +24,7 @@ import java.util.Map;
  */
 public class PortalRemoteProxyBeanCreator extends RemoteProxyBeanCreator {
 
-    private Log log = LogFactory.getLog(PortalRemoteProxyBeanCreator.class);
+    private Logger log = LoggerFactory.getLogger(PortalRemoteProxyBeanCreator.class);
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {

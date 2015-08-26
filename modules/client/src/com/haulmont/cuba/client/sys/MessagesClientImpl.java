@@ -13,8 +13,8 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AbstractMessages;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
@@ -41,7 +41,7 @@ public class MessagesClientImpl extends AbstractMessages {
 
     protected ClientConfig clientConfig;
 
-    private Log log = LogFactory.getLog(MessagesClientImpl.class);
+    private Logger log = LoggerFactory.getLogger(MessagesClientImpl.class);
 
     @Inject
     @Override

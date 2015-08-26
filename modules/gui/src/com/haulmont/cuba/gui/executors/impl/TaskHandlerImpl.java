@@ -17,8 +17,8 @@ import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.executors.WatchDog;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
@@ -32,7 +32,7 @@ import static com.google.common.base.Preconditions.checkState;
  */
 public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
-    private Log log = LogFactory.getLog(BackgroundWorker.class);
+    private Logger log = LoggerFactory.getLogger(BackgroundWorker.class);
 
     private final TaskExecutor<T, V> taskExecutor;
     private final WatchDog watchDog;

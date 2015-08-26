@@ -7,8 +7,8 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.sys.AppContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -22,7 +22,7 @@ import java.util.UUID;
 @ManagedBean(ScreenHistory.NAME)
 public class ScreenHistoryBean implements ScreenHistory {
 
-    private Log log = LogFactory.getLog(ScreenHistoryBean.class);
+    private Logger log = LoggerFactory.getLogger(ScreenHistoryBean.class);
 
     private static final int DELETE_BATCH = 10;
 

@@ -20,8 +20,8 @@ import com.haulmont.cuba.gui.components.filter.descriptor.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dom4j.Element;
 
 import java.util.*;
@@ -39,7 +39,7 @@ public class ConditionDescriptorsTreeBuilder {
     protected static final List<String> defaultExcludedProps = Collections.unmodifiableList(Arrays.asList("version"));
     protected static final String CUSTOM_CONDITIONS_PERMISSION = "cuba.gui.filter.customConditions";
 
-    protected static Log log = LogFactory.getLog(ConditionDescriptorsTreeBuilder.class);
+    protected static Logger log = LoggerFactory.getLogger(ConditionDescriptorsTreeBuilder.class);
 
     protected Filter filter;
     protected int hierarchyDepth;

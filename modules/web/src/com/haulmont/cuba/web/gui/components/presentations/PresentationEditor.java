@@ -21,8 +21,8 @@ import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 
@@ -43,7 +43,7 @@ public class PresentationEditor extends CubaWindow {
 
     protected boolean isNew;
 
-    protected Log log = LogFactory.getLog(getClass());
+    protected Logger log = LoggerFactory.getLogger(getClass());
 
     protected Messages messages;
     protected UserSessionSource sessionSource;

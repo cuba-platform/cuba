@@ -10,8 +10,8 @@ import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.TextArea;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -23,7 +23,7 @@ import java.util.Map;
  */
 public class LayoutAnalyzerWindow extends AbstractWindow {
 
-    protected Log log = LogFactory.getLog(getClass());
+    protected Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
     protected ThemeConstants themeConstants;

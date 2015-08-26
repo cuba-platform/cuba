@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2008-2015 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<configuration debug="true">
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="debug">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+    <!-- Begin CUBA -->
+
+    <logger name="com.haulmont.cuba" level="DEBUG"/>
+
+    <logger name="com.haulmont.cuba.core.sys.CubaDefaultListableBeanFactory" level="INFO"/>
+
+    <!-- End CUBA -->
+
+    <logger name="org.springframework" level="INFO"/>
+
+    <logger name="eclipselink" level="INFO"/>
+
+    <logger name="eclipselink.sql" level="DEBUG"/>
+
+    <logger name="freemarker" level="INFO"/>
+
+    <logger name="org.apache" level="INFO"/>
+
+    <logger name="org.hibernate" level="INFO"/>
+
+    <logger name="org.perf4j.TimingLogger" level="OFF"/>
+
+</configuration>

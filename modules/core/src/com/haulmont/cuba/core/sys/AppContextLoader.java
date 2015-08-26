@@ -9,8 +9,8 @@ import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import com.haulmont.cuba.core.sys.persistence.PersistenceConfigProcessor;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.eclipse.persistence.annotations.TransientCompatibleAnnotations;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -26,7 +26,7 @@ public class AppContextLoader extends AbstractWebAppContextLoader {
 
     public static final String PERSISTENCE_CONFIG = "cuba.persistenceConfig";
 
-    private Log log = LogFactory.getLog(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
     protected void beforeInitAppContext() {

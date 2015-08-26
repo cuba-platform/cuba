@@ -11,8 +11,8 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.zip.CRC32;
@@ -23,7 +23,7 @@ import java.util.zip.CRC32;
  */
 public class LogArchiver {
 
-    private static final Log log = LogFactory.getLog(LogArchiver.class);
+    private static final Logger log = LoggerFactory.getLogger(LogArchiver.class);
 
     private static final String ZIP_ENCODING = "CP866";
     public static final long LOG_TAIL_FOR_PACKING_SIZE = 20 * 1024 * 1024; // 20 MB

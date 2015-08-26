@@ -11,8 +11,8 @@ import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.jpa.JpaQuery;
@@ -31,7 +31,7 @@ import java.util.*;
  */
 public class QueryImpl<T> implements TypedQuery<T> {
 
-    private Log log = LogFactory.getLog(QueryImpl.class);
+    private Logger log = LoggerFactory.getLogger(QueryImpl.class);
 
     private Metadata metadata;
     private javax.persistence.EntityManager emDelegate;

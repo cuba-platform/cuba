@@ -5,13 +5,10 @@
 
 package com.haulmont.cuba.core.global;
 
+import ch.qos.logback.classic.Level;
 import com.haulmont.cuba.core.sys.logging.AppenderThresholdNotSupported;
 import com.haulmont.cuba.core.sys.logging.LogControlException;
 import com.haulmont.cuba.core.sys.logging.LogFileNotFoundException;
-import org.apache.log4j.Appender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 
 import java.io.File;
 import java.util.List;
@@ -53,44 +50,44 @@ public interface LogControl {
      *
      * @return current logger names
      */
-    List<Logger> getLoggers();
+    List<String> getLoggers();
 
     /**
      * Reads current level of the logger
      *
-     * @param logger logger
+     * @param loggerName logger
      * @return level of the logger
      */
-    Level getLoggerLevel(Logger logger);
+    Level getLoggerLevel(String loggerName);
 
     /**
      * Writes down level for the specified logger
      *
-     * @param logger logger name
+     * @param loggerName logger name
      * @param level  level
      */
-    void setLoggerLevel(Logger logger, Level level);
+    void setLoggerLevel(String loggerName, Level level);
 
     /**
      * Get current appenders
      *
      * @return current appender names
      */
-    List<Appender> getAppenders();
+    List<String> getAppenders();
 
     /**
      * Reads current threshold of the appender
      *
-     * @param appender appender
+     * @param appenderName appender
      * @return threshold of the logger
      */
-    Priority getAppenderThreshold(Appender appender) throws AppenderThresholdNotSupported;
+    Level getAppenderThreshold(String appenderName) throws AppenderThresholdNotSupported;
 
     /**
      * Writes threshold for the specified logger
      *
-     * @param appender  appender
+     * @param appenderName  appender
      * @param threshold threshold level
      */
-    void setAppenderThreshold(Appender appender, Level threshold) throws AppenderThresholdNotSupported;
+    void setAppenderThreshold(String appenderName, Level threshold) throws AppenderThresholdNotSupported;
 }

@@ -16,8 +16,8 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.*;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -33,7 +33,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @ManagedBean(EntityLogAPI.NAME)
 public class EntityLog implements EntityLogAPI {
 
-    protected Log log = LogFactory.getLog(EntityLog.class);
+    protected Logger log = LoggerFactory.getLogger(EntityLog.class);
 
     private volatile boolean loaded;
 

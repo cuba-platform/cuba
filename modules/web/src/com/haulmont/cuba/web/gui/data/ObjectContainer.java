@@ -12,8 +12,8 @@ import com.vaadin.data.Property;
 import com.vaadin.ui.UI;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -24,7 +24,7 @@ import java.util.*;
  */
 public class ObjectContainer implements com.vaadin.data.Container, Container.ItemSetChangeNotifier {
 
-    private Log log = LogFactory.getLog(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     // lazily initialized listeners list
     protected List<ItemSetChangeListener> itemSetChangeListeners = null;

@@ -24,8 +24,8 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.FilterEntity;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -104,7 +104,7 @@ public class FilterEditor extends AbstractWindow {
 
     protected boolean treeItemChangeListenerEnabled = true;
 
-    protected static Log log = LogFactory.getLog(FilterEditor.class);
+    protected static Logger log = LoggerFactory.getLogger(FilterEditor.class);
 
     @WindowParam(name = "useShortConditionForm")
     protected Boolean useShortConditionForm;

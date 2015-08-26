@@ -8,8 +8,8 @@ package com.haulmont.cuba.core.sys.persistence;
 import com.haulmont.bali.db.DbUtils;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.naming.InitialContext;
@@ -27,7 +27,7 @@ import java.util.Map;
 @SuppressWarnings("UnusedDeclaration")
 public class OracleDbmsFeatures implements DbmsFeatures {
 
-    private static Log log = LogFactory.getLog(OracleDbmsFeatures.class);
+    private static Logger log = LoggerFactory.getLogger(OracleDbmsFeatures.class);
 
     @Override
     public Map<String, String> getJpaParameters() {

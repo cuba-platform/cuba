@@ -11,8 +11,8 @@ import com.haulmont.cuba.core.sys.SecurityContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -34,7 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @ManagedBean(FileStorageAPI.NAME)
 public class FileStorage implements FileStorageAPI {
 
-    protected Log log = LogFactory.getLog(FileStorage.class);
+    protected Logger log = LoggerFactory.getLogger(FileStorage.class);
 
     @Inject
     protected UserSessionSource userSessionSource;

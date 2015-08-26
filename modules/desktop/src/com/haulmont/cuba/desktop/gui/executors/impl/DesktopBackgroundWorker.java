@@ -10,8 +10,8 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.executors.*;
 import com.haulmont.cuba.gui.executors.impl.TaskExecutor;
 import com.haulmont.cuba.gui.executors.impl.TaskHandlerImpl;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nonnull;
@@ -34,7 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @ManagedBean(BackgroundWorker.NAME)
 public class DesktopBackgroundWorker implements BackgroundWorker {
 
-    private Log log = LogFactory.getLog(DesktopBackgroundWorker.class);
+    private Logger log = LoggerFactory.getLogger(DesktopBackgroundWorker.class);
 
     private WatchDog watchDog;
 

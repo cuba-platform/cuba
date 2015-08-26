@@ -11,8 +11,8 @@ import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.filter.condition.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
  * @version $Id$
  */
 public class FilterParser {
-    private static Log log = LogFactory.getLog(FilterParser.class);
+    private static Logger log = LoggerFactory.getLogger(FilterParser.class);
 
     public static ConditionsTree getConditions(Filter filter, String xml) {
         ConditionsTree conditions = new ConditionsTree();

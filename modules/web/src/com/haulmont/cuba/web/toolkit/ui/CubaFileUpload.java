@@ -15,8 +15,8 @@ import com.vaadin.ui.LegacyComponent;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -71,7 +71,7 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
         setErrorHandler(new ErrorHandler() {
             @Override
             public void error(com.vaadin.server.ErrorEvent event) {
-                Log log = LogFactory.getLog(CubaFileUpload.class);
+                Logger log = LoggerFactory.getLogger(CubaFileUpload.class);
                 //noinspection ThrowableResultOfMethodCallIgnored
                 Throwable ex = event.getThrowable();
                 if (StringUtils.contains(ExceptionUtils.getRootCauseMessage(ex), "The multipart stream ended unexpectedly")) {
@@ -295,7 +295,7 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
 
                     double fileSizeLimit = getFileSizeLimit();
                     if (fileSizeLimit > 0 && event.getContentLength() > fileSizeLimit) {
-                        Log log = LogFactory.getLog(CubaFileUpload.class);
+                        Logger log = LoggerFactory.getLogger(CubaFileUpload.class);
                         log.warn("Unable to start upload. File size limit exceeded, but client-side checks ignored.");
 
                         interruptUpload();

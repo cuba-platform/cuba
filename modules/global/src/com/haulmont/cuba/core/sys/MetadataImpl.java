@@ -20,8 +20,8 @@ import com.haulmont.cuba.core.entity.BaseLongIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.*;
 import com.haulmont.cuba.core.global.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
 @ManagedBean(Metadata.NAME)
 public class MetadataImpl implements Metadata {
 
-    protected Log log = LogFactory.getLog(getClass());
+    protected Logger log = LoggerFactory.getLogger(getClass());
 
     protected volatile Session session;
 

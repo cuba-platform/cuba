@@ -16,8 +16,8 @@ import com.haulmont.cuba.security.sys.TrustedLoginHandler;
 import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
@@ -34,7 +34,7 @@ import java.util.*;
  */
 @ManagedBean(LoginWorker.NAME)
 public class LoginWorkerBean implements LoginWorker {
-    private Log log = LogFactory.getLog(LoginWorkerBean.class);
+    private Logger log = LoggerFactory.getLogger(LoginWorkerBean.class);
 
     @Inject
     protected Persistence persistence;

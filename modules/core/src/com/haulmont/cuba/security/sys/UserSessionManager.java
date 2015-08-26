@@ -18,8 +18,8 @@ import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -56,7 +56,7 @@ public class UserSessionManager {
     @Inject
     protected Metadata metadata;
 
-    private static Log log = LogFactory.getLog(UserSessionManager.class);
+    private static Logger log = LoggerFactory.getLogger(UserSessionManager.class);
 
     /**
      * Create a new session and fill it with security data. Must be called inside a transaction.

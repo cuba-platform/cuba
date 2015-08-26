@@ -5,6 +5,11 @@
 
 package com.haulmont.cuba.core.sys;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.LogControl;
@@ -12,9 +17,7 @@ import com.haulmont.cuba.core.sys.logging.AppenderThresholdNotSupported;
 import com.haulmont.cuba.core.sys.logging.LogControlException;
 import com.haulmont.cuba.core.sys.logging.LogFileNotFoundException;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.*;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -31,7 +34,7 @@ import java.util.*;
 @ManagedBean(LogControl.NAME)
 public class LogControlImpl implements LogControl {
 
-    private static final Log log = LogFactory.getLog(LogControl.class);
+    private final org.slf4j.Logger log = LoggerFactory.getLogger(LogControl.class);
 
     private static final long LOG_TAIL_AMOUNT_BYTES = 51200;
 
@@ -109,52 +112,59 @@ public class LogControlImpl implements LogControl {
     }
 
     @Override
-    public List<Logger> getLoggers() {
-        Enumeration currentLoggers = LogManager.getCurrentLoggers();
-        List<Logger> loggers = new ArrayList<>();
-        while (currentLoggers.hasMoreElements()) {
-            Logger logger = (Logger) currentLoggers.nextElement();
-            if (logger.getLevel() != null)
-                loggers.add(logger);
+    public List<String> getLoggers() {
+        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+        List<String> list = new ArrayList<>();
+        for (Logger log : lc.getLoggerList()) {
+            if (log.getLevel() != null || hasAppenders(log)) {
+                list.add(log.getName());
+            }
         }
-        return loggers;
+        return list;
+    }
+
+    private boolean hasAppenders(Logger logger) {
+        return logger.iteratorForAppenders().hasNext();
     }
 
     @Override
-    public Level getLoggerLevel(Logger logger) {
-        return logger.getLevel();
+    public Level getLoggerLevel(String loggerName) {
+        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+        return context.getLogger(loggerName).getLevel();
     }
 
     @Override
-    public void setLoggerLevel(Logger logger, Level level) {
+    public void setLoggerLevel(String loggerName, Level level) {
+        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+        Logger logger = context.getLogger(loggerName);
         logger.setLevel(level);
-        logger.setAdditivity(true);
 
-        log.info(String.format("Level for logger '%s' set to '%s'", logger.getName(), level));
+        log.info(String.format("Level for logger '%s' set to '%s'", loggerName, level));
     }
 
     @Override
-    public List<Appender> getAppenders() {
-        return Collections.list(LogManager.getRootLogger().getAllAppenders());
+    public List<String> getAppenders() {
+        Set<String> set = new HashSet<>();
+        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+        for (Logger logger : context.getLoggerList()) {
+            for (Iterator<Appender<ILoggingEvent>> index = logger.iteratorForAppenders(); index.hasNext();) {
+                Appender<ILoggingEvent> appender = index.next();
+                set.add(appender.getName());
+            }
+        }
+        return new ArrayList<>(set);
     }
 
     @Override
-    public Level getAppenderThreshold(Appender appender) throws AppenderThresholdNotSupported {
-        if (appender instanceof AppenderSkeleton) {
-            Priority threshold = ((AppenderSkeleton) appender).getThreshold();
-            return (Level) threshold;
-        } else
-            throw new AppenderThresholdNotSupported(appender.getName());
+    public Level getAppenderThreshold(String appenderName) throws AppenderThresholdNotSupported {
+        // TODO Logback
+        throw new AppenderThresholdNotSupported(appenderName);
     }
 
     @Override
-    public void setAppenderThreshold(Appender appender, Level threshold) throws AppenderThresholdNotSupported {
-        if (appender instanceof AppenderSkeleton) {
-            ((AppenderSkeleton) appender).setThreshold(threshold);
-
-            log.info(String.format("Threshold for appender '%s' set to '%s'", appender.getName(), threshold));
-        } else
-            throw new AppenderThresholdNotSupported(appender.getName());
+    public void setAppenderThreshold(String appenderName, Level threshold) throws AppenderThresholdNotSupported {
+        // TODO Logback
+        throw new AppenderThresholdNotSupported(appenderName);
     }
 
     protected void skipFirstLine(RandomAccessFile logFile) throws IOException {

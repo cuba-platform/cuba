@@ -14,8 +14,8 @@ import com.haulmont.cuba.core.sys.CubaMailSender;
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.net.QCodec;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -38,7 +38,7 @@ import java.io.*;
 @ManagedBean(EmailSenderAPI.NAME)
 public class EmailSender implements EmailSenderAPI {
 
-    private Log log = LogFactory.getLog(EmailSender.class);
+    private Logger log = LoggerFactory.getLogger(EmailSender.class);
 
     private static final String UTF_8 = "UTF-8";
 

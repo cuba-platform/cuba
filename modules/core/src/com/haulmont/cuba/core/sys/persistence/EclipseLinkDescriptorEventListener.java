@@ -14,8 +14,8 @@ import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventListener;
 import org.eclipse.persistence.queries.FetchGroup;
@@ -35,7 +35,7 @@ public class EclipseLinkDescriptorEventListener implements DescriptorEventListen
 
     public static final String NAME = "cuba_EclipseLinkDescriptorEventListener";
 
-    private Log log = LogFactory.getLog(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
     protected EntityListenerManager manager;

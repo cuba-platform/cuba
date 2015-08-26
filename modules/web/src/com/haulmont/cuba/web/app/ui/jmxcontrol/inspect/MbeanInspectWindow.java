@@ -17,8 +17,8 @@ import com.haulmont.cuba.web.jmx.JmxControlAPI;
 import com.haulmont.cuba.web.jmx.entity.*;
 import com.haulmont.cuba.web.toolkit.ui.CubaTable;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -30,7 +30,7 @@ import java.util.*;
  */
 public class MbeanInspectWindow extends AbstractEditor {
 
-    private Log log = LogFactory.getLog(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
     protected Table attributesTable;

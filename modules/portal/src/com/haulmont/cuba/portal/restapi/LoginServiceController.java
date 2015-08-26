@@ -16,8 +16,8 @@ import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
@@ -54,7 +54,7 @@ public class LoginServiceController {
     @Inject
     protected UserSessionService userSessionService;
 
-    private static Log log = LogFactory.getLog(LoginServiceController.class);
+    private static Logger log = LoggerFactory.getLogger(LoginServiceController.class);
     private static MimeType FORM_TYPE;
 
     static {

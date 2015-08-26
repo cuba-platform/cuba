@@ -19,8 +19,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrMatcher;
 import org.apache.commons.lang.text.StrTokenizer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.sql.DataSource;
@@ -43,7 +43,7 @@ public class DbUpdaterEngine implements DbUpdater {
 
     private static final String GROOVY_EXTENSION = "groovy";
 
-    private static final Log log = LogFactory.getLog(DbUpdaterEngine.class);
+    private static final Logger log = LoggerFactory.getLogger(DbUpdaterEngine.class);
 
     protected DataSource dataSource;
 
@@ -430,7 +430,7 @@ public class DbUpdaterEngine implements DbUpdater {
 
             Binding bind = new Binding();
             bind.setProperty("ds", getDataSource());
-            bind.setProperty("log", LogFactory.getLog(file.getName()));
+            bind.setProperty("log", LoggerFactory.getLogger(file.getName()));
             bind.setProperty("postUpdate", new PostUpdateScripts() {
                 @Override
                 public void add(Closure closure) {

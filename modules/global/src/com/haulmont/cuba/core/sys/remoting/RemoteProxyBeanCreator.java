@@ -5,8 +5,8 @@
 
 package com.haulmont.cuba.core.sys.remoting;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public class RemoteProxyBeanCreator implements BeanFactoryPostProcessor, ApplicationContextAware {
 
-    private Log log = LogFactory.getLog(RemoteProxyBeanCreator.class);
+    private Logger log = LoggerFactory.getLogger(RemoteProxyBeanCreator.class);
 
     protected Map<String, String> services;
 

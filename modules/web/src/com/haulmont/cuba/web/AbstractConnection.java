@@ -22,8 +22,8 @@ import com.vaadin.server.Page;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.server.WebBrowser;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -38,7 +38,7 @@ import java.util.TimeZone;
  */
 public abstract class AbstractConnection implements Connection {
 
-    protected Log log = LogFactory.getLog(getClass());
+    protected Logger log = LoggerFactory.getLogger(getClass());
 
     protected Map<ConnectionListener, Object> connListeners = new HashMap<>();
     protected Map<UserSubstitutionListener, Object> usListeners = new HashMap<>();

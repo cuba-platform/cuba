@@ -14,8 +14,8 @@ import com.haulmont.cuba.gui.components.Window;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dom4j.Element;
 import org.springframework.core.io.Resource;
 
@@ -48,7 +48,7 @@ public class WindowConfig {
 
     public static final Pattern ENTITY_SCREEN_PATTERN = Pattern.compile("([_A-Za-z]+\\$[A-Z][_A-Za-z0-9]*)\\..+");
 
-    private static Log log = LogFactory.getLog(WindowConfig.class);
+    private static Logger log = LoggerFactory.getLogger(WindowConfig.class);
 
     protected Map<String, WindowInfo> screens = new HashMap<>();
 

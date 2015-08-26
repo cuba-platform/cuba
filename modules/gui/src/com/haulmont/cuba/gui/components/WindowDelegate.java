@@ -18,8 +18,8 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.settings.Settings;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dom4j.Element;
 
 import java.lang.reflect.Constructor;
@@ -41,7 +41,7 @@ public class WindowDelegate {
 
     protected WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
 
-    private Log log = LogFactory.getLog(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     public WindowDelegate(Window window) {
         this.window = window;

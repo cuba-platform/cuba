@@ -12,8 +12,8 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.core.io.Resource;
@@ -35,7 +35,7 @@ public class PersistenceConfigProcessor {
     private List<String> sourceFileNames;
     private String outFileName;
 
-    private Log log = LogFactory.getLog(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     public void setBaseDir(String baseDir) {
         this.baseDir = baseDir;

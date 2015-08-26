@@ -9,8 +9,8 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.portal.Connection;
 import com.haulmont.cuba.portal.security.PortalSession;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 
@@ -25,7 +25,7 @@ import java.io.IOException;
  */
 public class PortalLogoutHandler extends SimpleUrlLogoutSuccessHandler {
 
-    private Log log = LogFactory.getLog(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,

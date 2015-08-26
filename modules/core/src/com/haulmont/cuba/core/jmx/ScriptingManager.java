@@ -9,8 +9,8 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.app.Authenticated;
 import groovy.lang.Binding;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -23,7 +23,7 @@ import java.util.Collections;
 @ManagedBean("cuba_ScriptingManagerMBean")
 public class ScriptingManager implements ScriptingManagerMBean {
 
-    protected Log log = LogFactory.getLog(getClass());
+    protected Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
     protected Configuration configuration;

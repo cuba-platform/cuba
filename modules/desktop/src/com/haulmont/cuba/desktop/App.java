@@ -33,8 +33,8 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.remoting.RemoteAccessException;
 
 import javax.annotation.Nullable;
@@ -60,7 +60,7 @@ public class App implements ConnectionListener {
 
     protected static App app;
 
-    private Log log;
+    private Logger log;
 
     protected TopLevelFrame mainFrame;
 
@@ -200,8 +200,8 @@ public class App implements ConnectionListener {
         return System.getProperty("user.home") + "/.haulmont/cuba";
     }
 
-    protected String getDefaultLog4jConfig() {
-        return "cuba-log4j.xml";
+    protected String getDefaultLogConfig() {
+        return "cuba-logback.xml";
     }
 
     protected void initHomeDir() {
@@ -227,11 +227,11 @@ public class App implements ConnectionListener {
     }
 
     protected void initLogging() {
-        String property = System.getProperty("log4j.configuration");
+        String property = System.getProperty("logback.configurationFile");
         if (StringUtils.isBlank(property)) {
-            System.setProperty("log4j.configuration", getDefaultLog4jConfig());
+            System.setProperty("logback.configurationFile", getDefaultLogConfig());
         }
-        log = LogFactory.getLog(App.class);
+        log = LoggerFactory.getLogger(App.class);
     }
 
     protected void initTestMode() {

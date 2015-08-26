@@ -20,12 +20,12 @@ import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaFileUpload;
 import com.haulmont.cuba.web.toolkit.ui.CubaMultiUpload;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.vaadin.server.Page;
 import com.vaadin.server.WebBrowser;
 import com.vaadin.ui.AbstractComponent;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -40,7 +40,7 @@ public class WebFileMultiUploadField extends WebAbstractComponent<AbstractCompon
 
     private static final int BYTES_IN_MEGABYTE = 1048576;
 
-    protected Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(WebFileMultiUploadField.class);
 
     protected FileUploadingAPI fileUploading;
 

@@ -6,8 +6,8 @@ package com.haulmont.cuba.security.global;
 
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ public class IpMatcher {
     private static Set<String> whiteListedIPs = ImmutableSet.of("127.0.0.1", "0:0:0:0:0:0:0:1");
     private List<String[]> masks = new ArrayList<>();
 
-    private Log log = LogFactory.getLog(IpMatcher.class);
+    private Logger log = LoggerFactory.getLogger(IpMatcher.class);
 
     public IpMatcher(String source) {
         String[] parts = source.split("[,;]");

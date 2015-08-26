@@ -30,8 +30,8 @@ import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.vaadin.peter.contextmenu.ContextMenu;
 
 import java.util.*;
@@ -46,7 +46,7 @@ import java.util.*;
  */
 public class AppWindow extends UIView implements CubaHistoryControl.HistoryBackHandler {
 
-    private static final Log log = LogFactory.getLog(AppWindow.class);
+    private static final Logger log = LoggerFactory.getLogger(AppWindow.class);
 
     protected final AppUI ui;
 

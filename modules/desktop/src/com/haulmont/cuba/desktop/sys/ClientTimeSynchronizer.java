@@ -13,8 +13,8 @@ import com.haulmont.cuba.desktop.DesktopConfig;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -37,7 +37,7 @@ public class ClientTimeSynchronizer {
 
     protected static final int TIMEOUT_SEC = 60;
 
-    private Log log = LogFactory.getLog(ClientTimeSynchronizer.class);
+    private Logger log = LoggerFactory.getLogger(ClientTimeSynchronizer.class);
 
     @Inject
     protected ServerInfoService serverInfoService;

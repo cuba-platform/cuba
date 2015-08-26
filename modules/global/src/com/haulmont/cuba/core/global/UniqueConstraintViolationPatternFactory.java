@@ -8,8 +8,8 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.config.type.TypeFactory;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -23,7 +23,7 @@ public class UniqueConstraintViolationPatternFactory extends TypeFactory {
     @Override
     public Object build(String value) {
         Messages messages = AppBeans.get(Messages.NAME);
-        Log log = LogFactory.getLog(getClass());
+        Logger log = LoggerFactory.getLogger(getClass());
         PersistenceManagerService pmService = AppBeans.get(PersistenceManagerService.NAME);
         String defaultConstraintViolationPattern = pmService.getUniqueConstraintViolationPattern();
         Pattern constraintViolationPattern;

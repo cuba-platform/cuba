@@ -7,8 +7,8 @@ package com.haulmont.cuba.core.jmx;
 
 import com.haulmont.cuba.core.app.MiddlewareStatisticsAccumulator;
 import com.haulmont.cuba.core.sys.AppContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 @ManagedBean("cuba_StatisticsCounterMBean")
 public class StatisticsCounter implements StatisticsCounterMBean {
 
-    private Log log = LogFactory.getLog(StatisticsCounter.class);
+    private Logger log = LoggerFactory.getLogger(StatisticsCounter.class);
 
     protected final Pattern DS_MBEAN_PATTERN;
 

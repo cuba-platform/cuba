@@ -41,8 +41,8 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -62,7 +62,7 @@ public class WebWindowManager extends WindowManager {
     public static final int HUMANIZED_NOTIFICATION_DELAY_MSEC = 3000;
     public static final int WARNING_NOTIFICATION_DELAY_MSEC = -1;
 
-    private static final Log log = LogFactory.getLog(WebWindowManager.class);
+    private static final Logger log = LoggerFactory.getLogger(WebWindowManager.class);
 
     protected App app;
     protected AppUI ui;

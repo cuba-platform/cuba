@@ -30,8 +30,8 @@ import com.vaadin.server.Page;
 import com.vaadin.ui.JavaScript;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 
 import javax.annotation.ManagedBean;
@@ -55,7 +55,7 @@ public class LinkHandler {
 
     public static final String NAME = "cuba_LinkHandler";
 
-    protected Log log = LogFactory.getLog(getClass());
+    protected Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
     protected Messages messages;

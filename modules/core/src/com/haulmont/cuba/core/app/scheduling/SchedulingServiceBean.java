@@ -17,8 +17,8 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.CubaDefaultListableBeanFactory;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -37,7 +37,7 @@ import java.util.*;
 @Service(SchedulingService.NAME)
 public class SchedulingServiceBean implements SchedulingService {
 
-    private Log log = LogFactory.getLog(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     protected List<String> beansToIgnore = Arrays.asList("dataSource", "entityManagerFactory", "hibernateSessionFactory",
             "mailSendTaskExecutor", "scheduler", "sqlSession", "sqlSessionFactory", "transactionManager",

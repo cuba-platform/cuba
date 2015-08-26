@@ -20,8 +20,8 @@ import com.haulmont.cuba.web.toolkit.ui.CubaMaskedTextField;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.server.UserError;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Time;
 import java.text.ParseException;
@@ -43,7 +43,7 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
 
     protected DateField.Resolution resolution;
 
-    protected Log log = LogFactory.getLog(WebTimeField.class);
+    protected Logger log = LoggerFactory.getLogger(WebTimeField.class);
 
     public WebTimeField() {
         UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);

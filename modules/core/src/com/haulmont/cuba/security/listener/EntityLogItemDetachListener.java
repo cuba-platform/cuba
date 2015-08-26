@@ -16,8 +16,8 @@ import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
 import com.haulmont.cuba.security.entity.EntityLogAttr;
 import com.haulmont.cuba.security.entity.EntityLogItem;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -33,7 +33,7 @@ import java.util.*;
 @ManagedBean("cuba_EntityLogItemDetachListener")
 public class EntityLogItemDetachListener implements BeforeDetachEntityListener<EntityLogItem> {
 
-    private Log log = LogFactory.getLog(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
     protected Persistence persistence;

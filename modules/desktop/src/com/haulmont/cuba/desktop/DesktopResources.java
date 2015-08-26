@@ -7,8 +7,8 @@ package com.haulmont.cuba.desktop;
 
 import com.haulmont.cuba.core.global.Resources;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class DesktopResources {
 
-    private Log log = LogFactory.getLog(DesktopResources.class);
+    private Logger log = LoggerFactory.getLogger(DesktopResources.class);
 
     protected List<String> roots;
 

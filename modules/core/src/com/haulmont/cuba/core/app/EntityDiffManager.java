@@ -19,8 +19,8 @@ import com.haulmont.cuba.core.entity.diff.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.ViewHelper;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
@@ -50,7 +50,7 @@ public class EntityDiffManager {
     @Inject
     private Metadata metadata;
 
-    private Log log = LogFactory.getLog(EntityDiffManager.class);
+    private Logger log = LoggerFactory.getLogger(EntityDiffManager.class);
 
     public EntityDiff getDifference(EntitySnapshot first, EntitySnapshot second) {
 

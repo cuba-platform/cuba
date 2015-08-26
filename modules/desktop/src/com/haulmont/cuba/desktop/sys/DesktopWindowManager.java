@@ -38,8 +38,8 @@ import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
@@ -65,7 +65,7 @@ import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
  */
 public class DesktopWindowManager extends WindowManager {
 
-    private static final Log log = LogFactory.getLog(DesktopWindowManager.class);
+    private static final Logger log = LoggerFactory.getLogger(DesktopWindowManager.class);
 
     protected static final float NEW_WINDOW_SCALE = 0.7f;
 
