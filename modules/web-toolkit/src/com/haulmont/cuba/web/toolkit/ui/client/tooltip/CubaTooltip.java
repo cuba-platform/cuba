@@ -17,12 +17,15 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
-import com.haulmont.cuba.web.toolkit.ui.client.resizabletextarea.CubaResizableTextAreaWidget;
+import com.haulmont.cuba.web.toolkit.ui.client.resizabletextarea.CubaResizableTextAreaWrapperWidget;
 import com.vaadin.client.*;
 import com.vaadin.client.ui.VGridLayout;
 import com.vaadin.client.ui.gridlayout.GridLayoutConnector;
 import com.vaadin.client.ui.layout.ComponentConnectorLayoutSlot;
 import com.vaadin.client.ui.orderedlayout.Slot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author devyatkin
@@ -35,8 +38,12 @@ public class CubaTooltip extends VTooltip {
     // If required indicators are not visible we show toolip on mouse hover otherwise only by mouse click
     protected static Boolean requiredIndicatorVisible = null;
 
+    protected List<String> excludeStyles = new ArrayList<String>();
+
     public CubaTooltip() {
         tooltipEventHandler = new CubaTooltipEventHandler();
+
+        excludeStyles.add(CubaResizableTextAreaWrapperWidget.RESIZE_ELEMENT);
     }
 
     protected void showTooltip(boolean forceShow) {
@@ -95,7 +102,11 @@ public class CubaTooltip extends VTooltip {
             checkRequiredIndicatorVisible();
 
             if (!requiredIndicatorVisible) {
-                return super.getTooltipFor(element);
+                if (excludeStyles.contains(element.getClassName())) {
+                    return null;
+                } else {
+                    return super.getTooltipFor(element);
+                }
             }
 
             if (isTooltipElement(element)) {
@@ -104,14 +115,6 @@ public class CubaTooltip extends VTooltip {
                 int index = DOM.getChildIndex(element.getParentElement().<Element>cast(), element);
                 int indexOfComponent = index == 0 ? index + 1 : index - 1;
                 element = DOM.getChild(element.getParentElement().<Element>cast(), indexOfComponent);
-                //special case for ResizableTextArea.
-                if (CubaResizableTextAreaWidget.TEXT_AREA_WRAPPER.equals(element.getClassName())) {
-                    element = DOM.getChild(element, 0);
-                }
-            }
-            //special case for ResizableTextArea
-            if (CubaResizableTextAreaWidget.RESIZE_ELEMENT.equals(element.getClassName())) {
-                element = DOM.getChild(element.getParentElement().<Element>cast(), 0);
             }
 
             ApplicationConnection ac = getApplicationConnection();

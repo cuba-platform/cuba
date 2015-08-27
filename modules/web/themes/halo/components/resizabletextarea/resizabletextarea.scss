@@ -8,20 +8,25 @@
 @mixin halo-cuba-resizabletextarea($primary-stylename: cuba-resizabletextarea) {
   $textarea-corner-color: valo-border-color($color: $v-overlay-background-color, $strength: 1.0);
 
+  .cuba-resizabletextarea-wrapper {
+    position: relative;
+    overflow: hidden;
+  }
+
   .#{$primary-stylename}-resize-corner {
-    z-index: 1001;
     position: absolute;
-    bottom: $v-border-radius;
-    right: $v-border-radius;
+    bottom: 0;
+    right: 0;
     background: transparent;
     width: round($v-unit-size/2);
     height: round($v-unit-size/2);
+    cursor: nwse-resize;
 
     &:after {
-      content:'';
+      content: "";
       position: absolute;
-      top: 0;
-      right: 0;
+      bottom: $v-border-radius;
+      right: $v-border-radius;
       width: 0;
       height: 0;
       border-style: solid;

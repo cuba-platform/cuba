@@ -7,6 +7,11 @@
 
 @mixin havana-cuba-resizabletextarea($primary-stylename: cuba-resizabletextarea) {
 
+  .cuba-resizabletextarea-wrapper {
+    position: relative;
+    overflow: hidden;
+  }
+
   .#{$primary-stylename}-resize-corner {
     z-index: 1001;
     position: absolute;
@@ -16,5 +21,6 @@
     height: 16px;
     background: transparent;
     background-image: url(sprites/resizable-corner.png); /** sprite-ref: components; */
+    cursor: nwse-resize;
   }
 }
