@@ -18,36 +18,40 @@ import java.util.UUID;
 public class MssqlDbTypeConverter implements DbTypeConverter {
 
     @Override
-    public Object getJavaObject(ResultSet resultSet, int columnIndex) throws SQLException {
+    public Object getJavaObject(ResultSet resultSet, int columnIndex) {
         Object value;
 
-        ResultSetMetaData metaData = resultSet.getMetaData();
+        try {
+            ResultSetMetaData metaData = resultSet.getMetaData();
 
-        if ((columnIndex > metaData.getColumnCount()) || (columnIndex <= 0))
-            throw new IndexOutOfBoundsException("Column index out of bound");
+            if ((columnIndex > metaData.getColumnCount()) || (columnIndex <= 0))
+                throw new IndexOutOfBoundsException("Column index out of bound");
 
-        int sqlType = metaData.getColumnType(columnIndex);
-        String typeName = metaData.getColumnTypeName(columnIndex);
+            int sqlType = metaData.getColumnType(columnIndex);
+            String typeName = metaData.getColumnTypeName(columnIndex);
 
-        switch (sqlType) {
-            case Types.CHAR:
-            case Types.VARCHAR:
-            case Types.LONGVARCHAR:
-            case Types.CLOB:
-                if ("uniqueidentifier".equals(typeName)) {
-                    String stringValue = resultSet.getString(columnIndex);
-                    value = stringValue != null ? UuidProvider.fromString(stringValue) : null;
-                } else {
+            switch (sqlType) {
+                case Types.CHAR:
+                case Types.VARCHAR:
+                case Types.LONGVARCHAR:
+                case Types.CLOB:
+                    if ("uniqueidentifier".equals(typeName)) {
+                        String stringValue = resultSet.getString(columnIndex);
+                        value = stringValue != null ? UuidProvider.fromString(stringValue) : null;
+                    } else {
+                        value = resultSet.getObject(columnIndex);
+                    }
+                    break;
+
+                default:
                     value = resultSet.getObject(columnIndex);
-                }
-                break;
+                    break;
+            }
 
-            default:
-                value = resultSet.getObject(columnIndex);
-                break;
+            return value;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error converting database value", e);
         }
-
-        return value;
     }
 
     @Override

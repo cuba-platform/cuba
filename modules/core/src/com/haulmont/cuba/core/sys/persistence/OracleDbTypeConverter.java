@@ -16,17 +16,21 @@ import java.util.UUID;
 public class OracleDbTypeConverter implements DbTypeConverter {
 
     @Override
-    public Object getJavaObject(ResultSet resultSet, int columnIndex) throws SQLException {
+    public Object getJavaObject(ResultSet resultSet, int columnIndex) {
         Object value;
 
-        ResultSetMetaData metaData = resultSet.getMetaData();
+        try {
+            ResultSetMetaData metaData = resultSet.getMetaData();
 
-        if ((columnIndex > metaData.getColumnCount()) || (columnIndex <= 0))
-            throw new IndexOutOfBoundsException("Column index out of bound");
+            if ((columnIndex > metaData.getColumnCount()) || (columnIndex <= 0))
+                throw new IndexOutOfBoundsException("Column index out of bound");
 
-        value = resultSet.getObject(columnIndex);
+            value = resultSet.getObject(columnIndex);
 
-        return value;
+            return value;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error converting database value", e);
+        }
     }
 
     @Override

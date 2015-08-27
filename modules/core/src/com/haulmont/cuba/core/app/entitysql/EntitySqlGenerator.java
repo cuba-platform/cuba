@@ -26,7 +26,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.persistence.*;
 import java.lang.reflect.Field;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -178,7 +177,7 @@ public class EntitySqlGenerator {
                 valueStr = value.toString();
             }
             return valueStr;
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new RuntimeException(format("An error occurred while converting object [%s] for SQL query", value), e);
         }
     }
