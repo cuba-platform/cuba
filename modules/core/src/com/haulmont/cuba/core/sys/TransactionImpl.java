@@ -95,7 +95,7 @@ public class TransactionImpl implements Transaction {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         end();
     }
 }

@@ -105,4 +105,7 @@ public interface Transaction extends AutoCloseable {
      * In case of successful commit this method does nothing. Otherwise it rollbacks the current transaction.
      */
     void end();
+
+    @Override
+    void close();
 }
