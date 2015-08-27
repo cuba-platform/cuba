@@ -6,17 +6,11 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.global.UuidProvider;
-import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.DirectCollectionMapping;
-import org.eclipse.persistence.mappings.ManyToOneMapping;
-import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
 import org.eclipse.persistence.sessions.Session;
-
-import java.sql.Types;
-import java.util.UUID;
 
 /**
  * @author krivopustov
@@ -34,6 +28,8 @@ public class UuidConverter implements Converter {
     public Object convertObjectValueToDataValue(Object objectValue, Session session) {
         if (session.getPlatform() instanceof PostgreSQLPlatform) {
             return objectValue;
+        } else if (session.getPlatform() instanceof OraclePlatform) {
+            return objectValue != null ? objectValue.toString().replace("-", "") : null;
         } else {
             return objectValue != null ? objectValue.toString() : null;
         }
@@ -43,6 +39,13 @@ public class UuidConverter implements Converter {
     public Object convertDataValueToObjectValue(Object dataValue, Session session) {
         if (session.getPlatform() instanceof PostgreSQLPlatform) {
             return dataValue;
+        } else if (session.getPlatform() instanceof OraclePlatform) {
+            StringBuilder sb = new StringBuilder((String) dataValue);
+            sb.insert(8, '-');
+            sb.insert(13, '-');
+            sb.insert(18, '-');
+            sb.insert(23, '-');
+            return UuidProvider.fromString(sb.toString());
         } else {
             return dataValue instanceof String ? UuidProvider.fromString((String) dataValue) : dataValue;
         }
@@ -55,32 +58,5 @@ public class UuidConverter implements Converter {
 
     @Override
     public void initialize(DatabaseMapping mapping, Session session) {
-//        DatabaseField field;
-//        if (mapping instanceof DirectCollectionMapping) {
-//            field = ((DirectCollectionMapping) mapping).getDirectField();
-//        } else {
-//            field = mapping.getField();
-//        }
-//        setFieldParameters(session, field);
-//
-//        for (DatabaseMapping m : mapping.getDescriptor().getMappings()) {
-//            assert OneToOneMapping.class.isAssignableFrom(ManyToOneMapping.class);
-//            if (m instanceof OneToOneMapping) {
-//                for (DatabaseField f : ((OneToOneMapping) m).getForeignKeyFields()) {
-//                    setFieldParameters(session, f);
-//                }
-//            }
-//        }
     }
-
-//    private void setFieldParameters(Session session, DatabaseField field) {
-//        if (session.getPlatform() instanceof PostgreSQLPlatform) {
-//            field.setSqlType(Types.OTHER);
-//            field.setType(UUID.class);
-//        } else {
-//            field.setSqlType(Types.VARCHAR);
-//            field.setType(String.class);
-//        }
-//        field.setColumnDefinition("UUID");
-//    }
 }
