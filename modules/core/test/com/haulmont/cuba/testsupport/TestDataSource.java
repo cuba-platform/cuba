@@ -25,6 +25,10 @@ public class TestDataSource implements DataSource {
         dataSource.setMaxTotal(20);
     }
 
+    public BasicDataSource getBasicDataSource() {
+        return dataSource;
+    }
+
     public Connection getConnection() throws SQLException {
         return dataSource.getConnection();
     }
