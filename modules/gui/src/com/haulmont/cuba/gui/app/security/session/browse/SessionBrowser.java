@@ -9,6 +9,8 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action.Status;
+import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.security.app.UserSessionService;
@@ -152,7 +154,7 @@ public class SessionBrowser extends AbstractLookup {
                 messages.getMessage(getClass(), "killConfirm"),
                 MessageType.CONFIRMATION,
                 new Action[]{
-                        new DialogAction(DialogAction.Type.OK) {
+                        new DialogAction(Type.OK) {
                             @Override
                             public void actionPerform(Component component) {
                                 for (UserSessionEntity session : selected) {
@@ -165,7 +167,7 @@ public class SessionBrowser extends AbstractLookup {
                                 sessionsTable.requestFocus();
                             }
                         },
-                        new DialogAction(DialogAction.Type.CANCEL)
+                        new DialogAction(Type.CANCEL, Status.PRIMARY)
                 }
         );
     }

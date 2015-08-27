@@ -18,6 +18,8 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action.Status;
+import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -236,7 +238,7 @@ public class EntityRestore extends AbstractWindow {
                         getMessage("dialogs.Message"),
                         MessageType.CONFIRMATION,
                         new Action[]{
-                                new DialogAction(DialogAction.Type.OK) {
+                                new DialogAction(Type.OK) {
                                     @Override
                                     public void actionPerform(Component component) {
                                         restoreService.restoreEntities(entityList);
@@ -244,7 +246,7 @@ public class EntityRestore extends AbstractWindow {
                                         entitiesTable.requestFocus();
                                     }
                                 },
-                                new DialogAction(DialogAction.Type.CANCEL) {
+                                new DialogAction(Type.CANCEL, Status.PRIMARY) {
                                     @Override
                                     public void actionPerform(Component component) {
                                         entitiesTable.requestFocus();

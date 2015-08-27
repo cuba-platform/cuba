@@ -9,6 +9,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.entity.User;
@@ -56,13 +57,13 @@ public class CopySettings extends AbstractWindow {
                             getMessage("confirmCopy.msg"),
                             MessageType.CONFIRMATION,
                             new Action[]{
-                                    new DialogAction(DialogAction.Type.YES) {
+                                    new DialogAction(Type.YES) {
                                         @Override
                                         public void actionPerform(Component component) {
                                             copySettings();
                                         }
                                     },
-                                    new DialogAction(DialogAction.Type.NO)
+                                    new DialogAction(Type.NO, Status.PRIMARY)
                             }
                     );
                 }

@@ -7,7 +7,6 @@ package com.haulmont.cuba.gui.app.security.user.browse;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.WindowManager;
@@ -15,6 +14,8 @@ import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.app.security.user.edit.UserEditor;
 import com.haulmont.cuba.gui.app.security.user.resetpasswords.ResetPasswordsDialog;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action.Status;
+import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
@@ -305,7 +306,7 @@ public class UserBrowser extends AbstractLookup {
                                     resetRememberMeAll();
                                 }
                             },
-                            new DialogAction(DialogAction.Type.CANCEL)
+                            new DialogAction(Type.CANCEL, Status.PRIMARY)
                     }
             );
         } else {
@@ -323,7 +324,7 @@ public class UserBrowser extends AbstractLookup {
                                     resetRememberMeAll();
                                 }
                             },
-                            new DialogAction(DialogAction.Type.CANCEL)
+                            new DialogAction(Type.CANCEL, Status.PRIMARY)
                     }
             );
         }

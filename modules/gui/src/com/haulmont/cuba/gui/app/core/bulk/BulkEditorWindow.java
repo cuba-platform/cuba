@@ -15,6 +15,8 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action.Status;
+import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.NestedDatasource;
@@ -478,13 +480,13 @@ public class BulkEditorWindow extends AbstractWindow {
             showOptionDialog(messages.getMainMessage("closeUnsaved.caption"),
                     messages.getMainMessage("closeUnsaved"),
                     MessageType.CONFIRMATION, new Action[]{
-                            new DialogAction(DialogAction.Type.YES) {
+                            new DialogAction(Type.YES) {
                                 @Override
                                 public void actionPerform(Component component) {
                                     close(CLOSE_ACTION_ID, true);
                                 }
                             },
-                            new DialogAction(DialogAction.Type.NO)
+                            new DialogAction(Type.NO, Status.PRIMARY)
                     });
         } else {
             close(CLOSE_ACTION_ID, true);
@@ -538,16 +540,7 @@ public class BulkEditorWindow extends AbstractWindow {
                                             commitChanges();
                                         }
                                     },
-                                    new AbstractAction("actions.Cancel") {
-                                        {
-                                            setIcon("icons/cancel.png");
-                                        }
-
-                                        @Override
-                                        public void actionPerform(Component component) {
-
-                                        }
-                                    }
+                                    new DialogAction(Type.CANCEL, Status.PRIMARY)
                             });
                 } else {
                     showNotification(getMessage("bulk.noChanges"), NotificationType.HUMANIZED);

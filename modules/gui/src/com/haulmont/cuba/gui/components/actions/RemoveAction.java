@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
@@ -139,7 +140,7 @@ public class RemoveAction extends ItemTrackingAction {
                 getConfirmationMessage(messagesPackage),
                 Frame.MessageType.CONFIRMATION,
                 new Action[]{
-                        new DialogAction(DialogAction.Type.OK) {
+                        new DialogAction(Type.OK) {
                             @Override
                             public void actionPerform(Component component) {
                                 doRemove(selected, autocommit);
@@ -153,7 +154,7 @@ public class RemoveAction extends ItemTrackingAction {
                                 }
                             }
                         },
-                        new DialogAction(DialogAction.Type.CANCEL) {
+                        new DialogAction(Type.CANCEL, Status.PRIMARY) {
                             @Override
                             public void actionPerform(Component component) {
                                 // move focus to owner

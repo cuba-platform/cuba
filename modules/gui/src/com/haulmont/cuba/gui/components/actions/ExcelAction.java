@@ -6,6 +6,7 @@ package com.haulmont.cuba.gui.components.actions;
 
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.export.ExcelExporter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 
@@ -69,7 +70,7 @@ public class ExcelAction extends BaseAction {
             String title = messages.getMainMessage("actions.exportSelectedTitle");
             String caption = messages.getMainMessage("actions.exportSelectedCaption");
             Action[] actions = new Action[] {
-                    new AbstractAction("actions.export.SELECTED_ROWS") {
+                    new AbstractAction("actions.export.SELECTED_ROWS", Status.PRIMARY) {
                         {
                             setCaption(messages.getMainMessage(getId()));
                         }
@@ -89,7 +90,7 @@ public class ExcelAction extends BaseAction {
                             export(ExportMode.ALL_ROWS);
                         }
                     },
-                    new DialogAction(DialogAction.Type.CANCEL)
+                    new DialogAction(Type.CANCEL)
             };
             Frame frame = table.getFrame();
             frame.showOptionDialog(title, caption, Frame.MessageType.CONFIRMATION, actions);
