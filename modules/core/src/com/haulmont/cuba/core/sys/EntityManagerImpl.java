@@ -5,13 +5,15 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.TypedQuery;
-import com.haulmont.cuba.core.entity.*;
+import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
@@ -23,7 +25,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.sql.Connection;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author krivopustov
@@ -244,9 +248,19 @@ public class EntityManagerImpl implements EntityManager {
     private void deepCopyIgnoringNulls(Entity source, Entity dest) {
         for (MetaProperty srcProperty : source.getMetaClass().getProperties()) {
             String name = srcProperty.getName();
-            Object value = source.getValue(name);
-            if (value == null)
+
+            if (!PersistenceHelper.isLoaded(source, name)) {
                 continue;
+            }
+
+            if (srcProperty.isReadOnly()) {
+                continue;
+            }
+
+            Object value = source.getValue(name);
+            if (value == null) {
+                continue;
+            }
 
             if (srcProperty.getRange().isClass()) {
                 MetadataTools metadataTools = metadata.getTools();
