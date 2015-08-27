@@ -34,6 +34,8 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     protected int orientation;
     protected boolean settingsEnabled = true;
 
+    protected float currentPosition = 0;
+
     @Override
     public void add(Component childComponent) {
         if (childComponent.getParent() != null && childComponent.getParent() != this) {
@@ -75,22 +77,29 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
         if (orientation == SplitPanel.ORIENTATION_HORIZONTAL) {
             component = new CubaHorizontalSplitPanel() {
                 @Override
-                protected void onPositionUpdate(float previousPosition, float newPosition) {
-                    super.onPositionUpdate(previousPosition, newPosition);
+                public void setSplitPosition(float pos, Unit unit, boolean reverse) {
+                    currentPosition = getSplitPosition();
 
-                    firePositionUpdateListener(previousPosition, newPosition);
+                    super.setSplitPosition(pos, unit, reverse);
                 }
             };
         } else {
             component = new VerticalSplitPanel() {
                 @Override
-                protected void onPositionUpdate(float previousPosition, float newPosition) {
-                    super.onPositionUpdate(previousPosition, newPosition);
+                public void setSplitPosition(float pos, Unit unit, boolean reverse) {
+                    currentPosition = getSplitPosition();
 
-                    firePositionUpdateListener(previousPosition, newPosition);
+                    super.setSplitPosition(pos, unit, reverse);
                 }
             };
         }
+
+        component.addSplitPositionChangeListener(new AbstractSplitPanel.SplitPositionChangeListener() {
+            @Override
+            public void onSplitPositionChanged(AbstractSplitPanel.SplitPositionChangeEvent event) {
+                firePositionUpdateListener(currentPosition, event.getSplitPosition());
+            }
+        });
     }
 
     protected void firePositionUpdateListener(float previousPosition, float newPosition) {

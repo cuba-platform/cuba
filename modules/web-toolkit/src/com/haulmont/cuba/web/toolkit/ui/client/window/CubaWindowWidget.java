@@ -28,7 +28,6 @@ public class CubaWindowWidget extends VWindow {
     protected ContextMenuHandler contextMenuHandler;
 
     public CubaWindowWidget() {
-        needFocusTopmostModalWindow = false;
         DOM.sinkEvents(header, DOM.getEventsSunk(header) | Event.ONCONTEXTMENU);
         addStyleName(NONMODAL_WINDOW_CLASSNAME);
     }
@@ -71,8 +70,6 @@ public class CubaWindowWidget extends VWindow {
 
         super.onCloseClick();
     }
-
-
 
     @Override
     public void setVaadinModality(boolean modality) {

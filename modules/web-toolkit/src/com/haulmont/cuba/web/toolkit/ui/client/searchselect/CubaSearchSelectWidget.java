@@ -66,7 +66,7 @@ public class CubaSearchSelectWidget extends VFilterSelect {
                                 suggestionPopup.selectFirstItem();
 
                                 MenuItem selectedItem = suggestionPopup.menu.getSelectedItem();
-                                suggestionPopup.menu.setKeyboardSelectedItem(selectedItem);
+                                suggestionPopup.menu.selectItem(selectedItem);
                                 suggestionPopup.menu.getElement().focus();
 
                                 tb.setText(selectedItem.getText());
@@ -114,25 +114,6 @@ public class CubaSearchSelectWidget extends VFilterSelect {
         }
     }
 
-    @Override
-    protected void handleSelectionOnBlur() {
-        if (tabPressedWhenPopupOpen) {
-            tabPressedWhenPopupOpen = false;
-            waitingForFilteringResponse = false;
-            suggestionPopup.menu.doSelectedItemAction();
-            suggestionPopup.hide();
-        } else if (!suggestionPopup.isAttached() || suggestionPopup.isJustClosed()) {
-            waitingForFilteringResponse = false;
-            if (currentSuggestion == null) {
-                if (tb.getText() != null && !"".equals(tb.getText().trim())) {
-                    suggestionPopup.menu.doSelectedItemAction();
-                }
-            } else if (!currentSuggestion.getReplacementString().equals(tb.getText())) {
-                suggestionPopup.menu.doSelectedItemAction();
-            }
-        }
-    }
-
     protected void updateEditState() {
         if (enabled && !readonly) {
             if (currentSuggestion != null) {
@@ -161,7 +142,7 @@ public class CubaSearchSelectWidget extends VFilterSelect {
             case KeyCodes.KEY_DOWN:
                 keyboardNavigation = true;
                 suggestionPopup.selectNextItem();
-                suggestionPopup.menu.setKeyboardSelectedItem(suggestionPopup.menu
+                suggestionPopup.menu.selectItem(suggestionPopup.menu
                         .getSelectedItem());
                 DOM.eventGetCurrentEvent().preventDefault();
                 event.stopPropagation();
@@ -169,7 +150,7 @@ public class CubaSearchSelectWidget extends VFilterSelect {
             case KeyCodes.KEY_UP:
                 keyboardNavigation = true;
                 suggestionPopup.selectPrevItem();
-                suggestionPopup.menu.setKeyboardSelectedItem(suggestionPopup.menu
+                suggestionPopup.menu.selectItem(suggestionPopup.menu
                         .getSelectedItem());
                 DOM.eventGetCurrentEvent().preventDefault();
                 event.stopPropagation();
@@ -188,17 +169,12 @@ public class CubaSearchSelectWidget extends VFilterSelect {
                 }
                 event.stopPropagation();
                 break;
-            case KeyCodes.KEY_TAB:
-                keyboardNavigation = false;
-                tabPressedWhenPopupOpen = true;
-//                filterOptions(currentPage);
-                // onBlur() takes care of the rest
-                break;
             case KeyCodes.KEY_ESCAPE:
                 keyboardNavigation = false;
                 reset();
                 event.stopPropagation();
                 break;
+            case KeyCodes.KEY_TAB:
             case KeyCodes.KEY_ENTER:
                 int selectedIndex = suggestionPopup.menu.getSelectedIndex();
                 if (selectedIndex >= 0) {
