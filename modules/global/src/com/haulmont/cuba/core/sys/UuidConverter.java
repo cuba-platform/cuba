@@ -40,12 +40,16 @@ public class UuidConverter implements Converter {
         if (session.getPlatform() instanceof PostgreSQLPlatform) {
             return dataValue;
         } else if (session.getPlatform() instanceof OraclePlatform) {
-            StringBuilder sb = new StringBuilder((String) dataValue);
-            sb.insert(8, '-');
-            sb.insert(13, '-');
-            sb.insert(18, '-');
-            sb.insert(23, '-');
-            return UuidProvider.fromString(sb.toString());
+            if (dataValue instanceof String) {
+                StringBuilder sb = new StringBuilder((String) dataValue);
+                sb.insert(8, '-');
+                sb.insert(13, '-');
+                sb.insert(18, '-');
+                sb.insert(23, '-');
+                return UuidProvider.fromString(sb.toString());
+            } else {
+                return dataValue;
+            }
         } else {
             return dataValue instanceof String ? UuidProvider.fromString((String) dataValue) : dataValue;
         }
