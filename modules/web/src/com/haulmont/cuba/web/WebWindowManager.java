@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.app.core.dev.LayoutAnalyzer;
 import com.haulmont.cuba.gui.app.core.dev.LayoutTip;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
+import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
@@ -768,20 +769,15 @@ public class WebWindowManager extends WindowManager {
 
                                 @Override
                                 public String getIcon() {
-                                    return "icons/ok.png";
+                                    return messages.getMainMessage("actions.dialog.Ok.icon");
                                 }
                             },
-                            new AbstractAction(messages.getMessage(WebWindow.class, "actions.Cancel"), Status.PRIMARY) {
+                            new DialogAction(Type.CANCEL, Status.PRIMARY) {
                                 @Override
                                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                                     if (runIfCancel != null) {
                                         runIfCancel.run();
                                     }
-                                }
-
-                                @Override
-                                public String getIcon() {
-                                    return "icons/cancel.png";
                                 }
                             }
                     }
@@ -1007,7 +1003,7 @@ public class WebWindowManager extends WindowManager {
         HorizontalLayout buttonsContainer = new HorizontalLayout();
         buttonsContainer.setSpacing(true);
 
-        DialogAction action = new DialogAction(DialogAction.Type.OK);
+        DialogAction action = new DialogAction(Type.OK);
         Button button = WebComponentsHelper.createButton();
 
         button.setCaption(action.getCaption());

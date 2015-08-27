@@ -47,7 +47,7 @@
         <split id="split" orientation="horizontal" pos="30" width="100%">
             <vbox id="topBox" spacing="true" margin="false,true,false,false" height="100%" expand="groupsTree">
                 <buttonsPanel>
-                    <popupButton id="groupCreateButton" caption="msg://create.caption" icon="icons/create.png"/>
+                    <popupButton id="groupCreateButton" caption="msg://create.caption" icon="msg://actions.Create.icon"/>
                     <button action="groupsTree.edit"/>
                     <button id="removeButton" action="groupsTree.remove"/>
                     <button action="groupsTree.refresh"/>
