@@ -34,6 +34,7 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.executors.*;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.BooleanUtils;
@@ -1800,7 +1801,8 @@ public class DesktopWindowManager extends WindowManager {
 
         @Override
         public String getIcon() {
-            return messages.getMainMessage(type.getIconKey());
+            ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
+            return thCM.getThemeValue(type.getIconKey());
         }
 
         @Override
