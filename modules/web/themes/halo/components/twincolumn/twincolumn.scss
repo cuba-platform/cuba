@@ -32,4 +32,8 @@
   .#{$primary-stylename}-buttons .removeAll .v-button-wrap:before {
     content: "\f053\f053";
   }
+
+  .#{$primary-stylename}-error .#{$primary-stylename}-selections {
+    @include valo-textfield-error-style;
+  }
 }
