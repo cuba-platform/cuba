@@ -1902,9 +1902,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             layout.setWidthUndefined();
             layout.setStyleName("cuba-table-view-textcut");
 
-            CubaResizableTextAreaWrapper content = new CubaResizableTextAreaWrapper(new CubaTextArea());
+            CubaTextArea textArea = new CubaTextArea();
+            textArea.setValue(value);
+            textArea.setReadOnly(true);
+
+            CubaResizableTextAreaWrapper content = new CubaResizableTextAreaWrapper(textArea);
             content.setResizable(true);
-            content.setValue(value);
 
             ThemeConstants theme = App.getInstance().getThemeConstants();
             if (theme != null) {
@@ -1915,7 +1918,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 content.setHeight("200px");
             }
 
-            content.setReadOnly(true);
             layout.addComponent(content);
 
             component.showCustomPopup(layout);
