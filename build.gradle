@@ -11,6 +11,7 @@ allprojects {
     //ext.tomcatDir = rootDir.absolutePath + '/../tomcat'
 }
 
+//
 buildscript {
     ext.cubaVersion = '6.0-SNAPSHOT'
     ext.cubaVersion = rootProject.hasProperty('buildVersion') ? rootProject['buildVersion'] : cubaVersion
