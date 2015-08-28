@@ -15,5 +15,7 @@ public class WebButtonsPanel extends WebHBoxLayout implements ButtonsPanel {
     public WebButtonsPanel() {
         setSpacing(true);
         setMargin(false);
+
+        setStyleName("cuba-buttons-panel");
     }
 }
