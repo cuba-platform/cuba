@@ -536,6 +536,12 @@ configure(webToolkitModule) {
         String xxMPS = '-XX:MaxPermSize=256m'
     }
 
+    task buildDebugWidgetSet(type: CubaWidgetSetBuilding) {
+        widgetSetClass = 'com.haulmont.cuba.web.toolkit.ui.WidgetSet'
+        // Performance and widgetset size:
+        style = 'PRETTY'
+    }
+
     task debugWidgetSet(type: CubaWidgetSetDebug) {
         widgetSetClass = 'com.haulmont.cuba.web.toolkit.ui.WidgetSet'
     }
@@ -549,8 +555,14 @@ configure(webToolkitModule) {
         classifier = 'web'
     }
 
+    task webDebugArchive(dependsOn: buildDebugWidgetSet, type: Zip) {
+        from file("$buildDir/web")
+        classifier = 'debug'
+    }
+
     artifacts {
         archives webArchive
+        archives webDebugArchive
     }
 
     task deploy(dependsOn: buildWidgetSet) << {
