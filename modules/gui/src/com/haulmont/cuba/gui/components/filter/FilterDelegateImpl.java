@@ -1378,6 +1378,9 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected void initDatasourceMaxResults() {
+        if (datasource == null) {
+            throw new DevelopmentException("Filter datasource is not set");
+        }
         if (this.maxResults != -1) {
             datasource.setMaxResults(maxResults);
         } else if (maxResultsDisplayed && useMaxResults) {
