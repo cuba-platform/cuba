@@ -31,6 +31,11 @@ public class CubaResizableTextAreaWrapperConnector extends CustomFieldConnector 
             public void sizeChanged(String width, String height) {
                 getRpcProxy(CubaResizableTextAreaWrapperServerRpc.class).sizeChanged(width, height);
             }
+
+            @Override
+            public void textChanged(String text) {
+                getRpcProxy(CubaResizableTextAreaWrapperServerRpc.class).textChanged(text);
+            }
         };
     }
 

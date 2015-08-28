@@ -31,8 +31,8 @@ public class CubaResizableTextAreaWrapper extends CustomField {
 
     protected final CubaTextArea textArea;
 
-    public CubaResizableTextAreaWrapper(CubaTextArea textArea) {
-        this.textArea = textArea;
+    public CubaResizableTextAreaWrapper(CubaTextArea txtArea) {
+        this.textArea = txtArea;
 
         setWidthUndefined();
         setPrimaryStyleName(getState().primaryStyleName);
@@ -48,6 +48,13 @@ public class CubaResizableTextAreaWrapper extends CustomField {
 
                 for (ResizeListener listener : listeners) {
                     listener.onResize(null, null, width, height);
+                }
+            }
+
+            @Override
+            public void textChanged(String text) {
+                if (!textArea.isReadOnly()) {
+                    textArea.setValue(text);
                 }
             }
         };

@@ -14,4 +14,6 @@ import com.vaadin.shared.communication.ServerRpc;
 public interface CubaResizableTextAreaWrapperServerRpc extends ServerRpc {
 
     void sizeChanged(String width, String height);
+
+    void textChanged(String text);
 }

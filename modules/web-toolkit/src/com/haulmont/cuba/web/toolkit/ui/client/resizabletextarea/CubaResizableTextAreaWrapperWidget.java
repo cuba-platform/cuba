@@ -111,6 +111,7 @@ public class CubaResizableTextAreaWrapperWidget extends VCustomComponent {
             if (resizeHandler != null) {
                 ComputedStyle cs = new ComputedStyle(getElement());
                 resizeHandler.sizeChanged(cs.getProperty("width"), cs.getProperty("height"));
+                resizeHandler.textChanged(getText());
             }
         }
     }
@@ -142,10 +143,16 @@ public class CubaResizableTextAreaWrapperWidget extends VCustomComponent {
         return getElement().getFirstChildElement();
     }
 
+    public String getText() {
+        return getTextArea().getPropertyString("value");
+    }
+
     public interface ResizeHandler {
 
         void handleResize();
 
         void sizeChanged(String width, String height);
+
+        void textChanged(String text);
     }
 }
