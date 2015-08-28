@@ -30,6 +30,7 @@ import org.codehaus.groovy.control.CompilerConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -93,7 +94,7 @@ public abstract class AbstractScripting implements Scripting {
         if (gse == null) {
             synchronized (this) {
                 if (gse == null) {
-                    gse = new GroovyScriptEngine(new CubaResourceConnector(), javaClassLoader);
+                    gse = new GroovyScriptEngine(new CubaResourceConnector(), getGroovyClassLoader());
                 }
             }
         }
@@ -272,6 +273,16 @@ public abstract class AbstractScripting implements Scripting {
     public void clearCache() {
         getGroovyClassLoader().clearCache();
         javaClassLoader.clearCache();
+        getPool().clear();
+        GroovyScriptEngine gse = getGroovyScriptEngine();
+        try {
+            Field scriptCacheField = gse.getClass().getDeclaredField("scriptCache");
+            scriptCacheField.setAccessible(true);
+            Map scriptCacheMap = (Map) scriptCacheField.get(gse);
+            scriptCacheMap.clear();
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            //ignore the exception
+        }
     }
 
     protected class CubaResourceConnector implements ResourceConnector {
