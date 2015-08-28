@@ -5,10 +5,6 @@
 
 <menu-config xmlns="http://schemas.haulmont.com/cuba/menu.xsd">
 
-    <menu id="test">
-        <item id="testScreen"/>
-    </menu>
-
     <menu id="administration">
         <item id="sec$User.browse"/>
         <item id="sec$Group.browse"/>
