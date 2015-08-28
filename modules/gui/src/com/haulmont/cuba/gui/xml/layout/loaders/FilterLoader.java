@@ -22,6 +22,8 @@ import org.dom4j.Element;
  */
 public class FilterLoader extends ComponentLoader {
 
+    public static final String DEFAULT_FILTER_ID = "filterWithoutId";
+
     public FilterLoader(Context context) {
         super(context);
     }
@@ -31,6 +33,14 @@ public class FilterLoader extends ComponentLoader {
         final Filter filter = (Filter) factory.createComponent(element.getName());
         initFilter(filter, element);
         return filter;
+    }
+
+    @Override
+    protected void loadId(Component component, Element element) {
+        super.loadId(component, element);
+        if (Strings.isNullOrEmpty(component.getId())) {
+            component.setId(DEFAULT_FILTER_ID);
+        }
     }
 
     protected void initFilter(final Filter filter, final Element element) {
