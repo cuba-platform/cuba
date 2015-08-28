@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.settings.Settings;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebWindowManager;
@@ -907,14 +908,16 @@ public class WebWindow implements Window, Component.Wrapper,
                                     }
                                 },
                                 new AbstractAction("discard") {
+                                    {
+                                        ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
+                                        icon = thCM.getThemeValue("actions.dialog.Cancel.icon");
+                                    }
+
                                     @Override
                                     public String getCaption() {
                                         return messages.getMainMessage("closeUnsaved.discard");
                                     }
-                                    @Override
-                                    public String getIcon() {
-                                        return messages.getMainMessage("actions.dialog.Cancel.icon");
-                                    }
+
                                     @Override
                                     public void actionPerform(Component component) {
                                         close(actionId, true);

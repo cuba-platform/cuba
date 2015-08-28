@@ -4,6 +4,9 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
+
 /**
  * @author krivopustov
  * @version $Id$
@@ -19,12 +22,12 @@ public class DialogAction extends AbstractAction {
 
         private String id;
         private String msgKey;
-        private String iconMsgKey;
+        private String iconKey;
 
-        Type(String id, String msgKey, String iconMsgKey) {
+        Type(String id, String msgKey, String iconKey) {
             this.id = id;
             this.msgKey = msgKey;
-            this.iconMsgKey = iconMsgKey;
+            this.iconKey = iconKey;
         }
 
         public String getId() {
@@ -35,8 +38,8 @@ public class DialogAction extends AbstractAction {
             return msgKey;
         }
 
-        public String getIconMsgKey() {
-            return iconMsgKey;
+        public String getIconKey() {
+            return iconKey;
         }
     }
 
@@ -56,16 +59,14 @@ public class DialogAction extends AbstractAction {
         this(type);
 
         this.primary = status == Status.PRIMARY;
+
+        ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
+        this.icon = thCM.getThemeValue(type.iconKey);
     }
 
     @Override
     public String getCaption() {
         return messages.getMainMessage(type.msgKey);
-    }
-
-    @Override
-    public String getIcon() {
-        return messages.getMainMessage(type.iconMsgKey);
     }
 
     public Type getType() {

@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.EntityOp;
 
 import java.util.HashMap;
@@ -94,7 +95,9 @@ public class EditAction extends BaseAction implements Action.HasOpenType {
 
         this.target = target;
         this.openType = openType;
-        this.icon = messages.getMainMessage("actions.Edit.icon");
+
+        ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
+        this.icon = thCM.getThemeValue("actions.Edit.icon");
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig config = configuration.getConfig(ClientConfig.class);

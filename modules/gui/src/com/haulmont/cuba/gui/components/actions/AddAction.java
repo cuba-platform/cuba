@@ -16,6 +16,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.NestedDatasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 
 import javax.annotation.Nullable;
@@ -86,7 +87,9 @@ public class AddAction extends BaseAction implements Action.HasOpenType {
         this.handler = handler;
         this.openType = openType;
         this.caption = messages.getMainMessage("actions.Add");
-        this.icon = messages.getMainMessage("actions.Add.icon");
+
+        ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
+        this.icon = thCM.getThemeValue("actions.Add.icon");
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);

@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 
@@ -81,7 +82,9 @@ public class RemoveAction extends ItemTrackingAction {
         this.target = target;
         this.autocommit = autocommit;
         this.caption = messages.getMainMessage("actions.Remove");
-        this.icon = messages.getMainMessage("actions.Remove.icon");
+
+        ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
+        this.icon = thCM.getThemeValue("actions.Remove.icon");
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig config = configuration.getConfig(ClientConfig.class);

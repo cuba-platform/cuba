@@ -4,11 +4,13 @@
  */
 package com.haulmont.cuba.gui.components.actions;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.export.ExcelExporter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 
 import static com.haulmont.cuba.gui.export.ExcelExporter.ExportMode;
 
@@ -57,7 +59,9 @@ public class ExcelAction extends BaseAction {
         this.table = table;
         this.display = display;
         this.caption = messages.getMainMessage("actions.Excel");
-        this.icon = messages.getMainMessage("actions.Excel.icon");
+
+        ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
+        this.icon = thCM.getThemeValue("actions.Excel.icon");
     }
 
     /**

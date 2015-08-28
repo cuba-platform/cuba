@@ -391,7 +391,7 @@ public class UserEditor extends AbstractEditor<User> {
         public AddRoleAction() {
             super("add");
 
-            icon = messages.getMainMessage("actions.Add.icon");
+            icon = themeConstants.get("actions.Add.icon");
 
             ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
             setShortcut(clientConfig.getTableAddShortcut());
@@ -468,7 +468,7 @@ public class UserEditor extends AbstractEditor<User> {
         public EditRoleAction() {
             super("edit");
 
-            icon = messages.getMainMessage("actions.Edit.icon");
+            icon = themeConstants.get("actions.Edit.icon");
         }
 
         @Override
@@ -537,7 +537,7 @@ public class UserEditor extends AbstractEditor<User> {
         public AddSubstitutedAction() {
             super("add");
 
-            icon = messages.getMainMessage("actions.Add.icon");
+            icon = themeConstants.get("actions.Add.icon");
 
             ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
             setShortcut(clientConfig.getTableAddShortcut());
@@ -573,7 +573,7 @@ public class UserEditor extends AbstractEditor<User> {
         public EditSubstitutedAction() {
             super("edit");
 
-            icon = messages.getMainMessage("actions.Edit.icon");
+            icon = themeConstants.get("actions.Edit.icon");
         }
 
         @Override

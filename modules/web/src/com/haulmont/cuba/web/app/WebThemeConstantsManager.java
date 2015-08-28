@@ -21,4 +21,14 @@ public class WebThemeConstantsManager implements ThemeConstantsManager {
     public ThemeConstants getConstants() {
         return App.getInstance().getThemeConstants();
     }
+
+    @Override
+    public String getThemeValue(String key) {
+        return getConstants().get(key);
+    }
+
+    @Override
+    public int getThemeValueInt(String key) {
+        return getConstants().getInt(key);
+    }
 }

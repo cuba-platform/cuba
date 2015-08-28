@@ -16,6 +16,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.NestedDatasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 
 import java.util.Set;
@@ -64,8 +65,10 @@ public class ExcludeAction extends RemoveAction {
 
         this.confirm = confirm;
         this.caption = messages.getMainMessage("actions.Exclude");
-        this.icon = messages.getMainMessage("actions.Exclude.icon");
         this.metadata = AppBeans.get(Metadata.NAME);
+
+        ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
+        this.icon = thCM.getThemeValue("actions.Exclude.icon");
     }
 
     @Override

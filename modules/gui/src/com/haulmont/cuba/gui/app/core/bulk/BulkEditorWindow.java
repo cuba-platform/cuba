@@ -532,7 +532,7 @@ public class BulkEditorWindow extends AbstractWindow {
                             MessageType.CONFIRMATION, new Action[]{
                                     new AbstractAction("actions.Apply") {
                                         {
-                                            setIcon("icons/ok.png");
+                                            icon = themeConstants.get("actions.dialog.Ok.icon");
                                         }
 
                                         @Override

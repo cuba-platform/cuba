@@ -14,4 +14,7 @@ public interface ThemeConstantsManager {
     String NAME = "cuba_ThemeManager";
 
     ThemeConstants getConstants();
+
+    String getThemeValue(String key);
+    int getThemeValueInt(String key);
 }

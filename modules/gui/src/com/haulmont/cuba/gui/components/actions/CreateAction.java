@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 
@@ -89,8 +90,11 @@ public class CreateAction extends BaseAction implements Action.HasOpenType {
         this.target = target;
         this.openType = openType;
         this.caption = messages.getMainMessage("actions.Create");
-        this.icon = messages.getMainMessage("actions.Create.icon");
+
+        ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
+        this.icon = thCM.getThemeValue("actions.Create.icon");
         this.metadata = AppBeans.get(Metadata.NAME);
+
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         setShortcut(clientConfig.getTableInsertShortcut());

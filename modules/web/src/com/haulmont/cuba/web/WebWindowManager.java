@@ -20,6 +20,7 @@ import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
 import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
@@ -761,15 +762,16 @@ public class WebWindowManager extends WindowManager {
                     MessageType.WARNING,
                     new Action[]{
                             new AbstractAction(messages.getMessage(WebWindow.class, "closeApplication")) {
+
+                                {
+                                    ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
+                                    icon = thCM.getThemeValue("actions.dialog.Ok.icon");
+                                }
+
                                 @Override
                                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                                     closeAllWindows();
                                     runIfOk.run();
-                                }
-
-                                @Override
-                                public String getIcon() {
-                                    return messages.getMainMessage("actions.dialog.Ok.icon");
                                 }
                             },
                             new DialogAction(Type.CANCEL, Status.PRIMARY) {

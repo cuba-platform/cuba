@@ -4,9 +4,11 @@
  */
 package com.haulmont.cuba.gui.components.actions;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 
 import java.util.Map;
 
@@ -43,7 +45,9 @@ public class RefreshAction extends BaseAction {
         super(id);
         this.owner = target;
         this.caption = messages.getMainMessage("actions.Refresh");
-        this.icon = messages.getMainMessage("actions.Refresh.icon");
+
+        ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
+        this.icon = thCM.getThemeValue("actions.Refresh.icon");
     }
 
     /**

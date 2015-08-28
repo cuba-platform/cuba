@@ -324,7 +324,8 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         if (element.attribute("icon") != null) {
             String icon = element.attributeValue("icon");
 
-            icon = loadResourceString(icon);
+            String themeValue = loadThemeString(icon);
+            icon = loadResourceString(themeValue);
             component.setIcon(icon);
         }
     }
