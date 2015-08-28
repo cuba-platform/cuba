@@ -396,7 +396,6 @@ configure(webModule) {
         }
 
         /* Vaadin addons */
-        compile(group: 'com.haulmont.thirdparty', name: 'appletintegration', version: '1.2.10')
         compile(group: 'com.haulmont.thirdparty', name: 'popupbutton', version: '2.5.2.cuba.3')
         compile(group: 'com.haulmont.thirdparty', name: 'aceeditor', version: '0.8.15')
         compile(group: 'org.vaadin.addons', name: 'contextmenu', version: '4.5')
