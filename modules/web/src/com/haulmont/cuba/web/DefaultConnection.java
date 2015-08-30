@@ -11,8 +11,7 @@ import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.auth.ActiveDirectoryConnection;
-import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
+import com.haulmont.cuba.web.auth.ExternallyAuthenticatedConnection;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
 
 import java.util.Locale;
@@ -24,7 +23,7 @@ import java.util.Map;
  * @author gorodnov
  * @version $Id$
  */
-public class DefaultConnection extends AbstractConnection implements ActiveDirectoryConnection {
+public class DefaultConnection extends AbstractConnection implements ExternallyAuthenticatedConnection {
 
     protected Configuration configuration = AppBeans.get(Configuration.NAME);
 
@@ -77,7 +76,7 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
     }
 
     @Override
-    public void loginActiveDirectory(String login, Locale locale) throws LoginException {
+    public void loginAfterExternalAuthentication(String login, Locale locale) throws LoginException {
         if (locale == null) {
             throw new IllegalArgumentException("Locale is null");
         }
@@ -89,7 +88,7 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
         if (session == null) {
             throw new IllegalStateException("Null session after login");
         }
-        session.setAttribute(ACTIVE_DIRECTORY_USER_SESSION_ATTRIBUTE, true);
+        session.setAttribute(EXTERNAL_AUTH_USER_SESSION_ATTRIBUTE, true);
     }
 
     /**
@@ -114,7 +113,7 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
     @Override
     public String logout() {
         super.logout();
-        return ActiveDirectoryHelper.useActiveDirectory() ? "login" : "";
+        return configuration.getConfig(WebAuthConfig.class).getExternalAuthentication() ? "login" : "";
     }
 
     @Override

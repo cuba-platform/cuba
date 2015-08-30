@@ -15,7 +15,6 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.NoUserSessionException;
-import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.auth.RequestContext;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.exception.ExceptionHandlers;
@@ -206,7 +205,7 @@ public abstract class App {
         MessageTools messageTools = AppBeans.get(MessageTools.NAME);
         locale = messageTools.getDefaultLocale();
 
-        if (ActiveDirectoryHelper.useActiveDirectory()) {
+        if (webAuthConfig.getExternalAuthentication()) {
             principal = RequestContext.get().getRequest().getUserPrincipal();
         }
     }

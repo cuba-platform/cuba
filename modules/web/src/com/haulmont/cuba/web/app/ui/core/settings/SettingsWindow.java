@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
-import static com.haulmont.cuba.web.auth.ActiveDirectoryConnection.ACTIVE_DIRECTORY_USER_SESSION_ATTRIBUTE;
+import static com.haulmont.cuba.web.auth.ExternallyAuthenticatedConnection.EXTERNAL_AUTH_USER_SESSION_ATTRIBUTE;
 
 /**
  * @author krivopustov
@@ -125,7 +125,7 @@ public class SettingsWindow extends AbstractWindow {
                 }
         );
         if (!user.equals(userSession.getCurrentOrSubstitutedUser())
-                || Boolean.TRUE.equals(userSession.getAttribute(ACTIVE_DIRECTORY_USER_SESSION_ATTRIBUTE))) {
+                || Boolean.TRUE.equals(userSession.getAttribute(EXTERNAL_AUTH_USER_SESSION_ATTRIBUTE))) {
             changePasswordBtn.setEnabled(false);
         }
 

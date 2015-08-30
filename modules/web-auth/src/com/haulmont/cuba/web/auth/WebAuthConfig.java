@@ -30,22 +30,22 @@ public interface WebAuthConfig extends Config {
     String getActiveDirectoryAliases();
 
     /**
-     * @return Whether to use the ActiveDirectory authentication
+     * @return Whether to use an external authentication
      */
-    @Property("cuba.web.useActiveDirectory")
+    @Property("cuba.web.ExternalAuthentication")
     @DefaultBoolean(false)
-    boolean getUseActiveDirectory();
+    boolean getExternalAuthentication();
 
     /**
-     * @return ActiveDirectory authentification provider
+     * @return external authentification provider
      */
-    @Property("cuba.web.activeDirectoryAuthClass")
+    @Property("cuba.web.externalAuthenticationProviderClass")
     @DefaultString("com.haulmont.cuba.web.auth.LdapAuthProvider")
-    String getActiveDirectoryAuthClass();
+    String getExternalAuthenticationProviderClass();
 
     /**
      * @return Password used by LoginService.loginTrusted() method.
-     * Trusted client may login without providing a user password. This is used by ActiveDirectory integration.
+     * Trusted client may login without providing a user password. This is used for external authentication.
      *
      * <p>Must be equal to password set for the same property on the CORE.</p>
      */

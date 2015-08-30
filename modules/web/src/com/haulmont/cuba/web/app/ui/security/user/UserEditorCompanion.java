@@ -23,7 +23,7 @@ public class UserEditorCompanion implements UserEditor.Companion {
 
     @Override
     public void initPasswordField(PasswordField passwordField) {
-        passwordField.setRequired(!config.getUseActiveDirectory());
+        passwordField.setRequired(!config.getExternalAuthentication());
     }
 
     @Override

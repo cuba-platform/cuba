@@ -13,10 +13,10 @@ import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.auth.ActiveDirectoryConnection;
-import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
+import com.haulmont.cuba.web.auth.ExternallyAuthenticatedConnection;
 import com.haulmont.cuba.web.auth.CubaAuthProvider;
 import com.haulmont.cuba.web.auth.DomainAliasesResolver;
+import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
@@ -79,11 +79,11 @@ public class LoginWindow extends UIView {
 
     protected Messages messages = AppBeans.get(Messages.NAME);
 
+    protected Configuration configuration = AppBeans.get(Configuration.NAME);
+
     public LoginWindow(AppUI ui) {
         log.trace("Creating " + this);
         this.ui = ui;
-
-        Configuration configuration = AppBeans.get(Configuration.NAME);
 
         globalConfig = configuration.getConfig(GlobalConfig.class);
         webConfig = configuration.getConfig(WebConfig.class);
@@ -354,7 +354,7 @@ public class LoginWindow extends UIView {
         }
         localesSelect.setValue(selected);
 
-        if (ActiveDirectoryHelper.useActiveDirectory()) {
+        if (configuration.getConfig(WebAuthConfig.class).getExternalAuthentication()) {
             loginField.setValue(app.getPrincipal() == null ? "" : app.getPrincipal().getName());
             passwordField.setValue("");
         } else {
@@ -408,13 +408,13 @@ public class LoginWindow extends UIView {
 
             if (loginByRememberMe && rememberMeAllowed) {
                 loginByRememberMe(login, password, locale);
-            } else if (ActiveDirectoryHelper.useActiveDirectory()) {
-                // try to login as AD user, fallback to regular authentication
+            } else if (configuration.getConfig(WebAuthConfig.class).getExternalAuthentication()) {
+                // try to login as externally authenticated user, fallback to regular authentication
                 // we use resolved locale for error messages
-                if (loginActiveDirectory(login, password, resolvedLocale)) {
+                if (authenticateExternally(login, password, resolvedLocale)) {
                     login = convertLoginString(login);
 
-                    ((ActiveDirectoryConnection) connection).loginActiveDirectory(login, locale);
+                    ((ExternallyAuthenticatedConnection) connection).loginAfterExternalAuthentication(login, locale);
                 } else {
                     login(login, passwordEncryption.getPlainHash(password), locale);
                 }
@@ -437,12 +437,12 @@ public class LoginWindow extends UIView {
         }
     }
 
-    protected boolean loginActiveDirectory(String login, String passwordValue, Locale locale) {
+    protected boolean authenticateExternally(String login, String passwordValue, Locale locale) {
         CubaAuthProvider authProvider = AppBeans.get(CubaAuthProvider.NAME);
         try {
             authProvider.authenticate(login, passwordValue, locale);
         } catch (Exception e) {
-            log.debug("Login to AD failed", e);
+            log.debug("External authentication failed", e);
             return false;
         }
         return true;

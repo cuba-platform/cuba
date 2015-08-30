@@ -28,7 +28,7 @@ public interface ServerConfig extends Config {
 
     /**
      * @return Password used by LoginService.loginTrusted() method.
-     * Trusted client may login without providing a user password. This is used by ActiveDirectory integration.
+     * Trusted client may login without providing a user password. This is used for external authentication.
      *
      * <p>Must be equal to password set for the same property on the client.</p>
      */

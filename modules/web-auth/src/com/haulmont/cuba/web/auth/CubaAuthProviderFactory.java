@@ -12,7 +12,7 @@ import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 
 /**
- * Simple factory bean for creation {@link CubaAuthProvider} by class from {@link WebAuthConfig#getActiveDirectoryAuthClass()}.<br/>
+ * Simple factory bean for creation {@link CubaAuthProvider} by class from {@link WebAuthConfig#getExternalAuthenticationProviderClass()}.<br/>
  * CAUTION: We do not use placeholder in class parameter for bean due to DEBUG errors on Spring context start.
  *
  * @author artamonov
@@ -29,7 +29,7 @@ public class CubaAuthProviderFactory {
 
     public CubaAuthProvider createAuthProvider() {
         WebAuthConfig authConfig = configuration.getConfig(WebAuthConfig.class);
-        String providerClassName = authConfig.getActiveDirectoryAuthClass();
+        String providerClassName = authConfig.getExternalAuthenticationProviderClass();
 
         try {
             ClassLoader classLoader = applicationContext.getClassLoader();

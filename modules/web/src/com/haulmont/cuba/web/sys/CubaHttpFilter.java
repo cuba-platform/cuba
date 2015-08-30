@@ -7,8 +7,8 @@ package com.haulmont.cuba.web.sys;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.auth.CubaAuthProvider;
+import com.haulmont.cuba.web.auth.WebAuthConfig;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,8 @@ public class CubaHttpFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        if (ActiveDirectoryHelper.useActiveDirectory()) {
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        if (configuration.getConfig(WebAuthConfig.class).getExternalAuthentication()) {
             try {
                 authProvider = AppBeans.get(CubaAuthProvider.NAME);
                 authProvider.init(filterConfig);
@@ -40,7 +41,6 @@ public class CubaHttpFilter implements Filter {
                 throw new ServletException(e);
             }
             // Fill bypassUrls
-            Configuration configuration = AppBeans.get(Configuration.NAME);
             String urls = configuration.getConfig(WebConfig.class).getCubaHttpFilterBypassUrls();
             String[] strings = urls.split("[, ]");
             for (String string : strings) {

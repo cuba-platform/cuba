@@ -12,8 +12,7 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
-import com.haulmont.cuba.web.auth.ActiveDirectoryConnection;
-import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
+import com.haulmont.cuba.web.auth.ExternallyAuthenticatedConnection;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.server.WrappedSession;
@@ -25,7 +24,7 @@ import java.util.Map;
 
 /**
  * Default {@link App} implementation that shows {@link LoginWindow} on start.
- * Supports SSO through integration with ActiveDirectory.
+ * Supports SSO through external authentication.
  *
  * @author gorodnov
  * @version $Id$
@@ -117,7 +116,7 @@ public class DefaultApp extends App implements ConnectionListener, UserSubstitut
      * Perform actions after successful login
      */
     protected void afterLoggedIn() {
-        if (!webAuthConfig.getUseActiveDirectory()) {
+        if (!webAuthConfig.getExternalAuthentication()) {
             UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
             final User user = sessionSource.getUserSession().getUser();
             // Change password on logon
@@ -148,12 +147,12 @@ public class DefaultApp extends App implements ConnectionListener, UserSubstitut
     protected boolean loginOnStart() {
         if (tryLoginOnStart &&
                 principal != null
-                && ActiveDirectoryHelper.useActiveDirectory()) {
+                && webAuthConfig.getExternalAuthentication()) {
 
             String userName = principal.getName();
-            log.debug("Trying to login ActiveDirectory as " + userName);
+            log.debug("Trying to login after external authentication as " + userName);
             try {
-                ((ActiveDirectoryConnection) connection).loginActiveDirectory(userName, locale);
+                ((ExternallyAuthenticatedConnection) connection).loginAfterExternalAuthentication(userName, locale);
 
                 return true;
             } catch (LoginException e) {
