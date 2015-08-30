@@ -57,12 +57,11 @@ apply from: "$rootProject.projectDir/lib.gradle"
 def springVersion = '4.2.0.RELEASE'
 def springSecurityVersion = '4.0.2.RELEASE'
 
-def servletApi = [group: 'org.apache.tomcat', name: 'tomcat-servlet-api', version: '7.0.53']
+def servletApi = 'org.apache.tomcat:tomcat-servlet-api:8.0.26'
 def groovyArtifact = 'org.codehaus.groovy:groovy-all:2.4.4'
-//def asm = [group: 'org.ow2.asm', name: 'asm', version: '5.0.3']
 def poi = [group: 'com.haulmont.thirdparty', name: 'poi', version: '3.9.20130515']
 def postgres = 'org.postgresql:postgresql:9.4-1201-jdbc41'
-def hsqldb = [group: 'org.hsqldb', name: 'hsqldb', version: '2.2.9']
+def hsqldb = 'org.hsqldb:hsqldb:2.3.3'
 
 /* Shared web dependencies */
 def commonsUpload = [group: 'commons-fileupload', name: 'commons-fileupload', version: '1.3.1']
@@ -94,7 +93,7 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
         compile(group: 'com.haulmont.thirdparty', name: 'javaee-api', version: '6.0.20091228')
         compile(groovyArtifact)
         compile(group: 'antlr', name: 'antlr', version: '2.7.7')
-//        compile(asm)
+        compile(group: 'org.antlr', name: 'antlr-runtime', version: '3.5.2')
         compile('com.google.guava:guava:18.0')
 
         compile 'org.eclipse.persistence:javax.persistence:2.1.0'
@@ -102,7 +101,6 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
         compile 'org.glassfish:javax.json:1.0.4'
         compile 'com.haulmont.thirdparty:eclipselink:2.6.0.cuba.1'
 
-        compile(group: 'org.antlr', name: 'antlr-runtime', version: '3.5.2')
         compile('org.freemarker:freemarker:2.3.23')
         compile(group: 'aopalliance', name: 'aopalliance', version: '1.0')
         compile(group: 'org.springframework', name: 'spring-core', version: springVersion)
@@ -111,7 +109,7 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
         compile(group: 'org.springframework', name: 'spring-web', version: springVersion)
 
         testCompile('org.jmockit:jmockit:1.15')
-        testCompile(group: 'junit', name: 'junit', version: '4.5')
+        testCompile('junit:junit:4.12')
     }
 
     task sourceJar(type: Jar) {
@@ -241,7 +239,7 @@ configure(coreModule) {
         runtime(group: 'xpp3', name: 'xpp3_min', version: '1.1.4c')
         runtime(group: 'xmlpull', name: 'xmlpull', version: '1.1.3.1')
 		compile(group: 'org.ocpsoft.prettytime', name: 'prettytime-nlp', version: '3.2.5.Final')
-        compile(group: 'org.jgroups', name: 'jgroups', version: '3.6.1.Final')
+        compile('org.jgroups:jgroups:3.6.4')
         compile('org.aspectj:aspectjrt:1.8.6')
         compile('org.aspectj:aspectjweaver:1.8.6')
         compile('org.mybatis:mybatis:3.2.7')
@@ -361,7 +359,6 @@ configure(guiModule) {
         compile(clientModule)
         compile(poi)
         compile(groovyArtifact)
-//        compile(asm)
 
         testCompile(clientModule.sourceSets.test.output)
     }
@@ -629,7 +626,6 @@ configure(portalModule) {
         compile(group: 'org.springframework.security', name: 'spring-security-taglibs', version: springSecurityVersion)
         compile(group: 'org.json', name: 'json', version: '20140107')
         compile(groovyArtifact)
-//        compile(asm)
 
         compile(group: 'org.springframework', name: 'spring-tx', version: springVersion)
         compile(group: 'org.springframework', name: 'spring-jdbc', version: springVersion)
