@@ -145,6 +145,12 @@ public class DatasourceImpl<T extends Entity>
             state = State.VALID;
             fireStateChanged(prevState);
         }
+        if (item != null) {
+            T prevItem = item;
+            T reloadedItem = dataSupplier.reload(item, view);
+            __setItem(reloadedItem);
+            fireItemChanged(prevItem);
+        }
     }
 
     @Override
