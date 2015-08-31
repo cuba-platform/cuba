@@ -13,6 +13,7 @@ import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 
 /**
  * Utility class providing some information about persistent entities.
@@ -24,10 +25,11 @@ public class PersistenceHelper {
 
     /**
      * Determines whether the instance is <em>New</em>, i.e. just created and not stored in database yet.
+     *
      * @param entity entity instance
      * @return <li>true if the instance is new or if it is not a persistent entity, or if it is actually in Managed state
-     *              but newly-persisted in this transaction
-     *         <li>false if it is not new Managed or Detached
+     * but newly-persisted in this transaction
+     * <li>false if it is not new Managed or Detached
      * @throws IllegalArgumentException if entity instance is null
      */
     public static boolean isNew(Object entity) {
@@ -44,9 +46,10 @@ public class PersistenceHelper {
 
     /**
      * Determines whether the instance is <em>Managed</em>, i.e. attached to a persistence context.
+     *
      * @param entity entity instance
      * @return <li>true if the instance is managed,
-     *         <li>false if it is New (and not yet persisted) or Detached, or if it is not a persistent entity
+     * <li>false if it is New (and not yet persisted) or Detached, or if it is not a persistent entity
      * @throws IllegalArgumentException if entity instance is null
      */
     public static boolean isManaged(Object entity) {
@@ -64,9 +67,10 @@ public class PersistenceHelper {
     /**
      * Determines whether the instance is <em>Detached</em>, i.e. stored in database but not attached to a persistence
      * context at the moment.
+     *
      * @param entity entity instance
      * @return <li>true if the instance is detached,
-     *         <li>false if it is New or Managed, or if it is not a persistent entity
+     * <li>false if it is New or Managed, or if it is not a persistent entity
      * @throws IllegalArgumentException if entity instance is null
      */
     public static boolean isDetached(Object entity) {
@@ -98,6 +102,7 @@ public class PersistenceHelper {
 
     /**
      * Determines whether the entity supports <em>Soft Deletion</em>.
+     *
      * @param entityClass entity class
      * @return <code>true</code> if the entity implements {@link SoftDelete}
      */
@@ -120,7 +125,10 @@ public class PersistenceHelper {
         }
         if (entity instanceof Instance) {
             try {
-                ((Instance) entity).getValue(property);
+                Object value = ((Instance) entity).getValue(property);
+                if (value instanceof Collection) {//check for IndirectCollection behaviour
+                    ((Collection) value).size();
+                }
                 return true;
             } catch (Exception ignored) {
                 return false;
