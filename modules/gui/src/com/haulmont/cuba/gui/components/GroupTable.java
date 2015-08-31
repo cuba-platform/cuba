@@ -5,12 +5,10 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * @author gorodnov
@@ -24,7 +22,12 @@ public interface GroupTable<E extends Entity> extends Table<E> {
     GroupDatasource getDatasource();
 
     void groupBy(Object[] properties);
-    void disableGroupBy(List<Object> properties);
+
+    boolean getColumnGroupAllowed(String columnId);
+    void setColumnGroupAllowed(String columnId, boolean allowed);
+
+    boolean getColumnGroupAllowed(Table.Column column);
+    void setColumnGroupAllowed(Table.Column column, boolean allowed);
 
     void expandAll();
     void expand(GroupInfo groupId);

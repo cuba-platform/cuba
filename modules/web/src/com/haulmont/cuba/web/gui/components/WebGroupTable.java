@@ -26,8 +26,11 @@ import com.vaadin.server.Resource;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author gorodnov
@@ -173,8 +176,42 @@ public class WebGroupTable<E extends Entity>
     }
 
     @Override
-    public void disableGroupBy(List<Object> properties) {
-        component.disableGroupBy(properties);
+    public boolean getColumnGroupAllowed(String columnId) {
+        Column column = getColumnNN(columnId);
+        return getColumnGroupAllowed(column);
+    }
+
+    @Override
+    public boolean getColumnGroupAllowed(Column column) {
+        checkNotNullArgument(column, "column must be non null");
+
+        return component.getColumnGroupAllowed(column.getId());
+    }
+
+    @Override
+    public void setColumnGroupAllowed(String columnId, boolean allowed) {
+        Column column = getColumnNN(columnId);
+        setColumnGroupAllowed(column, allowed);
+    }
+
+    @Nonnull
+    protected Column getColumnNN(String columnId) {
+        Column column = getColumn(columnId);
+        if (column == null) {
+            throw new IllegalStateException(String.format("Column with id '%s' not found", columnId));
+        }
+
+        return column;
+    }
+
+    @Override
+    public void setColumnGroupAllowed(Column column, boolean allowed) {
+        checkNotNullArgument(column, "column must be non null");
+
+        if (column.isGroupAllowed() != allowed) {
+            column.setGroupAllowed(allowed);
+        }
+        component.setColumnGroupAllowed(column.getId(), allowed);
     }
 
     @Override
@@ -788,5 +825,11 @@ public class WebGroupTable<E extends Entity>
         protected void recalcAggregation(GroupInfo groupInfo) {
             component.aggregate(new CubaGroupTable.GroupAggregationContext(component, groupInfo));
         }
+    }
+
+    @Override
+    public void addColumn(Column column) {
+        super.addColumn(column);
+        setColumnGroupAllowed(column, column.isGroupAllowed());
     }
 }

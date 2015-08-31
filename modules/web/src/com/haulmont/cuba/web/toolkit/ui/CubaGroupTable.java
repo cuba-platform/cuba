@@ -17,6 +17,7 @@ import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.server.KeyMapper;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;
@@ -30,7 +31,7 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
 
     protected KeyMapper groupIdMap = new KeyMapper();
 
-    protected final List<Object> groupDisallowedProperties = new ArrayList<>();
+    protected List<Object> groupDisallowedProperties;
 
     protected GroupPropertyValueFormatter groupPropertyValueFormatter;
 
@@ -146,7 +147,7 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
             return false;
         }
 
-        if (groupDisallowedProperties.isEmpty()) {
+        if (CollectionUtils.isEmpty(groupDisallowedProperties)) {
             return false;
         }
 
@@ -431,8 +432,22 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
         groupBy(properties, true);
     }
 
-    public void disableGroupBy(List<Object> properties) {
-        groupDisallowedProperties.addAll(properties);
+    public boolean getColumnGroupAllowed(Object id) {
+        if (groupDisallowedProperties == null) {
+            return true;
+        }
+        return !groupDisallowedProperties.contains(id);
+    }
+
+    public void setColumnGroupAllowed(Object id, boolean allowed) {
+        if (groupDisallowedProperties == null) {
+            groupDisallowedProperties = new ArrayList<>();
+        }
+        if (allowed) {
+            groupDisallowedProperties.remove(id);
+        } else {
+            groupDisallowedProperties.add(id);
+        }
     }
 
     @Override

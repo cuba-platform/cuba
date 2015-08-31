@@ -542,6 +542,9 @@ public interface Table<E extends Entity>
 
         public void setGroupAllowed(boolean groupAllowed) {
             this.groupAllowed = groupAllowed;
+            if (owner != null && owner instanceof GroupTable) {
+                ((GroupTable) owner).setColumnGroupAllowed(this, groupAllowed);
+            }
         }
 
         public AggregationInfo getAggregation() {
