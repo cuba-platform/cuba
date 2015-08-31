@@ -7,11 +7,8 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.GroupTable;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
-
-import java.util.List;
 
 /**
  * @author krivopustov
@@ -33,7 +30,21 @@ public class DesktopGroupTable<E extends Entity>
     }
 
     @Override
-    public void disableGroupBy(List<Object> properties) {
+    public boolean getColumnGroupAllowed(String columnId) {
+        return false;
+    }
+
+    @Override
+    public void setColumnGroupAllowed(String columnId, boolean allowed) {
+    }
+
+    @Override
+    public boolean getColumnGroupAllowed(Column column) {
+        return false;
+    }
+
+    @Override
+    public void setColumnGroupAllowed(Column column, boolean allowed) {
     }
 
     @Override
