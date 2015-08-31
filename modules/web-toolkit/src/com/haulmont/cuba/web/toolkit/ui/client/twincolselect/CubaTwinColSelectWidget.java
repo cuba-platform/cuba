@@ -54,6 +54,8 @@ public class CubaTwinColSelectWidget extends VTwinColSelect {
 
     @Override
     public void buildOptions(UIDL uidl) {
+        int optionsSelectedIndex = options.getSelectedIndex();
+        int selectionsSelectedIndex = selections.getSelectedIndex();
         options.clear();
         selections.clear();
 
@@ -88,6 +90,15 @@ public class CubaTwinColSelectWidget extends VTwinColSelect {
             selections.setVisibleItemCount(getRows());
 
         }
+
+        setSelectedIndex(options, optionsSelectedIndex);
+        setSelectedIndex(selections, selectionsSelectedIndex);
+    }
+
+    protected void setSelectedIndex(ListBox listBox, int index) {
+        if (listBox.getItemCount() > 0 && index >= 0) {
+            listBox.setSelectedIndex(index);
+        }
     }
 
     @Override
@@ -112,8 +123,11 @@ public class CubaTwinColSelectWidget extends VTwinColSelect {
             target.addItem(text, value);
             target.setItemSelected(target.getItemCount() - 1, true);
         }
-        source.clear();
         target.setFocus(true);
+        if (source.getItemCount() > 0) {
+            target.setSelectedIndex(0);
+        }
+        source.clear();
         return movedItems;
     }
 
