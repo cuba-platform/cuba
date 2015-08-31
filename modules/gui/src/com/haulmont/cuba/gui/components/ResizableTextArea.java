@@ -9,7 +9,7 @@ package com.haulmont.cuba.gui.components;
  * @author subbotin
  * @version $Id$
  */
-public interface ResizableTextArea extends TextArea {
+public interface ResizableTextArea extends TextArea, Component.HasSettings {
 
     String NAME = TextArea.NAME;
 
@@ -17,6 +17,6 @@ public interface ResizableTextArea extends TextArea {
     void setResizable(boolean resizable);
     boolean isResizable();
 
-    public void addResizeListener(ResizeListener resizeListener);
-    public void removeResizeListener(ResizeListener resizeListener);
+    void addResizeListener(ResizeListener resizeListener);
+    void removeResizeListener(ResizeListener resizeListener);
 }

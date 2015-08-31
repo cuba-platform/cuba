@@ -13,6 +13,8 @@ import com.vaadin.data.Property;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.Component;
+import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,7 @@ public class WebResizableTextArea
     protected List<ResizeListener> resizeListeners = new ArrayList<>();
 
     protected CubaResizableTextAreaWrapper wrapper;
+    protected boolean settingsEnabled = true;
 
     public WebResizableTextArea() {
         wrapper = new CubaResizableTextAreaWrapper(component);
@@ -144,5 +147,41 @@ public class WebResizableTextArea
     @Override
     public void setCursorPosition(int position) {
         component.setCursorPosition(position);
+    }
+
+    @Override
+    public void applySettings(Element element) {
+        if (isSettingsEnabled() && isResizable()) {
+            String width = element.attributeValue("width");
+            String height = element.attributeValue("height");
+            if (StringUtils.isNotEmpty(width) && StringUtils.isNotEmpty(height)) {
+                setWidth(width);
+                setHeight(height);
+            }
+        }
+    }
+
+    @Override
+    public boolean saveSettings(Element element) {
+        if (!isSettingsEnabled() || !isResizable()) {
+            return false;
+        }
+
+        String width = String.valueOf(getWidth()) + wrapper.getWidthUnits().toString();
+        String height = String.valueOf(getHeight()) + wrapper.getHeightUnits().toString();
+        element.addAttribute("width", width);
+        element.addAttribute("height", height);
+
+        return true;
+    }
+
+    @Override
+    public boolean isSettingsEnabled() {
+        return settingsEnabled;
+    }
+
+    @Override
+    public void setSettingsEnabled(boolean settingsEnabled) {
+        this.settingsEnabled = settingsEnabled;
     }
 }

@@ -7,6 +7,7 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.gui.components.ResizableTextArea;
 import com.haulmont.cuba.gui.components.ResizeListener;
+import org.dom4j.Element;
 
 /**
  * @author subbotin
@@ -31,6 +32,26 @@ public class DesktopResizableTextArea extends DesktopTextArea implements Resizab
 
     @Override
     public void removeResizeListener(ResizeListener resizeListener) {
+        //Do nothing, because desktop text area is not resizable
+    }
+
+    @Override
+    public void applySettings(Element element) {
+        //Do nothing, because desktop text area is not resizable
+    }
+
+    @Override
+    public boolean saveSettings(Element element) {
+        return false;
+    }
+
+    @Override
+    public boolean isSettingsEnabled() {
+        return false;
+    }
+
+    @Override
+    public void setSettingsEnabled(boolean settingsEnabled) {
         //Do nothing, because desktop text area is not resizable
     }
 }
