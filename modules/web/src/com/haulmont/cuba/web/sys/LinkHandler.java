@@ -275,7 +275,7 @@ public class LinkHandler {
         }
 
         if (itemStr == null) {
-            app.getWindowManager().openWindow(windowInfo, openType, getParamsMap());
+            app.getWindowManager().openWindow(windowInfo, openType, getParamsMap(requestParams));
         } else {
             EntityLoadInfo info = EntityLoadInfo.parse(itemStr);
             if (info == null) {
@@ -283,14 +283,14 @@ public class LinkHandler {
             } else {
                 Entity entity = loadEntityInstance(info);
                 if (entity != null)
-                    app.getWindowManager().openEditor(windowInfo, entity, openType, getParamsMap());
+                    app.getWindowManager().openEditor(windowInfo, entity, openType, getParamsMap(requestParams));
                 else
                     throw new EntityAccessException();
             }
         }
     }
 
-    protected Map<String, Object> getParamsMap() {
+    protected Map<String, Object> getParamsMap(Map<String, String> requestParams) {
         Map<String, Object> params = new HashMap<>();
         String paramsStr = requestParams.get("params");
         if (paramsStr == null)
