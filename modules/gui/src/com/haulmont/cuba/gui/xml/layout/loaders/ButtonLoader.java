@@ -44,6 +44,7 @@ public class ButtonLoader extends com.haulmont.cuba.gui.xml.layout.loaders.Compo
         loadIcon(component, element);
 
         loadWidth(component, element);
+        loadHeight(component, element);
         loadAlign(component, element);
 
         assignFrame(component);

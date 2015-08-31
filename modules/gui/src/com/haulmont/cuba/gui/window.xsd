@@ -860,6 +860,7 @@
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasWidthProp"/>
+        <xs:attributeGroup ref="hasHeightProp"/>
         <xs:attributeGroup ref="hasGridConstraints"/>
         <xs:attributeGroup ref="hasAlign"/>
         <xs:attributeGroup ref="hasIcon"/>
