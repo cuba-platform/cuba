@@ -99,7 +99,7 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
         compile 'org.eclipse.persistence:javax.persistence:2.1.0'
         compile 'org.eclipse.persistence:commonj.sdo:2.1.1'
         compile 'org.glassfish:javax.json:1.0.4'
-        compile 'com.haulmont.thirdparty:eclipselink:2.6.0.cuba.1'
+        compile 'com.haulmont.thirdparty:eclipselink:2.6.0.cuba1'
 
         compile('org.freemarker:freemarker:2.3.23')
         compile(group: 'aopalliance', name: 'aopalliance', version: '1.0')
