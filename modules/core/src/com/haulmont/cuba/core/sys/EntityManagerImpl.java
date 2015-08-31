@@ -317,6 +317,9 @@ public class EntityManagerImpl implements EntityManager {
         Entity reloadedRef = find(entityClass, id);
         if (reloadedRef == null) {
             reloadedRef = metadata.create(entityClass);
+            if (reloadedRef instanceof BaseGenericIdEntity) {
+                ((BaseGenericIdEntity)reloadedRef).setId(id);
+            }
             persist(reloadedRef);
         }
         //noinspection unchecked

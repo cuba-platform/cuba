@@ -13,7 +13,6 @@ import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.testsupport.TestSupport;
 
 import java.util.UUID;
 
@@ -134,6 +133,27 @@ public class EntityManagerTest extends CubaTestCase {
         } catch (Exception ignored) {
         }
         assertNotNull(user.getGroup());
+    }
+
+    public void testMerge() throws Exception {
+        UUID newUserId = UUID.randomUUID();
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            User user = new User();
+            user.setId(newUserId);
+            user.setName("testMerge");
+            user.setLogin("testMerge");
+            user.setPassword("testMerge");
+            user.setGroup(em.getReference(Group.class, groupId));
+            user = em.merge(user);
+            User userFromPersistentContext = em.find(User.class, newUserId);
+            assertEquals(user, userFromPersistentContext);
+            tx.commit();
+        } finally {
+            tx.end();
+            deleteRecord("SEC_USER", newUserId);
+        }
     }
 
     public void testFindSeparateViews() throws Exception {
