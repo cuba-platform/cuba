@@ -5,7 +5,6 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 
 import javax.annotation.Nullable;
@@ -23,6 +22,13 @@ public interface Tree<E extends Entity> extends ListComponent<E>, Component.Edit
 
     void collapseTree();
     void collapse(Object itemId);
+
+    /**
+     * Expand tree table including specified level
+     *
+     * @param expandLevelCount count of levels to expand
+     */
+    void expandLevels(int expandLevelCount);
 
     boolean isExpanded(Object itemId);
 

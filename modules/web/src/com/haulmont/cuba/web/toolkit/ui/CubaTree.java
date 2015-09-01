@@ -18,10 +18,7 @@ import com.vaadin.ui.HasComponents;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Tree;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author devyatkin
@@ -125,5 +122,58 @@ public class CubaTree extends Tree implements HasComponents {
             return Collections.singleton((Component)getState(false).contextMenu).iterator();
         }
         return Collections.emptyIterator();
+    }
+
+    public void expandAll() {
+        for (Object id : getItemIds()) {
+            expandItemRecursively(id);
+        }
+    }
+
+    public void expandItemRecursively(Object id) {
+        expandItem(id);
+        if (hasChildren(id)) {
+            for (Object childId: getChildren(id)) {
+                expandItemRecursively(childId);
+            }
+        }
+    }
+
+    public void expandItemWithParents(Object id) {
+        Object currentId = id;
+        while (currentId != null) {
+            expandItem(currentId);
+
+            currentId = getParent(currentId);
+        }
+    }
+
+    public void collapseItemRecursively(Object id) {
+        if (hasChildren(id)) {
+            for (Object childId: getChildren(id)) {
+                collapseItemRecursively(childId);
+            }
+        }
+        collapseItem(id);
+    }
+
+    public void collapseAll() {
+        for (Object id : getItemIds()) {
+            collapseItemRecursively(id);
+        }
+    }
+
+    public void expandLevels(int expandLevelCount) {
+        List<Object> currentLevelItemIds = new ArrayList<>(getItemIds());
+
+        int i = 0;
+        while (i < expandLevelCount && !currentLevelItemIds.isEmpty()) {
+            for (Object itemId : new ArrayList<>(currentLevelItemIds)) {
+                expandItem(itemId);
+                currentLevelItemIds.remove(itemId);
+                currentLevelItemIds.addAll(getChildren(itemId));
+            }
+            i++;
+        }
     }
 }

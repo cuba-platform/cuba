@@ -156,6 +156,27 @@ public class DesktopTree<E extends Entity>
     }
 
     @Override
+    public void expandLevels(int expandLevelCount) {
+        if (getDatasource() == null) {
+            return;
+        }
+
+        HierarchicalDatasource ds = getDatasource();
+        java.util.List<Object> currentLevelItemIds = new ArrayList<>(ds.getRootItemIds());
+        int i = 0;
+        while (i < expandLevelCount && !currentLevelItemIds.isEmpty()) {
+            for (Object itemId : new ArrayList<>(currentLevelItemIds)) {
+                Entity<Object> item = datasource.getItem(itemId);
+                impl.expandPath(model.getTreePath(item));
+
+                currentLevelItemIds.remove(itemId);
+                currentLevelItemIds.addAll(ds.getChildren(itemId));
+            }
+            i++;
+        }
+    }
+
+    @Override
     public boolean isExpanded(Object itemId) {
         if (datasource == null) {
             return false;

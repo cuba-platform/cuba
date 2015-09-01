@@ -7,7 +7,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Tree;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import org.apache.commons.lang.StringUtils;
@@ -33,34 +32,27 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
 
     @Override
     public void collapseTree() {
-        com.vaadin.data.Container.Hierarchical container =
-                (com.vaadin.data.Container.Hierarchical) component.getContainerDataSource();
-        if (container != null) {
-            for (Object id : container.rootItemIds()) {
-                component.collapseItemsRecursively(id);
-            }
-        }
+        component.collapseAll();
     }
 
     @Override
     public void expandTree() {
-        com.vaadin.data.Container.Hierarchical container =
-                (com.vaadin.data.Container.Hierarchical) component.getContainerDataSource();
-        if (container != null) {
-            for (Object id : container.rootItemIds()) {
-                component.expandItemsRecursively(id);
-            }
-        }
+        component.expandAll();
     }
 
     @Override
     public void collapse(Object itemId) {
-        component.collapseItem(itemId);
+        component.collapseItemRecursively(itemId);
     }
 
     @Override
     public void expand(Object itemId) {
-        component.expandItem(itemId);
+        component.expandItemWithParents(itemId);
+    }
+
+    @Override
+    public void expandLevels(int expandLevelCount) {
+        component.expandLevels(expandLevelCount);
     }
 
     @Override

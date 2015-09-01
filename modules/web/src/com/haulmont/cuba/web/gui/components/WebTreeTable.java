@@ -30,9 +30,7 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-public class WebTreeTable<E extends Entity>
-        extends WebAbstractTable<CubaTreeTable, E>
-        implements TreeTable<E> {
+public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTable, E> implements TreeTable<E> {
 
     protected String hierarchyProperty;
 
@@ -94,11 +92,8 @@ public class WebTreeTable<E extends Entity>
 
     @Override
     public void expand(Object itemId) {
-        for (Object id : component.getItemIds()) {
-            if (ObjectUtils.equals(id, itemId)) {
-                component.setCollapsed(itemId, false);
-                break;
-            }
+        if (component.containsId(itemId)) {
+            component.expandItemWithParents(itemId);
         }
     }
 
@@ -109,12 +104,14 @@ public class WebTreeTable<E extends Entity>
 
     @Override
     public void collapse(Object itemId) {
-        for (Object id : component.getItemIds()) {
-            if (ObjectUtils.equals(id, itemId)) {
-                component.setCollapsed(itemId, true);
-                break;
-            }
+        if (component.containsId(itemId)) {
+            component.collapseItemRecursively(itemId);
         }
+    }
+
+    @Override
+    public void expandLevels(int level) {
+        component.expandLevels(level);
     }
 
     @Override
@@ -124,7 +121,7 @@ public class WebTreeTable<E extends Entity>
 
     @Override
     public boolean isExpanded(Object itemId) {
-        for (Object id : component.getItemIds()) {
+        if (component.containsId(itemId)) {
             if (ObjectUtils.equals(id, itemId)) {
                 return !component.isCollapsed(id);
             }
@@ -138,7 +135,7 @@ public class WebTreeTable<E extends Entity>
 
         protected boolean treeTableDatasource;
 
-        private List<Object> aggregationProperties = null;
+        protected List<Object> aggregationProperties = null;
 
         public TreeTableDsWrapper(HierarchicalDatasource datasource) {
             super(datasource);

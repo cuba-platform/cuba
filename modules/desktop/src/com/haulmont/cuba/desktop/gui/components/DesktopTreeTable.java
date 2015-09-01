@@ -25,10 +25,7 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author krivopustov
@@ -281,6 +278,27 @@ public class DesktopTreeTable<E extends Entity>
             return;
 
         impl.collapsePath(((TreeTableModelAdapter) tableModel).getTreePath(item));
+    }
+
+    @Override
+    public void expandLevels(int expandLevelCount) {
+        if (getDatasource() == null) {
+            return;
+        }
+
+        HierarchicalDatasource ds = getDatasource();
+        java.util.List<Object> currentLevelItemIds = new ArrayList<>(ds.getRootItemIds());
+        int i = 0;
+        while (i < expandLevelCount && !currentLevelItemIds.isEmpty()) {
+            for (Object itemId : new ArrayList<>(currentLevelItemIds)) {
+                Entity<Object> item = datasource.getItem(itemId);
+                impl.expandPath(((TreeTableModelAdapter) tableModel).getTreePath(item));
+
+                currentLevelItemIds.remove(itemId);
+                currentLevelItemIds.addAll(ds.getChildren(itemId));
+            }
+            i++;
+        }
     }
 
     @Override
