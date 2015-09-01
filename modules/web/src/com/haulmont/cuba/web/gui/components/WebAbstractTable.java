@@ -1409,8 +1409,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         // save column order
         Object[] visibleColumns = component.getVisibleColumns();
 
+        boolean removeOldGeneratedColumn = component.getColumnGenerator(generatedColumnId) != null;
         // replace generator for column if exist
-        if (component.getColumnGenerator(generatedColumnId) != null) {
+        if (removeOldGeneratedColumn) {
             component.removeGeneratedColumn(generatedColumnId);
         }
 
@@ -1459,8 +1460,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 }
         );
 
-        // restore column order
-        component.setVisibleColumns(visibleColumns);
+        if (removeOldGeneratedColumn) {
+            // restore column order
+            component.setVisibleColumns(visibleColumns);
+        }
     }
 
     @Override
