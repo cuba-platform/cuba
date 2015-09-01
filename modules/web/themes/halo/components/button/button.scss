@@ -18,6 +18,10 @@
     border: 1px dashed transparent;
     height: auto;
 
+    .#{$primary-stylename}-caption {
+      @include user-select(text);
+    }
+
     &:focus:after {
       box-shadow: none;
     }

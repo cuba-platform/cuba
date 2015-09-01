@@ -16,6 +16,8 @@
     border-radius: $v-border-radius;
     box-sizing: border-box;
     display: inline-block;
+
+    @include user-select(text);
   }
 
   .#{$primary-stylename} > a:focus {
