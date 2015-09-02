@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.google.common.base.Preconditions;
 import com.haulmont.cuba.web.toolkit.ShortcutActionManager;
 import com.haulmont.cuba.web.toolkit.ui.client.tree.CubaTreeClientRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.tree.CubaTreeState;
@@ -163,11 +164,13 @@ public class CubaTree extends Tree implements HasComponents {
         }
     }
 
-    public void expandLevels(int expandLevelCount) {
+    public void expandUpTo(int level) {
+        Preconditions.checkArgument(level > 0, "level should be greater than 0");
+
         List<Object> currentLevelItemIds = new ArrayList<>(getItemIds());
 
         int i = 0;
-        while (i < expandLevelCount && !currentLevelItemIds.isEmpty()) {
+        while (i < level && !currentLevelItemIds.isEmpty()) {
             for (Object itemId : new ArrayList<>(currentLevelItemIds)) {
                 expandItem(itemId);
                 currentLevelItemIds.remove(itemId);

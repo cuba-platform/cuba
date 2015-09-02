@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
@@ -420,11 +421,13 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
         }
     }
 
-    public void expandLevels(int expandLevelCount) {
+    public void expandUpTo(int level) {
+        Preconditions.checkArgument(level > 0, "level should be greater than 0");
+
         List<Object> currentLevelItemIds = new ArrayList<>(getItemIds());
 
         int i = 0;
-        while (i < expandLevelCount && !currentLevelItemIds.isEmpty()) {
+        while (i < level && !currentLevelItemIds.isEmpty()) {
             for (Object itemId : new ArrayList<>(currentLevelItemIds)) {
                 setExpanded(itemId);
                 currentLevelItemIds.remove(itemId);

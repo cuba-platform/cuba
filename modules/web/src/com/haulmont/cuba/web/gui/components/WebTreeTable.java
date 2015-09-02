@@ -110,8 +110,8 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
     }
 
     @Override
-    public void expandLevels(int level) {
-        component.expandLevels(level);
+    public void expandUpTo(int level) {
+        component.expandUpTo(level);
     }
 
     @Override

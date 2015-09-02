@@ -24,11 +24,11 @@ public interface Tree<E extends Entity> extends ListComponent<E>, Component.Edit
     void collapse(Object itemId);
 
     /**
-     * Expand tree table including specified level
+     * Expand tree including specified level
      *
-     * @param expandLevelCount count of levels to expand
+     * @param level level of Tree nodes to expand
      */
-    void expandLevels(int expandLevelCount);
+    void expandUpTo(int level);
 
     boolean isExpanded(Object itemId);
 

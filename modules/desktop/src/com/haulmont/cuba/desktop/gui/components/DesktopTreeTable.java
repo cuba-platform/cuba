@@ -281,7 +281,7 @@ public class DesktopTreeTable<E extends Entity>
     }
 
     @Override
-    public void expandLevels(int expandLevelCount) {
+    public void expandUpTo(int level) {
         if (getDatasource() == null) {
             return;
         }
@@ -289,7 +289,7 @@ public class DesktopTreeTable<E extends Entity>
         HierarchicalDatasource ds = getDatasource();
         java.util.List<Object> currentLevelItemIds = new ArrayList<>(ds.getRootItemIds());
         int i = 0;
-        while (i < expandLevelCount && !currentLevelItemIds.isEmpty()) {
+        while (i < level && !currentLevelItemIds.isEmpty()) {
             for (Object itemId : new ArrayList<>(currentLevelItemIds)) {
                 Entity<Object> item = datasource.getItem(itemId);
                 impl.expandPath(((TreeTableModelAdapter) tableModel).getTreePath(item));

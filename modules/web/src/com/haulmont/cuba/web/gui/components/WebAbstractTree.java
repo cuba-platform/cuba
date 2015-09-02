@@ -51,8 +51,8 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
     }
 
     @Override
-    public void expandLevels(int expandLevelCount) {
-        component.expandLevels(expandLevelCount);
+    public void expandUpTo(int level) {
+        component.expandUpTo(level);
     }
 
     @Override
