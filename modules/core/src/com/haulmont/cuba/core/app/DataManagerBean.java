@@ -277,6 +277,9 @@ public class DataManagerBean implements DataManager {
 
                 if (entityHasDynamicAttributes(entity)) {
                     Map<String, CategoryAttributeValue> dynamicAttributes = ((BaseGenericIdEntity) entity).getDynamicAttributes();
+
+                    //dynamicAttributes checked for null in entityHasDynamicAttributes()
+                    //noinspection ConstantConditions
                     for (CategoryAttributeValue categoryAttributeValue : dynamicAttributes.values()) {
                         if (!PersistenceHelper.isNew(categoryAttributeValue)) {
                             em.remove(categoryAttributeValue);
