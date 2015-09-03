@@ -5,6 +5,7 @@
 package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.chile.core.common.ValueListener;
+import com.haulmont.chile.core.common.compatibility.InstancePropertyChangeListenerWrapper;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
@@ -23,6 +24,7 @@ import java.util.UUID;
  */
 @SuppressWarnings("unused")
 class CubaEnchancedEntityTemplate implements Instance {
+    @Override
     public UUID getUuid() {
         throw new UnsupportedOperationException();
     }
@@ -32,14 +34,14 @@ class CubaEnchancedEntityTemplate implements Instance {
         throw new UnsupportedOperationException();
     }
 
-    public void setName(String s)
-    {
+    public void setName(String s) {
         String s1 = getName();
         //pcSetname(this, s);
 
         // Generated Code
-        if(!ObjectUtils.equals(s1, s))
+        if (!ObjectUtils.equals(s1, s)) {
             propertyChanged("name", s1, s);
+        }
     }
 
 /// Generated Code /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47,8 +49,7 @@ class CubaEnchancedEntityTemplate implements Instance {
     protected transient Collection __valueListeners;
     protected static transient MethodsCache __cache = new MethodsCache(CubaEnchancedEntityTemplate.class);
 
-    public MetaClass getMetaClass()
-    {
+    public MetaClass getMetaClass() {
         return AppBeans.get(Metadata.class).getSession().getClass(getClass());
     }
 
@@ -56,52 +57,66 @@ class CubaEnchancedEntityTemplate implements Instance {
         return InstanceUtils.getInstanceName(this);
     }
 
-    protected void propertyChanged(String s, Object obj, Object obj1)
-    {
-        if(__valueListeners != null)
-        {
-            ValueListener valuelistener;
-            for(Iterator iterator = __valueListeners.iterator(); iterator.hasNext(); valuelistener.propertyChanged(this, s, obj, obj1))
-                valuelistener = (ValueListener)iterator.next();
+    protected void propertyChanged(String s, Object obj, Object obj1) {
+        if (__valueListeners != null) {
+            PropertyChangeListener valuelistener;
+            for (Iterator iterator = __valueListeners.iterator();
+                 iterator.hasNext();
+                 valuelistener.propertyChanged(new PropertyChangeEvent(this, s, obj, obj1))) {
+                valuelistener = (PropertyChangeListener) iterator.next();
+            }
         }
     }
 
-    public void addListener(ValueListener valuelistener)
-    {
-        if(__valueListeners == null)
-            __valueListeners = new LinkedHashSet();
-        __valueListeners.add(valuelistener);
+    @Override
+    public void addListener(ValueListener valuelistener) {
+        addPropertyChangeListener(new InstancePropertyChangeListenerWrapper(valuelistener));
     }
 
-    public void removeListener(ValueListener valuelistener)
-    {
-        if(__valueListeners != null)
-            __valueListeners.remove(valuelistener);
+    @Override
+    public void removeListener(ValueListener valuelistener) {
+        removePropertyChangeListener(new InstancePropertyChangeListenerWrapper(valuelistener));
+    }
+
+    @Override
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        if (__valueListeners == null) {
+            __valueListeners = new LinkedHashSet();
+        }
+        __valueListeners.add(listener);
+    }
+
+    @Override
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        if (__valueListeners != null) {
+            __valueListeners.remove(listener);
+        }
     }
 
     @Override
     public void removeAllListeners() {
-        if (__valueListeners != null)
+        if (__valueListeners != null) {
             __valueListeners.clear();
+        }
     }
 
-    public <T> T getValue(String s)
-    {
+    @Override
+    public <T> T getValue(String s) {
         return (T) __cache.invokeGetter(this, s);
     }
 
-    public void setValue(String s, Object obj)
-    {
+    @Override
+    public void setValue(String s, Object obj) {
         __cache.invokeSetter(this, s, obj);
     }
 
-    public <T> T getValueEx(String s)
-    {
+    @Override
+    public <T> T getValueEx(String s) {
         return InstanceUtils.<T>getValueEx(this, s);
     }
 
-    public void setValueEx(String s, Object obj)
-    {
+    @Override
+    public void setValueEx(String s, Object obj) {
         InstanceUtils.setValueEx(this, s, obj);
     }
 }
