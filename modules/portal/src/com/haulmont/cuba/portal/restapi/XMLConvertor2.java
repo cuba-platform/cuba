@@ -485,6 +485,10 @@ public class XMLConvertor2 implements Convertor {
         MetaClass metaClass = entity.getMetaClass();
         List<MetaProperty> orderedProperties = ConvertorHelper.getActualMetaProperties(metaClass, entity);
         for (MetaProperty property : orderedProperties) {
+            if (metadataTools.isPersistent(property) && !PersistenceHelper.isLoaded(entity, property.getName())) {
+                continue;
+            }
+
             if (!attrViewPermitted(metaClass, property.getName()))
                 continue;
 

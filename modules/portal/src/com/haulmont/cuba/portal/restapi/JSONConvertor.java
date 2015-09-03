@@ -545,6 +545,9 @@ public class JSONConvertor implements Convertor {
         List<MetaProperty> properties = ConvertorHelper.getActualMetaProperties(metaClass, entity);
 
         for (MetaProperty property : properties) {
+            if (metadataTools.isPersistent(property) && !PersistenceHelper.isLoaded(entity, property.getName())) {
+                continue;
+            }
 
             if (!attrViewPermitted(metaClass, property.getName()))
                 continue;
