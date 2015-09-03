@@ -17,12 +17,11 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.LookupField;
+import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.gui.components.filter.Op;
 import com.haulmont.cuba.gui.components.filter.OpManager;
 import com.haulmont.cuba.gui.components.filter.Param;
-import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondition;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.RandomStringUtils;
@@ -68,19 +67,16 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
     @Override
     protected void initComponents() {
         super.initComponents();
-        categoryLookup.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                if (value != null)
-                    fillAttributeSelect((Category) value);
+
+        categoryLookup.addValueChangeListener(e -> {
+            if (e.getValue() != null) {
+                fillAttributeSelect((Category) e.getValue());
             }
         });
 
-        attributeLookup.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                if (value != null)
-                    fillOperationSelect(DynamicAttributesUtils.getAttributeClass((CategoryAttribute) value));
+        attributeLookup.addValueChangeListener(e -> {
+            if (e.getValue() != null) {
+                fillOperationSelect(DynamicAttributesUtils.getAttributeClass((CategoryAttribute) e.getValue()));
             }
         });
     }

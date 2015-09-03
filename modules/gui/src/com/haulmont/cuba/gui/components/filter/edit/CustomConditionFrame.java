@@ -11,11 +11,11 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.DomainModelBuilder;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.gui.components.autocomplete.JpqlSuggestionFactory;
 import com.haulmont.cuba.gui.components.autocomplete.Suggester;
 import com.haulmont.cuba.gui.components.autocomplete.Suggestion;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.autocomplete.impl.HintProvider;
 import com.haulmont.cuba.gui.components.autocomplete.impl.HintRequest;
 import com.haulmont.cuba.gui.components.autocomplete.impl.HintResponse;
@@ -24,7 +24,6 @@ import com.haulmont.cuba.gui.components.filter.*;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.ValueListener;
 import org.antlr.runtime.RecognitionException;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -98,58 +97,54 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
     @Override
     public void initComponents() {
         super.initComponents();
-        typeSelect.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                boolean disableTypeCheckBox = ParamType.UNARY.equals(typeSelect.getValue()) ||
-                        ParamType.BOOLEAN.equals(typeSelect.getValue());
-                inExprCb.setEnabled(!disableTypeCheckBox);
-                if (disableTypeCheckBox)
-                    inExprCb.setValue(false);
 
-                boolean isEntity = ParamType.ENTITY.equals(typeSelect.getValue());
-                boolean isEnum = ParamType.ENUM.equals(typeSelect.getValue());
-                entityLab.setEnabled(isEntity || isEnum);
-                entitySelect.setEnabled(isEntity || isEnum);
-                entitySelect.setRequired(entitySelect.isEnabled());
-                paramWhereLab.setEnabled(isEntity);
-                entityParamWhereField.setEnabled(isEntity);
-                paramViewLab.setEnabled(isEntity);
-                entityParamViewField.setEnabled(isEntity);
-                Param param = condition.getParam();
-                fillEntitySelect(param);
+        typeSelect.addValueChangeListener(e -> {
+            boolean disableTypeCheckBox = ParamType.UNARY.equals(typeSelect.getValue()) ||
+                    ParamType.BOOLEAN.equals(typeSelect.getValue());
+            inExprCb.setEnabled(!disableTypeCheckBox);
+            if (disableTypeCheckBox)
+                inExprCb.setValue(false);
 
-                //recreate default value component based on param type
-                if (!initializing && defaultValueLayout.isVisible()) {
-                    if ((isEntity || isEnum) && (entitySelect.getValue() == null)) {
-                        defaultValueLayout.remove(defaultValueComponent);
-                        param.setJavaClass(null);
-                    } else {
-                        Class paramJavaClass = getParamJavaClass((ParamType) value);
-                        param.setJavaClass(paramJavaClass);
-                        param.setDefaultValue(null);
-                        createDefaultValueComponent();
-                    }
+            boolean isEntity = ParamType.ENTITY.equals(typeSelect.getValue());
+            boolean isEnum = ParamType.ENUM.equals(typeSelect.getValue());
+            entityLab.setEnabled(isEntity || isEnum);
+            entitySelect.setEnabled(isEntity || isEnum);
+            entitySelect.setRequired(entitySelect.isEnabled());
+            paramWhereLab.setEnabled(isEntity);
+            entityParamWhereField.setEnabled(isEntity);
+            paramViewLab.setEnabled(isEntity);
+            entityParamViewField.setEnabled(isEntity);
+            Param param = condition.getParam();
+            fillEntitySelect(param);
+
+            //recreate default value component based on param type
+            if (!initializing && defaultValueLayout.isVisible()) {
+                if ((isEntity || isEnum) && (entitySelect.getValue() == null)) {
+                    defaultValueLayout.remove(defaultValueComponent);
+                    param.setJavaClass(null);
+                } else {
+                    Class paramJavaClass = getParamJavaClass((ParamType) e.getValue());
+                    param.setJavaClass(paramJavaClass);
+                    param.setDefaultValue(null);
+                    createDefaultValueComponent();
                 }
             }
         });
 
-        entitySelect.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                if (initializing || !defaultValueLayout.isVisible()) {
-                    return;
-                }
-                if (value == null) {
-                    defaultValueLayout.remove(defaultValueComponent);
-                    return;
-                }
-                Param param = condition.getParam();
-                Class paramJavaClass = value instanceof Class ? (Class) value : ((MetaClass) value).getJavaClass();
-                param.setJavaClass(paramJavaClass);
-                param.setDefaultValue(null);
-                createDefaultValueComponent();
+        entitySelect.addValueChangeListener(e -> {
+            if (initializing || !defaultValueLayout.isVisible()) {
+                return;
             }
+            if (e.getValue() == null) {
+                defaultValueLayout.remove(defaultValueComponent);
+                return;
+            }
+            Param param = condition.getParam();
+            Class paramJavaClass = e.getValue() instanceof Class ?
+                    (Class) e.getValue() : ((MetaClass) e.getValue()).getJavaClass();
+            param.setJavaClass(paramJavaClass);
+            param.setDefaultValue(null);
+            createDefaultValueComponent();
         });
 
         FilterHelper filterHelper = AppBeans.get(FilterHelper.class);

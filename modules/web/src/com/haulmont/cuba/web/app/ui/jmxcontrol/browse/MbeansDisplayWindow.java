@@ -102,17 +102,15 @@ public class MbeansDisplayWindow extends AbstractWindow {
         jmxInstancesDs.refresh();
         jmxConnectionField.setValue(localJmxInstance);
         jmxConnectionField.setRequired(true);
-        jmxConnectionField.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                JmxInstance jmxInstance = jmxConnectionField.getValue();
-                try {
-                    mbeanDs.setJmxInstance(jmxInstance);
-                    mbeanDs.refresh();
-                } catch (JmxControlException e) {
-                    showNotification(getMessage("unableToConnectToInterface"), NotificationType.WARNING);
-                    if (jmxInstance != localJmxInstance)
-                        jmxConnectionField.setValue(localJmxInstance);
+        jmxConnectionField.addValueChangeListener(e -> {
+            JmxInstance jmxInstance = (JmxInstance) e.getValue();
+            try {
+                mbeanDs.setJmxInstance(jmxInstance);
+                mbeanDs.refresh();
+            } catch (JmxControlException ex) {
+                showNotification(getMessage("unableToConnectToInterface"), NotificationType.WARNING);
+                if (jmxInstance != localJmxInstance) {
+                    jmxConnectionField.setValue(localJmxInstance);
                 }
             }
         });

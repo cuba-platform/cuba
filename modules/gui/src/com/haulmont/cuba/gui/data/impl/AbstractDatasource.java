@@ -4,7 +4,6 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.chile.core.common.ValueListener;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
@@ -17,7 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * @author abramov
@@ -40,7 +42,7 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
     protected Collection itemToCreate = new HashSet();
     protected Collection itemToUpdate = new HashSet();
     protected Collection itemToDelete = new HashSet();
-    protected ValueListener listener = new ItemListener();
+    protected Instance.PropertyChangeListener listener = new ItemListener();
 
     protected boolean listenersEnabled = true;
 
@@ -217,13 +219,19 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
     }
 
     protected void attachListener(Instance item) {
-        if (item == null) return;
-        item.addListener(listener);
+        if (item == null) {
+            return;
+        }
+
+        item.addPropertyChangeListener(listener);
     }
 
     protected void detachListener(Instance item) {
-        if (item == null) return;
-        item.removeListener(listener);
+        if (item == null) {
+            return;
+        }
+
+        item.removePropertyChangeListener(listener);
     }
 
     protected void fireItemChanged(Object prevItem) {
@@ -238,21 +246,22 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
         }
     }
 
-    protected class ItemListener implements ValueListener {
+    protected class ItemListener implements Instance.PropertyChangeListener {
         @Override
-        public void propertyChanged(Object item, String property, Object prevValue, Object value) {
-            if (!listenersEnabled)
+        public void propertyChanged(Instance.PropertyChangeEvent e) {
+            if (!listenersEnabled) {
                 return;
+            }
 
-            log.trace("propertyChanged: item=" + item + ", property=" + property +
-                    ", value=" + value + ", prevValue=" + prevValue);
+            log.trace("propertyChanged: item={}, property={}, value={}, prevValue={}",
+                    e.getItem(), e.getProperty(), e.getValue(), e.getPrevValue());
 
-            if (!metadata.getTools().isTransient(item, property)) {
-                modified((T) item);
+            if (!metadata.getTools().isTransient(e.getItem(), e.getProperty())) {
+                modified((T) e.getItem());
             }
 
             for (DatasourceListener dsListener : new ArrayList<>(dsListeners)) {
-                dsListener.valueChanged(item, property, prevValue, value);
+                dsListener.valueChanged(e.getItem(), e.getProperty(), e.getPrevValue(), e.getValue());
             }
         }
     }

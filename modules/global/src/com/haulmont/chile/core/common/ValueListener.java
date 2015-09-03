@@ -11,6 +11,7 @@ package com.haulmont.chile.core.common;
  * @author abramov
  * @version $Id$
  */
+@Deprecated
 public interface ValueListener {
 
     /**

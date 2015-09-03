@@ -46,7 +46,7 @@ public interface Instance extends Serializable {
     /**
      * Set an attribute value.
      * <p/> An implementor should first read a current value of the attribute, and then call an appropriate setter
-     * method only if the new value differs. This ensures triggering of {@link ValueListener}s only if the attribute
+     * method only if the new value differs. This ensures triggering of {@link PropertyChangeListener}s only if the attribute
      * was actually changed.
      * @param name  attribute name according to JavaBeans notation
      * @param value attribute value
@@ -73,7 +73,7 @@ public interface Instance extends Serializable {
      * <code>getValueEx("car.driver")</code> is null or is not an {@link Instance}, this method throws
      * {@link IllegalStateException}.
      * <p/> An implementor should first read a current value of the attribute, and then call an appropriate setter
-     * method only if the new value differs. This ensures triggering of {@link ValueListener}s only if the attribute
+     * method only if the new value differs. This ensures triggering of {@link PropertyChangeListener}s only if the attribute
      * was actually changed.
      * @param propertyPath  path to an attibute
      * @param value         attribute value
@@ -84,16 +84,69 @@ public interface Instance extends Serializable {
      * Add listener to track attributes changes.
      * @param listener  listener
      */
+    @Deprecated
     void addListener(ValueListener listener);
 
     /**
      * Remove listener.
      * @param listener listener to remove
      */
+    @Deprecated
     void removeListener(ValueListener listener);
 
     /**
-     * Remove all {@link ValueListener}s.
+     * Add listener to track attributes changes.
+     * @param listener  listener
+     */
+    void addPropertyChangeListener(PropertyChangeListener listener);
+
+    /**
+     * Remove listener.
+     * @param listener listener to remove
+     */
+    void removePropertyChangeListener(PropertyChangeListener listener);
+
+    /**
+     * Remove all {@link PropertyChangeListener}s.
      */
     void removeAllListeners();
+
+    class PropertyChangeEvent {
+        private final Object item;
+
+        private final String property;
+
+        private final Object prevValue;
+
+        private final Object value;
+
+        public PropertyChangeEvent(Object item, String property, Object prevValue, Object value) {
+            this.item = item;
+            this.property = property;
+            this.prevValue = prevValue;
+            this.value = value;
+        }
+
+        public String getProperty() {
+            return property;
+        }
+
+        public Object getItem() {
+            return item;
+        }
+
+        @Nullable
+        public Object getPrevValue() {
+            return prevValue;
+        }
+
+        @Nullable
+        public Object getValue() {
+            return value;
+        }
+    }
+
+    interface PropertyChangeListener {
+        void propertyChanged(PropertyChangeEvent e);
+    }
 }

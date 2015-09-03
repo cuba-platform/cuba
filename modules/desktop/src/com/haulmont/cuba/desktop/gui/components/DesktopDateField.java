@@ -28,7 +28,6 @@ import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
@@ -37,8 +36,6 @@ import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
 import java.awt.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.text.ParseException;
 import java.util.*;
 import java.util.List;
@@ -95,25 +92,16 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         datePicker.setMinimumSize(size);
 
         timeField = new DesktopTimeField();
-
-        timeField.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                updateInstance();
-            }
+        timeField.addValueChangeListener(e -> {
+            updateInstance();
         });
 
-        datePicker.addPropertyChangeListener(
-                new PropertyChangeListener() {
-                    @Override
-                    public void propertyChange(PropertyChangeEvent evt) {
-                        if ("date".equals(evt.getPropertyName())) {
-                            updateInstance();
-                            updateMissingValueState();
-                        }
-                    }
-                }
-        );
+        datePicker.addPropertyChangeListener(evt -> {
+            if ("date".equals(evt.getPropertyName())) {
+                updateInstance();
+                updateMissingValueState();
+            }
+        });
     }
 
     protected void updateLayout() {
@@ -210,17 +198,9 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
     }
 
     @Override
-    public boolean isRequired() {
-        return required;
-    }
-
-    @Override
     public void requestFocus() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                datePicker.requestFocus();
-            }
+        SwingUtilities.invokeLater(() -> {
+            datePicker.requestFocus();
         });
     }
 

@@ -12,11 +12,11 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.text.StrBuilder;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -39,10 +39,10 @@ public class InListParamComponent {
     protected List listValue;
     protected Map<Object, String> values = new LinkedHashMap<>();
 
-    protected List<ValueListener> listeners = new LinkedList<>();
+    protected List<InListValueListener> listeners = new LinkedList<>();
     protected BoxLayout composition;
 
-    public InListParamComponent(final Class itemClass) {
+    public InListParamComponent(Class itemClass) {
         ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.class);
         final WindowManager windowManager = AppBeans.get(WindowManagerProvider.class).get();
         final WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
@@ -127,14 +127,13 @@ public class InListParamComponent {
         return composition;
     }
 
-    public void addValueListener(ValueListener listener) {
+    public void addValueListener(InListValueListener listener) {
         listeners.add(listener);
     }
 
-    public void removeValueListener(ValueListener listener) {
+    public void removeValueListener(InListValueListener listener) {
         listeners.remove(listener);
     }
-
 
     public Object getValue() {
         return listValue;
@@ -142,8 +141,8 @@ public class InListParamComponent {
 
     public void setValue(Object newValue) {
         if (!ObjectUtils.equals(listValue, newValue)) {
-            for (ValueListener listener : listeners) {
-                listener.valueChanged(this, "value", listValue, newValue);
+            for (InListValueListener listener : listeners) {
+                listener.valueChanged(listValue, newValue);
             }
             listValue = (List) newValue;
         }
@@ -166,5 +165,9 @@ public class InListParamComponent {
 
     public Map<Object, String> getValues() {
         return values;
+    }
+
+    public interface InListValueListener {
+        void valueChanged(@Nullable Object prevValue, @Nullable Object value);
     }
 }

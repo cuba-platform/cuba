@@ -24,14 +24,12 @@ import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.GroupDatasource;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.lang.reflect.AnnotatedElement;
 import java.util.*;
@@ -70,12 +68,7 @@ public class EntityRestore extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
-        entities.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                buildLayout();
-            }
-        });
+        entities.addValueChangeListener(e -> buildLayout());
         entities.setOptionsMap(getEntitiesLookupFieldOptions());
     }
 

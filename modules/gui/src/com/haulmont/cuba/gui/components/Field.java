@@ -4,19 +4,14 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.gui.data.ValueListener;
-
 /**
  * Base interface for "fields" - components intended to display and edit value of a certain entity attribute.
  *
  * @author abramov
  * @version $Id$
  */
-public interface Field
-    extends
-        DatasourceComponent, Component.HasCaption, Component.HasValue, Component.Editable,
-        Component.BelongToFrame, Component.Validatable
-{
+public interface Field extends DatasourceComponent, Component.HasCaption, Component.HasValue, Component.Editable,
+                               Component.BelongToFrame, Component.Validatable {
     /**
      * @return whether the field must contain a non-null value
      */
@@ -28,14 +23,6 @@ public interface Field
      */
     void setRequiredMessage(String msg);
     String getRequiredMessage();
-
-    /**
-     * Field value change listeners.<br>
-     * Use listeners on the component only if the component is not linked to a datasource.<br>
-     * Otherwise use {@link ValueListener} bound to the datasource.
-     */
-    void addListener(ValueListener listener);
-    void removeListener(ValueListener listener);
 
     /**
      * Add {@link Validator} instance.

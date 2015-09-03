@@ -14,8 +14,6 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.GroupDatasource;
-import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.web.app.ui.jmxinstance.edit.JmxInstanceEditor;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
 import com.haulmont.cuba.web.jmx.JmxControlException;
 
@@ -76,16 +74,14 @@ public class StatisticsWindow extends AbstractWindow {
         jmxInstancesDs.refresh();
         jmxConnectionField.setValue(localJmxInstance);
         jmxConnectionField.setRequired(true);
-        jmxConnectionField.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                try {
-                    setNode(jmxConnectionField.<JmxInstance>getValue());
-                } catch (JmxControlException e) {
-                    JmxInstance jmxInstance = jmxConnectionField.getValue();
-                    showNotification(messages.getMessage("com.haulmont.cuba.web.app.ui.jmxcontrol", "unableToConnectToInterface"), NotificationType.WARNING);
-                    if (jmxInstance != localJmxInstance)
-                        jmxConnectionField.setValue(localJmxInstance);
+        jmxConnectionField.addValueChangeListener(e -> {
+            try {
+                setNode(jmxConnectionField.<JmxInstance>getValue());
+            } catch (JmxControlException ex) {
+                JmxInstance jmxInstance = jmxConnectionField.getValue();
+                showNotification(messages.getMessage("com.haulmont.cuba.web.app.ui.jmxcontrol", "unableToConnectToInterface"), NotificationType.WARNING);
+                if (jmxInstance != localJmxInstance) {
+                    jmxConnectionField.setValue(localJmxInstance);
                 }
             }
         });

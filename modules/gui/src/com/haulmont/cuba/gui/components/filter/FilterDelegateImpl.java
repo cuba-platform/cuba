@@ -344,26 +344,24 @@ public class FilterDelegateImpl implements FilterDelegate {
         ftsSwitch = componentsFactory.createComponent(CheckBox.class);
         ftsSwitch.setCaption(getMessage("Filter.ftsSwitch"));
         ftsSwitch.setValue(filterMode == FilterMode.FTS_MODE);
-        ftsSwitch.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                filterMode = Boolean.TRUE.equals(value) ? FilterMode.FTS_MODE : FilterMode.GENERIC_MODE;
-                if (filterMode == FilterMode.FTS_MODE) {
-                    prevConditions = conditions;
-                    ((CollectionDatasource.SupportsApplyToSelected) datasource).unpinAllQuery();
-                    appliedFilters.clear();
-                    lastAppliedFilter = null;
-                }
-                conditions = (filterMode == FilterMode.GENERIC_MODE) ? prevConditions : new ConditionsTree();
-                createLayout();
-                initMaxResults();
-                if (filterMode == FilterMode.GENERIC_MODE) {
-                    fillConditionsLayout(ConditionsFocusType.FIRST);
-                    setFilterActionsEnabled();
-                    initFilterSelectComponents();
-                }
-                updateWindowCaption();
+
+        ftsSwitch.addValueChangeListener(e -> {
+            filterMode = Boolean.TRUE.equals(e.getValue()) ? FilterMode.FTS_MODE : FilterMode.GENERIC_MODE;
+            if (filterMode == FilterMode.FTS_MODE) {
+                prevConditions = conditions;
+                ((CollectionDatasource.SupportsApplyToSelected) datasource).unpinAllQuery();
+                appliedFilters.clear();
+                lastAppliedFilter = null;
             }
+            conditions = (filterMode == FilterMode.GENERIC_MODE) ? prevConditions : new ConditionsTree();
+            createLayout();
+            initMaxResults();
+            if (filterMode == FilterMode.GENERIC_MODE) {
+                fillConditionsLayout(ConditionsFocusType.FIRST);
+                setFilterActionsEnabled();
+                initFilterSelectComponents();
+            }
+            updateWindowCaption();
         });
     }
 

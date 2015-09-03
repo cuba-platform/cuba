@@ -186,6 +186,36 @@ public interface Component {
         void setBorderVisible(boolean borderVisible);
     }
 
+    class ValueChangeEvent {
+        private final Component source;
+        private final Object prevValue;
+        private final Object value;
+
+        public ValueChangeEvent(Component source, Object prevValue, Object value) {
+            this.source = source;
+            this.prevValue = prevValue;
+            this.value = value;
+        }
+
+        public Component getSource() {
+            return source;
+        }
+
+        @Nullable
+        public Object getPrevValue() {
+            return prevValue;
+        }
+
+        @Nullable
+        public Object getValue() {
+            return value;
+        }
+    }
+
+    interface ValueChangeListener {
+        void valueChanged(ValueChangeEvent e);
+    }
+
     /**
      * Object having a value
      */
@@ -194,8 +224,13 @@ public interface Component {
 
         void setValue(Object value);
 
+        @Deprecated
         void addListener(ValueListener listener);
+        @Deprecated
         void removeListener(ValueListener listener);
+
+        void addValueChangeListener(ValueChangeListener listener);
+        void removeValueChangeListener(ValueChangeListener listener);
     }
 
     /**

@@ -18,7 +18,6 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.export.LogDataProvider;
@@ -37,7 +36,6 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -115,29 +113,23 @@ public class ServerLogWindow extends AbstractWindow {
         jmxInstancesDs.refresh();
         jmxConnectionField.setValue(localJmxInstance);
         jmxConnectionField.setRequired(true);
-        jmxConnectionField.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                JmxInstance jmxInstance = jmxConnectionField.getValue();
-                try {
-                    refreshHostInfo();
-                } catch (JmxControlException e) {
-                    showNotification(getMessage("exception.unableToConnectToInterface"), NotificationType.WARNING);
-                    if (jmxInstance != localJmxInstance) {
-                        jmxConnectionField.setValue(localJmxInstance);
-                    }
+        jmxConnectionField.addValueChangeListener(e -> {
+            JmxInstance jmxInstance = (JmxInstance) e.getValue();
+            try {
+                refreshHostInfo();
+            } catch (JmxControlException ex) {
+                showNotification(getMessage("exception.unableToConnectToInterface"), NotificationType.WARNING);
+                if (jmxInstance != localJmxInstance) {
+                    jmxConnectionField.setValue(localJmxInstance);
                 }
             }
         });
 
-        autoRefreshCheck.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                if (Boolean.TRUE.equals(value)) {
-                    updateLogTailTimer.start();
-                } else {
-                    updateLogTailTimer.stop();
-                }
+        autoRefreshCheck.addValueChangeListener(e -> {
+            if (Boolean.TRUE.equals(e.getValue())) {
+                updateLogTailTimer.start();
+            } else {
+                updateLogTailTimer.stop();
             }
         });
 
@@ -182,16 +174,13 @@ public class ServerLogWindow extends AbstractWindow {
 
         refreshHostInfo();
 
-        loggerNameField.addListener(new ValueListener<Object>() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                List<String> currentLoggers = new ArrayList<>(jmxRemoteLoggingAPI.getLoggerNames(getSelectedConnection()));
+        loggerNameField.addValueChangeListener(e -> {
+            List<String> currentLoggers = new ArrayList<>(jmxRemoteLoggingAPI.getLoggerNames(getSelectedConnection()));
 
-                Collections.sort(currentLoggers);
-                currentLoggers.add(0, getMessage("logger.new"));
-                if (value != null && value.equals(currentLoggers.get(0))) {
-                    openAddLoggerDialog();
-                }
+            Collections.sort(currentLoggers);
+            currentLoggers.add(0, getMessage("logger.new"));
+            if (e.getValue() != null && e.getValue().equals(currentLoggers.get(0))) {
+                openAddLoggerDialog();
             }
         });
 

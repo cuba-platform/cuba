@@ -16,6 +16,7 @@ import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.compatibility.ComponentValueChangeListenerWrapper;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
@@ -29,13 +30,9 @@ import java.util.Set;
  * @author krivopustov
  * @version $Id$
  */
-public abstract class DesktopAbstractField<C extends JComponent>
-        extends
-            DesktopAbstractComponent<C>
-        implements
-            Field {
+public abstract class DesktopAbstractField<C extends JComponent> extends DesktopAbstractComponent<C> implements Field {
 
-    protected List<ValueListener> listeners = new ArrayList<>();
+    protected List<ValueChangeListener> listeners = new ArrayList<>();
 
     protected boolean required;
     protected String requiredMessage;
@@ -51,19 +48,30 @@ public abstract class DesktopAbstractField<C extends JComponent>
 
     @Override
     public void addListener(ValueListener listener) {
-        if (!listeners.contains(listener))
-            listeners.add(listener);
+        addValueChangeListener(new ComponentValueChangeListenerWrapper(listener));
     }
 
     @Override
     public void removeListener(ValueListener listener) {
-        listeners.remove(listener);
+        removeValueChangeListener(new ComponentValueChangeListenerWrapper(listener));
     }
 
     protected void fireValueChanged(Object prevValue, Object value) {
-        for (ValueListener listener : listeners) {
-            listener.valueChanged(this, "value", prevValue, value);
+        for (ValueChangeListener listener : new ArrayList<>(listeners)) {
+            listener.valueChanged(new ValueChangeEvent(this, prevValue, value));
         }
+    }
+
+    @Override
+    public void addValueChangeListener(ValueChangeListener listener) {
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeValueChangeListener(ValueChangeListener listener) {
+        listeners.remove(listener);
     }
 
     @Override

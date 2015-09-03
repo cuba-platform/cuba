@@ -7,11 +7,12 @@ package com.haulmont.cuba.web.app.ui.core.feedback;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.EmailService;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.EmailInfo;
+import com.haulmont.cuba.core.global.TimeSource;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.WebWindow;
 
 import javax.inject.Inject;
@@ -128,13 +129,11 @@ public class FeedbackWindow extends AbstractWindow {
         otherReason = getMessage("other");
         reason.setOptionsList(Arrays.asList(getMessage("bugReport"), getMessage("featureRequest"), otherReason));
         reasonFreeText.setVisible(false);
-        reason.addListener(new ValueListener<LookupField>() {
-            public void valueChanged(LookupField source, String property, Object prevValue, Object value) {
-                if (otherReason.equals(value)) {
-                    reasonFreeText.setVisible(true);
-                } else {
-                    reasonFreeText.setVisible(false);
-                }
+        reason.addValueChangeListener(e -> {
+            if (otherReason.equals(e.getValue())) {
+                reasonFreeText.setVisible(true);
+            } else {
+                reasonFreeText.setVisible(false);
             }
         });
 

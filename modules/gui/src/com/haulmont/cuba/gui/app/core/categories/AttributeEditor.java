@@ -7,13 +7,11 @@ package com.haulmont.cuba.gui.app.core.categories;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
@@ -25,7 +23,6 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -201,16 +198,14 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                 defaultEntityField = factory.createComponent(PickerField.class);
 
                 defaultEntityField.addLookupAction();
-                defaultEntityField.addListener(new ValueListener() {
-                    @Override
-                    public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                        if (value instanceof BaseUuidEntity) {
-                            attribute.setDefaultEntityId(((BaseUuidEntity) value).getId());
-                        } else {
-                            attribute.setDefaultEntityId(null);
-                        }
+                defaultEntityField.addValueChangeListener(e -> {
+                    if (e.getValue() instanceof BaseUuidEntity) {
+                        attribute.setDefaultEntityId(((BaseUuidEntity) e.getValue()).getId());
+                    } else {
+                        attribute.setDefaultEntityId(null);
                     }
                 });
+
                 return defaultEntityField;
             }
         });

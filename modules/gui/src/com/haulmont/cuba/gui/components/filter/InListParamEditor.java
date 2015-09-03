@@ -17,7 +17,6 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -90,15 +89,12 @@ public class InListParamEditor extends AbstractWindow {
                     }
             );
 
-            lookup.addListener(new ValueListener() {
-                @Override
-                public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                    if (value != null && !containsValue((Instance) value)) {
-                        String str = addEntityInstance((Instance) value);
-                        addItemLayout(value, str);
-                    }
-                    lookup.setValue(null);
+            lookup.addValueChangeListener(e -> {
+                if (e.getValue() != null && !containsValue((Instance) e.getValue())) {
+                    String str = addEntityInstance((Instance) e.getValue());
+                    addItemLayout(e.getValue(), str);
                 }
+                lookup.setValue(null);
             });
 
             componentLayout.add(lookup);
@@ -136,15 +132,12 @@ public class InListParamEditor extends AbstractWindow {
             lookup.setWidth(pickerWidth);
             lookup.setOptionsList(runtimeEnum);
 
-            lookup.addListener(new ValueListener() {
-                @Override
-                public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                    if (value != null && !containsValue((String) value)) {
-                        String str = addRuntimeEnumValue((String) value);
-                        addItemLayout(value, str);
-                    }
-                    lookup.setValue(null);
+            lookup.addValueChangeListener(e -> {
+                if (e.getValue() != null && !containsValue((String) e.getValue())) {
+                    String str = addRuntimeEnumValue((String) e.getValue());
+                    addItemLayout(e.getValue(), str);
                 }
+                lookup.setValue(null);
             });
 
             componentLayout.add(lookup);
@@ -159,15 +152,12 @@ public class InListParamEditor extends AbstractWindow {
             lookup.setWidth(pickerWidth);
             lookup.setOptionsMap(options);
 
-            lookup.addListener(new ValueListener() {
-                @Override
-                public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                    if (value != null && !containsValue((Enum) value)) {
-                        String str = addEnumValue((Enum) value);
-                        addItemLayout(value, str);
-                    }
-                    lookup.setValue(null);
+            lookup.addValueChangeListener(e -> {
+                if (e.getValue() != null && !containsValue((Enum) e.getValue())) {
+                    String str = addEnumValue((Enum) e.getValue());
+                    addItemLayout(e.getValue(), str);
                 }
+                lookup.setValue(null);
             });
 
             componentLayout.add(lookup);

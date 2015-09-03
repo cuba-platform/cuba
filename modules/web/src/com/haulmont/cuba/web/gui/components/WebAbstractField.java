@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.compatibility.ComponentValueChangeListenerWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.vaadin.data.Property;
 import com.vaadin.ui.AbstractComponent;
@@ -40,8 +41,8 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends We
     protected MetaProperty metaProperty;
     protected MetaPropertyPath metaPropertyPath;
 
-    protected List<ValueListener> listeners = new ArrayList<>();
-    protected List<Field.Validator> validators = new ArrayList<>();
+    protected List<ValueChangeListener> listeners = new ArrayList<>(); // todo lazy initialization
+    protected List<Field.Validator> validators = new ArrayList<>(); // todo lazy initialization
 
     protected boolean settingValue = false;
 
@@ -176,13 +177,23 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends We
 
     @Override
     public void addListener(ValueListener listener) {
+        addValueChangeListener(new ComponentValueChangeListenerWrapper(listener));
+    }
+
+    @Override
+    public void removeListener(ValueListener listener) {
+        removeValueChangeListener(new ComponentValueChangeListenerWrapper(listener));
+    }
+
+    @Override
+    public void addValueChangeListener(ValueChangeListener listener) {
         if (!listeners.contains(listener)) {
             listeners.add(listener);
         }
     }
 
     @Override
-    public void removeListener(ValueListener listener) {
+    public void removeValueChangeListener(ValueChangeListener listener) {
         listeners.remove(listener);
     }
 
@@ -190,8 +201,9 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends We
         component.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
-                if (settingValue)
+                if (settingValue) {
                     return;
+                }
 
                 final Object value = getValue();
                 final Object oldValue = prevValue;
@@ -212,17 +224,18 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends We
 
     protected void fireValueChanged(Object prevValue, Object value) {
         if (!ObjectUtils.equals(prevValue, value)) {
-            for (ValueListener listener : listeners) {
+            for (ValueChangeListener listener : listeners) {
                 //noinspection unchecked
-                listener.valueChanged(this, "value", prevValue, value);
+                listener.valueChanged(new ValueChangeEvent(this, prevValue, value));
             }
         }
     }
 
     @Override
     public void addValidator(Field.Validator validator) {
-        if (!validators.contains(validator))
+        if (!validators.contains(validator)) {
             validators.add(validator);
+        }
     }
 
     @Override
@@ -242,15 +255,17 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends We
 
     @Override
     public void validate() throws ValidationException {
-        if (!isVisible() || !isEditable() || !isEnabled())
+        if (!isVisible() || !isEditable() || !isEnabled()) {
             return;
+        }
 
         Object value = getValue();
         if (isEmpty(value)) {
-            if (isRequired())
+            if (isRequired()) {
                 throw new RequiredValueMissingException(getRequiredMessage(), this);
-            else
+            } else {
                 return;
+            }
         }
 
         for (Field.Validator validator : validators) {

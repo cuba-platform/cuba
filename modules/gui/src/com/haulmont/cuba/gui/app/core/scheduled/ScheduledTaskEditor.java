@@ -14,12 +14,10 @@ import com.haulmont.cuba.core.entity.ScheduledTaskDefinedBy;
 import com.haulmont.cuba.core.entity.SchedulingType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -107,19 +105,24 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
     //List holds an information about methods of selected bean
     protected List<MethodInfo> availableMethods = new ArrayList<>();
 
-    private void show(Component... components) {
+    protected void show(Component... components) {
         for (Component component : components) {
             component.setVisible(true);
         }
     }
 
-    private void hide(Component... components) {
+    protected void hide(Component... components) {
         for (Component component : components) {
             component.setVisible(false);
         }
     }
 
-    private void clear(Field... fields) {
+    protected void hideAll() {
+        hide(classNameField, classNameLabel, scriptNameField, scriptNameLabel, beanNameField, beanNameLabel,
+                methodNameField, methodNameLabel, methodNameHbox, methodParamsBox);
+    }
+
+    protected void clear(Field... fields) {
         for (Field component : fields) {
             component.setValue(null);
         }
@@ -128,83 +131,65 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
     @Override
     public void init(Map<String, Object> params) {
         schedulingTypeField.setOptionsList(Arrays.asList(SchedulingType.values()));
-        schedulingTypeField.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                setSchedulingTypeField((SchedulingType) value);
-            }
-        });
+        schedulingTypeField.addValueChangeListener(e -> setSchedulingTypeField((SchedulingType) e.getValue()));
 
         definedByField.setOptionsList(Arrays.asList(ScheduledTaskDefinedBy.values()));
-        definedByField.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                if (ScheduledTaskDefinedBy.BEAN == value) {
-                    clear(classNameField, scriptNameField);
-                    hideAll();
-                    show(beanNameField, beanNameLabel, methodNameField, methodNameLabel, methodNameHbox, methodParamsBox);
-                } else if (ScheduledTaskDefinedBy.CLASS == value) {
-                    clear(beanNameField, methodNameField, scriptNameField);
-                    hideAll();
-                    show(classNameField, classNameLabel);
-                } else if (ScheduledTaskDefinedBy.SCRIPT == value) {
-                    clear(beanNameField, methodNameField, classNameField);
-                    hideAll();
-                    show(scriptNameField, scriptNameLabel);
-                } else {
-                    clear(beanNameField, methodNameField, classNameField, scriptNameField);
-                    hideAll();
-                }
-            }
-
-            private void hideAll() {
-                hide(classNameField, classNameLabel, scriptNameField, scriptNameLabel, beanNameField, beanNameLabel,
-                        methodNameField, methodNameLabel, methodNameHbox, methodParamsBox);
+        definedByField.addValueChangeListener(e -> {
+            if (ScheduledTaskDefinedBy.BEAN == e.getValue()) {
+                clear(classNameField, scriptNameField);
+                hideAll();
+                show(beanNameField, beanNameLabel, methodNameField, methodNameLabel, methodNameHbox, methodParamsBox);
+            } else if (ScheduledTaskDefinedBy.CLASS == e.getValue()) {
+                clear(beanNameField, methodNameField, scriptNameField);
+                hideAll();
+                show(classNameField, classNameLabel);
+            } else if (ScheduledTaskDefinedBy.SCRIPT == e.getValue()) {
+                clear(beanNameField, methodNameField, classNameField);
+                hideAll();
+                show(scriptNameField, scriptNameLabel);
+            } else {
+                clear(beanNameField, methodNameField, classNameField, scriptNameField);
+                hideAll();
             }
         });
 
-        final Map<String, List<MethodInfo>> availableBeans = service.getAvailableBeans();
+        Map<String, List<MethodInfo>> availableBeans = service.getAvailableBeans();
         beanNameField.setOptionsList(new ArrayList<>(availableBeans.keySet()));
-        beanNameField.addListener(new ValueListener<LookupField>() {
-            @Override
-            public void valueChanged(LookupField source, String property, Object prevValue, Object value) {
-                methodNameField.setValue(null);
-                if (value == null)
-                    methodNameField.setOptionsList(Collections.emptyList());
-                else {
-                    availableMethods = availableBeans.get(value);
+        beanNameField.addValueChangeListener(e -> {
+            methodNameField.setValue(null);
+            if (e.getValue() == null) {
+                methodNameField.setOptionsList(Collections.emptyList());
+            } else {
+                availableMethods = availableBeans.get(e.getValue());
 
-                    if (availableMethods != null) {
-                        HashMap<String, Object> optionsMap = new HashMap<>();
-                        for (MethodInfo availableMethod : availableMethods) {
-                            optionsMap.put(availableMethod.getMethodSignature(), availableMethod);
-                        }
-                        methodNameField.setOptionsMap(optionsMap);
+                if (availableMethods != null) {
+                    HashMap<String, Object> optionsMap = new HashMap<>();
+                    for (MethodInfo availableMethod : availableMethods) {
+                        optionsMap.put(availableMethod.getMethodSignature(), availableMethod);
                     }
+                    methodNameField.setOptionsMap(optionsMap);
                 }
             }
         });
 
-        methodNameField.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                clearMethodParamsGrid();
-                if (value != null) {
-                    createMethodParamsGrid((MethodInfo) value);
-                }
-
-                String methodName = (value != null) ? ((MethodInfo) value).getName() : null;
-                taskDs.getItem().setMethodName(methodName);
-
-                List<MethodParameterInfo> methodParams = (value != null) ? ((MethodInfo) value).getParameters() : Collections.<MethodParameterInfo>emptyList();
-                taskDs.getItem().updateMethodParameters(methodParams);
+        methodNameField.addValueChangeListener(e -> {
+            clearMethodParamsGrid();
+            if (e.getValue() != null) {
+                createMethodParamsGrid((MethodInfo) e.getValue());
             }
+
+            String methodName = (e.getValue() != null) ? ((MethodInfo) e.getValue()).getName() : null;
+            taskDs.getItem().setMethodName(methodName);
+
+            List<MethodParameterInfo> methodParams = (e.getValue() != null) ?
+                    ((MethodInfo) e.getValue()).getParameters() : Collections.<MethodParameterInfo>emptyList();
+            taskDs.getItem().updateMethodParameters(methodParams);
         });
 
         userNameField.setOptionsList(service.getAvailableUsers());
     }
 
-    private void setSchedulingTypeField(SchedulingType value) {
+    protected void setSchedulingTypeField(SchedulingType value) {
         if (SchedulingType.CRON == value) {
             hide(periodField, periodLabel, startDateField, startDateLabel);
             clear(periodField, startDateField);
@@ -237,7 +222,7 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
      * finds appropriate MethodInfo object in methodInfoField's optionsList
      * and sets found value to methodInfoField
      */
-    private void setInitialMethodNameValue(ScheduledTask task) {
+    protected void setInitialMethodNameValue(ScheduledTask task) {
         if (availableMethods == null)
             return;
 
@@ -252,7 +237,7 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
         }
     }
 
-    private void createMethodParamsGrid(MethodInfo methodInfo) {
+    protected void createMethodParamsGrid(MethodInfo methodInfo) {
         GridLayout methodParamsGrid = componentsFactory.createComponent(GridLayout.class);
         methodParamsGrid.setSpacing(true);
         methodParamsGrid.setColumns(2);
@@ -267,13 +252,10 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
             valueTextField.setWidth(themeConstants.get("cuba.gui.ScheduledTaskEditor.valueTextField.width"));
             valueTextField.setValue(parameterInfo.getValue());
 
-            valueTextField.addListener(new ValueListener() {
-                @Override
-                public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                    parameterInfo.setValue(value);
-                    MethodInfo selectedMethod = methodNameField.getValue();
-                    taskDs.getItem().updateMethodParameters(selectedMethod.getParameters());
-                }
+            valueTextField.addValueChangeListener(e -> {
+                parameterInfo.setValue(e.getValue());
+                MethodInfo selectedMethod = methodNameField.getValue();
+                taskDs.getItem().updateMethodParameters(selectedMethod.getParameters());
             });
 
             methodParamsGrid.setRows(++rowsCount);
@@ -283,7 +265,7 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
         methodParamsBox.add(methodParamsGrid);
     }
 
-    private void clearMethodParamsGrid() {
+    protected void clearMethodParamsGrid() {
         for (Component component : methodParamsBox.getComponents()) {
             methodParamsBox.remove(component);
         }

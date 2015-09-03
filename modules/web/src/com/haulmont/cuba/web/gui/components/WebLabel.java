@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.compatibility.ComponentValueChangeListenerWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaLabel;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToDatatypeConverter;
@@ -35,7 +36,7 @@ import java.util.List;
  */
 public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implements Label {
 
-    protected List<ValueListener> listeners = new ArrayList<>();
+    protected List<ValueChangeListener> listeners = new ArrayList<>(); // todo lazy initialization
 
     protected Datasource<Entity> datasource;
     protected MetaProperty metaProperty;
@@ -146,13 +147,23 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
 
     @Override
     public void addListener(ValueListener listener) {
+        addValueChangeListener(new ComponentValueChangeListenerWrapper(listener));
+    }
+
+    @Override
+    public void removeListener(ValueListener listener) {
+        removeValueChangeListener(new ComponentValueChangeListenerWrapper(listener));
+    }
+
+    @Override
+    public void addValueChangeListener(ValueChangeListener listener) {
         if (!listeners.contains(listener)) {
             listeners.add(listener);
         }
     }
 
     @Override
-    public void removeListener(ValueListener listener) {
+    public void removeValueChangeListener(ValueChangeListener listener) {
         listeners.remove(listener);
     }
 
@@ -167,8 +178,8 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
     }
 
     protected void fireValueChanged(Object prevValue, Object value) {
-        for (ValueListener listener : listeners) {
-            listener.valueChanged(this, "value", prevValue, value);
+        for (ValueChangeListener listener : new ArrayList<>(listeners)) {
+            listener.valueChanged(new ValueChangeEvent(this, prevValue, value));
         }
     }
 

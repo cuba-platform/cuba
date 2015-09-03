@@ -152,15 +152,13 @@ public class RuntimePropsDatasourceImpl
             view.addProperty(property.getName());
         }
 
-        item.addListener(listener);
-        item.addListener(new com.haulmont.chile.core.common.ValueListener() {
-            @Override
-            public void propertyChanged(Object item, String property, Object prevValue, Object value) {
-                modified = true;
-                //noinspection unchecked
-                itemToUpdate.add(((DynamicAttributesEntity) item).getCategoryValue(property));
-            }
+        item.addPropertyChangeListener(listener);
+        item.addPropertyChangeListener(e -> {
+            modified = true;
+            //noinspection unchecked
+            itemToUpdate.add(item.getCategoryValue(e.getProperty()));
         });
+
         this.valid();
         initializedBefore = true;
         if (!itemToDelete.isEmpty()) {

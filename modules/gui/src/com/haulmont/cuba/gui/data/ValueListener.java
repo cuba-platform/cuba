@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
  * @author abramov
  * @version $Id$
  */
+@Deprecated
 public interface ValueListener<T> {
 
     /**

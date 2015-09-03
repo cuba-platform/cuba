@@ -19,7 +19,7 @@ import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
@@ -27,7 +27,6 @@ import com.haulmont.cuba.gui.components.filter.condition.FilterConditionUtils;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -85,7 +84,7 @@ public class Param {
     protected ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.NAME);
     protected ThemeConstants theme = AppBeans.get(ThemeConstantsManager.class).getConstants();
 
-    protected List<ValueListener> listeners = new ArrayList<>();
+    protected List<ParamValueChangeListener> listeners = new ArrayList<>();
 
     public Param(String name, Class javaClass, String entityWhere, String entityView,
                  Datasource datasource, boolean inExpr, boolean required) {
@@ -156,8 +155,8 @@ public class Param {
         if (!ObjectUtils.equals(value, this.value)) {
             Object prevValue = this.value;
             this.value = value;
-            for (ValueListener listener : listeners) {
-                listener.valueChanged(this, "value", prevValue, value);
+            for (ParamValueChangeListener listener : new ArrayList<>(listeners)) {
+                listener.valueChanged(prevValue, value);
             }
             if (updateEditComponent && this.editComponent instanceof Component.HasValue) {
                 ((Component.HasValue) editComponent).setValue(value);
@@ -350,12 +349,9 @@ public class Param {
 
     protected CheckBox createUnaryField(final ValueProperty valueProperty) {
         CheckBox field = componentsFactory.createComponent(CheckBox.class);
-        field.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                value = BooleanUtils.isTrue((Boolean) value) ? true : null;
-                _setValue(value, valueProperty);
-            }
+        field.addValueChangeListener(e -> {
+            Object newValue = BooleanUtils.isTrue((Boolean) e.getValue()) ? true : null;
+            _setValue(newValue, valueProperty);
         });
         field.setValue(_getValue(valueProperty));
         field.setAlignment(Component.Alignment.MIDDLE_LEFT);
@@ -411,34 +407,29 @@ public class Param {
 
         field.setWidth(theme.get("cuba.gui.filter.Param.textComponent.width"));
 
-        field.addListener(new ValueListener() {
-
-            @Override
-            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                Object paramValue = null;
-                if (!StringUtils.isBlank((String) value)) {
-                    if (inExpr) {
-                        paramValue = new ArrayList<String>();
-                        String[] parts = ((String) value).split(",");
-                        for (String part : parts) {
-                            ((List) paramValue).add(part.trim());
-                        }
-                    } else {
-                        paramValue = value;
+        field.addValueChangeListener(e -> {
+            Object paramValue = null;
+            if (!StringUtils.isBlank((String) e.getValue())) {
+                if (inExpr) {
+                    paramValue = new ArrayList<String>();
+                    String[] parts = ((String) e.getValue()).split(",");
+                    for (String part : parts) {
+                        ((List) paramValue).add(part.trim());
                     }
+                } else {
+                    paramValue = e.getValue();
                 }
+            }
 
-                if (paramValue instanceof String) {
-                    Configuration configuration = AppBeans.get(Configuration.NAME);
-                    if (configuration.getConfig(ClientConfig.class).getGenericFilterTrimParamValues()) {
-                        _setValue(StringUtils.trimToNull((String) paramValue), valueProperty);
-                    } else {
-                        _setValue(paramValue, valueProperty);
-                    }
+            if (paramValue instanceof String) {
+                Configuration configuration = AppBeans.get(Configuration.NAME);
+                if (configuration.getConfig(ClientConfig.class).getGenericFilterTrimParamValues()) {
+                    _setValue(StringUtils.trimToNull((String) paramValue), valueProperty);
                 } else {
                     _setValue(paramValue, valueProperty);
                 }
-
+            } else {
+                _setValue(paramValue, valueProperty);
             }
         });
 
@@ -483,20 +474,15 @@ public class Param {
 
         if (dateOnly) {
             resolution = com.haulmont.cuba.gui.components.DateField.Resolution.DAY;
-            formatStr = messages.getMessage(AppConfig.getMessagesPack(), "dateFormat");
+            formatStr = messages.getMainMessage("dateFormat");
         } else {
             resolution = com.haulmont.cuba.gui.components.DateField.Resolution.MIN;
-            formatStr = messages.getMessage(AppConfig.getMessagesPack(), "dateTimeFormat");
+            formatStr = messages.getMainMessage("dateTimeFormat");
         }
         dateField.setResolution(resolution);
         dateField.setDateFormat(formatStr);
 
-        dateField.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                _setValue(value, valueProperty);
-            }
-        });
+        dateField.addValueChangeListener(e -> _setValue(e.getValue(), valueProperty));
 
         dateField.setValue(_getValue(valueProperty));
         return dateField;
@@ -505,44 +491,43 @@ public class Param {
     protected Component createNumberField(final Datatype datatype, final ValueProperty valueProperty) {
         TextField field = componentsFactory.createComponent(TextField.class);
 
-        field.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                if (value == null || value instanceof Number)
-                    _setValue(value, valueProperty);
-                else if (value instanceof String && !StringUtils.isBlank((String) value)) {
-                    UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
-                    Messages messages = AppBeans.get(Messages.NAME);
+        field.addValueChangeListener(e -> {
+            if (e.getValue() == null || e.getValue() instanceof Number) {
+                _setValue(e.getValue(), valueProperty);
+            } else if (e.getValue() instanceof String && !StringUtils.isBlank((String) e.getValue())) {
+                UserSessionSource userSessionSource1 = AppBeans.get(UserSessionSource.NAME);
 
-                    Object v;
-                    if (inExpr) {
-                        v = new ArrayList();
-                        String[] parts = ((String) value).split(",");
-                        for (String part : parts) {
-                            Object p;
-                            try {
-                                p = datatype.parse(part, userSessionSource.getLocale());
-                            } catch (ParseException e) {
-                                AppBeans.get(WindowManagerProvider.class).get().showNotification(messages.getMessage(Param.class,
-                                        "Param.numberInvalid"), Frame.NotificationType.ERROR);
-                                return;
-                            }
-                            ((List) v).add(p);
-                        }
-                    } else {
+                Object v;
+                if (inExpr) {
+                    v = new ArrayList();
+                    String[] parts = ((String) e.getValue()).split(",");
+                    for (String part : parts) {
+                        Object p;
                         try {
-                            v = datatype.parse((String) value, userSessionSource.getLocale());
-                        } catch (ParseException e) {
-                            AppBeans.get(WindowManagerProvider.class).get().showNotification(messages.getMessage(Param.class,
+                            p = datatype.parse(part, userSessionSource1.getLocale());
+                        } catch (ParseException ex) {
+                            WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
+                            wm.showNotification(messages.getMessage(Param.class,
                                     "Param.numberInvalid"), Frame.NotificationType.ERROR);
                             return;
                         }
+                        ((List) v).add(p);
                     }
-                    _setValue(v, valueProperty);
-                } else if (value instanceof String && StringUtils.isBlank((String) value)) {
-                    _setValue(null, valueProperty);
-                } else
-                    throw new IllegalStateException("Invalid value: " + value);
+                } else {
+                    try {
+                        v = datatype.parse((String) e.getValue(), userSessionSource1.getLocale());
+                    } catch (ParseException ex) {
+                        WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
+                        wm.showNotification(messages.getMessage(Param.class,
+                                "Param.numberInvalid"), Frame.NotificationType.ERROR);
+                        return;
+                    }
+                }
+                _setValue(v, valueProperty);
+            } else if (e.getValue() instanceof String && StringUtils.isBlank((String) e.getValue())) {
+                _setValue(null, valueProperty);
+            } else {
+                throw new IllegalStateException("Invalid value: " + e.getValue());
             }
         });
 
@@ -563,13 +548,7 @@ public class Param {
         values.put(messages.getMessage(Param.class, "Boolean.FALSE"), Boolean.FALSE);
 
         field.setOptionsMap(values);
-
-        field.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                _setValue(value, valueProperty);
-            }
-        });
+        field.addValueChangeListener(e -> _setValue(e.getValue(), valueProperty));
 
         field.setValue(_getValue(valueProperty));
         return field;
@@ -578,41 +557,38 @@ public class Param {
     protected Component createUuidField(final ValueProperty valueProperty) {
         TextField field = componentsFactory.createComponent(TextField.class);
 
-        field.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                String strValue = (String) value;
-                if (strValue == null)
-                    _setValue(strValue, valueProperty);
-                else if ((!StringUtils.isBlank(strValue))) {
-                    Messages messages = AppBeans.get(Messages.NAME);
+        field.addValueChangeListener(e -> {
+            String strValue = (String) e.getValue();
+            if (strValue == null) {
+                _setValue(null, valueProperty);
+            } else if ((!StringUtils.isBlank(strValue))) {
+                Messages messages1 = AppBeans.get(Messages.NAME);
 
-                    if (inExpr) {
-                        List list = new ArrayList();
-                        String[] parts = strValue.split(",");
-                        try {
-                            for (String part : parts) {
-                                list.add(UUID.fromString(part.trim()));
-                            }
-                            _setValue(list, valueProperty);
-                        } catch (IllegalArgumentException ie) {
-                            AppBeans.get(WindowManagerProvider.class).get().showNotification(messages.getMessage(Param.class,
-                                    "Param.uuid.Err"), Frame.NotificationType.TRAY);
-                            _setValue(null, valueProperty);
+                if (inExpr) {
+                    List list = new ArrayList();
+                    String[] parts = strValue.split(",");
+                    try {
+                        for (String part : parts) {
+                            list.add(UUID.fromString(part.trim()));
                         }
-                    } else {
-                        try {
-                            _setValue(UUID.fromString(strValue), valueProperty);
-                        } catch (IllegalArgumentException ie) {
-                            AppBeans.get(WindowManagerProvider.class).get().showNotification(messages.getMessage(Param.class,
-                                    "Param.uuid.Err"), Frame.NotificationType.TRAY);
-                        }
+                        _setValue(list, valueProperty);
+                    } catch (IllegalArgumentException ie) {
+                        AppBeans.get(WindowManagerProvider.class).get().showNotification(messages1.getMessage(Param.class,
+                                "Param.uuid.Err"), Frame.NotificationType.TRAY);
+                        _setValue(null, valueProperty);
                     }
-                } else if (StringUtils.isBlank(strValue))
-                    _setValue(null, valueProperty);
-                else
-                    throw new IllegalStateException("Invalid value: " + strValue);
-
+                } else {
+                    try {
+                        _setValue(UUID.fromString(strValue), valueProperty);
+                    } catch (IllegalArgumentException ie) {
+                        AppBeans.get(WindowManagerProvider.class).get().showNotification(messages1.getMessage(Param.class,
+                                "Param.uuid.Err"), Frame.NotificationType.TRAY);
+                    }
+                }
+            } else if (StringUtils.isBlank(strValue)) {
+                _setValue(null, valueProperty);
+            } else {
+                throw new IllegalStateException("Invalid value: " + strValue);
             }
         });
 
@@ -651,14 +627,7 @@ public class Param {
                 picker.addLookupAction();
                 picker.addClearAction();
 
-                picker.addListener(
-                        new ValueListener() {
-                            @Override
-                            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                                _setValue(value, valueProperty);
-                            }
-                        }
-                );
+                picker.addValueChangeListener(e -> _setValue(e.getValue(), valueProperty));
                 picker.setValue(_getValue(valueProperty));
 
                 return picker;
@@ -707,13 +676,7 @@ public class Param {
                         }
                 );
 
-                lookup.addListener(new ValueListener() {
-                    @Override
-                    public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                        _setValue(value, valueProperty);
-                    }
-                });
-
+                lookup.addValueChangeListener(e -> _setValue(e.getValue(), valueProperty));
                 lookup.setValue(_getValue(valueProperty));
 
                 return lookup;
@@ -736,13 +699,7 @@ public class Param {
             LookupField lookup = componentsFactory.createComponent(LookupField.class);
             lookup.setOptionsMap(options);
 
-            lookup.addListener(new ValueListener() {
-                @Override
-                public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                    _setValue(value, valueProperty);
-                }
-            });
-
+            lookup.addValueChangeListener(e -> _setValue(e.getValue(), valueProperty));
             lookup.setValue(_getValue(valueProperty));
 
             return lookup;
@@ -777,11 +734,8 @@ public class Param {
             LookupField lookup = componentsFactory.createComponent(LookupField.class);
             lookup.setOptionsList(runtimeEnum);
 
-            lookup.addListener(new ValueListener() {
-                @Override
-                public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                    _setValue(value, valueProperty);
-                }
+            lookup.addValueChangeListener(e -> {
+                _setValue(value, valueProperty);
             });
 
             lookup.setValue(_getValue(valueProperty));
@@ -790,14 +744,9 @@ public class Param {
         }
     }
 
-    protected void initListEdit(final InListParamComponent component, final ValueProperty valueProperty) {
-        component.addValueListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                _setValue(value, valueProperty);
+    protected void initListEdit(InListParamComponent component, ValueProperty valueProperty) {
+        component.addValueListener((prevValue, value1) -> _setValue(value1, valueProperty));
 
-            }
-        });
         Object _value = _getValue(valueProperty);
         if (_value != null) {
             Map<Object, String> values = new HashMap<>();
@@ -819,16 +768,22 @@ public class Param {
         paramElem.setText(formatValue(_getValue(valueProperty)));
     }
 
-    public void addListener(ValueListener listener) {
-        if (!listeners.contains(listener))
+    public void addValueChangeListener(ParamValueChangeListener listener) {
+        if (!listeners.contains(listener)) {
             listeners.add(listener);
+        }
     }
 
-    public void removeListener(ValueListener listener) {
+    public void removeValueChangeListener(ParamValueChangeListener listener) {
         listeners.remove(listener);
     }
 
     public MetaProperty getProperty() {
         return property;
+    }
+
+    public interface ParamValueChangeListener {
+
+        void valueChanged(@Nullable Object prevValue, @Nullable Object value);
     }
 }

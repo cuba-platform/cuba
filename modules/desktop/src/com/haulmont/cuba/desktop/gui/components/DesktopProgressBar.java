@@ -7,6 +7,7 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.gui.components.ProgressBar;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.compatibility.ComponentValueChangeListenerWrapper;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.swing.*;
@@ -22,7 +23,7 @@ import java.util.List;
 public class DesktopProgressBar extends DesktopAbstractComponent<JProgressBar> implements ProgressBar {
 
     protected boolean editable = true;
-    protected List<ValueListener> listeners = new ArrayList<>();
+    protected List<ValueChangeListener> listeners = new ArrayList<>();
     protected Object prevValue;
 
     private static final int WHOLE_PROGRESS = 100;
@@ -35,19 +36,30 @@ public class DesktopProgressBar extends DesktopAbstractComponent<JProgressBar> i
 
     @Override
     public void addListener(ValueListener listener) {
-        if (!listeners.contains(listener))
-            listeners.add(listener);
+        addValueChangeListener(new ComponentValueChangeListenerWrapper(listener));
     }
 
     @Override
     public void removeListener(ValueListener listener) {
-        listeners.remove(listener);
+        removeValueChangeListener(new ComponentValueChangeListenerWrapper(listener));
     }
 
     protected void fireValueChanged(Object prevValue, Object value) {
-        for (ValueListener listener : listeners) {
-            listener.valueChanged(this, "value", prevValue, value);
+        for (ValueChangeListener listener : new ArrayList<>(listeners)) {
+            listener.valueChanged(new ValueChangeEvent(this, prevValue, value));
         }
+    }
+
+    @Override
+    public void addValueChangeListener(ValueChangeListener listener) {
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeValueChangeListener(ValueChangeListener listener) {
+        listeners.remove(listener);
     }
 
     @Override

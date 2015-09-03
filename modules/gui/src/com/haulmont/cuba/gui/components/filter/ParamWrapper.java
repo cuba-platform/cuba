@@ -13,9 +13,11 @@ import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
 import com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondition;
 import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.compatibility.ComponentValueChangeListenerWrapper;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -98,12 +100,58 @@ public class ParamWrapper implements Component.HasValue {
 
     @Override
     public void addListener(ValueListener listener) {
-        param.addListener(listener);
+        addValueChangeListener(new ComponentValueChangeListenerWrapper(listener));
     }
 
     @Override
     public void removeListener(ValueListener listener) {
-        param.removeListener(listener);
+        removeValueChangeListener(new ComponentValueChangeListenerWrapper(listener));
+    }
+
+    @Override
+    public void addValueChangeListener(ValueChangeListener listener) {
+        param.addValueChangeListener(new ParamValueChangeListenerWrapper(this, listener));
+    }
+
+    @Override
+    public void removeValueChangeListener(ValueChangeListener listener) {
+        param.removeValueChangeListener(new ParamValueChangeListenerWrapper(this, listener));
+    }
+
+    protected static class ParamValueChangeListenerWrapper implements Param.ParamValueChangeListener {
+
+        protected final ParamWrapper paramWrapper;
+        protected final ValueChangeListener valueChangeListener;
+
+        public ParamValueChangeListenerWrapper(ParamWrapper paramWrapper, ValueChangeListener valueChangeListener) {
+            this.paramWrapper = paramWrapper;
+            this.valueChangeListener = valueChangeListener;
+        }
+
+        @Override
+        public void valueChanged(@Nullable Object prevValue, @Nullable Object value) {
+            valueChangeListener.valueChanged(new ValueChangeEvent(paramWrapper, prevValue, value));
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (obj.getClass() != getClass()) {
+                return false;
+            }
+
+            ParamValueChangeListenerWrapper that = (ParamValueChangeListenerWrapper) obj;
+
+            return this.valueChangeListener.equals(that.valueChangeListener);
+        }
+
+        @Override
+        public int hashCode() {
+            return valueChangeListener.hashCode();
+        }
     }
 
     @Override

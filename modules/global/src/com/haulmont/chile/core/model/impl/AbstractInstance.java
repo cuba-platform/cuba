@@ -5,7 +5,8 @@
 
 package com.haulmont.chile.core.model.impl;
 
-import com.haulmont.chile.core.common.ValueListener;
+import com.haulmont.chile.core.common.*;
+import com.haulmont.chile.core.common.compatibility.InstancePropertyChangeListenerWrapper;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.chile.core.model.utils.MethodsCache;
@@ -21,22 +22,20 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class AbstractInstance implements Instance {
 
-    protected transient Collection<WeakReference<ValueListener>> __valueListeners;
+    protected transient Collection<WeakReference<PropertyChangeListener>> __valueListeners;
 
     private static transient Map<Class, MethodsCache> methodCacheMap = new ConcurrentHashMap<>();
 
     protected void propertyChanged(String s, Object prev, Object curr) {
         if (__valueListeners != null) {
-            Collection<WeakReference<ValueListener>> listenersCopy = new ArrayList<>(__valueListeners);
-            Collection<WeakReference<ValueListener>> listenersToRemove = new ArrayList<>();
-            for (WeakReference<ValueListener> reference : listenersCopy) {
-                ValueListener listener = reference.get();
-                if (listener == null)
-                    listenersToRemove.add(reference);
-                else
-                    listener.propertyChanged(this, s, prev, curr);
+            for (WeakReference<PropertyChangeListener> reference : new ArrayList<>(__valueListeners)) {
+                PropertyChangeListener listener = reference.get();
+                if (listener == null) {
+                    __valueListeners.remove(reference);
+                } else {
+                    listener.propertyChanged(new PropertyChangeEvent(this, s, prev, curr));
+                }
             }
-            __valueListeners.removeAll(listenersToRemove);
         }
     }
 
@@ -46,27 +45,40 @@ public abstract class AbstractInstance implements Instance {
     }
 
     @Override
-    public void addListener(ValueListener valuelistener) {
-        if (__valueListeners == null)
-            __valueListeners = new ArrayList<>();
-        __valueListeners.add(new WeakReference<>(valuelistener));
+    public void addListener(ValueListener listener) {
+        addPropertyChangeListener(new InstancePropertyChangeListenerWrapper(listener));
     }
 
     @Override
-    public void removeListener(ValueListener valuelistener) {
+    public void removeListener(ValueListener listener) {
+        removePropertyChangeListener(new InstancePropertyChangeListenerWrapper(listener));
+    }
+
+    @Override
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        if (__valueListeners == null) {
+            __valueListeners = new ArrayList<>();
+        }
+        __valueListeners.add(new WeakReference<>(listener));
+    }
+
+    @Override
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
         if (__valueListeners != null) {
-            for (Iterator<WeakReference<ValueListener>> it = __valueListeners.iterator(); it.hasNext(); ) {
-                ValueListener listener = it.next().get();
-                if (listener == null || listener.equals(valuelistener))
+            for (Iterator<WeakReference<PropertyChangeListener>> it = __valueListeners.iterator(); it.hasNext(); ) {
+                PropertyChangeListener iteratorListener = it.next().get();
+                if (iteratorListener == null || iteratorListener.equals(listener)) {
                     it.remove();
+                }
             }
         }
     }
 
     @Override
     public void removeAllListeners() {
-        if (__valueListeners != null)
+        if (__valueListeners != null) {
             __valueListeners.clear();
+        }
     }
 
     @Override

@@ -11,7 +11,6 @@ import com.haulmont.cuba.core.global.TimeZones;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.app.UserTimeZone;
@@ -22,7 +21,6 @@ import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.ui.ComboBox;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -169,12 +167,7 @@ public class SettingsWindow extends AbstractWindow {
 
         timeZoneAutoField.setCaption(messages.getMainMessage("timeZone.auto"));
         timeZoneAutoField.setDescription(messages.getMainMessage("timeZone.auto.descr"));
-        timeZoneAutoField.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                timeZoneLookup.setEnabled(!Boolean.TRUE.equals(value));
-            }
-        });
+        timeZoneAutoField.addValueChangeListener(e -> timeZoneLookup.setEnabled(!Boolean.TRUE.equals(e.getValue())));
 
         UserTimeZone userTimeZone = userManagementService.loadOwnTimeZone();
         timeZoneLookup.setValue(userTimeZone.name);

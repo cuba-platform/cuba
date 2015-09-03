@@ -20,14 +20,12 @@ import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.toolkit.ui.CubaDateField;
 import com.haulmont.cuba.web.toolkit.ui.CubaDateFieldWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaMaskedTextField;
-import com.vaadin.data.Property;
 import com.vaadin.ui.HorizontalLayout;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -86,24 +84,16 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         vTimeField.setInvalidAllowed(false);
         vTimeField.setInvalidCommitted(true);
 
-        dateField.addValueChangeListener(new Property.ValueChangeListener() {
-            @Override
-            public void valueChange(Property.ValueChangeEvent event) {
-                updateInstance();
+        dateField.addValueChangeListener(event -> {
+            updateInstance();
 
-                if (component != null) {
-                    // Repaint error state
-                    component.markAsDirty();
-                }
+            if (component != null) {
+                // Repaint error state
+                component.markAsDirty();
             }
         });
 
-        timeField.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                updateInstance();
-            }
-        });
+        timeField.addValueChangeListener(e -> updateInstance());
         setResolution(Resolution.MIN);
 
         component = new CubaDateFieldWrapper(this, innerLayout);
@@ -372,8 +362,8 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
             prevValue = value;
 
-            for (ValueListener listener : listeners) {
-                listener.valueChanged(this, "value", oldValue, value);
+            for (ValueChangeListener listener : listeners) {
+                listener.valueChanged(new ValueChangeEvent(this, oldValue, value));
             }
         }
     }

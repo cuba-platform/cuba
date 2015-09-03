@@ -7,15 +7,14 @@ package com.haulmont.cuba.gui.app.security.role.edit.tabs;
 
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Security;
-import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.app.security.ds.EntityPermissionTargetsDatasource;
 import com.haulmont.cuba.gui.app.security.ds.RestorablePermissionDatasource;
 import com.haulmont.cuba.gui.app.security.entity.OperationPermissionTarget;
 import com.haulmont.cuba.gui.app.security.entity.PermissionVariant;
+import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
@@ -443,88 +442,81 @@ public class EntityPermissionsFrame extends AbstractFrame {
     }
 
     protected void attachAllCheckBoxListener(CheckBox checkBox, final PermissionVariant activeVariant) {
-        checkBox.addListener(new ValueListener<CheckBox>() {
-            @Override
-            public void valueChanged(CheckBox source, String property, Object prevValue, Object value) {
-                if (itemChanging)
-                    return;
+        checkBox.addValueChangeListener(e -> {
+            if (itemChanging)
+                return;
 
-                if (entityPermissionsTable.getSelected().isEmpty())
-                    return;
+            if (entityPermissionsTable.getSelected().isEmpty())
+                return;
 
-                itemChanging = true;
+            itemChanging = true;
 
-                PermissionVariant permissionVariant = PermissionUiHelper.getCheckBoxVariant(value, activeVariant);
+            PermissionVariant permissionVariant = PermissionUiHelper.getCheckBoxVariant(e.getValue(), activeVariant);
 
-                if (isSingleSelection()) {
-                    for (EntityOperationControl control : operationControls) {
-                        OperationPermissionTarget target = entityPermissionsTable.getSingleSelected();
-                        //noinspection ConstantConditions
-                        if (control.applicableToEntity(target.getEntityClass())) {
-                            markItemPermission(control.getMetaProperty(), control.getOperation(), permissionVariant);
-                        }
+            if (isSingleSelection()) {
+                for (EntityOperationControl control : operationControls) {
+                    OperationPermissionTarget target = entityPermissionsTable.getSingleSelected();
+                    //noinspection ConstantConditions
+                    if (control.applicableToEntity(target.getEntityClass())) {
+                        markItemPermission(control.getMetaProperty(), control.getOperation(), permissionVariant);
                     }
-                } else {
-                    for (EntityOperationControl control : operationControls) {
-                        control.getAllowChecker().setValue(permissionVariant == PermissionVariant.ALLOWED);
-                        control.getDenyChecker().setValue(permissionVariant == PermissionVariant.DISALLOWED);
-                    }
-
-                    allAllowCheck.setValue(permissionVariant == PermissionVariant.ALLOWED);
-                    allDenyCheck.setValue(permissionVariant == PermissionVariant.DISALLOWED);
+                }
+            } else {
+                for (EntityOperationControl control : operationControls) {
+                    control.getAllowChecker().setValue(permissionVariant == PermissionVariant.ALLOWED);
+                    control.getDenyChecker().setValue(permissionVariant == PermissionVariant.DISALLOWED);
                 }
 
-                entityPermissionsTable.repaint();
-
-                itemChanging = false;
+                allAllowCheck.setValue(permissionVariant == PermissionVariant.ALLOWED);
+                allDenyCheck.setValue(permissionVariant == PermissionVariant.DISALLOWED);
             }
+
+            entityPermissionsTable.repaint();
+
+            itemChanging = false;
         });
     }
 
     protected void attachCheckBoxListener(final CheckBox checkBox, final String metaProperty,
                                         final EntityOp operation, final PermissionVariant activeVariant) {
+        checkBox.addValueChangeListener(e -> {
+            if (itemChanging)
+                return;
 
-        checkBox.addListener(new ValueListener<CheckBox>() {
-            @Override
-            public void valueChanged(CheckBox source, String property, Object prevValue, Object value) {
-                if (itemChanging)
-                    return;
+            if (entityPermissionsTable.getSelected().isEmpty())
+                return;
 
-                if (entityPermissionsTable.getSelected().isEmpty())
-                    return;
+            itemChanging = true;
 
-                itemChanging = true;
+            if (isSingleSelection()) {
+                markItemPermission(metaProperty, operation,
+                        PermissionUiHelper.getCheckBoxVariant(e.getValue(), activeVariant));
+            } else {
+                EntityOperationControl checkerControl = getOperationControl(checkBox);
 
-                if (isSingleSelection()) {
-                    markItemPermission(metaProperty, operation,
-                            PermissionUiHelper.getCheckBoxVariant(value, activeVariant));
-                } else {
-                    EntityOperationControl checkerControl = getOperationControl(checkBox);
-
-                    if (activeVariant == PermissionVariant.ALLOWED) {
-                        checkerControl.getDenyChecker().setValue(false);
-                    } else if (activeVariant == PermissionVariant.DISALLOWED) {
-                        checkerControl.getAllowChecker().setValue(false);
-                    }
-
-                    boolean isAllowedAll = true;
-                    boolean isDenyAll = true;
-
-                    for (EntityOperationControl control : operationControls) {
-                        if (control.isControlVisible()) {
-                            isAllowedAll &= Boolean.TRUE.equals(control.getAllowChecker().getValue());
-                            isDenyAll &= Boolean.TRUE.equals(control.getDenyChecker().getValue());
-                        }
-                    }
-
-                    allAllowCheck.setValue(isAllowedAll);
-                    allDenyCheck.setValue(isDenyAll);
+                if (activeVariant == PermissionVariant.ALLOWED) {
+                    checkerControl.getDenyChecker().setValue(false);
+                } else if (activeVariant == PermissionVariant.DISALLOWED) {
+                    checkerControl.getAllowChecker().setValue(false);
                 }
 
-                entityPermissionsTable.repaint();
+                boolean isAllowedAll = true;
+                boolean isDenyAll = true;
 
-                itemChanging = false;
+                for (EntityOperationControl control : operationControls) {
+                    if (control.isControlVisible()) {
+                        isAllowedAll &= Boolean.TRUE.equals(control.getAllowChecker().getValue());
+                        isDenyAll &= Boolean.TRUE.equals(control.getDenyChecker().getValue());
+                    }
+                }
+
+                allAllowCheck.setValue(isAllowedAll);
+                allDenyCheck.setValue(isDenyAll);
             }
+
+            entityPermissionsTable.repaint();
+
+            itemChanging = false;
         });
     }
 

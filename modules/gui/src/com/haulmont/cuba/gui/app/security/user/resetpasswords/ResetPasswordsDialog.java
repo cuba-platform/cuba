@@ -9,10 +9,8 @@ import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Map;
 
@@ -42,28 +40,20 @@ public class ResetPasswordsDialog extends AbstractWindow {
                 .setWidth(theme.getInt("cuba.gui.ResetPasswordsDialog.width"))
                 .setResizable(false);
 
-        generatePasswordsCheckBox.addListener(new ValueListener<CheckBox>() {
-            @Override
-            public void valueChanged(CheckBox source, String property, Object prevValue, Object value) {
-                if (Boolean.TRUE.equals(generatePasswordsCheckBox.getValue())) {
-                    sendEmailsCheckBox.setEnabled(true);
+        generatePasswordsCheckBox.addValueChangeListener(e -> {
+            if (Boolean.TRUE.equals(e.getValue())) {
+                sendEmailsCheckBox.setEnabled(true);
 
-                    updateExpectedResultLabel();
-                } else {
-                    sendEmailsCheckBox.setValue(false);
-                    sendEmailsCheckBox.setEnabled(false);
-                }
-
-                expectedResultLabel.setVisible(getGeneratePasswords());
-            }
-        });
-
-        sendEmailsCheckBox.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
                 updateExpectedResultLabel();
+            } else {
+                sendEmailsCheckBox.setValue(false);
+                sendEmailsCheckBox.setEnabled(false);
             }
+
+            expectedResultLabel.setVisible(getGeneratePasswords());
         });
+
+        sendEmailsCheckBox.addValueChangeListener(e -> updateExpectedResultLabel());
     }
 
     protected void updateExpectedResultLabel() {

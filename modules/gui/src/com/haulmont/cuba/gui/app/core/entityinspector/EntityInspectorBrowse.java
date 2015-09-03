@@ -13,7 +13,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.actions.ExcelAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
@@ -21,18 +20,13 @@ import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.lang.BooleanUtils;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.persistence.*;
 import java.util.*;
 
 /**
@@ -110,18 +104,8 @@ public class EntityInspectorBrowse extends AbstractLookup {
             lookupBox.setVisible(false);
         } else {
             entitiesLookup.setOptionsMap(getEntitiesLookupFieldOptions());
-            entitiesLookup.addListener(new ValueListener() {
-                @Override
-                public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                    showEntities();
-                }
-            });
-            removedRecords.addListener(new ValueListener() {
-                @Override
-                public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                    showEntities();
-                }
-            });
+            entitiesLookup.addValueChangeListener(e -> showEntities());
+            removedRecords.addValueChangeListener(e -> showEntities());
         }
     }
 

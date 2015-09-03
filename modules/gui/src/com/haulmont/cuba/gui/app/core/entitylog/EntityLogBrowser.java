@@ -18,7 +18,6 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -147,7 +146,7 @@ public class EntityLogBrowser extends AbstractWindow {
         Map<String, Object> changeTypeMap = new TreeMap<>();
         changeTypeMap.put(messages.getMessage(getClass(),"createField"), "C");
         changeTypeMap.put(messages.getMessage(getClass(),"modifyField"),"M");
-        changeTypeMap.put(messages.getMessage(getClass(),"deleteField"), "D");
+        changeTypeMap.put(messages.getMessage(getClass(), "deleteField"), "D");
 
         entityMetaClassesMap = getEntityMetaClasses();
         entityNameField.setOptionsMap(entityMetaClassesMap);
@@ -229,13 +228,12 @@ public class EntityLogBrowser extends AbstractWindow {
 
         instancePicker.addAction(lookupAction);
         instancePicker.addAction(clearAction);
-        entityNameField.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                if (entityNameField.isEditable())
-                    fillAttributes((String) value, null, true);
-            }
+
+        entityNameField.addValueChangeListener(e -> {
+            if (entityNameField.isEditable())
+                fillAttributes((String) e.getValue(), null, true);
         });
+
         loggedEntityDs.addListener(new CollectionDsListenerAdapter<LoggedEntity>() {
             @Override
             public void itemChanged(Datasource<LoggedEntity> ds, LoggedEntity prevItem, LoggedEntity item) {
@@ -248,25 +246,18 @@ public class EntityLogBrowser extends AbstractWindow {
                 }
             }
         });
-        filterEntityNameField.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                if (value != null) {
-                    instancePicker.setEnabled(true);
-                    MetaClass metaClass = metadata.getSession().getClassNN(value.toString());
-                    instancePicker.setMetaClass(metaClass);
-                } else {
-                    instancePicker.setEnabled(false);
-                }
-                instancePicker.setValue(null);
+
+        filterEntityNameField.addValueChangeListener(e -> {
+            if (e.getValue() != null) {
+                instancePicker.setEnabled(true);
+                MetaClass metaClass = metadata.getSession().getClassNN(e.getValue().toString());
+                instancePicker.setMetaClass(metaClass);
+            } else {
+                instancePicker.setEnabled(false);
             }
+            instancePicker.setValue(null);
         });
-        selectAllCheckBox.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                enableAllCheckBoxes((boolean) value);
-            }
-        });
+        selectAllCheckBox.addValueChangeListener(e -> enableAllCheckBoxes((boolean) e.getValue()));
     }
 
     public TreeMap<String, Object> getEntityMetaClasses() {
@@ -323,12 +314,8 @@ public class EntityLogBrowser extends AbstractWindow {
                     checkBox.setId(property.getName());
                     checkBox.setCaption(property.getName());
                     checkBox.setEditable(setEditableCheckboxes);
-                    checkBox.addListener(new ValueListener() {
-                        @Override
-                        public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                            checkAllCheckboxes();
-                        }
-                    });
+                    checkBox.addValueChangeListener(e -> checkAllCheckboxes());
+
                     attributesBox.add(checkBox);
                 }
             }

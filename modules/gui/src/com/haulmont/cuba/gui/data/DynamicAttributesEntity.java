@@ -5,6 +5,7 @@
 package com.haulmont.cuba.gui.data;
 
 import com.haulmont.chile.core.common.ValueListener;
+import com.haulmont.chile.core.common.compatibility.InstancePropertyChangeListenerWrapper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
@@ -16,6 +17,7 @@ import com.haulmont.cuba.core.global.UuidProvider;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
+import java.lang.ref.WeakReference;
 import java.util.*;
 
 /**
@@ -31,7 +33,8 @@ public class DynamicAttributesEntity implements BaseEntity {
     protected MetaClass metaClass;
     protected UUID id;
     protected Map<String, Object> changed = new HashMap<>();
-    protected Set<ValueListener> listeners = new LinkedHashSet<>();
+
+    protected Collection<WeakReference<PropertyChangeListener>> __valueListeners;
 
     protected Map<String, CategoryAttributeValue> categoryValues = new HashMap<>();
     protected Map<String, Object> values = new HashMap<>();
@@ -87,17 +90,52 @@ public class DynamicAttributesEntity implements BaseEntity {
 
     @Override
     public void addListener(com.haulmont.chile.core.common.ValueListener listener) {
-        listeners.add(listener);
+        addPropertyChangeListener(new InstancePropertyChangeListenerWrapper(listener));
     }
 
     @Override
     public void removeListener(ValueListener listener) {
-        listeners.remove(listener);
+        removePropertyChangeListener(new InstancePropertyChangeListenerWrapper(listener));
+    }
+
+    @Override
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        if (__valueListeners == null) {
+            __valueListeners = new ArrayList<>();
+        }
+        __valueListeners.add(new WeakReference<>(listener));
+    }
+
+    @Override
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        if (__valueListeners != null) {
+            for (Iterator<WeakReference<PropertyChangeListener>> it = __valueListeners.iterator(); it.hasNext(); ) {
+                PropertyChangeListener iteratorListener = it.next().get();
+                if (iteratorListener == null || iteratorListener.equals(listener)) {
+                    it.remove();
+                }
+            }
+        }
     }
 
     @Override
     public void removeAllListeners() {
-        listeners.clear();
+        if (__valueListeners != null) {
+            __valueListeners.clear();
+        }
+    }
+
+    protected void propertyChanged(String s, Object prev, Object curr) {
+        if (__valueListeners != null) {
+            for (WeakReference<PropertyChangeListener> reference : new ArrayList<>(__valueListeners)) {
+                PropertyChangeListener listener = reference.get();
+                if (listener == null) {
+                    __valueListeners.remove(reference);
+                } else {
+                    listener.propertyChanged(new PropertyChangeEvent(this, s, prev, curr));
+                }
+            }
+        }
     }
 
     @Override
@@ -122,9 +160,7 @@ public class DynamicAttributesEntity implements BaseEntity {
                 setValue(categoryValue, null);
             }
 
-            for (ValueListener listener : listeners) {
-                listener.propertyChanged(this, name, oldValue, value);
-            }
+            propertyChanged(name, oldValue, value);
         }
     }
 
@@ -150,9 +186,7 @@ public class DynamicAttributesEntity implements BaseEntity {
                 setValue(attrValue, null);
             }
 
-            for (ValueListener listener : listeners) {
-                listener.propertyChanged(this, propertyPath, oldValue, value);
-            }
+            propertyChanged(propertyPath, oldValue, value);
         }
     }
 

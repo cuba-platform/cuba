@@ -16,7 +16,6 @@ import com.haulmont.cuba.gui.app.security.entity.MultiplePermissionTarget;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -170,37 +169,36 @@ public class AttributePermissionsFrame extends AbstractFrame {
         }
 
         protected void attachListener(CheckBox checkBox, final AttributePermissionVariant activeVariant) {
-            checkBox.addListener(new ValueListener<CheckBox>() {
-                @Override
-                public void valueChanged(CheckBox source, String property, Object prevValue, Object value) {
-                    if (itemChanging)
-                        return;
-
-                    if (propertyPermissionsTable.getSelected().isEmpty())
-                        return;
-
-                    itemChanging = true;
-
-                    markTargetPermission(PermissionUiHelper.getCheckBoxVariant(value, activeVariant));
-
-                    if (activeVariant != AttributePermissionVariant.MODIFY)
-                        modifyCheckBox.setValue(false);
-
-                    if (activeVariant != AttributePermissionVariant.READ_ONLY)
-                        readOnlyCheckBox.setValue(false);
-
-                    if (activeVariant != AttributePermissionVariant.HIDE)
-                        hideCheckBox.setValue(false);
-
-                    allModifyCheck.setValue(item.isAllModified());
-                    allReadOnlyCheck.setValue(item.isAllReadOnly());
-                    allHideCheck.setValue(item.isAllHide());
-
-                    // todo enforce property change instead of item
-                    attributeTargetsDs.updateItem(item);
-
-                    itemChanging = false;
+            checkBox.addValueChangeListener(e -> {
+                if (itemChanging) {
+                    return;
                 }
+
+                if (propertyPermissionsTable.getSelected().isEmpty()) {
+                    return;
+                }
+
+                itemChanging = true;
+
+                markTargetPermission(PermissionUiHelper.getCheckBoxVariant(e.getValue(), activeVariant));
+
+                if (activeVariant != AttributePermissionVariant.MODIFY)
+                    modifyCheckBox.setValue(false);
+
+                if (activeVariant != AttributePermissionVariant.READ_ONLY)
+                    readOnlyCheckBox.setValue(false);
+
+                if (activeVariant != AttributePermissionVariant.HIDE)
+                    hideCheckBox.setValue(false);
+
+                allModifyCheck.setValue(item.isAllModified());
+                allReadOnlyCheck.setValue(item.isAllReadOnly());
+                allHideCheck.setValue(item.isAllHide());
+
+                // todo enforce property change instead of item
+                attributeTargetsDs.updateItem(item);
+
+                itemChanging = false;
             });
         }
 
@@ -311,35 +309,34 @@ public class AttributePermissionsFrame extends AbstractFrame {
     }
 
     protected void attachAllCheckboxListener(CheckBox checkBox, final AttributePermissionVariant activeVariant) {
-        checkBox.addListener(new ValueListener<CheckBox>() {
-            @Override
-            public void valueChanged(CheckBox source, String property, Object prevValue, Object value) {
-                if (itemChanging)
-                    return;
+        checkBox.addValueChangeListener(e -> {
+            if (itemChanging) {
+                return;
+            }
 
-                if (propertyPermissionsTable.getSelected().isEmpty())
-                    return;
+            if (propertyPermissionsTable.getSelected().isEmpty()) {
+                return;
+            }
 
-                itemChanging = true;
-                MultiplePermissionTarget item = propertyPermissionsTable.getSingleSelected();
-                if (item != null) {
+            itemChanging = true;
+            MultiplePermissionTarget item = propertyPermissionsTable.getSingleSelected();
+            if (item != null) {
 
-                    for (AttributePermissionControl control : permissionControls) {
-                        AttributePermissionVariant permissionVariant = PermissionUiHelper.getCheckBoxVariant(value, activeVariant);
-                        control.markTargetPermission(permissionVariant);
-                        control.updateCheckers(permissionVariant);
-                    }
-
-                    // todo enforce value change
-                    propertyPermissionsTable.repaint();
-
-                    allModifyCheck.setValue(item.isAllModified());
-                    allReadOnlyCheck.setValue(item.isAllReadOnly());
-                    allHideCheck.setValue(item.isAllHide());
+                for (AttributePermissionControl control : permissionControls) {
+                    AttributePermissionVariant permissionVariant = PermissionUiHelper.getCheckBoxVariant(e.getValue(), activeVariant);
+                    control.markTargetPermission(permissionVariant);
+                    control.updateCheckers(permissionVariant);
                 }
 
-                itemChanging = false;
+                // todo enforce value change
+                propertyPermissionsTable.repaint();
+
+                allModifyCheck.setValue(item.isAllModified());
+                allReadOnlyCheck.setValue(item.isAllReadOnly());
+                allHideCheck.setValue(item.isAllHide());
             }
+
+            itemChanging = false;
         });
     }
 

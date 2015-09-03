@@ -68,12 +68,9 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
     protected boolean multiselect;
     protected PickerField.LookupAction lookupAction;
 
-    protected final ValueListener lookupSelectListener = new ValueListener() {
-        @Override
-        public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
-            if (isEditable()) {
-                addValueFromLookupPickerField();
-            }
+    protected final ValueChangeListener lookupSelectListener = e -> {
+        if (isEditable()) {
+            addValueFromLookupPickerField();
         }
     };
 
@@ -83,7 +80,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
         addButton.setCaption(messages.getMessage(TokenList.class, "actions.Add"));
 
         lookupPickerField = new WebLookupPickerField();
-        lookupPickerField.addListener(lookupSelectListener);
+        lookupPickerField.addValueChangeListener(lookupSelectListener);
         component = new CubaTokenList();
 
         setMultiSelect(false);
@@ -218,6 +215,16 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
 
     @Override
     public void removeListener(ValueListener listener) {
+        // todo
+    }
+
+    @Override
+    public void addValueChangeListener(ValueChangeListener listener) {
+        // todo
+    }
+
+    @Override
+    public void removeValueChangeListener(ValueChangeListener listener) {
         // todo
     }
 

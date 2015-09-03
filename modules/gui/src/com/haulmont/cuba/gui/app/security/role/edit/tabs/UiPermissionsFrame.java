@@ -9,18 +9,17 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.app.security.ds.RestorablePermissionDatasource;
+import com.haulmont.cuba.gui.app.security.ds.UiPermissionsDatasource;
+import com.haulmont.cuba.gui.app.security.entity.UiPermissionTarget;
+import com.haulmont.cuba.gui.app.security.entity.UiPermissionVariant;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
-import com.haulmont.cuba.gui.app.security.ds.RestorablePermissionDatasource;
-import com.haulmont.cuba.gui.app.security.ds.UiPermissionsDatasource;
-import com.haulmont.cuba.gui.app.security.entity.UiPermissionTarget;
-import com.haulmont.cuba.gui.app.security.entity.UiPermissionVariant;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
@@ -194,26 +193,23 @@ public class UiPermissionsFrame extends AbstractFrame {
         }
     }
 
-    protected void attachCheckBoxListener(CheckBox checkBox, final UiPermissionVariant activeVariant) {
-        checkBox.addListener(new ValueListener<CheckBox>() {
-            @Override
-            public void valueChanged(CheckBox source, String property, Object prevValue, Object value) {
-                if (itemChanging)
-                    return;
+    protected void attachCheckBoxListener(CheckBox checkBox, UiPermissionVariant activeVariant) {
+        checkBox.addValueChangeListener(e -> {
+            if (itemChanging)
+                return;
 
-                if (uiPermissionsTable.getSelected().isEmpty())
-                    return;
+            if (uiPermissionsTable.getSelected().isEmpty())
+                return;
 
-                itemChanging = true;
+            itemChanging = true;
 
-                UiPermissionVariant permissionVariant = PermissionUiHelper.getCheckBoxVariant(value, activeVariant);
-                UiPermissionTarget target = uiPermissionsTable.getSingleSelected();
-                markItemPermission(permissionVariant, target);
+            UiPermissionVariant permissionVariant = PermissionUiHelper.getCheckBoxVariant(e.getValue(), activeVariant);
+            UiPermissionTarget target = uiPermissionsTable.getSingleSelected();
+            markItemPermission(permissionVariant, target);
 
-                uiPermissionTargetsDs.updateItem(target);
+            uiPermissionTargetsDs.updateItem(target);
 
-                itemChanging = false;
-            }
+            itemChanging = false;
         });
     }
 

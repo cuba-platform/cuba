@@ -15,7 +15,6 @@ import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescr
 import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
 import com.haulmont.cuba.gui.components.filter.operationedit.CustomOperationEditor;
 import com.haulmont.cuba.gui.data.Datasource;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -33,7 +32,6 @@ public class CustomCondition extends AbstractCondition {
     private String join;
 
     public CustomCondition() {
-        super();
     }
 
     protected CustomCondition(AbstractCondition other) {
