@@ -92,7 +92,7 @@
 
     <view class="com.haulmont.cuba.security.entity.Group" name="group.browse">
         <property name="name"/>
-        <property name="parent"/>
+        <property name="parent" view="_minimal"/>
     </view>
 
     <view class="com.haulmont.cuba.security.entity.Group" name="group.edit" extends="group.browse">

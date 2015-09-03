@@ -12,7 +12,6 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.queries.FetchGroup;
@@ -79,17 +78,23 @@ public class FetchGroupManager {
                 refFields.add(field);
         }
         if (!refFields.isEmpty()) {
+            MetaClass metaClass = metadata.getClassNN(view.getEntityClass());
             String alias = QueryTransformerFactory.createParser(queryString).getEntityAlias();
-            for (FetchGroupField field : refFields) {
-                boolean isMany = false;
-                for (MetaProperty mp : field.metaPropertyPath.getMetaProperties()) {
+            for (FetchGroupField refField : refFields) {
+                boolean toMany = false, selfRef = false;
+                for (MetaProperty mp : refField.metaPropertyPath.getMetaProperties()) {
                     if (mp.getRange().getCardinality().isMany()) {
-                        isMany = true;
+                        toMany = true;
+                        break;
+                    } else if (mp.getRange().asClass().equals(metaClass)) {
+                        selfRef = true;
                         break;
                     }
                 }
-                if (!isMany) {
-                    query.setHint(QueryHints.LEFT_FETCH, alias + "." + field.path());
+                if (selfRef) {
+                    query.setHint(QueryHints.BATCH, alias + "." + refField.path());
+                } else if (!toMany) {
+                    query.setHint(QueryHints.LEFT_FETCH, alias + "." + refField.path());
                 }
             }
         }

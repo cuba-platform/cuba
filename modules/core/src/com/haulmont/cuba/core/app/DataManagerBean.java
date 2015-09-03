@@ -156,14 +156,6 @@ public class DataManagerBean implements DataManager {
             Query query = createQuery(em, context);
             resultList = getResultList(context, query, ensureDistinct);
 
-            // Fetch if StoreCache is enabled or there are lazy properties in the view
-//            if (context.getView() != null && (dataCacheAPI.isStoreCacheEnabled()
-//                    || context.getView().hasLazyProperties()) {
-//                for (Entity entity : resultList) {
-//                    em.fetch(entity, context.getView());
-//                }
-//            }
-
             // Fetch dynamic attributes
             if (context.getView() != null
                     && BaseGenericIdEntity.class.isAssignableFrom(context.getView().getEntityClass())
@@ -286,13 +278,6 @@ public class DataManagerBean implements DataManager {
                             res.add(categoryAttributeValue);
                         }
                     }
-                }
-            }
-
-            for (Entity entity : res) {
-                View view = context.getViews().get(entity);
-                if (view != null) {
-                    em.fetch(entity, view);
                 }
             }
 
@@ -631,7 +616,7 @@ public class DataManagerBean implements DataManager {
         for (Entity persistedEntity : persisted) {
             for (Entity entity : committed) {
                 if (entity != persistedEntity) {
-                    updateReferences(persistedEntity, entity, new HashSet<Entity>());
+                    updateReferences(persistedEntity, entity, new HashSet<>());
                 }
             }
         }
@@ -646,22 +631,24 @@ public class DataManagerBean implements DataManager {
         for (MetaProperty property : entity.getMetaClass().getProperties()) {
             if (!property.getRange().isClass() || !property.getRange().asClass().equals(refEntityMetaClass))
                 continue;
-            if (property.getRange().getCardinality().isMany()) {
-                Collection collection = entity.getValue(property.getName());
-                if (collection != null) {
-                    for (Object obj : collection) {
-                        updateReferences((Entity) obj, refEntity, visited);
-                    }
-                }
-            } else {
-                Entity value = entity.getValue(property.getName());
-                if (value != null) {
-                    if (value.getId().equals(refEntity.getId())) {
-                        if (entity instanceof AbstractInstance) {
-                            ((AbstractInstance) entity).setValue(property.getName(), refEntity, false);
+            if (PersistenceHelper.isLoaded(entity, property.getName())) {
+                if (property.getRange().getCardinality().isMany()) {
+                    Collection collection = entity.getValue(property.getName());
+                    if (collection != null) {
+                        for (Object obj : collection) {
+                            updateReferences((Entity) obj, refEntity, visited);
                         }
-                    } else {
-                        updateReferences(value, refEntity, visited);
+                    }
+                } else {
+                    Entity value = entity.getValue(property.getName());
+                    if (value != null) {
+                        if (value.getId().equals(refEntity.getId())) {
+                            if (entity instanceof AbstractInstance) {
+                                ((AbstractInstance) entity).setValue(property.getName(), refEntity, false);
+                            }
+                        } else {
+                            updateReferences(value, refEntity, visited);
+                        }
                     }
                 }
             }

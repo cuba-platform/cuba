@@ -106,9 +106,9 @@ public class PersistenceImplSupport {
     protected boolean isDeleted(BaseGenericIdEntity entity, AttributeChangeListener changeListener) {
         if ((entity instanceof SoftDelete)) {
             ObjectChangeSet changeSet = changeListener.getObjectChangeSet();
-            return ((SoftDelete) entity).isDeleted()
-                    && changeSet != null
-                    && changeSet.getAttributesToChanges().containsKey("deleteTs");
+            return changeSet != null
+                    && changeSet.getAttributesToChanges().containsKey("deleteTs")
+                    && ((SoftDelete) entity).isDeleted();
 
         } else
             return entity.__removed();
