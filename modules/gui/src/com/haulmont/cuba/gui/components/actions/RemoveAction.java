@@ -143,7 +143,7 @@ public class RemoveAction extends ItemTrackingAction {
                 getConfirmationMessage(messagesPackage),
                 Frame.MessageType.CONFIRMATION,
                 new Action[]{
-                        new DialogAction(Type.OK) {
+                        new DialogAction(Type.OK, Status.PRIMARY) {
                             @Override
                             public void actionPerform(Component component) {
                                 doRemove(selected, autocommit);
@@ -157,7 +157,7 @@ public class RemoveAction extends ItemTrackingAction {
                                 }
                             }
                         },
-                        new DialogAction(Type.CANCEL, Status.PRIMARY) {
+                        new DialogAction(Type.CANCEL) {
                             @Override
                             public void actionPerform(Component component) {
                                 // move focus to owner
