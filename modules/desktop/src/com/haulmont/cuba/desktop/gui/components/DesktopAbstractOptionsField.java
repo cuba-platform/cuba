@@ -147,7 +147,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
         datasource.addItemPropertyChangeListener(e -> {
             if (updatingInstance)
                 return;
-            if (property.equals(metaPropertyPath.toString())) {
+            if (e.getProperty().equals(metaPropertyPath.toString())) {
                 updateComponent(e.getValue());
                 fireChangeListeners(e.getValue());
             }

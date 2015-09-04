@@ -276,7 +276,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
                 return;
             }
 
-            if (property.equals(metaProperty.getName())) {
+            if (e.getProperty().equals(metaProperty.getName())) {
                 updateComponent(e.getValue());
                 fireChangeListeners(e.getValue());
             }

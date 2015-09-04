@@ -293,7 +293,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
             if (updatingInstance) {
                 return;
             }
-            if (property.equals(metaPropertyPath.toString())) {
+            if (e.getProperty().equals(metaPropertyPath.toString())) {
                 updateComponent(toUserDate((Date) e.getValue()));
                 fireChangeListeners(e.getValue());
             }

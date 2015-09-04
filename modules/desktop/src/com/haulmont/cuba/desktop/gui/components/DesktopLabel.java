@@ -106,7 +106,7 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
                 return;
             }
 
-            if (property.equals(metaPropertyPath.toString())) {
+            if (e.getProperty().equals(metaPropertyPath.toString())) {
                 updateComponent(e.getValue());
                 fireChangeListeners(e.getValue());
             }

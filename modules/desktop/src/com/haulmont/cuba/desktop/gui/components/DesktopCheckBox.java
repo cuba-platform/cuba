@@ -101,7 +101,7 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
                 return;
             }
 
-            if (property.equals(metaPropertyPath.toString())) {
+            if (e.getProperty().equals(metaPropertyPath.toString())) {
                 Object value = e.getValue();
                 if (e.getValue() == null) {
                     value = false;

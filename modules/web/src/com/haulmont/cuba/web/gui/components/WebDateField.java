@@ -318,7 +318,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
             if (updatingInstance) {
                 return;
             }
-            if (property.equals(metaPropertyPath.toString())) {
+            if (e.getProperty().equals(metaPropertyPath.toString())) {
                 setValueToFields(toUserDate((Date) e.getValue()));
                 fireValueChanged(e.getValue());
             }

@@ -205,7 +205,7 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
             if (updatingInstance) {
                 return;
             }
-            if (property.equals(metaPropertyPath.toString())) {
+            if (e.getProperty().equals(metaPropertyPath.toString())) {
                 updateComponent(e.getValue());
                 fireChangeListeners(e.getValue());
             }
