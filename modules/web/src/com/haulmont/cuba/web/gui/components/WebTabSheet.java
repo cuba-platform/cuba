@@ -46,8 +46,12 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
     protected Set<TabChangeListener> listeners = new HashSet<>();
 
     public WebTabSheet() {
-        component = new CubaTabSheet();
+        component = createComponent();
         component.setCloseHandler(new DefaultCloseHandler());
+    }
+
+    protected CubaTabSheet createComponent() {
+        return new CubaTabSheet();
     }
 
     @Override
