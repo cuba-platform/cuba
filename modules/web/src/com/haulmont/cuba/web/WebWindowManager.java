@@ -1122,7 +1122,7 @@ public class WebWindowManager extends WindowManager {
             }
 
             if (action instanceof AbstractAction && ((AbstractAction)action).isPrimary()) {
-                button.addStyleName("primary");
+                button.addStyleName("cuba-primary-action");
                 button.focus();
             }
 
