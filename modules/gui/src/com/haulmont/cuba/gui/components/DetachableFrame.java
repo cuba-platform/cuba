@@ -16,7 +16,7 @@ public interface DetachableFrame extends Frame {
     /**
      * Listener for frame attach/detach
      */
-    public interface DetachListener {
+    interface DetachListener {
 
         /**
          * Invoked after frame attached

@@ -82,6 +82,8 @@ public interface Instance extends Serializable {
 
     /**
      * Add listener to track attributes changes.
+     *
+     * @deprecated Use {@link #addPropertyChangeListener(PropertyChangeListener)}
      * @param listener  listener
      */
     @Deprecated
@@ -89,6 +91,8 @@ public interface Instance extends Serializable {
 
     /**
      * Remove listener.
+     *
+     * @deprecated User {@link #removePropertyChangeListener(PropertyChangeListener)}
      * @param listener listener to remove
      */
     @Deprecated
@@ -111,6 +115,9 @@ public interface Instance extends Serializable {
      */
     void removeAllListeners();
 
+    /**
+     * Event object for {@link com.haulmont.chile.core.model.Instance.PropertyChangeListener}.
+     */
     class PropertyChangeEvent {
         private final Instance item;
         private final String property;
@@ -143,7 +150,15 @@ public interface Instance extends Serializable {
         }
     }
 
+    /**
+     * Interface to track changes in data model objects.
+     */
     interface PropertyChangeListener {
+        /**
+         * Called when value of instance property changed.
+         *
+         * @param e event object
+         */
         void propertyChanged(PropertyChangeEvent e);
     }
 }

@@ -22,16 +22,16 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class AbstractInstance implements Instance {
 
-    protected transient Collection<WeakReference<PropertyChangeListener>> __valueListeners;
+    protected transient Collection<WeakReference<PropertyChangeListener>> __propertyChangeListeners;
 
     private static transient Map<Class, MethodsCache> methodCacheMap = new ConcurrentHashMap<>();
 
     protected void propertyChanged(String s, Object prev, Object curr) {
-        if (__valueListeners != null) {
-            for (WeakReference<PropertyChangeListener> reference : new ArrayList<>(__valueListeners)) {
+        if (__propertyChangeListeners != null) {
+            for (WeakReference<PropertyChangeListener> reference : new ArrayList<>(__propertyChangeListeners)) {
                 PropertyChangeListener listener = reference.get();
                 if (listener == null) {
-                    __valueListeners.remove(reference);
+                    __propertyChangeListeners.remove(reference);
                 } else {
                     listener.propertyChanged(new PropertyChangeEvent(this, s, prev, curr));
                 }
@@ -56,16 +56,16 @@ public abstract class AbstractInstance implements Instance {
 
     @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
-        if (__valueListeners == null) {
-            __valueListeners = new ArrayList<>();
+        if (__propertyChangeListeners == null) {
+            __propertyChangeListeners = new ArrayList<>();
         }
-        __valueListeners.add(new WeakReference<>(listener));
+        __propertyChangeListeners.add(new WeakReference<>(listener));
     }
 
     @Override
     public void removePropertyChangeListener(PropertyChangeListener listener) {
-        if (__valueListeners != null) {
-            for (Iterator<WeakReference<PropertyChangeListener>> it = __valueListeners.iterator(); it.hasNext(); ) {
+        if (__propertyChangeListeners != null) {
+            for (Iterator<WeakReference<PropertyChangeListener>> it = __propertyChangeListeners.iterator(); it.hasNext(); ) {
                 PropertyChangeListener iteratorListener = it.next().get();
                 if (iteratorListener == null || iteratorListener.equals(listener)) {
                     it.remove();
@@ -76,8 +76,8 @@ public abstract class AbstractInstance implements Instance {
 
     @Override
     public void removeAllListeners() {
-        if (__valueListeners != null) {
-            __valueListeners.clear();
+        if (__propertyChangeListeners != null) {
+            __propertyChangeListeners.clear();
         }
     }
 

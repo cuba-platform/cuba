@@ -186,19 +186,22 @@ public interface Component {
         void setBorderVisible(boolean borderVisible);
     }
 
+    /**
+     * Describes value change event.
+     */
     class ValueChangeEvent {
-        private final Component source;
+        private final Component.HasValue component;
         private final Object prevValue;
         private final Object value;
 
-        public ValueChangeEvent(Component source, Object prevValue, Object value) {
-            this.source = source;
+        public ValueChangeEvent(Component.HasValue component, Object prevValue, Object value) {
+            this.component = component;
             this.prevValue = prevValue;
             this.value = value;
         }
 
-        public Component getSource() {
-            return source;
+        public Component getComponent() {
+            return component;
         }
 
         @Nullable
@@ -212,12 +215,20 @@ public interface Component {
         }
     }
 
-    interface ValueChangeListener<T extends Component> {
+    /**
+     * Listener to value change events.
+     */
+    interface ValueChangeListener {
+        /**
+         * Called when value of Component changed.
+         *
+         * @param e event object
+         */
         void valueChanged(ValueChangeEvent e);
     }
 
     /**
-     * Object having a value
+     * Object having a value.
      */
     interface HasValue extends Editable, BelongToFrame {
         <T> T getValue();
@@ -320,28 +331,73 @@ public interface Component {
     }
 
     /**
+     * Describes expanded state change event of {@link com.haulmont.cuba.gui.components.Component.Collapsable}.
+     */
+    class ExpandedStateChangeEvent {
+        private final Component.Collapsable component;
+        private final boolean expanded;
+
+        public ExpandedStateChangeEvent(Collapsable component, boolean expanded) {
+            this.component = component;
+            this.expanded = expanded;
+        }
+
+        public Collapsable getComponent() {
+            return component;
+        }
+
+        /**
+         * @return true if Component has been expanded.
+         */
+        public boolean isExpanded() {
+            return expanded;
+        }
+    }
+
+    /**
+     * Listener to expanded state change events.
+     */
+    interface ExpandedStateChangeListener {
+        /**
+         * Called when expanded state of {@link com.haulmont.cuba.gui.components.Component.Collapsable} changed.
+         *
+         * @param e event object
+         */
+        void expandedStateChanged(ExpandedStateChangeEvent e);
+    }
+
+    /**
      * Is able to collapse (folding)
      */
-    interface Collapsable {
+    interface Collapsable extends Component {
         boolean isExpanded();
         void setExpanded(boolean expanded);
 
         boolean isCollapsable();
         void setCollapsable(boolean collapsable);
 
+        @Deprecated
         void addListener(ExpandListener listener);
+        @Deprecated
         void removeListener(ExpandListener listener);
 
+        @Deprecated
         void addListener(CollapseListener listener);
+        @Deprecated
         void removeListener(CollapseListener listener);
 
+        @Deprecated
         interface ExpandListener {
             void onExpand(Collapsable component);
         }
 
+        @Deprecated
         interface CollapseListener {
             void onCollapse(Collapsable component);
         }
+
+        void addExpandedStateChangeListener(ExpandedStateChangeListener listener);
+        void removeExpandedStateChangeListener(ExpandedStateChangeListener listener);
     }
 
     interface Disposable {

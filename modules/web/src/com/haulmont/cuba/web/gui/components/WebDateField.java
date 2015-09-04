@@ -15,10 +15,7 @@ import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.TimeZones;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.TestIdManager;
-import com.haulmont.cuba.gui.components.DateField;
-import com.haulmont.cuba.gui.components.Field;
-import com.haulmont.cuba.gui.components.RequiredValueMissingException;
-import com.haulmont.cuba.gui.components.ValidationException;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.AppUI;
@@ -356,8 +353,11 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
             prevValue = value;
 
-            for (ValueChangeListener listener : listeners) {
-                listener.valueChanged(new ValueChangeEvent(this, oldValue, value));
+            if (listeners != null && !listeners.isEmpty()) {
+                ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value);
+                for (ValueChangeListener listener : listeners) {
+                    listener.valueChanged(event);
+                }
             }
         }
     }
@@ -430,8 +430,10 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
             throw new RequiredValueMissingException(component.getRequiredError(), this);
         }
 
-        for (Field.Validator validator : validators) {
-            validator.validate(getValue());
+        if (validators != null) {
+            for (Field.Validator validator : validators) {
+                validator.validate(getValue());
+            }
         }
     }
 }

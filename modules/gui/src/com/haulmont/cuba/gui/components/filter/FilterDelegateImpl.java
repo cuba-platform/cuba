@@ -174,6 +174,8 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected SaveAsFolderAction saveAsSearchFolderAction;
     protected LookupField filtersLookup;
 
+    protected List<FDExpandedStateChangeListener> expandedStateChangeListeners;
+
     protected enum ConditionsFocusType {
         NONE,
         FIRST,
@@ -201,6 +203,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected void createLayout() {
         if (layout == null) {
             groupBoxLayout = componentsFactory.createComponent(GroupBoxLayout.class);
+            groupBoxLayout.addExpandedStateChangeListener(e -> fireExpandStateChange());
             groupBoxLayout.setOrientation(GroupBoxLayout.Orientation.VERTICAL);
             groupBoxLayout.setStyleName("cuba-generic-filter");
             groupBoxLayout.setWidth("100%");
@@ -1752,23 +1755,30 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     @Override
-    public void addListener(Component.Collapsable.ExpandListener listener) {
-        groupBoxLayout.addListener(listener);
+    public void addExpandedStateChangeListener(FDExpandedStateChangeListener listener) {
+        if (expandedStateChangeListeners == null) {
+            expandedStateChangeListeners = new ArrayList<>();
+        }
+        if (!expandedStateChangeListeners.contains(listener)) {
+            expandedStateChangeListeners.add(listener);
+        }
     }
 
     @Override
-    public void removeListener(Component.Collapsable.ExpandListener listener) {
-        groupBoxLayout.removeListener(listener);
+    public void removeExpandedStateChangeListener(FDExpandedStateChangeListener listener) {
+        if (expandedStateChangeListeners != null) {
+            expandedStateChangeListeners.remove(listener);
+        }
     }
 
-    @Override
-    public void addListener(Component.Collapsable.CollapseListener listener) {
-        groupBoxLayout.addListener(listener);
-    }
+    protected void fireExpandStateChange() {
+        if (expandedStateChangeListeners != null) {
+            FDExpandedStateChangeEvent event = new FDExpandedStateChangeEvent(this, isExpanded());
 
-    @Override
-    public void removeListener(Component.Collapsable.CollapseListener listener) {
-        groupBoxLayout.removeListener(listener);
+            for (FDExpandedStateChangeListener listener : expandedStateChangeListeners) {
+                listener.expandedStateChanged(event);
+            }
+        }
     }
 
     @Override

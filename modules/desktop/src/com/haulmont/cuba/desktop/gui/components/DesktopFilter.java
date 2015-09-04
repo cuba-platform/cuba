@@ -10,6 +10,7 @@ import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.FilterImplementation;
+import com.haulmont.cuba.gui.components.compatibility.ComponentExpandedStateChangeListenerWrapper;
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.FilterEntity;
@@ -19,6 +20,7 @@ import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,14 +34,17 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     protected FilterDelegate delegate;
     protected boolean settingsEnabled = true;
 
+    protected List<ExpandedStateChangeListener> expandedStateChangeListeners;
+
     public DesktopFilter() {
         delegate = AppBeans.get(FilterDelegate.class);
         delegate.setFilter(this);
         LC topLc = new LC();
         topLc.hideMode(3);
         topLc.insetsAll("0");
-        if (LayoutAdapter.isDebug())
+        if (LayoutAdapter.isDebug()) {
             topLc.debug(1000);
+        }
         MigLayout topLayout = new MigLayout(topLc);
         impl = new JPanel(topLayout);
 
@@ -48,6 +53,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         impl.add(unwrap, "width 100%");
 
         setWidth("100%");
+
+        delegate.addExpandedStateChangeListener(e -> fireExpandStateChange(e.isExpanded()));
     }
 
     @Override
@@ -272,21 +279,48 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     @Override
     public void addListener(ExpandListener listener) {
-        delegate.addListener(listener);
+        addExpandedStateChangeListener(new ComponentExpandedStateChangeListenerWrapper(listener));
     }
 
     @Override
     public void removeListener(ExpandListener listener) {
-        delegate.removeListener(listener);
+        removeExpandedStateChangeListener(new ComponentExpandedStateChangeListenerWrapper(listener));
     }
 
     @Override
     public void addListener(CollapseListener listener) {
-        delegate.addListener(listener);
+        addExpandedStateChangeListener(new ComponentExpandedStateChangeListenerWrapper(listener));
     }
 
     @Override
     public void removeListener(CollapseListener listener) {
-        delegate.removeListener(listener);
+        removeExpandedStateChangeListener(new ComponentExpandedStateChangeListenerWrapper(listener));
+    }
+
+    @Override
+    public void addExpandedStateChangeListener(ExpandedStateChangeListener listener) {
+        if (expandedStateChangeListeners == null) {
+            expandedStateChangeListeners = new ArrayList<>();
+        }
+        if (!expandedStateChangeListeners.contains(listener)) {
+            expandedStateChangeListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeExpandedStateChangeListener(ExpandedStateChangeListener listener) {
+        if (expandedStateChangeListeners != null) {
+            expandedStateChangeListeners.remove(listener);
+        }
+    }
+
+    protected void fireExpandStateChange(boolean expanded) {
+        if (expandedStateChangeListeners != null && !expandedStateChangeListeners.isEmpty()) {
+            ExpandedStateChangeEvent event = new ExpandedStateChangeEvent(this, expanded);
+
+            for (ExpandedStateChangeListener listener : expandedStateChangeListeners) {
+                listener.expandedStateChanged(event);
+            }
+        }
     }
 }

@@ -191,7 +191,7 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
         if (itemChangeListeners == null) {
             itemChangeListeners = new ArrayList<>();
         }
-        if (itemChangeListeners.indexOf(listener) < 0) {
+        if (!itemChangeListeners.contains(listener)) {
             itemChangeListeners.add(listener);
         }
     }
@@ -208,7 +208,7 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
         if (itemPropertyChangeListeners == null) {
             itemPropertyChangeListeners = new ArrayList<>();
         }
-        if (itemPropertyChangeListeners.indexOf(listener) < 0) {
+        if (!itemPropertyChangeListeners.contains(listener)) {
             itemPropertyChangeListeners.add(listener);
         }
     }
@@ -225,7 +225,7 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
         if (stateChangeListeners == null) {
             stateChangeListeners = new ArrayList<>();
         }
-        if (stateChangeListeners.indexOf(listener) < 0) {
+        if (!stateChangeListeners.contains(listener)) {
             stateChangeListeners.add(listener);
         }
     }

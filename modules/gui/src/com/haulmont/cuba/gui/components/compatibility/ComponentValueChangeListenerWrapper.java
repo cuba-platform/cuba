@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.gui.data.compatibility;
+package com.haulmont.cuba.gui.components.compatibility;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.ValueListener;
@@ -43,6 +43,6 @@ public class ComponentValueChangeListenerWrapper implements Component.ValueChang
 
     @Override
     public void valueChanged(Component.ValueChangeEvent e) {
-        listener.valueChanged(e.getSource(), "value", e.getPrevValue(), e.getValue());
+        listener.valueChanged(e.getComponent(), "value", e.getPrevValue(), e.getValue());
     }
 }

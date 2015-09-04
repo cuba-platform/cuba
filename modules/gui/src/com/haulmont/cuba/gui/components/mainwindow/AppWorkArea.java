@@ -16,7 +16,7 @@ public interface AppWorkArea extends Component.BelongToFrame {
 
     String NAME = "workArea";
 
-    public enum Mode {
+    enum Mode {
         /**
          * If the main window is in TABBED mode, it creates the Tabsheet inside
          * and opens screens with {@link com.haulmont.cuba.gui.WindowManager.OpenType#NEW_TAB} as tabs.
@@ -30,7 +30,7 @@ public interface AppWorkArea extends Component.BelongToFrame {
         SINGLE
     }
 
-    public enum State {
+    enum State {
         INITIAL_LAYOUT,
         WINDOW_CONTAINER
     }

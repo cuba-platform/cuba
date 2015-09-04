@@ -21,7 +21,6 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.ErrorMessage;
-import com.vaadin.ui.AbstractSelect;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -62,14 +61,11 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
         setFilterMode(FilterMode.CONTAINS);
 
         setNewOptionAllowed(false);
-        component.setNewItemHandler(new AbstractSelect.NewItemHandler() {
-            @Override
-            public void addNewItem(String newItemCaption) {
-                if (newOptionHandler == null) {
-                    throw new IllegalStateException("New item handler cannot be NULL");
-                }
-                newOptionHandler.addNewOption(newItemCaption);
+        component.setNewItemHandler(newItemCaption -> {
+            if (newOptionHandler == null) {
+                throw new IllegalStateException("New item handler cannot be NULL");
             }
+            newOptionHandler.addNewOption(newItemCaption);
         });
 
         component.addShortcutListener(new ShortcutListener("clearShortcut", KeyCode.DELETE, new int[]{ModifierKey.SHIFT}) {
@@ -170,30 +166,17 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
 
     @Override
     protected void attachListener(CubaComboBox component) {
-        component.addValueChangeListener(new Property.ValueChangeListener() {
-            @Override
-            public void valueChange(Property.ValueChangeEvent event) {
-                if (settingValue)
-                    return;
+        component.addValueChangeListener(event -> {
+            final Object value = getValue();
+            final Object oldValue = prevValue;
+            prevValue = value;
 
-                final Object value = getValue();
-                final Object oldValue = prevValue;
-                prevValue = value;
-
-                // use setting block value only for ValueChangingListener
-                settingValue = true;
-                if (!ObjectUtils.equals(value, value)) {
-                    WebLookupField.this.component.setValue(value);
-                }
-                settingValue = false;
-
-                if (optionsDatasource != null) {
-                    optionsDatasource.setItem((Entity) value);
-                }
-                fireValueChanged(oldValue, value);
-
-                checkMissingValue();
+            if (optionsDatasource != null) {
+                optionsDatasource.setItem((Entity) value);
             }
+            fireValueChanged(oldValue, value);
+
+            checkMissingValue();
         });
     }
 

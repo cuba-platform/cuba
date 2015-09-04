@@ -8,6 +8,7 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.GroupBoxLayout;
+import com.haulmont.cuba.gui.components.compatibility.ComponentExpandedStateChangeListenerWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaOrderedActionsLayout;
@@ -27,20 +28,20 @@ import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAl
  * @author abramov
  * @version $Id$
  */
-public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements GroupBoxLayout, CubaGroupBox.ExpandChangeHandler {
+public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements GroupBoxLayout {
 
     protected Collection<Component> ownComponents = new LinkedHashSet<>();
     protected Map<String, Component> componentByIds = new HashMap<>();
 
     protected Orientation orientation = Orientation.VERTICAL;
 
-    protected List<ExpandListener> expandListeners = null;
-    protected List<CollapseListener> collapseListeners = null;
+    protected List<ExpandedStateChangeListener> expandedStateChangeListeners;
+
     protected boolean settingsEnabled = true;
 
     public WebGroupBox() {
         component = new CubaGroupBox();
-        component.setExpandChangeHandler(this);
+        component.setExpandChangeHandler(expanded -> fireExpandStateChange(expanded));
 
         CubaVerticalActionsLayout container = new CubaVerticalActionsLayout();
         component.setContent(container);
@@ -231,52 +232,47 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
 
     @Override
     public void addListener(ExpandListener listener) {
-        if (expandListeners == null) {
-            expandListeners = new LinkedList<>();
-        }
-        expandListeners.add(listener);
+        addExpandedStateChangeListener(new ComponentExpandedStateChangeListenerWrapper(listener));
     }
 
     @Override
     public void removeListener(ExpandListener listener) {
-        if (expandListeners != null) {
-            expandListeners.remove(listener);
-            if (expandListeners.isEmpty()) {
-                expandListeners = null;
-            }
-        }
-    }
-
-    protected void fireExpandListeners() {
-        if (expandListeners != null) {
-            for (final ExpandListener expandListener : expandListeners) {
-                expandListener.onExpand(this);
-            }
-        }
+        removeExpandedStateChangeListener(new ComponentExpandedStateChangeListenerWrapper(listener));
     }
 
     @Override
     public void addListener(CollapseListener listener) {
-        if (collapseListeners == null) {
-            collapseListeners = new LinkedList<>();
-        }
-        collapseListeners.add(listener);
+        addExpandedStateChangeListener(new ComponentExpandedStateChangeListenerWrapper(listener));
     }
 
     @Override
     public void removeListener(CollapseListener listener) {
-        if (collapseListeners != null) {
-            collapseListeners.remove(listener);
-            if (collapseListeners.isEmpty()) {
-                collapseListeners = null;
-            }
+        removeExpandedStateChangeListener(new ComponentExpandedStateChangeListenerWrapper(listener));
+    }
+
+    @Override
+    public void addExpandedStateChangeListener(ExpandedStateChangeListener listener) {
+        if (expandedStateChangeListeners == null) {
+            expandedStateChangeListeners = new ArrayList<>();
+        }
+        if (!expandedStateChangeListeners.contains(listener)) {
+            expandedStateChangeListeners.add(listener);
         }
     }
 
-    private void fireCollapseListeners() {
-        if (collapseListeners != null) {
-            for (final CollapseListener collapseListener : collapseListeners) {
-                collapseListener.onCollapse(this);
+    @Override
+    public void removeExpandedStateChangeListener(ExpandedStateChangeListener listener) {
+        if (expandedStateChangeListeners != null) {
+            expandedStateChangeListeners.remove(listener);
+        }
+    }
+
+    protected void fireExpandStateChange(boolean expanded) {
+        if (expandedStateChangeListeners != null && !expandedStateChangeListeners.isEmpty()) {
+            ExpandedStateChangeEvent event = new ExpandedStateChangeEvent(this, expanded);
+
+            for (ExpandedStateChangeListener listener : expandedStateChangeListeners) {
+                listener.expandedStateChanged(event);
             }
         }
     }
@@ -379,14 +375,5 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
     @Override
     public void setDescription(String description) {
         component.setDescription(description);
-    }
-
-    @Override
-    public void expandStateChanged(boolean expanded) {
-        if (expanded) {
-            fireExpandListeners();
-        } else {
-            fireCollapseListeners();
-        }
     }
 }

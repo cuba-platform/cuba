@@ -8,6 +8,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.FilterImplementation;
+import com.haulmont.cuba.gui.components.compatibility.ComponentExpandedStateChangeListenerWrapper;
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.FilterEntity;
@@ -16,6 +17,7 @@ import com.vaadin.shared.ui.MarginInfo;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,6 +31,8 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     protected FilterDelegate delegate;
     protected boolean settingsEnabled = true;
 
+    protected List<ExpandedStateChangeListener> expandedStateChangeListeners;
+
     public WebFilter() {
         delegate = AppBeans.get(FilterDelegate.class);
         delegate.setFilter(this);
@@ -37,6 +41,8 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         com.vaadin.ui.Component unwrap = WebComponentsHelper.getComposition(layout);
         component.addComponent(unwrap);
         component.setWidth("100%");
+
+        delegate.addExpandedStateChangeListener(e -> fireExpandStateChange(e.isExpanded()));
     }
 
     @Override
@@ -228,22 +234,49 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
     @Override
     public void addListener(ExpandListener listener) {
-        delegate.addListener(listener);
+        addExpandedStateChangeListener(new ComponentExpandedStateChangeListenerWrapper(listener));
     }
 
     @Override
     public void removeListener(ExpandListener listener) {
-        delegate.removeListener(listener);
+        removeExpandedStateChangeListener(new ComponentExpandedStateChangeListenerWrapper(listener));
     }
 
     @Override
     public void addListener(CollapseListener listener) {
-        delegate.addListener(listener);
+        addExpandedStateChangeListener(new ComponentExpandedStateChangeListenerWrapper(listener));
     }
 
     @Override
     public void removeListener(CollapseListener listener) {
-        delegate.removeListener(listener);
+        removeExpandedStateChangeListener(new ComponentExpandedStateChangeListenerWrapper(listener));
+    }
+
+    @Override
+    public void addExpandedStateChangeListener(ExpandedStateChangeListener listener) {
+        if (expandedStateChangeListeners == null) {
+            expandedStateChangeListeners = new ArrayList<>();
+        }
+        if (!expandedStateChangeListeners.contains(listener)) {
+            expandedStateChangeListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeExpandedStateChangeListener(ExpandedStateChangeListener listener) {
+        if (expandedStateChangeListeners != null) {
+            expandedStateChangeListeners.remove(listener);
+        }
+    }
+
+    protected void fireExpandStateChange(boolean expanded) {
+        if (expandedStateChangeListeners != null && !expandedStateChangeListeners.isEmpty()) {
+            ExpandedStateChangeEvent event = new ExpandedStateChangeEvent(this, expanded);
+
+            for (ExpandedStateChangeListener listener : expandedStateChangeListeners) {
+                listener.expandedStateChanged(event);
+            }
+        }
     }
 
     @Nullable

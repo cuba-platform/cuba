@@ -8,6 +8,7 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.vcl.CollapsiblePanel;
 import com.haulmont.cuba.gui.components.GroupBoxLayout;
+import com.haulmont.cuba.gui.components.compatibility.ComponentExpandedStateChangeListenerWrapper;
 import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.Element;
 
@@ -26,8 +27,8 @@ public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayou
 
     protected CollapsiblePanel collapsiblePanel;
 
-    protected List<ExpandListener> expandListeners = null;
-    protected List<CollapseListener> collapseListeners = null;
+    protected List<ExpandedStateChangeListener> expandedStateChangeListeners;
+
     protected boolean settingsEnabled = true;
 
     public DesktopGroupBox() {
@@ -35,12 +36,12 @@ public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayou
         collapsiblePanel.addCollapseListener(new CollapsiblePanel.CollapseListener() {
             @Override
             public void collapsed() {
-                fireCollapseListeners();
+                fireExpandStateChange(false);
             }
 
             @Override
             public void expanded() {
-                fireExpandListeners();
+                fireExpandStateChange(true);
             }
         });
         layoutAdapter.setFlowDirection(BoxLayoutAdapter.FlowDirection.Y);
@@ -75,52 +76,47 @@ public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayou
 
     @Override
     public void addListener(ExpandListener listener) {
-        if (expandListeners == null) {
-            expandListeners = new ArrayList<>();
-        }
-        expandListeners.add(listener);
+        addExpandedStateChangeListener(new ComponentExpandedStateChangeListenerWrapper(listener));
     }
 
     @Override
     public void removeListener(ExpandListener listener) {
-        if (expandListeners != null) {
-            expandListeners.remove(listener);
-            if (expandListeners.isEmpty()) {
-                expandListeners = null;
-            }
-        }
-    }
-
-    private void fireExpandListeners() {
-        if (expandListeners != null) {
-            for (final ExpandListener expandListener : expandListeners) {
-                expandListener.onExpand(this);
-            }
-        }
+        removeExpandedStateChangeListener(new ComponentExpandedStateChangeListenerWrapper(listener));
     }
 
     @Override
     public void addListener(CollapseListener listener) {
-        if (collapseListeners == null) {
-            collapseListeners = new ArrayList<>();
-        }
-        collapseListeners.add(listener);
+        addExpandedStateChangeListener(new ComponentExpandedStateChangeListenerWrapper(listener));
     }
 
     @Override
     public void removeListener(CollapseListener listener) {
-        if (collapseListeners != null) {
-            collapseListeners.remove(listener);
-            if (collapseListeners.isEmpty()) {
-                collapseListeners = null;
-            }
+        removeExpandedStateChangeListener(new ComponentExpandedStateChangeListenerWrapper(listener));
+    }
+
+    @Override
+    public void addExpandedStateChangeListener(ExpandedStateChangeListener listener) {
+        if (expandedStateChangeListeners == null) {
+            expandedStateChangeListeners = new ArrayList<>();
+        }
+        if (!expandedStateChangeListeners.contains(listener)) {
+            expandedStateChangeListeners.add(listener);
         }
     }
 
-    private void fireCollapseListeners() {
-        if (collapseListeners != null) {
-            for (final CollapseListener collapseListener : collapseListeners) {
-                collapseListener.onCollapse(this);
+    @Override
+    public void removeExpandedStateChangeListener(ExpandedStateChangeListener listener) {
+        if (expandedStateChangeListeners != null) {
+            expandedStateChangeListeners.remove(listener);
+        }
+    }
+
+    protected void fireExpandStateChange(boolean expanded) {
+        if (expandedStateChangeListeners != null && !expandedStateChangeListeners.isEmpty()) {
+            ExpandedStateChangeEvent event = new ExpandedStateChangeEvent(this, expanded);
+
+            for (ExpandedStateChangeListener listener : expandedStateChangeListeners) {
+                listener.expandedStateChanged(event);
             }
         }
     }

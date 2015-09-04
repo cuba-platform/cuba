@@ -45,7 +45,7 @@ public class CubaAnnotationsLoader extends JPAAnnotationsLoader {
                 && !name.equals("pcVersionInit")
                 && !name.equals("pcStateManager")
                 && !name.equals("pcDetachedState")
-                && !name.equals("__valueListeners");
+                && !name.equals("__propertyChangeListeners");
     }
 
     @Override

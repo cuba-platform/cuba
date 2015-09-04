@@ -13,7 +13,7 @@ import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
 import com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondition;
 import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.data.compatibility.ComponentValueChangeListenerWrapper;
+import com.haulmont.cuba.gui.components.compatibility.ComponentValueChangeListenerWrapper;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
 import org.apache.commons.lang.StringUtils;
 

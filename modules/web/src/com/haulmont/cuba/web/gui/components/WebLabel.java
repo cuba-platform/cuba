@@ -17,7 +17,7 @@ import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.data.compatibility.ComponentValueChangeListenerWrapper;
+import com.haulmont.cuba.gui.components.compatibility.ComponentValueChangeListenerWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaLabel;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToDatatypeConverter;

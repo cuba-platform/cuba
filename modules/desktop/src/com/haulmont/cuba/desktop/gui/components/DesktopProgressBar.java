@@ -7,7 +7,7 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.gui.components.ProgressBar;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.data.compatibility.ComponentValueChangeListenerWrapper;
+import com.haulmont.cuba.gui.components.compatibility.ComponentValueChangeListenerWrapper;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.swing.*;

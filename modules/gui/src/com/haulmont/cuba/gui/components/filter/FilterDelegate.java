@@ -98,9 +98,34 @@ public interface FilterDelegate {
     boolean isCollapsable();
     void setCollapsable(boolean collapsable);
 
-    void addListener(Component.Collapsable.ExpandListener listener);
-    void removeListener(Component.Collapsable.ExpandListener listener);
+    class FDExpandedStateChangeEvent {
+        private final FilterDelegate delegate;
+        private final boolean expanded;
 
-    void addListener(Component.Collapsable.CollapseListener listener);
-    void removeListener(Component.Collapsable.CollapseListener listener);
+        public FDExpandedStateChangeEvent(FilterDelegate delegate, boolean expanded) {
+            this.delegate = delegate;
+            this.expanded = expanded;
+        }
+
+        public FilterDelegate getComponent() {
+            return delegate;
+        }
+
+        /**
+         * @return true if Component has been expanded.
+         */
+        public boolean isExpanded() {
+            return expanded;
+        }
+    }
+
+    /**
+     * Listener to expanded state change events.
+     */
+    interface FDExpandedStateChangeListener {
+        void expandedStateChanged(FDExpandedStateChangeEvent e);
+    }
+
+    void addExpandedStateChangeListener(FDExpandedStateChangeListener listener);
+    void removeExpandedStateChangeListener(FDExpandedStateChangeListener listener);
 }

@@ -619,7 +619,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         if (collectionChangeListeners == null) {
             collectionChangeListeners = new ArrayList<>();
         }
-        if (collectionChangeListeners.indexOf(listener) < 0) {
+        if (!collectionChangeListeners.contains(listener)) {
             collectionChangeListeners.add(listener);
         }
     }
