@@ -20,6 +20,7 @@ import javax.annotation.Nullable;
  * @author abramov
  * @version $Id$
  */
+@Deprecated
 public interface DatasourceListener<T extends Entity> extends ValueListener<T> {
 
     /**

@@ -23,7 +23,7 @@ public interface CollectionDatasourceListener<T extends Entity> extends Datasour
     /**
      * Operation which caused the datasource change.
      */
-    public enum Operation {
+    enum Operation {
         REFRESH,
         CLEAR,
         ADD,

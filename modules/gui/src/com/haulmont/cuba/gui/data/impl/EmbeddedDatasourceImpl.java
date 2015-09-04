@@ -38,37 +38,32 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
     }
 
     protected void initParentDsListeners() {
-        masterDs.addListener(new DatasourceListener<Entity>() {
-            @Override
-            public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                Entity prevValue = getItem(prevItem);
-                Entity newValue = getItem(item);
-                reattachListeners(prevValue, newValue);
-                fireItemChanged(prevValue);
-            }
+        //noinspection unchecked
+        masterDs.addItemChangeListener(e -> {
+            Entity prevValue = getItem(e.getPrevItem());
+            Entity newValue = getItem(e.getItem());
+            reattachListeners(prevValue, newValue);
 
-            @Override
-            public void stateChanged(Datasource ds, State prevState, State state) {
-                for (DatasourceListener dsListener : new ArrayList<>(dsListeners)) {
-                    dsListener.stateChanged(EmbeddedDatasourceImpl.this, prevState, state);
-                }
-            }
+            fireItemChanged((T) prevValue);
+        });
 
-            @Override
-            public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                if (property.equals(metaProperty.getName()) && !ObjectUtils.equals(prevValue, value)) {
-                    reattachListeners((Entity) prevValue, (Entity) value);
-                    fireItemChanged(prevValue);
-                }
-            }
+        //noinspection unchecked
+        masterDs.addStateChangeListener(e -> fireStateChanged(e.getPrevState()));
 
-            protected void reattachListeners(Entity prevItem, Entity item) {
-                if (prevItem != item) {
-                    detachListener(prevItem);
-                    attachListener(item);
-                }
+        //noinspection unchecked
+        masterDs.addItemPropertyChangeListener(e -> {
+            if (e.getProperty().equals(metaProperty.getName()) && !ObjectUtils.equals(e.getPrevValue(), e.getValue())) {
+                reattachListeners((Entity) e.getPrevValue(), (Entity) e.getValue());
+                fireItemChanged((T) e.getPrevValue());
             }
         });
+    }
+
+    protected void reattachListeners(Entity prevItem, Entity item) {
+        if (prevItem != item) {
+            detachListener(prevItem);
+            attachListener(item);
+        }
     }
 
     @Override
@@ -83,8 +78,9 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
 
     @Override
     public void commit() {
-        if (!allowCommit)
+        if (!allowCommit) {
             return;
+        }
 
         clearCommitLists();
         modified = false;

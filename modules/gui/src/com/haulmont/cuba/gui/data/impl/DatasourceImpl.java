@@ -18,15 +18,11 @@ import javax.annotation.Nullable;
 import java.util.Set;
 
 /**
- *
  * @param <T>
- *
  * @author abramov
  * @version $Id$
  */
-public class DatasourceImpl<T extends Entity>
-        extends AbstractDatasource<T>
-        implements DatasourceImplementation<T> {
+public class DatasourceImpl<T extends Entity> extends AbstractDatasource<T> implements DatasourceImplementation<T> {
 
     protected DsContext dsContext;
     protected DataSupplier dataSupplier;
@@ -75,8 +71,9 @@ public class DatasourceImpl<T extends Entity>
 
     @Override
     public void commit() {
-        if (!allowCommit)
+        if (!allowCommit) {
             return;
+        }
 
         if (getCommitMode() == CommitMode.DATASTORE) {
             final DataSupplier supplier = getDataSupplier();
@@ -86,8 +83,9 @@ public class DatasourceImpl<T extends Entity>
             modified = false;
 
         } else if (getCommitMode() == CommitMode.PARENT) {
-            if (parentDs == null)
+            if (parentDs == null) {
                 throw new IllegalStateException("parentDs is null while commitMode=PARENT");
+            }
 
             if (parentDs instanceof CollectionDatasource) {
                 CollectionDatasource ds = (CollectionDatasource) parentDs;
@@ -158,7 +156,7 @@ public class DatasourceImpl<T extends Entity>
         if (this.state == State.NOT_INITIALIZED) {
             __setItem(item);
         } else {
-            Object prevItem = this.item;
+            T prevItem = this.item;
             State prevStatus = this.state;
 
             __setItem(item);
@@ -177,7 +175,7 @@ public class DatasourceImpl<T extends Entity>
         if (item != null) {
             final MetaClass aClass = item.getMetaClass();
             if (!aClass.equals(metaClass) && !metaClass.getDescendants().contains(aClass)) {
-                throw new DevelopmentException(String.format("Invalid item metaClass '%s'",  aClass),
+                throw new DevelopmentException(String.format("Invalid item metaClass '%s'", aClass),
                         ParamsMap.of("datasource", getId(), "metaClass", aClass));
             }
             attachListener(item);
@@ -216,8 +214,9 @@ public class DatasourceImpl<T extends Entity>
 
     @Override
     public void committed(Set<Entity> entities) {
-        if (!State.VALID.equals(state))
+        if (!State.VALID.equals(state)) {
             return;
+        }
 
         for (Entity entity : entities) {
             if (entity.equals(item)) {

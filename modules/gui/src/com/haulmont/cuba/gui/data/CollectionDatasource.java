@@ -11,6 +11,7 @@ import com.haulmont.cuba.gui.filter.QueryFilter;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -361,4 +362,43 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
         RefreshMode getRefreshMode();
         void setRefreshMode(RefreshMode refreshMode);
     }
+
+    enum Operation {
+        REFRESH,
+        CLEAR,
+        ADD,
+        REMOVE,
+        UPDATE
+    }
+
+    class CollectionChangeEvent<T extends Entity> {
+        private final CollectionDatasource ds;
+        private final Operation operation;
+        private final List<T> items;
+
+        public CollectionChangeEvent(CollectionDatasource ds, Operation operation, List<T> items) {
+            this.ds = ds;
+            this.operation = operation;
+            this.items = items;
+        }
+
+        public CollectionDatasource getDs() {
+            return ds;
+        }
+
+        public List<T> getItems() {
+            return items;
+        }
+
+        public Operation getOperation() {
+            return operation;
+        }
+    }
+
+    interface CollectionChangeListener<T extends Entity> {
+        void collectionChanged(CollectionChangeEvent<T> e);
+    }
+
+    void addCollectionChangeListener(CollectionChangeListener<T> listener);
+    void removeCollectionChangeListener(CollectionChangeListener<T> listener);
 }

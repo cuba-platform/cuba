@@ -21,7 +21,6 @@ import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.compatibility.ComponentValueChangeListenerWrapper;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -90,32 +89,28 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
 
         valueFormatter.setMetaProperty(metaProperty);
 
-        datasource.addListener(
-                new DsListenerAdapter() {
-                    @Override
-                    public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                        if (updatingInstance) {
-                            return;
-                        }
+        //noinspection unchecked
+        datasource.addItemChangeListener(e -> {
+            if (updatingInstance) {
+                return;
+            }
 
-                        Object value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
-                        updateComponent(value);
-                        fireChangeListeners(value);
-                    }
+            Object value = InstanceUtils.getValueEx(e.getItem(), metaPropertyPath.getPath());
+            updateComponent(value);
+            fireChangeListeners(value);
+        });
 
-                    @Override
-                    public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                        if (updatingInstance) {
-                            return;
-                        }
+        //noinspection unchecked
+        datasource.addItemPropertyChangeListener(e -> {
+            if (updatingInstance) {
+                return;
+            }
 
-                        if (property.equals(metaPropertyPath.toString())) {
-                            updateComponent(value);
-                            fireChangeListeners(value);
-                        }
-                    }
-                }
-        );
+            if (property.equals(metaPropertyPath.toString())) {
+                updateComponent(e.getValue());
+                fireChangeListeners(e.getValue());
+            }
+        });
 
         if ((datasource.getState() == Datasource.State.VALID) && (datasource.getItem() != null)) {
             Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());

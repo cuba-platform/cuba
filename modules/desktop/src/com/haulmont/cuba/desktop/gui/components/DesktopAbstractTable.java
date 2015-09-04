@@ -26,7 +26,6 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import net.miginfocom.layout.CC;
@@ -513,10 +512,9 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
 
     @Override
     public void setDatasource(final CollectionDatasource datasource) {
-        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
-
         final Collection<Object> properties;
         if (this.columns.isEmpty()) {
+            MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
             MessageTools messageTools = AppBeans.get(MessageTools.NAME);
             Collection<MetaPropertyPath> paths =
                     metadataTools.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass());
@@ -543,22 +541,20 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
 
         this.datasource = datasource;
 
-        datasource.addListener(new CollectionDsListenerAdapter<Entity>() {
-            @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
-                switch (operation) {
-                    case CLEAR:
-                    case REFRESH:
-                        fieldDatasources.clear();
-                        break;
+        //noinspection unchecked
+        datasource.addCollectionChangeListener(e -> {
+            switch (e.getOperation()) {
+                case CLEAR:
+                case REFRESH:
+                    fieldDatasources.clear();
+                    break;
 
-                    case UPDATE:
-                    case REMOVE:
-                        for (Entity entity : items) {
-                            fieldDatasources.remove(entity);
-                        }
-                        break;
-                }
+                case UPDATE:
+                case REMOVE:
+                    for (Object entity : e.getItems()) {
+                        fieldDatasources.remove(entity);
+                    }
+                    break;
             }
         });
 
@@ -641,61 +637,55 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
             action.setDatasource(datasource);
         }
 
-        datasource.addListener(new CollectionDsListenerAdapter<Entity>() {
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
-                        onDataChange();
-                        packRows();
+        datasource.addCollectionChangeListener(e -> {
+            onDataChange();
+            packRows();
 
-                        // #PL-2035, reload selection from ds
-                        Set<E> selectedItems = getSelected();
-                        if (selectedItems == null) {
-                            selectedItems = Collections.emptySet();
-                        }
+            // #PL-2035, reload selection from ds
+            Set<E> selectedItems1 = getSelected();
+            if (selectedItems1 == null) {
+                selectedItems1 = Collections.emptySet();
+            }
 
-                        Set<E> newSelection = new HashSet<>();
-                        for (E entity : selectedItems) {
-                            if (ds.containsItem(entity.getId())) {
-                                newSelection.add(entity);
-                            }
-                        }
+            Set<E> newSelection = new HashSet<>();
+            for (E entity : selectedItems1) {
+                if (e.getDs().containsItem(entity.getId())) {
+                    newSelection.add(entity);
+                }
+            }
 
-                        if (ds.getState() == Datasource.State.VALID && ds.getItem() != null) {
-                            if (ds.containsItem(ds.getItem())) {
-                                newSelection.add((E) ds.getItem());
-                            }
-                        }
+            if (e.getDs().getState() == Datasource.State.VALID && e.getDs().getItem() != null) {
+                if (e.getDs().containsItem(e.getDs().getItem())) {
+                    newSelection.add((E) e.getDs().getItem());
+                }
+            }
 
-                        if (newSelection.isEmpty()) {
-                            setSelected((E) null);
-                        } else {
-                            setSelected(newSelection);
-                        }
-                    }
+            if (newSelection.isEmpty()) {
+                setSelected((E) null);
+            } else {
+                setSelected(newSelection);
+            }
+        });
 
-                    @Override
-                    public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                        List<Column> columns = getColumns();
-                        boolean find = false;
-                        int i = 0;
-                        while ((i < columns.size()) & !find) {
-                            Object columnId = columns.get(i).getId();
-                            if (columnId instanceof MetaPropertyPath) {
-                                String propertyName = ((MetaPropertyPath) columnId).getMetaProperty().getName();
-                                if (propertyName.equals(property)) {
-                                    find = true;
-                                }
-                            }
-                            i++;
-                        }
-                        if (find) {
-                            onDataChange();
-                        }
-                        packRows();
+        datasource.addItemPropertyChangeListener(e -> {
+            List<Column> columns1 = getColumns();
+            boolean find = false;
+            int i = 0;
+            while ((i < columns1.size()) & !find) {
+                Object columnId = columns1.get(i).getId();
+                if (columnId instanceof MetaPropertyPath) {
+                    String propertyName = ((MetaPropertyPath) columnId).getMetaProperty().getName();
+                    if (propertyName.equals(e.getProperty())) {
+                        find = true;
                     }
                 }
-        );
+                i++;
+            }
+            if (find) {
+                onDataChange();
+            }
+            packRows();
+        });
 
         if (rowsCount != null) {
             rowsCount.setDatasource(datasource);

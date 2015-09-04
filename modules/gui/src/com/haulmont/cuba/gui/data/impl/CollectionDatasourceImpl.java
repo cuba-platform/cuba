@@ -14,7 +14,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.filter.Condition;
 import com.haulmont.cuba.gui.filter.DenyingClause;
 import com.haulmont.cuba.gui.filter.LogicalCondition;
@@ -125,7 +124,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             suspended = false;
             refreshOnResumeRequired = false;
 
-            fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH, Collections.<Entity>emptyList());
+            fireCollectionChanged(Operation.REFRESH, Collections.<T>emptyList());
 
             inRefresh = false;
             return;
@@ -172,7 +171,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         suspended = false;
         refreshOnResumeRequired = false;
 
-        fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH, Collections.<Entity>emptyList());
+        fireCollectionChanged(Operation.REFRESH, Collections.<T>emptyList());
 
         checkDataLoadError();
     }
@@ -232,7 +231,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
                 if (!sortOnDb || containsAllDataFromDb()) {
                     doSort();
 
-                    fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH, Collections.<Entity>emptyList());
+                    fireCollectionChanged(Operation.REFRESH, Collections.<T>emptyList());
                 } else {
                     refresh();
                 }
@@ -312,7 +311,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
 
         modified = true;
-        fireCollectionChanged(CollectionDatasourceListener.Operation.ADD, Collections.<Entity>singletonList(item));
+        fireCollectionChanged(Operation.ADD, Collections.singletonList(item));
     }
 
     @Override
@@ -328,7 +327,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
         deleted(item);
 
-        fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE, Collections.<Entity>singletonList(item));
+        fireCollectionChanged(Operation.REMOVE, Collections.singletonList(item));
     }
 
     @Override
@@ -338,7 +337,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         data.put(item.getId(), item);
         attachListener(item);
 
-        fireCollectionChanged(CollectionDatasourceListener.Operation.ADD, Collections.<Entity>singletonList(item));
+        fireCollectionChanged(Operation.ADD, Collections.singletonList(item));
     }
 
     @Override
@@ -352,7 +351,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         data.remove(item.getId());
         detachListener(item);
 
-        fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE, Collections.<Entity>singletonList(item));
+        fireCollectionChanged(Operation.REMOVE, Collections.singletonList(item));
     }
 
     @Override
@@ -380,7 +379,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
         setItem(null);
 
-        fireCollectionChanged(CollectionDatasourceListener.Operation.CLEAR, Collections.<Entity>emptyList());
+        fireCollectionChanged(Operation.CLEAR, Collections.emptyList());
     }
 
     @Override
@@ -417,7 +416,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         if (data.containsKey(item.getId())) {
             data.put(item.getId(), item);
             attachListener(item);
-            fireCollectionChanged(CollectionDatasourceListener.Operation.UPDATE, Collections.<Entity>singletonList(item));
+            fireCollectionChanged(Operation.UPDATE, Collections.singletonList(item));
         }
     }
 
@@ -428,12 +427,14 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void committed(Set<Entity> entities) {
-        if (!State.VALID.equals(state))
+        if (!State.VALID.equals(state)) {
             return;
+        }
 
         for (Entity newEntity : entities) {
-            if (newEntity.equals(item))
+            if (newEntity.equals(item)) {
                 item = (T) newEntity;
+            }
 
             updateItem((T) newEntity);
         }
@@ -444,8 +445,10 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     protected boolean needLoading() {
         if (filter != null) {
-            if (filter.getRoot() instanceof DenyingClause)
+            if (filter.getRoot() instanceof DenyingClause) {
                 return false;
+            }
+
             if ((filter.getRoot() instanceof LogicalCondition)
                     && ((LogicalCondition) filter.getRoot()).getOperation().equals(LogicalOp.AND)) {
                 for (Condition condition : filter.getRoot().getConditions()) {
@@ -570,7 +573,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     protected Object getItemValue(MetaPropertyPath property, K itemId) {
-        Instance instance = getItem(itemId);
+        Instance instance = getItemNN(itemId);
         if (property.getMetaProperties().length == 1) {
             return instance.getValue(property.getMetaProperty().getName());
         } else {

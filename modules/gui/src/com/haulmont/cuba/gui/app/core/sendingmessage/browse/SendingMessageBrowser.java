@@ -17,7 +17,6 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
@@ -74,12 +73,8 @@ public class SendingMessageBrowser extends AbstractWindow {
             }
         });
         fg.setEditable(CONTENT_TEXT, false);
-        sendingMessageDs.addListener(new DsListenerAdapter<SendingMessage>() {
-            @Override
-            public void itemChanged(Datasource<SendingMessage> ds, SendingMessage prevItem, SendingMessage item) {
-                selectedItemChanged(item);
-            }
-        });
+
+        sendingMessageDs.addItemChangeListener(e -> selectedItemChanged(e.getItem()));
     }
 
     protected void selectedItemChanged(SendingMessage item) {

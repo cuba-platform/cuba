@@ -278,30 +278,26 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
             }
         }
 
-        datasource.addListener(
-                new DsListenerAdapter() {
-                    @Override
-                    public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                        if (updatingInstance) {
-                            return;
-                        }
-                        Date value = getEntityValue(item);
-                        updateComponent(toUserDate(value));
-                        fireChangeListeners(value);
-                    }
+        //noinspection unchecked
+        datasource.addItemChangeListener(e -> {
+            if (updatingInstance) {
+                return;
+            }
+            Date value = getEntityValue(e.getItem());
+            updateComponent(toUserDate(value));
+            fireChangeListeners(value);
+        });
 
-                    @Override
-                    public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                        if (updatingInstance) {
-                            return;
-                        }
-                        if (property.equals(metaPropertyPath.toString())) {
-                            updateComponent(toUserDate((Date) value));
-                            fireChangeListeners(value);
-                        }
-                    }
-                }
-        );
+        //noinspection unchecked
+        datasource.addItemPropertyChangeListener(e -> {
+            if (updatingInstance) {
+                return;
+            }
+            if (property.equals(metaPropertyPath.toString())) {
+                updateComponent(toUserDate((Date) e.getValue()));
+                fireChangeListeners(e.getValue());
+            }
+        });
 
         if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
             if (property.equals(metaPropertyPath.toString())) {

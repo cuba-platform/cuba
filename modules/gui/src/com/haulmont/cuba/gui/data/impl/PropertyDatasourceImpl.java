@@ -18,7 +18,6 @@ import com.haulmont.cuba.gui.data.*;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -44,37 +43,28 @@ public class PropertyDatasourceImpl<T extends Entity>
     }
 
     protected void initParentDsListeners() {
-        masterDs.addListener(new DatasourceListener<Entity>() {
-            @Override
-            public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                Entity prevValue = getItem(prevItem);
-                Entity newValue = getItem(item);
-                reattachListeners(prevValue, newValue);
-                fireItemChanged(prevValue);
-            }
+        masterDs.addItemChangeListener(e -> {
+            Entity prevValue = getItem(e.getPrevItem());
+            Entity newValue = getItem(e.getItem());
+            reattachListeners(prevValue, newValue);
+            fireItemChanged((T) prevValue);
+        });
 
-            @Override
-            public void stateChanged(Datasource ds, State prevState, State state) {
-                for (DatasourceListener dsListener : new ArrayList<>(dsListeners)) {
-                    dsListener.stateChanged(PropertyDatasourceImpl.this, prevState, state);
-                }
-            }
+        masterDs.addStateChangeListener(e -> fireStateChanged(e.getPrevState()));
 
-            @Override
-            public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                if (property.equals(metaProperty.getName()) && !ObjectUtils.equals(prevValue, value)) {
-                    reattachListeners((Entity) prevValue, (Entity) value);
-                    fireItemChanged(prevValue);
-                }
-            }
-
-            private void reattachListeners(Entity prevItem, Entity item) {
-                if (prevItem != item) {
-                    detachListener(prevItem);
-                    attachListener(item);
-                }
+        masterDs.addItemPropertyChangeListener(e -> {
+            if (e.getProperty().equals(metaProperty.getName()) && !ObjectUtils.equals(e.getPrevValue(), e.getValue())) {
+                reattachListeners((Entity) e.getPrevValue(), (Entity) e.getValue());
+                fireItemChanged((T) e.getPrevValue());
             }
         });
+    }
+
+    protected void reattachListeners(Entity prevItem, Entity item) {
+        if (prevItem != item) {
+            detachListener(prevItem);
+            attachListener(item);
+        }
     }
 
     @Override
@@ -154,12 +144,14 @@ public class PropertyDatasourceImpl<T extends Entity>
 
     @Override
     public void commit() {
-        if (!allowCommit)
+        if (!allowCommit) {
             return;
+        }
 
-        if (Datasource.CommitMode.PARENT.equals(getCommitMode())) {
-            if (parentDs == null)
+        if (getCommitMode() == CommitMode.PARENT) {
+            if (parentDs == null) {
                 throw new IllegalStateException("parentDs is null while commitMode=PARENT");
+            }
 
             if (parentDs instanceof CollectionDatasource) {
                 CollectionDatasource parentCollectionDs = (CollectionDatasource) parentDs;

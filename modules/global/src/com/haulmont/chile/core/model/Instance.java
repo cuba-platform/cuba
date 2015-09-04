@@ -112,15 +112,12 @@ public interface Instance extends Serializable {
     void removeAllListeners();
 
     class PropertyChangeEvent {
-        private final Object item;
-
+        private final Instance item;
         private final String property;
-
         private final Object prevValue;
-
         private final Object value;
 
-        public PropertyChangeEvent(Object item, String property, Object prevValue, Object value) {
+        public PropertyChangeEvent(Instance item, String property, Object prevValue, Object value) {
             this.item = item;
             this.property = property;
             this.prevValue = prevValue;
@@ -131,7 +128,7 @@ public interface Instance extends Serializable {
             return property;
         }
 
-        public Object getItem() {
+        public Instance getItem() {
             return item;
         }
 

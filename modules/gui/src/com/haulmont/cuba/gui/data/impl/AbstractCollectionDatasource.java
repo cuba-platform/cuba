@@ -16,6 +16,7 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleDatasourceListenerWrapper;
 import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
@@ -51,10 +52,12 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     protected Map<String, Object> savedParameters;
     protected Throwable dataLoadError;
     protected boolean listenersSuspended;
-    protected CollectionDatasourceListener.Operation lastCollectionChangeOperation;
-    protected List<Entity> lastCollectionChangeItems;
+    protected Operation lastCollectionChangeOperation;
+    protected List<T> lastCollectionChangeItems;
     protected RefreshMode refreshMode = RefreshMode.ALWAYS;
     protected UserSession userSession = AppBeans.<UserSessionSource>get(UserSessionSource.NAME).getUserSession();
+
+    protected List<CollectionChangeListener<T>> collectionChangeListeners;
 
     @Override
     public T getItemNN(K id) {
@@ -68,7 +71,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     @Override
     public void setItem(T item) {
         if (State.VALID.equals(state)) {
-            Object prevItem = this.item;
+            T prevItem = this.item;
 
             if (prevItem != item) {
                 if (item != null) {
@@ -164,16 +167,13 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                 if (ds != null) {
                     dsContext.registerDependency(this, ds, property);
                 } else {
-                    ((DsContextImplementation) dsContext).addLazyTask(new DsContextImplementation.LazyTask() {
-                        @Override
-                        public void execute(DsContext context) {
-                            final String[] strings = path.split("\\.");
-                            String source = strings[0];
+                    ((DsContextImplementation) dsContext).addLazyTask(context -> {
+                        final String[] strings1 = path.split("\\.");
+                        String source1 = strings1[0];
 
-                            final Datasource ds = dsContext.get(source);
-                            if (ds != null) {
-                                dsContext.registerDependency(AbstractCollectionDatasource.this, ds, property);
-                            }
+                        final Datasource ds1 = dsContext.get(source1);
+                        if (ds1 != null) {
+                            dsContext.registerDependency(AbstractCollectionDatasource.this, ds1, property);
                         }
                     });
                 }
@@ -338,15 +338,18 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         return query;
     }
 
-    protected void fireCollectionChanged(CollectionDatasourceListener.Operation operation, List<Entity> items) {
+    protected void fireCollectionChanged(Operation operation, List<T> items) {
         if (listenersSuspended) {
             lastCollectionChangeOperation = operation;
             lastCollectionChangeItems = items;
             return;
         }
-        for (DatasourceListener dsListener : new ArrayList<>(dsListeners)) {
-            if (dsListener instanceof CollectionDatasourceListener) {
-                ((CollectionDatasourceListener) dsListener).collectionChanged(this, operation, items);
+
+        if (collectionChangeListeners != null && !collectionChangeListeners.isEmpty()) {
+            CollectionChangeEvent<T> event = new CollectionChangeEvent<>(this, operation, items);
+
+            for (CollectionChangeListener<T> listener : collectionChangeListeners) {
+                listener.collectionChanged(event);
             }
         }
     }
@@ -357,7 +360,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
         String compPerfix = ParameterInfo.Type.COMPONENT.getPrefix() + "$";
         for (ParameterInfo info : queryParameters) {
-            if (ParameterInfo.Type.COMPONENT.equals(info.getType())) {
+            if (info.getType() == ParameterInfo.Type.COMPONENT) {
                 Object value = dsContext.getFrameContext() == null ?
                         null : dsContext.getFrameContext().getValue(info.getPath());
                 templateParams.put(compPerfix + info.getPath(), value);
@@ -400,7 +403,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
         if (lastCollectionChangeOperation != null) {
             fireCollectionChanged(lastCollectionChangeOperation,
-                    lastCollectionChangeItems != null ? lastCollectionChangeItems : Collections.<Entity>emptyList());
+                    lastCollectionChangeItems != null ? lastCollectionChangeItems : Collections.<T>emptyList());
         }
 
         lastCollectionChangeOperation = null;
@@ -419,10 +422,11 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
     @Override
     public void commit() {
-        if (!allowCommit)
+        if (!allowCommit) {
             return;
+        }
 
-        if (CommitMode.DATASTORE.equals(getCommitMode())) {
+        if (getCommitMode() == CommitMode.DATASTORE) {
             final DataSupplier supplier = getDataSupplier();
             Set<Entity> commitInstances = new HashSet<>();
             Set<Entity> deleteInstances = new HashSet<>();
@@ -450,18 +454,13 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
     protected Comparator<T> createEntityComparator() {
         // In case of generated column the sortInfos can actually contain string as a column identifier.
-        if (sortInfos[0].getPropertyPath() instanceof MetaPropertyPath) {
+        if (sortInfos[0].getPropertyPath() != null) {
             final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
             final boolean asc = Sortable.Order.ASC.equals(sortInfos[0].getOrder());
             return new EntityComparator<>(propertyPath, asc);
         } else {
             // If we can not sort the datasource, just return the empty comparator.
-            return new Comparator<T>() {
-                @Override
-                public int compare(T o1, T o2) {
-                    return 0;
-                }
-            };
+            return (o1, o2) -> 0;
         }
     }
 
@@ -580,7 +579,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
             if (dataLoadError instanceof RuntimeException)
                 throw (RuntimeException) dataLoadError;
             else
-                throw new RuntimeException(dataLoadError);
+                throw new RuntimeException("Data load error", dataLoadError);
         }
     }
 
@@ -636,6 +635,41 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         @Override
         public void valueChanged(Object source, String property, Object prevValue, Object value) {
             refresh();
+        }
+    }
+
+    @Override
+    public void addCollectionChangeListener(CollectionChangeListener<T> listener) {
+        if (collectionChangeListeners == null) {
+            collectionChangeListeners = new ArrayList<>();
+        }
+        if (collectionChangeListeners.indexOf(listener) < 0) {
+            collectionChangeListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeCollectionChangeListener(CollectionChangeListener<T> listener) {
+        if (collectionChangeListeners != null) {
+            collectionChangeListeners.remove(listener);
+        }
+    }
+
+    @Override
+    public void addListener(DatasourceListener<T> listener) {
+        super.addListener(listener);
+
+        if (listener instanceof CollectionDatasourceListener) {
+            addCollectionChangeListener(new CompatibleDatasourceListenerWrapper(listener));
+        }
+    }
+
+    @Override
+    public void removeListener(DatasourceListener<T> listener) {
+        super.removeListener(listener);
+
+        if (listener instanceof CollectionDatasourceListener) {
+            removeCollectionChangeListener(new CompatibleDatasourceListenerWrapper(listener));
         }
     }
 }

@@ -6,12 +6,11 @@
 package com.haulmont.cuba.web.app.ui.statistics;
 
 import com.haulmont.cuba.core.entity.JmxInstance;
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.gui.components.Formatter;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.Timer;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Map;
 
@@ -30,12 +29,8 @@ public class ThreadsMonitoringWindow extends AbstractWindow {
     @Override
     public void init(Map<String, Object> params) {
         threadsDs.refresh(params);
-        threadsDs.addListener(new DsListenerAdapter<ThreadSnapshot>() {
-            @Override
-            public void itemChanged(Datasource<ThreadSnapshot> ds, @Nullable ThreadSnapshot prevItem, @Nullable ThreadSnapshot item) {
-                updateStacktrace(item);
-            }
-        });
+        threadsDs.addItemChangeListener(e -> updateStacktrace(e.getItem()));
+
         JmxInstance node = (JmxInstance) params.get("node");
         setCaption(formatMessage("threadsMonitoring.caption", node.getNodeName()));
 

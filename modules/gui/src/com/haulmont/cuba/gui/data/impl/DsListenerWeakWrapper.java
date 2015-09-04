@@ -16,7 +16,7 @@ import java.lang.ref.WeakReference;
  * @author artamonov
  * @version $Id$
  */
-public class DsListenerWeakWrapper implements DatasourceListener, WeakDatasourceListener {
+public class DsListenerWeakWrapper implements DatasourceListener {
 
     protected WeakReference<DatasourceListener> listener;
     protected Datasource ds;
@@ -57,11 +57,6 @@ public class DsListenerWeakWrapper implements DatasourceListener, WeakDatasource
         } else {
             removeBridge();
         }
-    }
-
-    @Override
-    public boolean isAlive() {
-        return listener.get() != null;
     }
 
     @SuppressWarnings("unchecked")

@@ -4,9 +4,9 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.cuba.gui.data.DatasourceListener;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DatasourceListener;
 
 import javax.annotation.Nullable;
 
@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
  * @author tulupov
  * @version $Id$
  */
+@Deprecated
 public class DsListenerAdapter<T extends Entity> implements DatasourceListener<T> {
 
     @Override

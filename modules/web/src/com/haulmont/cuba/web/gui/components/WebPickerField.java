@@ -15,7 +15,6 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaPickerField;
@@ -163,22 +162,18 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
 
         component.setPropertyDataSource(itemProperty);
 
-        datasource.addListener(
-                new DsListenerAdapter() {
-                    @Override
-                    public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                        Object newValue = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
-                        setValue(newValue);
-                    }
+        //noinspection unchecked
+        datasource.addItemChangeListener(e -> {
+            Object newValue = InstanceUtils.getValueEx(e.getItem(), metaPropertyPath.getPath());
+            setValue(newValue);
+        });
 
-                    @Override
-                    public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                        if (property.equals(metaPropertyPath.toString())) {
-                            setValue(value);
-                        }
-                    }
-                }
-        );
+        //noinspection unchecked
+        datasource.addItemPropertyChangeListener(e -> {
+            if (e.getProperty().equals(metaPropertyPath.toString())) {
+                setValue(e.getValue());
+            }
+        });
 
         if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
             if (property.equals(metaPropertyPath.toString())) {

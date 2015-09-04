@@ -20,14 +20,12 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.AbstractDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -100,13 +98,10 @@ public class UserEditor extends AbstractEditor<User> {
 
     @Override
     public void init(Map<String, Object> params) {
-        userDs.addListener(new NameBuilderListener<User>(userDs));
-        userDs.addListener(new DsListenerAdapter<User>() {
-            @Override
-            public void valueChanged(User source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                if (property.equals("timeZoneAuto")) {
-                    timeZoneLookup.setEnabled(!Boolean.TRUE.equals(value));
-                }
+        userDs.addItemPropertyChangeListener(new NameBuilderListener<>(userDs));
+        userDs.addItemPropertyChangeListener(e -> {
+            if (e.getProperty().equals("timeZoneAuto")) {
+                timeZoneLookup.setEnabled(!Boolean.TRUE.equals(e.getValue()));
             }
         });
 

@@ -16,6 +16,7 @@ import java.util.List;
  * @author tulupov
  * @version $Id$
  */
+@Deprecated
 public class CollectionDsListenerAdapter<T extends Entity> extends DsListenerAdapter<T> implements CollectionDatasourceListener<T> {
 
     @Override

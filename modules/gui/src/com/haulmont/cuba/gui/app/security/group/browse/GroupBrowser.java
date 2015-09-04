@@ -15,9 +15,7 @@ import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.app.UserManagementService;
@@ -188,17 +186,17 @@ public class GroupBrowser extends AbstractWindow {
                         EntityOp.CREATE);
 
         // enable actions if group is selected
-        groupsDs.addListener(new DsListenerAdapter<Group>() {
-            @Override
-            public void itemChanged(Datasource<Group> ds, Group prevItem, Group item) {
-                if (userCreateAction != null)
-                    userCreateAction.setEnabled(item != null);
-                if (attributeCreateAction != null)
-                    attributeCreateAction.setEnabled(item != null);
-                if (constraintCreateAction != null)
-                    constraintCreateAction.setEnabled(item != null);
-                groupCopyAction.setEnabled(hasPermissionsToCreateGroup && item != null);
+        groupsDs.addItemChangeListener(e -> {
+            if (userCreateAction != null) {
+                userCreateAction.setEnabled(e.getItem() != null);
             }
+            if (attributeCreateAction != null) {
+                attributeCreateAction.setEnabled(e.getItem() != null);
+            }
+            if (constraintCreateAction != null) {
+                constraintCreateAction.setEnabled(e.getItem() != null);
+            }
+            groupCopyAction.setEnabled(hasPermissionsToCreateGroup && e.getItem() != null);
         });
 
         groupsDs.refresh();

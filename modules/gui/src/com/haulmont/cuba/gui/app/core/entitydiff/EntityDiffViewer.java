@@ -11,7 +11,6 @@ import com.haulmont.cuba.core.entity.diff.EntityDiff;
 import com.haulmont.cuba.core.entity.diff.EntityPropertyDiff;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -56,26 +55,22 @@ public class EntityDiffViewer extends AbstractFrame {
 
         diffTable.setStyleProvider(new DiffStyleProvider());
 
-        diffDs.addListener(new DsListenerAdapter<EntityPropertyDiff>() {
-            @Override
-            public void itemChanged(Datasource<EntityPropertyDiff> ds,
-                                    EntityPropertyDiff prevItem, EntityPropertyDiff item) {
-                boolean valuesVisible = (item != null) && (item.hasStateValues());
-                boolean stateVisible = (item != null) && (item.hasStateValues() && item.itemStateVisible());
+        diffDs.addItemChangeListener(e -> {
+            boolean valuesVisible = (e.getItem() != null) && (e.getItem().hasStateValues());
+            boolean stateVisible = (e.getItem() != null) && (e.getItem().hasStateValues() && e.getItem().itemStateVisible());
 
-                valuesHeader.setVisible(stateVisible || valuesVisible);
-                itemStateField.setVisible(stateVisible);
-                diffValuesField.setVisible(valuesVisible);
+            valuesHeader.setVisible(stateVisible || valuesVisible);
+            itemStateField.setVisible(stateVisible);
+            diffValuesField.setVisible(valuesVisible);
 
-                if (item != null) {
-                    EntityPropertyDiff.ItemState itemState = item.getItemState();
-                    if (itemState != EntityPropertyDiff.ItemState.Normal) {
-                        String messageCode = "ItemState." + itemState.toString();
-                        itemStateLabel.setValue(getMessage(messageCode));
-                        itemStateLabel.setVisible(true);
-                    } else {
-                        itemStateField.setVisible(false);
-                    }
+            if (e.getItem() != null) {
+                EntityPropertyDiff.ItemState itemState = e.getItem().getItemState();
+                if (itemState != EntityPropertyDiff.ItemState.Normal) {
+                    String messageCode = "ItemState." + itemState.toString();
+                    itemStateLabel.setValue(getMessage(messageCode));
+                    itemStateLabel.setVisible(true);
+                } else {
+                    itemStateField.setVisible(false);
                 }
             }
         });

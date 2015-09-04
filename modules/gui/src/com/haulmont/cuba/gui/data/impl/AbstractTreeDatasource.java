@@ -8,7 +8,6 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import org.apache.commons.lang.ObjectUtils;
@@ -72,7 +71,7 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
 
     @Override
     public Collection<K> getRootItemIds() {
-        if (State.NOT_INITIALIZED.equals(state)) {
+        if (state == State.NOT_INITIALIZED) {
             return Collections.emptyList();
         } else {
             if (tree == null) {
@@ -164,7 +163,7 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
 
         setItem(null);
 
-        fireCollectionChanged(CollectionDatasourceListener.Operation.CLEAR, Collections.<Entity>emptyList());
+        fireCollectionChanged(Operation.CLEAR, Collections.emptyList());
     }
 
     @Override

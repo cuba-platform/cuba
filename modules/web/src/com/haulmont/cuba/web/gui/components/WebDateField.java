@@ -20,7 +20,6 @@ import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.toolkit.ui.CubaDateField;
@@ -308,30 +307,25 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
             }
         }
 
-        datasource.addListener(
-                new DsListenerAdapter() {
-                    @Override
-                    public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                        if (updatingInstance) {
-                            return;
-                        }
-                        Date value = getEntityValue(item);
-                        setValueToFields(toUserDate(value));
-                        fireValueChanged(value);
-                    }
+        //noinspection unchecked
+        datasource.addItemChangeListener(e -> {
+            if (updatingInstance) {
+                return;
+            }
+            Date value = getEntityValue(e.getItem());
+            setValueToFields(toUserDate(value));
+            fireValueChanged(value);
+        });
 
-                    @Override
-                    public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                        if (updatingInstance) {
-                            return;
-                        }
-                        if (property.equals(metaPropertyPath.toString())) {
-                            setValueToFields(toUserDate((Date) value));
-                            fireValueChanged(value);
-                        }
-                    }
-                }
-        );
+        datasource.addItemPropertyChangeListener(e -> {
+            if (updatingInstance) {
+                return;
+            }
+            if (property.equals(metaPropertyPath.toString())) {
+                setValueToFields(toUserDate((Date) e.getValue()));
+                fireValueChanged(e.getValue());
+            }
+        });
 
         if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
             if (property.equals(metaPropertyPath.toString())) {

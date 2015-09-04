@@ -27,7 +27,6 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaButtonField;
 import com.vaadin.data.Property;
@@ -245,22 +244,17 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
         component.setPropertyDataSource(itemProperty);
 
         //noinspection unchecked
-        datasource.addListener(
-                new DsListenerAdapter() {
-                    @Override
-                    public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                        Object newValue = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
-                        setValue(newValue);
-                    }
+        datasource.addItemChangeListener(e -> {
+            Object newValue = InstanceUtils.getValueEx(e.getItem(), metaPropertyPath.getPath());
+            setValue(newValue);
+        });
 
-                    @Override
-                    public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                        if (property.equals(metaPropertyPath.toString())) {
-                            setValue(value);
-                        }
-                    }
-                }
-        );
+        //noinspection unchecked
+        datasource.addItemPropertyChangeListener(e -> {
+            if (e.getProperty().equals(metaPropertyPath.toString())) {
+                setValue(e.getValue());
+            }
+        });
 
         if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
             if (property.equals(metaPropertyPath.toString())) {

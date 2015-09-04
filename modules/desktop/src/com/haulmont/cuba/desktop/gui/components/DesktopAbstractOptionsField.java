@@ -22,7 +22,6 @@ import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.OptionsField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -137,28 +136,22 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
         MetaClass metaClass = datasource.getMetaClass();
         resolveMetaPropertyPath(metaClass, property);
 
-        datasource.addListener(
-                new DsListenerAdapter() {
-                    @Override
-                    public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                        if (updatingInstance)
-                            return;
-                        Object value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
-                        updateComponent(value);
-                        fireChangeListeners(value);
-                    }
+        datasource.addItemChangeListener(e -> {
+            if (updatingInstance)
+                return;
+            Object value = InstanceUtils.getValueEx(e.getItem(), metaPropertyPath.getPath());
+            updateComponent(value);
+            fireChangeListeners(value);
+        });
 
-                    @Override
-                    public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                        if (updatingInstance)
-                            return;
-                        if (property.equals(metaPropertyPath.toString())) {
-                            updateComponent(value);
-                            fireChangeListeners(value);
-                        }
-                    }
-                }
-        );
+        datasource.addItemPropertyChangeListener(e -> {
+            if (updatingInstance)
+                return;
+            if (property.equals(metaPropertyPath.toString())) {
+                updateComponent(e.getValue());
+                fireChangeListeners(e.getValue());
+            }
+        });
 
         setRequired(metaProperty.isMandatory());
         if (StringUtils.isEmpty(getRequiredMessage())) {

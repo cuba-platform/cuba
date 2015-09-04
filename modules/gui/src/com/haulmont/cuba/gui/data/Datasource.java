@@ -138,12 +138,123 @@ public interface Datasource<T extends Entity> {
     /**
      * Add listener to datasource events
      */
+    @Deprecated
     void addListener(DatasourceListener<T> listener);
 
     /**
      * Remove listener to datasource events
      */
+    @Deprecated
     void removeListener(DatasourceListener<T> listener);
+
+    class ItemChangeEvent<T extends Entity> {
+        private final Datasource<T> ds;
+        private final T prevItem;
+        private final T item;
+
+        public ItemChangeEvent(Datasource<T> ds, T prevItem, T item) {
+            this.ds = ds;
+            this.prevItem = prevItem;
+            this.item = item;
+        }
+
+        public Datasource<T> getDs() {
+            return ds;
+        }
+
+        @Nullable
+        public T getItem() {
+            return item;
+        }
+
+        @Nullable
+        public T getPrevItem() {
+            return prevItem;
+        }
+    }
+
+    interface ItemChangeListener<T extends Entity> {
+        void itemChanged(ItemChangeEvent<T> e);
+    }
+
+    void addItemChangeListener(ItemChangeListener<T> listener);
+    void removeItemChangeListener(ItemChangeListener<T> listener);
+
+    class StateChangeEvent<T extends Entity> {
+        private final Datasource<T> ds;
+        private final Datasource.State prevState;
+        private final Datasource.State state;
+
+        public StateChangeEvent(Datasource<T> ds, State prevState, State state) {
+            this.ds = ds;
+            this.prevState = prevState;
+            this.state = state;
+        }
+
+        public Datasource<T> getDs() {
+            return ds;
+        }
+
+        public State getPrevState() {
+            return prevState;
+        }
+
+        public State getState() {
+            return state;
+        }
+    }
+
+    interface StateChangeListener<T extends Entity> {
+        void stateChanged(StateChangeEvent<T> e);
+    }
+
+    void addStateChangeListener(StateChangeListener<T> listener);
+    void removeStateChangeListener(StateChangeListener<T> listener);
+
+    class ItemPropertyChangeEvent<T extends Entity> {
+        private final Datasource<T> ds;
+        private final T item;
+        private final String property;
+        private final Object prevValue;
+        private final Object value;
+
+        public ItemPropertyChangeEvent(Datasource<T> ds, T item, String property, Object prevValue, Object value) {
+            this.ds = ds;
+            this.item = item;
+            this.property = property;
+            this.prevValue = prevValue;
+            this.value = value;
+        }
+
+        public Datasource<T> getDs() {
+            return ds;
+        }
+
+        public T getItem() {
+            return item;
+        }
+
+        public String getProperty() {
+            return property;
+        }
+
+        @Nullable
+        public Object getPrevValue() {
+            return prevValue;
+        }
+
+        @Nullable
+        public Object getValue() {
+            return value;
+        }
+    }
+
+    interface ItemPropertyChangeListener<T extends Entity> {
+        void itemPropertyChanged(ItemPropertyChangeEvent<T> e);
+    }
+
+    void addItemPropertyChangeListener(ItemPropertyChangeListener<T> listener);
+    void removeItemPropertyChangeListener(ItemPropertyChangeListener<T> listener);
 
     /**
      * @return whether to load dynamic attributes

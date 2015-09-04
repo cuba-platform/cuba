@@ -212,7 +212,7 @@ public interface Component {
         }
     }
 
-    interface ValueChangeListener {
+    interface ValueChangeListener<T extends Component> {
         void valueChanged(ValueChangeEvent e);
     }
 

@@ -18,7 +18,7 @@ import java.util.List;
  * @author artamonov
  * @version $Id$
  */
-public class CollectionDsListenerWeakWrapper implements CollectionDatasourceListener, WeakDatasourceListener {
+public class CollectionDsListenerWeakWrapper implements CollectionDatasourceListener {
 
     protected WeakReference<CollectionDatasourceListener> listener;
     protected CollectionDatasource ds;
@@ -70,11 +70,6 @@ public class CollectionDsListenerWeakWrapper implements CollectionDatasourceList
         } else {
             removeBridge();
         }
-    }
-
-    @Override
-    public boolean isAlive() {
-        return listener.get() != null;
     }
 
     @SuppressWarnings("unchecked")

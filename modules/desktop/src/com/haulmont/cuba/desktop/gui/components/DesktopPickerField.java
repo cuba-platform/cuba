@@ -15,17 +15,16 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.Picker;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.*;
 import javax.swing.AbstractAction;
+import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import java.awt.event.*;
 import java.util.*;
@@ -260,30 +259,28 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
 
         resolveMetaPropertyPath(datasource.getMetaClass(), property);
 
-        datasource.addListener(
-                new DsListenerAdapter() {
-                    @Override
-                    public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                        if (updatingInstance)
-                            return;
+        //noinspection unchecked
+        datasource.addItemChangeListener(e -> {
+            if (updatingInstance) {
+                return;
+            }
 
-                        Object value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
-                        updateComponent(value);
-                        fireChangeListeners(value);
-                    }
+            Object value = InstanceUtils.getValueEx(e.getItem(), metaPropertyPath.getPath());
+            updateComponent(value);
+            fireChangeListeners(value);
+        });
 
-                    @Override
-                    public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                        if (updatingInstance)
-                            return;
+        //noinspection unchecked
+        datasource.addItemPropertyChangeListener(e -> {
+            if (updatingInstance) {
+                return;
+            }
 
-                        if (property.equals(metaProperty.getName())) {
-                            updateComponent(value);
-                            fireChangeListeners(value);
-                        }
-                    }
-                }
-        );
+            if (property.equals(metaProperty.getName())) {
+                updateComponent(e.getValue());
+                fireChangeListeners(e.getValue());
+            }
+        });
 
         if ((datasource.getState() == Datasource.State.VALID) && (datasource.getItem() != null)) {
             Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());

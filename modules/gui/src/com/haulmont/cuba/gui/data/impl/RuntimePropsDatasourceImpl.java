@@ -64,13 +64,11 @@ public class RuntimePropsDatasourceImpl
             this.metaClass.addProperty(metaProperty, attribute);
         }
 
-        mainDs.addListener(new DsListenerAdapter() {
-            @Override
-            public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                if (property.equals("category")) {
-                    categoryChanged = true;
-                    initMetaClass();
-                }
+        //noinspection unchecked
+        mainDs.addItemPropertyChangeListener(e -> {
+            if (e.getProperty().equals("category")) {
+                categoryChanged = true;
+                initMetaClass();
             }
         });
         mainDs.setLoadDynamicAttributes(true);
@@ -97,7 +95,7 @@ public class RuntimePropsDatasourceImpl
         }
         BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) entity;
         if (PersistenceHelper.isNew(baseGenericIdEntity)) {
-            baseGenericIdEntity.setDynamicAttributes(new HashMap<String, CategoryAttributeValue>());
+            baseGenericIdEntity.setDynamicAttributes(new HashMap<>());
         }
         @SuppressWarnings("unchecked")
         Map<String, CategoryAttributeValue> dynamicAttributes = baseGenericIdEntity.getDynamicAttributes();
@@ -167,6 +165,7 @@ public class RuntimePropsDatasourceImpl
         fireItemChanged(null);
     }
 
+    @Override
     public MetaClass resolveCategorizedEntityClass() {
         if (categorizedEntityClass == null) {
             return mainDs.getMetaClass();
@@ -332,7 +331,7 @@ public class RuntimePropsDatasourceImpl
 
     @Override
     public void committed(Set<Entity> entities) {
-        if (!State.VALID.equals(state)) {
+        if (state != State.VALID) {
             return;
         }
 
@@ -353,19 +352,15 @@ public class RuntimePropsDatasourceImpl
         }
 
         //noinspection unchecked
-        mainDs.addListener(
-                new DsListenerAdapter() {
-                    @Override
-                    public void stateChanged(Datasource ds, State prevState, State state) {
-                        if (State.VALID.equals(state)) {
-                            if (!State.VALID.equals(prevState))
-                                initMetaClass();
-                            else
-                                valid();
-                        }
-                    }
+        mainDs.addStateChangeListener(e -> {
+            if (state == State.VALID) {
+                if (e.getPrevState() != State.VALID) {
+                    initMetaClass();
+                } else {
+                    valid();
                 }
-        );
+            }
+        });
     }
 
     @Override

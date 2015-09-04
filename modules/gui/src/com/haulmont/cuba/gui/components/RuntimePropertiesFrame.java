@@ -27,7 +27,6 @@ import com.haulmont.cuba.gui.components.validators.IntegerValidator;
 import com.haulmont.cuba.gui.components.validators.LongValidator;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.*;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
 
@@ -114,14 +113,11 @@ public class RuntimePropertiesFrame extends AbstractWindow {
 
     @SuppressWarnings("unchecked")
     protected void loadComponent(Datasource ds) {
-        ds.addListener(new DsListenerAdapter() {
-            @Override
-            public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
-                if (!Datasource.State.VALID.equals(state)) {
-                    return;
-                }
-                createRuntimeFieldGroup(ds);
+        ds.addStateChangeListener(e -> {
+            if (!Datasource.State.VALID.equals(e.getState())) {
+                return;
             }
+            createRuntimeFieldGroup(ds);
         });
     }
 

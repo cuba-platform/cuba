@@ -10,7 +10,6 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
@@ -21,7 +20,6 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.TextInputField;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -194,30 +192,27 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
         valueFormatter.setMetaProperty(metaProperty);
 
         //noinspection unchecked
-        datasource.addListener(
-                new DsListenerAdapter() {
-                    @Override
-                    public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                        if (updatingInstance)
-                            return;
+        datasource.addItemChangeListener(e -> {
+            if (updatingInstance) {
+                return;
+            }
 
-                        Object value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
-                        updateComponent(value);
-                        fireChangeListeners(value);
-                    }
+            Object value = InstanceUtils.getValueEx(e.getItem(), metaPropertyPath.getPath());
+            updateComponent(value);
+            fireChangeListeners(value);
+        });
 
-                    @Override
-                    public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                        if (updatingInstance)
-                            return;
+        //noinspection unchecked
+        datasource.addItemPropertyChangeListener(e -> {
+            if (updatingInstance) {
+                return;
+            }
 
-                        if (property.equals(metaPropertyPath.toString())) {
-                            updateComponent(value);
-                            fireChangeListeners(value);
-                        }
-                    }
-                }
-        );
+            if (property.equals(metaPropertyPath.toString())) {
+                updateComponent(e.getValue());
+                fireChangeListeners(e.getValue());
+            }
+        });
 
         setRequired(metaProperty.isMandatory());
         if (StringUtils.isEmpty(getRequiredMessage())) {

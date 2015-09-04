@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
+import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleDatasourceListenerWrapper;
 import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -44,10 +45,12 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     protected SortInfo<MetaPropertyPath>[] sortInfos;
     protected boolean listenersSuspended;
-    protected CollectionDatasourceListener.Operation lastCollectionChangeOperation;
-    protected List<Entity> lastCollectionChangeItems;
+    protected Operation lastCollectionChangeOperation;
+    protected List<T> lastCollectionChangeItems;
 
     protected boolean doNotModify;
+
+    protected List<CollectionChangeListener<T>> collectionChangeListeners;
 
     private AggregatableDelegate<K> aggregatableDelegate = new AggregatableDelegate<K>() {
         @Override
@@ -69,74 +72,71 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     protected void initParentDsListeners() {
-        masterDs.addListener(new DatasourceListener<Entity>() {
+        //noinspection unchecked
+        masterDs.addItemChangeListener(e -> {
+            log.trace("itemChanged: prevItem={}, item={}", e.getPrevItem(), e.getItem());
 
-            @Override
-            public void itemChanged(Datasource<Entity> ds, Entity prevItem, Entity item) {
-                log.trace("itemChanged: prevItem=" + prevItem + ", item=" + item);
+            Collection prevColl = e.getPrevItem() == null ? null : (Collection) e.getPrevItem().getValue(metaProperty.getName());
+            Collection coll = e.getItem() == null ? null : (Collection) e.getItem().getValue(metaProperty.getName());
+            reattachListeners(prevColl, coll);
 
-                Collection prevColl = prevItem == null ? null : (Collection) prevItem.getValue(metaProperty.getName());
-                Collection coll = item == null ? null : (Collection) item.getValue(metaProperty.getName());
-                reattachListeners(prevColl, coll);
-
-                if (coll != null && metadata.getTools().isPersistent(metaProperty)) {
-                    for (Object collItem : coll) {
-                        if (PersistenceHelper.isNew(collItem)) {
-                            itemToCreate.remove(collItem);
-                            itemToCreate.add(collItem);
-                            modified = true;
-                        }
+            if (coll != null && metadata.getTools().isPersistent(metaProperty)) {
+                for (Object collItem : coll) {
+                    if (PersistenceHelper.isNew(collItem)) {
+                        itemToCreate.remove(collItem);
+                        itemToCreate.add((T) collItem);
+                        modified = true;
                     }
-                }
-
-                fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH, Collections.<Entity>emptyList());
-            }
-
-            @Override
-            public void stateChanged(Datasource<Entity> ds, State prevState, State state) {
-                for (DatasourceListener dsListener : new ArrayList<>(dsListeners)) {
-                    dsListener.stateChanged(CollectionPropertyDatasourceImpl.this, prevState, state);
-                }
-                fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH, Collections.<Entity>emptyList());
-            }
-
-            @Override
-            public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                if (property.equals(metaProperty.getName()) && !ObjectUtils.equals(prevValue, value)) {
-                    log.trace("valueChanged: prop=" + property + ", prevValue=" + prevValue + ", value=" + value);
-
-                    reattachListeners((Collection) prevValue, (Collection) value);
-
-                    fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH, Collections.<Entity>emptyList());
                 }
             }
 
-            private void reattachListeners(Collection prevColl, Collection coll) {
-                if (prevColl != null)
-                    for (Object entity : prevColl) {
-                        if (entity instanceof Instance)
-                            detachListener((Instance) entity);
-                    }
+            fireCollectionChanged(Operation.REFRESH, Collections.emptyList());
+        });
 
-                if (coll != null)
-                    for (Object entity : coll) {
-                        if (entity instanceof Instance)
-                            attachListener((Instance) entity);
-                    }
+        //noinspection unchecked
+        masterDs.addStateChangeListener(e -> {
+            fireStateChanged(e.getPrevState());
+
+            fireCollectionChanged(Operation.REFRESH, Collections.emptyList());
+        });
+
+        //noinspection unchecked
+        masterDs.addItemPropertyChangeListener(e -> {
+            if (e.getProperty().equals(metaProperty.getName()) && !ObjectUtils.equals(e.getPrevValue(), e.getValue())) {
+                log.trace("master valueChanged: prop={}, prevValue={}, value={}", e.getProperty(), e.getPrevValue(), e.getValue());
+
+                reattachListeners((Collection) e.getPrevValue(), (Collection) e.getValue());
+
+                fireCollectionChanged(Operation.REFRESH, Collections.emptyList());
             }
         });
     }
 
+    protected void reattachListeners(Collection prevColl, Collection coll) {
+        if (prevColl != null)
+            for (Object entity : prevColl) {
+                if (entity instanceof Instance)
+                    detachListener((Instance) entity);
+            }
+
+        if (coll != null)
+            for (Object entity : coll) {
+                if (entity instanceof Instance)
+                    attachListener((Instance) entity);
+            }
+    }
+
     @Override
     public T getItem(K id) {
-        if (id instanceof Entity)
+        if (id instanceof Entity) {
             return (T) id;
-        else {
+        } else {
             Collection<T> collection = __getCollection();
             if (collection != null) {
                 for (T t : collection) {
-                    if (t.getId().equals(id))
+                    if (t.getId().equals(id)) {
                         return t;
+                    }
                 }
             }
             return null;
@@ -146,10 +146,11 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     @Override
     public T getItemNN(K id) {
         T it = getItem(id);
-        if (it != null)
+        if (it != null) {
             return it;
-        else
-            throw new NullPointerException("Item with id=" + id + " is not found in datasource " + this.id);
+        } else {
+            throw new IllegalStateException("Item with id=" + id + " is not found in datasource " + this.id);
+        }
     }
 
     @Override
@@ -161,7 +162,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             if (items == null)
                 return Collections.emptyList();
             else {
-                List<K> ids = new ArrayList(items.size());
+                List<K> ids = new ArrayList<>(items.size());
                 for (T item : items) {
                     ids.add(item.getId());
                 }
@@ -192,7 +193,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void setItem(T item) {
-        if (State.VALID.equals(getState())) {
+        if (getState() == State.VALID) {
             Object prevItem = this.item;
 
             if (prevItem != item) {
@@ -206,14 +207,14 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                 }
                 this.item = item;
 
-                fireItemChanged(prevItem);
+                fireItemChanged((T) prevItem);
             }
         }
     }
 
     @Override
     public void refresh() {
-        fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH, Collections.<Entity>emptyList());
+        fireCollectionChanged(Operation.REFRESH, Collections.emptyList());
     }
 
     @Override
@@ -276,8 +277,9 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                         }
                     }
                 }
-                if (masterDs.getItem() == null)
+                if (masterDs.getItem() == null) {
                     throw new IllegalStateException("Master datasource item is null");
+                }
             } else {
                 initCollection();
             }
@@ -306,7 +308,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             modified(item);
         }
 
-        fireCollectionChanged(CollectionDatasourceListener.Operation.ADD, Collections.<Entity>singletonList(item));
+        fireCollectionChanged(Operation.ADD, Collections.singletonList(item));
     }
 
     /**
@@ -369,7 +371,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                 }
             }
 
-            fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE, Collections.<Entity>singletonList(item));
+            fireCollectionChanged(Operation.REMOVE, Collections.singletonList(item));
         }
     }
 
@@ -395,7 +397,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                 // detach listener only after setting value to the link property
                 detachListener(item);
 
-                fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE, Collections.<Entity>singletonList(item));
+                fireCollectionChanged(Operation.REMOVE, Collections.singletonList(item));
             } finally {
                 doNotModify = false;
             }
@@ -424,7 +426,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             // attach listener only after setting value to the link property
             attachListener(item);
 
-            fireCollectionChanged(CollectionDatasourceListener.Operation.ADD, Collections.<Entity>singletonList(item));
+            fireCollectionChanged(Operation.ADD, Collections.singletonList(item));
         } finally {
             doNotModify = false;
         }
@@ -457,7 +459,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
                 setItem(null);
 
-                fireCollectionChanged(CollectionDatasourceListener.Operation.CLEAR, Collections.<Entity>emptyList());
+                fireCollectionChanged(Operation.CLEAR, Collections.emptyList());
             } finally {
                 doNotModify = false;
             }
@@ -486,7 +488,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                     }
                 }
             }
-            fireCollectionChanged(CollectionDatasourceListener.Operation.UPDATE, Collections.<Entity>singletonList(item));
+            fireCollectionChanged(Operation.UPDATE, Collections.singletonList(item));
         }
     }
 
@@ -502,7 +504,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                 }
             }
             modified = saveModified;
-            fireCollectionChanged(CollectionDatasourceListener.Operation.UPDATE, Collections.<Entity>singletonList(item));
+            fireCollectionChanged(Operation.UPDATE, Collections.singletonList(item));
         }
     }
 
@@ -536,22 +538,24 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             if (sortInfos != null)
                 doSort();
 
-            fireCollectionChanged(CollectionDatasourceListener.Operation.UPDATE, Collections.<Entity>singletonList(item));
+            fireCollectionChanged(Operation.UPDATE, Collections.singletonList(item));
         }
     }
 
     @Override
     public boolean containsItem(K itemId) {
         Collection<T> collection = __getCollection();
-        if (collection == null)
+        if (collection == null) {
             return false;
+        }
 
-        if (itemId instanceof Entity)
+        if (itemId instanceof Entity) {
             return collection.contains(itemId);
-        else {
+        } else {
             for (T item : collection) {
-                if (item.getId().equals(itemId))
+                if (item.getId().equals(itemId)) {
                     return true;
+                }
             }
             return false;
         }
@@ -611,6 +615,41 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
+    public void addCollectionChangeListener(CollectionChangeListener<T> listener) {
+        if (collectionChangeListeners == null) {
+            collectionChangeListeners = new ArrayList<>();
+        }
+        if (collectionChangeListeners.indexOf(listener) < 0) {
+            collectionChangeListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeCollectionChangeListener(CollectionChangeListener<T> listener) {
+        if (collectionChangeListeners != null) {
+            collectionChangeListeners.remove(listener);
+        }
+    }
+
+    @Override
+    public void addListener(DatasourceListener<T> listener) {
+        super.addListener(listener);
+
+        if (listener instanceof CollectionDatasourceListener) {
+            addCollectionChangeListener(new CompatibleDatasourceListenerWrapper(listener));
+        }
+    }
+
+    @Override
+    public void removeListener(DatasourceListener<T> listener) {
+        super.removeListener(listener);
+
+        if (listener instanceof CollectionDatasourceListener) {
+            removeCollectionChangeListener(new CompatibleDatasourceListenerWrapper(listener));
+        }
+    }
+
+    @Override
     public void committed(Set<Entity> entities) {
         if (!State.VALID.equals(masterDs.getState()))
             return;
@@ -629,7 +668,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                             set.add(entity);
                         }
                         attachListener(entity);
-                        fireCollectionChanged(CollectionDatasourceListener.Operation.UPDATE, Collections.<Entity>singletonList(item));
+                        fireCollectionChanged(Operation.UPDATE, Collections.singletonList(item));
                     }
                 }
                 detachListener(item); // to avoid duplication in any case
@@ -647,15 +686,17 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         clearCommitLists();
     }
 
-    protected void fireCollectionChanged(CollectionDatasourceListener.Operation operation, List<Entity> items) {
+    protected void fireCollectionChanged(Operation operation, List<T> items) {
         if (listenersSuspended) {
             lastCollectionChangeOperation = operation;
             lastCollectionChangeItems = items;
             return;
         }
-        for (DatasourceListener dsListener : new ArrayList<>(dsListeners)) {
-            if (dsListener instanceof CollectionDatasourceListener) {
-                ((CollectionDatasourceListener) dsListener).collectionChanged(this, operation, items);
+        if (collectionChangeListeners != null && !collectionChangeListeners.isEmpty()) {
+            CollectionChangeEvent<T> event = new CollectionChangeEvent<>(this, operation, items);
+
+            for (CollectionChangeListener<T> listener : collectionChangeListeners) {
+                listener.collectionChanged(event);
             }
         }
     }
@@ -671,7 +712,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
         if (lastCollectionChangeOperation != null) {
             fireCollectionChanged(lastCollectionChangeOperation,
-                    lastCollectionChangeItems != null ? lastCollectionChangeItems : Collections.<Entity>emptyList());
+                    lastCollectionChangeItems != null ? lastCollectionChangeItems : Collections.<T>emptyList());
         }
 
         lastCollectionChangeOperation = null;
@@ -698,7 +739,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             this.sortInfos = sortInfos;
             doSort();
 
-            fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH, Collections.<Entity>emptyList());
+            fireCollectionChanged(Operation.REFRESH, Collections.<T>emptyList());
         }
     }
 
@@ -781,7 +822,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     protected Object getItemValue(MetaPropertyPath property, K itemId) {
-        Instance instance = getItem(itemId);
+        Instance instance = getItemNN(itemId);
         if (property.getMetaProperties().length == 1) {
             return instance.getValue(property.getMetaProperty().getName());
         } else {

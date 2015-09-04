@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleDatasourceListenerWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,12 +37,13 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
     protected Datasource parentDs;
     protected Metadata metadata = AppBeans.get(Metadata.NAME);
 
-    protected List<DatasourceListener> dsListeners = new ArrayList<>();
-    protected List<WeakDatasourceListener> weakListeners = new ArrayList<>();
+    protected List<ItemChangeListener<T>> itemChangeListeners; // lazily initialized list
+    protected List<ItemPropertyChangeListener<T>> itemPropertyChangeListeners; // lazily initialized list
+    protected List<StateChangeListener<T>> stateChangeListeners; // lazily initialized list
 
-    protected Collection itemToCreate = new HashSet();
-    protected Collection itemToUpdate = new HashSet();
-    protected Collection itemToDelete = new HashSet();
+    protected Collection<Entity> itemToCreate = new HashSet<>();
+    protected Collection<Entity> itemToUpdate = new HashSet<>();
+    protected Collection<Entity> itemToDelete = new HashSet<>();
     protected Instance.PropertyChangeListener listener = new ItemListener();
 
     protected boolean listenersEnabled = true;
@@ -81,17 +83,17 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
 
     @Override
     public Collection<T> getItemsToCreate() {
-        return itemToCreate;
+        return (Collection<T>) itemToCreate;
     }
 
     @Override
     public Collection<T> getItemsToUpdate() {
-        return itemToUpdate;
+        return (Collection<T>) itemToUpdate;
     }
 
     @Override
     public Collection<T> getItemsToDelete() {
-        return itemToDelete;
+        return (Collection<T>) itemToDelete;
     }
 
     @Override
@@ -146,8 +148,9 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
     }
 
     protected void addParentsToNested() {
-        if (parentDs == null || getDsContext() == parentDs.getDsContext())
+        if (parentDs == null || getDsContext() == parentDs.getDsContext()) {
             return;
+        }
 
         // Iterate through all datasources in the same DsContext
         for (Datasource sibling : getDsContext().getAll()) {
@@ -167,37 +170,70 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
 
     @Override
     public void addListener(DatasourceListener<T> listener) {
-        if (!weakListeners.isEmpty()) {
-            for (WeakDatasourceListener weakListener : new ArrayList<>(weakListeners)) {
-                if (!weakListener.isAlive()) {
-                    dsListeners.remove(weakListener);
-                }
-            }
-        }
+        CompatibleDatasourceListenerWrapper wrapper = new CompatibleDatasourceListenerWrapper(listener);
 
-        if (dsListeners.indexOf(listener) < 0) {
-            dsListeners.add(listener);
-
-            if (listener instanceof WeakDatasourceListener) {
-                weakListeners.add((WeakDatasourceListener) listener);
-            }
-        }
+        addItemChangeListener(wrapper);
+        addItemPropertyChangeListener(wrapper);
+        addStateChangeListener(wrapper);
     }
 
     @Override
     public void removeListener(DatasourceListener<T> listener) {
-        boolean removed = dsListeners.remove(listener);
+        CompatibleDatasourceListenerWrapper wrapper = new CompatibleDatasourceListenerWrapper(listener);
 
-        if (removed && listener instanceof WeakDatasourceListener) {
-            weakListeners.remove(listener);
+        removeItemChangeListener(wrapper);
+        removeItemPropertyChangeListener(wrapper);
+        removeStateChangeListener(wrapper);
+    }
+
+    @Override
+    public void addItemChangeListener(ItemChangeListener<T> listener) {
+        if (itemChangeListeners == null) {
+            itemChangeListeners = new ArrayList<>();
         }
+        if (itemChangeListeners.indexOf(listener) < 0) {
+            itemChangeListeners.add(listener);
+        }
+    }
 
-        if (!weakListeners.isEmpty()) {
-            for (WeakDatasourceListener weakListener : new ArrayList<>(weakListeners)) {
-                if (!weakListener.isAlive()) {
-                    dsListeners.remove(weakListener);
-                }
-            }
+    @Override
+    public void removeItemChangeListener(ItemChangeListener<T> listener) {
+        if (itemChangeListeners != null) {
+            itemChangeListeners.remove(listener);
+        }
+    }
+
+    @Override
+    public void addItemPropertyChangeListener(ItemPropertyChangeListener<T> listener) {
+        if (itemPropertyChangeListeners == null) {
+            itemPropertyChangeListeners = new ArrayList<>();
+        }
+        if (itemPropertyChangeListeners.indexOf(listener) < 0) {
+            itemPropertyChangeListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeItemPropertyChangeListener(ItemPropertyChangeListener<T> listener) {
+        if (itemPropertyChangeListeners != null) {
+            itemPropertyChangeListeners.remove(listener);
+        }
+    }
+
+    @Override
+    public void addStateChangeListener(StateChangeListener<T> listener) {
+        if (stateChangeListeners == null) {
+            stateChangeListeners = new ArrayList<>();
+        }
+        if (stateChangeListeners.indexOf(listener) < 0) {
+            stateChangeListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeStateChangeListener(StateChangeListener<T> listener) {
+        if (stateChangeListeners != null) {
+            stateChangeListeners.remove(listener);
         }
     }
 
@@ -234,19 +270,28 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
         item.removePropertyChangeListener(listener);
     }
 
-    protected void fireItemChanged(Object prevItem) {
-        for (DatasourceListener dsListener : new ArrayList<>(dsListeners)) {
-            dsListener.itemChanged(this, (Entity) prevItem, getItem());
+    protected void fireItemChanged(T prevItem) {
+        if (itemChangeListeners != null && !itemChangeListeners.isEmpty()) {
+            ItemChangeEvent<T> itemChangeEvent = new ItemChangeEvent<T>(this, prevItem, getItem());
+
+            for (ItemChangeListener<T> listener : new ArrayList<>(itemChangeListeners)) {
+                listener.itemChanged(itemChangeEvent);
+            }
         }
     }
 
     protected void fireStateChanged(State prevStatus) {
-        for (DatasourceListener dsListener : new ArrayList<>(dsListeners)) {
-            dsListener.stateChanged(this, prevStatus, getState());
+        if (stateChangeListeners != null && !stateChangeListeners.isEmpty()) {
+            StateChangeEvent<T> stateChangeEvent = new StateChangeEvent<>(this, prevStatus, getState());
+
+            for (StateChangeListener<T> listener : new ArrayList<>(stateChangeListeners)) {
+                listener.stateChanged(stateChangeEvent);
+            }
         }
     }
 
     protected class ItemListener implements Instance.PropertyChangeListener {
+        @SuppressWarnings("unchecked")
         @Override
         public void propertyChanged(Instance.PropertyChangeEvent e) {
             if (!listenersEnabled) {
@@ -260,8 +305,14 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
                 modified((T) e.getItem());
             }
 
-            for (DatasourceListener dsListener : new ArrayList<>(dsListeners)) {
-                dsListener.valueChanged(e.getItem(), e.getProperty(), e.getPrevValue(), e.getValue());
+            if (itemPropertyChangeListeners != null && !itemPropertyChangeListeners.isEmpty()) {
+                AbstractDatasource<T> ds = AbstractDatasource.this;
+                ItemPropertyChangeEvent<T> itemPropertyChangeEvent =
+                        new ItemPropertyChangeEvent<T>(ds, (T) e.getItem(), e.getProperty(), e.getPrevValue(), e.getValue());
+
+                for (ItemPropertyChangeListener<T> listener : new ArrayList<>(itemPropertyChangeListeners)) {
+                    listener.itemPropertyChanged(itemPropertyChangeEvent);
+                }
             }
         }
     }

@@ -24,12 +24,10 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -210,19 +208,14 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             }
         });
 
-
-        attributeDs.addListener(new DsListenerAdapter<CategoryAttribute>() {
-            @Override
-            public void valueChanged(CategoryAttribute source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                if ("dataType".equalsIgnoreCase(property)
-                        || "lookup".equalsIgnoreCase(property)
-                        || "defaultDateIsCurrent".equalsIgnoreCase(property)
-                        || "entityClass".equalsIgnoreCase(property)) {
-                    setupVisibility();
-                }
+        attributeDs.addItemPropertyChangeListener(e -> {
+            if ("dataType".equalsIgnoreCase(e.getProperty())
+                    || "lookup".equalsIgnoreCase(e.getProperty())
+                    || "defaultDateIsCurrent".equalsIgnoreCase(e.getProperty())
+                    || "entityClass".equalsIgnoreCase(e.getProperty())) {
+                setupVisibility();
             }
         });
-
     }
 
     private void setupVisibility() {

@@ -11,7 +11,6 @@ import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.global.UserUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -21,9 +20,10 @@ import java.text.ParseException;
  * @author pavlov
  * @version $Id$
  */
-public class NameBuilderListener<T extends Entity> extends DsListenerAdapter<T> {
+public class NameBuilderListener<T extends Entity> implements Datasource.ItemPropertyChangeListener<T> {
 
     public static final String DEFAULT_NAME_PATTERN = "{FF| }{LL}";
+
     protected Window window;
     protected FieldGroup fieldGroup;
     protected Datasource datasource;
@@ -57,46 +57,6 @@ public class NameBuilderListener<T extends Entity> extends DsListenerAdapter<T> 
 
     public NameBuilderListener(Datasource datasource) {
         this.datasource = datasource;
-    }
-
-    @Override
-    public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-        if (!"firstName".equals(property)
-            && !"lastName".equals(property)
-            && !"middleName".equals(property)) {
-            return;
-        }
-
-        String firstName = getFieldValue("firstName");
-        String lastName = getFieldValue("lastName");
-        String middleName = getFieldValue("middleName");
-
-        String displayedName;
-        try {
-            if (this.pattern == null) {
-                pattern = AppContext.getProperty("cuba.user.fullNamePattern");
-                if (StringUtils.isBlank(pattern))
-                    pattern = DEFAULT_NAME_PATTERN;
-            }
-
-            if (isGeneratingDisplayName(pattern, firstName, lastName, middleName, property, prevValue)) {
-                return;
-            }
-
-            displayedName = UserUtils.formatName(pattern, firstName, lastName, middleName);
-        } catch (ParseException pe) {
-            displayedName = "";
-        }
-
-        MetaProperty nameProperty = source.getMetaClass().getProperty("name");
-        if (nameProperty != null && nameProperty.getAnnotations().containsKey("length")) {
-            int length = (int) nameProperty.getAnnotations().get("length");
-            if (displayedName.length() > length) {
-                displayedName = "";
-            }
-        }
-
-        setFullName(displayedName);
     }
 
     protected boolean isGeneratingDisplayName(
@@ -148,5 +108,46 @@ public class NameBuilderListener<T extends Entity> extends DsListenerAdapter<T> 
         } else {
             return (String) fieldGroup.getFieldValue(name);
         }
+    }
+
+    @Override
+    public void itemPropertyChanged(Datasource.ItemPropertyChangeEvent<T> e) {
+
+        if (!"firstName".equals(e.getProperty())
+                && !"lastName".equals(e.getProperty())
+                && !"middleName".equals(e.getProperty())) {
+            return;
+        }
+
+        String firstName = getFieldValue("firstName");
+        String lastName = getFieldValue("lastName");
+        String middleName = getFieldValue("middleName");
+
+        String displayedName;
+        try {
+            if (this.pattern == null) {
+                pattern = AppContext.getProperty("cuba.user.fullNamePattern");
+                if (StringUtils.isBlank(pattern))
+                    pattern = DEFAULT_NAME_PATTERN;
+            }
+
+            if (isGeneratingDisplayName(pattern, firstName, lastName, middleName, e.getProperty(), e.getPrevValue())) {
+                return;
+            }
+
+            displayedName = UserUtils.formatName(pattern, firstName, lastName, middleName);
+        } catch (ParseException pe) {
+            displayedName = "";
+        }
+
+        MetaProperty nameProperty = e.getItem().getMetaClass().getProperty("name");
+        if (nameProperty != null && nameProperty.getAnnotations().containsKey("length")) {
+            int length = (int) nameProperty.getAnnotations().get("length");
+            if (displayedName.length() > length) {
+                displayedName = "";
+            }
+        }
+
+        setFullName(displayedName);
     }
 }

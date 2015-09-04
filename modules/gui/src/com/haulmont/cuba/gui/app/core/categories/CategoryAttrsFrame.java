@@ -21,11 +21,9 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.BooleanUtils;
 
@@ -74,13 +72,12 @@ public class CategoryAttrsFrame extends AbstractFrame {
         categoryAttrsTable.addAction(new RemoveAction(categoryAttrsTable, false));
         categoryAttrsTable.addAction(new RefreshAction(categoryAttrsTable));
 
-        categoryAttrsDs.addListener(new DsListenerAdapter<CategoryAttribute>() {
-            @Override
-            public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
-                if (state != Datasource.State.VALID) return;
-                initDataTypeColumn();
-                initDefaultValueColumn();
+        categoryAttrsDs.addStateChangeListener(e -> {
+            if (e.getState() != Datasource.State.VALID) {
+                return;
             }
+            initDataTypeColumn();
+            initDefaultValueColumn();
         });
 
         initMoveButtons();

@@ -11,13 +11,11 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.CategoryAttributeValue;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
@@ -44,12 +42,9 @@ public class DynamicAttributesGuiTools {
     @SuppressWarnings("unchecked")
     public void listenDynamicAttributesChanges(final Datasource datasource) {
         if (datasource != null && datasource.getLoadDynamicAttributes()) {
-            datasource.addListener(new DsListenerAdapter() {
-                @Override
-                public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                    if (DynamicAttributesUtils.isDynamicAttribute(property)) {
-                        ((DatasourceImplementation) datasource).modified((Entity) source);
-                    }
+            datasource.addItemPropertyChangeListener(e -> {
+                if (DynamicAttributesUtils.isDynamicAttribute(e.getProperty())) {
+                    ((DatasourceImplementation) datasource).modified(e.getItem());
                 }
             });
         }

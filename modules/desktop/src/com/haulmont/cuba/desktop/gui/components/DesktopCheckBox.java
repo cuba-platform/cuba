@@ -5,23 +5,16 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author krivopustov
@@ -36,15 +29,10 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
 
     public DesktopCheckBox() {
         impl = new JCheckBox();
-        impl.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        updateInstance();
-                        fireChangeListeners(impl.isSelected());
-                    }
-                }
-        );
+        impl.addActionListener(e -> {
+            updateInstance();
+            fireChangeListeners(impl.isSelected());
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -95,36 +83,34 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
             return;
         }
         resolveMetaPropertyPath(datasource.getMetaClass(), property);
-        datasource.addListener(
-                new DsListenerAdapter() {
-                    @Override
-                    public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                        if (updatingInstance)
-                            return;
-                        Boolean value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
-                        if (value == null) {
-                            value = false;
-                        }
 
-                        updateComponent(value);
-                        fireChangeListeners(value);
-                    }
+        datasource.addItemChangeListener(e -> {
+            if (updatingInstance)
+                return;
+            Boolean value = InstanceUtils.getValueEx(e.getItem(), metaPropertyPath.getPath());
+            if (value == null) {
+                value = false;
+            }
 
-                    @Override
-                    public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                        if (updatingInstance)
-                            return;
-                        if (property.equals(metaPropertyPath.toString())) {
-                            if (value == null) {
-                                value = false;
-                            }
+            updateComponent(value);
+            fireChangeListeners(value);
+        });
 
-                            updateComponent(value);
-                            fireChangeListeners(value);
-                        }
-                    }
+        datasource.addItemPropertyChangeListener(e -> {
+            if (updatingInstance) {
+                return;
+            }
+
+            if (property.equals(metaPropertyPath.toString())) {
+                Object value = e.getValue();
+                if (e.getValue() == null) {
+                    value = false;
                 }
-        );
+
+                updateComponent(value);
+                fireChangeListeners(value);
+            }
+        });
 
         if (datasource.getItemIfValid() != null) {
             Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
