@@ -48,20 +48,19 @@ public class DialogAction extends AbstractAction {
     public DialogAction(Type type) {
         super(type.id);
         this.type = type;
+
+        ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
+        this.icon = thCM.getThemeValue(type.iconKey);
     }
 
     public DialogAction(Type type, boolean primary) {
         this(type);
-        this.primary = primary;
+        this.primary = primary;;
     }
 
     public DialogAction(Type type, Status status) {
         this(type);
-
         this.primary = status == Status.PRIMARY;
-
-        ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
-        this.icon = thCM.getThemeValue(type.iconKey);
     }
 
     @Override
