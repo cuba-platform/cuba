@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author krivopustov
@@ -75,8 +75,7 @@ public class FileStorage implements FileStorageAPI {
 
     @Override
     public long saveStream(final FileDescriptor fileDescr, final InputStream inputStream) throws FileStorageException {
-        checkNotNull(fileDescr, "No file descriptor");
-        checkNotNull(fileDescr.getCreateDate(), "Empty creation date");
+        checkFileDescriptor(fileDescr);
 
         File[] roots = getStorageRoots();
 
@@ -145,7 +144,7 @@ public class FileStorage implements FileStorageAPI {
 
     @Override
     public void saveFile(final FileDescriptor fileDescr, final byte[] data) throws FileStorageException {
-        checkNotNull(data, "No file content");
+        checkNotNullArgument(data, "File content is null");
         saveStream(fileDescr, new ByteArrayInputStream(data));
     }
 
@@ -177,8 +176,7 @@ public class FileStorage implements FileStorageAPI {
 
     @Override
     public void removeFile(FileDescriptor fileDescr) throws FileStorageException {
-        checkNotNull(fileDescr, "No file descriptor");
-        checkNotNull(fileDescr.getCreateDate(), "Empty creation date");
+        checkFileDescriptor(fileDescr);
 
         File[] roots = getStorageRoots();
         if (roots.length == 0) {
@@ -198,10 +196,16 @@ public class FileStorage implements FileStorageAPI {
         }
     }
 
+    private void checkFileDescriptor(FileDescriptor fileDescr) {
+        if (fileDescr == null || StringUtils.isBlank(fileDescr.getExtension()) || fileDescr.getCreateDate() == null) {
+            throw new IllegalArgumentException("A FileDescriptor instance with populated 'extension' and 'createDate' " +
+                    "attributes must be provided");
+        }
+    }
+
     @Override
     public InputStream openStream(FileDescriptor fileDescr) throws FileStorageException {
-        checkNotNull(fileDescr, "No file descriptor");
-        checkNotNull(fileDescr.getCreateDate(), "Empty creation date");
+        checkFileDescriptor(fileDescr);
 
         File[] roots = getStorageRoots();
         if (roots.length == 0) {
@@ -246,9 +250,7 @@ public class FileStorage implements FileStorageAPI {
 
     @Override
     public void putFile(final FileDescriptor fileDescr, final File file) throws FileStorageException {
-        checkNotNull(fileDescr, "No file descriptor");
-        checkNotNull(fileDescr.getCreateDate(), "Empty creation date");
-        checkNotNull(file, "No file");
+        checkNotNullArgument(file, "File is null");
 
         FileInputStream inputStream = null;
         try {
@@ -263,8 +265,7 @@ public class FileStorage implements FileStorageAPI {
 
     @Override
     public boolean fileExists(FileDescriptor fileDescr) {
-        checkNotNull(fileDescr, "No file descriptor");
-        checkNotNull(fileDescr.getCreateDate(), "Empty creation date");
+        checkFileDescriptor(fileDescr);
 
         File[] roots = getStorageRoots();
         for (File root : roots) {
