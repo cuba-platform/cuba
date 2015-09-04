@@ -7,7 +7,6 @@ package com.haulmont.cuba.core.sys;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.FormatStrings;
 import com.haulmont.cuba.core.global.*;
@@ -16,10 +15,10 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.lang.text.StrTokenizer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
@@ -34,6 +33,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * <code>Messages</code> implementation common for all tiers.
@@ -170,12 +171,16 @@ public abstract class AbstractMessages implements Messages {
 
     @Override
     public String getMessage(Enum caller) {
+        checkNotNullArgument(caller, "Enum parameter 'caller' is null");
+
         Locale loc = getUserLocale();
         return getMessage(caller, loc);
     }
 
     @Override
     public String getMessage(Enum caller, Locale locale) {
+        checkNotNullArgument(caller, "Enum parameter 'caller' is null");
+
         String className = caller.getClass().getName();
         int i = className.lastIndexOf('.');
         if (i > -1)
@@ -206,7 +211,7 @@ public abstract class AbstractMessages implements Messages {
 
     @Override
     public String getMainMessage(String key, Locale locale) {
-        Preconditions.checkNotNullArgument(key, "Message key is null");
+        checkNotNullArgument(key, "Message key is null");
         return internalGetMessage(mainMessagePack, key, locale, key, false);
     }
 
@@ -230,8 +235,8 @@ public abstract class AbstractMessages implements Messages {
 
     @Override
     public String getMessage(String packs, String key, Locale locale) {
-        Preconditions.checkNotNullArgument(packs, "Messages pack name is null");
-        Preconditions.checkNotNullArgument(key, "Message key is null");
+        checkNotNullArgument(packs, "Messages pack name is null");
+        checkNotNullArgument(key, "Message key is null");
 
         String compositeKey = packs + "/" + key;
         String msg = internalGetMessage(mainMessagePack, compositeKey, locale, null, false);
@@ -244,8 +249,8 @@ public abstract class AbstractMessages implements Messages {
     @Nullable
     @Override
     public String findMessage(String packs, String key, @Nullable Locale locale) {
-        Preconditions.checkNotNullArgument(packs, "Messages pack name is null");
-        Preconditions.checkNotNullArgument(key, "Message key is null");
+        checkNotNullArgument(packs, "Messages pack name is null");
+        checkNotNullArgument(key, "Message key is null");
 
         if (locale == null)
             locale = getUserLocale();
