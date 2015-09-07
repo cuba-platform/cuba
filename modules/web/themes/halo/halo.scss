@@ -118,6 +118,8 @@
   @include cuba-table-showlink;
   @include cuba-menubar;
   @include cuba-application-window;
-  @include cuba-scrollbar;
+  @if $cuba-scrollbars-style-enabled == true {
+    @include cuba-scrollbar;
+  }
   @include cuba-folders-pane;
 }
