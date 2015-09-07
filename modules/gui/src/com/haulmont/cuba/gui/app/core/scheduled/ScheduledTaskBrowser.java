@@ -21,6 +21,7 @@ import org.apache.commons.lang.BooleanUtils;
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author krivopustov
@@ -29,7 +30,7 @@ import java.util.Map;
 public class ScheduledTaskBrowser extends AbstractWindow {
 
     @Inject
-    protected CollectionDatasource tasksDs;
+    protected CollectionDatasource<ScheduledTask, UUID> tasksDs;
 
     @Inject
     protected Table<ScheduledTask> tasksTable;
@@ -44,10 +45,10 @@ public class ScheduledTaskBrowser extends AbstractWindow {
     public void init(Map<String, Object> params) {
         ComponentsHelper.createActions(tasksTable);
 
-        final Action editAction = tasksTable.getAction(EditAction.ACTION_ID);
+        final Action editAction = tasksTable.getActionNN(EditAction.ACTION_ID);
         editAction.setEnabled(false);
 
-        final Action removeAction = tasksTable.getAction(RemoveAction.ACTION_ID);
+        final Action removeAction = tasksTable.getActionNN(RemoveAction.ACTION_ID);
         removeAction.setEnabled(false);
 
         activateBtn.setAction(new AbstractAction("activate") {
@@ -66,24 +67,22 @@ public class ScheduledTaskBrowser extends AbstractWindow {
         showExecutionsAction.setEnabled(false);
         tasksTable.addAction(showExecutionsAction);
 
-        tasksDs.addListener(new CollectionDsListenerAdapter() {
-            @Override
-            public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                ScheduledTask selected = tasksTable.getSingleSelected();
+        tasksDs.addItemChangeListener(e -> {
+            ScheduledTask selected = tasksTable.getSingleSelected();
 
-                boolean enableEdit = selected != null && !BooleanUtils.isTrue(selected.getActive());
-                editAction.setEnabled(enableEdit);
-                removeAction.setEnabled(enableEdit);
+            boolean enableEdit = selected != null && !BooleanUtils.isTrue(selected.getActive());
+            editAction.setEnabled(enableEdit);
+            removeAction.setEnabled(enableEdit);
 
-                activateBtn.setEnabled(selected != null);
-                if (selected == null)
-                    activateBtn.setCaption(getMessage("activate"));
-                else
-                    activateBtn.setCaption(BooleanUtils.isTrue(selected.getActive()) ?
-                            getMessage("deactivate") : getMessage("activate"));
-
-                showExecutionsAction.setEnabled(selected != null);
+            activateBtn.setEnabled(selected != null);
+            if (selected == null) {
+                activateBtn.setCaption(getMessage("activate"));
+            } else {
+                activateBtn.setCaption(BooleanUtils.isTrue(selected.getActive()) ?
+                        getMessage("deactivate") : getMessage("activate"));
             }
+
+            showExecutionsAction.setEnabled(selected != null);
         });
     }
 

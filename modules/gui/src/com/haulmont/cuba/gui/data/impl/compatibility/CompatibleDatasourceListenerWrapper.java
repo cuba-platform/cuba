@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.data.DatasourceListener;
  * @author artamonov
  * @version $Id$
  */
+@SuppressWarnings("unchecked")
 @Deprecated
 public class CompatibleDatasourceListenerWrapper implements Datasource.ItemChangeListener,
                                                             Datasource.StateChangeListener,
@@ -73,5 +74,25 @@ public class CompatibleDatasourceListenerWrapper implements Datasource.ItemChang
 
             ((CollectionDatasourceListener) listener).collectionChanged(e.getDs(), operation, e.getItems());
         }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        CompatibleDatasourceListenerWrapper that = (CompatibleDatasourceListenerWrapper) obj;
+
+        return this.listener.equals(that.listener);
+    }
+
+    @Override
+    public int hashCode() {
+        return listener.hashCode();
     }
 }

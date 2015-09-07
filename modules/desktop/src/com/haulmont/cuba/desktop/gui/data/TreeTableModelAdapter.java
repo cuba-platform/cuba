@@ -9,9 +9,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.desktop.sys.vcl.JXTreeTableExt;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
 
@@ -33,34 +31,27 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
 
     protected List<DataChangeListener> changeListeners = new ArrayList<>();
 
-    public TreeTableModelAdapter(
-            JXTreeTable treeTable,
-            HierarchicalDatasource datasource,
-            List<Table.Column> columns,
-            boolean autoRefresh) {
+    public TreeTableModelAdapter(JXTreeTable treeTable, HierarchicalDatasource datasource, List<Table.Column> columns,
+                                 boolean autoRefresh) {
 
         this.treeTable = treeTable;
         this.treeDelegate = createTreeModelAdapter(datasource, autoRefresh);
         this.tableDelegate = new TableModelAdapter(datasource, columns, autoRefresh);
 
-        datasource.addListener(
-                new CollectionDsListenerAdapter<Entity>() {
-                    @Override
-                    public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
-                        Object root = getRoot();
-                        // Fixes #1160
-                        JXTreeTableExt impl = (JXTreeTableExt) TreeTableModelAdapter.this.treeTable;
-                        impl.setAutoCreateColumnsFromModel(false);
-                        impl.backupExpandedNodes();
+        //noinspection unchecked
+        datasource.addCollectionChangeListener(e -> {
+            Object root1 = getRoot();
+            // Fixes #1160
+            JXTreeTableExt impl = (JXTreeTableExt) TreeTableModelAdapter.this.treeTable;
+            impl.setAutoCreateColumnsFromModel(false);
+            impl.backupExpandedNodes();
 
-                        for (DataChangeListener changeListener : changeListeners) {
-                            changeListener.beforeChange(true);
-                        }
+            for (DataChangeListener changeListener : changeListeners) {
+                changeListener.beforeChange(true);
+            }
 
-                        modelSupport.fireTreeStructureChanged(root == null ? null : new TreePath(root));
-                    }
-                }
-        );
+            modelSupport.fireTreeStructureChanged(root1 == null ? null : new TreePath(root1));
+        });
     }
 
     protected TreeModelAdapter createTreeModelAdapter(HierarchicalDatasource datasource, boolean autoRefresh) {

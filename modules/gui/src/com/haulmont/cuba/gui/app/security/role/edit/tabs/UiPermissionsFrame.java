@@ -19,7 +19,6 @@ import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
@@ -86,6 +85,9 @@ public class UiPermissionsFrame extends AbstractFrame {
     @Inject
     protected Button addPermissionBtn;
 
+    @Inject
+    protected Companion companion;
+
     protected boolean itemChanging = false;
 
     @Override
@@ -104,25 +106,22 @@ public class UiPermissionsFrame extends AbstractFrame {
         }
         screenFilter.setOptionsMap(screens);
 
-        Companion companion = getCompanion();
         companion.initPermissionsColoredColumns(uiPermissionsTable);
 
-        uiPermissionTargetsDs.addListener(new CollectionDsListenerAdapter<UiPermissionTarget>() {
-            @Override
-            public void itemChanged(Datasource<UiPermissionTarget> ds, UiPermissionTarget prevItem, UiPermissionTarget item) {
-                if (!selectedComponentPanel.isVisible() && (item != null))
-                    selectedComponentPanel.setVisible(true);
-                if (selectedComponentPanel.isVisible() && (item == null))
-                    selectedComponentPanel.setVisible(false);
-
-                updateCheckBoxes(item);
+        uiPermissionTargetsDs.addItemChangeListener(e -> {
+            if (!selectedComponentPanel.isVisible() && (e.getItem() != null)) {
+                selectedComponentPanel.setVisible(true);
+            }
+            if (selectedComponentPanel.isVisible() && (e.getItem() == null)) {
+                selectedComponentPanel.setVisible(false);
             }
 
-            @Override
-            public void valueChanged(UiPermissionTarget source, String property, Object prevValue, Object value) {
-                if ("permissionVariant".equals(property)) {
-                    updateCheckBoxes(uiPermissionsTable.getSingleSelected());
-                }
+            updateCheckBoxes(e.getItem());
+        });
+
+        uiPermissionTargetsDs.addItemPropertyChangeListener(e -> {
+            if ("permissionVariant".equals(e.getProperty())) {
+                updateCheckBoxes(uiPermissionsTable.getSingleSelected());
             }
         });
 
@@ -165,18 +164,15 @@ public class UiPermissionsFrame extends AbstractFrame {
     protected Collection<WindowInfo> sortWindowInfos(Collection<WindowInfo> infos) {
         List<WindowInfo> infosContainer = new ArrayList<>(infos);
 
-        Collections.sort(infosContainer, new Comparator<WindowInfo>() {
-            @Override
-            public int compare(WindowInfo o1, WindowInfo o2) {
-                if (o1.getId().contains("$") != o2.getId().contains("$")) {
-                    if (o1.getId().contains("$")) {
-                        return -1;
-                    } else {
-                        return 1;
-                    }
+        Collections.sort(infosContainer, (o1, o2) -> {
+            if (o1.getId().contains("$") != o2.getId().contains("$")) {
+                if (o1.getId().contains("$")) {
+                    return -1;
                 } else {
-                    return o1.getId().compareTo(o2.getId());
+                    return 1;
                 }
+            } else {
+                return o1.getId().compareTo(o2.getId());
             }
         });
 
@@ -185,11 +181,11 @@ public class UiPermissionsFrame extends AbstractFrame {
 
     protected void applyPermissions(boolean editable) {
         if (!editable) {
-            hideCheckBox.setEditable(editable);
-            showCheckBox.setEditable(editable);
-            readOnlyCheckBox.setEditable(editable);
+            hideCheckBox.setEditable(false);
+            showCheckBox.setEditable(false);
+            readOnlyCheckBox.setEditable(false);
 
-            addPermissionBtn.setEnabled(editable);
+            addPermissionBtn.setEnabled(false);
         }
     }
 

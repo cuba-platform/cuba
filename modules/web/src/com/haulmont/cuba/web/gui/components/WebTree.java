@@ -11,20 +11,17 @@ import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.ShowInfoAction;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
-import com.vaadin.data.Property;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.AbstractSelect;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -48,39 +45,33 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
         contextMenuPopup.setParent(component);
         component.setContextMenuPopup(contextMenuPopup);
 
-        component.addValueChangeListener(
-                new Property.ValueChangeListener() {
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public void valueChange(Property.ValueChangeEvent event) {
-                        if (datasource != null) {
-                            Set<E> selected = getSelected();
-                            if (selected.isEmpty()) {
-                                Entity dsItem = datasource.getItemIfValid();
-                                datasource.setItem(null);
+        component.addValueChangeListener(event -> {
+            if (datasource != null) {
+                Set<E> selected = getSelected();
+                if (selected.isEmpty()) {
+                    Entity dsItem = datasource.getItemIfValid();
+                    datasource.setItem(null);
 
-                                if (dsItem == null) {
-                                    // in this case item change event will not be generated
-                                    refreshActionsState();
-                                }
-                            } else {
-                                // reset selection and select new item
-                                if (isMultiSelect()) {
-                                    datasource.setItem(null);
-                                }
-                                Entity newItem = selected.iterator().next();
-                                Entity dsItem = datasource.getItemIfValid();
-                                datasource.setItem(newItem);
+                    if (dsItem == null) {
+                        // in this case item change event will not be generated
+                        refreshActionsState();
+                    }
+                } else {
+                    // reset selection and select new item
+                    if (isMultiSelect()) {
+                        datasource.setItem(null);
+                    }
+                    Entity newItem = selected.iterator().next();
+                    Entity dsItem = datasource.getItemIfValid();
+                    datasource.setItem(newItem);
 
-                                if (ObjectUtils.equals(dsItem, newItem)) {
-                                    // in this case item change event will not be generated
-                                    refreshActionsState();
-                                }
-                            }
-                        }
+                    if (ObjectUtils.equals(dsItem, newItem)) {
+                        // in this case item change event will not be generated
+                        refreshActionsState();
                     }
                 }
-        );
+            }
+        });
     }
 
     protected void refreshActionsState() {
@@ -174,33 +165,32 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
         }
 
         //noinspection unchecked
-        datasource.addListener(new CollectionDsActionsNotifier(this) {
-            @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
-                // #PL-2035, reload selection from ds
-                Set<Object> selectedItemIds = getSelectedItemIds();
-                if (selectedItemIds == null) {
-                    selectedItemIds = Collections.emptySet();
-                }
+        datasource.addCollectionChangeListener(e -> {
+            // #PL-2035, reload selection from ds
+            Set<Object> selectedItemIds = getSelectedItemIds();
+            if (selectedItemIds == null) {
+                selectedItemIds = Collections.emptySet();
+            }
 
-                Set<Object> newSelection = new HashSet<>();
-                for (Object entityId : selectedItemIds) {
-                    if (ds.containsItem(entityId)) {
-                        newSelection.add(entityId);
-                    }
-                }
-
-                if (ds.getState() == Datasource.State.VALID && ds.getItem() != null) {
-                    newSelection.add(ds.getItem().getId());
-                }
-
-                if (newSelection.isEmpty()) {
-                    setSelected((E) null);
-                } else {
-                    setSelectedIds(newSelection);
+            Set<Object> newSelection = new HashSet<>();
+            for (Object entityId : selectedItemIds) {
+                if (e.getDs().containsItem(entityId)) {
+                    newSelection.add(entityId);
                 }
             }
+
+            if (e.getDs().getState() == Datasource.State.VALID && e.getDs().getItem() != null) {
+                newSelection.add(e.getDs().getItem().getId());
+            }
+
+            if (newSelection.isEmpty()) {
+                setSelected((E) null);
+            } else {
+                setSelectedIds(newSelection);
+            }
         });
+
+        new CollectionDsActionsNotifier(this).bind(datasource);
 
         for (Action action : getActions()) {
             action.refreshState();
@@ -220,21 +210,16 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
             if (action != null) {
                 if (itemClickListener == null) {
                     component.setDoubleClickMode(true);
-                    itemClickListener = new ItemClickEvent.ItemClickListener() {
-                        @Override
-                        public void itemClick(ItemClickEvent event) {
-                            if (event.isDoubleClick()
-                                    && !component.isReadOnly()) {
+                    itemClickListener = event -> {
+                        if (event.isDoubleClick() && !component.isReadOnly()) {
+                            if (!component.isMultiSelect()) {
+                                component.setValue(event.getItemId());
+                            } else {
+                                component.setValue(Collections.singletonList(event.getItemId()));
+                            }
 
-                                if (!component.isMultiSelect()) {
-                                    component.setValue(event.getItemId());
-                                } else {
-                                    component.setValue(Collections.singletonList(event.getItemId()));
-                                }
-
-                                if (doubleClickAction != null) {
-                                    doubleClickAction.actionPerform(WebTree.this);
-                                }
+                            if (doubleClickAction != null) {
+                                doubleClickAction.actionPerform(WebTree.this);
                             }
                         }
                     };

@@ -9,7 +9,6 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -17,7 +16,6 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
@@ -80,14 +78,8 @@ public class InListParamEditor extends AbstractWindow {
             lookup.setWidth(pickerWidth);
             lookup.setOptionsDatasource(collectionDatasource);
 
-            collectionDatasource.addListener(
-                    new CollectionDsListenerAdapter<Entity>() {
-                        @Override
-                        public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
-                            lookup.setValue(null);
-                        }
-                    }
-            );
+            //noinspection unchecked
+            collectionDatasource.addCollectionChangeListener(e -> lookup.setValue(null));
 
             lookup.addValueChangeListener(e -> {
                 if (e.getValue() != null && !containsValue((Instance) e.getValue())) {

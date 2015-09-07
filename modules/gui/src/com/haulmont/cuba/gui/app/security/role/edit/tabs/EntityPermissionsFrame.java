@@ -14,7 +14,6 @@ import com.haulmont.cuba.gui.app.security.entity.PermissionVariant;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
@@ -171,7 +170,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
         systemLevelCheckBox.setValue(Boolean.FALSE);
 
         entityTargetsDs.setPermissionDs(entityPermissionsDs);
-        entityTargetsDs.setFilter(new EntityNameFilter<OperationPermissionTarget>(
+        entityTargetsDs.setFilter(new EntityNameFilter<>(
                 metadata, assignedOnlyCheckBox, systemLevelCheckBox, entityFilter));
 
         initCheckBoxesControls();
@@ -179,42 +178,35 @@ public class EntityPermissionsFrame extends AbstractFrame {
         entityPermissionsDs.refresh();
 
         companion.initPermissionColoredColumns(entityPermissionsTable);
-        companion.initTextFieldFilter(entityFilter, new Runnable() {
-            @Override
-            public void run() {
-                applyFilter();
+        companion.initTextFieldFilter(entityFilter, this::applyFilter);
+
+        entityTargetsDs.addItemChangeListener(e -> {
+            if (!selectedEntityPanel.isVisible() && (e.getItem() != null)) {
+                selectedEntityPanel.setVisible(true);
             }
+            if (selectedEntityPanel.isVisible() && (e.getItem() == null)) {
+                selectedEntityPanel.setVisible(false);
+            }
+
+            Set selected = entityPermissionsTable.getSelected();
+            if (!selected.isEmpty() && (selected.size() > 1)) {
+                applyPermissionPane.setVisible(true);
+            } else {
+                applyPermissionPane.setVisible(false);
+            }
+
+            updateEditPane(e.getItem(), selected);
+
+            updateCheckBoxes(e.getItem());
         });
 
-        entityTargetsDs.addListener(new CollectionDsListenerAdapter<OperationPermissionTarget>() {
-            @Override
-            public void itemChanged(Datasource<OperationPermissionTarget> ds,
-                                    OperationPermissionTarget prevItem, OperationPermissionTarget item) {
-                if (!selectedEntityPanel.isVisible() && (item != null))
-                    selectedEntityPanel.setVisible(true);
-                if (selectedEntityPanel.isVisible() && (item == null))
-                    selectedEntityPanel.setVisible(false);
-
-                Set selected = entityPermissionsTable.getSelected();
-                if (!selected.isEmpty() && (selected.size() > 1))
-                    applyPermissionPane.setVisible(true);
-                else
-                    applyPermissionPane.setVisible(false);
-
-                updateEditPane(item, selected);
-
-                updateCheckBoxes(item);
-            }
-
-            @Override
-            public void valueChanged(OperationPermissionTarget source, String property, Object prevValue, Object value) {
-                if (isSingleSelection()) {
-                    if ("createPermissionVariant".equals(property) ||
-                            "readPermissionVariant".equals(property) ||
-                            "updatePermissionVariant".equals(property) ||
-                            "deletePermissionVariant".equals(property))
-                        updateCheckBoxes(source);
-                }
+        entityTargetsDs.addItemPropertyChangeListener(e -> {
+            if (isSingleSelection()) {
+                if ("createPermissionVariant".equals(e.getProperty()) ||
+                        "readPermissionVariant".equals(e.getProperty()) ||
+                        "updatePermissionVariant".equals(e.getProperty()) ||
+                        "deletePermissionVariant".equals(e.getProperty()))
+                    updateCheckBoxes(e.getItem());
             }
         });
 

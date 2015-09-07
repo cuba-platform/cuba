@@ -17,8 +17,6 @@ import com.haulmont.cuba.gui.app.core.entityinspector.EntityInspectorBrowse;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityLogItem;
@@ -234,16 +232,13 @@ public class EntityLogBrowser extends AbstractWindow {
                 fillAttributes((String) e.getValue(), null, true);
         });
 
-        loggedEntityDs.addListener(new CollectionDsListenerAdapter<LoggedEntity>() {
-            @Override
-            public void itemChanged(Datasource<LoggedEntity> ds, LoggedEntity prevItem, LoggedEntity item) {
-                if (item != null) {
-                    fillAttributes(item.getName(), item, false);
-                    checkAllCheckboxes();
-                } else {
-                    setSelectAllCheckBox(false);
-                    clearAttributes();
-                }
+        loggedEntityDs.addItemChangeListener(e -> {
+            if (e.getItem() != null) {
+                fillAttributes(e.getItem().getName(), e.getItem(), false);
+                checkAllCheckboxes();
+            } else {
+                setSelectAllCheckBox(false);
+                clearAttributes();
             }
         });
 

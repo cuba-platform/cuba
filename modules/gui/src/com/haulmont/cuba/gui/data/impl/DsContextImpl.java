@@ -335,44 +335,45 @@ public class DsContextImpl implements DsContextImplementation {
     @Override
     public void registerDependency(final Datasource datasource, final Datasource dependFrom, final String propertyName) {
         Datasource ds = dependencies.get(datasource);
-        if (ds != null)
-            if (ds.equals(dependFrom)) return;
-            else throw new UnsupportedOperationException("Datasource couldn't depend from two different sources");
-
-        final DatasourceListener listener = new CollectionDatasourceListener<Entity>() {
-            @Override
-            public void itemChanged(Datasource<Entity> ds, Entity prevItem, Entity item) {
-                if (Datasource.State.VALID.equals(datasource.getState()))
-                    datasource.refresh();
+        if (ds != null) {
+            if (ds.equals(dependFrom)) {
+                return;
+            } else {
+                throw new UnsupportedOperationException("Datasource couldn't depend from two different sources");
             }
+        }
 
-            @Override
-            public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {}
+        //noinspection unchecked
+        dependFrom.addItemChangeListener(e -> {
+            if (datasource.getState() == Datasource.State.VALID) {
+                datasource.refresh();
+            }
+        });
 
-            @Override
-            public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                if (propertyName != null) {
-                    // parameter can use a property path with more than one element, e.g. :ds$driversDs.status.id,
-                    // but we should listen the first level property
-                    String listeningProperty = propertyName.split("\\.")[0];
-                    if (listeningProperty.equals(property)) {
-                        final Entity item = Datasource.State.VALID.equals(dependFrom.getState()) ? dependFrom.getItem() : null;
-                        if (ObjectUtils.equals(item, source)) {
-                            datasource.refresh();
-                        }
+        if (dependFrom instanceof CollectionDatasource) {
+            //noinspection unchecked
+            ((CollectionDatasource) dependFrom).addCollectionChangeListener(e -> {
+                if (e.getOperation() == CollectionDatasource.Operation.REFRESH) {
+                    datasource.refresh();
+                }
+            });
+        }
+
+        //noinspection unchecked
+        dependFrom.addItemPropertyChangeListener(e -> {
+            if (propertyName != null) {
+                // parameter can use a property path with more than one element, e.g. :ds$driversDs.status.id,
+                // but we should listen the first level property
+                String listeningProperty = propertyName.split("\\.")[0];
+                if (listeningProperty.equals(e.getProperty())) {
+                    final Entity item = Datasource.State.VALID.equals(dependFrom.getState()) ? dependFrom.getItem() : null;
+                    if (ObjectUtils.equals(item, e.getItem())) {
+                        datasource.refresh();
                     }
                 }
             }
+        });
 
-            @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
-                if (Operation.REFRESH.equals(operation)) {
-                    datasource.refresh();
-                }
-            }
-        };
-
-        dependFrom.addListener(listener);
         dependencies.put(datasource, dependFrom);
     }
 

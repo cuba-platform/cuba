@@ -11,13 +11,12 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
-import com.haulmont.cuba.gui.data.impl.DsListenerWeakWrapper;
+import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
+import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 
@@ -32,28 +31,28 @@ public class PropertyWrapper extends AbstractPropertyWrapper implements Property
     protected MetaPropertyPath propertyPath;
 
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
-    protected DsListenerAdapter<Entity> dsListener;
+
+    protected Datasource.ItemChangeListener dsItemChangeListener;
+    protected Datasource.ItemPropertyChangeListener dsItemPropertyChangeListener;
 
     public PropertyWrapper(Object item, MetaPropertyPath propertyPath) {
         this.item = item;
         this.propertyPath = propertyPath;
+
         if (item instanceof Datasource) {
-            dsListener = new DsListenerAdapter<Entity>() {
-                @Override
-                public void itemChanged(Datasource<Entity> ds, Entity prevItem, Entity item) {
+            dsItemChangeListener = e -> fireValueChangeEvent();
+            dsItemPropertyChangeListener = e -> {
+                if (e.getProperty().equals(this.propertyPath.toString())) {
                     fireValueChangeEvent();
                 }
-
-                @Override
-                public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                    if (property.equals(PropertyWrapper.this.propertyPath.toString())) {
-                        fireValueChangeEvent();
-                    }
-                }
             };
+
             Datasource datasource = (Datasource) item;
+
             //noinspection unchecked
-            datasource.addListener(new DsListenerWeakWrapper(datasource, dsListener));
+            datasource.addItemChangeListener(new WeakItemChangeListener(datasource, dsItemChangeListener));
+            //noinspection unchecked
+            datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, dsItemPropertyChangeListener));
         }
     }
 

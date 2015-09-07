@@ -27,7 +27,6 @@ import com.haulmont.cuba.gui.components.filter.condition.FilterConditionUtils;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
@@ -666,15 +665,8 @@ public class Param {
                 lookup.setWidth(theme.get("cuba.gui.filter.Param.textComponent.width"));
                 lookup.setOptionsDatasource(ds);
 
-                ds.addListener(
-                        new CollectionDsListenerAdapter<Entity>() {
-                            @Override
-                            public void collectionChanged(CollectionDatasource ds, Operation operation,
-                                                          List<Entity> items) {
-                                lookup.setValue(null);
-                            }
-                        }
-                );
+                //noinspection unchecked
+                ds.addCollectionChangeListener(e -> lookup.setValue(null));
 
                 lookup.addValueChangeListener(e -> _setValue(e.getValue(), valueProperty));
                 lookup.setValue(_getValue(valueProperty));
@@ -713,8 +705,9 @@ public class Param {
         context.setView("_local");
         q.setParameter("id", categoryAttrId);
         CategoryAttribute categoryAttribute = dataService.load(context);
-        if (categoryAttribute == null)
+        if (categoryAttribute == null) {
             throw new EntityAccessException();
+        }
 
         runtimeEnum = new LinkedList<>();
         String enumerationString = categoryAttribute.getEnumeration();

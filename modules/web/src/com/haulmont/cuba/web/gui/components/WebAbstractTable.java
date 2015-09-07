@@ -26,7 +26,6 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
@@ -46,7 +45,6 @@ import com.haulmont.cuba.web.toolkit.ui.CubaResizableTextAreaWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaTextArea;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.*;
@@ -506,34 +504,32 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
         shortcutsDelegate.setAllowEnterShortcut(false);
 
-        component.addValueChangeListener(new Property.ValueChangeListener() {
-            @Override
-            @SuppressWarnings("unchecked")
-            public void valueChange(Property.ValueChangeEvent event) {
-                if (datasource == null) return;
+        component.addValueChangeListener(event -> {
+            if (datasource == null) {
+                return;
+            }
 
-                final Set<? extends Entity> selected = getSelected();
-                if (selected.isEmpty()) {
-                    Entity dsItem = datasource.getItemIfValid();
+            final Set<? extends Entity> selected = getSelected();
+            if (selected.isEmpty()) {
+                Entity dsItem = datasource.getItemIfValid();
+                datasource.setItem(null);
+                if (dsItem == null) {
+                    // in this case item change event will not be generated
+                    refreshActionsState();
+                }
+            } else {
+                // reset selection and select new item
+                if (isMultiSelect()) {
                     datasource.setItem(null);
-                    if (dsItem == null) {
-                        // in this case item change event will not be generated
-                        refreshActionsState();
-                    }
-                } else {
-                    // reset selection and select new item
-                    if (isMultiSelect()) {
-                        datasource.setItem(null);
-                    }
+                }
 
-                    Entity newItem = selected.iterator().next();
-                    Entity dsItem = datasource.getItemIfValid();
-                    datasource.setItem(newItem);
+                Entity newItem = selected.iterator().next();
+                Entity dsItem = datasource.getItemIfValid();
+                datasource.setItem(newItem);
 
-                    if (ObjectUtils.equals(dsItem, newItem)) {
-                        // in this case item change event will not be generated
-                        refreshActionsState();
-                    }
+                if (ObjectUtils.equals(dsItem, newItem)) {
+                    // in this case item change event will not be generated
+                    refreshActionsState();
                 }
             }
         });
@@ -551,12 +547,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             }
         });
 
-        component.addItemClickListener(new ItemClickEvent.ItemClickListener() {
-            @Override
-            public void itemClick(ItemClickEvent event) {
-                if (event.isDoubleClick() && event.getItem() != null) {
-                    handleClickAction();
-                }
+        component.addItemClickListener(event -> {
+            if (event.isDoubleClick() && event.getItem() != null) {
+                handleClickAction();
             }
         });
 
@@ -758,23 +751,20 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
         // drop cached datasources for components before update table cells on client
         //noinspection unchecked
-        datasource.addListener(new CollectionDsListenerAdapter<Entity>() {
-            @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
-                if (fieldDatasources != null) {
-                    switch (operation) {
-                        case CLEAR:
-                        case REFRESH:
-                            fieldDatasources.clear();
-                            break;
+        datasource.addCollectionChangeListener(e -> {
+            if (fieldDatasources != null) {
+                switch (e.getOperation()) {
+                    case CLEAR:
+                    case REFRESH:
+                        fieldDatasources.clear();
+                        break;
 
-                        case UPDATE:
-                        case REMOVE:
-                            for (Entity entity : items) {
-                                fieldDatasources.remove(entity);
-                            }
-                            break;
-                    }
+                    case UPDATE:
+                    case REMOVE:
+                        for (Object entity : e.getItems()) {
+                            fieldDatasources.remove(entity);
+                        }
+                        break;
                 }
             }
         });
@@ -835,7 +825,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
         if (aggregationCells != null) {
             //noinspection unchecked
-            datasource.addListener(createAggregationDatasourceListener());
+            datasource.addItemPropertyChangeListener(createAggregationDatasourceListener());
         }
 
         createStubsForGeneratedColumns();
@@ -856,37 +846,34 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         }
 
         //noinspection unchecked
-        datasource.addListener(new CollectionDsListenerAdapter<Entity>() {
-            @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
-                // #PL-2035, reload selection from ds
-                Set<Object> selectedItemIds = getSelectedItemIds();
-                if (selectedItemIds == null) {
-                    selectedItemIds = Collections.emptySet();
-                }
+        datasource.addCollectionChangeListener(e -> {
+            // #PL-2035, reload selection from ds
+            Set<Object> selectedItemIds = getSelectedItemIds();
+            if (selectedItemIds == null) {
+                selectedItemIds = Collections.emptySet();
+            }
 
-                Set<Object> newSelection = new HashSet<>();
-                for (Object entityId : selectedItemIds) {
-                    //noinspection unchecked
-                    if (ds.containsItem(entityId)) {
-                        newSelection.add(entityId);
-                    }
+            Set<Object> newSelection = new HashSet<>();
+            for (Object entityId : selectedItemIds) {
+                //noinspection unchecked
+                if (e.getDs().containsItem(entityId)) {
+                    newSelection.add(entityId);
                 }
+            }
 
-                if (ds.getState() == Datasource.State.VALID && ds.getItem() != null) {
-                    newSelection.add(ds.getItem().getId());
-                }
+            if (e.getDs().getState() == Datasource.State.VALID && e.getDs().getItem() != null) {
+                newSelection.add(e.getDs().getItem().getId());
+            }
 
-                if (newSelection.isEmpty()) {
-                    setSelected((E) null);
-                } else {
-                    setSelectedIds(newSelection);
-                }
+            if (newSelection.isEmpty()) {
+                setSelected((E) null);
+            } else {
+                setSelectedIds(newSelection);
             }
         });
 
         //noinspection unchecked
-        datasource.addListener(new CollectionDsActionsNotifier(this));
+        new CollectionDsActionsNotifier(this).bind(datasource);
 
         for (Action action : getActions()) {
             action.refreshState();
@@ -2022,14 +2009,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         aggregationCells.put(column, "");
     }
 
-    protected CollectionDatasourceListener createAggregationDatasourceListener() {
+    protected CollectionDatasource.ItemPropertyChangeListener createAggregationDatasourceListener() {
         return new AggregationDatasourceListener();
     }
 
-    protected class AggregationDatasourceListener extends CollectionDsListenerAdapter<Entity> {
+    protected class AggregationDatasourceListener implements Datasource.ItemPropertyChangeListener<Entity> {
 
         @Override
-        public void valueChanged(Entity source, String property, Object prevValue, Object value) {
+        public void itemPropertyChanged(Datasource.ItemPropertyChangeEvent<Entity> e) {
             final CollectionDatasource ds = WebAbstractTable.this.getDatasource();
             component.aggregate(new AggregationContainer.Context(ds.getItemIds()));
         }

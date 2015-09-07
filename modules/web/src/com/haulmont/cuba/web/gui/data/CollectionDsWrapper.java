@@ -6,11 +6,13 @@ package com.haulmont.cuba.web.gui.data;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerWeakWrapper;
+import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
+import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
+import com.haulmont.cuba.gui.data.impl.WeakStateChangeListener;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -28,12 +30,14 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     protected boolean ignoreListeners;
 
     protected CollectionDatasource datasource;
-    protected CollectionDatasourceListener dsListener;
-
     protected Collection<MetaPropertyPath> properties = new ArrayList<>();
 
     // lazily initialized listeners list
     protected List<ItemSetChangeListener> itemSetChangeListeners = null;
+
+    protected Datasource.StateChangeListener cdsStateChangeListener;
+    protected Datasource.ItemPropertyChangeListener cdsItemPropertyChangeListener;
+    protected CollectionDatasource.CollectionChangeListener cdsCollectionChangeListener;
 
     public CollectionDsWrapper(CollectionDatasource datasource, boolean autoRefresh) {
         this(datasource, null, autoRefresh);
@@ -53,13 +57,29 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
             this.properties.addAll(properties);
         }
 
-        dsListener = createDatasourceListener();
+        cdsStateChangeListener = createStateChangeListener();
         //noinspection unchecked
-        datasource.addListener(new CollectionDsListenerWeakWrapper(datasource, dsListener));
+        datasource.addStateChangeListener(new WeakStateChangeListener(datasource, cdsStateChangeListener));
+
+        cdsItemPropertyChangeListener = createItemPropertyChangeListener();
+        //noinspection unchecked
+        datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, cdsItemPropertyChangeListener));
+
+        cdsCollectionChangeListener = createCollectionChangeListener();
+        //noinspection unchecked
+        datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource, cdsCollectionChangeListener));
     }
 
-    protected CollectionDatasourceListener createDatasourceListener() {
-        return new DataSourceRefreshListener();
+    protected CollectionDatasource.CollectionChangeListener createCollectionChangeListener() {
+        return new ContainerDatasourceCollectionChangeListener();
+    }
+
+    protected Datasource.ItemPropertyChangeListener createItemPropertyChangeListener() {
+        return new ContainerDatasourceItemPropertyChangeListener();
+    }
+
+    protected Datasource.StateChangeListener createStateChangeListener() {
+        return new ContainerDatasourceStateChangeListener();
     }
 
     protected void createProperties(View view, MetaClass metaClass) {
@@ -207,33 +227,24 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
         removeItemSetChangeListener(listener);
     }
 
-    protected class DataSourceRefreshListener implements CollectionDatasourceListener<Entity> {
-        @Override
-        public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
+    protected class ContainerDatasourceStateChangeListener implements Datasource.StateChangeListener {
+
+        public ContainerDatasourceStateChangeListener() {
         }
 
         @Override
-        public void stateChanged(Datasource<Entity> ds, Datasource.State prevState, Datasource.State state) {
+        public void stateChanged(Datasource.StateChangeEvent e) {
             itemsCache.clear();
         }
+    }
 
-        @Override
-        public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-            Item wrapper = getItemWrapper(source);
+    protected class ContainerDatasourceCollectionChangeListener implements CollectionDatasource.CollectionChangeListener {
 
-            // MetaProperty worked wrong with properties from inherited superclasses
-            MetaPropertyPath metaPropertyPath = datasource.getMetaClass().getPropertyPath(property);
-            if (metaPropertyPath == null) {
-                return;
-            }
-            Property itemProperty = wrapper.getItemProperty(metaPropertyPath);
-            if (itemProperty instanceof PropertyWrapper) {
-                ((PropertyWrapper) itemProperty).fireValueChangeEvent();
-            }
+        public ContainerDatasourceCollectionChangeListener() {
         }
 
         @Override
-        public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
+        public void collectionChanged(CollectionDatasource.CollectionChangeEvent e) {
             itemsCache.clear();
 
             final boolean prevIgnoreListeners = ignoreListeners;
@@ -241,6 +252,27 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
                 fireItemSetChanged();
             } finally {
                 ignoreListeners = prevIgnoreListeners;
+            }
+        }
+    }
+
+    protected class ContainerDatasourceItemPropertyChangeListener implements Datasource.ItemPropertyChangeListener {
+
+        public ContainerDatasourceItemPropertyChangeListener() {
+        }
+
+        @Override
+        public void itemPropertyChanged(Datasource.ItemPropertyChangeEvent e) {
+            Item wrapper = getItemWrapper(e.getItem());
+
+            // MetaProperty worked wrong with properties from inherited superclasses
+            MetaPropertyPath metaPropertyPath = datasource.getMetaClass().getPropertyPath(e.getProperty());
+            if (metaPropertyPath == null) {
+                return;
+            }
+            Property itemProperty = wrapper.getItemProperty(metaPropertyPath);
+            if (itemProperty instanceof PropertyWrapper) {
+                ((PropertyWrapper) itemProperty).fireValueChangeEvent();
             }
         }
     }

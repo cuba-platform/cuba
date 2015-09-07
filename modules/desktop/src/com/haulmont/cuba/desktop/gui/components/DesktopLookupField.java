@@ -18,9 +18,7 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
 import com.haulmont.cuba.gui.components.LookupField;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -258,17 +256,12 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
                 items.add(new EntityWrapper(optionsDatasource.getItem(id)));
             }
 
-            optionsDatasource.addListener(
-                    new CollectionDsListenerAdapter<Entity<Object>>() {
-                        @Override
-                        public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity<Object>> dsItems) {
-                            items.clear();
-                            for (Entity item : optionsDatasource.getItems()) {
-                                items.add(new EntityWrapper(item));
-                            }
-                        }
-                    }
-            );
+            optionsDatasource.addCollectionChangeListener(e -> {
+                items.clear();
+                for (Entity item : optionsDatasource.getItems()) {
+                    items.add(new EntityWrapper(item));
+                }
+            });
         } else if (optionsMap != null) {
             for (String key : optionsMap.keySet()) {
                 items.add(new MapKeyWrapper(key));

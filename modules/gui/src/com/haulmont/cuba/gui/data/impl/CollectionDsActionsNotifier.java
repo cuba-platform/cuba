@@ -5,58 +5,58 @@
 
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.data.*;
-
-import java.util.List;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class CollectionDsActionsNotifier implements CollectionDatasourceListener<Entity> {
-    
-    private Component.ActionsHolder actionsHolder;
+public class CollectionDsActionsNotifier implements Datasource.ItemChangeListener,
+                                                    Datasource.ItemPropertyChangeListener,
+                                                    Datasource.StateChangeListener,
+                                                    CollectionDatasource.CollectionChangeListener {
+
+    private final Component.ActionsHolder actionsHolder;
 
     public CollectionDsActionsNotifier(Component.ActionsHolder actionsHolder) {
         this.actionsHolder = actionsHolder;
     }
 
     @Override
-    public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
+    public void collectionChanged(CollectionDatasource.CollectionChangeEvent e) {
         for (Action action : actionsHolder.getActions()) {
-            if (action instanceof DatasourceListener) {
-                ((DatasourceListener) action).stateChanged(ds, prevState, state);
-            }
+            action.refreshState();
         }
     }
 
     @Override
-    public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
+    public void itemChanged(Datasource.ItemChangeEvent e) {
         for (Action action : actionsHolder.getActions()) {
-            if (action instanceof DatasourceListener) {
-                ((DatasourceListener) action).itemChanged(ds, prevItem, item);
-            }
+            action.refreshState();
         }
     }
 
     @Override
-    public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
+    public void itemPropertyChanged(Datasource.ItemPropertyChangeEvent e) {
         for (Action action : actionsHolder.getActions()) {
-            if (action instanceof CollectionDatasourceListener) {
-                ((CollectionDatasourceListener) action).collectionChanged(ds, operation, items);
-            }
+            action.refreshState();
         }
     }
 
     @Override
-    public void valueChanged(Entity source, String property, Object prevValue, Object value) {
+    public void stateChanged(Datasource.StateChangeEvent e) {
         for (Action action : actionsHolder.getActions()) {
-            if (action instanceof ValueListener) {
-                ((ValueListener) action).valueChanged(source, property, prevValue, value);
-            }
+            action.refreshState();
         }
+    }
+
+    public void bind(CollectionDatasource ds) {
+        ds.addItemChangeListener(this);
+        ds.addItemPropertyChangeListener(this);
+        ds.addStateChangeListener(this);
+        ds.addCollectionChangeListener(this);
     }
 }

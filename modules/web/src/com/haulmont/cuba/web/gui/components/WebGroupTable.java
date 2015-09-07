@@ -36,9 +36,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  * @author gorodnov
  * @version $Id$
  */
-public class WebGroupTable<E extends Entity>
-        extends WebAbstractTable<CubaGroupTable, E>
-        implements GroupTable<E> {
+public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupTable, E> implements GroupTable<E> {
 
     protected Map<Table.Column, GroupAggregationCells> groupAggregationCells = null;
 
@@ -134,7 +132,7 @@ public class WebGroupTable<E extends Entity>
     }
 
     @Override
-    protected CollectionDatasourceListener createAggregationDatasourceListener() {
+    protected CollectionDatasource.ItemPropertyChangeListener createAggregationDatasourceListener() {
         return new GroupAggregationDatasourceListener();
     }
 
@@ -730,32 +728,35 @@ public class WebGroupTable<E extends Entity>
         }
 
         @Override
-        protected CollectionDatasourceListener createDatasourceListener() {
-            return new GroupDataSourceRefreshListener();
+        protected Datasource.StateChangeListener createStateChangeListener() {
+            return new ContainerDatasourceStateChangeListener() {
+                @Override
+                public void stateChanged(Datasource.StateChangeEvent e) {
+                    rerender = false;
+                    Collection groupProperties = component.getGroupProperties();
+                    component.groupBy(groupProperties.toArray());
+                    super.stateChanged(e);
+                    rerender = true;
+                }
+            };
+        }
+
+        @Override
+        protected CollectionDatasource.CollectionChangeListener createCollectionChangeListener() {
+            return new ContainerDatasourceCollectionChangeListener(){
+                @Override
+                public void collectionChanged(CollectionDatasource.CollectionChangeEvent e) {
+                    Collection groupProperties = component.getGroupProperties();
+                    component.groupBy(groupProperties.toArray());
+                    super.collectionChanged(e);
+                }
+            };
         }
 
         @Override
         public void resetSortOrder() {
             if (datasource instanceof CollectionDatasource.Sortable) {
                 ((CollectionDatasource.Sortable) datasource).resetSortOrder();
-            }
-        }
-
-        protected class GroupDataSourceRefreshListener extends DataSourceRefreshListener {
-            @Override
-            public void stateChanged(Datasource<Entity> ds, Datasource.State prevState, Datasource.State state) {
-                rerender = false;
-                Collection groupProperties = component.getGroupProperties();
-                component.groupBy(groupProperties.toArray());
-                super.stateChanged(ds, prevState, state);
-                rerender = true;
-            }
-
-            @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
-                Collection groupProperties = component.getGroupProperties();
-                component.groupBy(groupProperties.toArray());
-                super.collectionChanged(ds, operation, items);
             }
         }
     }
@@ -811,25 +812,24 @@ public class WebGroupTable<E extends Entity>
     }
 
     protected class GroupAggregationDatasourceListener extends AggregationDatasourceListener {
+
         @Override
-        public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-            super.valueChanged(source, property, prevValue, value);
+        public void itemPropertyChanged(Datasource.ItemPropertyChangeEvent<Entity> e) {
+            super.itemPropertyChanged(e);
+
             GroupDatasource ds = WebGroupTable.this.getDatasource();
             @SuppressWarnings("unchecked")
             Collection<GroupInfo> roots = ds.rootGroups();
             for (final GroupInfo root : roots) {
-                recalcAggregation(root);
+                component.aggregate(new CubaGroupTable.GroupAggregationContext(component, root));
             }
-        }
-
-        protected void recalcAggregation(GroupInfo groupInfo) {
-            component.aggregate(new CubaGroupTable.GroupAggregationContext(component, groupInfo));
         }
     }
 
     @Override
     public void addColumn(Column column) {
         super.addColumn(column);
+
         setColumnGroupAllowed(column, column.isGroupAllowed());
     }
 }

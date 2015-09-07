@@ -57,7 +57,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     protected RefreshMode refreshMode = RefreshMode.ALWAYS;
     protected UserSession userSession = AppBeans.<UserSessionSource>get(UserSessionSource.NAME).getUserSession();
 
-    protected List<CollectionChangeListener<T>> collectionChangeListeners;
+    protected List<CollectionChangeListener<T, K>> collectionChangeListeners;
 
     @Override
     public T getItemNN(K id) {
@@ -346,9 +346,9 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         }
 
         if (collectionChangeListeners != null && !collectionChangeListeners.isEmpty()) {
-            CollectionChangeEvent<T> event = new CollectionChangeEvent<>(this, operation, items);
+            CollectionChangeEvent<T, K> event = new CollectionChangeEvent<>(this, operation, items);
 
-            for (CollectionChangeListener<T> listener : collectionChangeListeners) {
+            for (CollectionChangeListener<T, K> listener : new ArrayList<>(collectionChangeListeners)) {
                 listener.collectionChanged(event);
             }
         }
@@ -639,7 +639,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    public void addCollectionChangeListener(CollectionChangeListener<T> listener) {
+    public void addCollectionChangeListener(CollectionChangeListener<T, K> listener) {
         if (collectionChangeListeners == null) {
             collectionChangeListeners = new ArrayList<>();
         }
@@ -649,7 +649,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    public void removeCollectionChangeListener(CollectionChangeListener<T> listener) {
+    public void removeCollectionChangeListener(CollectionChangeListener<T, K> listener) {
         if (collectionChangeListeners != null) {
             collectionChangeListeners.remove(listener);
         }

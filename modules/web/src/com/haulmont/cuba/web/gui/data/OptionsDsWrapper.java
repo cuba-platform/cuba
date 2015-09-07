@@ -9,10 +9,11 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerWeakWrapper;
+import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
+import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
+import com.haulmont.cuba.gui.data.impl.WeakStateChangeListener;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -34,9 +35,14 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
     protected boolean ignoreListeners;
 
     protected CollectionDatasource datasource;
-    protected CollectionDatasourceListener dsListener;
+
+    protected Datasource.StateChangeListener dsStateChangeListener;
+    protected Datasource.ItemPropertyChangeListener dsItemPropertyChangeListener;
+    protected CollectionDatasource.CollectionChangeListener cdsCollectionChangeListener;
 
     protected Collection<MetaPropertyPath> properties = new ArrayList<>();
+
+    protected Map<Object, ItemWrapper> itemsCache = new HashMap<>();
 
     // lazily initialized listeners list
     protected List<ItemSetChangeListener> itemSetChangeListeners = null;
@@ -45,8 +51,7 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
         this(datasource, null, autoRefresh);
     }
 
-    public OptionsDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties,
-                            boolean autoRefresh) {
+    public OptionsDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties, boolean autoRefresh) {
         this.datasource = datasource;
         this.autoRefresh = autoRefresh;
 
@@ -59,13 +64,37 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
             this.properties.addAll(properties);
         }
 
-        dsListener = createDatasourceListener();
+        dsStateChangeListener = e -> itemsCache.clear();
         //noinspection unchecked
-        datasource.addListener(new CollectionDsListenerWeakWrapper(datasource, dsListener));
-    }
+        datasource.addStateChangeListener(new WeakStateChangeListener(datasource, dsStateChangeListener));
 
-    protected CollectionDatasourceListener createDatasourceListener() {
-        return new DataSourceRefreshListener();
+        dsItemPropertyChangeListener = e -> {
+            Item wrapper = getItemWrapper(e.getItem());
+
+            // MetaProperty worked wrong with properties from inherited superclasses
+            MetaPropertyPath metaPropertyPath = datasource.getMetaClass().getPropertyPath(e.getProperty());
+            if (metaPropertyPath == null) {
+                return;
+            }
+            Property itemProperty = wrapper.getItemProperty(metaPropertyPath);
+            if (itemProperty instanceof PropertyWrapper) {
+                ((PropertyWrapper) itemProperty).fireValueChangeEvent();
+            }
+        };
+        //noinspection unchecked
+        datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, dsItemPropertyChangeListener));
+
+        cdsCollectionChangeListener = e -> {
+            final boolean prevIgnoreListeners = ignoreListeners;
+            try {
+                itemsCache.clear();
+                fireItemSetChanged();
+            } finally {
+                ignoreListeners = prevIgnoreListeners;
+            }
+        };
+        //noinspection unchecked
+        datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource, cdsCollectionChangeListener));
     }
 
     protected void createProperties(View view, MetaClass metaClass) {
@@ -104,8 +133,6 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
         final Object item = datasource.getItem(entity.getId());
         return item == null ? null : getItemWrapper(item);
     }
-
-    protected Map<Object, ItemWrapper> itemsCache = new HashMap<>();
 
     protected Item getItemWrapper(Object item) {
         ItemWrapper wrapper = itemsCache.get(item);
@@ -310,48 +337,6 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
     @Override
     public Item addItemAfter(Object previousItemId, Object newItemId) throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
-    }
-
-    protected class DataSourceRefreshListener implements CollectionDatasourceListener<Entity> {
-        @Override
-        public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-        }
-
-        @Override
-        public void stateChanged(Datasource<Entity> ds, Datasource.State prevState, Datasource.State state) {
-            final boolean prevIgnoreListeners = ignoreListeners;
-            try {
-                itemsCache.clear();
-            } finally {
-                ignoreListeners = prevIgnoreListeners;
-            }
-        }
-
-        @Override
-        public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-            Item wrapper = getItemWrapper(source);
-
-            // MetaProperty worked wrong with properties from inherited superclasses
-            MetaPropertyPath metaPropertyPath = datasource.getMetaClass().getPropertyPath(property);
-            if (metaPropertyPath == null) {
-                return;
-            }
-            Property itemProperty = wrapper.getItemProperty(metaPropertyPath);
-            if (itemProperty instanceof PropertyWrapper) {
-                ((PropertyWrapper) itemProperty).fireValueChangeEvent();
-            }
-        }
-
-        @Override
-        public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
-            final boolean prevIgnoreListeners = ignoreListeners;
-            try {
-                itemsCache.clear();
-                fireItemSetChanged();
-            } finally {
-                ignoreListeners = prevIgnoreListeners;
-            }
-        }
     }
 
     @Override

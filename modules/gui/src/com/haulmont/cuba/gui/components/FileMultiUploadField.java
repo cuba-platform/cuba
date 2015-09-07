@@ -15,6 +15,7 @@ public interface FileMultiUploadField extends Component, Component.HasCaption, C
 
     String NAME = "multiUpload";
 
+    @Deprecated
     abstract class UploadListener {
 
         /**
@@ -54,8 +55,10 @@ public interface FileMultiUploadField extends Component, Component.HasCaption, C
         }
     }
 
+    @Deprecated
     void addListener(UploadListener listener);
 
+    @Deprecated
     void removeListener(UploadListener listener);
 
     /**

@@ -17,7 +17,6 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.ui.CubaTokenListLabel;
@@ -94,26 +93,24 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
     @Override
     public void setDatasource(CollectionDatasource datasource) {
         this.datasource = datasource;
-        //noinspection unchecked
-        datasource.addListener(new CollectionDsListenerAdapter<Entity>() {
-            @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
-                if (lookupPickerField != null) {
-                    if (isLookup()) {
-                        if (getLookupScreen() != null) {
-                            lookupAction.setLookupScreen(getLookupScreen());
-                        } else {
-                            lookupAction.setLookupScreen(null);
-                        }
 
-                        lookupAction.setLookupScreenOpenType(lookupOpenMode);
-                        lookupAction.setLookupScreenParams(lookupScreenParams);
-                        lookupAction.setLookupScreenDialogParams(lookupScreenDialogParams);
+        //noinspection unchecked
+        datasource.addCollectionChangeListener(e -> {
+            if (lookupPickerField != null) {
+                if (isLookup()) {
+                    if (getLookupScreen() != null) {
+                        lookupAction.setLookupScreen(getLookupScreen());
+                    } else {
+                        lookupAction.setLookupScreen(null);
                     }
+
+                    lookupAction.setLookupScreenOpenType(lookupOpenMode);
+                    lookupAction.setLookupScreenParams(lookupScreenParams);
+                    lookupAction.setLookupScreenDialogParams(lookupScreenDialogParams);
                 }
-                component.refreshComponent();
-                component.refreshClickListeners(itemClickListener);
             }
+            component.refreshComponent();
+            component.refreshClickListeners(itemClickListener);
         });
     }
 

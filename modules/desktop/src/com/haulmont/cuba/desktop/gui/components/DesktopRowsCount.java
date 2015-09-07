@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
@@ -14,7 +13,6 @@ import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.RowsCount;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 import org.jdesktop.swingx.JXHyperlink;
@@ -22,14 +20,13 @@ import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.RowsCountComponent> implements RowsCount {
+public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.RowsCountComponent>
+        implements RowsCount {
 
     protected CollectionDatasource datasource;
     protected boolean refreshing;
@@ -51,37 +48,13 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
     public void setDatasource(CollectionDatasource datasource) {
         this.datasource = datasource;
         if (datasource != null) {
-            this.datasource.addListener(
-                    new CollectionDsListenerAdapter<Entity>() {
-                        @Override
-                        public void collectionChanged(CollectionDatasource ds, Operation operation, java.util.List<Entity> items) {
-                            onCollectionChanged();
-                        }
-                    }
-            );
-            impl.getCountButton().addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    onLinkClick();
-                }
-            });
+            //noinspection unchecked
+            this.datasource.addCollectionChangeListener(e -> onCollectionChanged());
 
-            impl.getPrevButton().addActionListener(
-                    new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            onPrevClick();
-                        }
-                    }
-            );
-            impl.getNextButton().addActionListener(
-                    new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            onNextClick();
-                        }
-                    }
-            );
+            impl.getCountButton().addActionListener(e -> onLinkClick());
+
+            impl.getPrevButton().addActionListener(e -> onPrevClick());
+            impl.getNextButton().addActionListener(e -> onNextClick());
             if (datasource.getState() == Datasource.State.VALID) {
                 onCollectionChanged();
             }
@@ -99,8 +72,9 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
     }
 
     protected void onCollectionChanged() {
-        if (datasource == null)
+        if (datasource == null) {
             return;
+        }
 
         String msgKey;
         size = datasource.size();
@@ -118,8 +92,9 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
             } else if (size < ds.getMaxResults() && ds.getFirstResult() > 0) {
                 state = State.LAST;
                 start = ds.getFirstResult();
-            } else
+            } else {
                 state = State.FIRST_COMPLETE;
+            }
         } else {
             state = State.FIRST_COMPLETE;
         }
@@ -185,16 +160,18 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
     }
 
     private void onLinkClick() {
-        if (datasource == null || !(datasource instanceof CollectionDatasource.SupportsPaging))
+        if (datasource == null || !(datasource instanceof CollectionDatasource.SupportsPaging)) {
             return;
+        }
 
         int count = ((CollectionDatasource.SupportsPaging) datasource).getCount();
         impl.getCountButton().setText(String.valueOf(count));
     }
 
     private void onNextClick() {
-        if (!(datasource instanceof CollectionDatasource.SupportsPaging))
+        if (!(datasource instanceof CollectionDatasource.SupportsPaging)) {
             return;
+        }
 
         CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
         int firstResult = ds.getFirstResult();
@@ -215,8 +192,9 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
     }
 
     private void onPrevClick() {
-        if (!(datasource instanceof CollectionDatasource.SupportsPaging))
+        if (!(datasource instanceof CollectionDatasource.SupportsPaging)) {
             return;
+        }
 
         CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
         int newStart = ds.getFirstResult() - ds.getMaxResults();

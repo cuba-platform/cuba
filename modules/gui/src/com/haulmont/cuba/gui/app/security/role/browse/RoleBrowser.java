@@ -14,13 +14,11 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -45,7 +43,7 @@ public class RoleBrowser extends AbstractLookup {
     protected DataManager dataManager;
 
     @Inject
-    protected CollectionDatasource rolesDs;
+    protected CollectionDatasource<Role, UUID> rolesDs;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -116,17 +114,13 @@ public class RoleBrowser extends AbstractLookup {
             rolesTable.setMultiSelect(true);
         }
 
-        rolesDs.addListener(new CollectionDsListenerAdapter<Role>() {
-            @Override
-            public void valueChanged(Role source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                super.valueChanged(source, property, prevValue, value);
-                if (DEFAULT_ROLE_PROPERTY.equals(property)) {
-                    Role reloadedRole = dataManager.reload(source, View.LOCAL);
-                    reloadedRole.setDefaultRole(source.getDefaultRole());
-                    rolesDs.updateItem(reloadedRole);
-                    rolesDs.modifyItem(reloadedRole);
-                    rolesDs.commit();
-                }
+        rolesDs.addItemPropertyChangeListener(e -> {
+            if (DEFAULT_ROLE_PROPERTY.equals(e.getProperty())) {
+                Role reloadedRole = dataManager.reload(e.getItem(), View.LOCAL);
+                reloadedRole.setDefaultRole(e.getItem().getDefaultRole());
+                rolesDs.updateItem(reloadedRole);
+                rolesDs.modifyItem(reloadedRole);
+                rolesDs.commit();
             }
         });
     }

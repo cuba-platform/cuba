@@ -6,6 +6,7 @@ package com.haulmont.cuba.gui.data;
 
 import com.haulmont.cuba.core.entity.Entity;
 
+@Deprecated
 public interface LazyCollectionDatasourceListener<T extends Entity> extends CollectionDatasourceListener<T> {
 
     void completelyLoaded(CollectionDatasource.Lazy ds);

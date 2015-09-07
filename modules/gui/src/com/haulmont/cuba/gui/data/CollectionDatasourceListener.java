@@ -18,6 +18,7 @@ import java.util.List;
  * @author abramov
  * @version $Id$
  */
+@Deprecated
 public interface CollectionDatasourceListener<T extends Entity> extends DatasourceListener<T> {
 
     /**

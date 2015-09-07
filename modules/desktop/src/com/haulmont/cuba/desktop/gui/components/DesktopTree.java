@@ -14,8 +14,6 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.ShowInfoAction;
 import com.haulmont.cuba.gui.components.Tree;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
@@ -29,20 +27,15 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.*;
-import java.util.List;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class DesktopTree<E extends Entity>
-        extends DesktopAbstractActionsHolderComponent<JTree>
-        implements Tree<E> {
+public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderComponent<JTree> implements Tree<E> {
 
     protected String hierarchyProperty;
     protected HierarchicalDatasource<Entity<Object>, Object> datasource;
@@ -241,36 +234,33 @@ public class DesktopTree<E extends Entity>
         }
 
         //noinspection unchecked
-        datasource.addListener(
-                new CollectionDsActionsNotifier(this) {
-                    @Override
-                    public void collectionChanged(CollectionDatasource ds, CollectionDatasourceListener.Operation operation, List<Entity> items) {
-                        // #PL-2035, reload selection from ds
-                        Set<E> selectedItems = getSelected();
-                        if (selectedItems == null) {
-                            selectedItems = Collections.emptySet();
-                        }
+        datasource.addCollectionChangeListener(e -> {
+            // #PL-2035, reload selection from ds
+            Set<E> selectedItems = getSelected();
+            if (selectedItems == null) {
+                selectedItems = Collections.emptySet();
+            }
 
-                        Set<E> newSelection = new HashSet<>();
-                        for (E entity : selectedItems) {
-                            if (ds.containsItem(entity.getId())) {
-                                newSelection.add(entity);
-                            }
-                        }
-
-                        if (ds.getState() == Datasource.State.VALID && ds.getItem() != null) {
-                            //noinspection unchecked
-                            newSelection.add((E) ds.getItem());
-                        }
-
-                        if (newSelection.isEmpty()) {
-                            setSelected((Entity) null);
-                        } else {
-                            setSelected(newSelection);
-                        }
-                    }
+            Set<E> newSelection = new HashSet<>();
+            for (E entity : selectedItems) {
+                if (e.getDs().containsItem(entity.getId())) {
+                    newSelection.add(entity);
                 }
-        );
+            }
+
+            if (e.getDs().getState() == Datasource.State.VALID && e.getDs().getItem() != null) {
+                //noinspection unchecked
+                newSelection.add((E) e.getDs().getItem());
+            }
+
+            if (newSelection.isEmpty()) {
+                setSelected((Entity) null);
+            } else {
+                setSelected(newSelection);
+            }
+        });
+
+        new CollectionDsActionsNotifier(this).bind(datasource);
 
         for (Action action : getActions()) {
             action.refreshState();
@@ -479,14 +469,7 @@ public class DesktopTree<E extends Entity>
                     menuItem.setAccelerator(DesktopComponentsHelper.convertKeyCombination(action.getShortcut()));
                 }
                 menuItem.setEnabled(action.isEnabled());
-                menuItem.addActionListener(
-                        new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                action.actionPerform(DesktopTree.this);
-                            }
-                        }
-                );
+                menuItem.addActionListener(e -> action.actionPerform(DesktopTree.this));
                 popup.add(menuItem);
             }
         }

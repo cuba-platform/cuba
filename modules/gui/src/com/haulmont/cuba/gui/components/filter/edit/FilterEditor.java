@@ -20,14 +20,11 @@ import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.components.filter.GroupType;
 import com.haulmont.cuba.gui.components.filter.condition.*;
 import com.haulmont.cuba.gui.components.filter.descriptor.GroupConditionDescriptor;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -131,8 +128,9 @@ public class FilterEditor extends AbstractWindow {
                 .setResizable(true);
 
         filterEntity = (FilterEntity) params.get("filterEntity");
-        if (filterEntity == null)
+        if (filterEntity == null) {
             throw new RuntimeException("Filter entity was not passed to filter editor");
+        }
         filter = (Filter) params.get("filter");
         ConditionsTree paramConditions = (ConditionsTree) params.get("conditions");
         conditions = paramConditions.createCopy();
@@ -164,61 +162,60 @@ public class FilterEditor extends AbstractWindow {
             defaultLabel.setVisible(false);
         }
 
-        conditionsDs.addListener(new CollectionDsListenerAdapter<AbstractCondition>() {
-            @Override
-            public void itemChanged(Datasource<AbstractCondition> ds, @Nullable AbstractCondition prevItem, @Nullable AbstractCondition item) {
-                if (!treeItemChangeListenerEnabled)
-                    return;
+        conditionsDs.addItemChangeListener(e -> {
+            if (!treeItemChangeListenerEnabled) {
+                return;
+            }
 
-                //commit previously selected condition
-                if (activeConditionFrame != null) {
-                    List<Validatable> validatables = new ArrayList<>();
-                    Collection<Component> frameComponents = ComponentsHelper.getComponents(activeConditionFrame);
-                    for (Component frameComponent : frameComponents) {
-                        if (frameComponent instanceof Validatable)
-                            validatables.add((Validatable) frameComponent);
-                    }
-                    if (validate(validatables)) {
-                        activeConditionFrame.commit();
-                    } else {
-                        treeItemChangeListenerEnabled = false;
-                        conditionsTree.setSelected(prevItem);
-                        treeItemChangeListenerEnabled = true;
-                        return;
+            //commit previously selected condition
+            if (activeConditionFrame != null) {
+                List<Validatable> validatables = new ArrayList<>();
+                Collection<Component> frameComponents = ComponentsHelper.getComponents(activeConditionFrame);
+                for (Component frameComponent : frameComponents) {
+                    if (frameComponent instanceof Validatable) {
+                        validatables.add((Validatable) frameComponent);
                     }
                 }
-
-                if (item == null) {
-                    activeConditionFrame = null;
+                if (validate(validatables)) {
+                    activeConditionFrame.commit();
                 } else {
-                    if (item instanceof PropertyCondition) {
-                        activeConditionFrame = propertyConditionFrame;
-                    } else if (item instanceof DynamicAttributesCondition) {
-                        activeConditionFrame = dynamicAttributesConditionFrame;
-                    } else if (item instanceof CustomCondition) {
-                        activeConditionFrame = customConditionFrame;
-                    } else if (item instanceof GroupCondition) {
-                        activeConditionFrame = groupConditionFrame;
-                    } else {
-                        log.warn("Conditions frame for condition with type " + item.getClass().getSimpleName() + " not found");
-                    }
+                    treeItemChangeListenerEnabled = false;
+                    conditionsTree.setSelected(e.getPrevItem());
+                    treeItemChangeListenerEnabled = true;
+                    return;
                 }
+            }
 
-                propertyConditionFrame.setVisible(false);
-                customConditionFrame.setVisible(false);
-                dynamicAttributesConditionFrame.setVisible(false);
-                groupConditionFrame.setVisible(false);
+            if (e.getItem() == null) {
+                activeConditionFrame = null;
+            } else {
+                if (e.getItem() instanceof PropertyCondition) {
+                    activeConditionFrame = propertyConditionFrame;
+                } else if (e.getItem() instanceof DynamicAttributesCondition) {
+                    activeConditionFrame = dynamicAttributesConditionFrame;
+                } else if (e.getItem() instanceof CustomCondition) {
+                    activeConditionFrame = customConditionFrame;
+                } else if (e.getItem() instanceof GroupCondition) {
+                    activeConditionFrame = groupConditionFrame;
+                } else {
+                    log.warn("Conditions frame for condition with type " + e.getItem().getClass().getSimpleName() + " not found");
+                }
+            }
 
-                if (activeConditionFrame != null) {
-                    activeConditionFrame.setVisible(true);
-                    activeConditionFrame.setCondition(item);
+            propertyConditionFrame.setVisible(false);
+            customConditionFrame.setVisible(false);
+            dynamicAttributesConditionFrame.setVisible(false);
+            groupConditionFrame.setVisible(false);
 
-                    if (Boolean.TRUE.equals(useShortConditionForm)) {
-                        for (String componentName : componentsToHideInShortForm) {
-                            Component component = activeConditionFrame.getComponent(componentName);
-                            if (component != null) {
-                                component.setVisible(false);
-                            }
+            if (activeConditionFrame != null) {
+                activeConditionFrame.setVisible(true);
+                activeConditionFrame.setCondition(e.getItem());
+
+                if (Boolean.TRUE.equals(useShortConditionForm)) {
+                    for (String componentName : componentsToHideInShortForm) {
+                        Component component = activeConditionFrame.getComponent(componentName);
+                        if (component != null) {
+                            component.setVisible(false);
                         }
                     }
                 }
@@ -261,16 +258,20 @@ public class FilterEditor extends AbstractWindow {
     }
 
     public void commitAndClose() {
-        if (!validateAll()) return;
-        if (activeConditionFrame != null)
+        if (!validateAll()) {
+            return;
+        }
+        if (activeConditionFrame != null) {
             activeConditionFrame.commit();
-        filterEntity.setName((String) filterName.getValue());
-        if (availableForAllCb.getValue())
+        }
+        filterEntity.setName(filterName.getValue());
+        if (availableForAllCb.getValue()) {
             filterEntity.setUser(null);
-        else
+        } else {
             filterEntity.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
-        filterEntity.setIsDefault((Boolean) defaultCb.getValue());
-        filterEntity.setApplyDefault((Boolean) applyDefaultCb.getValue());
+        }
+        filterEntity.setIsDefault(defaultCb.getValue());
+        filterEntity.setApplyDefault(applyDefaultCb.getValue());
         close(COMMIT_ACTION_ID, true);
     }
 

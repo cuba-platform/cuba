@@ -18,7 +18,6 @@ import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
@@ -71,6 +70,9 @@ public class SpecificPermissionsFrame extends AbstractFrame {
     @Inject
     protected CheckBox disallowCheckBox;
 
+    @Inject
+    protected Companion companion;
+
     protected boolean itemChanging = false;
 
     @Override
@@ -79,47 +81,22 @@ public class SpecificPermissionsFrame extends AbstractFrame {
 
         specificPermissionsTree.setStyleProvider(new BasicPermissionTreeStyleProvider());
 
-        Companion companion = getCompanion();
         companion.initPermissionColoredColumns(specificPermissionsTree);
 
-        specificPermissionsTreeDs.addListener(new CollectionDsListenerAdapter<BasicPermissionTarget>() {
-            @Override
-            public void itemChanged(Datasource<BasicPermissionTarget> ds,
-                                    BasicPermissionTarget prevItem, BasicPermissionTarget item) {
-                if (!selectedPermissionPanel.isVisible() && (item != null)) {
-                    selectedPermissionPanel.setVisible(!item.getId().startsWith("category:"));
-                }
-                if (selectedPermissionPanel.isVisible() && (item == null))
-                    selectedPermissionPanel.setVisible(false);
-
-                updateCheckBoxes(item);
+        specificPermissionsTreeDs.addItemChangeListener(e -> {
+            if (!selectedPermissionPanel.isVisible() && (e.getItem() != null)) {
+                selectedPermissionPanel.setVisible(!e.getItem().getId().startsWith("category:"));
+            }
+            if (selectedPermissionPanel.isVisible() && (e.getItem() == null)) {
+                selectedPermissionPanel.setVisible(false);
             }
 
-            @Override
-            public void valueChanged(BasicPermissionTarget source,
-                                     String property, Object prevValue, Object value) {
-                if ("permissionVariant".equals(property))
-                    updateCheckBoxes(source);
-            }
+            updateCheckBoxes(e.getItem());
+        });
 
-            private void updateCheckBoxes(BasicPermissionTarget item) {
-                itemChanging = true;
-                if (item != null) {
-                    if (item.getPermissionVariant() == PermissionVariant.ALLOWED) {
-                        allowCheckBox.setValue(true);
-                        disallowCheckBox.setValue(false);
-                    } else if (item.getPermissionVariant() == PermissionVariant.DISALLOWED) {
-                        disallowCheckBox.setValue(true);
-                        allowCheckBox.setValue(false);
-                    } else {
-                        allowCheckBox.setValue(false);
-                        disallowCheckBox.setValue(false);
-                    }
-                } else {
-                    allowCheckBox.setValue(false);
-                    disallowCheckBox.setValue(false);
-                }
-                itemChanging = false;
+        specificPermissionsTreeDs.addItemPropertyChangeListener(e -> {
+            if ("permissionVariant".equals(e.getProperty())) {
+                updateCheckBoxes(e.getItem());
             }
         });
 
@@ -155,10 +132,30 @@ public class SpecificPermissionsFrame extends AbstractFrame {
         applyPermissions(hasPermissionsToModifyPermission);
     }
 
+    protected void updateCheckBoxes(BasicPermissionTarget item) {
+        itemChanging = true;
+        if (item != null) {
+            if (item.getPermissionVariant() == PermissionVariant.ALLOWED) {
+                allowCheckBox.setValue(true);
+                disallowCheckBox.setValue(false);
+            } else if (item.getPermissionVariant() == PermissionVariant.DISALLOWED) {
+                disallowCheckBox.setValue(true);
+                allowCheckBox.setValue(false);
+            } else {
+                allowCheckBox.setValue(false);
+                disallowCheckBox.setValue(false);
+            }
+        } else {
+            allowCheckBox.setValue(false);
+            disallowCheckBox.setValue(false);
+        }
+        itemChanging = false;
+    }
+
     protected void applyPermissions(boolean editable) {
         if (!editable) {
-            allowCheckBox.setEditable(editable);
-            disallowCheckBox.setEditable(editable);
+            allowCheckBox.setEditable(false);
+            disallowCheckBox.setEditable(false);
         }
     }
 

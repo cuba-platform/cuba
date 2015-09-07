@@ -14,7 +14,6 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -40,7 +39,6 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
     public TableModelAdapter(CollectionDatasource datasource, List<Table.Column> columns, boolean autoRefresh) {
-
         this.datasource = datasource;
         this.columns = columns;
         this.autoRefresh = autoRefresh;
@@ -57,55 +55,51 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
             }
         }
 
-        datasource.addListener(
-                new CollectionDsListenerAdapter<Entity>() {
-                    @Override
-                    public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
-                        switch (operation) {
-                            case ADD:
-                                fireBeforeChangeListeners(true);
-                                for (Entity e : items) {
-                                    int rowIndex = getRowIndex(e);
-                                    if (rowIndex >= 0) {
-                                        fireTableRowsInserted(rowIndex, rowIndex);
-                                    }
-                                }
-                                fireAfterChangeListeners(true);
-                                break;
-
-                            case UPDATE:
-                                fireBeforeChangeListeners(false);
-                                for (Entity e : items) {
-                                    int rowIndex = getRowIndex(e);
-                                    if (rowIndex >= 0) {
-                                        fireTableRowsUpdated(rowIndex, rowIndex);
-                                    }
-                                }
-                                fireAfterChangeListeners(false);
-                                break;
-
-                            case REMOVE:
-                            case CLEAR:
-                            case REFRESH:
-                                fireBeforeChangeListeners(true);
-                                fireTableDataChanged();
-                                fireAfterChangeListeners(true);
-                                break;
-                        }
-                    }
-
-                    @Override
-                    public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                        int rowIndex = getRowIndex(source);
-
+        //noinspection unchecked
+        datasource.addCollectionChangeListener(e -> {
+            switch (e.getOperation()) {
+                case ADD:
+                    fireBeforeChangeListeners(true);
+                    for (Object entity : e.getItems()) {
+                        int rowIndex = getRowIndex((Entity) entity);
                         if (rowIndex >= 0) {
-                            fireBeforeChangeListeners(false);
-                            fireTableRowsUpdated(rowIndex, rowIndex);
-                            fireAfterChangeListeners(false);
+                            fireTableRowsInserted(rowIndex, rowIndex);
                         }
                     }
-                }
-        );
+                    fireAfterChangeListeners(true);
+                    break;
+
+                case UPDATE:
+                    fireBeforeChangeListeners(false);
+                    for (Object entity : e.getItems()) {
+                        int rowIndex = getRowIndex((Entity) entity);
+                        if (rowIndex >= 0) {
+                            fireTableRowsUpdated(rowIndex, rowIndex);
+                        }
+                    }
+                    fireAfterChangeListeners(false);
+                    break;
+
+                case REMOVE:
+                case CLEAR:
+                case REFRESH:
+                    fireBeforeChangeListeners(true);
+                    fireTableDataChanged();
+                    fireAfterChangeListeners(true);
+                    break;
+            }
+        });
+
+        //noinspection unchecked
+        datasource.addItemPropertyChangeListener(e -> {
+            int rowIndex = getRowIndex(e.getItem());
+
+            if (rowIndex >= 0) {
+                fireBeforeChangeListeners(false);
+                fireTableRowsUpdated(rowIndex, rowIndex);
+                fireAfterChangeListeners(false);
+            }
+        });
     }
 
     protected void fireBeforeChangeListeners(boolean structureChanged) {

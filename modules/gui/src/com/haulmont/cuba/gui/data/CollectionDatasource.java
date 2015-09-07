@@ -98,7 +98,7 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     void updateItem(T item);
 
     /**
-     * Suspend invocation of <code>collectionChanged</code> method of registered {@link CollectionDatasourceListener}s.
+     * Suspend invocation of <code>collectionChanged</code> method of registered {@link CollectionChangeListener}s.
      * It makes sense in case of massive updates of the datasource by {@link #addItem(com.haulmont.cuba.core.entity.Entity)}
      * or similar methods.
      * After that, <code>collectionChanged</code> will be invoked once on {@link #resumeListeners()} call.
@@ -117,7 +117,7 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     void suspendListeners();
 
     /**
-     * Resume invocation of <code>collectionChanged</code> method of registered {@link CollectionDatasourceListener}s
+     * Resume invocation of <code>collectionChanged</code> method of registered {@link CollectionChangeListener}s
      * after calling {@link #suspendListeners()}.
      * It will call <code>collectionChanged</code> just once, doesn't matter how many updates were issued
      * since the previous {@link #suspendListeners()} call.
@@ -371,7 +371,7 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
         UPDATE
     }
 
-    class CollectionChangeEvent<T extends Entity> {
+    class CollectionChangeEvent<T extends Entity<K>, K> {
         private final CollectionDatasource ds;
         private final Operation operation;
         private final List<T> items;
@@ -382,7 +382,7 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
             this.items = items;
         }
 
-        public CollectionDatasource getDs() {
+        public CollectionDatasource<T, K> getDs() {
             return ds;
         }
 
@@ -395,10 +395,10 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
         }
     }
 
-    interface CollectionChangeListener<T extends Entity> {
-        void collectionChanged(CollectionChangeEvent<T> e);
+    interface CollectionChangeListener<T extends Entity<K>, K> {
+        void collectionChanged(CollectionChangeEvent<T, K> e);
     }
 
-    void addCollectionChangeListener(CollectionChangeListener<T> listener);
-    void removeCollectionChangeListener(CollectionChangeListener<T> listener);
+    void addCollectionChangeListener(CollectionChangeListener<T, K> listener);
+    void removeCollectionChangeListener(CollectionChangeListener<T, K> listener);
 }

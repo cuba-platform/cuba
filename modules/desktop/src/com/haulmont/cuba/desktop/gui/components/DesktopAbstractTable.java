@@ -691,7 +691,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
             rowsCount.setDatasource(datasource);
         }
 
-        datasource.addListener(new CollectionDsActionsNotifier(this));
+        new CollectionDsActionsNotifier(this).bind(datasource);
 
         for (Action action : getActions()) {
             action.refreshState();

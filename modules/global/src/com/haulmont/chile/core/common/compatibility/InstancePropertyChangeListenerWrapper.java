@@ -22,12 +22,17 @@ public class InstancePropertyChangeListenerWrapper implements Instance.PropertyC
     }
 
     @Override
+    public void propertyChanged(Instance.PropertyChangeEvent e) {
+        listener.propertyChanged(e.getItem(), e.getProperty(), e.getPrevValue(), e.getValue());
+    }
+
+    @Override
     public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
+        if (obj == this) {
+            return true;
         }
 
-        if (getClass() != obj.getClass()) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
 
@@ -39,10 +44,5 @@ public class InstancePropertyChangeListenerWrapper implements Instance.PropertyC
     @Override
     public int hashCode() {
         return listener.hashCode();
-    }
-
-    @Override
-    public void propertyChanged(Instance.PropertyChangeEvent e) {
-        listener.propertyChanged(e.getItem(), e.getProperty(), e.getPrevValue(), e.getValue());
     }
 }

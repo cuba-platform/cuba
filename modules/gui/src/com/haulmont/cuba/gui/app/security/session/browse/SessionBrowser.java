@@ -11,8 +11,6 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
 import org.apache.commons.lang.StringUtils;
@@ -73,25 +71,22 @@ public class SessionBrowser extends AbstractLookup {
             companion.enableTextSelection(sessionsTable);
         }
 
-        sessionsDs.addListener(new CollectionDsListenerAdapter<UserSessionEntity>() {
-            @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation, List<UserSessionEntity> items) {
-                String time = Datatypes.getNN(Date.class).format(sessionsDs.getUpdateTs(), userSessionSource.getLocale());
-                lastUpdateTsLab.setValue(time);
+        sessionsDs.addCollectionChangeListener(e -> {
+            String time = Datatypes.getNN(Date.class).format(sessionsDs.getUpdateTs(), userSessionSource.getLocale());
+            lastUpdateTsLab.setValue(time);
 
-                Map<String, Object> info = uss.getLicenseInfo();
-                Integer licensed = (Integer) info.get("licensedSessions");
-                Integer active = (Integer) info.get("activeSessions");
-                if (licensed == 0) {
-                    sessionsInfo.setVisible(false);
+            Map<String, Object> info = uss.getLicenseInfo();
+            Integer licensed = (Integer) info.get("licensedSessions");
+            Integer active = (Integer) info.get("activeSessions");
+            if (licensed == 0) {
+                sessionsInfo.setVisible(false);
+            } else {
+                sessionsInfo.setValue(messages.formatMessage(getMessagesPack(), "sessionsInfo",
+                        info.get("activeSessions"), info.get("licensedSessions")));
+                if (active > licensed) {
+                    sessionsInfo.setStyleName("h2-red");
                 } else {
-                    sessionsInfo.setValue(messages.formatMessage(getMessagesPack(), "sessionsInfo",
-                            info.get("activeSessions"), info.get("licensedSessions")));
-                    if (active > licensed) {
-                        sessionsInfo.setStyleName("h2-red");
-                    } else {
-                        sessionsInfo.setStyleName(null);
-                    }
+                    sessionsInfo.setStyleName(null);
                 }
             }
         });

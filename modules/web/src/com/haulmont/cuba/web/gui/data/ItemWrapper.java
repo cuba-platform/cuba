@@ -12,8 +12,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerWeakWrapper;
+import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 
@@ -32,7 +31,7 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
 
     protected Object item;
     protected MetaClass metaClass;
-    protected CollectionDsListenerAdapter<Entity> collectionDslistener;
+    protected CollectionDatasource.CollectionChangeListener cdsCollectionChangeListener;
 
     public ItemWrapper(Object item, MetaClass metaClass) {
         this(item, metaClass, AppBeans.<MetadataTools>get(MetadataTools.NAME).getPropertyPaths(metaClass));
@@ -47,15 +46,11 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
         }
 
         if (item instanceof CollectionDatasource) {
-            collectionDslistener = new CollectionDsListenerAdapter<Entity>() {
-                @Override
-                public void itemChanged(Datasource<Entity> ds, Entity prevItem, Entity item) {
-                    fireItemPropertySetChanged();
-                }
-            };
+            cdsCollectionChangeListener = e -> fireItemPropertySetChanged();
+
             CollectionDatasource datasource = (CollectionDatasource) item;
             //noinspection unchecked
-            datasource.addListener(new CollectionDsListenerWeakWrapper(datasource, collectionDslistener));
+            datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource, cdsCollectionChangeListener));
         }
     }
 

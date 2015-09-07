@@ -4,18 +4,13 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.RowsCount;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.web.toolkit.ui.CubaRowsCount;
-import com.vaadin.ui.Button;
-
-import java.util.List;
 
 /**
  * @author krivopustov
@@ -45,38 +40,12 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         this.datasource = datasource;
         if (datasource != null) {
             //noinspection unchecked
-            this.datasource.addListener(
-                    new CollectionDsListenerAdapter<Entity>() {
-                        @Override
-                        public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
-                            onCollectionChanged();
-                        }
-                    }
-            );
-            component.getCountButton().addClickListener(
-                    new Button.ClickListener() {
-                        @Override
-                        public void buttonClick(Button.ClickEvent event) {
-                            onLinkClick();
-                        }
-                    }
-            );
-            component.getPrevButton().addClickListener(
-                    new Button.ClickListener() {
-                        @Override
-                        public void buttonClick(Button.ClickEvent event) {
-                            onPrevClick();
-                        }
-                    }
-            );
-            component.getNextButton().addClickListener(
-                    new Button.ClickListener() {
-                        @Override
-                        public void buttonClick(Button.ClickEvent event) {
-                            onNextClick();
-                        }
-                    }
-            );
+            this.datasource.addCollectionChangeListener(e -> onCollectionChanged());
+
+            component.getCountButton().addClickListener(event -> onLinkClick());
+            component.getPrevButton().addClickListener(event -> onPrevClick());
+            component.getNextButton().addClickListener(event -> onNextClick());
+
             if (datasource.getState() == Datasource.State.VALID) {
                 onCollectionChanged();
             }
@@ -94,8 +63,9 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     }
 
     protected void onPrevClick() {
-        if (!(datasource instanceof CollectionDatasource.SupportsPaging))
+        if (!(datasource instanceof CollectionDatasource.SupportsPaging)) {
             return;
+        }
 
         CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
         int newStart = ds.getFirstResult() - ds.getMaxResults();
@@ -108,8 +78,9 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     }
 
     protected void onNextClick() {
-        if (!(datasource instanceof CollectionDatasource.SupportsPaging))
+        if (!(datasource instanceof CollectionDatasource.SupportsPaging)) {
             return;
+        }
 
         CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
         int firstResult = ds.getFirstResult();
@@ -139,8 +110,9 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     }
 
     protected void onLinkClick() {
-        if (datasource == null || !(datasource instanceof CollectionDatasource.SupportsPaging))
+        if (datasource == null || !(datasource instanceof CollectionDatasource.SupportsPaging)) {
             return;
+        }
 
         int count = ((CollectionDatasource.SupportsPaging) datasource).getCount();
         component.getCountButton().setCaption(String.valueOf(count));
@@ -148,8 +120,9 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     }
 
     protected void onCollectionChanged() {
-        if (datasource == null)
+        if (datasource == null) {
             return;
+        }
 
         String msgKey;
         size = datasource.size();
@@ -167,8 +140,9 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
             } else if (size < ds.getMaxResults() && ds.getFirstResult() > 0) {
                 state = State.LAST;
                 start = ds.getFirstResult();
-            } else
+            } else {
                 state = State.FIRST_COMPLETE;
+            }
         } else {
             state = State.FIRST_COMPLETE;
         }

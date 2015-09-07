@@ -5,16 +5,11 @@
 
 package com.haulmont.cuba.gui.components.actions;
 
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ListComponent;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
-import com.haulmont.cuba.gui.data.Datasource;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * Action that can change its enabled and visible properties depending on the user permissions and current context.
@@ -36,8 +31,7 @@ import java.util.List;
  * @author artamonov
  * @version $Id$
  */
-public abstract class BaseAction extends AbstractAction
-        implements Action.HasTarget, Action.UiPermissionAware, CollectionDatasourceListener<Entity> {
+public abstract class BaseAction extends AbstractAction implements Action.HasTarget, Action.UiPermissionAware {
 
     private boolean enabledByUiPermissions = true;
     private boolean visibleByUiPermissions = true;
@@ -119,26 +113,6 @@ public abstract class BaseAction extends AbstractAction
 
             refreshState();
         }
-    }
-
-    @Override
-    public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
-        refreshState();
-    }
-
-    @Override
-    public void itemChanged(Datasource<Entity> ds, @Nullable Entity prevItem, @Nullable Entity item) {
-        refreshState();
-    }
-
-    @Override
-    public void stateChanged(Datasource<Entity> ds, Datasource.State prevState, Datasource.State state) {
-        refreshState();
-    }
-
-    @Override
-    public void valueChanged(Entity source, String property, @Nullable Object prevValue, @Nullable Object value) {
-        refreshState();
     }
 
     @Override

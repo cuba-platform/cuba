@@ -20,7 +20,6 @@ import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.*;
@@ -102,29 +101,25 @@ public class UserBrowser extends AbstractLookup {
 
         resetRememberMeAction.setEnabled(security.isEntityOpPermitted(RememberMeToken.class, EntityOp.DELETE));
 
-        usersDs.addListener(new CollectionDsListenerAdapter<User>() {
-            @Override
-            public void itemChanged(Datasource<User> ds, User prevItem, User item) {
-                if (usersTable.getSelected().size() > 1) {
-                    copyAction.setEnabled(false);
-                    changePasswAction.setEnabled(false);
-                } else {
-                    copyAction.setEnabled(hasPermissionsToCreateUsers && item != null);
-                    changePasswAction.setEnabled(hasPermissionsToUpdateUsers && item != null);
-                }
-
-                changePasswAtLogonAction.setEnabled(hasPermissionsToUpdateUsers && item != null);
-                copySettingsAction.setEnabled(hasPermissionsToCreateSettings && item != null);
+        usersDs.addItemChangeListener(e -> {
+            if (usersTable.getSelected().size() > 1) {
+                copyAction.setEnabled(false);
+                changePasswAction.setEnabled(false);
+            } else {
+                copyAction.setEnabled(hasPermissionsToCreateUsers && e.getItem() != null);
+                changePasswAction.setEnabled(hasPermissionsToUpdateUsers && e.getItem() != null);
             }
 
-            @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation, List<User> items) {
-                if (ds.getState() == Datasource.State.VALID) {
-                    copyAction.setEnabled(hasPermissionsToCreateUsers && ds.getItem() != null);
-                    changePasswAction.setEnabled(hasPermissionsToUpdateUsers && ds.getItem() != null);
-                    changePasswAtLogonAction.setEnabled(hasPermissionsToUpdateUsers && ds.getItem() != null);
-                    copySettingsAction.setEnabled(hasPermissionsToCreateSettings && ds.getItem() != null);
-                }
+            changePasswAtLogonAction.setEnabled(hasPermissionsToUpdateUsers && e.getItem() != null);
+            copySettingsAction.setEnabled(hasPermissionsToCreateSettings && e.getItem() != null);
+        });
+
+        usersDs.addCollectionChangeListener(e -> {
+            if (e.getDs().getState() == Datasource.State.VALID) {
+                copyAction.setEnabled(hasPermissionsToCreateUsers && e.getDs().getItem() != null);
+                changePasswAction.setEnabled(hasPermissionsToUpdateUsers && e.getDs().getItem() != null);
+                changePasswAtLogonAction.setEnabled(hasPermissionsToUpdateUsers && e.getDs().getItem() != null);
+                copySettingsAction.setEnabled(hasPermissionsToCreateSettings && e.getDs().getItem() != null);
             }
         });
 

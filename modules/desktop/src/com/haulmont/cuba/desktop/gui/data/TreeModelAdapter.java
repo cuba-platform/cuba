@@ -12,7 +12,6 @@ import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;
@@ -35,12 +34,12 @@ public class TreeModelAdapter implements TreeModel {
 
     protected Object rootNode = "Root";
 
-    private List<TreeModelListener> listeners = new ArrayList<>();
+    protected List<TreeModelListener> listeners = new ArrayList<>();
 
-    private CaptionMode captionMode;
-    private String captionProperty;
+    protected CaptionMode captionMode;
+    protected String captionProperty;
 
-    private boolean autoRefresh;
+    protected boolean autoRefresh;
 
     public TreeModelAdapter(HierarchicalDatasource datasource, CaptionMode captionMode, String captionProperty,
                             boolean autoRefresh) {
@@ -49,35 +48,34 @@ public class TreeModelAdapter implements TreeModel {
         this.captionProperty = captionProperty;
         this.autoRefresh = autoRefresh;
 
-        datasource.addListener(
-                new CollectionDsListenerAdapter<Entity>() {
-                    @Override
-                    public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
-                        switch (operation) {
-                            case CLEAR:
-                            case REFRESH:
-                            case ADD:
-                            case REMOVE:
-                                Object[] path = {getRoot()};
-                                for (TreeModelListener listener : listeners) {
-                                    TreeModelEvent ev = new TreeModelEvent(this, path);
-                                    listener.treeStructureChanged(ev);
-                                }
-                                break;
-
-                            case UPDATE:
-                                for (Entity item : items) {
-                                    TreePath treePath = getTreePath(item);
-                                    for (TreeModelListener listener : listeners) {
-                                        TreeModelEvent ev = new TreeModelEvent(this, treePath.getPath());
-                                        listener.treeNodesChanged(ev);
-                                    }
-                                }
-                                break;
+        //noinspection unchecked
+        datasource.addCollectionChangeListener(new CollectionDatasource.CollectionChangeListener() {
+            @Override
+            public void collectionChanged(CollectionDatasource.CollectionChangeEvent e) {
+                switch (e.getOperation()) {
+                    case CLEAR:
+                    case REFRESH:
+                    case ADD:
+                    case REMOVE:
+                        Object[] path = {getRoot()};
+                        for (TreeModelListener listener : listeners) {
+                            TreeModelEvent ev = new TreeModelEvent(this, path);
+                            listener.treeStructureChanged(ev);
                         }
-                    }
+                        break;
+
+                    case UPDATE:
+                        for (Object item : e.getItems()) {
+                            TreePath treePath = getTreePath(item);
+                            for (TreeModelListener listener : listeners) {
+                                TreeModelEvent ev = new TreeModelEvent(this, treePath.getPath());
+                                listener.treeNodesChanged(ev);
+                            }
+                        }
+                        break;
                 }
-        );
+            }
+        });
     }
 
     @Override

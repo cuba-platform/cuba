@@ -16,7 +16,6 @@ import com.haulmont.cuba.gui.app.security.entity.MultiplePermissionTarget;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
@@ -238,53 +237,46 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
         attributeTargetsDs.setPermissionDs(propertyPermissionsDs);
         attributeTargetsDs.setFilter(
-                new EntityNameFilter<MultiplePermissionTarget>(
+                new EntityNameFilter<>(
                         metadata, assignedOnlyCheckBox, systemLevelCheckBox, entityFilter));
 
         propertyPermissionsDs.refresh();
 
         // client specific code
         companion.initPermissionColoredColumn(propertyPermissionsTable);
-        companion.initTextFieldFilter(entityFilter, new Runnable() {
-            @Override
-            public void run() {
-                applyFilter();
+        companion.initTextFieldFilter(entityFilter, this::applyFilter);
+
+        attributeTargetsDs.addItemChangeListener(e -> {
+            if (!selectedEntityPanel.isVisible() && (e.getItem() != null)) {
+                selectedEntityPanel.setVisible(true);
             }
-        });
+            if (selectedEntityPanel.isVisible() && (e.getItem() == null)) {
+                selectedEntityPanel.setVisible(false);
+            }
 
-        attributeTargetsDs.addListener(new CollectionDsListenerAdapter<MultiplePermissionTarget>() {
-            @Override
-            public void itemChanged(Datasource<MultiplePermissionTarget> ds,
-                                    MultiplePermissionTarget prevItem, final MultiplePermissionTarget item) {
-                if (!selectedEntityPanel.isVisible() && (item != null))
-                    selectedEntityPanel.setVisible(true);
-                if (selectedEntityPanel.isVisible() && (item == null))
-                    selectedEntityPanel.setVisible(false);
+            String caption = e.getItem() != null ? e.getItem().getCaption() : "";
 
-                String caption = item != null ? item.getCaption() : "";
+            String name;
+            String localName;
 
-                String name;
-                String localName;
+            int delimiterIndex = caption.lastIndexOf(" ");
+            if (delimiterIndex >= 0) {
+                localName = caption.substring(0, delimiterIndex);
+                name = caption.substring(delimiterIndex + 1);
+            } else {
+                name = caption;
+                localName = "";
+            }
 
-                int delimiterIndex = caption.lastIndexOf(" ");
-                if (delimiterIndex >= 0) {
-                    localName = caption.substring(0, delimiterIndex);
-                    name = caption.substring(delimiterIndex + 1);
-                } else {
-                    name = caption;
-                    localName = "";
-                }
+            selectedTargetCaption.setVisible(e.getItem() != null);
+            selectedTargetCaption.setValue(name);
 
-                selectedTargetCaption.setVisible(item != null);
-                selectedTargetCaption.setValue(name);
+            selectedTargetLocalCaption.setVisible(e.getItem() != null);
+            selectedTargetLocalCaption.setValue(localName);
 
-                selectedTargetLocalCaption.setVisible(item != null);
-                selectedTargetLocalCaption.setValue(localName);
-
-                clearEditGrid();
-                if (item != null) {
-                    compileEditPane(item);
-                }
+            clearEditGrid();
+            if (e.getItem() != null) {
+                compileEditPane(e.getItem());
             }
         });
 

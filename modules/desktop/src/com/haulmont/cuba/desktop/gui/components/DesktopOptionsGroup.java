@@ -10,7 +10,6 @@ import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.OptionsGroup;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -77,26 +76,20 @@ public class DesktopOptionsGroup extends DesktopAbstractOptionsField<JPanel> imp
                 addItem(new EntityWrapper(item));
             }
 
-            optionsDatasource.addListener(
-                    new CollectionDsListenerAdapter<Entity<Object>>() {
-                        @Override
-                        public void collectionChanged(CollectionDatasource ds, Operation operation,
-                                                      List<Entity<Object>> items) {
-                            Object value = getValue();
+            optionsDatasource.addCollectionChangeListener(e -> {
+                Object value = getValue();
 
-                            removeAllItems();
-                            for (Object id : ds.getItemIds()) {
-                                addItem(new EntityWrapper(ds.getItem(id)));
-                            }
+                removeAllItems();
+                for (Object id : e.getDs().getItemIds()) {
+                    addItem(new EntityWrapper(e.getDs().getItem(id)));
+                }
 
-                            updateComponent(value);
-                            fireChangeListeners(getValue());
+                updateComponent(value);
+                fireChangeListeners(getValue());
 
-                            impl.revalidate();
-                            impl.repaint();
-                        }
-                    }
-            );
+                impl.revalidate();
+                impl.repaint();
+            });
 
             if ((datasource!= null) && (datasource.getState() == Datasource.State.VALID)) {
                 Entity newValue = datasource.getItem();

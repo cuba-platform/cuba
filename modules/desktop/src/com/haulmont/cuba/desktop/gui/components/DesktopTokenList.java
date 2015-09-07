@@ -22,7 +22,6 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 
 import javax.annotation.Nullable;
 import javax.swing.BoxLayout;
@@ -136,24 +135,22 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
     @Override
     public void setDatasource(CollectionDatasource datasource) {
         this.datasource = datasource;
-        datasource.addListener(new CollectionDsListenerAdapter<Entity>() {
-            @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
-                if (lookupPickerField != null) {
-                    if (isLookup()) {
-                        if (getLookupScreen() != null)
-                            lookupAction.setLookupScreen(getLookupScreen());
-                        else
-                            lookupAction.setLookupScreen(null);
 
-                        lookupAction.setLookupScreenOpenType(lookupOpenMode);
-                        lookupAction.setLookupScreenParams(lookupScreenParams);
-                        lookupAction.setLookupScreenDialogParams(lookupScreenDialogParams);
-                    }
+        datasource.addCollectionChangeListener(e -> {
+            if (lookupPickerField != null) {
+                if (isLookup()) {
+                    if (getLookupScreen() != null)
+                        lookupAction.setLookupScreen(getLookupScreen());
+                    else
+                        lookupAction.setLookupScreen(null);
+
+                    lookupAction.setLookupScreenOpenType(lookupOpenMode);
+                    lookupAction.setLookupScreenParams(lookupScreenParams);
+                    lookupAction.setLookupScreenDialogParams(lookupScreenDialogParams);
                 }
-                impl.refreshComponent();
-                impl.refreshClickListeners(itemClickListener);
             }
+            impl.refreshComponent();
+            impl.refreshClickListeners(itemClickListener);
         });
     }
 
@@ -406,7 +403,7 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
     @SuppressWarnings("unchecked")
     public <T> T getValue() {
         if (datasource != null) {
-            List<Object> items = new ArrayList<Object>(datasource.getItems());
+            List<Object> items = new ArrayList<>(datasource.getItems());
             return (T) items;
         } else
             return (T) Collections.emptyList();

@@ -9,7 +9,6 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.app.ui.jmxcontrol.util.AttributeEditor;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
@@ -33,7 +32,7 @@ public class MbeanInspectWindow extends AbstractEditor {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
-    protected Table attributesTable;
+    protected Table<ManagedBeanAttribute> attributesTable;
 
     @Named("attributesTable.edit")
     protected Action editAttributeAction;
@@ -55,12 +54,10 @@ public class MbeanInspectWindow extends AbstractEditor {
         vaadinAttrTable.setTextSelectionEnabled(true);
 
         attributesTable.setItemClickAction(editAttributeAction);
-        attrDs.addListener(new CollectionDsListenerAdapter<ManagedBeanAttribute>() {
-            @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation, List<ManagedBeanAttribute> items) {
-                if (ds.getItemIds().isEmpty()) {
-                    attributesTable.setHeight("80px"); // reduce its height if no attributes
-                }
+
+        attrDs.addCollectionChangeListener(e -> {
+            if (e.getDs().getItemIds().isEmpty()) {
+                attributesTable.setHeight("80px"); // reduce its height if no attributes
             }
         });
 
