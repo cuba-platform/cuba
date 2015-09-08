@@ -37,7 +37,6 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.filter.DenyingClause;
 import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.presentations.Presentations;
@@ -266,7 +265,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         filtersLookup = componentsFactory.createComponent(LookupField.class);
         filtersLookup.setWidth(theme.get("cuba.gui.filter.select.width"));
-        filtersLookup.addListener(new FiltersLookupChangeListener());
+        filtersLookup.addValueChangeListener(new FiltersLookupChangeListener());
         filterHelper.setLookupNullSelectionAllowed(filtersLookup, false);
 
         addConditionBtn = componentsFactory.createComponent(LinkButton.class);
@@ -1859,23 +1858,22 @@ public class FilterDelegateImpl implements FilterDelegate {
         return new ControlsLayoutBuilder(layoutDescription);
     }
 
-    protected class FiltersLookupChangeListener implements ValueListener {
-
+    protected class FiltersLookupChangeListener implements Component.ValueChangeListener {
         public FiltersLookupChangeListener() {
         }
 
         @Override
-        public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
+        public void valueChanged(Component.ValueChangeEvent e) {
             if (!filtersLookupListenerEnabled) return;
-            if (value instanceof FilterEntity) {
-                setFilterEntity((FilterEntity) value);
+            if (e.getValue() instanceof FilterEntity) {
+                setFilterEntity((FilterEntity) e.getValue());
             }
         }
     }
 
     protected class SaveAction extends AbstractAction {
 
-        protected SaveAction() {
+        public SaveAction() {
             super("save");
         }
 

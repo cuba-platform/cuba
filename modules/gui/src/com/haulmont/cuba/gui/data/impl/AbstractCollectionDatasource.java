@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.FrameContext;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleDatasourceListenerWrapper;
@@ -249,7 +250,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                             if (componentValueListener == null)
                                 componentValueListener = new ComponentValueListener();
                             try {
-                                dsContext.getFrameContext().addValueListener(path, componentValueListener);
+                                dsContext.getFrameContext().addValueChangeListener(path, componentValueListener);
                             } catch (Exception e) {
                                 log.error("Unable to add value listener: " + e);
                             }
@@ -631,9 +632,9 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         this.refreshMode = refreshMode;
     }
 
-    private class ComponentValueListener implements ValueListener {
+    private class ComponentValueListener implements Component.ValueChangeListener {
         @Override
-        public void valueChanged(Object source, String property, Object prevValue, Object value) {
+        public void valueChanged(Component.ValueChangeEvent e) {
             refresh();
         }
     }

@@ -5,6 +5,7 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.compatibility.ComponentValueChangeListenerWrapper;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
@@ -132,11 +133,21 @@ public class FrameContextImpl implements FrameContext {
 
     @Override
     public void addValueListener(String componentName, ValueListener listener) {
+        addValueChangeListener(componentName, new ComponentValueChangeListenerWrapper(listener));
+    }
+
+    @Override
+    public void removeValueListener(String componentName, ValueListener listener) {
+        removeValueChangeListener(componentName, new ComponentValueChangeListenerWrapper(listener));
+    }
+
+    @Override
+    public void addValueChangeListener(String componentName, Component.ValueChangeListener listener) {
         Component component = frame.getComponent(componentName);
         if (component == null)
             throw new RuntimeException("Component not found: " + componentName);
         if (component instanceof Component.HasValue) {
-            ((Component.HasValue) component).addListener(listener);
+            ((Component.HasValue) component).addValueChangeListener(listener);
         } else if (component instanceof ListComponent) {
             throw new UnsupportedOperationException("List component is not supported yet");
         } else {
@@ -145,12 +156,12 @@ public class FrameContextImpl implements FrameContext {
     }
 
     @Override
-    public void removeValueListener(String componentName, ValueListener listener) {
+    public void removeValueChangeListener(String componentName, Component.ValueChangeListener listener) {
         Component component = frame.getComponent(componentName);
         if (component == null)
             throw new RuntimeException("Component not found: " + componentName);
         if (component instanceof Component.HasValue) {
-            ((Component.HasValue) component).removeListener(listener);
+            ((Component.HasValue) component).removeValueChangeListener(listener);
         } else if (component instanceof ListComponent) {
             throw new UnsupportedOperationException("List component is not supported yet");
         } else {

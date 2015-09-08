@@ -12,9 +12,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.web.app.ui.jmxcontrol.ds.ManagedBeanInfoDatasource;
-import com.haulmont.cuba.web.app.ui.jmxinstance.edit.JmxInstanceEditor;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
 import com.haulmont.cuba.web.jmx.JmxControlException;
 import com.haulmont.cuba.web.jmx.entity.ManagedBeanInfo;
@@ -23,7 +21,10 @@ import org.apache.commons.lang.StringUtils;
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.inject.Inject;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * @author budarov
@@ -58,7 +59,7 @@ public class MbeansDisplayWindow extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        objectNameField.addListener(new ObjectNameFieldListener());
+        objectNameField.addValueChangeListener(new ObjectNameFieldListener());
 
         mbeansTable.addAction(new RefreshAction(mbeansTable));
 
@@ -163,13 +164,13 @@ public class MbeansDisplayWindow extends AbstractWindow {
         });
     }
 
-    private class ObjectNameFieldListener implements ValueListener {
+    private class ObjectNameFieldListener implements Component.ValueChangeListener {
         @Override
-        public void valueChanged(Object source, String property, Object prevValue, Object value) {
+        public void valueChanged(ValueChangeEvent e) {
             Map<String, Object> params = new HashMap<>();
-            params.put("objectName", value);
+            params.put("objectName", e.getValue());
             mbeanDs.refresh(params);
-            if (StringUtils.isNotEmpty((String) value)) {
+            if (StringUtils.isNotEmpty((String) e.getValue())) {
                 mbeansTable.expandAll();
             }
         }

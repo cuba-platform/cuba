@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 /**
  * Listener to value change events
  *
+ * @deprecated Use {@link com.haulmont.cuba.gui.components.Component.ValueChangeListener}
  * @param <T> type of event source
  * @author abramov
  * @version $Id$
