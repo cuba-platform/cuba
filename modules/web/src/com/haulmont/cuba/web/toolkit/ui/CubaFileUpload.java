@@ -12,6 +12,7 @@ import com.vaadin.server.*;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.LegacyComponent;
+import com.vaadin.util.ReflectTools;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -68,17 +69,14 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
             }
         });
 
-        setErrorHandler(new ErrorHandler() {
-            @Override
-            public void error(com.vaadin.server.ErrorEvent event) {
-                Logger log = LoggerFactory.getLogger(CubaFileUpload.class);
-                //noinspection ThrowableResultOfMethodCallIgnored
-                Throwable ex = event.getThrowable();
-                if (StringUtils.contains(ExceptionUtils.getRootCauseMessage(ex), "The multipart stream ended unexpectedly")) {
-                    log.warn("Unable to upload file, it seems upload canceled or network error occurred");
-                } else {
-                    log.warn("Unexpected error in CubaFileUpload", ex);
-                }
+        setErrorHandler(event -> {
+            Logger log = LoggerFactory.getLogger(CubaFileUpload.class);
+            //noinspection ThrowableResultOfMethodCallIgnored
+            Throwable ex = event.getThrowable();
+            if (StringUtils.contains(ExceptionUtils.getRootCauseMessage(ex), "The multipart stream ended unexpectedly")) {
+                log.warn("Unable to upload file, it seems upload canceled or network error occurred");
+            } else {
+                log.warn("Unexpected error in CubaFileUpload", ex);
             }
         });
     }
@@ -138,7 +136,7 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
     /**
      * Set whether the caption text is rendered as HTML or not. You might need to re-theme button to allow higher
      * content than the original text style.
-     * <p/>
+     * <p>
      * If set to true, the captions are passed to the browser as html and the developer is responsible for ensuring no
      * harmful html is used. If set to false, the content is passed to the browser as plain text.
      *
@@ -152,7 +150,7 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
 
     /**
      * Sets the component's icon and alt text.
-     * <p/>
+     * <p>
      * An alt text is shown when an image could not be loaded, and read by assistive devices.
      *
      * @param icon        the icon to be shown with the component's caption.
@@ -336,7 +334,7 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
     /**
      * Go into upload state. This is to prevent double uploading on same
      * component.
-     * <p/>
+     * <p>
      * Warning: this is an internal method used by the framework and should not
      * be used by user of the Upload component. Using it results in the Upload
      * component going in wrong state and not working. It is currently public
@@ -361,7 +359,7 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
 
     /**
      * Go into state where new uploading can begin.
-     * <p/>
+     * <p>
      * Warning: this is an internal method used by the framework and should not be used by user of the Upload component.
      */
     protected void endUpload() {
@@ -439,7 +437,7 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
         /**
          * Length of the received file.
          */
-        private final long length;
+        private final long contentLength;
 
         /**
          * MIME type of the received file.
@@ -452,17 +450,17 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
         private final String fileName;
 
         /**
-         * @param source   the source of the file.
-         * @param fileName the received file name.
-         * @param MIMEType the MIME type of the received file.
-         * @param length   the length of the received file.
+         * @param source        the source of the file.
+         * @param fileName      the received file name.
+         * @param MIMEType      the MIME type of the received file.
+         * @param contentLength the contentLength of the received file.
          */
         public FinishedEvent(CubaFileUpload source, String fileName, String MIMEType,
-                             long length) {
+                             long contentLength) {
             super(source);
             type = MIMEType;
             this.fileName = fileName;
-            this.length = length;
+            this.contentLength = contentLength;
         }
 
         /**
@@ -493,12 +491,12 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
         }
 
         /**
-         * Gets the length of the file.
+         * Gets the contentLength of the file.
          *
-         * @return the length.
+         * @return the contentLength.
          */
-        public long getLength() {
-            return length;
+        public long getContentLength() {
+            return contentLength;
         }
     }
 
@@ -592,14 +590,14 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
         /**
          * Length of the received file.
          */
-        private final long length;
+        private final long contentLength;
 
         public StartedEvent(CubaFileUpload source, String fileName, String MIMEType,
                             long contentLength) {
             super(source);
             this.fileName = fileName;
             type = MIMEType;
-            length = contentLength;
+            this.contentLength = contentLength;
         }
 
         /**
@@ -630,10 +628,10 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
         }
 
         /**
-         * @return the length of the file that is being uploaded
+         * @return the contentLength of the file that is being uploaded
          */
         public long getContentLength() {
-            return length;
+            return contentLength;
         }
     }
 
@@ -722,31 +720,23 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
         void fileSizeLimitExceeded(FileSizeLimitExceededEvent e);
     }
 
-    private static final Method UPLOAD_FINISHED_METHOD;
+    private static final Method UPLOAD_FINISHED_METHOD = ReflectTools.findMethod(
+            FinishedListener.class, "uploadFinished", FinishedEvent.class);
 
-    private static final Method QUEUE_UPLOAD_FINISHED_METHOD;
+    private static final Method QUEUE_UPLOAD_FINISHED_METHOD = ReflectTools.findMethod(
+            QueueFinishedListener.class, "queueUploadFinished", QueueFinishedEvent.class);
 
-    private static final Method UPLOAD_FAILED_METHOD;
+    private static final Method UPLOAD_FAILED_METHOD = ReflectTools.findMethod(
+            FailedListener.class, "uploadFailed", FailedEvent.class);
 
-    private static final Method UPLOAD_SUCCEEDED_METHOD;
+    private static final Method UPLOAD_STARTED_METHOD = ReflectTools.findMethod(
+            StartedListener.class, "uploadStarted", StartedEvent.class);
 
-    private static final Method UPLOAD_STARTED_METHOD;
+    private static final Method UPLOAD_SUCCEEDED_METHOD = ReflectTools.findMethod(
+            SucceededListener.class, "uploadSucceeded", SucceededEvent.class);
 
-    private static final Method FILESIZE_LIMIT_EXCEEDED_METHOD;
-
-    static {
-        try {
-            UPLOAD_FINISHED_METHOD = FinishedListener.class.getDeclaredMethod("uploadFinished", FinishedEvent.class);
-            QUEUE_UPLOAD_FINISHED_METHOD = QueueFinishedListener.class.getDeclaredMethod("queueUploadFinished", QueueFinishedEvent.class);
-            UPLOAD_FAILED_METHOD = FailedListener.class.getDeclaredMethod("uploadFailed", FailedEvent.class);
-            UPLOAD_STARTED_METHOD = StartedListener.class.getDeclaredMethod("uploadStarted", StartedEvent.class);
-            UPLOAD_SUCCEEDED_METHOD = SucceededListener.class.getDeclaredMethod("uploadSucceeded", SucceededEvent.class);
-            FILESIZE_LIMIT_EXCEEDED_METHOD = FileSizeLimitExceededListener.class.getDeclaredMethod("fileSizeLimitExceeded", FileSizeLimitExceededEvent.class);
-        } catch (final java.lang.NoSuchMethodException e) {
-            // This should never happen
-            throw new java.lang.RuntimeException("Internal error finding methods in CubaFileUpload", e);
-        }
-    }
+    private static final Method FILESIZE_LIMIT_EXCEEDED_METHOD = ReflectTools.findMethod(
+            FileSizeLimitExceededListener.class, "fileSizeLimitExceeded", FileSizeLimitExceededEvent.class);
 
     public void addStartedListener(StartedListener listener) {
         addListener(StartedEvent.class, listener, UPLOAD_STARTED_METHOD);

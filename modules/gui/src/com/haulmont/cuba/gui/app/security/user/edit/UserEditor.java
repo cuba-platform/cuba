@@ -115,31 +115,26 @@ public class UserEditor extends AbstractEditor<User> {
 
         initCustomFields(PersistenceHelper.isNew(WindowParams.ITEM.getEntity(params)));
 
-        dsContext.addListener(
-                new DsContext.CommitListenerAdapter() {
-                    @Override
-                    public void afterCommit(CommitContext context, Set<Entity> result) {
-                        for (Entity entity : result) {
-                            if (entity.equals(userSession.getUser())) {
-                                userSession.setUser((User) entity);
-                            }
-                            if (entity.equals(userSession.getSubstitutedUser())) {
-                                userSession.setSubstitutedUser((User) entity);
-                            }
-                        }
+        dsContext.addAfterCommitListener((context, result) -> {
+            for (Entity entity : result) {
+                if (entity.equals(userSession.getUser())) {
+                    userSession.setUser((User) entity);
+                }
+                if (entity.equals(userSession.getSubstitutedUser())) {
+                    userSession.setSubstitutedUser((User) entity);
+                }
+            }
 
-                        Companion companion = getCompanion();
-                        if (companion != null && userSession.getUser().equals(getItem())) {
-                            for (Entity entity : result) {
-                                if (entity instanceof UserSubstitution) {
-                                    companion.refreshUserSubstitutions();
-                                    break;
-                                }
-                            }
-                        }
+            Companion companion = getCompanion();
+            if (companion != null && userSession.getUser().equals(getItem())) {
+                for (Entity entity : result) {
+                    if (entity instanceof UserSubstitution) {
+                        companion.refreshUserSubstitutions();
+                        break;
                     }
                 }
-        );
+            }
+        });
     }
 
     @Override

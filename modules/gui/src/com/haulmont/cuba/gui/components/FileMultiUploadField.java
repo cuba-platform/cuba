@@ -11,13 +11,12 @@ import java.util.UUID;
  * @author artamonov
  * @version $Id$
  */
-public interface FileMultiUploadField extends Component, Component.HasCaption, Component.BelongToFrame, Component.HasIcon {
+public interface FileMultiUploadField extends UploadComponentSupport {
 
     String NAME = "multiUpload";
 
     @Deprecated
     abstract class UploadListener {
-
         /**
          * File upload finished. Executed in uploading thread. <br/>
          * <b>Do not perform progress indication here!</b>
@@ -64,7 +63,7 @@ public interface FileMultiUploadField extends Component, Component.HasCaption, C
     /**
      * Get uploads map
      *
-     * @return Map ( UUID - Id of file in FileUploadService, String - FileName )
+     * @return Map ( UUID - Id of file in FileUploadingAPI, String - FileName )
      */
     Map<UUID, String> getUploadsMap();
 
@@ -72,4 +71,11 @@ public interface FileMultiUploadField extends Component, Component.HasCaption, C
      * Clear uploads list
      */
     void clearUploads();
+
+    interface QueueUploadCompleteListener {
+        void queueUploadComplete();
+    }
+
+    void addQueueUploadCompleteListener(QueueUploadCompleteListener listener);
+    void removeQueueUploadCompleteListener(QueueUploadCompleteListener listener);
 }

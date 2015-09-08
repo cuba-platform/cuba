@@ -48,14 +48,16 @@ public class CubaMultiUpload extends AbstractComponent implements LegacyComponen
     CubaMultiUploadServerRpc rpc = new CubaMultiUploadServerRpc() {
         @Override
         public void resourceLoadingFailed() {
-            if (bootstrapFailureHandler != null)
+            if (bootstrapFailureHandler != null) {
                 bootstrapFailureHandler.loadWebResourcesFailed();
+            }
         }
 
         @Override
         public void flashNotInstalled() {
-            if (bootstrapFailureHandler != null)
+            if (bootstrapFailureHandler != null) {
                 bootstrapFailureHandler.flashNotInstalled();
+            }
         }
 
         @Override
@@ -66,7 +68,7 @@ public class CubaMultiUpload extends AbstractComponent implements LegacyComponen
         @Override
         public void uploadError(String fileName, String message, int code) {
             UploadErrorType uploadErrorType = UploadErrorType.fromId(code);
-            fireError(fileName, message, uploadErrorType);
+            fireError(fileName, 0, message, uploadErrorType);
         }
     };
 
@@ -97,8 +99,9 @@ public class CubaMultiUpload extends AbstractComponent implements LegacyComponen
 
                 @Override
                 public OutputStream getOutputStream() {
-                    if (receiver == null)
+                    if (receiver == null) {
                         return null;
+                    }
 
                     OutputStream receiveUpload = receiver.receiveUpload(
                             lastStartedEvent.getFileName(),
@@ -109,14 +112,14 @@ public class CubaMultiUpload extends AbstractComponent implements LegacyComponen
 
                 @Override
                 public void streamingStarted(StreamingStartEvent event) {
-                    fireStarted(event.getFileName());
+                    fireStarted(event.getFileName(), event.getContentLength());
                     lastStartedEvent = event;
                     isUploading = true;
                 }
 
                 @Override
                 public void streamingFinished(StreamingEndEvent event) {
-                    fireFinished(event.getFileName());
+                    fireFinished(event.getFileName(), event.getContentLength());
                     markAsDirty();
                     isUploading = false;
                     lastStartedEvent = null;
@@ -124,7 +127,7 @@ public class CubaMultiUpload extends AbstractComponent implements LegacyComponen
 
                 @Override
                 public void streamingFailed(StreamingErrorEvent event) {
-                    fireError(event.getFileName(), "", UploadErrorType.IO_ERROR);
+                    fireError(event.getFileName(), event.getContentLength(), "", UploadErrorType.IO_ERROR);
                     isUploading = false;
                     lastStartedEvent = null;
                 }
@@ -142,39 +145,46 @@ public class CubaMultiUpload extends AbstractComponent implements LegacyComponen
     /**
      * Emit upload received event.
      *
-     * @param filename file name
+     * @param filename      file name
+     * @param contentLength content length
      */
-    protected void fireStarted(String filename) {
-        for (UploadListener uploadListener : uploadListeners)
-            uploadListener.fileUploadStart(filename);
+    protected void fireStarted(String filename, long contentLength) {
+        for (UploadListener uploadListener : uploadListeners) {
+            uploadListener.fileUploadStart(filename, contentLength);
+        }
     }
 
     /**
      * Emit upload received event.
      *
-     * @param filename file name
+     * @param filename      file name
+     * @param contentLength content length
      */
-    protected void fireFinished(String filename) {
-        for (UploadListener uploadListener : uploadListeners)
-            uploadListener.fileUploaded(filename);
+    protected void fireFinished(String filename, long contentLength) {
+        for (UploadListener uploadListener : uploadListeners) {
+            uploadListener.fileUploaded(filename, contentLength);
+        }
     }
 
     /**
      * Emit upload received event.
      *
-     * @param filename file name
+     * @param filename      file name
+     * @param contentLength content length
      */
-    protected void fireError(String filename, String message, UploadErrorType uploadErrorType) {
-        for (UploadListener uploadListener : uploadListeners)
-            uploadListener.errorNotify(filename, message, uploadErrorType);
+    protected void fireError(String filename, long contentLength, String message, UploadErrorType uploadErrorType) {
+        for (UploadListener uploadListener : uploadListeners) {
+            uploadListener.errorNotify(filename, message, uploadErrorType, contentLength);
+        }
     }
 
     /**
      * Emit upload received event.
      */
     protected void fireQueueComplete() {
-        for (UploadListener uploadListener : uploadListeners)
+        for (UploadListener uploadListener : uploadListeners) {
             uploadListener.queueUploadComplete();
+        }
     }
 
     @Override
@@ -366,11 +376,9 @@ public class CubaMultiUpload extends AbstractComponent implements LegacyComponen
         /**
          * Invoked when a new upload arrives.
          *
-         * @param filename
-         *            the desired filename of the upload, usually as specified
-         *            by the client.
-         * @param mimeType
-         *            the MIME type of the uploaded file.
+         * @param filename the desired filename of the upload, usually as specified
+         *                 by the client.
+         * @param mimeType the MIME type of the uploaded file.
          * @return Stream to which the uploaded file should be written.
          */
         OutputStream receiveUpload(String filename, String mimeType);
@@ -410,20 +418,21 @@ public class CubaMultiUpload extends AbstractComponent implements LegacyComponen
 
         public static UploadErrorType fromId(Integer id) {
             for (UploadErrorType type : UploadErrorType.values()) {
-                if (ObjectUtils.equals(id, type.getId()))
+                if (ObjectUtils.equals(id, type.getId())) {
                     return type;
+                }
             }
             return UPLOAD_FAILED; // unknown id
         }
     }
 
     public interface UploadListener extends Serializable {
-        void fileUploadStart(String fileName);
+        void fileUploadStart(String fileName, long contentLength);
 
-        void fileUploaded(String fileName);
+        void fileUploaded(String fileName, long contentLength);
 
         void queueUploadComplete();
 
-        void errorNotify(String fileName, String message, UploadErrorType errorCode);
+        void errorNotify(String fileName, String message, UploadErrorType errorCode, long contentLength);
     }
 }

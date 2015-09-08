@@ -24,7 +24,7 @@ public interface DsContextImplementation extends DsContext {
     void unregister(Datasource datasource);
     void registerListener(ParameterInfo item, Datasource datasource);
 
-    public interface LazyTask {
+    interface LazyTask {
         void execute(DsContext context);
     }
 

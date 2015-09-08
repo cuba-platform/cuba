@@ -15,6 +15,7 @@ import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.components.FileMultiUploadField;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.compatibility.MultiUploadFieldListenerWrapper;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import org.apache.commons.io.FileUtils;
 
@@ -23,7 +24,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.*;
 
-import static com.haulmont.cuba.gui.upload.FileUploadingAPI.*;
+import static com.haulmont.cuba.gui.upload.FileUploadingAPI.FileInfo;
 
 /**
  * @author artamonov
@@ -37,10 +38,13 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
 
     protected FileUploadingAPI fileUploading;
 
-    protected List<UploadListener> listeners = new ArrayList<>();
-
     protected Map<UUID, String> filesMap = new HashMap<>();
     protected String icon;
+
+    protected List<FileUploadStartListener> fileUploadStartListeners;         // lazily initialized list
+    protected List<FileUploadFinishListener> fileUploadFinishListeners;       // lazily initialized list
+    protected List<FileUploadErrorListener> fileUploadErrorListeners;         // lazily initialized list
+    protected List<QueueUploadCompleteListener> queueUploadCompleteListeners; // lazily initialized list
 
     public DesktopFileMultiUploadField() {
         fileUploading = AppBeans.get(FileUploadingAPI.NAME);
@@ -72,7 +76,7 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
     protected void uploadFiles(File[] files) {
         for (File file : files) {
             try {
-                notifyStartListeners(file);
+                fireFileUploadStart(file.getName(), file.length());
 
                 FileInfo fileInfo = fileUploading.createFile();
                 UUID tempFileId = fileInfo.getId();
@@ -82,20 +86,20 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
 
                 filesMap.put(tempFileId, file.getName());
 
-                notifyEndListeners(file);
+                fireFileUploadFinish(file.getName(), file.length());
             } catch (Exception ex) {
-                if (!notifyErrorListeners(file)) {
-                    Messages messages = AppBeans.get(Messages.NAME);
-                    String uploadError = messages.formatMessage(DesktopFileMultiUploadField.class,
-                            "multiupload.uploadError", file.getName());
+                Messages messages = AppBeans.get(Messages.NAME);
+                String uploadError = messages.formatMessage(DesktopFileMultiUploadField.class,
+                        "multiupload.uploadError", file.getName());
 
-                    TopLevelFrame topLevelFrame = DesktopComponentsHelper.getTopLevelFrame(this);
-                    topLevelFrame.showNotification(uploadError, Frame.NotificationType.ERROR);
-                }
-                return;
+                TopLevelFrame topLevelFrame = DesktopComponentsHelper.getTopLevelFrame(this);
+                topLevelFrame.showNotification(uploadError, Frame.NotificationType.ERROR);
+
+                fireFileUploadError(file.getName(), file.length(), ex);
             }
         }
-        notifyQuerCompleteListeners();
+
+        fireQueueUploadComplete();
     }
 
     protected boolean checkFiles(File[] files) {
@@ -113,28 +117,6 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
         return true;
     }
 
-    protected void notifyStartListeners(File file) {
-        for (UploadListener uploadListener : listeners)
-            uploadListener.fileUploadStart(file.getName());
-    }
-
-    protected void notifyEndListeners(File file) {
-        for (UploadListener uploadListener : listeners)
-            uploadListener.fileUploaded(file.getName());
-    }
-
-    protected void notifyQuerCompleteListeners() {
-        for (UploadListener uploadListener : listeners)
-            uploadListener.queueUploadComplete();
-    }
-
-    protected boolean notifyErrorListeners(File file) {
-        boolean handled = false;
-        for (UploadListener uploadListener : listeners)
-            handled = handled | uploadListener.uploadError(file.getName());
-        return handled;
-    }
-
     protected void notifyFileSizeExceedLimit(File file) {
         Messages messages = AppBeans.get(Messages.NAME);
 
@@ -149,12 +131,22 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
 
     @Override
     public void addListener(UploadListener listener) {
-        if (!listeners.contains(listener)) listeners.add(listener);
+        MultiUploadFieldListenerWrapper wrapper = new MultiUploadFieldListenerWrapper(listener);
+
+        addFileUploadStartListener(wrapper);
+        addFileUploadFinishListener(wrapper);
+        addFileUploadErrorListener(wrapper);
+        addQueueUploadCompleteListener(wrapper);
     }
 
     @Override
     public void removeListener(UploadListener listener) {
-        listeners.remove(listener);
+        MultiUploadFieldListenerWrapper wrapper = new MultiUploadFieldListenerWrapper(listener);
+
+        removeFileUploadStartListener(wrapper);
+        removeFileUploadFinishListener(wrapper);
+        removeFileUploadErrorListener(wrapper);
+        removeQueueUploadCompleteListener(wrapper);
     }
 
     @Override
@@ -200,5 +192,108 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
             impl.setIcon(App.getInstance().getResources().getIcon(icon));
         else
             impl.setIcon(null);
+    }
+
+    protected void fireFileUploadStart(String fileName, long contentLength) {
+        if (fileUploadStartListeners != null && !fileUploadStartListeners.isEmpty()) {
+            FileUploadStartEvent e = new FileUploadStartEvent(fileName, contentLength);
+            for (FileUploadStartListener listener : fileUploadStartListeners) {
+                listener.fileUploadStart(e);
+            }
+        }
+    }
+
+    protected void fireFileUploadFinish(String fileName, long contentLength) {
+        if (fileUploadFinishListeners != null && !fileUploadFinishListeners.isEmpty()) {
+            FileUploadFinishEvent e = new FileUploadFinishEvent(fileName, contentLength);
+            for (FileUploadFinishListener listener : fileUploadFinishListeners) {
+                listener.fileUploadFinish(e);
+            }
+        }
+    }
+
+    protected void fireFileUploadError(String fileName, long contentLength, Exception cause) {
+        if (fileUploadErrorListeners != null && !fileUploadErrorListeners.isEmpty()) {
+            FileUploadErrorEvent e = new FileUploadErrorEvent(fileName, contentLength, cause);
+            for (FileUploadErrorListener listener : fileUploadErrorListeners) {
+                listener.fileUploadError(e);
+            }
+        }
+    }
+
+    protected void fireQueueUploadComplete() {
+        if (queueUploadCompleteListeners != null) {
+            for (QueueUploadCompleteListener listener : queueUploadCompleteListeners) {
+                listener.queueUploadComplete();
+            }
+        }
+    }
+
+    @Override
+    public void addFileUploadStartListener(FileUploadStartListener listener) {
+        if (fileUploadStartListeners == null) {
+            fileUploadStartListeners = new ArrayList<>();
+        }
+        if (!fileUploadStartListeners.contains(listener)) {
+            fileUploadStartListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeFileUploadStartListener(FileUploadStartListener listener) {
+        if (fileUploadStartListeners != null) {
+            fileUploadStartListeners.remove(listener);
+        }
+    }
+
+    @Override
+    public void addFileUploadFinishListener(FileUploadFinishListener listener) {
+        if (fileUploadFinishListeners == null) {
+            fileUploadFinishListeners = new ArrayList<>();
+        }
+        if (!fileUploadFinishListeners.contains(listener)) {
+            fileUploadFinishListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeFileUploadFinishListener(FileUploadFinishListener listener) {
+        if (fileUploadFinishListeners != null) {
+            fileUploadFinishListeners.remove(listener);
+        }
+    }
+
+    @Override
+    public void addFileUploadErrorListener(FileUploadErrorListener listener) {
+        if (fileUploadErrorListeners == null) {
+            fileUploadErrorListeners = new ArrayList<>();
+        }
+        if (!fileUploadErrorListeners.isEmpty()) {
+            fileUploadErrorListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeFileUploadErrorListener(FileUploadErrorListener listener) {
+        if (fileUploadErrorListeners != null) {
+            fileUploadErrorListeners.remove(listener);
+        }
+    }
+
+    @Override
+    public void addQueueUploadCompleteListener(QueueUploadCompleteListener listener) {
+        if (queueUploadCompleteListeners == null) {
+            queueUploadCompleteListeners = new ArrayList<>();
+        }
+        if (!queueUploadCompleteListeners.contains(listener)) {
+            queueUploadCompleteListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeQueueUploadCompleteListener(QueueUploadCompleteListener listener) {
+        if (queueUploadCompleteListeners != null) {
+            queueUploadCompleteListeners.remove(listener);
+        }
     }
 }

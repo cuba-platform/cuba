@@ -9,10 +9,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.gui.app.core.file.FileDownloadHelper;
-import com.haulmont.cuba.gui.components.AbstractWindow;
-import com.haulmont.cuba.gui.components.Button;
-import com.haulmont.cuba.gui.components.FileUploadField;
-import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -47,38 +44,26 @@ public class FileFrameController extends AbstractWindow {
         Button remove = (Button) getComponentNN("remove");
         remove.setAction(new RemoveAction(filesTable, false));
 
-        uploadField.addListener(new FileUploadField.Listener() {
-            @Override
-            public void uploadStarted(Event event) {
-                uploadField.setEnabled(false);
-            }
+        uploadField.addFileUploadStartListener(e -> uploadField.setEnabled(false));
 
-            @Override
-            public void uploadFinished(Event event) {
-                uploadField.setEnabled(true);
-            }
+        uploadField.addFileUploadFinishListener(e -> uploadField.setEnabled(true));
 
-            @Override
-            public void uploadSucceeded(Event event) {
-                fd = new FileDescriptor();
-                fd.setName(uploadField.getFileName());
-                fd.setExtension(FilenameUtils.getExtension(uploadField.getFileName()));
+        uploadField.addFileUploadSucceedListener(e -> {
+            fd = new FileDescriptor();
+            fd.setName(uploadField.getFileName());
+            fd.setExtension(FilenameUtils.getExtension(uploadField.getFileName()));
 
-                FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
-                File file = fileUploading.getFile(uploadField.getFileId());
-                fd.setSize(file.length());
+            FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
+            File file = fileUploading.getFile(uploadField.getFileId());
+            fd.setSize(file.length());
 
-                fd.setCreateDate(AppBeans.get(TimeSource.class).currentTimestamp());
-                saveFile();
-                ds.addItem(fd);
-                showNotification(getMessage("uploadSuccess"), NotificationType.HUMANIZED);
-            }
-
-            @Override
-            public void uploadFailed(Event event) {
-                showNotification(getMessage("uploadUnsuccess"), NotificationType.HUMANIZED);
-            }
+            fd.setCreateDate(AppBeans.get(TimeSource.class).currentTimestamp());
+            saveFile();
+            ds.addItem(fd);
+            showNotification(getMessage("uploadSuccess"), NotificationType.HUMANIZED);
         });
+
+        uploadField.addFileUploadErrorListener(e -> showNotification(getMessage("uploadUnsuccess"), NotificationType.HUMANIZED));
     }
 
     public void initGeneratedColumn() {
@@ -87,12 +72,12 @@ public class FileFrameController extends AbstractWindow {
         }
     }
 
-    private void saveFile() {
+    protected void saveFile() {
         FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
         try {
             fileUploading.putFileIntoStorage(uploadField.getFileId(), fd);
         } catch (FileStorageException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to put file to storage", e);
         }
     }
 }

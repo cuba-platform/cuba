@@ -95,12 +95,20 @@ public interface DsContext {
     /**
      * Add commit events listener.
      */
+    @Deprecated
     void addListener(CommitListener listener);
 
     /**
      * Remove commit events listener.
      */
+    @Deprecated
     void removeListener(CommitListener listener);
+
+    void addBeforeCommitListener(BeforeCommitListener listener);
+    void removeBeforeCommitListener(BeforeCommitListener listener);
+
+    void addAfterCommitListener(AfterCommitListener listener);
+    void removeAfterCommitListener(AfterCommitListener listener);
 
     /**
      * @return a parent DsContext if this DsContext is defined in a frame
@@ -120,10 +128,13 @@ public interface DsContext {
      * {@link com.haulmont.cuba.core.global.CommitContext#getCommitInstances()} or
      * {@link com.haulmont.cuba.core.global.CommitContext#getRemoveInstances()} collections.
      *
+     * @deprecated Use {@link com.haulmont.cuba.gui.data.DsContext.BeforeCommitListener} and {@link com.haulmont.cuba.gui.data.DsContext.AfterCommitListener}
+     *
      * @see DsContext#addListener(com.haulmont.cuba.gui.data.DsContext.CommitListener)
      * @see DsContext#removeListener(com.haulmont.cuba.gui.data.DsContext.CommitListener)
      * @see CommitListenerAdapter
      */
+    @Deprecated
     interface CommitListener {
         /**
          * Called before sending data to the middleware.
@@ -145,6 +156,7 @@ public interface DsContext {
      * @see DsContext#addListener(com.haulmont.cuba.gui.data.DsContext.CommitListener)
      * @see DsContext#removeListener(com.haulmont.cuba.gui.data.DsContext.CommitListener)
      */
+    @Deprecated
     abstract class CommitListenerAdapter implements CommitListener {
         @Override
         public void beforeCommit(CommitContext context) {
@@ -153,5 +165,29 @@ public interface DsContext {
         public void afterCommit(CommitContext context, Set<Entity> result) {
         }
     }
-}
 
+    /**
+     * This listener allows to intercept commit events.
+     * <p/> Should be used to augment {@link CommitContext} with entities which must be committed in the
+     * same transaction as datasources content. To do this, add needed entity instances to
+     * {@link com.haulmont.cuba.core.global.CommitContext#getCommitInstances()} or
+     * {@link com.haulmont.cuba.core.global.CommitContext#getRemoveInstances()} collections.
+     */
+    interface BeforeCommitListener {
+        /**
+         * Called before sending data to the middleware.
+         * @param context   commit context
+         */
+        void beforeCommit(CommitContext context);
+    }
+
+    interface AfterCommitListener {
+
+        /**
+         * Called after a succesfull commit to the middleware.
+         * @param context   commit context
+         * @param result    set of committed entities returning from the middleware service
+         */
+        void afterCommit(CommitContext context, Set<Entity> result);
+    }
+}

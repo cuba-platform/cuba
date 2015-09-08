@@ -12,9 +12,10 @@ import java.util.UUID;
  * @author abramov
  * @version $Id$
  */
-public interface FileUploadField extends Component, Component.HasCaption, Component.BelongToFrame, Component.HasIcon {
+public interface FileUploadField extends UploadComponentSupport {
     String NAME = "upload";
 
+    @Deprecated
     interface Listener {
         class Event {
             String filename;
@@ -45,6 +46,7 @@ public interface FileUploadField extends Component, Component.HasCaption, Compon
         void uploadFailed(Event event);
     }
 
+    @Deprecated
     class ListenerAdapter implements Listener {
         @Override
         public void uploadStarted(Event event) {
@@ -78,6 +80,21 @@ public interface FileUploadField extends Component, Component.HasCaption, Compon
      */
     byte[] getBytes();
 
+    @Deprecated
     void addListener(Listener listener);
+    @Deprecated
     void removeListener(Listener listener);
+
+    class FileUploadSucceedEvent extends FileUploadEvent {
+        public FileUploadSucceedEvent(String fileName, long contentLength) {
+            super(fileName, contentLength);
+        }
+    }
+
+    interface FileUploadSucceedListener {
+        void fileUploadSucceed(FileUploadSucceedEvent e);
+    }
+
+    void addFileUploadSucceedListener(FileUploadSucceedListener listener);
+    void removeFileUploadSucceedListener(FileUploadSucceedListener listener);
 }

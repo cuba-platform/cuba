@@ -15,6 +15,7 @@ import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.compatibility.FileUploadFieldListenerWrapper;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -53,7 +54,10 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
 
     protected UUID tempFileId;
 
-    protected List<Listener> listeners = new ArrayList<>();
+    protected List<FileUploadStartListener> fileUploadStartListeners;     // lazily initialized list
+    protected List<FileUploadFinishListener> fileUploadFinishListeners;   // lazily initialized list
+    protected List<FileUploadSucceedListener> fileUploadSucceedListeners; // lazily initialized list
+    protected List<FileUploadErrorListener> fileUploadErrorListeners;     // lazily initialized list
 
     public DesktopFileUploadField() {
         fileUploading = AppBeans.get(FileUploadingAPI.NAME);
@@ -87,7 +91,7 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
                 isUploadingState = true;
 
                 fileName = file.getAbsolutePath();
-                notifyListenersStart(file);
+                fireFileUploadStart(file.getName(), file.length());
 
                 FileInfo fileInfo = fileUploading.createFile();
                 tempFileId = fileInfo.getId();
@@ -106,41 +110,15 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
                 } catch (FileStorageException e) {
                     throw new RuntimeException("Unable to delete file from temp storage", ex);
                 }
-                notifyListenersFail(file, ex);
+
+                fireFileUploadError(file.getName(), file.length(), ex);
             } finally {
-                notifyListenersFinish(file);
+                fireFileUploadFinish(file.getName(), file.length());
             }
+
             if (success) {
-                notifyListenersSuccess(file);
+                fireFileUploadSucceed(file.getName(), file.length());
             }
-        }
-    }
-
-    protected void notifyListenersSuccess(File file) {
-        final Listener.Event e = new Listener.Event(file.getName());
-        for (Listener listener : listeners) {
-            listener.uploadSucceeded(e);
-        }
-    }
-
-    protected void notifyListenersFail(File file, Exception ex) {
-        final Listener.Event failedEvent = new Listener.Event(file.getName(), ex);
-        for (Listener listener : listeners) {
-            listener.uploadFailed(failedEvent);
-        }
-    }
-
-    protected void notifyListenersFinish(File file) {
-        final Listener.Event finishedEvent = new Listener.Event(file.getName());
-        for (Listener listener : listeners) {
-            listener.uploadFinished(finishedEvent);
-        }
-    }
-
-    protected void notifyListenersStart(File file) {
-        final Listener.Event startedEvent = new Listener.Event(file.getName());
-        for (Listener listener : listeners) {
-            listener.uploadStarted(startedEvent);
         }
     }
 
@@ -152,10 +130,11 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
 
     @Override
     public FileDescriptor getFileDescriptor() {
-        if (fileId != null)
+        if (fileId != null) {
             return fileUploading.getFileDescriptor(fileId, fileName);
-        else
+        } else {
             return null;
+        }
     }
 
     @Override
@@ -183,12 +162,22 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
 
     @Override
     public void addListener(Listener listener) {
-        if (!listeners.contains(listener)) listeners.add(listener);
+        FileUploadFieldListenerWrapper wrapper = new FileUploadFieldListenerWrapper(listener);
+
+        addFileUploadStartListener(wrapper);
+        addFileUploadErrorListener(wrapper);
+        addFileUploadFinishListener(wrapper);
+        addFileUploadSucceedListener(wrapper);
     }
 
     @Override
     public void removeListener(Listener listener) {
-        listeners.remove(listener);
+        FileUploadFieldListenerWrapper wrapper = new FileUploadFieldListenerWrapper(listener);
+
+        removeFileUploadStartListener(wrapper);
+        removeFileUploadErrorListener(wrapper);
+        removeFileUploadFinishListener(wrapper);
+        removeFileUploadSucceedListener(wrapper);
     }
 
     @Override
@@ -220,9 +209,114 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
     @Override
     public void setIcon(String icon) {
         this.icon = icon;
-        if (icon != null)
+        if (icon != null) {
             impl.setIcon(App.getInstance().getResources().getIcon(icon));
-        else
+        } else {
             impl.setIcon(null);
+        }
+    }
+
+    protected void fireFileUploadStart(String fileName, long contentLength) {
+        if (fileUploadStartListeners != null && !fileUploadStartListeners.isEmpty()) {
+            FileUploadStartEvent e = new FileUploadStartEvent(fileName, contentLength);
+            for (FileUploadStartListener listener : fileUploadStartListeners) {
+                listener.fileUploadStart(e);
+            }
+        }
+    }
+
+    protected void fireFileUploadFinish(String fileName, long contentLength) {
+        if (fileUploadFinishListeners != null && !fileUploadFinishListeners.isEmpty()) {
+            FileUploadFinishEvent e = new FileUploadFinishEvent(fileName, contentLength);
+            for (FileUploadFinishListener listener : fileUploadFinishListeners) {
+                listener.fileUploadFinish(e);
+            }
+        }
+    }
+
+    protected void fireFileUploadError(String fileName, long contentLength, Exception cause) {
+        if (fileUploadErrorListeners != null && !fileUploadErrorListeners.isEmpty()) {
+            FileUploadErrorEvent e = new FileUploadErrorEvent(fileName, contentLength, cause);
+            for (FileUploadErrorListener listener : fileUploadErrorListeners) {
+                listener.fileUploadError(e);
+            }
+        }
+    }
+
+    protected void fireFileUploadSucceed(String fileName, long contentLength) {
+        if (fileUploadSucceedListeners != null && !fileUploadSucceedListeners.isEmpty()) {
+            FileUploadSucceedEvent e = new FileUploadSucceedEvent(fileName, contentLength);
+            for (FileUploadSucceedListener listener : fileUploadSucceedListeners) {
+                listener.fileUploadSucceed(e);
+            }
+        }
+    }
+
+    @Override
+    public void addFileUploadStartListener(FileUploadStartListener listener) {
+        if (fileUploadStartListeners == null) {
+            fileUploadStartListeners = new ArrayList<>();
+        }
+        if (!fileUploadStartListeners.contains(listener)) {
+            fileUploadStartListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeFileUploadStartListener(FileUploadStartListener listener) {
+        if (fileUploadStartListeners != null) {
+            fileUploadStartListeners.remove(listener);
+        }
+    }
+
+    @Override
+    public void addFileUploadFinishListener(FileUploadFinishListener listener) {
+        if (fileUploadFinishListeners == null) {
+            fileUploadFinishListeners = new ArrayList<>();
+        }
+        if (!fileUploadFinishListeners.contains(listener)) {
+            fileUploadFinishListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeFileUploadFinishListener(FileUploadFinishListener listener) {
+        if (fileUploadFinishListeners != null) {
+            fileUploadFinishListeners.remove(listener);
+        }
+    }
+
+    @Override
+    public void addFileUploadErrorListener(FileUploadErrorListener listener) {
+        if (fileUploadErrorListeners == null) {
+            fileUploadErrorListeners = new ArrayList<>();
+        }
+        if (!fileUploadErrorListeners.isEmpty()) {
+            fileUploadErrorListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeFileUploadErrorListener(FileUploadErrorListener listener) {
+        if (fileUploadErrorListeners != null) {
+            fileUploadErrorListeners.remove(listener);
+        }
+    }
+
+    @Override
+    public void addFileUploadSucceedListener(FileUploadSucceedListener listener) {
+        if (fileUploadSucceedListeners == null) {
+            fileUploadSucceedListeners = new ArrayList<>();
+        }
+        if (!fileUploadSucceedListeners.contains(listener)) {
+            fileUploadSucceedListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeFileUploadSucceedListener(FileUploadSucceedListener listener) {
+        if (fileUploadSucceedListeners != null) {
+            fileUploadSucceedListeners.remove(listener);
+        }
     }
 }

@@ -8,6 +8,7 @@ package com.haulmont.chile.core.common;
 /**
  * Interface to track changes in data model objects.
  *
+ * @deprecated Use {@link com.haulmont.chile.core.model.Instance.PropertyChangeListener}
  * @author abramov
  * @version $Id$
  */

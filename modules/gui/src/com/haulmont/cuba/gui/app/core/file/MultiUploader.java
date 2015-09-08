@@ -8,10 +8,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.components.Button;
-import com.haulmont.cuba.gui.components.FileMultiUploadField;
-import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
@@ -55,29 +52,22 @@ public class MultiUploader extends AbstractEditor {
         uploadsTable.addAction(new RemoveAction(uploadsTable, true));
 
         multiUpload.setCaption(getMessage("upload"));
-        multiUpload.addListener(new FileMultiUploadField.UploadListener() {
+        multiUpload.addQueueUploadCompleteListener(() -> {
+            needSave = true;
+            okBtn.setEnabled(true);
+            FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
+            Map<UUID, String> uploads = multiUpload.getUploadsMap();
+            for (Map.Entry<UUID, String> upload : uploads.entrySet()) {
+                FileDescriptor fDesc = fileUploading.getFileDescriptor(upload.getKey(), upload.getValue());
 
-            @Override
-            public void queueUploadComplete() {
-                needSave = true;
-                okBtn.setEnabled(true);
-                FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
-                Map<UUID, String> uploads = multiUpload.getUploadsMap();
-                for (Map.Entry<UUID, String> upload : uploads.entrySet()) {
-                    FileDescriptor fDesc = fileUploading.getFileDescriptor(upload.getKey(), upload.getValue());
-
-                    descriptors.put(fDesc, upload.getKey());
-                    filesDs.addItem(fDesc);
-                }
-                multiUpload.clearUploads();
-                uploadsTable.refresh();
+                descriptors.put(fDesc, upload.getKey());
+                filesDs.addItem(fDesc);
             }
-
-            @Override
-            public void fileUploadStart(String fileName) {
-                okBtn.setEnabled(false);
-            }
+            multiUpload.clearUploads();
+            uploadsTable.refresh();
         });
+
+        multiUpload.addFileUploadStartListener(e -> okBtn.setEnabled(false));
     }
 
     @Override

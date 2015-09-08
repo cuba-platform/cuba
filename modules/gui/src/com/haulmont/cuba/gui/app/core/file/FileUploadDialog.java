@@ -22,14 +22,14 @@ import java.util.UUID;
  * @version $Id$
  */
 public class FileUploadDialog extends AbstractWindow {
-    private static Logger log = LoggerFactory.getLogger(FileUploadDialog.class);
+    private final Logger log = LoggerFactory.getLogger(FileUploadDialog.class);
 
     @Inject
-    private FileUploadField fileUpload;
+    protected FileUploadField fileUpload;
 
-    private UUID fileId;
+    protected UUID fileId;
 
-    private String fileName;
+    protected String fileName;
 
     public UUID getFileId() {
         return fileId;
@@ -42,20 +42,17 @@ public class FileUploadDialog extends AbstractWindow {
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
-        fileUpload.addListener(new FileUploadField.ListenerAdapter() {
-            @Override
-            public void uploadSucceeded(Event event) {
-                fileId = fileUpload.getFileId();
-                fileName = fileUpload.getFileName();
-                close(Window.COMMIT_ACTION_ID);
-            }
 
-            @Override
-            public void uploadFailed(Event event) {
-                showNotification(getMessage("notification.uploadUnsuccessful"), NotificationType.WARNING);
-                if (event.getException() != null) {
-                    log.error("An error occurred while uploading", event.getException());
-                }
+        fileUpload.addFileUploadSucceedListener(e -> {
+            fileId = fileUpload.getFileId();
+            fileName = fileUpload.getFileName();
+            close(Window.COMMIT_ACTION_ID);
+        });
+
+        fileUpload.addFileUploadErrorListener(e -> {
+            showNotification(getMessage("notification.uploadUnsuccessful"), NotificationType.WARNING);
+            if (e.getCause() != null) {
+                log.error("An error occurred while uploading", e.getCause());
             }
         });
     }

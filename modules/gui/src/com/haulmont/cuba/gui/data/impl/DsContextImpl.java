@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.impl.compatibility.DsContextCommitListenerWrapper;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -25,14 +26,13 @@ import java.util.*;
  */
 public class DsContextImpl implements DsContextImplementation {
 
-    private FrameContext windowContext;
-    private DataSupplier dataservice;
+    protected FrameContext windowContext;
+    protected DataSupplier dataservice;
 
-    private DsContext parent;
-    private List<DsContext> children = new ArrayList<>();
+    protected DsContext parent;
+    protected List<DsContext> children = new ArrayList<>();
 
-    private Map<String, Datasource> datasourceMap = new HashMap<>();
-
+    protected Map<String, Datasource> datasourceMap = new HashMap<>();
     protected Map<Datasource, Datasource> dependencies = new HashMap<>();
 
     protected Metadata metadata;
@@ -43,7 +43,8 @@ public class DsContextImpl implements DsContextImplementation {
 
     protected List<LazyTask> lazyTasks = new ArrayList<>();
 
-    private Set<CommitListener> commitListeners = new LinkedHashSet<>();
+    protected List<BeforeCommitListener> beforeCommitListeners; // lazily initialized list
+    protected List<AfterCommitListener> afterCommitListeners; // lazily initialized list
 
     public DsContextImpl(DataSupplier dataservice) {
         this.dataservice = dataservice;
@@ -52,7 +53,9 @@ public class DsContextImpl implements DsContextImplementation {
 
     @Override
     public void addLazyTask(LazyTask lazyTask) {
-        if (!lazyTasks.contains(lazyTask)) lazyTasks.add(lazyTask);
+        if (!lazyTasks.contains(lazyTask)) {
+            lazyTasks.add(lazyTask);
+        }
     }
 
     @Override
@@ -73,7 +76,7 @@ public class DsContextImpl implements DsContextImplementation {
         }
     }
 
-    private void addDsContextToResume(DsContext dsContext, LinkedList<CollectionDatasource.Suspendable> list) {
+    protected void addDsContextToResume(DsContext dsContext, LinkedList<CollectionDatasource.Suspendable> list) {
         for (Datasource datasource : dsContext.getAll()) {
             if (datasource instanceof CollectionDatasource.Suspendable) {
                 addDatasourceToResume(list, datasource);
@@ -84,17 +87,19 @@ public class DsContextImpl implements DsContextImplementation {
         }
     }
 
-    private void addDatasourceToResume(LinkedList<CollectionDatasource.Suspendable> list, Datasource datasource) {
-        if (list.contains(datasource))
+    protected void addDatasourceToResume(LinkedList<CollectionDatasource.Suspendable> list, Datasource datasource) {
+        if (list.contains(datasource)) {
             return;
+        }
 
         if (dependencies.containsKey(datasource)) {
             Datasource master = dependencies.get(datasource);
             addDatasourceToResume(list, master);
         }
         if (datasource instanceof CollectionDatasource.Suspendable
-                && ((CollectionDatasource.Suspendable) datasource).isSuspended())
+                && ((CollectionDatasource.Suspendable) datasource).isSuspended()) {
             list.add((CollectionDatasource.Suspendable) datasource);
+        }
     }
 
     @Override
@@ -143,8 +148,7 @@ public class DsContextImpl implements DsContextImplementation {
             Set<DataSupplier> suppliers = commitData.keySet();
 
             if (suppliers.size() == 1 &&
-                    ObjectUtils.equals(suppliers.iterator().next(), dataservice))
-            {
+                    ObjectUtils.equals(suppliers.iterator().next(), dataservice)) {
                 CommitContext context = createCommitContext(dataservice, commitData);
 
                 fireBeforeCommit(context);
@@ -171,11 +175,11 @@ public class DsContextImpl implements DsContextImplementation {
         return committed;
     }
 
-    private boolean commitToParent(Collection<Datasource> datasources) {
+    protected boolean commitToParent(Collection<Datasource> datasources) {
         List<Datasource> list = new ArrayList<>();
         for (Datasource datasource : datasources) {
             if (Datasource.CommitMode.PARENT.equals(datasource.getCommitMode())
-                    && (datasource.isModified()  || !((DatasourceImplementation) datasource).getItemsToCreate().isEmpty())) {
+                    && (datasource.isModified() || !((DatasourceImplementation) datasource).getItemsToCreate().isEmpty())) {
                 list.add(datasource);
             }
         }
@@ -187,20 +191,23 @@ public class DsContextImpl implements DsContextImplementation {
         return !list.isEmpty();
     }
 
-    private void notifyAllDsCommited(DataSupplier dataservice, Set<Entity> committedEntities) {
+    protected void notifyAllDsCommited(DataSupplier dataservice, Set<Entity> committedEntities) {
         // Notify all datasources in context
         List<Datasource> datasources = new LinkedList<>();
         for (DsContext childDsContext : children) {
             for (Datasource ds : childDsContext.getAll()) {
                 if (ObjectUtils.equals(ds.getDataSupplier(), dataservice)
-                        && ds.getCommitMode() == Datasource.CommitMode.DATASTORE)
+                        && ds.getCommitMode() == Datasource.CommitMode.DATASTORE) {
                     datasources.add(ds);
+                }
             }
         }
-        for (Datasource ds : datasourceMap.values())
+        for (Datasource ds : datasourceMap.values()) {
             if (ObjectUtils.equals(ds.getDataSupplier(), dataservice)
-                    && ds.getCommitMode() == Datasource.CommitMode.DATASTORE)
+                    && ds.getCommitMode() == Datasource.CommitMode.DATASTORE) {
                 datasources.add(ds);
+            }
+        }
 
         List<Datasource> sortedList = new DsTree(datasources).toDsList();
         for (Datasource datasource : sortedList) {
@@ -208,21 +215,28 @@ public class DsContextImpl implements DsContextImplementation {
         }
     }
 
+    @Override
     public void fireBeforeCommit(CommitContext context) {
-        for (CommitListener commitListener : commitListeners) {
-            commitListener.beforeCommit(context);
+        if (beforeCommitListeners != null) {
+            for (BeforeCommitListener listener : new ArrayList<>(beforeCommitListeners)) {
+                listener.beforeCommit(context);
+            }
         }
         for (DsContext childDsContext : children) {
             ((DsContextImplementation) childDsContext).fireBeforeCommit(context);
         }
     }
 
+    @Override
     public void fireAfterCommit(CommitContext context, Set<Entity> committedEntities) {
         for (DsContext childDsContext : children) {
             ((DsContextImplementation) childDsContext).fireAfterCommit(context, committedEntities);
         }
-        for (CommitListener commitListener : commitListeners) {
-            commitListener.afterCommit(context, committedEntities);
+
+        if (afterCommitListeners != null) {
+            for (AfterCommitListener listener : afterCommitListeners) {
+                listener.afterCommit(context, committedEntities);
+            }
         }
     }
 
@@ -266,10 +280,11 @@ public class DsContextImpl implements DsContextImplementation {
         }
     }
 
-    private void addToContext(Entity entity, Datasource<Entity> datasource,
+    protected void addToContext(Entity entity, Datasource<Entity> datasource,
                               Collection<Entity> entities, Map<Object, View> views) {
-        if (datasource instanceof NestedDatasource)
+        if (datasource instanceof NestedDatasource) {
             replaceMasterCopies(entity, ((NestedDatasource) datasource));
+        }
 
         entities.add(entity);
         views.put(entity, datasource.getView());
@@ -281,7 +296,7 @@ public class DsContextImpl implements DsContextImplementation {
 
     // Replace the reference to master entity with actual entity containing in the master datasource,
     // because in case of nested property datasources there may be references to cloned master entities.
-    private void replaceMasterCopies(Entity entity, NestedDatasource datasource) {
+    protected void replaceMasterCopies(Entity entity, NestedDatasource datasource) {
         Datasource masterDs = datasource.getMaster();
         MetaProperty metaProperty = datasource.getProperty();
         if (masterDs != null && metaProperty != null) {
@@ -290,7 +305,7 @@ public class DsContextImpl implements DsContextImplementation {
                 MetaClass metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(inverseProp.getDomain());
                 if (metaClass.equals(datasource.getMetaClass())
                         && (PersistenceHelper.isLoaded(entity, inverseProp.getName())
-                            && entity.getValue(inverseProp.getName()) != null)) // replace master only if it's already set
+                        && entity.getValue(inverseProp.getName()) != null)) // replace master only if it's already set
                 {
                     Object masterItem;
                     if (masterDs instanceof CollectionDatasource) {
@@ -313,12 +328,12 @@ public class DsContextImpl implements DsContextImplementation {
         }
         datasources.addAll(datasourceMap.values());
 
-        final Map<DataSupplier,Collection<Datasource<Entity>>> commitDatasources = new HashMap<>();
+        final Map<DataSupplier, Collection<Datasource<Entity>>> commitDatasources = new HashMap<>();
 
         for (Datasource datasource : datasources) {
             if (Datasource.CommitMode.DATASTORE == datasource.getCommitMode() &&
-                datasource.isAllowCommit() &&
-                (datasource.isModified() || !((DatasourceImplementation) datasource).getItemsToCreate().isEmpty())) {
+                    datasource.isAllowCommit() &&
+                    (datasource.isModified() || !((DatasourceImplementation) datasource).getItemsToCreate().isEmpty())) {
 
                 final DataSupplier dataservice = datasource.getDataSupplier();
                 Collection<Datasource<Entity>> collection = commitDatasources.get(dataservice);
@@ -379,12 +394,52 @@ public class DsContextImpl implements DsContextImplementation {
 
     @Override
     public void addListener(CommitListener listener) {
-        commitListeners.add(listener);
+        DsContextCommitListenerWrapper wrapper = new DsContextCommitListenerWrapper(listener);
+
+        addBeforeCommitListener(wrapper);
+        addAfterCommitListener(wrapper);
     }
 
     @Override
     public void removeListener(CommitListener listener) {
-        commitListeners.remove(listener);
+        DsContextCommitListenerWrapper wrapper = new DsContextCommitListenerWrapper(listener);
+
+        removeBeforeCommitListener(wrapper);
+        removeAfterCommitListener(wrapper);
+    }
+
+    @Override
+    public void addBeforeCommitListener(BeforeCommitListener listener) {
+        if (beforeCommitListeners == null) {
+            beforeCommitListeners = new ArrayList<>();
+        }
+        if (!beforeCommitListeners.contains(listener)) {
+            beforeCommitListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeBeforeCommitListener(BeforeCommitListener listener) {
+        if (beforeCommitListeners != null) {
+            beforeCommitListeners.remove(listener);
+        }
+    }
+
+    @Override
+    public void addAfterCommitListener(AfterCommitListener listener) {
+        if (afterCommitListeners == null) {
+            afterCommitListeners = new ArrayList<>();
+        }
+        if (!afterCommitListeners.contains(listener)) {
+            afterCommitListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeAfterCommitListener(AfterCommitListener listener) {
+        if (afterCommitListeners != null) {
+            afterCommitListeners.remove(listener);
+        }
     }
 
     @Override
@@ -417,8 +472,9 @@ public class DsContextImpl implements DsContextImplementation {
     @Override
     public Datasource getNN(String name) {
         Datasource datasource = get(name);
-        if (datasource == null)
+        if (datasource == null) {
             throw new IllegalArgumentException("Datasource '" + name + "' is not found");
+        }
         return datasource;
     }
 
@@ -448,7 +504,9 @@ public class DsContextImpl implements DsContextImplementation {
     public void refresh() {
         final Collection<Datasource> datasources = datasourceMap.values();
         for (Datasource datasource : datasources) {
-            if (dependencies.containsKey(datasource)) continue;
+            if (dependencies.containsKey(datasource)) {
+                continue;
+            }
             datasource.refresh();
         }
     }
@@ -505,8 +563,9 @@ public class DsContextImpl implements DsContextImplementation {
 
         @Override
         public void visit(Entity entity, MetaProperty property) {
-            if (!property.getRange().isClass() || !property.getRange().asClass().equals(contextEntity.getMetaClass()))
+            if (!property.getRange().isClass() || !property.getRange().asClass().equals(contextEntity.getMetaClass())) {
                 return;
+            }
 
             if (PersistenceHelper.isLoaded(entity, property.getName())) {
                 Object value = entity.getValue(property.getName());
