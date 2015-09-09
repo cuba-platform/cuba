@@ -16,7 +16,7 @@ import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.components.compatibility.ComponentValueChangeListenerWrapper;
+import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
@@ -48,12 +48,12 @@ public abstract class DesktopAbstractField<C extends JComponent> extends Desktop
 
     @Override
     public void addListener(ValueListener listener) {
-        addValueChangeListener(new ComponentValueChangeListenerWrapper(listener));
+        addValueChangeListener(new ComponentValueListenerWrapper(listener));
     }
 
     @Override
     public void removeListener(ValueListener listener) {
-        removeValueChangeListener(new ComponentValueChangeListenerWrapper(listener));
+        removeValueChangeListener(new ComponentValueListenerWrapper(listener));
     }
 
     protected void fireValueChanged(Object prevValue, Object value) {

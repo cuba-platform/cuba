@@ -5,7 +5,7 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.compatibility.ComponentValueChangeListenerWrapper;
+import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
@@ -133,12 +133,12 @@ public class FrameContextImpl implements FrameContext {
 
     @Override
     public void addValueListener(String componentName, ValueListener listener) {
-        addValueChangeListener(componentName, new ComponentValueChangeListenerWrapper(listener));
+        addValueChangeListener(componentName, new ComponentValueListenerWrapper(listener));
     }
 
     @Override
     public void removeValueListener(String componentName, ValueListener listener) {
-        removeValueChangeListener(componentName, new ComponentValueChangeListenerWrapper(listener));
+        removeValueChangeListener(componentName, new ComponentValueListenerWrapper(listener));
     }
 
     @Override

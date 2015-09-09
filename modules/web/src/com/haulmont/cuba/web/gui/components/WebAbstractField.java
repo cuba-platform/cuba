@@ -15,7 +15,7 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
-import com.haulmont.cuba.gui.components.compatibility.ComponentValueChangeListenerWrapper;
+import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
@@ -174,12 +174,12 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends We
 
     @Override
     public void addListener(ValueListener listener) {
-        addValueChangeListener(new ComponentValueChangeListenerWrapper(listener));
+        addValueChangeListener(new ComponentValueListenerWrapper(listener));
     }
 
     @Override
     public void removeListener(ValueListener listener) {
-        removeValueChangeListener(new ComponentValueChangeListenerWrapper(listener));
+        removeValueChangeListener(new ComponentValueListenerWrapper(listener));
     }
 
     @Override

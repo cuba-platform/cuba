@@ -13,7 +13,7 @@ import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
 import com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondition;
 import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.components.compatibility.ComponentValueChangeListenerWrapper;
+import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
 import org.apache.commons.lang.StringUtils;
 
@@ -100,12 +100,12 @@ public class ParamWrapper implements Component.HasValue {
 
     @Override
     public void addListener(ValueListener listener) {
-        addValueChangeListener(new ComponentValueChangeListenerWrapper(listener));
+        addValueChangeListener(new ComponentValueListenerWrapper(listener));
     }
 
     @Override
     public void removeListener(ValueListener listener) {
-        removeValueChangeListener(new ComponentValueChangeListenerWrapper(listener));
+        removeValueChangeListener(new ComponentValueListenerWrapper(listener));
     }
 
     @Override

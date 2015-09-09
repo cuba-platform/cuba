@@ -412,7 +412,7 @@ public class WebFileMultiUploadField extends WebAbstractComponent<AbstractCompon
     protected void fireFileUploadStart(String fileName, long contentLength) {
         if (fileUploadStartListeners != null && !fileUploadStartListeners.isEmpty()) {
             FileUploadStartEvent e = new FileUploadStartEvent(fileName, contentLength);
-            for (FileUploadStartListener listener : fileUploadStartListeners) {
+            for (FileUploadStartListener listener : new ArrayList<>(fileUploadStartListeners)) {
                 listener.fileUploadStart(e);
             }
         }
@@ -421,7 +421,7 @@ public class WebFileMultiUploadField extends WebAbstractComponent<AbstractCompon
     protected void fireFileUploadFinish(String fileName, long contentLength) {
         if (fileUploadFinishListeners != null && !fileUploadFinishListeners.isEmpty()) {
             FileUploadFinishEvent e = new FileUploadFinishEvent(fileName, contentLength);
-            for (FileUploadFinishListener listener : fileUploadFinishListeners) {
+            for (FileUploadFinishListener listener : new ArrayList<>(fileUploadFinishListeners)) {
                 listener.fileUploadFinish(e);
             }
         }
@@ -430,7 +430,7 @@ public class WebFileMultiUploadField extends WebAbstractComponent<AbstractCompon
     protected void fireFileUploadError(String fileName, long contentLength, Exception cause) {
         if (fileUploadErrorListeners != null && !fileUploadErrorListeners.isEmpty()) {
             FileUploadErrorEvent e = new FileUploadErrorEvent(fileName, contentLength, cause);
-            for (FileUploadErrorListener listener : fileUploadErrorListeners) {
+            for (FileUploadErrorListener listener : new ArrayList<>(fileUploadErrorListeners)) {
                 listener.fileUploadError(e);
             }
         }
@@ -438,7 +438,7 @@ public class WebFileMultiUploadField extends WebAbstractComponent<AbstractCompon
 
     protected void fireQueueUploadComplete() {
         if (queueUploadCompleteListeners != null) {
-            for (QueueUploadCompleteListener listener : queueUploadCompleteListeners) {
+            for (QueueUploadCompleteListener listener : new ArrayList<>(queueUploadCompleteListeners)) {
                 listener.queueUploadComplete();
             }
         }

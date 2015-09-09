@@ -225,7 +225,7 @@ public class CubaFoldersPane extends VerticalLayout {
         timer = new FoldersPaneTimer();
         timer.setRepeating(true);
         timer.setDelay(period);
-        timer.addTimerListener(createAppFolderUpdater());
+        timer.addActionListener(createAppFolderUpdater());
         timer.start();
 
         appWindow.addTimer(timer);
@@ -333,7 +333,7 @@ public class CubaFoldersPane extends VerticalLayout {
         userSettingsTools.saveFoldersState(visible, -1, verticalSplitPos);
     }
 
-    protected CubaTimer.TimerListener createAppFolderUpdater() {
+    protected CubaTimer.ActionListener createAppFolderUpdater() {
         return new AppFoldersUpdater();
     }
 
@@ -830,24 +830,19 @@ public class CubaFoldersPane extends VerticalLayout {
         public void perform(final Folder folder) {
             final FolderEditWindow window;
             if (folder instanceof SearchFolder) {
-                window = AppFolderEditWindow.create(false, false, folder, null, new Runnable() {
-                    @Override
-                    public void run() {
-                        saveFolder(folder);
-                        refreshFolders();
-                    }
+                window = AppFolderEditWindow.create(false, false, folder, null, () -> {
+                    saveFolder(folder);
+                    refreshFolders();
                 });
             } else {
                 if (folder instanceof AppFolder) {
-                    window = AppFolderEditWindow.create(true, false, folder, null, new Runnable() {
-                        @Override
-                        public void run() {
-                            saveFolder(folder);
-                            refreshFolders();
-                        }
+                    window = AppFolderEditWindow.create(true, false, folder, null, () -> {
+                        saveFolder(folder);
+                        refreshFolders();
                     });
-                } else
+                } else {
                     return;
+                }
             }
             AppUI.getCurrent().addWindow(window);
         }
@@ -951,14 +946,10 @@ public class CubaFoldersPane extends VerticalLayout {
         }
     }
 
-    public class AppFoldersUpdater implements CubaTimer.TimerListener {
+    public class AppFoldersUpdater implements CubaTimer.ActionListener {
         @Override
-        public void onTimer(CubaTimer timer) {
+        public void timerAction(CubaTimer timer) {
             reloadAppFolders();
-        }
-
-        @Override
-        public void onStopTimer(CubaTimer timer) {
         }
     }
 

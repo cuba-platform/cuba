@@ -8,7 +8,7 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.GroupBoxLayout;
-import com.haulmont.cuba.gui.components.compatibility.ComponentExpandedStateChangeListenerWrapper;
+import com.haulmont.cuba.gui.components.compatibility.ComponentExpandCollapseListenerWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaOrderedActionsLayout;
@@ -232,22 +232,22 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
 
     @Override
     public void addListener(ExpandListener listener) {
-        addExpandedStateChangeListener(new ComponentExpandedStateChangeListenerWrapper(listener));
+        addExpandedStateChangeListener(new ComponentExpandCollapseListenerWrapper(listener));
     }
 
     @Override
     public void removeListener(ExpandListener listener) {
-        removeExpandedStateChangeListener(new ComponentExpandedStateChangeListenerWrapper(listener));
+        removeExpandedStateChangeListener(new ComponentExpandCollapseListenerWrapper(listener));
     }
 
     @Override
     public void addListener(CollapseListener listener) {
-        addExpandedStateChangeListener(new ComponentExpandedStateChangeListenerWrapper(listener));
+        addExpandedStateChangeListener(new ComponentExpandCollapseListenerWrapper(listener));
     }
 
     @Override
     public void removeListener(CollapseListener listener) {
-        removeExpandedStateChangeListener(new ComponentExpandedStateChangeListenerWrapper(listener));
+        removeExpandedStateChangeListener(new ComponentExpandCollapseListenerWrapper(listener));
     }
 
     @Override

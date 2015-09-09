@@ -69,14 +69,14 @@ public interface PickerField extends Field, Component.ActionsHolder {
 
     void setFieldEditable(boolean editable);
 
-    public interface FieldListener {
-        public void actionPerformed(String text, Object prevValue);
+    interface FieldListener {
+        void actionPerformed(String text, Object prevValue);
     }
 
     /**
      * Enumerates standard picker action types. Can create a corresponding action instance.
      */
-    public enum ActionType {
+    enum ActionType {
 
         LOOKUP("lookup") {
             @Override
@@ -112,7 +112,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
         public abstract Action createAction(PickerField pickerField);
     }
 
-    public static abstract class StandardAction extends BaseAction {
+    abstract class StandardAction extends BaseAction {
 
         protected PickerField pickerField;
 
@@ -134,7 +134,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
     /**
      * Action to select an entity instance through the entity lookup screen.
      */
-    public static class LookupAction extends StandardAction {
+    class LookupAction extends StandardAction {
 
         public static final String NAME = ActionType.LOOKUP.getId();
 
@@ -305,7 +305,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
     /**
      * Action to clear the PickerField content.
      */
-    public static class ClearAction extends StandardAction {
+    class ClearAction extends StandardAction {
 
         public static final String NAME = ActionType.CLEAR.getId();
 
@@ -327,7 +327,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
     /**
      * Action to open an edit screen for entity instance which is currently set in the PickerField.
      */
-    public static class OpenAction extends StandardAction {
+    class OpenAction extends StandardAction {
 
         public static final String NAME = ActionType.OPEN.getId();
 

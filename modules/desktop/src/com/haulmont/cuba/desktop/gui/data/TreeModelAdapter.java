@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.desktop.gui.data;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.CaptionMode;
@@ -14,7 +13,6 @@ import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
 import org.apache.commons.lang.ObjectUtils;
 
-import javax.annotation.Nullable;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
@@ -34,7 +32,7 @@ public class TreeModelAdapter implements TreeModel {
 
     protected Object rootNode = "Root";
 
-    protected List<TreeModelListener> listeners = new ArrayList<>();
+    protected List<TreeModelListener> treeModelListeners = new ArrayList<>();
 
     protected CaptionMode captionMode;
     protected String captionProperty;
@@ -43,6 +41,7 @@ public class TreeModelAdapter implements TreeModel {
 
     public TreeModelAdapter(HierarchicalDatasource datasource, CaptionMode captionMode, String captionProperty,
                             boolean autoRefresh) {
+
         this.datasource = datasource;
         this.captionMode = captionMode;
         this.captionProperty = captionProperty;
@@ -58,7 +57,7 @@ public class TreeModelAdapter implements TreeModel {
                     case ADD:
                     case REMOVE:
                         Object[] path = {getRoot()};
-                        for (TreeModelListener listener : listeners) {
+                        for (TreeModelListener listener : treeModelListeners) {
                             TreeModelEvent ev = new TreeModelEvent(this, path);
                             listener.treeStructureChanged(ev);
                         }
@@ -67,7 +66,7 @@ public class TreeModelAdapter implements TreeModel {
                     case UPDATE:
                         for (Object item : e.getItems()) {
                             TreePath treePath = getTreePath(item);
-                            for (TreeModelListener listener : listeners) {
+                            for (TreeModelListener listener : treeModelListeners) {
                                 TreeModelEvent ev = new TreeModelEvent(this, treePath.getPath());
                                 listener.treeNodesChanged(ev);
                             }
@@ -135,22 +134,18 @@ public class TreeModelAdapter implements TreeModel {
             childrenIds = datasource.getChildren(entity.getId());
         }
         final Entity childEntity = ((Node) child).getEntity();
-        return Iterables.indexOf(childrenIds, new Predicate<Object>() {
-            public boolean apply(@Nullable Object id) {
-                return childEntity.getId().equals(id);
-            }
-        });
+        return Iterables.indexOf(childrenIds, id -> childEntity.getId().equals(id));
     }
 
     @Override
     public void addTreeModelListener(TreeModelListener l) {
-        if (!listeners.contains(l))
-            listeners.add(l);
+        if (!treeModelListeners.contains(l))
+            treeModelListeners.add(l);
     }
 
     @Override
     public void removeTreeModelListener(TreeModelListener l) {
-        listeners.remove(l);
+        treeModelListeners.remove(l);
     }
 
     public void setCaptionMode(CaptionMode captionMode) {

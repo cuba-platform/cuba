@@ -219,7 +219,7 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
     protected void fireFileUploadStart(String fileName, long contentLength) {
         if (fileUploadStartListeners != null && !fileUploadStartListeners.isEmpty()) {
             FileUploadStartEvent e = new FileUploadStartEvent(fileName, contentLength);
-            for (FileUploadStartListener listener : fileUploadStartListeners) {
+            for (FileUploadStartListener listener : new ArrayList<>(fileUploadStartListeners)) {
                 listener.fileUploadStart(e);
             }
         }
@@ -228,7 +228,7 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
     protected void fireFileUploadFinish(String fileName, long contentLength) {
         if (fileUploadFinishListeners != null && !fileUploadFinishListeners.isEmpty()) {
             FileUploadFinishEvent e = new FileUploadFinishEvent(fileName, contentLength);
-            for (FileUploadFinishListener listener : fileUploadFinishListeners) {
+            for (FileUploadFinishListener listener : new ArrayList<>(fileUploadFinishListeners)) {
                 listener.fileUploadFinish(e);
             }
         }
@@ -237,7 +237,7 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
     protected void fireFileUploadError(String fileName, long contentLength, Exception cause) {
         if (fileUploadErrorListeners != null && !fileUploadErrorListeners.isEmpty()) {
             FileUploadErrorEvent e = new FileUploadErrorEvent(fileName, contentLength, cause);
-            for (FileUploadErrorListener listener : fileUploadErrorListeners) {
+            for (FileUploadErrorListener listener : new ArrayList<>(fileUploadErrorListeners)) {
                 listener.fileUploadError(e);
             }
         }
@@ -246,7 +246,7 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
     protected void fireFileUploadSucceed(String fileName, long contentLength) {
         if (fileUploadSucceedListeners != null && !fileUploadSucceedListeners.isEmpty()) {
             FileUploadSucceedEvent e = new FileUploadSucceedEvent(fileName, contentLength);
-            for (FileUploadSucceedListener listener : fileUploadSucceedListeners) {
+            for (FileUploadSucceedListener listener : new ArrayList<>(fileUploadSucceedListeners)) {
                 listener.fileUploadSucceed(e);
             }
         }

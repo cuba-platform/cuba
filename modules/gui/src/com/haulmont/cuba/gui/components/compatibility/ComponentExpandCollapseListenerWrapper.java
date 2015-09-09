@@ -12,15 +12,15 @@ import com.haulmont.cuba.gui.components.Component;
  * @version $Id$
  */
 @Deprecated
-public class ComponentExpandedStateChangeListenerWrapper implements Component.ExpandedStateChangeListener {
+public class ComponentExpandCollapseListenerWrapper implements Component.ExpandedStateChangeListener {
 
     private Object expandCollapseListener;
 
-    public ComponentExpandedStateChangeListenerWrapper(Component.Collapsable.ExpandListener expandListener) {
+    public ComponentExpandCollapseListenerWrapper(Component.Collapsable.ExpandListener expandListener) {
         this.expandCollapseListener = expandListener;
     }
 
-    public ComponentExpandedStateChangeListenerWrapper(Component.Collapsable.CollapseListener collapseListener) {
+    public ComponentExpandCollapseListenerWrapper(Component.Collapsable.CollapseListener collapseListener) {
         this.expandCollapseListener = collapseListener;
     }
 
@@ -43,7 +43,7 @@ public class ComponentExpandedStateChangeListenerWrapper implements Component.Ex
             return false;
         }
 
-        ComponentExpandedStateChangeListenerWrapper that = (ComponentExpandedStateChangeListenerWrapper) obj;
+        ComponentExpandCollapseListenerWrapper that = (ComponentExpandCollapseListenerWrapper) obj;
 
         return this.expandCollapseListener.equals(that.expandCollapseListener);
     }

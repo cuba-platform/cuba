@@ -10,7 +10,7 @@ import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.FilterImplementation;
-import com.haulmont.cuba.gui.components.compatibility.ComponentExpandedStateChangeListenerWrapper;
+import com.haulmont.cuba.gui.components.compatibility.ComponentExpandCollapseListenerWrapper;
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.FilterEntity;
@@ -279,22 +279,22 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     @Override
     public void addListener(ExpandListener listener) {
-        addExpandedStateChangeListener(new ComponentExpandedStateChangeListenerWrapper(listener));
+        addExpandedStateChangeListener(new ComponentExpandCollapseListenerWrapper(listener));
     }
 
     @Override
     public void removeListener(ExpandListener listener) {
-        removeExpandedStateChangeListener(new ComponentExpandedStateChangeListenerWrapper(listener));
+        removeExpandedStateChangeListener(new ComponentExpandCollapseListenerWrapper(listener));
     }
 
     @Override
     public void addListener(CollapseListener listener) {
-        addExpandedStateChangeListener(new ComponentExpandedStateChangeListenerWrapper(listener));
+        addExpandedStateChangeListener(new ComponentExpandCollapseListenerWrapper(listener));
     }
 
     @Override
     public void removeListener(CollapseListener listener) {
-        removeExpandedStateChangeListener(new ComponentExpandedStateChangeListenerWrapper(listener));
+        removeExpandedStateChangeListener(new ComponentExpandCollapseListenerWrapper(listener));
     }
 
     @Override
@@ -318,7 +318,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         if (expandedStateChangeListeners != null && !expandedStateChangeListeners.isEmpty()) {
             ExpandedStateChangeEvent event = new ExpandedStateChangeEvent(this, expanded);
 
-            for (ExpandedStateChangeListener listener : expandedStateChangeListeners) {
+            for (ExpandedStateChangeListener listener : new ArrayList<>(expandedStateChangeListeners)) {
                 listener.expandedStateChanged(event);
             }
         }

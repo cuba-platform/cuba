@@ -7,7 +7,7 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.gui.components.ProgressBar;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.components.compatibility.ComponentValueChangeListenerWrapper;
+import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.swing.*;
@@ -23,7 +23,7 @@ import java.util.List;
 public class DesktopProgressBar extends DesktopAbstractComponent<JProgressBar> implements ProgressBar {
 
     protected boolean editable = true;
-    protected List<ValueChangeListener> listeners = new ArrayList<>();
+    protected List<ValueChangeListener> valueChangeListeners = new ArrayList<>();
     protected Object prevValue;
 
     private static final int WHOLE_PROGRESS = 100;
@@ -36,30 +36,30 @@ public class DesktopProgressBar extends DesktopAbstractComponent<JProgressBar> i
 
     @Override
     public void addListener(ValueListener listener) {
-        addValueChangeListener(new ComponentValueChangeListenerWrapper(listener));
+        addValueChangeListener(new ComponentValueListenerWrapper(listener));
     }
 
     @Override
     public void removeListener(ValueListener listener) {
-        removeValueChangeListener(new ComponentValueChangeListenerWrapper(listener));
+        removeValueChangeListener(new ComponentValueListenerWrapper(listener));
     }
 
     protected void fireValueChanged(Object prevValue, Object value) {
-        for (ValueChangeListener listener : new ArrayList<>(listeners)) {
+        for (ValueChangeListener listener : new ArrayList<>(valueChangeListeners)) {
             listener.valueChanged(new ValueChangeEvent(this, prevValue, value));
         }
     }
 
     @Override
     public void addValueChangeListener(ValueChangeListener listener) {
-        if (!listeners.contains(listener)) {
-            listeners.add(listener);
+        if (!valueChangeListeners.contains(listener)) {
+            valueChangeListeners.add(listener);
         }
     }
 
     @Override
     public void removeValueChangeListener(ValueChangeListener listener) {
-        listeners.remove(listener);
+        valueChangeListeners.remove(listener);
     }
 
     @Override

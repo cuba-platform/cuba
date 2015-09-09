@@ -169,19 +169,11 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
 
                 final Method timerInvokeMethod = timerMethod;
 
-                timer.addTimerListener(new Timer.TimerListener() {
-                    @Override
-                    public void onTimer(Timer timer) {
-                        try {
-                            timerInvokeMethod.invoke(window, timer);
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            throw new RuntimeException("Unable to invoke onTimer", e);
-                        }
-                    }
-
-                    @Override
-                    public void onStopTimer(Timer timer) {
-                        //do nothing
+                timer.addActionListener(t -> {
+                    try {
+                        timerInvokeMethod.invoke(window, t);
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        throw new RuntimeException("Unable to invoke onTimer", e);
                     }
                 });
             }

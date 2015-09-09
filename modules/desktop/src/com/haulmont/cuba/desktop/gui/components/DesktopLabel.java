@@ -20,7 +20,7 @@ import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.components.compatibility.ComponentValueChangeListenerWrapper;
+import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -39,7 +39,7 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     protected MetaProperty metaProperty;
     protected MetaPropertyPath metaPropertyPath;
 
-    protected List<ValueChangeListener> listeners = new ArrayList<>();
+    protected List<ValueChangeListener> valueChangeListeners = new ArrayList<>();
 
     protected DefaultValueFormatter valueFormatter;
 
@@ -218,28 +218,28 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
 
     @Override
     public void addListener(ValueListener listener) {
-        addValueChangeListener(new ComponentValueChangeListenerWrapper(listener));
+        addValueChangeListener(new ComponentValueListenerWrapper(listener));
     }
 
     @Override
     public void removeListener(ValueListener listener) {
-        removeValueChangeListener(new ComponentValueChangeListenerWrapper(listener));
+        removeValueChangeListener(new ComponentValueListenerWrapper(listener));
     }
 
     @Override
     public void addValueChangeListener(ValueChangeListener listener) {
-        if (!listeners.contains(listener)) {
-            listeners.add(listener);
+        if (!valueChangeListeners.contains(listener)) {
+            valueChangeListeners.add(listener);
         }
     }
 
     @Override
     public void removeValueChangeListener(ValueChangeListener listener) {
-        listeners.remove(listener);
+        valueChangeListeners.remove(listener);
     }
 
     protected void fireValueChanged(Object prevValue, Object value) {
-        for (ValueChangeListener listener : new ArrayList<>(listeners)) {
+        for (ValueChangeListener listener : new ArrayList<>(valueChangeListeners)) {
             listener.valueChanged(new ValueChangeEvent(this, prevValue, value));
         }
     }

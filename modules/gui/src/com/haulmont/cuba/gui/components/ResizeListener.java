@@ -6,10 +6,12 @@
 package com.haulmont.cuba.gui.components;
 
 /**
+ * @deprecated Use {@link com.haulmont.cuba.gui.components.ResizableTextArea.ResizeListener}
  * @author subbotin
  * @version $Id$
  */
+@Deprecated
 public interface ResizeListener<T> {
 
-    public void onResize(T source, String oldWidth, String oldHeight, String width, String height);
+    void onResize(T source, String oldWidth, String oldHeight, String width, String height);
 }

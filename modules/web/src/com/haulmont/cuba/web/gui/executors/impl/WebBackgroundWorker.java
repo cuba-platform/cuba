@@ -58,27 +58,27 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
         private CubaTimer timer;
 
-        private CubaTimer.TimerListener timerListener;
+        private CubaTimer.ActionListener timerListener;
 
         private WebTimerListener(CubaTimer timer) {
             this.timer = timer;
         }
 
-        public CubaTimer.TimerListener getTimerListener() {
+        public CubaTimer.ActionListener getTimerListener() {
             return timerListener;
         }
 
-        public void setTimerListener(CubaTimer.TimerListener timerListener) {
+        public void setTimerListener(CubaTimer.ActionListener timerListener) {
             this.timerListener = timerListener;
         }
 
         public void startListen() {
             if (timerListener != null)
-                timer.addTimerListener(timerListener);
+                timer.addActionListener(timerListener);
         }
 
         public void stopListen() {
-            timer.removeTimerListener(timerListener);
+            timer.removeActionListener(timerListener);
         }
     }
 
@@ -110,11 +110,11 @@ public class WebBackgroundWorker implements BackgroundWorker {
         final TaskHandlerImpl<T, V> taskHandler = new TaskHandlerImpl<>(taskExecutor, watchDog);
 
         // add timer to AppWindow for UI ping
-        CubaTimer.TimerListener timerListener = new CubaTimer.TimerListener() {
+        CubaTimer.ActionListener timerListener = new CubaTimer.ActionListener() {
             private long intentVersion = 0;
 
             @Override
-            public void onTimer(CubaTimer timer) {
+            public void timerAction(CubaTimer timer) {
                 UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
                 if (sessionSource.getUserSession() == null) {
                     log.debug("Null UserSession in background task");
@@ -148,11 +148,6 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 if (!taskExecutor.isAlive()) {
                     webTimerListener.stopListen();
                 }
-            }
-
-            @Override
-            public void onStopTimer(CubaTimer timer) {
-                // Do nothing
             }
         };
 

@@ -6,6 +6,7 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.core.global.RemoteException;
+import com.haulmont.cuba.gui.components.compatibility.TimerListenerWrapper;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -13,8 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,8 +28,10 @@ public class DesktopTimer extends DesktopAbstractComponent<JLabel> implements co
     protected boolean repeating = false;
     protected int delay = 0;
 
-    protected List<TimerListener> timerListeners = new ArrayList<>();
     protected Timer timer;
+
+    protected List<ActionListener> actionListeners;
+    protected List<StopListener> stopListeners;
 
     protected boolean started = false;
 
@@ -64,17 +65,14 @@ public class DesktopTimer extends DesktopAbstractComponent<JLabel> implements co
     @Override
     public void start() {
         if (!started) {
-            timer = new Timer(delay, new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    Timer timerBefore = timer;
+            timer = new Timer(delay, e -> {
+                Timer timerBefore = timer;
 
-                    onTimerAction();
+                onTimerAction();
 
-                    // if user didn't stop or restart timer
-                    if (timerBefore == timer && !timerBefore.isRepeats()) {
-                        stop();
-                    }
+                // if user didn't stop or restart timer
+                if (timerBefore == timer && !timerBefore.isRepeats()) {
+                    stop();
                 }
             });
             timer.setRepeats(repeating);
@@ -96,18 +94,22 @@ public class DesktopTimer extends DesktopAbstractComponent<JLabel> implements co
 
             started = false;
 
-            for (TimerListener listener : timerListeners) {
-                listener.onStopTimer(this);
+            if (stopListeners != null) {
+                for (StopListener listener : stopListeners) {
+                    listener.timerStopped(this);
+                }
             }
         }
     }
 
     protected void onTimerAction() {
-        for (TimerListener listener : timerListeners) {
-            try {
-                listener.onTimer(this);
-            } catch (RuntimeException ex) {
-                handleTimerException(ex);
+        if (actionListeners != null) {
+            for (ActionListener listener : actionListeners) {
+                try {
+                    listener.timerAction(this);
+                } catch (RuntimeException ex) {
+                    handleTimerException(ex);
+                }
             }
         }
     }
@@ -148,7 +150,13 @@ public class DesktopTimer extends DesktopAbstractComponent<JLabel> implements co
         if (timer == null)
             return;
 
-        timerListeners.clear();
+        if (actionListeners != null) {
+            actionListeners.clear();
+        }
+
+        if (stopListeners != null) {
+            stopListeners.clear();
+        }
 
         timer.stop();
         timer = null;
@@ -156,12 +164,51 @@ public class DesktopTimer extends DesktopAbstractComponent<JLabel> implements co
 
     @Override
     public void addTimerListener(TimerListener listener) {
-        if (!timerListeners.contains(listener))
-            timerListeners.add(listener);
+        TimerListenerWrapper wrapper = new TimerListenerWrapper(listener);
+
+        addActionListener(wrapper);
+        addStopListener(wrapper);
     }
 
     @Override
     public void removeTimerListener(TimerListener listener) {
-        timerListeners.remove(listener);
+        TimerListenerWrapper wrapper = new TimerListenerWrapper(listener);
+
+        removeActionListener(wrapper);
+        removeStopListener(wrapper);
+    }
+
+    @Override
+    public void addActionListener(ActionListener listener) {
+        if (actionListeners == null) {
+            actionListeners = new ArrayList<>();
+        }
+        if (!actionListeners.contains(listener)) {
+            actionListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeActionListener(ActionListener listener) {
+        if (actionListeners != null) {
+            actionListeners.remove(listener);
+        }
+    }
+
+    @Override
+    public void addStopListener(StopListener listener) {
+        if (stopListeners == null) {
+            stopListeners = new ArrayList<>();
+        }
+        if (!stopListeners.contains(listener)) {
+            stopListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeStopListener(StopListener listener) {
+        if (stopListeners != null) {
+            stopListeners.remove(listener);
+        }
     }
 }

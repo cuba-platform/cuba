@@ -6,10 +6,9 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.ResizableTextArea;
-import com.haulmont.cuba.gui.components.ResizeListener;
+import com.haulmont.cuba.gui.components.compatibility.ResizeListenerWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaResizableTextAreaWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaTextArea;
-import com.vaadin.data.Property;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.Component;
@@ -23,34 +22,26 @@ import java.util.List;
  * @author subbotin
  * @version $Id$
  */
-public class WebResizableTextArea
-        extends
-            WebAbstractTextArea<CubaTextArea>
-        implements
-            ResizableTextArea {
+public class WebResizableTextArea extends WebAbstractTextArea<CubaTextArea> implements ResizableTextArea {
 
-    protected List<ResizeListener> resizeListeners = new ArrayList<>();
+    protected List<ResizeListener> resizeListeners;
 
     protected CubaResizableTextAreaWrapper wrapper;
     protected boolean settingsEnabled = true;
 
     public WebResizableTextArea() {
         wrapper = new CubaResizableTextAreaWrapper(component);
-        wrapper.addResizeListener(new CubaResizableTextAreaWrapper.ResizeListener() {
-            @Override
-            public void onResize(String oldWidth, String oldHeight, String width, String height) {
-                for (ResizeListener listener : resizeListeners) {
-                    listener.onResize(WebResizableTextArea.this, oldWidth, oldHeight, width, height);
+        wrapper.addResizeListener((oldWidth, oldHeight, width, height) -> {
+            if (resizeListeners != null && !resizeListeners.isEmpty()) {
+                ResizeEvent e = new ResizeEvent(this, oldWidth, width, oldHeight, height);
+
+                for (ResizeListener resizeListener : resizeListeners) {
+                    resizeListener.sizeChanged(e);
                 }
             }
         });
 
-        component.addValueChangeListener(new Property.ValueChangeListener() {
-            @Override
-            public void valueChange(Property.ValueChangeEvent event) {
-                wrapper.markAsDirty();
-            }
-        });
+        component.addValueChangeListener(event -> wrapper.markAsDirty());
     }
 
     @Override
@@ -75,6 +66,16 @@ public class WebResizableTextArea
     @Override
     public boolean isResizable() {
         return wrapper.isResizable();
+    }
+
+    @Override
+    public void addResizeListener(com.haulmont.cuba.gui.components.ResizeListener resizeListener) {
+        addResizeListener(new ResizeListenerWrapper(resizeListener));
+    }
+
+    @Override
+    public void removeResizeListener(com.haulmont.cuba.gui.components.ResizeListener resizeListener) {
+        removeResizeListener(new ResizeListenerWrapper(resizeListener));
     }
 
     @Override
@@ -134,6 +135,9 @@ public class WebResizableTextArea
 
     @Override
     public void addResizeListener(ResizeListener resizeListener) {
+        if (resizeListeners == null) {
+            resizeListeners = new ArrayList<>();
+        }
         if (!resizeListeners.contains(resizeListener)) {
             resizeListeners.add(resizeListener);
         }
@@ -141,7 +145,9 @@ public class WebResizableTextArea
 
     @Override
     public void removeResizeListener(ResizeListener resizeListener) {
-        resizeListeners.remove(resizeListener);
+        if (resizeListeners != null) {
+            resizeListeners.remove(resizeListener);
+        }
     }
 
     @Override

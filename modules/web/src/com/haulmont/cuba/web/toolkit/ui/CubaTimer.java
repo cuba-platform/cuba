@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -28,7 +27,8 @@ public class CubaTimer extends AbstractExtension implements CubaTimerServerRpc {
 
     private static final Logger log = LoggerFactory.getLogger(CubaTimer.class);
 
-    protected final List<TimerListener> listeners = new LinkedList<>();
+    protected final List<ActionListener> actionListeners = new ArrayList<>();
+    protected List<StopListener> stopListeners; // lazily initialized
 
     public CubaTimer() {
         registerRpc(this);
@@ -80,8 +80,10 @@ public class CubaTimer extends AbstractExtension implements CubaTimerServerRpc {
         if (getState(false).running) {
             getRpcProxy(CubaTimerClientRpc.class).setRunning(false);
 
-            for (TimerListener listener : new ArrayList<>(listeners)) {
-                listener.onStopTimer(this);
+            if (stopListeners != null) {
+                for (StopListener stopListener : new ArrayList<>(stopListeners)) {
+                    stopListener.timerStopped(this);
+                }
             }
             getState().running = false;
         }
@@ -92,8 +94,8 @@ public class CubaTimer extends AbstractExtension implements CubaTimerServerRpc {
         try {
             long startTime = System.currentTimeMillis();
 
-            for (TimerListener listener : new ArrayList<>(listeners)) {
-                listener.onTimer(this);
+            for (ActionListener listener : new ArrayList<>(actionListeners)) {
+                listener.timerAction(this);
             }
 
             long endTime = System.currentTimeMillis();
@@ -139,30 +141,45 @@ public class CubaTimer extends AbstractExtension implements CubaTimerServerRpc {
     public void beforeClientResponse(boolean initial) {
         super.beforeClientResponse(initial);
 
-        getState().listeners = listeners.size() > 0;
+        getState().listeners = actionListeners.size() > 0 || (stopListeners != null && stopListeners.size() > 0);
     }
 
     public void setTimerId(String id) {
         getState().timerId = id;
     }
 
-    public void addTimerListener(TimerListener listener) {
-        if (!listeners.contains(listener)) {
-            listeners.add(listener);
-            markAsDirty();
+    public interface ActionListener {
+
+        void timerAction(CubaTimer timer);
+    }
+
+    public interface StopListener {
+
+        void timerStopped(CubaTimer timer);
+    }
+
+    public void addActionListener(ActionListener listener) {
+        if (!actionListeners.contains(listener)) {
+            actionListeners.add(listener);
         }
     }
 
-    public void removeTimerListener(TimerListener listener) {
-        if (listeners.contains(listener)) {
-            listeners.remove(listener);
-            markAsDirty();
+    public void removeActionListener(ActionListener listener) {
+        actionListeners.remove(listener);
+    }
+
+    public void addStopListener(StopListener listener) {
+        if (stopListeners == null) {
+            stopListeners = new ArrayList<>();
+        }
+        if (!stopListeners.contains(listener)) {
+            stopListeners.add(listener);
         }
     }
 
-    public interface TimerListener {
-        void onTimer(CubaTimer timer);
-
-        void onStopTimer(CubaTimer timer);
+    public void removeStopListeners(StopListener listener) {
+        if (stopListeners != null) {
+            stopListeners.remove(listener);
+        }
     }
 }

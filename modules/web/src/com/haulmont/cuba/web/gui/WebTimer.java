@@ -4,12 +4,11 @@
  */
 package com.haulmont.cuba.web.gui;
 
+import com.haulmont.cuba.gui.components.Timer;
+import com.haulmont.cuba.gui.components.compatibility.TimerListenerWrapper;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
 import com.vaadin.ui.Label;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author gorodnov
@@ -17,7 +16,6 @@ import java.util.Map;
  */
 public class WebTimer extends WebAbstractComponent<Label> implements com.haulmont.cuba.gui.components.Timer {
 
-    protected final Map<TimerListener, CubaTimer.TimerListener> listeners = new HashMap<>();
     protected CubaTimer timerImpl;
 
     public WebTimer() {
@@ -57,15 +55,38 @@ public class WebTimer extends WebAbstractComponent<Label> implements com.haulmon
 
     @Override
     public void addTimerListener(TimerListener listener) {
-        TimerListenerWrapper componentListener = new TimerListenerWrapper(listener);
-        listeners.put(listener, componentListener);
-        timerImpl.addTimerListener(componentListener);
+        TimerListenerWrapper wrapper = new TimerListenerWrapper(listener);
+
+        addActionListener(wrapper);
+        addStopListener(wrapper);
     }
 
     @Override
     public void removeTimerListener(TimerListener listener) {
-        CubaTimer.TimerListener componentListener = listeners.remove(listener);
-        timerImpl.removeTimerListener(componentListener);
+        TimerListenerWrapper wrapper = new TimerListenerWrapper(listener);
+
+        removeActionListener(wrapper);
+        removeStopListener(wrapper);
+    }
+
+    @Override
+    public void addActionListener(ActionListener listener) {
+        timerImpl.addActionListener(new CubaTimerActionListenerWrapper(listener));
+    }
+
+    @Override
+    public void removeActionListener(ActionListener listener) {
+        timerImpl.removeActionListener(new CubaTimerActionListenerWrapper(listener));
+    }
+
+    @Override
+    public void addStopListener(StopListener listener) {
+        timerImpl.addStopListener(new CubaTimerStopListenerWrapper(listener));
+    }
+
+    @Override
+    public void removeStopListener(StopListener listener) {
+        timerImpl.removeStopListeners(new CubaTimerStopListenerWrapper(listener));
     }
 
     @Override
@@ -79,22 +100,71 @@ public class WebTimer extends WebAbstractComponent<Label> implements com.haulmon
         return timerImpl;
     }
 
-    protected class TimerListenerWrapper implements CubaTimer.TimerListener {
+    protected class CubaTimerActionListenerWrapper implements CubaTimer.ActionListener {
 
-        protected TimerListener timerListener;
+        private final Timer.ActionListener listener;
 
-        public TimerListenerWrapper(TimerListener timerListener) {
-            this.timerListener = timerListener;
+        public CubaTimerActionListenerWrapper(ActionListener listener) {
+            this.listener = listener;
         }
 
         @Override
-        public void onTimer(CubaTimer timer) {
-            timerListener.onTimer(WebTimer.this);
+        public void timerAction(CubaTimer timer) {
+            listener.timerAction(WebTimer.this);
         }
 
         @Override
-        public void onStopTimer(CubaTimer timer) {
-            timerListener.onStopTimer(WebTimer.this);
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+
+            if (obj == null || obj.getClass() != getClass()) {
+                return false;
+            }
+
+            CubaTimerActionListenerWrapper that = (CubaTimerActionListenerWrapper) obj;
+
+            return this.listener.equals(that.listener);
+        }
+
+        @Override
+        public int hashCode() {
+            return listener.hashCode();
+        }
+    }
+
+    protected class CubaTimerStopListenerWrapper implements CubaTimer.StopListener {
+
+        private final Timer.StopListener listener;
+
+        public CubaTimerStopListenerWrapper(StopListener listener) {
+            this.listener = listener;
+        }
+
+        @Override
+        public void timerStopped(CubaTimer timer) {
+            listener.timerStopped(WebTimer.this);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+
+            if (obj == null || obj.getClass() != getClass()) {
+                return false;
+            }
+
+            CubaTimerActionListenerWrapper that = (CubaTimerActionListenerWrapper) obj;
+
+            return this.listener.equals(that.listener);
+        }
+
+        @Override
+        public int hashCode() {
+            return listener.hashCode();
         }
     }
 }

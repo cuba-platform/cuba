@@ -13,11 +13,11 @@ import com.haulmont.cuba.gui.data.ValueListener;
  * @version $Id$
  */
 @Deprecated
-public class ComponentValueChangeListenerWrapper implements Component.ValueChangeListener {
+public class ComponentValueListenerWrapper implements Component.ValueChangeListener {
 
     protected final ValueListener listener;
 
-    public ComponentValueChangeListenerWrapper(ValueListener listener) {
+    public ComponentValueListenerWrapper(ValueListener listener) {
         this.listener = listener;
     }
 
@@ -31,7 +31,7 @@ public class ComponentValueChangeListenerWrapper implements Component.ValueChang
             return false;
         }
 
-        ComponentValueChangeListenerWrapper that = (ComponentValueChangeListenerWrapper) obj;
+        ComponentValueListenerWrapper that = (ComponentValueListenerWrapper) obj;
 
         return this.listener.equals(that.listener);
     }
