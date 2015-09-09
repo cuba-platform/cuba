@@ -14,10 +14,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class DataManagerTest extends CubaTestCase {
     
     protected DataManager dataManager;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         dataManager = AppBeans.get(DataManager.class);
@@ -104,6 +109,22 @@ public class DataManagerTest extends CubaTestCase {
         LoadContext<Server> loadContext = LoadContext.create(Server.class);
         loadContext.setQueryString("select s from sys$Server s where s.name like :name")
                 .setParameter("name", "(?i)%loc%host%");
+
+        List<Server> list = dataManager.loadList(loadContext);
+        assertTrue(list.size() > 0);
+    }
+
+    public void testLoadListCaseInsensitiveLower() {
+        Server server = new Server();
+        server.setName("LocalHost");
+        server.setRunning(true);
+
+        DataManager dataManager = AppBeans.get(DataManager.NAME);
+        dataManager.commit(new CommitContext(Collections.<Entity>singleton(server)));
+
+        LoadContext<Server> loadContext = LoadContext.create(Server.class);
+        loadContext.setQueryString("select s from sys$Server s where s.name like :name")
+                .setParameter("name", "(?i)%localhost%");
 
         List<Server> list = dataManager.loadList(loadContext);
         assertTrue(list.size() > 0);
