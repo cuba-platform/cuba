@@ -5,6 +5,8 @@
 
 package com.haulmont.cuba.testsupport;
 
+import org.junit.Assert;
+
 import java.io.*;
 
 /**
@@ -30,5 +32,13 @@ public class TestSupport {
         bis.close();
 
         return result;
+    }
+
+    public static void runAndFail(Runnable runnable) {
+        try {
+            runnable.run();
+            Assert.fail();
+        } catch (Exception ignored) {
+        }
     }
 }

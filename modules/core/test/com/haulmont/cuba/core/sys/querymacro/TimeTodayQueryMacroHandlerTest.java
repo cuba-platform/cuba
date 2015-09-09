@@ -4,10 +4,9 @@
  */
 package com.haulmont.cuba.core.sys.querymacro;
 
-import com.haulmont.cuba.core.sys.querymacro.TimeTodayQueryMacroHandler;
-import junit.framework.TestCase;
+import com.haulmont.cuba.core.CubaTestCase;
 
-public class TimeTodayQueryMacroHandlerTest extends TestCase {
+public class TimeTodayQueryMacroHandlerTest extends CubaTestCase {
 
     public void testExpandMacro() throws Exception {
         TimeTodayQueryMacroHandler handler = new TimeTodayQueryMacroHandler();

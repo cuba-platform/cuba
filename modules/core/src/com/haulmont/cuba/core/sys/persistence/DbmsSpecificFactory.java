@@ -23,20 +23,16 @@ import org.apache.commons.lang.StringUtils;
  */
 public class DbmsSpecificFactory {
 
-    private static final DbmsFeatures features = create(DbmsFeatures.class);
-    private static final SequenceSupport sequenceSupport = create(SequenceSupport.class);
-    private static final DbTypeConverter dbTypeConverter = create(DbTypeConverter.class);
-
     public static DbmsFeatures getDbmsFeatures() {
-        return features;
+        return create(DbmsFeatures.class);
     }
 
     public static SequenceSupport getSequenceSupport() {
-        return sequenceSupport;
+        return create(SequenceSupport.class);
     }
 
     public static DbTypeConverter getDbTypeConverter() {
-        return dbTypeConverter;
+        return create(DbTypeConverter.class);
     }
 
     public static <T> T create(Class<T> intf) {

@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class TestContext implements Context {
 
-    private Map<String, Object> store = new ConcurrentHashMap<String, Object>();
+    private Map<String, Object> store = new ConcurrentHashMap<>();
 
     private static Context instance = new TestContext();
 

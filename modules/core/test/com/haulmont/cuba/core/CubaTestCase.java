@@ -4,152 +4,120 @@
  */
 package com.haulmont.cuba.core;
 
-import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.PasswordEncryption;
-import com.haulmont.cuba.core.sys.AbstractAppContextLoader;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.AppContextLoader;
-import com.haulmont.cuba.core.sys.CubaCoreApplicationContext;
-import com.haulmont.cuba.core.sys.persistence.EclipseLinkCustomizer;
-import com.haulmont.cuba.core.sys.persistence.PersistenceConfigProcessor;
+import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestContext;
 import com.haulmont.cuba.testsupport.TestDataSource;
 import junit.framework.TestCase;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.text.StrLookup;
-import org.apache.commons.lang.text.StrSubstitutor;
-import org.apache.commons.lang.text.StrTokenizer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 import java.util.UUID;
 
 /**
- * Base class for middleware integration tests.
- * <p>This class provides full-functional middleware environment without web container, including:
- * <ul>
- *     <li>Connection to the database</li>
- *     <li>Spring container with all project beans inside</li>
- *     <li>All middleware infrastructure interfaces</li>
- * </ul>
- * </p>
- * <p>Descendant classes must override methods <code>initDataSources()</code> and <code>getTestAppProperties()</code>
- * to supply project-specific properties.</p>
+ * DEPRECATED. Use TestContainer and JUnit4 test annotations:
+ * <pre>
+ *     {@literal@}ClassRule
+ *     public static TestContainer cont = TestContainer.Common.INSTANCE;
+ *
+ *     {@literal@}Test
+ *     public void testSomething() {
+ *     }
+ * </pre>
  *
  * @author krivopustov
  * @version $Id$
  */
+@Deprecated
 public abstract class CubaTestCase extends TestCase {
 
-    private Logger log;
-
     protected static boolean initialized;
+
+    protected static TestContainer cont;
+
+    static {
+        String property = System.getProperty("logback.configurationFile");
+        if (StringUtils.isBlank(property)) {
+            System.setProperty("logback.configurationFile", "test-logback.xml");
+        }
+    }
 
     protected Persistence persistence;
     protected Metadata metadata;
     protected PasswordEncryption passwordEncryption;
 
-    protected CubaTestCase() {
-        String property = System.getProperty("logback.configurationFile");
-        if (StringUtils.isBlank(property)) {
-            System.setProperty("logback.configurationFile", getTestLogConfig());
+    private class CommonTestContainer extends TestContainer {
+        @Override
+        public void before() throws Throwable {
+            super.before();
         }
-        log = LoggerFactory.getLogger(CubaTestCase.class);
+
+        @Override
+        public void after() {
+            super.after();
+        }
+
+        @Override
+        public void cleanupContext() {
+            super.cleanupContext();
+        }
+
+        @Override
+        public void setupContext() {
+            super.setupContext();
+        }
+
+        @Override
+        protected void initDataSources() {
+            try {
+                CubaTestCase.this.initDataSources();
+            } catch (Exception e) {
+                throw new RuntimeException("Error initializing datasource", e);
+            }
+        }
     }
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        if (!initialized) {
-            System.setProperty("cuba.unitTestMode", "true");
+        try {
+            if (!initialized) {
+                System.setProperty("cuba.unitTestMode", "true");
+                cont = new CommonTestContainer();
+                cont.setAppPropertiesFiles(getTestAppProperties());
+                cont.setSpringConfig(getTestSpringConfig());
+                ((CommonTestContainer) cont).before();
+                initialized = true;
+            }
 
-            initDataSources();
-            initAppProperties();
-            initPersistenceConfig();
-            initAppContext();
+            ((CommonTestContainer) cont).setupContext();
 
-            initialized = true;
+            persistence = AppBeans.get(Persistence.class);
+            metadata = AppBeans.get(Metadata.class);
+            passwordEncryption = AppBeans.get(PasswordEncryption.class);
+        } catch (Throwable throwable) {
+            if (throwable instanceof Exception)
+                throw (Exception) throwable;
+            else
+                throw new RuntimeException(throwable);
         }
-        persistence = AppBeans.get(Persistence.class);
-        metadata = AppBeans.get(Metadata.class);
-        passwordEncryption = AppBeans.get(PasswordEncryption.class);
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        TestContext.getInstance().unbind(AppContext.getProperty("cuba.dataSourceJndiName"));
+        ((CommonTestContainer) cont).cleanupContext();
+        super.tearDown();
     }
 
     protected void initDataSources() throws Exception {
         Class.forName("org.hsqldb.jdbc.JDBCDriver");
         TestDataSource ds = new TestDataSource("jdbc:hsqldb:hsql://localhost/cubadb", "sa", "");
-        TestContext.getInstance().bind("java:comp/env/jdbc/CubaDS", ds);
-    }
-
-    protected void initPersistenceConfig() {
-        String configProperty = AppContext.getProperty(AppContextLoader.PERSISTENCE_CONFIG);
-        StrTokenizer tokenizer = new StrTokenizer(configProperty);
-
-        PersistenceConfigProcessor processor = new PersistenceConfigProcessor();
-        processor.setSourceFiles(tokenizer.getTokenList());
-
-        String dataDir = AppContext.getProperty("cuba.dataDir");
-        processor.setOutputFile(dataDir + "/persistence.xml");
-
-        processor.create();
-    }
-
-    protected void initAppProperties() {
-        final Properties properties = new Properties();
-
-        List<String> locations = getTestAppProperties();
-        DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
-        for (String location : locations) {
-            Resource resource = resourceLoader.getResource(location);
-            if (resource.exists()) {
-                InputStream stream = null;
-                try {
-                    stream = resource.getInputStream();
-                    properties.load(stream);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } finally {
-                    IOUtils.closeQuietly(stream);
-                }
-            } else {
-                log.warn("Resource " + location + " not found, ignore it");
-            }
-        }
-
-        StrSubstitutor substitutor = new StrSubstitutor(new StrLookup() {
-            @Override
-            public String lookup(String key) {
-                String subst = properties.getProperty(key);
-                return subst != null ? subst : System.getProperty(key);
-            }
-        });
-        for (Object key : properties.keySet()) {
-            String value = substitutor.replace(properties.getProperty((String) key));
-            AppContext.setProperty((String) key, value);
-        }
-
-        File dir;
-        dir = new File(AppContext.getProperty("cuba.confDir"));
-        dir.mkdirs();
-        dir = new File(AppContext.getProperty("cuba.logDir"));
-        dir.mkdirs();
-        dir = new File(AppContext.getProperty("cuba.tempDir"));
-        dir.mkdirs();
-        dir = new File(AppContext.getProperty("cuba.dataDir"));
-        dir.mkdirs();
+        TestContext.getInstance().bind(AppContext.getProperty("cuba.dataSourceJndiName"), ds);
     }
 
     protected List<String> getTestAppProperties() {
@@ -160,41 +128,16 @@ public abstract class CubaTestCase extends TestCase {
         return Arrays.asList(files);
     }
 
-    protected void initAppContext() {
-        EclipseLinkCustomizer.initTransientCompatibleAnnotations();
-
-        String configProperty = AppContext.getProperty(AbstractAppContextLoader.SPRING_CONTEXT_CONFIG);
-
-        StrTokenizer tokenizer = new StrTokenizer(configProperty);
-        List<String> locations = tokenizer.getTokenList();
-        locations.add(getTestSpringConfig());
-
-        ClassPathXmlApplicationContext appContext = new CubaCoreApplicationContext(locations.toArray(new String[locations.size()])); //CubaTestClassPathXmlApplicationContext(locations);
-        AppContext.setApplicationContext(appContext);
-    }
-
     protected String getTestSpringConfig() {
         return "test-spring.xml";
     }
 
-    protected String getTestLogConfig() {
-        return "test-logback.xml";
-    }
-
     protected void deleteRecord(String table, UUID... ids) {
-        deleteRecord(table, "ID", ids);
+        cont.deleteRecord(table, ids);
     }
 
     protected void deleteRecord(String table, String primaryKeyCol, UUID... ids) {
-        for (UUID id : ids) {
-            String sql = "delete from " + table + " where " + primaryKeyCol + " = '" + id.toString() + "'";
-            QueryRunner runner = new QueryRunner(persistence.getDataSource());
-            try {
-                runner.update(sql);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        cont.deleteRecord(table, primaryKeyCol, ids);
     }
 
     protected EntityManager entityManager() {

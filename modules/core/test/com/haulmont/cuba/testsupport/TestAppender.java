@@ -11,6 +11,8 @@ import ch.qos.logback.core.AppenderBase;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
 * @author krivopustov
@@ -22,6 +24,14 @@ public class TestAppender extends AppenderBase<ILoggingEvent> {
 
     public List<String> getMessages() {
         return messages;
+    }
+
+    public void clearMessages() {
+        messages.clear();
+    }
+
+    public Stream<String> filterMessages(Predicate<String> predicate) {
+        return messages.stream().filter(predicate);
     }
 
     @Override

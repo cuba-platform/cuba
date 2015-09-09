@@ -7,15 +7,14 @@ package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
-import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 import javax.persistence.Entity;
@@ -97,6 +96,11 @@ public class PersistenceConfigProcessor {
         Element puElem = findPersistenceUnitElement(rootElem);
         if (puElem == null)
             throw new IllegalStateException("No persistence unit named 'cuba' found among multiple units inside " + fileName);
+
+        String puName = AppContext.getProperty("cuba.persistenceUnitName");
+        if (!StringUtils.isEmpty(puName)) {
+            puElem.addAttribute("name", puName);
+        }
 
         for (Element element : new ArrayList<>(Dom4j.elements(puElem, "class"))) {
             puElem.remove(element);
