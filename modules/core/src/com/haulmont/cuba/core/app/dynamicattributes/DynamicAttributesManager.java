@@ -89,7 +89,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
             List<Category> resultList = query.getResultList();
 
             Multimap<String, Category> categoriesCache = HashMultimap.create();
-            Map<String, Map<String, CategoryAttribute>> attributesCache = new HashMap<>();
+            Map<String, Map<String, CategoryAttribute>> attributesCache = new LinkedHashMap<>();
 
             for (Category category : resultList) {
                 MetaClass metaClass = resolveTargetMetaClass(metadata.getSession().getClass(category.getEntityType()));
@@ -97,7 +97,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
                     categoriesCache.put(metaClass.getName(), category);
                     Map<String, CategoryAttribute> attributes = attributesCache.get(metaClass.getName());
                     if (attributes == null) {
-                        attributes = new HashMap<>();
+                        attributes = new LinkedHashMap<>();
                         attributesCache.put(metaClass.getName(), attributes);
                     }
 
