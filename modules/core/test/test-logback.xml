@@ -30,7 +30,7 @@
 
     <logger name="org.springframework" level="INFO"/>
 
-    <logger name="eclipselink" level="INFO"/>
+    <logger name="eclipselink" level="WARN"/>
 
     <logger name="eclipselink.sql" level="DEBUG"/>
 

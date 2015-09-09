@@ -15,7 +15,12 @@ import java.util.Map;
  */
 public class CubaEclipseLinkJpaVendorAdapter extends EclipseLinkJpaVendorAdapter {
 
-    private final EclipseLinkJpaDialect jpaDialect = new CubaEclipseLinkJpaDialect();
+    protected final EclipseLinkJpaDialect jpaDialect;
+
+    public CubaEclipseLinkJpaVendorAdapter() {
+        jpaDialect = new CubaEclipseLinkJpaDialect();
+        jpaDialect.setLazyDatabaseTransaction(true);
+    }
 
     @Override
     public Map<String, Object> getJpaPropertyMap() {

@@ -82,6 +82,8 @@ public class EntityManagerImpl implements EntityManager {
 
     @Override
     public <T extends Entity> T merge(T entity) {
+        log.debug("merge {}", entity);
+
         if (PersistenceHelper.isManaged(entity))
             return entity;
 
@@ -104,6 +106,8 @@ public class EntityManagerImpl implements EntityManager {
 
     @Override
     public void remove(Entity entity) {
+        log.debug("remove {}", entity);
+
         if (PersistenceHelper.isDetached(entity)) {
             entity = delegate.merge(entity);
         }
@@ -121,6 +125,7 @@ public class EntityManagerImpl implements EntityManager {
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Entity<K>, K> T find(Class<T> entityClass, K key) {
+        log.debug("find {} by id={}", entityClass.getSimpleName(), key);
         MetaClass metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(entityClass);
         Class<T> javaClass = metaClass.getJavaClass();
 
@@ -145,6 +150,7 @@ public class EntityManagerImpl implements EntityManager {
     }
 
     private <T extends Entity> T findWithViews(MetaClass metaClass, Object key, List<View> views) {
+        log.debug("find {} by id={}, views={}", metaClass.getJavaClass().getSimpleName(), key, views);
         Query query = createQuery("select e from " + metaClass.getName() + " e where e.id = ?1");
         query.setParameter(1, key);
         for (View view : views) {
@@ -236,6 +242,7 @@ public class EntityManagerImpl implements EntityManager {
 
     @Override
     public void flush() {
+        log.debug("flush");
         support.fireEntityListeners();
         delegate.flush();
     }

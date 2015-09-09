@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.persistence.DbmsFeatures;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -196,6 +197,9 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
     @Override
     public List<T> getResultList() {
+        if (log.isDebugEnabled())
+            log.debug(queryString.replaceAll("[\\t\\n\\x0B\\f\\r]", " "));
+
 //        if (!isNative && log.isTraceEnabled())
 //            log.trace("JPQL query result class: " + getQuery().getResultClass());
 
@@ -204,6 +208,9 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
     @Override
     public T getSingleResult() {
+        if (log.isDebugEnabled())
+            log.debug(queryString.replaceAll("[\\t\\n\\x0B\\f\\r]", " "));
+
 //        if (!isNative && log.isTraceEnabled())
 //            log.trace("JPQL query result class: " + getQuery().getResultClass());
 
@@ -213,6 +220,9 @@ public class QueryImpl<T> implements TypedQuery<T> {
     @Override
     @Nullable
     public T getFirstResult() {
+        if (log.isDebugEnabled())
+            log.debug(queryString.replaceAll("[\\t\\n\\x0B\\f\\r]", " "));
+
 //        if (!isNative && log.isTraceEnabled())
 //            log.trace("JPQL query result class: " + getQuery().getResultClass());
         List<T> resultList = getQuery().getResultList();
@@ -279,8 +289,9 @@ public class QueryImpl<T> implements TypedQuery<T> {
     @Override
     public TypedQuery<T> setParameter(int position, Object value, boolean implicitConversions) {
         checkState();
-        if (isNative && (value instanceof UUID) && (DbmsSpecificFactory.getDbmsFeatures().getUuidTypeClassName() != null)) {
-            Class c = ReflectionHelper.getClass(DbmsSpecificFactory.getDbmsFeatures().getUuidTypeClassName());
+        DbmsFeatures dbmsFeatures = DbmsSpecificFactory.getDbmsFeatures();
+        if (isNative && (value instanceof UUID) && (dbmsFeatures.getUuidTypeClassName() != null)) {
+            Class c = ReflectionHelper.getClass(dbmsFeatures.getUuidTypeClassName());
             try {
                 value = ReflectionHelper.newInstance(c, value);
             } catch (NoSuchMethodException e) {

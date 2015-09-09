@@ -118,8 +118,6 @@ public class PersistenceConfigProcessor {
 
         puElem.addElement("exclude-unlisted-classes");
 
-        puElem.addElement("shared-cache-mode").setText(AppContext.getProperty("cuba.sharedCacheMode"));
-
         Element propertiesEl = puElem.element("properties");
         if (propertiesEl != null)
             puElem.remove(propertiesEl);
