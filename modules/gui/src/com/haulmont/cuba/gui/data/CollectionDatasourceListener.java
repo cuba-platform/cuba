@@ -11,6 +11,7 @@ import java.util.List;
 /**
  * Listener to {@link CollectionDatasource} events.
  *
+ * @deprecated Use {@link com.haulmont.cuba.gui.data.CollectionDatasource.CollectionChangeListener}
  * @see com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter
  *
  * @param <T> type of entity the datasource contains

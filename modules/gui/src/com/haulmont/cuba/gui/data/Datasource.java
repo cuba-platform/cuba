@@ -136,7 +136,13 @@ public interface Datasource<T extends Entity> {
     View getView();
 
     /**
-     * Add listener to datasource events
+     * Add listener to datasource events.
+     *
+     * @deprecated See new methods <br/>
+     * {@link #addItemChangeListener(ItemChangeListener)} <br/>
+     * {@link #addItemPropertyChangeListener(ItemPropertyChangeListener)} <br/>
+     * {@link #addStateChangeListener(StateChangeListener)} <br/>
+     * {@link CollectionDatasource#addCollectionChangeListener(CollectionDatasource.CollectionChangeListener)}
      */
     @Deprecated
     void addListener(DatasourceListener<T> listener);
@@ -158,22 +164,38 @@ public interface Datasource<T extends Entity> {
             this.item = item;
         }
 
+        /**
+         * @return datasource
+         */
         public Datasource<T> getDs() {
             return ds;
         }
 
+        /**
+         * @return current item
+         */
         @Nullable
         public T getItem() {
             return item;
         }
 
+        /**
+         * @return previous selected item
+         */
         @Nullable
         public T getPrevItem() {
             return prevItem;
         }
     }
 
+    /**
+     * Listener to datasource item change events.
+     */
     interface ItemChangeListener<T extends Entity> {
+        /**
+         * Current item changed, that is now {@link com.haulmont.cuba.gui.data.Datasource#getItem()} returns a different
+         * instance.
+         */
         void itemChanged(ItemChangeEvent<T> e);
     }
 
@@ -191,20 +213,35 @@ public interface Datasource<T extends Entity> {
             this.state = state;
         }
 
+        /**
+         * @return datasource
+         */
         public Datasource<T> getDs() {
             return ds;
         }
 
+        /**
+         * @return previous state
+         */
         public State getPrevState() {
             return prevState;
         }
 
+        /**
+         * @return current state
+         */
         public State getState() {
             return state;
         }
     }
 
+    /**
+     * Listener to datasource state change events.
+     */
     interface StateChangeListener<T extends Entity> {
+        /**
+         * Datasource state changed.
+         */
         void stateChanged(StateChangeEvent<T> e);
     }
 
@@ -226,30 +263,52 @@ public interface Datasource<T extends Entity> {
             this.value = value;
         }
 
+        /**
+         * @return datasource
+         */
         public Datasource<T> getDs() {
             return ds;
         }
 
+        /**
+         * @return item, which property value is changed
+         */
         public T getItem() {
             return item;
         }
 
+        /**
+         * @return property name
+         */
         public String getProperty() {
             return property;
         }
 
+        /**
+         * @return previous value of item property
+         */
         @Nullable
         public Object getPrevValue() {
             return prevValue;
         }
 
+        /**
+         * @return current value of item property
+         */
         @Nullable
         public Object getValue() {
             return value;
         }
     }
 
+    /**
+     * Listener to datasource item property value change events.
+     */
     interface ItemPropertyChangeListener<T extends Entity> {
+        /**
+         * Property value of some datasource item changed. In case of {@link CollectionDatasource} this method may be
+         * called for any item of collection if its property value changed.
+         */
         void itemPropertyChanged(ItemPropertyChangeEvent<T> e);
     }
 

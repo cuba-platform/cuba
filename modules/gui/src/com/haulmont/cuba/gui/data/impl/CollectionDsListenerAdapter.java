@@ -13,6 +13,8 @@ import java.util.List;
 /**
  * Adapter class for {@link CollectionDatasourceListener}. Use it if you need to implement only few methods.
  *
+ * @deprecated Use {@link com.haulmont.cuba.gui.data.CollectionDatasource.CollectionChangeListener}
+ *
  * @author tulupov
  * @version $Id$
  */

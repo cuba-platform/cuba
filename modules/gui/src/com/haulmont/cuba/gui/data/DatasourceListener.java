@@ -11,9 +11,7 @@ import javax.annotation.Nullable;
 /**
  * Listener to basic datasource events.
  *
- * @see Datasource#addListener(DatasourceListener)
- * @see Datasource#removeListener(DatasourceListener)
- * @see com.haulmont.cuba.gui.data.impl.DsListenerAdapter
+ * @deprecated Use new methods
  *
  * @param <T> type of entity the datasource contains
  *

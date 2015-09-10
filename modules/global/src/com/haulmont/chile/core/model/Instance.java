@@ -131,19 +131,31 @@ public interface Instance extends Serializable {
             this.value = value;
         }
 
+        /**
+         * @return property name
+         */
         public String getProperty() {
             return property;
         }
 
+        /**
+         * @return data model object
+         */
         public Instance getItem() {
             return item;
         }
 
+        /**
+         * @return previous value of property
+         */
         @Nullable
         public Object getPrevValue() {
             return prevValue;
         }
 
+        /**
+         * @return current value of property
+         */
         @Nullable
         public Object getValue() {
             return value;

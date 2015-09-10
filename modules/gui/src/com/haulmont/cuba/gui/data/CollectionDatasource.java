@@ -363,6 +363,7 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
         void setRefreshMode(RefreshMode refreshMode);
     }
 
+    /** Operation which caused the datasource change. */
     enum Operation {
         REFRESH,
         CLEAR,
@@ -382,20 +383,33 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
             this.items = items;
         }
 
+        /**
+         * @return datasource
+         */
         public CollectionDatasource<T, K> getDs() {
             return ds;
         }
 
+        /**
+         * @return items which used in operation, in case of {@link Operation#REFRESH} or {@link Operation#CLEAR}
+         * equals {@link java.util.Collections#emptyList()}
+         */
         public List<T> getItems() {
             return items;
         }
 
+        /**
+         * @return operation which caused the datasource change
+         */
         public Operation getOperation() {
             return operation;
         }
     }
 
     interface CollectionChangeListener<T extends Entity<K>, K> {
+        /**
+         * Enclosed collection changed.
+         */
         void collectionChanged(CollectionChangeEvent<T, K> e);
     }
 
