@@ -165,7 +165,7 @@ public class QueryAnalyzerTest {
         pathNode = (PathNode) orderByField.getChild(0);
         assertEquals("c", pathNode.getEntityVariableName());
         assertEquals("regNumber", pathNode.getChild(0).getText());
-        assertEquals("DESC", orderByField.getChild(1).getText());
+        assertEquals("desc", orderByField.getChild(1).getText());
     }
 
     @Test
@@ -190,7 +190,7 @@ public class QueryAnalyzerTest {
         assertTrue(selectedItem.getChild(0) instanceof AggregateExpressionNode);
         AggregateExpressionNode countExpr = (AggregateExpressionNode) selectedItem.getChild(0);
 
-        assertEquals("COUNT", countExpr.getChild(0).getText());
+        assertEquals("count", countExpr.getChild(0).getText());
         assertEquals("c", countExpr.getChild(2).getText());
         assertEquals(4, countExpr.getChildCount());
         assertNull(orderByNode.getFirstChildWithType(JPA2Lexer.T_ORDER_BY));
@@ -221,8 +221,8 @@ public class QueryAnalyzerTest {
         assertTrue(selectedItem.getChild(0) instanceof AggregateExpressionNode);
         AggregateExpressionNode countExpr = (AggregateExpressionNode) selectedItem.getChild(0);
 
-        assertEquals("COUNT", countExpr.getChild(0).getText());
-        assertEquals("DISTINCT", countExpr.getChild(2).getText());
+        assertEquals("count", countExpr.getChild(0).getText());
+        assertEquals("distinct", countExpr.getChild(2).getText());
         assertEquals("d", countExpr.getChild(3).getText());
         assertEquals(5, countExpr.getChildCount());
         assertNull(orderByNode.getFirstChildWithType(JPA2Lexer.T_ORDER_BY));
