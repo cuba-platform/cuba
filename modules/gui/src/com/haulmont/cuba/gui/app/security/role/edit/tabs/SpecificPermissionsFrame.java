@@ -160,8 +160,7 @@ public class SpecificPermissionsFrame extends AbstractFrame {
     }
 
     protected void markItemPermission(PermissionVariant permissionVariant) {
-        BasicPermissionTarget target = specificPermissionsTree.getSingleSelected();
-        if (target != null) {
+        for (BasicPermissionTarget target : specificPermissionsTree.getSelected()) {
             target.setPermissionVariant(permissionVariant);
             if (permissionVariant != PermissionVariant.NOTSET) {
                 // Create permission
