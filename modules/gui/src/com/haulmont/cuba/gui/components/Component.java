@@ -200,15 +200,24 @@ public interface Component {
             this.value = value;
         }
 
-        public Component getComponent() {
+        /**
+         * @return component
+         */
+        public Component.HasValue getComponent() {
             return component;
         }
 
+        /**
+         * @return previous value
+         */
         @Nullable
         public Object getPrevValue() {
             return prevValue;
         }
 
+        /**
+         * @return current value
+         */
         @Nullable
         public Object getValue() {
             return value;
@@ -235,6 +244,9 @@ public interface Component {
 
         void setValue(Object value);
 
+        /**
+         * @deprecated Use {@link #addValueChangeListener(ValueChangeListener)}
+         */
         @Deprecated
         void addListener(ValueListener listener);
         @Deprecated

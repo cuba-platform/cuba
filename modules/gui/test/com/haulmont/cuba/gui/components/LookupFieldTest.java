@@ -12,7 +12,6 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
@@ -21,7 +20,6 @@ import mockit.NonStrictExpectations;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
@@ -93,12 +91,7 @@ public abstract class LookupFieldTest extends AbstractComponentTest {
         assertTrue(component.isEditable());
 
         component.setOptionsList(new ArrayList<>(Arrays.asList("One", "Two", "Three")));
-        component.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                component.setEditable(false);
-            }
-        });
+        component.addValueChangeListener(e -> component.setEditable(false));
         component.setValue("One");
 
         assertEquals("One", component.getValue());
@@ -124,6 +117,7 @@ public abstract class LookupFieldTest extends AbstractComponentTest {
         g.setName("Group 0");
         testDs.getItem().setGroup(g);
 
+        //noinspection unchecked
         CollectionDatasource<Group, UUID> groupsDs = new DsBuilder()
                 .setId("testDs")
                 .setJavaClass(Group.class)
@@ -178,6 +172,7 @@ public abstract class LookupFieldTest extends AbstractComponentTest {
         final Group g = new Group();
         testDs.getItem().setGroup(g);
 
+        //noinspection unchecked
         CollectionDatasource<Group, UUID> groupsDs = new DsBuilder()
                 .setId("testDs")
                 .setJavaClass(Group.class)
@@ -187,65 +182,52 @@ public abstract class LookupFieldTest extends AbstractComponentTest {
                 .buildCollectionDatasource();
 
         groupsDs.includeItem(g);
-        final Group g1 = new Group();
+        Group g1 = new Group();
         groupsDs.includeItem(g1);
-        final Group g2 = new Group();
+        Group g2 = new Group();
         groupsDs.includeItem(g2);
 
         component.setOptionsDatasource(groupsDs);
 
-        ValueListener listener1 = new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property,
-                                     @Nullable Object prevValue, @Nullable Object value) {
-                assertNull(prevValue);
-                assertEquals(g2, value);
+        Component.ValueChangeListener listener1 = e -> {
+            assertNull(e.getPrevValue());
+            assertEquals(g2, e.getValue());
 
-                counter.addAndGet(1);
-            }
+            counter.addAndGet(1);
         };
-        component.addListener(listener1);
+        component.addValueChangeListener(listener1);
         component.setValue(g2);
 
-        component.removeListener(listener1);
+        component.removeValueChangeListener(listener1);
         assertEquals(1, counter.get());
 
-        ValueListener listener2 = new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property,
-                                     @Nullable Object prevValue, @Nullable Object value) {
-                assertEquals(g2, prevValue);
-                assertEquals(g, value);
+        Component.ValueChangeListener listener2 = e -> {
+            assertEquals(g2, e.getPrevValue());
+            assertEquals(g, e.getValue());
 
-                counter.addAndGet(1);
-            }
+            counter.addAndGet(1);
         };
 
-        component.addListener(listener2);
+        component.addValueChangeListener(listener2);
 
         component.setDatasource(testDs, "group");
         assertEquals(g, component.getValue());
 
         assertEquals(2, counter.get());
 
-        component.removeListener(listener2);
+        component.removeValueChangeListener(listener2);
         component.setValue(g1);
         assertEquals(g1, testDs.getItem().getGroup());
 
         assertEquals(2, counter.get());
 
-        ValueListener listener3 = new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property,
-                                     @Nullable Object prevValue, @Nullable Object value) {
-                assertEquals(g1, prevValue);
-                assertEquals(g2, value);
+        Component.ValueChangeListener listener3 = e -> {
+            assertEquals(g1, e.getPrevValue());
+            assertEquals(g2, e.getValue());
 
-                counter.addAndGet(1);
-            }
+            counter.addAndGet(1);
         };
-
-        component.addListener(listener3);
+        component.addValueChangeListener(listener3);
         testDs.getItem().setGroup(g2);
         assertEquals(g2, component.getValue());
 
@@ -267,9 +249,10 @@ public abstract class LookupFieldTest extends AbstractComponentTest {
         ((DatasourceImpl) testDs).valid();
 
         assertNull(component.getValue());
-        final Group g = new Group();
+        Group g = new Group();
         testDs.getItem().setGroup(g);
 
+        //noinspection unchecked
         CollectionDatasource<Group, UUID> groupsDs = new DsBuilder()
                 .setId("testDs")
                 .setJavaClass(Group.class)
@@ -279,10 +262,10 @@ public abstract class LookupFieldTest extends AbstractComponentTest {
                 .buildCollectionDatasource();
 
         groupsDs.includeItem(g);
-        final Group g1 = new Group();
+        Group g1 = new Group();
         g1.setId(g.getId());
         groupsDs.includeItem(g1);
-        final Group g2 = new Group();
+        Group g2 = new Group();
         groupsDs.includeItem(g2);
 
         component.setOptionsDatasource(groupsDs);
@@ -293,15 +276,11 @@ public abstract class LookupFieldTest extends AbstractComponentTest {
 
         component.setValue(g2);
 
-        ValueListener listener1 = new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property,
-                                     @Nullable Object prevValue, @Nullable Object value) {
-                assertEquals(g2, prevValue);
-                assertEquals(g1, value);
-            }
+        Component.ValueChangeListener listener1 = e -> {
+            assertEquals(g2, e.getPrevValue());
+            assertEquals(g1, e.getValue());
         };
-        component.addListener(listener1);
+        component.addValueChangeListener(listener1);
 
         component.setValue(g);
     }

@@ -6,19 +6,14 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.User;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import javax.annotation.Nullable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
@@ -79,12 +74,7 @@ public abstract class TextFieldTest extends AbstractComponentTest {
 
         assertTrue(component.isEditable());
 
-        component.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                component.setEditable(false);
-            }
-        });
+        component.addValueChangeListener(e -> component.setEditable(false));
 
         component.setValue("OK");
 
@@ -124,23 +114,19 @@ public abstract class TextFieldTest extends AbstractComponentTest {
     public void testValueChangeListener() {
         TextField component = factory.createComponent(TextField.class);
 
-        final AtomicInteger counter = new AtomicInteger(0);
+        AtomicInteger counter = new AtomicInteger(0);
 
-        ValueListener okListener = new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property,
-                                     @Nullable Object prevValue, @Nullable Object value) {
-                assertNull(prevValue);
-                assertEquals("OK", value);
+        Component.ValueChangeListener okListener = e -> {
+            assertNull(e.getPrevValue());
+            assertEquals("OK", e.getValue());
 
-                counter.addAndGet(1);
-            }
+            counter.addAndGet(1);
         };
-        component.addListener(okListener);
+        component.addValueChangeListener(okListener);
         component.setValue("OK");
 
         assertEquals(1, counter.get());
-        component.removeListener(okListener);
+        component.removeValueChangeListener(okListener);
 
         component.setValue("Test");
         assertEquals(1, counter.get());
@@ -155,34 +141,26 @@ public abstract class TextFieldTest extends AbstractComponentTest {
         testDs.setItem(new User());
         ((DatasourceImpl) testDs).valid();
 
-        ValueListener dsLoadListener = new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property,
-                                     @Nullable Object prevValue, @Nullable Object value) {
-                assertEquals("Test", prevValue);
-                assertNull(value);
+        Component.ValueChangeListener dsLoadListener = e -> {
+            assertEquals("Test", e.getPrevValue());
+            assertNull(e.getValue());
 
-                counter.addAndGet(1);
-            }
+            counter.addAndGet(1);
         };
-        component.addListener(dsLoadListener);
+        component.addValueChangeListener(dsLoadListener);
         component.setDatasource(testDs, "login");
 
         assertEquals(2, counter.get());
 
-        component.removeListener(dsLoadListener);
+        component.removeValueChangeListener(dsLoadListener);
 
-        ValueListener dsListener = new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property,
-                                     @Nullable Object prevValue, @Nullable Object value) {
-                assertNull(prevValue);
-                assertEquals("dsValue", value);
+        Component.ValueChangeListener dsListener = e -> {
+            assertNull(e.getPrevValue());
+            assertEquals("dsValue", e.getValue());
 
-                counter.addAndGet(1);
-            }
+            counter.addAndGet(1);
         };
-        component.addListener(dsListener);
+        component.addValueChangeListener(dsListener);
         testDs.getItem().setLogin("dsValue");
 
         assertEquals(3, counter.get());
