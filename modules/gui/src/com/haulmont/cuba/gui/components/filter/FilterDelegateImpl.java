@@ -309,12 +309,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         ftsSearchCriteriaField.setWidth(theme.get("cuba.gui.filter.ftsSearchCriteriaField.width"));
         ftsSearchCriteriaField.setInputPrompt(getMessage("Filter.enterSearchPhrase"));
         ftsSearchCriteriaField.requestFocus();
-        filterHelper.addShortcutListener(ftsSearchCriteriaField, new FilterHelper.ShortcutListener("ftsSearch", new KeyCombination(KeyCombination.Key.ENTER, null)) {
-            @Override
-            public void handleShortcutPressed() {
-                applyFts();
-            }
-        });
+        filterHelper.addShortcutListener(ftsSearchCriteriaField, createFtsSearchShortcutListener());
         controlsLayout.add(ftsSearchCriteriaField);
 
         searchBtn = componentsFactory.createComponent(Button.class);
@@ -340,6 +335,15 @@ public class FilterDelegateImpl implements FilterDelegate {
         createFtsSwitch();
         ftsSwitch.setAlignment(Component.Alignment.MIDDLE_RIGHT);
         controlsLayout.add(ftsSwitch);
+    }
+
+    protected FilterHelper.ShortcutListener createFtsSearchShortcutListener() {
+        return new FilterHelper.ShortcutListener("ftsSearch", new KeyCombination(KeyCombination.Key.ENTER, null)) {
+            @Override
+            public void handleShortcutPressed() {
+                applyFts();
+            }
+        };
     }
 
     protected void createFtsSwitch() {
