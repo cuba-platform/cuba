@@ -6,7 +6,6 @@
 package com.haulmont.cuba.portal.restapi;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -75,13 +74,13 @@ public class LoginServiceController {
 
         String username;
         String password;
-        Locale locale;
+        String localeStr;
         if (contentType.match(JSONConvertor.MIME_TYPE_JSON)) {
             try {
                 JSONObject json = new JSONObject(requestBody);
                 username = json.getString("username");
                 password = json.getString("password");
-                locale = new Locale(json.getString("locale"));
+                localeStr = json.getString("locale");
             } catch (JSONException e) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST);
                 return;
@@ -101,38 +100,12 @@ public class LoginServiceController {
             }
             username = name2value.get("username");
             password = name2value.get("password");
-            locale = new Locale(name2value.get("locale"));
+            localeStr = name2value.get("locale");
         } else {
             throw new IllegalStateException("Unsupported content type: " + contentType);
         }
 
-        try {
-            LoginService loginService = AppBeans.get(LoginService.NAME);
-            UserSession userSession = loginService.login(username, passwordEncryption.getPlainHash(password), locale);
-
-            if (!userSession.isSpecificPermitted(Authentication.PERMISSION_NAME)) {
-                log.info(String.format("User %s is not allowed to use REST-API", username));
-                AppContext.setSecurityContext(new PortalSecurityContext(userSession));
-                try {
-                    loginService.logout();
-                } finally {
-                    AppContext.setSecurityContext(null);
-                }
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
-            }
-
-            setSessionInfo(request, userSession);
-
-            response.setStatus(HttpServletResponse.SC_OK);
-            PrintWriter writer = new PrintWriter(response.getOutputStream());
-            writer.write(userSession.getId().toString());
-            writer.close();
-
-            log.debug(String.format("User %s logged in with REST-API, session id: %s", username, userSession.getId()));
-        } catch (LoginException e) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-        }
+        doLogin(username, password, localeStr, request, response);
     }
 
     @RequestMapping(value = "/api/login", method = RequestMethod.GET)
@@ -143,7 +116,20 @@ public class LoginServiceController {
                            HttpServletResponse response) throws IOException, JSONException {
 
         response.addHeader("Access-Control-Allow-Origin", "*");
-        Locale locale = StringUtils.isBlank(localeStr) ? new Locale("en") : new Locale(localeStr);
+
+        doLogin(username, password, localeStr, request, response);
+    }
+
+    protected Locale localeFromString(String localeStr) {
+        return StringUtils.isBlank(localeStr) ?
+                globalConfig.getAvailableLocales().values().iterator().next()
+                : new Locale(localeStr);
+    }
+
+    protected void doLogin(String username, String password, String localeStr,
+                           HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException {
+        Locale locale = localeFromString(localeStr);
+
         try {
             LoginService loginService = AppBeans.get(LoginService.NAME);
 
@@ -207,20 +193,17 @@ public class LoginServiceController {
         } else {
             throw new IllegalStateException("Unsupported content type: " + contentType);
         }
-        try {
-            if (authentication.begin(sessionUUID)) {
-                LoginService loginService = AppBeans.get(LoginService.NAME);
-                loginService.logout();
-            }
-        } catch (Throwable e) {
-            log.error("Error processing logout request", e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        }
+
+        doLogout(sessionUUID, response);
     }
 
     @RequestMapping(value = "/api/logout", method = RequestMethod.GET)
     public void logoutByGet(@RequestParam(value = "session") String sessionUUID,
                             HttpServletResponse response) throws IOException, JSONException {
+        doLogout(sessionUUID, response);
+    }
+
+    protected void doLogout(String sessionUUID, HttpServletResponse response) throws IOException, JSONException {
         try {
             if (authentication.begin(sessionUUID)) {
                 LoginService loginService = AppBeans.get(LoginService.NAME);
