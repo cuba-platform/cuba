@@ -41,10 +41,11 @@ public class TreeToQuery implements TreeVisitorAction {
             return t;
 
         if (node.getType() == JPA2Lexer.HAVING ||
-                node.parent != null && node.parent.getType() == JPA2Lexer.T_SIMPLE_CONDITION ||
+                node.parent != null && node.parent.getType() == JPA2Lexer.T_SIMPLE_CONDITION
+                        && !parentNodeHasPreviousLparen(node) ||
                 node.parent != null && node.parent.getType() == JPA2Lexer.T_GROUP_BY ||
                 node.parent != null && node.parent.getType() == JPA2Lexer.T_ORDER_BY && node.getType() != JPA2Lexer.T_ORDER_BY_FIELD ||
-                node.parent != null && node.parent.getType() == JPA2Lexer.T_CONDITION && node.getType() == JPA2Lexer.LPAREN && node.childIndex - 1 >= 0 && node.parent.getChild(node.childIndex - 1).getType() != JPA2Lexer.LPAREN ||
+                node.parent != null && node.parent.getType() == JPA2Lexer.T_CONDITION && node.getType() == JPA2Lexer.LPAREN && (node.childIndex == 0 || node.parent.getChild(node.childIndex - 1).getType() != JPA2Lexer.LPAREN) ||
                 node.getType() == JPA2Lexer.AND ||
                 node.parent != null && node.parent.getType() == JPA2Lexer.T_ORDER_BY_FIELD ||
                 node.getType() == JPA2Lexer.OR ||
@@ -58,7 +59,7 @@ public class TreeToQuery implements TreeVisitorAction {
             sb.appendSpace();
         }
 
-        if (node.getType() == JPA2Lexer.T_ORDER_BY_FIELD && node.childIndex - 1 >= 0 && node.parent.getChild(node.childIndex - 1).getType() == JPA2Lexer.T_ORDER_BY_FIELD) {
+        if (node.getType() == JPA2Lexer.T_ORDER_BY_FIELD && node.childIndex > 0 && node.parent.getChild(node.childIndex - 1).getType() == JPA2Lexer.T_ORDER_BY_FIELD) {
             sb.appendString(", ");
         }
 
@@ -71,12 +72,16 @@ public class TreeToQuery implements TreeVisitorAction {
         }
 
         if (node.getType() == JPA2Lexer.T_SOURCES) {
-            sb.appendString("FROM ");
+            sb.appendString("from ");
             return t;
         }
 
         sb.appendString(node.toString());
         return t;
+    }
+
+    private boolean parentNodeHasPreviousLparen(CommonTree node) {
+        return (node.childIndex == 0 && node.parent.childIndex > 0 && node.parent.parent.getChild(node.parent.childIndex - 1).getType() == JPA2Lexer.LPAREN );
     }
 
     public Object post(Object t) {

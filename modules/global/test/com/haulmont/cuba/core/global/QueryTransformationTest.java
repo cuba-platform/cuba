@@ -19,7 +19,7 @@ public class QueryTransformationTest {
     @Test
     public void testAst() throws Exception {
         for (int i = 0; i < 1000; i++) {
-            QueryTransformerAstBased transformerAstBased = new QueryTransformerAstBased(prepareDomainModel(), "select g from sec$GroupHierarchy g", "sec$GroupHierarchy");
+            QueryTransformerAstBased transformerAstBased = new QueryTransformerAstBased(prepareDomainModel(), "select g from sec$GroupHierarchy g");
             transformerAstBased.addWhere("g.deleteTs is null");
         }
     }

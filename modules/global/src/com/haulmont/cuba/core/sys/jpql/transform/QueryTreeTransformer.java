@@ -13,8 +13,10 @@ import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 import org.apache.commons.collections.CollectionUtils;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Author: Alexander Chevelev
@@ -42,13 +44,22 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
             }
             tree.freshenParentAndChildIndexes();
         } else {
+            List<Tree> existingChildren = (List<Tree>) whereTreeToMixWithin.getChildren();
+            CommonTree existingChildrenWithBraces = new CommonTree();
+            existingChildrenWithBraces.addChild(new CommonTree(new CommonToken(JPA2Lexer.LPAREN, "(")));
+            existingChildrenWithBraces.addChildren(existingChildren);
+            existingChildrenWithBraces.addChild(new CommonTree(new CommonToken(JPA2Lexer.RPAREN, ")")));
+            whereTreeToMixWithin.replaceChildren(0, whereTreeToMixWithin.getChildCount() - 1, existingChildrenWithBraces);
+
             CommonTree and = new CommonTree(new CommonToken(JPA2Lexer.AND, "and"));
             whereTreeToMixWithin.addChild(and);
+            whereTreeToMixWithin.addChild(new CommonTree(new CommonToken(JPA2Lexer.LPAREN, "(")));
             for (Object o : whereTreeToMixIn.getChildren()) {
                 CommonTree t = (CommonTree) o;
                 whereTreeToMixWithin.addChild(t.dupNode());
             }
-            whereTreeToMixIn.freshenParentAndChildIndexes();
+            whereTreeToMixWithin.addChild(new CommonTree(new CommonToken(JPA2Lexer.RPAREN, ")")));
+            whereTreeToMixWithin.freshenParentAndChildIndexes();
         }
     }
 
@@ -124,23 +135,63 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
     }
 
     public void replaceEntityName(String newEntityName) {
-        Tree selectedItems = tree.getFirstChildWithType(JPA2Lexer.T_SELECTED_ITEMS);
-        SelectedItemNode selectedItemNode = (SelectedItemNode) selectedItems.getChild(0);
+        IdentificationVariableNode identificationVariable = getMainEntityIdentification();
+        if (identificationVariable != null) {
+            identificationVariable.deleteChild(0);
+            identificationVariable.addChild(new CommonTree(new CommonToken(JPA2Lexer.WORD, newEntityName)));
+            tree.freshenParentAndChildIndexes();
+        }
+    }
+
+    @Nullable
+    public IdentificationVariableNode getMainEntityIdentification() {
+        List<IdentificationVariableNode> identificationVariables = getIdentificationVariableNodes();
+
+        String returnedVariableName = getReturnedVariableName();
+        if (returnedVariableName != null) {
+            for (IdentificationVariableNode identificationVariable : identificationVariables) {
+                if (identificationVariable.getVariableName().equalsIgnoreCase(returnedVariableName)) {
+                    return identificationVariable;
+                }
+            }
+        }
+
+        return identificationVariables.size() > 0 ? identificationVariables.get(0) : null;
+    }
+
+    @Nullable
+    public String getReturnedVariableName() {
+        PathNode returnedPathNode = getReturnedPathNode();
+        if (returnedPathNode != null) {
+            return returnedPathNode.getEntityVariableName();
+        }
+
+        return null;
+    }
+
+    @Nullable
+    public PathNode getReturnedPathNode() {
+        CommonTree selectedItems = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SELECTED_ITEMS);
+        SelectedItemNode selectedItemNode = (SelectedItemNode) selectedItems.getFirstChildWithType(JPA2Lexer.T_SELECTED_ITEM);
         List<PathNode> pathNodes = getChildrenByClass(selectedItemNode, PathNode.class);
         if (CollectionUtils.isNotEmpty(pathNodes)) {
             PathNode pathNode = pathNodes.get(0);
-            String returnedEntityVariableName = pathNode.getEntityVariableName();
-            FromNode fromNode = (FromNode) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
-            SelectionSourceNode selectionSource = (SelectionSourceNode) fromNode.getFirstChildWithType(JPA2Lexer.T_SOURCE);
-            List<IdentificationVariableNode> identificationVariables = getChildrenByClass(selectionSource, IdentificationVariableNode.class);
-            for (IdentificationVariableNode identificationVariable : identificationVariables) {
-                if (identificationVariable.getVariableName().equalsIgnoreCase(returnedEntityVariableName)) {
-                    identificationVariable.deleteChild(0);
-                    identificationVariable.addChild(new CommonTree(new CommonToken(50, newEntityName)));
-                }
-            }
-            tree.freshenParentAndChildIndexes();
+            return pathNode;
         }
+
+        return null;
+    }
+
+    public List<IdentificationVariableNode> getIdentificationVariableNodes() {
+        FromNode fromNode = (FromNode) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
+        List<IdentificationVariableNode> identificationVariableNodes = new ArrayList<>();
+
+        List<SelectionSourceNode> selectionSources = getChildrenByClass(fromNode, SelectionSourceNode.class);
+        for (SelectionSourceNode selectionSource : selectionSources) {
+            identificationVariableNodes.addAll(getChildrenByClass(selectionSource, IdentificationVariableNode.class));
+        }
+
+        return identificationVariableNodes;
     }
 
     public void replaceOrderBy(PathEntityReference orderingFieldRef, boolean desc) {
@@ -185,18 +236,48 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
         }
 
         if (desc) {
-            orderByField.addChild(new CommonTree(new CommonToken(JPA2Lexer.DESC, "DESC")));
+            orderByField.addChild(new CommonTree(new CommonToken(JPA2Lexer.DESC, "desc")));
         }
         orderByField.freshenParentAndChildIndexes();
     }
 
+    public void handleCaseInsensitiveParam(String paramName) {
+        CommonTree whereTree = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_CONDITION);
+        List<SimpleConditionNode> conditionNodes = getChildrenByClass(whereTree, SimpleConditionNode.class);
+        List<SimpleConditionNode> conditionNodesWithParameter = conditionNodes.stream()
+                .filter((SimpleConditionNode n) -> {
+                    ParameterNode parameter = (ParameterNode) n.getFirstChildWithType(JPA2Lexer.T_PARAMETER);
+                    return parameter.getChild(0).getText().contains(paramName);
+                }).collect(Collectors.toList());
+
+        for (SimpleConditionNode simpleConditionNode : conditionNodesWithParameter) {
+            PathNode pathNode = (PathNode) simpleConditionNode.getFirstChildWithType(JPA2Lexer.T_SELECTED_FIELD);
+            CommonTree loweredPathNode = new CommonTree();
+            loweredPathNode.addChild(new CommonTree(new CommonToken(JPA2Lexer.LOWER, "lower")));
+            loweredPathNode.addChild(new CommonTree(new CommonToken(JPA2Lexer.LPAREN, "(")));
+            loweredPathNode.addChild(pathNode);
+            loweredPathNode.addChild(new CommonTree(new CommonToken(JPA2Lexer.RPAREN, ")")));
+
+            simpleConditionNode.replaceChildren(0, 0, loweredPathNode);
+        }
+        tree.freshenParentAndChildIndexes();
+    }
+
+    public void replaceWithSelectId() {
+        PathNode returnedPathNode = getReturnedPathNode();
+        if (returnedPathNode != null && (returnedPathNode.getChildCount() == 0 || getReturnedPathNode().getChildCount() > 1)) {
+            returnedPathNode.addChild(new CommonTree(new CommonToken(JPA2Lexer.WORD, "id")));
+        }
+    }
+
+
     private AggregateExpressionNode createCountNode(EntityReference ref, boolean distinct) {
         AggregateExpressionNode result = new AggregateExpressionNode(JPA2Lexer.T_AGGREGATE_EXPR);
 
-        result.addChild(new CommonTree(new CommonToken(JPA2Lexer.COUNT, "COUNT")));
+        result.addChild(new CommonTree(new CommonToken(JPA2Lexer.COUNT, "count")));
         result.addChild(new CommonTree(new CommonToken(JPA2Lexer.LPAREN, "(")));
         if (distinct) {
-            result.addChild(new CommonTree(new CommonToken(JPA2Lexer.DISTINCT, "DISTINCT")));
+            result.addChild(new CommonTree(new CommonToken(JPA2Lexer.DISTINCT, "distinct")));
         }
         result.addChild(ref.createNode());
         result.addChild(new CommonTree(new CommonToken(JPA2Lexer.RPAREN, ")")));

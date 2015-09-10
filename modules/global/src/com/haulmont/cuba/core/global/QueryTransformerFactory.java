@@ -31,7 +31,7 @@ public class QueryTransformerFactory {
                     DomainModelBuilder builder = new DomainModelBuilder(metadataTools, messageTools);
                     domainModel = builder.produce();
                 }
-                return new QueryTransformerAstBased(domainModel, query, "");
+                return new QueryTransformerAstBased(domainModel, query);
             } catch (RecognitionException e) {
                 throw new RuntimeException(e);
             }

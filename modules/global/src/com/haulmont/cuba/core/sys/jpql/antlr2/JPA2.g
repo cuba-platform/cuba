@@ -31,6 +31,7 @@ tokens {
     MIN = 'MIN';
     SUM = 'SUM';
     COUNT = 'COUNT';
+    LOWER = 'LOWER';
     OR = 'OR';
     AND = 'AND';
     LPAREN = '(';
@@ -405,7 +406,7 @@ functions_returning_strings
     : 'CONCAT('string_expression',' string_expression (',' string_expression)*')'
     | 'SUBSTRING(' string_expression',' arithmetic_expression (',' arithmetic_expression)?')'
     | 'TRIM('((trim_specification)? (trim_character)? 'FROM')? string_expression ')'
-    | 'LOWER('string_expression')'
+    | 'LOWER' '('string_expression')'
     | 'UPPER('string_expression')';
 trim_specification
     : 'LEADING' | 'TRAILING' | 'BOTH';

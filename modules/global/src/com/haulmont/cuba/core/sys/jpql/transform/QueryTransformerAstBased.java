@@ -8,10 +8,13 @@ package com.haulmont.cuba.core.sys.jpql.transform;
 import com.haulmont.cuba.core.global.QueryTransformer;
 import com.haulmont.cuba.core.sys.jpql.*;
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
+import com.haulmont.cuba.core.sys.jpql.model.Entity;
+import com.haulmont.cuba.core.sys.jpql.tree.IdentificationVariableNode;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonErrorNode;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.TreeVisitor;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -25,16 +28,26 @@ import java.util.Set;
 public class QueryTransformerAstBased implements QueryTransformer {
     private DomainModel model;
     private String query;
-    private String entityName;
     private QueryTreeTransformer queryTreeTransformer;
     private Set<String> addedParams = new HashSet<String>();
+    private String returnedEntityName;
+    private String mainEntityName;
 
-    //todo eude - resolve entity name automatically
-    public QueryTransformerAstBased(DomainModel model, String query, String entityName) throws RecognitionException {
+    public QueryTransformerAstBased(DomainModel model, String query) throws RecognitionException {
         this.model = model;
         this.query = query;
-        this.entityName = entityName;
         initQueryAnalyzer(model, query);
+
+        String returnedVariableName = queryTreeTransformer.getReturnedVariableName();
+        Entity entity = queryTreeTransformer.getRootQueryVariableContext().getEntityByVariableName(returnedVariableName);
+        if (entity != null) {
+            returnedEntityName = entity.getName();
+        }
+
+        IdentificationVariableNode mainEntityIdentification = queryTreeTransformer.getMainEntityIdentification();
+        if (mainEntityIdentification != null) {
+            mainEntityName = mainEntityIdentification.getEntityName();
+        }
     }
 
 
@@ -78,7 +91,7 @@ public class QueryTransformerAstBased implements QueryTransformer {
 
     @Override
     public void handleCaseInsensitiveParam(String paramName) {
-
+        queryTreeTransformer.handleCaseInsensitiveParam(paramName);
     }
 
     /**
@@ -87,7 +100,7 @@ public class QueryTransformerAstBased implements QueryTransformer {
      */
     @Override
     public void addWhere(String where) {
-        EntityReferenceInferer inferrer = new EntityReferenceInferer(entityName);
+        EntityReferenceInferer inferrer = new EntityReferenceInferer(mainEntityName);
         EntityReference ref = inferrer.infer(queryTreeTransformer);
         boolean doReplaceVariableName = true;
         if (where.contains("{E}")) {
@@ -119,7 +132,7 @@ public class QueryTransformerAstBased implements QueryTransformer {
      */
     @Override
     public void mergeWhere(String statement) {
-        EntityReferenceInferer inferer = new EntityReferenceInferer(entityName);
+        EntityReferenceInferer inferer = new EntityReferenceInferer(mainEntityName);
         EntityReference ref = inferer.infer(queryTreeTransformer);
         try {
             CommonTree statementTree = Parser.parse(statement);
@@ -132,7 +145,7 @@ public class QueryTransformerAstBased implements QueryTransformer {
 
     @Override
     public void addJoinAndWhere(String join, String where) {
-        EntityReferenceInferer inferer = new EntityReferenceInferer(entityName);
+        EntityReferenceInferer inferer = new EntityReferenceInferer(mainEntityName);
         EntityReference ref = inferer.infer(queryTreeTransformer);
         if (where.contains("{E}")) {
             where = ref.replaceEntries(where, "\\{E\\}");
@@ -143,8 +156,10 @@ public class QueryTransformerAstBased implements QueryTransformer {
         String[] strings = join.split(",");
         join = strings[0];
         try {
-            CommonTree joinClause = Parser.parseJoinClause(join);
-            queryTreeTransformer.mixinJoinIntoTree(joinClause, ref, true);
+            if (StringUtils.isNotBlank(join)) {
+                CommonTree joinClause = Parser.parseJoinClause(join);
+                queryTreeTransformer.mixinJoinIntoTree(joinClause, ref, true);
+            }
             for (int i = 1; i < strings.length; i++) {
                 CommonTree selectionSource = Parser.parseSelectionSource(strings[i]);
                 queryTreeTransformer.addSelectionSource(selectionSource);
@@ -162,7 +177,7 @@ public class QueryTransformerAstBased implements QueryTransformer {
         join = strings[0];
         try {
             CommonTree joinClause = Parser.parseJoinClause(join);
-            queryTreeTransformer.mixinJoinIntoTree(joinClause, new EntityNameEntityReference(entityName), false);
+            queryTreeTransformer.mixinJoinIntoTree(joinClause, new EntityNameEntityReference(mainEntityName), false);
             for (int i = 1; i < strings.length; i++) {
                 CommonTree selectionSource = Parser.parseSelectionSource(strings[i]);
                 queryTreeTransformer.addSelectionSource(selectionSource);
@@ -174,13 +189,14 @@ public class QueryTransformerAstBased implements QueryTransformer {
 
     @Override
     public void replaceWithCount() {
-        EntityReferenceInferer inferer = new EntityReferenceInferer(entityName);
+        EntityReferenceInferer inferer = new EntityReferenceInferer(returnedEntityName);
         EntityReference ref = inferer.infer(queryTreeTransformer);
         queryTreeTransformer.replaceWithCount(ref);
     }
 
     @Override
     public void replaceWithSelectId() {
+        queryTreeTransformer.replaceWithSelectId();
     }
 
     @Override
@@ -190,7 +206,7 @@ public class QueryTransformerAstBased implements QueryTransformer {
 
     @Override
     public void replaceOrderBy(boolean desc, String... properties) {
-        EntityReferenceInferer inferer = new EntityReferenceInferer(entityName);
+        EntityReferenceInferer inferer = new EntityReferenceInferer(returnedEntityName);
         EntityReference ref = inferer.infer(queryTreeTransformer);
         queryTreeTransformer.replaceOrderBy(ref.addFieldPath(properties[0]), desc);
     }

@@ -154,8 +154,7 @@ public class QueryResultTest extends CubaTestCase {
 
         LoadContext.Query prevQuery = new LoadContext.Query("select u from sec$User u where u.name like :name")
                 .setParameter("name", "A-%");
-        context.getPrevQueries().add(prevQuery);
-        context.setQueryKey(111);
+        context.getPrevQueries().add(prevQuery);          context.setQueryKey(111);
 
         List<Entity> entities = dataService.loadList(context);
         assertEquals(10, entities.size());
