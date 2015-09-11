@@ -21,8 +21,12 @@ import org.apache.commons.lang.RandomStringUtils;
 @MetaClass(name = "sec$DynamicAttributesConditionCreator")
 @SystemLevel
 public class DynamicAttributesConditionCreator extends AbstractConditionDescriptor {
-    public DynamicAttributesConditionCreator(String filterComponentName, CollectionDatasource datasource) {
+
+    protected String propertyPath;
+
+    public DynamicAttributesConditionCreator(String filterComponentName, CollectionDatasource datasource, String propertyPath) {
         super(RandomStringUtils.randomAlphabetic(10), filterComponentName, datasource);
+        this.propertyPath = propertyPath;
         Messages messages = AppBeans.get(Messages.NAME);
         locCaption = messages.getMessage(DynamicAttributesConditionCreator.class, "dynamicAttributeConditionCreator");
         showImmediately = true;
@@ -30,7 +34,7 @@ public class DynamicAttributesConditionCreator extends AbstractConditionDescript
 
     @Override
     public AbstractCondition createCondition() {
-        return new DynamicAttributesCondition(this, entityAlias);
+        return new DynamicAttributesCondition(this, entityAlias, propertyPath);
     }
 
     @Override

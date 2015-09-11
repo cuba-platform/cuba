@@ -5,6 +5,9 @@
 
 package com.haulmont.cuba.gui.components.filter.edit;
 
+import com.google.common.base.Strings;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
@@ -12,7 +15,7 @@ import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Label;
@@ -28,6 +31,8 @@ import org.apache.commons.lang.RandomStringUtils;
 
 import javax.inject.Inject;
 import java.util.*;
+
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  * @author devyatkin
@@ -56,8 +61,8 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
     @Inject
     protected Label categoryLabel;
 
-
-    protected Messages messages;
+    @Inject
+    protected MessageTools messageTools;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -142,8 +147,11 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
             if (Op.IN.equals(op) || Op.NOT_IN.equals(op))
                 paramStr = " ( ? ) ";
 
+        String propertyPath = Strings.isNullOrEmpty(condition.getPropertyPath()) ? "" : "." + condition.getPropertyPath();
+
         String where = cavAlias + ".entityId=" +
                 alias +
+                propertyPath +
                 ".id and " + cavAlias + "." +
                 valueFieldName +
                 " " +
@@ -179,7 +187,16 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
 
     protected void fillCategorySelect() {
         DynamicAttributes dynamicAttributes = AppBeans.get(DynamicAttributes.NAME);
-        Collection<Category> categories = dynamicAttributes.getCategoriesForMetaClass(condition.getDatasource().getMetaClass());
+        MetaClass metaClass = condition.getDatasource().getMetaClass();
+        if (!Strings.isNullOrEmpty(condition.getPropertyPath())) {
+            MetaPropertyPath propertyPath = metaClass.getPropertyPath(condition.getPropertyPath());
+            if (propertyPath == null) {
+                throw new RuntimeException("Property path " + condition.getPropertyPath() + " doesn't exist");
+            }
+            metaClass = propertyPath.getRange().asClass();
+
+        }
+        Collection<Category> categories = dynamicAttributes.getCategoriesForMetaClass(metaClass);
         UUID catId = condition.getCategoryId();
         Category selectedCategory = null;
         Map<String, Object> categoriesMap = new TreeMap<>();

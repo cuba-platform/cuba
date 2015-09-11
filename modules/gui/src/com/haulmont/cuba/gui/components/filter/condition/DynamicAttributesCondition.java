@@ -40,8 +40,9 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 @SystemLevel
 public class DynamicAttributesCondition extends AbstractCondition {
 
-    private UUID categoryId;
-    private UUID categoryAttributeId;
+    protected UUID categoryId;
+    protected UUID categoryAttributeId;
+    protected String propertyPath;
     protected String join;
 
     public DynamicAttributesCondition(DynamicAttributesCondition condition) {
@@ -51,23 +52,24 @@ public class DynamicAttributesCondition extends AbstractCondition {
         this.categoryAttributeId = condition.getCategoryAttributeId();
     }
 
-    public DynamicAttributesCondition(AbstractConditionDescriptor descriptor, String entityAlias) {
+    public DynamicAttributesCondition(AbstractConditionDescriptor descriptor, String entityAlias, String propertyPath) {
         super(descriptor);
         this.entityAlias = entityAlias;
         this.name = RandomStringUtils.randomAlphabetic(10);
         Messages messages = AppBeans.get(Messages.class);
         this.locCaption = messages.getMessage(DynamicAttributesCondition.class, "newDynamicAttributeCondition");
+        this.propertyPath = propertyPath;
     }
 
     public DynamicAttributesCondition(Element element, String messagesPack, String filterComponentName, Datasource datasource) {
         super(element, messagesPack, filterComponentName, datasource);
 
-        if (isBlank(caption)) {
-            locCaption = element.attributeValue("locCaption");
-        } else {
-            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-            locCaption = messageTools.loadString(messagesPack, caption);
-        }
+        propertyPath = element.attributeValue("propertyPath");
+
+        MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+        locCaption = isBlank(caption)
+                ? element.attributeValue("locCaption")
+                : messageTools.loadString(messagesPack, caption);
 
         entityAlias = element.attributeValue("entityAlias");
         text = element.getText();
@@ -101,6 +103,9 @@ public class DynamicAttributesCondition extends AbstractCondition {
         element.addAttribute("category", categoryId.toString());
         element.addAttribute("categoryAttribute", categoryAttributeId.toString());
         element.addAttribute("entityAlias", entityAlias);
+        if (!isBlank(propertyPath)) {
+            element.addAttribute("propertyPath", propertyPath);
+        }
         if (!isBlank(join)) {
             element.addAttribute("join", StringEscapeUtils.escapeXml(join));
         }
@@ -196,8 +201,25 @@ public class DynamicAttributesCondition extends AbstractCondition {
         this.text = where;
     }
 
+    public String getPropertyPath() {
+        return propertyPath;
+    }
+
     @Override
     public AbstractCondition createCopy() {
         return new DynamicAttributesCondition(this);
     }
+
+    @Override
+    public String getLocCaption() {
+        if (isBlank(caption) && !isBlank(propertyPath)) {
+            MessageTools messageTools = AppBeans.get(MessageTools.class);
+            String propertyCaption = messageTools.getPropertyCaption(datasource.getMetaClass(), propertyPath);
+            if (!isBlank(propertyCaption)) {
+                return propertyCaption + "." + locCaption;
+            }
+        }
+        return super.getLocCaption();
+    }
+
 }

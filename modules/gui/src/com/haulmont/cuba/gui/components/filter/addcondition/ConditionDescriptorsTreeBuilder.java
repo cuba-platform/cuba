@@ -11,7 +11,7 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.entity.Categorized;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Filter;
@@ -47,6 +47,7 @@ public class ConditionDescriptorsTreeBuilder {
     protected String filterComponentName;
     protected MessageTools messageTools;
     protected MetadataTools metadataTools;
+    protected DynamicAttributes dynamicAttributes;
 
     /**
      * @param filter filter
@@ -58,6 +59,7 @@ public class ConditionDescriptorsTreeBuilder {
         security = AppBeans.get(Security.class);
         messageTools = AppBeans.get(MessageTools.NAME);
         metadataTools = AppBeans.get(MetadataTools.NAME);
+        dynamicAttributes = AppBeans.get(DynamicAttributes.class);
         filterComponentName = getFilterComponentName();
     }
 
@@ -139,8 +141,8 @@ public class ConditionDescriptorsTreeBuilder {
             rootNodes.add(new Node<AbstractConditionDescriptor>(new CustomConditionCreator(filterComponentName, datasource)));
         }
 
-        if (Categorized.class.isAssignableFrom(datasource.getMetaClass().getJavaClass())) {//todo eude not only for categorized?
-            rootNodes.add(new Node<AbstractConditionDescriptor>(new DynamicAttributesConditionCreator(filterComponentName, datasource)));
+        if (!dynamicAttributes.getAttributesForMetaClass(datasource.getMetaClass()).isEmpty()) {
+            rootNodes.add(new Node<AbstractConditionDescriptor>(new DynamicAttributesConditionCreator(filterComponentName, datasource, "")));
         }
 
         tree.setRootNodes(rootNodes);
@@ -177,6 +179,15 @@ public class ConditionDescriptorsTreeBuilder {
             parentNode.addChild(newNode);
             if (currentDepth < hierarchyDepth) {
                 recursivelyFillPropertyDescriptors(newNode, currentDepth);
+            }
+        }
+
+        if (metaProperty.getRange().isClass()) {
+            MetaClass childMetaClass = metaProperty.getRange().asClass();
+            if (!dynamicAttributes.getAttributesForMetaClass(childMetaClass).isEmpty()) {
+                DynamicAttributesConditionCreator descriptor = new DynamicAttributesConditionCreator(filterComponentName, filter.getDatasource(), propertyId);
+                Node<AbstractConditionDescriptor> newNode = new Node<AbstractConditionDescriptor>(descriptor);
+                parentNode.addChild(newNode);
             }
         }
     }
