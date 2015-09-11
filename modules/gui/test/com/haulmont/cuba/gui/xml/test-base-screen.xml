@@ -1,0 +1,25 @@
+<!--
+  ~ Copyright (c) 2008-2015 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd">
+    <dsContext>
+        <datasource id="userDs" class="com.haulmont.cuba.security.entity.User" view="_local"/>
+    </dsContext>
+
+    <layout spacing="true">
+        <fieldGroup id="fieldGroupLeft" datasource="userDs" width="AUTO">
+            <column>
+                <field id="login" required="true"/>
+                <field id="passw" custom="true"/>
+                <field id="confirmPassw" custom="true"/>
+                <field id="firstName"/>
+                <field id="middleName"/>
+                <field id="lastName"/>
+                <field id="name"/>
+                <field id="email"/>
+            </column>
+        </fieldGroup>
+    </layout>
+</window>

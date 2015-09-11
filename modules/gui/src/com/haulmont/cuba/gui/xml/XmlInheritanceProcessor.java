@@ -36,7 +36,7 @@ public class XmlInheritanceProcessor {
 
     private List<ElementTargetLocator> targetLocators = new ArrayList<>();
 
-    protected Resources resources = AppBeans.get(Resources.NAME);
+    private Resources resources = AppBeans.get(Resources.NAME);
 
     public XmlInheritanceProcessor(Document document, Map<String, Object> params) {
         this.document = document;
@@ -111,11 +111,6 @@ public class XmlInheritanceProcessor {
 
                 throw new DevelopmentException(message,
                         ParamsMap.of("element", resultElem.getName(), "index", index));
-            }
-
-            int currentIndex = parent.elements().indexOf(resultElem);
-            if (index > currentIndex) {
-                index--;
             }
 
             parent.remove(resultElem);
