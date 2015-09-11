@@ -41,7 +41,7 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         try {
             ServletContext sc = servletContextEvent.getServletContext();
-            AppContext.setServletContext(sc);
+            ServletContextHolder.setServletContext(sc);
 
             initAppProperties(sc);
             afterInitAppProperties();

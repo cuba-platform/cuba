@@ -6,6 +6,7 @@
 package com.haulmont.cuba.core.sys.dbupdate;
 
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.ServletContextHolder;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -124,7 +125,7 @@ public class ScriptScanner {
 
     protected ResourcePatternResolver createAppropriateResourceResolver() {
         if (dbScriptsDirectory.startsWith(WEB_INF_LABEL)) {
-            return new ServletContextResourcePatternResolver(AppContext.getServletContext());
+            return new ServletContextResourcePatternResolver(ServletContextHolder.getServletContext());
         } else {
             return new PathMatchingResourcePatternResolver();
         }

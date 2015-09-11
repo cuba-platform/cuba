@@ -11,7 +11,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import javax.annotation.Nullable;
-import javax.servlet.ServletContext;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -49,8 +48,6 @@ public class AppContext {
     }
 
     private static ApplicationContext context;
-
-    private static ServletContext servletContext;
 
     private static Map<String, String> properties = new ConcurrentHashMap<>();
 
@@ -208,13 +205,5 @@ public class AppContext {
         if (context != null && context instanceof ConfigurableApplicationContext) {
             ((ConfigurableApplicationContext) context).close();
         }
-    }
-
-    public static ServletContext getServletContext() {
-        return servletContext;
-    }
-
-    public static void setServletContext(ServletContext servletContext) {
-        AppContext.servletContext = servletContext;
     }
 }
