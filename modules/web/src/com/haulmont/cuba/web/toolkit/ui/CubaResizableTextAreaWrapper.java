@@ -93,6 +93,15 @@ public class CubaResizableTextAreaWrapper extends CustomField {
         getState().resizable = resizable;
     }
 
+    public boolean isEditable() {
+        return !super.isReadOnly();
+    }
+
+    public void setEditable(boolean editable) {
+        super.setReadOnly(!editable);
+        textArea.setReadOnly(!editable);
+    }
+
     @Override
     protected CubaResizableTextAreaWrapperState getState() {
         return (CubaResizableTextAreaWrapperState) super.getState();
