@@ -472,6 +472,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         setFilterActionsEnabled();
+        setFilterActionsVisible();
         fillConditionsLayout(ConditionsFocusType.FIRST);
         setConditionsLayoutVisible(true);
 
@@ -534,8 +535,8 @@ public class FilterDelegateImpl implements FilterDelegate {
         boolean makeDefaultActionEnabled = !isDefault && !isFolder && !isSet && !isAdHocFilter;
         boolean pinAppliedActionEnabled = lastAppliedFilter != null
                 && !(lastAppliedFilter.getFilterEntity() == adHocFilter && lastAppliedFilter.getConditions().getRoots().size() == 0);
-        boolean saveAsSearchFolderActionEnabled = !isFolder && !hasCode;
-        boolean saveAsAppFolderActionEnabled = !isFolder && !hasCode && userCanEditGlobalAppFolder;
+        boolean saveAsSearchFolderActionEnabled = folderActionsEnabled && !isFolder && !hasCode;
+        boolean saveAsAppFolderActionEnabled = folderActionsEnabled && !isFolder && !hasCode && userCanEditGlobalAppFolder;
 
         saveAction.setEnabled(saveActionEnabled);
         saveAsAction.setEnabled(saveAsActionEnabled);
@@ -549,6 +550,15 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (filterHelper.isTableActionsEnabled()) {
             fillTableActions();
         }
+    }
+
+    protected void setFilterActionsVisible() {
+        saveAsSearchFolderAction.setVisible(folderActionsEnabled);
+        saveAsAppFolderAction.setVisible(folderActionsEnabled);
+        saveAction.setVisible(editable);
+        saveAsAction.setVisible(editable);
+        editAction.setVisible(editable);
+        removeAction.setVisible(editable);
     }
 
     protected void createFilterActions() {
@@ -1688,10 +1698,11 @@ public class FilterDelegateImpl implements FilterDelegate {
     @Override
     public void setEditable(boolean editable) {
         this.editable = editable;
-        addConditionBtn.setEnabled(editable && userCanEditFilers());
+        addConditionBtn.setVisible(editable && userCanEditFilers());
         //do not process actions if method is invoked from filter loader
         if (filterActionsCreated && filterEntity != null) {
             setFilterActionsEnabled();
+            setFilterActionsVisible();
         }
     }
 
