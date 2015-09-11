@@ -621,15 +621,7 @@ public class CubaFoldersPane extends VerticalLayout {
         public void itemClick(ItemClickEvent event) {
             Folder folder = (Folder) event.getItemId();
             if (getItemClickable(folder)) {
-                if (event.getButton() == MouseEventDetails.MouseButton.RIGHT) {
-                    if (appFoldersTree != null && appFoldersTree.containsId(event.getItemId())) {
-                        appFoldersTree.select(event.getItemId());
-                    } else if (searchFoldersTree != null && searchFoldersTree.containsId(event.getItemId())) {
-                        searchFoldersTree.select(event.getItemId());
-                    }
-                } else {
-                    openFolder((AbstractSearchFolder) event.getItemId());
-                }
+                openFolder((AbstractSearchFolder) event.getItemId());
             } else if (isItemExpandable(folder)) {
                 Component tree = event.getComponent();
                 if (tree instanceof Tree) {
