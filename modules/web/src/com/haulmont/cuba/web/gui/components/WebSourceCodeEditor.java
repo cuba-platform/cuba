@@ -36,6 +36,8 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
         component.setInvalidCommitted(true);
         component.setInvalidAllowed(false);
         component.setBuffered(false);
+
+        attachListener(component);
     }
 
     @Override
