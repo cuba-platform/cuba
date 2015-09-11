@@ -2,12 +2,14 @@
  * Copyright (c) 2008-2013 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
-package com.haulmont.cuba.core.sys;
+package com.haulmont.cuba.core.sys.dbupdate;
 
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Scripting;
+import com.haulmont.cuba.core.sys.DbUpdater;
+import com.haulmont.cuba.core.sys.PostUpdateScripts;
 import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import groovy.lang.Binding;
 import groovy.lang.Closure;
@@ -17,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import javax.sql.DataSource;
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
 
     protected PostUpdateScripts postUpdate;
 
-    protected Map<Closure, File> postUpdateScripts = new HashMap<>();
+    protected Map<Closure, ScriptResource> postUpdateScripts = new HashMap<>();
 
     private static final Logger log = LoggerFactory.getLogger(DbUpdaterImpl.class);
 
@@ -45,7 +46,7 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
     public void setConfigProvider(Configuration configuration) {
         String dbDirName = configuration.getConfig(ServerConfig.class).getDbDir();
         if (dbDirName != null)
-            this.dbDir = new File(dbDirName);
+            this.dbScriptsDirectory = dbDirName;
 
         dbmsType = DbmsType.getType();
         dbmsVersion = DbmsType.getVersion();
@@ -57,7 +58,7 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
     }
 
     @Override
-    protected boolean executeGroovyScript(final File file) {
+    protected boolean executeGroovyScript(final ScriptResource file) {
         Binding bind = new Binding();
         bind.setProperty("ds", getDataSource());
         bind.setProperty("log", LoggerFactory.getLogger(file.getName()));
@@ -94,7 +95,7 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
             log.info(String.format("Execute '%s' post update actions", postUpdate.getUpdates().size()));
 
             for (Closure closure : postUpdate.getUpdates()) {
-                File groovyFile = postUpdateScripts.remove(closure);
+                ScriptResource groovyFile = postUpdateScripts.remove(closure);
                 if (groovyFile != null) {
                     log.info("Execute post update from " + getScriptName(groovyFile));
                 }

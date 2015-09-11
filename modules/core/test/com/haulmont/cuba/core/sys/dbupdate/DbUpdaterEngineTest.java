@@ -3,17 +3,20 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.core.sys;
+package com.haulmont.cuba.core.sys.dbupdate;
 
 import com.haulmont.cuba.core.CubaTestCase;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.sys.dbupdate.DbUpdaterEngine;
+import com.haulmont.cuba.core.sys.dbupdate.ScriptResource;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DbUpdaterEngineTest extends CubaTestCase {
 
@@ -113,29 +116,43 @@ public class DbUpdaterEngineTest extends CubaTestCase {
 
     public void testGetInitScripts() throws Exception {
         DbUpdaterEngine engine = new DbUpdaterEngine();
-        engine.dbDir = dbmsDir;
+        engine.dbScriptsDirectory = dbmsDir.getAbsolutePath();
         engine.dbmsType = "mssql";
 
-        List<File> scripts = engine.getInitScripts();
-        assertEquals(mssqlInitFiles, scripts);
+        List<ScriptResource> scripts = engine.getInitScripts();
+        List<File> files = scripts.stream().map(sr -> new File(sr.getPath())).collect(Collectors.toList());
+        assertEquals(mssqlInitFiles, files);
 
         engine.dbmsVersion = "2012";
 
         scripts = engine.getInitScripts();
-        assertEquals(mssql2012InitFiles, scripts);
+        files = scripts.stream().map(sr -> new File(sr.getPath())).collect(Collectors.toList());
+        assertEquals(mssql2012InitFiles, files);
     }
 
+    //
     public void testGetUpdateScripts() throws Exception {
         DbUpdaterEngine engine = new DbUpdaterEngine();
-        engine.dbDir = dbmsDir;
+        engine.dbScriptsDirectory = dbmsDir.getAbsolutePath();
         engine.dbmsType = "mssql";
 
-        List<File> scripts = engine.getUpdateScripts();
-        assertEquals(mssqlUpdateFiles, scripts);
+        List<ScriptResource> scripts = engine.getUpdateScripts();
+        List<File> files = scripts.stream().map(sr -> new File(sr.getPath())).collect(Collectors.toList());
+
+        assertEquals(mssqlUpdateFiles, files);
 
         engine.dbmsVersion = "2012";
 
         scripts = engine.getUpdateScripts();
-        assertEquals(mssql2012UpdateFiles, scripts);
+        files = scripts.stream().map(sr -> new File(sr.getPath())).collect(Collectors.toList());
+        assertEquals(mssql2012UpdateFiles, files);
+    }
+
+    public void testGetModules() throws Exception {
+        DbUpdaterEngine engine = new DbUpdaterEngine();
+        engine.dbScriptsDirectory = dbmsDir.getAbsolutePath();
+        engine.dbmsType = "mssql";
+        List<String> moduleDirs = engine.getModuleDirs();
+        System.out.println(moduleDirs);
     }
 }

@@ -6,7 +6,8 @@
 package com.haulmont.cuba.core.sys.utils;
 
 import com.haulmont.cuba.core.sys.DBNotInitializedException;
-import com.haulmont.cuba.core.sys.DbUpdaterEngine;
+import com.haulmont.cuba.core.sys.dbupdate.DbUpdaterEngine;
+import com.haulmont.cuba.core.sys.dbupdate.ScriptResource;
 import org.apache.commons.cli.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -135,9 +136,9 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
                         !cmd.hasOption(createDbOption.getOpt()))
             formatter.printHelp("dbupdate", cliOptions);
         else {
-            String dbDirParam = cmd.getOptionValue(dbDirOption.getOpt());
-            this.dbDir = new File(dbDirParam);
-            if (!this.dbDir.exists()) {
+            this.dbScriptsDirectory = cmd.getOptionValue(dbDirOption.getOpt());
+            File directory = new File(dbScriptsDirectory);
+            if (!directory.exists()) {
                 log.error("Not found db update directory");
                 return;
             }
@@ -186,7 +187,7 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
             if (cmd.hasOption(createDbOption.getOpt())) {
                 // create database from init scripts
                 StringBuilder availableScripts = new StringBuilder();
-                for (File initScript : getInitScripts()) {
+                for (ScriptResource initScript : getInitScripts()) {
                     availableScripts.append("\t").append(getScriptName(initScript)).append("\n");
                 }
                 log.info("Available create scripts: \n" + availableScripts);
@@ -231,18 +232,15 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
     }
 
     @Override
-    protected List<File> getUpdateScripts() {
+    protected List<ScriptResource> getUpdateScripts() {
         if (executeGroovy) {
             return super.getUpdateScripts();
         } else {
-            final List<File> files = new ArrayList<>(super.getUpdateScripts());
+            final List<ScriptResource> files = new ArrayList<>(super.getUpdateScripts());
 
-            CollectionUtils.filter(files, new org.apache.commons.collections.Predicate() {
-                @Override
-                public boolean evaluate(Object object) {
-                    File file = ((File) object);
-                    return !(file.getName().endsWith("groovy"));
-                }
+            CollectionUtils.filter(files, object -> {
+                File file = ((File) object);
+                return !(file.getName().endsWith("groovy"));
             });
 
             return files;
