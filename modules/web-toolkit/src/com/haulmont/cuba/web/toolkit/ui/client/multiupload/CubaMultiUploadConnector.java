@@ -23,6 +23,11 @@ public class CubaMultiUploadConnector extends AbstractComponentConnector impleme
     protected boolean initialized = false;
 
     @Override
+    public boolean delegateCaptionHandling() {
+        return false;
+    }
+
+    @Override
     public CubaMultiUploadWidget getWidget() {
         return (CubaMultiUploadWidget) super.getWidget();
     }
