@@ -35,7 +35,7 @@ public class ScriptScanner {
     protected String dbmsVersion;
 
     public ScriptScanner(String dbScriptsDirectory, String dbmsType, String dbmsVersion) {
-        this.dbScriptsDirectory = dbScriptsDirectory;
+        this.dbScriptsDirectory = dbScriptsDirectory.replace('\\', '/');
         this.dbmsType = dbmsType;
         this.dbmsVersion = dbmsVersion;
     }
