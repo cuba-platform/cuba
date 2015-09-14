@@ -77,4 +77,11 @@ public interface CubaEnhancedTable extends AggregationContainer {
     interface CellClickListener {
         void onClick(Object itemId, Object columnId);
     }
+
+    /**
+     * Marker interface for generated columns which return String value.
+     * Used to work with custom cacheRate and pageLength.
+     */
+    interface PlainTextGeneratedColumn {
+    }
 }

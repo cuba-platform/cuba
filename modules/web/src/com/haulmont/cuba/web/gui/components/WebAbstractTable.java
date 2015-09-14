@@ -1878,7 +1878,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         }
     }
 
-    protected static class AbbreviatedColumnGenerator implements SystemTableColumnGenerator {
+    protected static class AbbreviatedColumnGenerator implements SystemTableColumnGenerator,
+                                                                 CubaEnhancedTable.PlainTextGeneratedColumn {
 
         protected Table.Column column;
 

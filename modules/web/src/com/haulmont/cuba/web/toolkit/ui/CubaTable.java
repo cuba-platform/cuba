@@ -263,6 +263,13 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
             throw new IllegalArgumentException(
                     "Can not add the same GeneratedColumn twice, id:" + id);
         } else {
+            if (!(generatedColumn instanceof PlainTextGeneratedColumn)) {
+                // do not use custom cache row settings for table with generated columns
+                if (getCacheRate() != 2) {
+                    setCacheRate(2);
+                }
+            }
+
             columnGenerators.put(id, generatedColumn);
             /*
              * add to visible column list unless already there (overriding
@@ -277,6 +284,17 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
             }
 
             refreshRowCache();
+        }
+    }
+
+    @Override
+    public void setEditable(boolean editable) {
+        super.setEditable(editable);
+
+        if (editable) {
+            if (getCacheRate() != 2) {
+                setCacheRate(2);
+            }
         }
     }
 
