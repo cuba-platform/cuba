@@ -51,7 +51,7 @@ public class RemoteProxyBeanCreator implements BeanFactoryPostProcessor, Applica
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        log.info("Configuring remote proxy beans for " + support.getBaseUrl());
+        log.info("Configuring remote proxy beans for " + support.getBaseUrl() + ": " + services.keySet());
 
         BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
 

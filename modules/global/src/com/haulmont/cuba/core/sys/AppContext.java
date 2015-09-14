@@ -5,6 +5,7 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.bali.datastruct.Pair;
+import com.haulmont.cuba.core.sys.logging.LogMdc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -153,6 +154,7 @@ public class AppContext {
         if (log.isTraceEnabled())
             log.trace("setSecurityContext " + securityContext + " for thread " + Thread.currentThread());
         securityContextHolder.set(securityContext);
+        LogMdc.setup(securityContext);
     }
 
     /**

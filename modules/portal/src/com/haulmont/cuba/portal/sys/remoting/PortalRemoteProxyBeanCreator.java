@@ -31,7 +31,7 @@ public class PortalRemoteProxyBeanCreator extends RemoteProxyBeanCreator {
         String useLocal = AppContext.getProperty("cuba.useLocalServiceInvocation");
 
         if (Boolean.valueOf(useLocal)) {
-            log.info("Configuring proxy beans for local service invocations");
+            log.info("Configuring proxy beans for local service invocations: " + services.keySet());
             BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
             for (Map.Entry<String, String> entry : services.entrySet()) {
                 String name = entry.getKey();

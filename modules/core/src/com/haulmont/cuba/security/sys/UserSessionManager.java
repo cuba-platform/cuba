@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.global.UuidSource;
+import com.haulmont.cuba.core.sys.UserSessionFinder;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.NoUserSessionException;
@@ -37,7 +38,7 @@ import java.util.UUID;
  * @version $Id$
  */
 @ManagedBean(UserSessionManager.NAME)
-public class UserSessionManager {
+public class UserSessionManager implements UserSessionFinder {
 
     public static final String NAME = "cuba_UserSessionManager";
 
