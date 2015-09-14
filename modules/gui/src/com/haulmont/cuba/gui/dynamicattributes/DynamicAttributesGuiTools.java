@@ -57,7 +57,7 @@ public class DynamicAttributesGuiTools {
     public Set<CategoryAttribute> getAttributesToShowOnTheScreen(MetaClass metaClass, String screen, @Nullable String component) {
         Collection<CategoryAttribute> attributesForMetaClass =
                 dynamicAttributes.getAttributesForMetaClass(metaClass);
-        Set<CategoryAttribute> categoryAttributes = new HashSet<>();
+        Set<CategoryAttribute> categoryAttributes = new LinkedHashSet<>();
 
         for (CategoryAttribute attribute : attributesForMetaClass) {
             if (attributeShouldBeShownOnTheScreen(screen, component, attribute)) {
