@@ -153,6 +153,12 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
             }
         }
     }
+
+    jar {
+        manifest {
+            attributes("Implementation-Version": cubaVersion)
+        }
+    }
 }
 
 // configure web toolkit modules
