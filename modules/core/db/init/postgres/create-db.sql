@@ -805,7 +805,7 @@ create index IDX_SEC_REMEMBER_ME_TOKEN on SEC_REMEMBER_ME(TOKEN)^
 
 --------------------------------------------------------------------------------------------------------------
 
-create extension "uuid-ossp"^
+create extension if not exists  "uuid-ossp"^
 
 create or replace function newid() returns uuid
 as 'select uuid_generate_v1();'
