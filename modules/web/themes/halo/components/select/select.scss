@@ -16,4 +16,10 @@
       display: none;
     }
   }
+
+  .#{$primary-stylename}.v-readonly {
+    input {
+      padding-right: ceil($v-unit-size/6) + ceil($v-border-radius/3);
+    }
+  }
 }
