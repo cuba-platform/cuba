@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.core.sys.dbupdate;
 
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.ServletContextHolder;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.core.io.Resource;
@@ -14,6 +13,7 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.web.context.support.ServletContextResourcePatternResolver;
 
 import javax.annotation.Nullable;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
@@ -88,6 +88,9 @@ public class ScriptScanner {
 
 
             return results;
+        } catch (FileNotFoundException e) {
+            //just return empty list
+            return Collections.emptyList();
         } catch (IOException e) {
             throw new RuntimeException("An error occurred while loading scripts", e);
         }
