@@ -22,6 +22,9 @@ import java.io.InputStream;
 @ManagedBean(ServerInfoAPI.NAME)
 public class ServerInfo implements ServerInfoAPI {
 
+    public static final String CUBA_RELEASE_NUMBER_PATH = "/com/haulmont/cuba/core/global/release.number";
+    public static final String CUBA_RELEASE_TIMESTAMP_PATH = "/com/haulmont/cuba/core/global/release.timestamp";
+
     protected Logger log = LoggerFactory.getLogger(getClass());
 
     protected String releaseNumber = "?";
@@ -34,9 +37,8 @@ public class ServerInfo implements ServerInfoAPI {
     @Inject
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
-        ServerConfig config = configuration.getConfig(ServerConfig.class);
 
-        InputStream stream = getClass().getResourceAsStream(config.getReleaseNumberPath());
+        InputStream stream = getClass().getResourceAsStream(CUBA_RELEASE_NUMBER_PATH);
         if (stream != null) {
             try {
                 releaseNumber = IOUtils.toString(stream);
@@ -45,7 +47,7 @@ public class ServerInfo implements ServerInfoAPI {
             }
         }
 
-        stream = getClass().getResourceAsStream(config.getReleaseTimestampPath());
+        stream = getClass().getResourceAsStream(CUBA_RELEASE_TIMESTAMP_PATH);
         if (stream != null) {
             try {
                 releaseTimestamp = IOUtils.toString(stream);

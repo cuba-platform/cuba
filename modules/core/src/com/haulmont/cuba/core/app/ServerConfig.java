@@ -100,20 +100,6 @@ public interface ServerConfig extends Config {
     void setSchedulingInterval(long value);
 
     /**
-     * @return Path to resource containing the release number
-     */
-    @Property("cuba.releaseNumberPath")
-    @DefaultString("/com/haulmont/cuba/core/global/release.number")
-    String getReleaseNumberPath();
-
-    /**
-     * @return Path to resource containing the release timestamp
-     */
-    @Property("cuba.releaseTimestampPath")
-    @DefaultString("/com/haulmont/cuba/core/global/release.timestamp")
-    String getReleaseTimestampPath();
-
-    /**
      * @return Tells DataService to ensure distinct results by processing them in memory, instead of issue
      * 'select distinct' to the database.
      */
