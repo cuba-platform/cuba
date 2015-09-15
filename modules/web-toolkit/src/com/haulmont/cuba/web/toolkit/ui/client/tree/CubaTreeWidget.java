@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.tree;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
@@ -63,6 +64,27 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
 
     protected CubaTreeConnector getConnector() {
         return (CubaTreeConnector) ConnectorMap.get(client).getConnector(this);
+    }
+
+    @Override
+    protected void applySelectionCommand(final Scheduler.ScheduledCommand command) {
+        if (!doubleClickMode || doubleClickHandling) {
+        super.applySelectionCommand(command);
+        } else {
+            Scheduler.get().scheduleFixedDelay(new Scheduler.RepeatingCommand() {
+
+                private long scheduledTimestamp = System.currentTimeMillis();
+
+                @Override
+                public boolean execute() {
+                    if (!doubleClickHandling && lastDoubleClickHandled < scheduledTimestamp) {
+                        command.execute();
+                    }
+
+                    return false;
+                }
+            }, 250);
+        }
     }
 
     @Override
