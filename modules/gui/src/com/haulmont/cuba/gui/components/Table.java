@@ -123,6 +123,14 @@ public interface Table<E extends Entity>
     void setColumnControlVisible(boolean columnCollapsingAllowed);
     boolean getColumnControlVisible();
 
+    /**
+     * Sort the table by a column.
+     * For example:
+     * <pre>table.sortBy(table.getDatasource().getMetaClass().getPropertyPath("name"), ascending);</pre>
+     *
+     * @param propertyId    column indicated by a corresponding {@code MetaPropertyPath} object
+     * @param ascending     sort direction
+     */
     void sortBy(Object propertyId, boolean ascending);
 
     void selectAll();
