@@ -27,6 +27,11 @@ public class TimeBetweenQueryMacroHandlerTest extends CubaTestCase {
                 " and u.deleteTs is null");
         System.out.println(res);
         System.out.println(handler.getParams());
+
+        handler = new TimeBetweenQueryMacroHandler();
+        res = handler.expandMacro("select u from sec$User where @between(u.createTs, now-5+2, now, day) and u.deleteTs is null");
+        System.out.println(res);
+        System.out.println(handler.getParams());
     }
 
     public void testReplaceQueryParams() {

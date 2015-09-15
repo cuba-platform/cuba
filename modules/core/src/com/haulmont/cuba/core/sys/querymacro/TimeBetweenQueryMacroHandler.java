@@ -6,8 +6,10 @@ package com.haulmont.cuba.core.sys.querymacro;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.TimeSource;
+import com.google.common.base.Strings;
+import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.sys.QueryMacroHandler;
-import org.apache.commons.lang.StringUtils;
+import groovy.lang.Binding;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.context.annotation.Scope;
 
@@ -28,7 +30,7 @@ import java.util.regex.Pattern;
 public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
 
     protected static final Pattern MACRO_PATTERN = Pattern.compile("@between\\s*\\(([^\\)]+)\\)");
-    protected static final Pattern PARAM_PATTERN = Pattern.compile("(now)\\s*([+-]*)\\s*(\\d*)");
+    protected static final Pattern PARAM_PATTERN = Pattern.compile("(now)\\s*([\\d\\s+-]*)");
     protected static final Pattern QUERY_PARAM_PATTERN = Pattern.compile(":(\\w+)");
 
     protected static final Map<String, Object> units = new HashMap<>();
@@ -114,16 +116,15 @@ public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
         if (!matcher.find())
             throw new RuntimeException("Invalid macro argument: " + arg);
 
-        String op = matcher.group(2);
         int num = 0;
-        if (!StringUtils.isBlank(op)) {
-            try {
-                num = Integer.valueOf(matcher.group(3));
-            } catch (NumberFormatException e) {
-                throw new RuntimeException("Invalid macro argument: " + arg, e);
+        try {
+            String expr = matcher.group(2);
+            if (!Strings.isNullOrEmpty(expr)) {
+                Scripting scripting = AppBeans.get(Scripting.class);
+                num = scripting.evaluateGroovy(expr, new Binding());
             }
-            if (op.equals("-"))
-                num = num * (-1);
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Invalid macro argument: " + arg, e);
         }
 
         Date date = computeDate(num, unit);
