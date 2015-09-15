@@ -9,15 +9,14 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.auth.RequestContext;
 import com.haulmont.cuba.web.toolkit.ui.CubaFileUpload;
 import com.vaadin.server.*;
-import com.vaadin.server.communication.FileUploadHandler;
-import com.vaadin.server.communication.HeartbeatHandler;
-import com.vaadin.server.communication.PublishedFileHandler;
-import com.vaadin.server.communication.ServletBootstrapHandler;
+import com.vaadin.server.communication.*;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
@@ -34,6 +33,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Callable;
 
 /**
  * @author artamonov
@@ -41,7 +41,7 @@ import java.util.Locale;
  */
 public class CubaVaadinServletService extends VaadinServletService {
 
-    private Logger log = LoggerFactory.getLogger(CubaVaadinServletService.class);
+    private final Logger log = LoggerFactory.getLogger(CubaVaadinServletService.class);
 
     protected WebConfig webConfig;
 
@@ -62,67 +62,58 @@ public class CubaVaadinServletService extends VaadinServletService {
             this.webResourceTimestamp = "DEBUG";
         }
 
-        addSessionInitListener(new SessionInitListener() {
-            @Override
-            public void sessionInit(SessionInitEvent event) throws ServiceException {
-                event.getSession().getSession().setMaxInactiveInterval(webConfig.getHttpSessionExpirationTimeoutSec());
-                log.debug("HTTP session " + event.getSession() + " initialized, timeout="
-                        + event.getSession().getSession().getMaxInactiveInterval() + "sec");
+        addSessionInitListener(event -> {
+            event.getSession().getSession().setMaxInactiveInterval(webConfig.getHttpSessionExpirationTimeoutSec());
+            log.debug("HTTP session " + event.getSession() + " initialized, timeout="
+                    + event.getSession().getSession().getMaxInactiveInterval() + "sec");
+        });
+
+        addSessionDestroyListener(event -> {
+            log.debug("HTTP session destroyed: " + event.getSession());
+            App app = event.getSession().getAttribute(App.class);
+            if (app != null) {
+                app.cleanupBackgroundTasks();
             }
         });
 
-        addSessionDestroyListener(new SessionDestroyListener() {
-            @Override
-            public void sessionDestroy(SessionDestroyEvent event) {
-                log.debug("HTTP session destroyed: " + event.getSession());
-                App app = event.getSession().getAttribute(App.class);
-                if (app != null) {
-                    app.cleanupBackgroundTasks();
+        setSystemMessagesProvider(systemMessagesInfo -> {
+            Locale locale = systemMessagesInfo.getLocale();
+
+            CustomizedSystemMessages msgs = new CustomizedSystemMessages();
+
+            if (AppContext.isStarted()) {
+                try {
+                    Messages messages = AppBeans.get(Messages.NAME);
+
+                    msgs.setInternalErrorCaption(messages.getMainMessage("internalErrorCaption", locale));
+                    msgs.setInternalErrorMessage(messages.getMainMessage("internalErrorMessage", locale));
+
+                    msgs.setCommunicationErrorCaption(messages.getMainMessage("communicationErrorCaption", locale));
+                    msgs.setCommunicationErrorMessage(messages.getMainMessage("communicationErrorMessage", locale));
+
+                    msgs.setSessionExpiredCaption(messages.getMainMessage("sessionExpiredErrorCaption", locale));
+                    msgs.setSessionExpiredMessage(messages.getMainMessage("sessionExpiredErrorMessage", locale));
+                } catch (Exception e) {
+                    log.error("Unable to set system messages", e);
+                    throw new RuntimeException("Unable to set system messages. " +
+                            "It usually happens when the middleware web application is not responding due to " +
+                            "errors on start. See logs for details.", e);
                 }
             }
-        });
+            msgs.setOutOfSyncNotificationEnabled(false);
 
-        setSystemMessagesProvider(new SystemMessagesProvider() {
-            @Override
-            public SystemMessages getSystemMessages(SystemMessagesInfo systemMessagesInfo) {
-                Locale locale = systemMessagesInfo.getLocale();
-
-                CustomizedSystemMessages msgs = new CustomizedSystemMessages();
-
-                if (AppContext.isStarted()) {
-                    try {
-                        Messages messages = AppBeans.get(Messages.NAME);
-
-                        msgs.setInternalErrorCaption(messages.getMainMessage("internalErrorCaption", locale));
-                        msgs.setInternalErrorMessage(messages.getMainMessage("internalErrorMessage", locale));
-
-                        msgs.setCommunicationErrorCaption(messages.getMainMessage("communicationErrorCaption", locale));
-                        msgs.setCommunicationErrorMessage(messages.getMainMessage("communicationErrorMessage", locale));
-
-                        msgs.setSessionExpiredCaption(messages.getMainMessage("sessionExpiredErrorCaption", locale));
-                        msgs.setSessionExpiredMessage(messages.getMainMessage("sessionExpiredErrorMessage", locale));
-                    } catch (Exception e) {
-                        log.error("Unable to set system messages", e);
-                        throw new RuntimeException("Unable to set system messages. " +
-                                "It usually happens when the middleware web application is not responding due to " +
-                                "errors on start. See logs for details.", e);
-                    }
-                }
-                msgs.setOutOfSyncNotificationEnabled(false);
-
-                String redirectUri;
-                if (RequestContext.get() != null) {
-                    HttpServletRequest request = RequestContext.get().getRequest();
-                    redirectUri = StringUtils.replace(request.getRequestURI(), "/UIDL", "");
-                } else {
-                    String webContext = AppContext.getProperty("cuba.webContextName");
-                    redirectUri = "/" + webContext;
-                }
-
-                msgs.setInternalErrorURL(redirectUri + "?restartApp");
-
-                return msgs;
+            String redirectUri;
+            if (RequestContext.get() != null) {
+                HttpServletRequest request = RequestContext.get().getRequest();
+                redirectUri = StringUtils.replace(request.getRequestURI(), "/UIDL", "");
+            } else {
+                String webContext = AppContext.getProperty("cuba.webContextName");
+                redirectUri = "/" + webContext;
             }
+
+            msgs.setInternalErrorURL(redirectUri + "?restartApp");
+
+            return msgs;
         });
     }
 
@@ -143,7 +134,10 @@ public class CubaVaadinServletService extends VaadinServletService {
         List<RequestHandler> cubaRequestHandlers = new ArrayList<>();
 
         for (RequestHandler handler : requestHandlers) {
-            if (handler instanceof PublishedFileHandler) {
+            if (handler instanceof UidlRequestHandler) {
+                // replace UidlRequestHandler with CubaUidlRequestHandler
+                cubaRequestHandlers.add(new CubaUidlRequestHandler());
+            } else if (handler instanceof PublishedFileHandler) {
                 // replace PublishedFileHandler with CubaPublishedFileHandler
                 // for support resources from VAADIN directory
                 cubaRequestHandlers.add(new CubaPublishedFileHandler());
@@ -163,6 +157,21 @@ public class CubaVaadinServletService extends VaadinServletService {
         }
 
         return cubaRequestHandlers;
+    }
+
+    protected static boolean withUserSession(VaadinSession session, Callable<Boolean> handler) throws IOException {
+        UserSession userSession = session.getAttribute(UserSession.class);
+        if (userSession != null) {
+            AppContext.setSecurityContext(new SecurityContext(userSession));
+        }
+
+        try {
+            return handler.call();
+        } catch (Exception e) {
+            throw new IOException("Exception in request handler", e);
+        } finally {
+            AppContext.setSecurityContext(null);
+        }
     }
 
     // Add ability to load JS and CSS resources from VAADIN directory
@@ -193,7 +202,6 @@ public class CubaVaadinServletService extends VaadinServletService {
         @Override
         protected void sendUploadResponse(VaadinRequest request, VaadinResponse response,
                                           String fileName, long contentLength) throws IOException {
-
             JsonArray json = Json.createArray();
             JsonObject fileInfo = Json.createObject();
             fileInfo.put("name", fileName);
@@ -209,6 +217,12 @@ public class CubaVaadinServletService extends VaadinServletService {
             PrintWriter writer = response.getWriter();
             writer.write(json.toJson());
             writer.close();
+        }
+
+        @Override
+        public boolean handleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response)
+                throws IOException {
+            return withUserSession(session, () -> super.handleRequest(session, request, response));
         }
     }
 
@@ -240,17 +254,29 @@ public class CubaVaadinServletService extends VaadinServletService {
         @Override
         public boolean synchronizedHandleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response)
                 throws IOException {
-            boolean result = super.synchronizedHandleRequest(session, request, response);
+            return withUserSession(session, () -> {
+                boolean result = super.synchronizedHandleRequest(session, request, response);
 
-            if (log.isTraceEnabled()) {
-                log.trace("Handle heartbeat " + request.getRemoteHost() + " " + request.getRemoteAddr());
-            }
+                if (log.isTraceEnabled()) {
+                    log.trace("Handle heartbeat " + request.getRemoteHost() + " " + request.getRemoteAddr());
+                }
 
-            if (result && App.isBound()) {
-                App.getInstance().onHeartbeat();
-            }
+                if (result && App.isBound()) {
+                    App.getInstance().onHeartbeat();
+                }
 
-            return result;
+                return result;
+            });
+        }
+    }
+
+    // Set security context to AppContext for normal UI requests
+    protected static class CubaUidlRequestHandler extends UidlRequestHandler {
+
+        @Override
+        public boolean synchronizedHandleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response)
+                throws IOException {
+            return withUserSession(session, () -> super.synchronizedHandleRequest(session, request, response));
         }
     }
 }

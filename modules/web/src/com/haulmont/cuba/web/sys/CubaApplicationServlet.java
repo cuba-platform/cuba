@@ -6,7 +6,6 @@ package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.WebStatisticsAccumulator;
@@ -65,13 +64,10 @@ public class CubaApplicationServlet extends VaadinServlet {
     protected void servletInitialized() throws ServletException {
         super.servletInitialized();
 
-        getService().addSessionInitListener(new SessionInitListener() {
-            @Override
-            public void sessionInit(SessionInitEvent event) throws ServiceException {
-                CubaBootstrapListener bootstrapListener = AppBeans.get(CubaBootstrapListener.NAME);
+        getService().addSessionInitListener(event -> {
+            CubaBootstrapListener bootstrapListener = AppBeans.get(CubaBootstrapListener.NAME);
 
-                event.getSession().addBootstrapListener(bootstrapListener);
-            }
+            event.getSession().addBootstrapListener(bootstrapListener);
         });
     }
 
@@ -155,7 +151,6 @@ public class CubaApplicationServlet extends VaadinServlet {
     protected void serviceAppRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         RequestContext.create(request, response);
-        AppContext.setSecurityContext(new VaadinSessionAwareSecurityContext());
         statisticsCounter.incWebRequestsCount();
 
         long startTs = System.currentTimeMillis();
@@ -164,7 +159,6 @@ public class CubaApplicationServlet extends VaadinServlet {
             super.service(request, response);
         } finally {
             RequestContext.destroy();
-            AppContext.setSecurityContext(null);
         }
 
         if (hasPathPrefix(request, ApplicationConstants.UIDL_PATH + '/')) {

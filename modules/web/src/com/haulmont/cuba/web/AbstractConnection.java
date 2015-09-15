@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.User;
@@ -17,7 +18,6 @@ import com.haulmont.cuba.security.global.IpMatcher;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.sys.VaadinSessionAwareSecurityContext;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.server.WebBrowser;
@@ -99,12 +99,12 @@ public abstract class AbstractConnection implements Connection {
             throw e;
         } catch (Exception e) {
             internalLogout();
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to login internal", e);
         }
     }
 
     protected void internalLogin(UserSession session) throws LoginException {
-        AppContext.setSecurityContext(new VaadinSessionAwareSecurityContext());
+        AppContext.setSecurityContext(new SecurityContext(session));
 
         App app = App.getInstance();
 
