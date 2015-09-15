@@ -11,6 +11,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.GroupDatasource;
@@ -98,14 +99,11 @@ public class StatisticsWindow extends AbstractWindow {
         jmxConnectionField.addAction(new AbstractAction("actions.Add") {
             @Override
             public void actionPerform(Component component) {
-                final AbstractEditor<JmxInstance> instanceEditor = openEditor("sys$JmxInstance.edit", new JmxInstance(), WindowManager.OpenType.DIALOG);
-                instanceEditor.addListener(new CloseListener() {
-                    @Override
-                    public void windowClosed(String actionId) {
-                        if (COMMIT_ACTION_ID.equals(actionId)) {
-                            jmxInstancesDs.refresh();
-                            jmxConnectionField.setValue(instanceEditor.getItem());
-                        }
+                AbstractEditor<JmxInstance> instanceEditor = openEditor("sys$JmxInstance.edit", new JmxInstance(), OpenType.DIALOG);
+                instanceEditor.addCloseListener(actionId -> {
+                    if (COMMIT_ACTION_ID.equals(actionId)) {
+                        jmxInstancesDs.refresh();
+                        jmxConnectionField.setValue(instanceEditor.getItem());
                     }
                 });
             }
@@ -141,7 +139,7 @@ public class StatisticsWindow extends AbstractWindow {
     }
 
     public void onMonitorThreads() {
-        openWindow("threadsMonitoringWindow", WindowManager.OpenType.NEW_TAB,
+        openWindow("threadsMonitoringWindow", OpenType.NEW_TAB,
                 ParamsMap.of("node", jmxConnectionField.<JmxInstance>getValue()));
     }
 }

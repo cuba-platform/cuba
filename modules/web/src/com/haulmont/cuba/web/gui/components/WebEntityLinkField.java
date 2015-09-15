@@ -31,7 +31,6 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaButtonField;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
-import com.vaadin.ui.Button;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
@@ -58,14 +57,11 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
 
     public WebEntityLinkField() {
         component = new CubaButtonField();
-        component.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                if (clickHandler != null) {
-                    clickHandler.onClick(WebEntityLinkField.this);
-                } else {
-                    openEntityEditor();
-                }
+        component.addClickListener(event -> {
+            if (clickHandler != null) {
+                clickHandler.onClick(WebEntityLinkField.this);
+            } else {
+                openEntityEditor();
             }
         });
         component.setInvalidCommitted(true);
@@ -319,20 +315,17 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
                 screenOpenType,
                 screenParams != null ? screenParams : Collections.<String, Object>emptyMap()
         );
-        editor.addListener(new Window.CloseListener() {
-            @Override
-            public void windowClosed(String actionId) {
-                // move focus to component
-                component.focus();
+        editor.addCloseListener(actionId -> {
+            // move focus to component
+            component.focus();
 
-                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                    Entity item = editor.getItem();
-                    afterCommitOpenedEntity(item);
-                }
+            if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                Entity item = editor.getItem();
+                afterCommitOpenedEntity(item);
+            }
 
-                if (screenCloseListener != null) {
-                    screenCloseListener.windowClosed(editor, actionId);
-                }
+            if (screenCloseListener != null) {
+                screenCloseListener.windowClosed(editor, actionId);
             }
         });
     }

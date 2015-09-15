@@ -53,14 +53,9 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
         if (task.getOwnerFrame() != null) {
             Frame ownerFrame = task.getOwnerFrame();
             if (ownerFrame.getFrame() != null) {
-                closeListener = new Window.CloseListener() {
-                    @Override
-                    public void windowClosed(String actionId) {
-                        ownerWindowClosed();
-                    }
-                };
+                closeListener = actionId -> ownerWindowClosed();
                 Window ownerWindow = ComponentsHelper.getWindowImplementation(ownerFrame);
-                ownerWindow.addListener(closeListener);
+                ownerWindow.addCloseListener(closeListener);
             }
         }
         // remove close listener on done
@@ -129,7 +124,7 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
         Frame ownerFrame = getTask().getOwnerFrame();
         if (ownerFrame != null) {
             Window ownerWindow = ComponentsHelper.getWindowImplementation(ownerFrame);
-            ownerWindow.removeListener(closeListener);
+            ownerWindow.removeCloseListener(closeListener);
         }
         closeListener = null;
     }

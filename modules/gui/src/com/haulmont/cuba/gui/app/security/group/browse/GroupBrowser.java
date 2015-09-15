@@ -51,10 +51,10 @@ public class GroupBrowser extends AbstractWindow {
     protected HierarchicalDatasource<Group, UUID> groupsDs;
 
     @Inject
-    protected Tree groupsTree;
+    protected Tree<Group> groupsTree;
 
     @Inject
-    protected Table usersTable;
+    protected Table<User> usersTable;
 
     @Inject
     protected TabSheet tabsheet;
@@ -153,11 +153,8 @@ public class GroupBrowser extends AbstractWindow {
                         }
                     }, WindowManager.OpenType.DIALOG);
 
-                    lookupWindow.addListener(new CloseListener() {
-                        @Override
-                        public void windowClosed(String actionId) {
-                            usersTable.requestFocus();
-                        }
+                    lookupWindow.addCloseListener(actionId -> {
+                        usersTable.requestFocus();
                     });
                 }
             }
@@ -169,17 +166,13 @@ public class GroupBrowser extends AbstractWindow {
             }
         });
 
-        tabsheet.addListener(
-                new TabSheet.TabChangeListener() {
-                    @Override
-                    public void tabChanged(TabSheet.Tab newTab) {
-                        if ("constraintsTab".equals(newTab.getName()))
-                            initConstraintsTab();
-                        else if ("attributesTab".equals(newTab.getName()))
-                            initAttributesTab();
-                    }
-                }
-        );
+        tabsheet.addListener(newTab -> {
+            if ("constraintsTab".equals(newTab.getName())) {
+                initConstraintsTab();
+            } else if ("attributesTab".equals(newTab.getName())) {
+                initAttributesTab();
+            }
+        });
 
         final boolean hasPermissionsToCreateGroup =
                 security.isEntityOpPermitted(metadata.getSession().getClass(Group.class),

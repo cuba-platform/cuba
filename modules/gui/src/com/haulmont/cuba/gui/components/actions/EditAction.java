@@ -174,32 +174,28 @@ public class EditAction extends BaseAction implements Action.HasOpenType {
             if (params == null)
                 params = new HashMap<>();
 
-            final Window window = target.getFrame().openEditor(windowID, datasource.getItem(), getOpenType(), params, parentDs);
-
-            window.addListener(new Window.CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
-                        Entity item = ((Window.Editor) window).getItem();
-                        if (item != null) {
-                            if (pDs == null) {
-                                //noinspection unchecked
-                                datasource.updateItem(item);
-                            }
-                            afterCommit(item);
-                            if (afterCommitHandler != null) {
-                                afterCommitHandler.handle(item);
-                            }
+            Window.Editor window = target.getFrame().openEditor(windowID, datasource.getItem(), getOpenType(), params, parentDs);
+            window.addCloseListener(actionId -> {
+                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                    Entity item = window.getItem();
+                    if (item != null) {
+                        if (pDs == null) {
+                            //noinspection unchecked
+                            datasource.updateItem(item);
+                        }
+                        afterCommit(item);
+                        if (afterCommitHandler != null) {
+                            afterCommitHandler.handle(item);
                         }
                     }
+                }
 
-                    // move focus to owner
-                    target.requestFocus();
+                // move focus to owner
+                target.requestFocus();
 
-                    afterWindowClosed(window);
-                    if (afterWindowClosedHandler != null) {
-                        afterWindowClosedHandler.handle(window);
-                    }
+                afterWindowClosed(window);
+                if (afterWindowClosedHandler != null) {
+                    afterWindowClosedHandler.handle(window);
                 }
             });
         }

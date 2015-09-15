@@ -7,7 +7,7 @@ package com.haulmont.cuba.gui.app.security.session.browse;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
@@ -36,7 +36,7 @@ public class SessionBrowser extends AbstractLookup {
     protected UserSessionService uss;
 
     @Inject
-    protected Table sessionsTable;
+    protected Table<UserSessionEntity> sessionsTable;
 
     @Inject
     protected UserSessionsDatasource sessionsDs;
@@ -126,15 +126,12 @@ public class SessionBrowser extends AbstractLookup {
         Map<String, Object> params = new HashMap<>();
         params.put("selectedSessions", selected);
         params.put("allSessions", all);
-        final SessionMessageWindow window = (SessionMessageWindow) openWindow("sessionMessageWindow", WindowManager.OpenType.DIALOG, params);
-        window.addListener(new CloseListener() {
-            @Override
-            public void windowClosed(String actionId) {
-                String result = window.getResult();
-                if (!StringUtils.isBlank(result)) {
-                    showNotification(result, NotificationType.TRAY);
-                    sessionsTable.requestFocus();
-                }
+        SessionMessageWindow window = (SessionMessageWindow) openWindow("sessionMessageWindow", OpenType.DIALOG, params);
+        window.addCloseListener(actionId -> {
+            String result = window.getResult();
+            if (!StringUtils.isBlank(result)) {
+                showNotification(result, NotificationType.TRAY);
+                sessionsTable.requestFocus();
             }
         });
     }

@@ -56,7 +56,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
     protected DataSupplier dataSupplier;
 
     @Inject
-    private Table categoryAttrsTable;
+    private Table<CategoryAttribute> categoryAttrsTable;
 
     @Inject
     protected Datasource categoryDs;
@@ -149,6 +149,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
     protected void initDataTypeColumn() {
         categoryAttrsTable.removeGeneratedColumn("dataType");
         categoryAttrsTable.addGeneratedColumn("dataType", new Table.ColumnGenerator<CategoryAttribute>() {
+            @Override
             public Component generateCell(CategoryAttribute attribute) {
                 Label dataTypeLabel = factory.createComponent(Label.class);
                 String labelContent;
@@ -183,7 +184,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
                         case DATE:
                             Date date = attribute.getDefaultDate();
                             if (date != null) {
-                                String dateTimeFormat = Datatypes.getFormatStrings(userSessionSource.getLocale()).getDateTimeFormat();
+                                String dateTimeFormat = Datatypes.getFormatStringsNN(userSessionSource.getLocale()).getDateTimeFormat();
                                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateTimeFormat);
                                 defaultValue = simpleDateFormat.format(date);
                             } else if (BooleanUtils.isTrue(attribute.getDefaultDateIsCurrent())) {
@@ -228,11 +229,11 @@ public class CategoryAttrsFrame extends AbstractFrame {
         if (lastId == null)
             attr.setOrderNo(1);
         else {
-            CategoryAttribute lastItem = categoryAttrsDs.getItem(lastId);
+            CategoryAttribute lastItem = categoryAttrsDs.getItemNN(lastId);
             if (lastItem.getOrderNo() == null)
                 attr.setOrderNo(1);
             else
-                attr.setOrderNo(categoryAttrsDs.getItem(lastId).getOrderNo() + 1);
+                attr.setOrderNo(categoryAttrsDs.getItemNN(lastId).getOrderNo() + 1);
 
         }
     }
@@ -257,14 +258,11 @@ public class CategoryAttrsFrame extends AbstractFrame {
                         selected.iterator().next(),
                         WindowManager.OpenType.DIALOG,
                         categoryAttrsTable.getDatasource());
-                editor.addListener(new Window.CloseListener() {
-                    @Override
-                    public void windowClosed(String actionId) {
-                        categoryAttrsTable.getDatasource().refresh();
-                        categoryAttrsTable.requestFocus();
-                        // restore selection from ds
-                        categoryAttrsTable.setSelected(categoryAttrsDs.getItem());
-                    }
+                editor.addCloseListener(actionId -> {
+                    categoryAttrsTable.getDatasource().refresh();
+                    categoryAttrsTable.requestFocus();
+                    // restore selection from ds
+                    categoryAttrsTable.setSelected(categoryAttrsDs.getItem());
                 });
             }
         }
@@ -291,14 +289,11 @@ public class CategoryAttrsFrame extends AbstractFrame {
                     attribute,
                     WindowManager.OpenType.DIALOG,
                     categoryAttrsTable.getDatasource());
-            editor.addListener(new Window.CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    categoryAttrsTable.getDatasource().refresh();
-                    categoryAttrsTable.requestFocus();
-                    // restore selection from ds
-                    categoryAttrsTable.setSelected(categoryAttrsDs.getItem());
-                }
+            editor.addCloseListener(actionId -> {
+                categoryAttrsTable.getDatasource().refresh();
+                categoryAttrsTable.requestFocus();
+                // restore selection from ds
+                categoryAttrsTable.setSelected(categoryAttrsDs.getItem());
             });
         }
     }

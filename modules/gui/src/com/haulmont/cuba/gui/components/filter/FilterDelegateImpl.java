@@ -10,6 +10,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
@@ -649,20 +650,14 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         Runnable commitHandler;
         if (isAppFolder) {
-            commitHandler = new Runnable() {
-                @Override
-                public void run() {
-                    AbstractSearchFolder savedFolder = saveFolder(folder);
-                    filterEntity.setFolder(savedFolder);
-                }
+            commitHandler = () -> {
+                AbstractSearchFolder savedFolder = saveFolder(folder);
+                filterEntity.setFolder(savedFolder);
             };
         } else {
-            commitHandler = new Runnable() {
-                @Override
-                public void run() {
-                    AbstractSearchFolder savedFolder = saveFolder(folder);
-                    filterEntity.setFolder(savedFolder);
-                }
+            commitHandler = () -> {
+                AbstractSearchFolder savedFolder = saveFolder(folder);
+                filterEntity.setFolder(savedFolder);
             };
         }
 
@@ -1022,16 +1017,14 @@ public class FilterDelegateImpl implements FilterDelegate {
             @Override
             public void actionPerform(Component component) {
                 WindowInfo windowInfo = windowConfig.getWindowInfo("filterSelect");
-                final FilterSelectWindow window = (FilterSelectWindow) windowManager.openWindow(windowInfo,
+                FilterSelectWindow window = (FilterSelectWindow) windowManager.openWindow(windowInfo,
                         WindowManager.OpenType.DIALOG,
-                        Collections.<String, Object>singletonMap("filterEntities", filterEntities));
-                window.addListener(new Window.CloseListener() {
-                    @Override
-                    public void windowClosed(String actionId) {
-                        if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                            FilterEntity selectedEntity = window.getFilterEntity();
-                            setFilterEntity(selectedEntity);
-                        }
+                        ParamsMap.of("filterEntities", filterEntities));
+
+                window.addCloseListener(actionId -> {
+                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                        FilterEntity selectedEntity = window.getFilterEntity();
+                        setFilterEntity(selectedEntity);
                     }
                 });
             }
@@ -1901,22 +1894,19 @@ public class FilterDelegateImpl implements FilterDelegate {
                     params.put("filterName", filterEntity.getName());
                 }
                 final SaveFilterWindow window = (SaveFilterWindow) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
-                window.addListener(new Window.CloseListener() {
-                    @Override
-                    public void windowClosed(String actionId) {
-                        if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                            String filterName = window.getFilterName();
-                            filterEntity.setName(filterName);
-                            filterEntity.setXml(FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE));
-                            saveFilterEntity();
-                            initAdHocFilter();
-                            initFilterSelectComponents();
-                            updateWindowCaption();
+                window.addCloseListener(actionId -> {
+                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                        String filterName = window.getFilterName();
+                        filterEntity.setName(filterName);
+                        filterEntity.setXml(FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE));
+                        saveFilterEntity();
+                        initAdHocFilter();
+                        initFilterSelectComponents();
+                        updateWindowCaption();
 
-                            //recreate layout to remove delete conditions buttons
-                            initialConditions = conditions.toConditionsList();
-                            fillConditionsLayout(ConditionsFocusType.NONE);
-                        }
+                        //recreate layout to remove delete conditions buttons
+                        initialConditions = conditions.toConditionsList();
+                        fillConditionsLayout(ConditionsFocusType.NONE);
                     }
                 });
             } else {
@@ -1948,33 +1938,30 @@ public class FilterDelegateImpl implements FilterDelegate {
         public void actionPerform(Component component) {
             WindowInfo windowInfo = windowConfig.getWindowInfo("saveFilter");
             final SaveFilterWindow window = (SaveFilterWindow) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG);
-            window.addListener(new Window.CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                        String filterName = window.getFilterName();
-                        FilterEntity newFilterEntity = metadata.create(FilterEntity.class);
-                        InstanceUtils.copy(filterEntity, newFilterEntity);
-                        newFilterEntity.setCode(null);
-                        newFilterEntity.setId(UuidProvider.createUuid());
-                        //if filter was global but current user cannot create global filter then new filter
-                        //will be connected with current user
-                        if (newFilterEntity.getUser() == null && !uerCanEditGlobalFilter()) {
-                            newFilterEntity.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
-                        }
-                        String xml = filterEntity.getFolder() == null ?  FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE)
-                                : FilterParser.getXml(conditions, Param.ValueProperty.VALUE);
-                        filterEntity = newFilterEntity;
-                        filterEntity.setName(filterName);
-                        filterEntity.setXml(xml);
-                        saveFilterEntity();
-                        initFilterSelectComponents();
-                        updateWindowCaption();
-
-                        //recreate layout to remove delete conditions buttons
-                        initialConditions = conditions.toConditionsList();
-                        fillConditionsLayout(ConditionsFocusType.NONE);
+            window.addCloseListener(actionId -> {
+                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                    String filterName = window.getFilterName();
+                    FilterEntity newFilterEntity = metadata.create(FilterEntity.class);
+                    InstanceUtils.copy(filterEntity, newFilterEntity);
+                    newFilterEntity.setCode(null);
+                    newFilterEntity.setId(UuidProvider.createUuid());
+                    //if filter was global but current user cannot create global filter then new filter
+                    //will be connected with current user
+                    if (newFilterEntity.getUser() == null && !uerCanEditGlobalFilter()) {
+                        newFilterEntity.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
                     }
+                    String xml = filterEntity.getFolder() == null ?  FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE)
+                            : FilterParser.getXml(conditions, Param.ValueProperty.VALUE);
+                    filterEntity = newFilterEntity;
+                    filterEntity.setName(filterName);
+                    filterEntity.setXml(xml);
+                    saveFilterEntity();
+                    initFilterSelectComponents();
+                    updateWindowCaption();
+
+                    //recreate layout to remove delete conditions buttons
+                    initialConditions = conditions.toConditionsList();
+                    fillConditionsLayout(ConditionsFocusType.NONE);
                 }
             });
         }
@@ -1998,17 +1985,15 @@ public class FilterDelegateImpl implements FilterDelegate {
             params.put("filterEntity", filterEntity);
             params.put("filter", filter);
             params.put("conditions", conditions);
-            final FilterEditor window = (FilterEditor) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
-            window.addListener(new Window.CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                        conditions = window.getConditions();
-                        initFilterSelectComponents();
-                        updateWindowCaption();
-                        fillConditionsLayout(ConditionsFocusType.FIRST);
-                        updateFilterModifiedIndicator();
-                    }
+
+            FilterEditor window = (FilterEditor) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
+            window.addCloseListener(actionId -> {
+                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                    conditions = window.getConditions();
+                    initFilterSelectComponents();
+                    updateWindowCaption();
+                    fillConditionsLayout(ConditionsFocusType.FIRST);
+                    updateFilterModifiedIndicator();
                 }
             });
         }

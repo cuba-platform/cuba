@@ -53,25 +53,22 @@ public class FileBrowser extends AbstractLookup {
             public void actionPerform(Component component) {
                 Map<String, Object> params = Collections.emptyMap();
 
-                final Window window = frame.openEditor("multiuploadDialog", null,
+                Window.Editor window = frame.openEditor("multiuploadDialog", null,
                         WindowManager.OpenType.DIALOG,
                         params, null);
 
-                window.addListener(new Window.CloseListener() {
-                    @Override
-                    public void windowClosed(String actionId) {
-                        if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
-                            List<FileDescriptor> items = ((MultiUploader) window).getFiles();
-                            for (FileDescriptor fdesc : items) {
-                                filesDs.addItem(fdesc);
-                            }
-                            if (items.size() > 0) {
-                                filesDs.commit();
-                            }
-
-                            filesTable.refresh();
-                            filesTable.requestFocus();
+                window.addCloseListener(actionId -> {
+                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                        List<FileDescriptor> items = ((MultiUploader) window).getFiles();
+                        for (FileDescriptor fdesc : items) {
+                            filesDs.addItem(fdesc);
                         }
+                        if (items.size() > 0) {
+                            filesDs.commit();
+                        }
+
+                        filesTable.refresh();
+                        filesTable.requestFocus();
                     }
                 });
             }

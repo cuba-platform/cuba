@@ -200,34 +200,30 @@ public class CreateAction extends BaseAction implements Action.HasOpenType {
         if (params == null)
             params = new HashMap<>();
 
-        final Window window = target.getFrame().openEditor(getWindowId(), item, getOpenType(), params, parentDs);
-
-        window.addListener(new Window.CloseListener() {
-            @Override
-            public void windowClosed(String actionId) {
-                if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
-                    Entity item = ((Window.Editor) window).getItem();
-                    if (item != null) {
-                        if (pDs == null) {
-                            boolean modified = datasource.isModified();
-                            datasource.addItem(item);
-                            ((DatasourceImplementation) datasource).setModified(modified);
-                        }
-                        target.setSelected(item);
-                        afterCommit(item);
-                        if (afterCommitHandler != null) {
-                            afterCommitHandler.handle(item);
-                        }
+        Window.Editor window = target.getFrame().openEditor(getWindowId(), item, getOpenType(), params, parentDs);
+        window.addCloseListener(actionId -> {
+            if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                Entity item1 = window.getItem();
+                if (item1 != null) {
+                    if (pDs == null) {
+                        boolean modified = datasource.isModified();
+                        datasource.addItem(item1);
+                        ((DatasourceImplementation) datasource).setModified(modified);
+                    }
+                    target.setSelected(item1);
+                    afterCommit(item1);
+                    if (afterCommitHandler != null) {
+                        afterCommitHandler.handle(item1);
                     }
                 }
+            }
 
-                // move focus to owner
-                target.requestFocus();
+            // move focus to owner
+            target.requestFocus();
 
-                afterWindowClosed(window);
-                if (afterWindowClosedHandler != null) {
-                    afterWindowClosedHandler.handle(window);
-                }
+            afterWindowClosed(window);
+            if (afterWindowClosedHandler != null) {
+                afterWindowClosedHandler.handle(window);
             }
         });
     }

@@ -689,19 +689,18 @@ public class App implements ConnectionListener {
         if (Boolean.TRUE.equals(user.getChangePasswordAtNextLogon())) {
             mainFrame.deactivate("");
             final DesktopWindowManager wm = mainFrame.getWindowManager();
-            for (Window window : wm.getOpenWindows())
+            for (Window window : wm.getOpenWindows()) {
                 window.setEnabled(false);
+            }
 
             WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
             WindowInfo changePasswordDialog = windowConfig.getWindowInfo("sec$User.changePassword");
             wm.getDialogParams().setCloseable(false);
             Map<String, Object> params = Collections.singletonMap("cancelEnabled", (Object) Boolean.FALSE);
             Window changePasswordWindow = wm.openEditor(changePasswordDialog, user, WindowManager.OpenType.DIALOG, params);
-            changePasswordWindow.addListener(new Window.CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    for (Window window : wm.getOpenWindows())
-                        window.setEnabled(true);
+            changePasswordWindow.addCloseListener(actionId -> {
+                for (Window window : wm.getOpenWindows()) {
+                    window.setEnabled(true);
                 }
             });
         }

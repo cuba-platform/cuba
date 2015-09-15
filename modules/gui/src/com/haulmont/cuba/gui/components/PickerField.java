@@ -267,14 +267,11 @@ public interface PickerField extends Field, Component.ActionsHolder {
                         openType,
                         screenParams != null ? screenParams : Collections.<String, Object>emptyMap()
                 );
-                lookupWindow.addListener(new Window.CloseListener() {
-                    @Override
-                    public void windowClosed(String actionId) {
-                        // move focus to owner
-                        pickerField.requestFocus();
+                lookupWindow.addCloseListener(actionId -> {
+                    // move focus to owner
+                    pickerField.requestFocus();
 
-                        afterCloseLookup(actionId);
-                    }
+                    afterCloseLookup(actionId);
                 });
             }
         }
@@ -436,26 +433,22 @@ public interface PickerField extends Field, Component.ActionsHolder {
                 windowAlias = windowConfig.getEditorScreenId(entity.getMetaClass());
             }
 
-            final Window.Editor editor = wm.openEditor(
+            Window.Editor editor = wm.openEditor(
                     windowConfig.getWindowInfo(windowAlias),
                     entity,
                     openType,
                     screenParams != null ? screenParams : Collections.<String, Object>emptyMap()
             );
-            editor.addListener(new Window.CloseListener() {
-
-                @Override
-                public void windowClosed(String actionId) {
-                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                        Entity item = editor.getItem();
-                        afterCommitOpenedEntity(item);
-                    }
-
-                    // move focus to owner
-                    pickerField.requestFocus();
-
-                    afterWindowClosed(editor);
+            editor.addCloseListener(actionId -> {
+                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                    Entity item = editor.getItem();
+                    afterCommitOpenedEntity(item);
                 }
+
+                // move focus to owner
+                pickerField.requestFocus();
+
+                afterWindowClosed(editor);
             });
         }
 

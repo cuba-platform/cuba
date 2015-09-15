@@ -112,12 +112,9 @@ public class SettingsWindow extends AbstractWindow {
                     public void actionPerform(Component component) {
                         Window passwordDialog = openWindow("sec$User.changePassword", WindowManager.OpenType.DIALOG,
                                 Collections.<String, Object>singletonMap("currentPasswordRequired", true));
-                        passwordDialog.addListener(new CloseListener() {
-                            @Override
-                            public void windowClosed(String actionId) {
-                                // move focus back to window
-                                changePasswordBtn.requestFocus();
-                            }
+                        passwordDialog.addCloseListener(actionId -> {
+                            // move focus back to window
+                            changePasswordBtn.requestFocus();
                         });
                     }
                 }
@@ -175,8 +172,7 @@ public class SettingsWindow extends AbstractWindow {
     }
 
     protected void saveTimeZoneSettings() {
-        UserTimeZone userTimeZone = new UserTimeZone(
-                (String) timeZoneLookup.getValue(), (Boolean) timeZoneAutoField.getValue());
+        UserTimeZone userTimeZone = new UserTimeZone(timeZoneLookup.getValue(), timeZoneAutoField.getValue());
         userManagementService.saveOwnTimeZone(userTimeZone);
     }
 }

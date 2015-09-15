@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.gui.app.core.entitylog;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.EntityLogService;
@@ -210,15 +211,12 @@ public class EntityLogBrowser extends AbstractWindow {
                         lookupWindow.openLookup(EntityInspectorBrowse.SCREEN_NAME,
                                 lookupWindowHandler,
                                 WindowManager.OpenType.THIS_TAB,
-                                Collections.<String, Object>singletonMap("entity", metaClass.getName())
+                                ParamsMap.of("entity", metaClass.getName())
                         );
                     }
 
-                    lookupWindow.addListener(new CloseListener() {
-                        @Override
-                        public void windowClosed(String actionId) {
-                            pickerField.requestFocus();
-                        }
+                    lookupWindow.addCloseListener(actionId -> {
+                        pickerField.requestFocus();
                     });
                 }
             }

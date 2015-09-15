@@ -980,13 +980,11 @@ public class EntityInspectorEditor extends AbstractWindow {
                 editorParams.put("parentProperty", inverseProperty.getName());
             editorParams.put("parent", item);
             Window window = openWindow("entityInspector.edit", OPEN_TYPE, editorParams);
-            if (!(entitiesDs instanceof PropertyDatasource))
-                window.addListener(new CloseListener() {
-                    @Override
-                    public void windowClosed(String actionId) {
-                        entitiesDs.refresh();
-                    }
+            if (!(entitiesDs instanceof PropertyDatasource)) {
+                window.addCloseListener(actionId -> {
+                    entitiesDs.refresh();
                 });
+            }
         }
     }
 
@@ -1021,11 +1019,8 @@ public class EntityInspectorEditor extends AbstractWindow {
                 editorParams.put("parentProperty", inverseProperty.getName());
 
             Window window = openWindow("entityInspector.edit", OPEN_TYPE, editorParams);
-            window.addListener(new CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    entitiesDs.refresh();
-                }
+            window.addCloseListener(actionId -> {
+                entitiesDs.refresh();
             });
         }
     }

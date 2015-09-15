@@ -51,12 +51,22 @@ public class AbstractWindow extends AbstractFrame
 
     @Override
     public void addListener(CloseListener listener) {
-        ((Window) frame).addListener(listener);
+        addCloseListener(listener);
     }
 
     @Override
     public void removeListener(CloseListener listener) {
-        ((Window) frame).removeListener(listener);
+        removeCloseListener(listener);
+    }
+
+    @Override
+    public void addCloseListener(CloseListener listener) {
+        ((Window) frame).addCloseListener(listener);
+    }
+
+    @Override
+    public void removeCloseListener(CloseListener listener) {
+        ((Window) frame).removeCloseListener(listener);
     }
 
     /**

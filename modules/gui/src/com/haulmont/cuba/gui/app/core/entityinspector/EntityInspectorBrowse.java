@@ -315,12 +315,9 @@ public class EntityInspectorBrowse extends AbstractLookup {
             Map<String, Object> editorParams = new HashMap<>();
             editorParams.put("metaClass", selectedMeta.getName());
             Window window = openWindow("entityInspector.edit", WINDOW_OPEN_TYPE, editorParams);
-            window.addListener(new CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    entitiesDs.refresh();
-                    entitiesTable.requestFocus();
-                }
+            window.addCloseListener(actionId -> {
+                entitiesDs.refresh();
+                entitiesTable.requestFocus();
             });
         }
     }
@@ -341,12 +338,9 @@ public class EntityInspectorBrowse extends AbstractLookup {
             Map<String, Object> editorParams = new HashMap<>();
             editorParams.put("item", item);
             Window window = openWindow("entityInspector.edit", WINDOW_OPEN_TYPE, editorParams);
-            window.addListener(new CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    entitiesDs.refresh();
-                    entitiesTable.requestFocus();
-                }
+            window.addCloseListener(actionId -> {
+                entitiesDs.refresh();
+                entitiesTable.requestFocus();
             });
         }
     }

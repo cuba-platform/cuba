@@ -37,7 +37,7 @@ public class CategoryBrowser extends AbstractLookup {
     protected MessageTools messageTools;
 
     @Inject
-    protected Table categoryTable;
+    protected Table<Category> categoryTable;
 
     @Inject
     protected CollectionDatasource categoriesDs;
@@ -54,7 +54,6 @@ public class CategoryBrowser extends AbstractLookup {
     @Override
     public void init(Map<String, Object> params) {
         categoriesDs = (CollectionDatasource) getDsContext().get("categoriesDs");
-        categoryTable = (Table) getComponent("categoryTable");
         categoryTable.addAction(new CreateAction());
         categoryTable.addAction(new EditAction());
         categoryTable.addAction(new RemoveAction(categoryTable));
@@ -97,12 +96,9 @@ public class CategoryBrowser extends AbstractLookup {
         public void actionPerform(Component component) {
             Category category = metadata.create(Category.class);
             Editor editor = openEditor("sys$Category.edit", category, WindowManager.OpenType.THIS_TAB);
-            editor.addListener(new CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    categoriesDs.refresh();
-                    categoryTable.requestFocus();
-                }
+            editor.addCloseListener(actionId -> {
+                categoriesDs.refresh();
+                categoryTable.requestFocus();
             });
         }
     }
@@ -124,12 +120,9 @@ public class CategoryBrowser extends AbstractLookup {
             if (!selected.isEmpty()) {
                 Category category = selected.iterator().next();
                 Editor editor = openEditor("sys$Category.edit", category, WindowManager.OpenType.THIS_TAB);
-                editor.addListener(new CloseListener() {
-                    @Override
-                    public void windowClosed(String actionId) {
-                        categoriesDs.refresh();
-                        categoryTable.requestFocus();
-                    }
+                editor.addCloseListener(actionId -> {
+                    categoriesDs.refresh();
+                    categoryTable.requestFocus();
                 });
             }
         }

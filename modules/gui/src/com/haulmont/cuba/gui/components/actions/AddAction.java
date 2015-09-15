@@ -131,12 +131,9 @@ public class AddAction extends BaseAction implements Action.HasOpenType {
         Window.Lookup.Handler itemsHandler = handler != null ? handler : new DefaultHandler();
 
         Window lookupWindow = target.getFrame().openLookup(getWindowId(), itemsHandler, getOpenType(), params);
-        lookupWindow.addListener(new Window.CloseListener() {
-            @Override
-            public void windowClosed(String actionId) {
-                // move focus to owner
-                target.requestFocus();
-            }
+        lookupWindow.addCloseListener(actionId -> {
+            // move focus to owner
+            target.requestFocus();
         });
     }
 

@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.components.filter;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -68,15 +69,12 @@ public class InListParamComponent {
                 params.put("runtimeEnum", runtimeEnum);
                 params.put("itemClass", itemClass);
 
-                final InListParamEditor editor = (InListParamEditor) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
-                editor.addListener(new Window.CloseListener() {
-                    @Override
-                    public void windowClosed(String actionId) {
-                        if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                            setValues(editor.getValues());
-                        }
-                        field.requestFocus();
+                InListParamEditor editor = (InListParamEditor) windowManager.openWindow(windowInfo, OpenType.DIALOG, params);
+                editor.addCloseListener(actionId -> {
+                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                        setValues(editor.getValues());
                     }
+                    field.requestFocus();
                 });
             }
         });

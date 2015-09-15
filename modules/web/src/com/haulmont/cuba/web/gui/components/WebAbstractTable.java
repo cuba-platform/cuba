@@ -1811,17 +1811,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                     entity,
                     screenOpenType
             );
-            editor.addListener(new Window.CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    // move focus to component
-                    requestFocus();
+            editor.addCloseListener(actionId -> {
+                // move focus to component
+                requestFocus();
 
-                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                        Entity editorItem = editor.getItem();
+                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                    Entity editorItem = editor.getItem();
 
-                        handleEditorCommit(editorItem, rowItem, columnId);
-                    }
+                    handleEditorCommit(editorItem, rowItem, columnId);
                 }
             });
         }

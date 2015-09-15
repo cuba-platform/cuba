@@ -427,11 +427,8 @@ public class UserEditor extends AbstractEditor<User> {
 
             }, WindowManager.OpenType.THIS_TAB, lookupParams);
 
-            roleLookupWindow.addListener(new CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    rolesTable.requestFocus();
-                }
+            roleLookupWindow.addCloseListener(actionId -> {
+                rolesTable.requestFocus();
             });
 
             Component lookupComponent = roleLookupWindow.getLookupComponent();
@@ -466,14 +463,11 @@ public class UserEditor extends AbstractEditor<User> {
             if (rolesDs.getItem() == null)
                 return;
             Window window = openEditor("sec$Role.edit", rolesDs.getItem().getRole(), WindowManager.OpenType.THIS_TAB);
-            window.addListener(new CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                        rolesDs.refresh();
-                    }
-                    rolesTable.requestFocus();
+            window.addCloseListener(actionId -> {
+                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                    rolesDs.refresh();
                 }
+                rolesTable.requestFocus();
             });
         }
 
@@ -542,11 +536,8 @@ public class UserEditor extends AbstractEditor<User> {
 
             Window substitutionEditor = openEditor("sec$UserSubstitution.edit", substitution,
                     WindowManager.OpenType.DIALOG, substitutionsDs);
-            substitutionEditor.addListener(new CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    substTable.requestFocus();
-                }
+            substitutionEditor.addCloseListener(actionId -> {
+                substTable.requestFocus();
             });
         }
 
@@ -573,11 +564,8 @@ public class UserEditor extends AbstractEditor<User> {
             if (substitutionsDs.getItem() != null) {
                 Window substitutionEditor = openEditor("sec$UserSubstitution.edit", substitutionsDs.getItem(),
                         WindowManager.OpenType.DIALOG, substitutionsDs);
-                substitutionEditor.addListener(new CloseListener() {
-                    @Override
-                    public void windowClosed(String actionId) {
-                        substTable.requestFocus();
-                    }
+                substitutionEditor.addCloseListener(actionId -> {
+                    substTable.requestFocus();
                 });
             }
         }

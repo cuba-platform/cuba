@@ -70,16 +70,13 @@ public class AddConditionHelper {
         }
         params.put("descriptorsTree", descriptorsTree);
         WindowInfo windowInfo = windowConfig.getWindowInfo("addCondition");
-        final AddConditionWindow window = (AddConditionWindow) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
-        window.addListener(new Window.CloseListener() {
-            @Override
-            public void windowClosed(String actionId) {
-                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                    Collection<AbstractConditionDescriptor> descriptors = window.getDescriptors();
-                    if (descriptors != null) {
-                        for (AbstractConditionDescriptor descriptor : descriptors) {
-                            _addCondition(descriptor, conditionsTree);
-                        }
+        AddConditionWindow window = (AddConditionWindow) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
+        window.addCloseListener(actionId -> {
+            if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                Collection<AbstractConditionDescriptor> descriptors = window.getDescriptors();
+                if (descriptors != null) {
+                    for (AbstractConditionDescriptor descriptor : descriptors) {
+                        _addCondition(descriptor, conditionsTree);
                     }
                 }
             }
@@ -95,12 +92,9 @@ public class AddConditionHelper {
             params.put("condition", condition);
             params.put("conditionsTree", conditionsTree);
             final CustomConditionEditor window = (CustomConditionEditor) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
-            window.addListener(new Window.CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                        handler.handle(condition);
-                    }
+            window.addCloseListener(actionId -> {
+                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                    handler.handle(condition);
                 }
             });
         } else if (descriptor instanceof DynamicAttributesConditionCreator) {
@@ -108,12 +102,9 @@ public class AddConditionHelper {
             Map<String, Object> params = new HashMap<>();
             params.put("condition", condition);
             final DynamicAttributesConditionEditor window = (DynamicAttributesConditionEditor) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
-            window.addListener(new Window.CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                        handler.handle(condition);
-                    }
+            window.addCloseListener(actionId -> {
+                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                    handler.handle(condition);
                 }
             });
         } else {

@@ -7,7 +7,7 @@ package com.haulmont.cuba.web.app.ui.jmxcontrol.browse;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.JmxInstance;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
@@ -70,12 +70,9 @@ public class MbeansDisplayWindow extends AbstractWindow {
                 if (!selected.isEmpty()) {
                     ManagedBeanInfo mbi = selected.iterator().next();
                     if (mbi.getObjectName() != null) { // otherwise it's a fake root node
-                        Window editor = openEditor("jmxConsoleInspectMbean", mbi, WindowManager.OpenType.THIS_TAB);
-                        editor.addListener(new CloseListener() {
-                            @Override
-                            public void windowClosed(String actionId) {
-                                target.requestFocus();
-                            }
+                        Window editor = openEditor("jmxConsoleInspectMbean", mbi, OpenType.THIS_TAB);
+                        editor.addCloseListener(actionId -> {
+                            target.requestFocus();
                         });
                     } else { // expand / collapse fake root node
                         TreeTable treeTable = (TreeTable) target;
@@ -128,14 +125,11 @@ public class MbeansDisplayWindow extends AbstractWindow {
         jmxConnectionField.addAction(new AbstractAction("actions.Add") {
             @Override
             public void actionPerform(Component component) {
-                final AbstractEditor<JmxInstance> instanceEditor = openEditor("sys$JmxInstance.edit", new JmxInstance(), WindowManager.OpenType.DIALOG);
-                instanceEditor.addListener(new CloseListener() {
-                    @Override
-                    public void windowClosed(String actionId) {
-                        if (COMMIT_ACTION_ID.equals(actionId)) {
-                            jmxInstancesDs.refresh();
-                            jmxConnectionField.setValue(instanceEditor.getItem());
-                        }
+                final AbstractEditor<JmxInstance> instanceEditor = openEditor("sys$JmxInstance.edit", new JmxInstance(), OpenType.DIALOG);
+                instanceEditor.addCloseListener(actionId -> {
+                    if (COMMIT_ACTION_ID.equals(actionId)) {
+                        jmxInstancesDs.refresh();
+                        jmxConnectionField.setValue(instanceEditor.getItem());
                     }
                 });
             }

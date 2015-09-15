@@ -38,11 +38,10 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.TabSheet;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.dom4j.Element;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -525,6 +524,16 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public void addListener(CloseListener listener) {
+        addCloseListener(listener);
+    }
+
+    @Override
+    public void removeListener(CloseListener listener) {
+        removeCloseListener(listener);
+    }
+
+    @Override
+    public void addCloseListener(CloseListener listener) {
         if (listeners == null) {
             listeners = new LinkedList<>();
         }
@@ -535,7 +544,7 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     @Override
-    public void removeListener(CloseListener listener) {
+    public void removeCloseListener(CloseListener listener) {
         if (listeners != null) {
             listeners.remove(listener);
         }
@@ -563,12 +572,7 @@ public class WebWindow implements Window, Component.Wrapper,
             return null;
         }
 
-        return (Timer) CollectionUtils.find(timers, new Predicate() {
-            @Override
-            public boolean evaluate(Object object) {
-                return StringUtils.equals(id, ((Timer) object).getId());
-            }
-        });
+        return (Timer) CollectionUtils.find(timers, object -> StringUtils.equals(id, ((Timer) object).getId()));
     }
 
     public void stopTimers() {

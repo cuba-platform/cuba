@@ -65,10 +65,21 @@ public interface Window extends Frame, Component.HasCaption {
 
     /**
      * Add a listener that will be notified when this screen is closed.
+     *
+     * @deprecated Use {@link #addCloseListener(CloseListener)}
      * @param listener listener instance
      */
+    @Deprecated
     void addListener(CloseListener listener);
+    @Deprecated
     void removeListener(CloseListener listener);
+
+    /**
+     * Add a listener that will be notified when this screen is closed.
+     * @param listener listener instance
+     */
+    void addCloseListener(CloseListener listener);
+    void removeCloseListener(CloseListener listener);
 
     /** This method is called by the framework after opening the screen to apply user settings to all components. */
     void applySettings(Settings settings);
@@ -327,7 +338,6 @@ public interface Window extends Frame, Component.HasCaption {
     }
 
     interface MainWindow extends Window {
-
         @Nullable
         AppWorkArea getWorkArea();
 

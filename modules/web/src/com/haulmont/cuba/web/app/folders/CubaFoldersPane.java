@@ -37,7 +37,6 @@ import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.event.Action;
 import com.vaadin.event.ItemClickEvent;
-import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import org.apache.commons.io.FileUtils;
@@ -47,6 +46,8 @@ import org.apache.commons.lang.StringUtils;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
+
+import static com.haulmont.cuba.gui.components.Window.COMMIT_ACTION_ID;
 
 /**
  * Left panel containing application and search folders.
@@ -895,26 +896,23 @@ public class CubaFoldersPane extends VerticalLayout {
             final FileUploadDialog dialog = (FileUploadDialog) App.getInstance().getWindowManager().
                     openWindow(windowConfig.getWindowInfo("fileUploadDialog"), WindowManager.OpenType.DIALOG);
 
-            dialog.addListener(new com.haulmont.cuba.gui.components.Window.CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    if (com.haulmont.cuba.gui.components.Window.COMMIT_ACTION_ID.equals(actionId)) {
-                        try {
-                            FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
-                            byte[] data = FileUtils.readFileToByteArray(fileUploading.getFile(dialog.getFileId()));
-                            fileUploading.deleteFile(dialog.getFileId());
-                            foldersService.importFolder(folder, data);
-                        } catch (AccessDeniedException ex) {
-                            throw ex;
-                        } catch (Exception ex) {
-                            dialog.showNotification(
-                                    messages.getMainMessage("folders.importFailedNotification"),
-                                    ex.getMessage(),
-                                    Frame.NotificationType.ERROR
-                            );
-                        }
-                        refreshFolders();
+            dialog.addCloseListener(actionId -> {
+                if (COMMIT_ACTION_ID.equals(actionId)) {
+                    try {
+                        FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
+                        byte[] data = FileUtils.readFileToByteArray(fileUploading.getFile(dialog.getFileId()));
+                        fileUploading.deleteFile(dialog.getFileId());
+                        foldersService.importFolder(folder, data);
+                    } catch (AccessDeniedException ex) {
+                        throw ex;
+                    } catch (Exception ex) {
+                        dialog.showNotification(
+                                messages.getMainMessage("folders.importFailedNotification"),
+                                ex.getMessage(),
+                                Frame.NotificationType.ERROR
+                        );
                     }
+                    refreshFolders();
                 }
             });
         }

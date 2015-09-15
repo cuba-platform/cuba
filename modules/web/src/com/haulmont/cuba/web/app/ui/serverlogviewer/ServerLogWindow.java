@@ -14,7 +14,7 @@ import com.haulmont.cuba.core.sys.logging.LogArchiver;
 import com.haulmont.cuba.core.sys.logging.LogControlException;
 import com.haulmont.cuba.core.sys.logging.LoggingHelper;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -145,14 +145,11 @@ public class ServerLogWindow extends AbstractWindow {
         jmxConnectionField.addAction(new AbstractAction("actions.Add") {
             @Override
             public void actionPerform(Component component) {
-                final AbstractEditor<JmxInstance> instanceEditor = openEditor("sys$JmxInstance.edit", new JmxInstance(), WindowManager.OpenType.DIALOG);
-                instanceEditor.addListener(new CloseListener() {
-                    @Override
-                    public void windowClosed(String actionId) {
-                        if (COMMIT_ACTION_ID.equals(actionId)) {
-                            jmxInstancesDs.refresh();
-                            jmxConnectionField.setValue(instanceEditor.getItem());
-                        }
+                AbstractEditor<JmxInstance> instanceEditor = openEditor("sys$JmxInstance.edit", new JmxInstance(), OpenType.DIALOG);
+                instanceEditor.addCloseListener(actionId -> {
+                    if (COMMIT_ACTION_ID.equals(actionId)) {
+                        jmxInstancesDs.refresh();
+                        jmxConnectionField.setValue(instanceEditor.getItem());
                     }
                 });
             }
@@ -216,26 +213,23 @@ public class ServerLogWindow extends AbstractWindow {
     }
 
     protected void openAddLoggerDialog() {
-        final AdditionLoggerWindow additionLogger = (AdditionLoggerWindow) openWindow("serverLogAddLoggerDialog", WindowManager.OpenType.DIALOG);
-        additionLogger.addListener(new CloseListener() {
-            @Override
-            public void windowClosed(String actionId) {
-                if (COMMIT_ACTION_ID.equals(actionId)) {
-                    Level level = additionLogger.getSelectedLevel();
-                    String loggerName = additionLogger.getSelectedLoggerName();
+        AdditionLoggerWindow additionLogger = (AdditionLoggerWindow) openWindow("serverLogAddLoggerDialog", OpenType.DIALOG);
+        additionLogger.addCloseListener(actionId -> {
+            if (COMMIT_ACTION_ID.equals(actionId)) {
+                Level level = additionLogger.getSelectedLevel();
+                String loggerName = additionLogger.getSelectedLoggerName();
 
-                    try {
-                        jmxRemoteLoggingAPI.setLoggerLevel(getSelectedConnection(), loggerName, level.toString());
-                    } catch (LogControlException | JmxControlException e) {
-                        log.error("Error setting logger level", e);
-                        showNotification(getMessage("exception.logControl"), NotificationType.ERROR);
-                    }
-
-                    showNotification(String.format(getMessage("logger.setMessage"), loggerName, level.toString()),
-                            NotificationType.HUMANIZED);
-
-                    refreshLoggers();
+                try {
+                    jmxRemoteLoggingAPI.setLoggerLevel(getSelectedConnection(), loggerName, level.toString());
+                } catch (LogControlException | JmxControlException e) {
+                    log.error("Error setting logger level", e);
+                    showNotification(getMessage("exception.logControl"), NotificationType.ERROR);
                 }
+
+                showNotification(String.format(getMessage("logger.setMessage"), loggerName, level.toString()),
+                        NotificationType.HUMANIZED);
+
+                refreshLoggers();
             }
         });
         loggerNameField.setValue(null);
@@ -411,7 +405,7 @@ public class ServerLogWindow extends AbstractWindow {
                     exportDisplay.show(new LogDataProvider(selectedConnection, fileName), fileName + ".zip");
                 } else {
                     openWindow("serverLogDownloadOptionsDialog",
-                               WindowManager.OpenType.DIALOG,
+                               OpenType.DIALOG,
                                ParamsMap.of("logFileName", fileName,
                                             "connection", selectedConnection,
                                             "logFileSize", size,
@@ -441,36 +435,33 @@ public class ServerLogWindow extends AbstractWindow {
 
         params.put("loggersMap", loggersMap);
 
-        final ControlLoggerWindow controlLogger = (ControlLoggerWindow) openWindow("serverLogLoggerControlDialog", WindowManager.OpenType.DIALOG, params);
-        controlLogger.addListener(new CloseListener() {
-            @Override
-            public void windowClosed(String actionId) {
-                if (COMMIT_ACTION_ID.equals(actionId)) {
-                    Map<String, Level> levels = controlLogger.getLevels();
-                    try {
-                        Map<String, String> updates = new HashMap<>();
-                        for (Map.Entry<String, Level> levelEntry : levels.entrySet()) {
-                            String loggerName = levelEntry.getKey();
-                            Level newLogLevel = levelEntry.getValue();
+        ControlLoggerWindow controlLogger = (ControlLoggerWindow) openWindow("serverLogLoggerControlDialog", OpenType.DIALOG, params);
+        controlLogger.addCloseListener(actionId -> {
+            if (COMMIT_ACTION_ID.equals(actionId)) {
+                Map<String, Level> levels = controlLogger.getLevels();
+                try {
+                    Map<String, String> updates = new HashMap<>();
+                    for (Map.Entry<String, Level> levelEntry : levels.entrySet()) {
+                        String loggerName = levelEntry.getKey();
+                        Level newLogLevel = levelEntry.getValue();
 
-                            Level prevLevel = loggersMap.get(loggerName);
-                            String logLevel = prevLevel == null ? null : prevLevel.toString();
+                        Level prevLevel = loggersMap.get(loggerName);
+                        String logLevel = prevLevel == null ? null : prevLevel.toString();
 
-                            if (!StringUtils.equals(logLevel, newLogLevel.toString())) {
-                                updates.put(loggerName, newLogLevel.toString());
-                            }
+                        if (!StringUtils.equals(logLevel, newLogLevel.toString())) {
+                            updates.put(loggerName, newLogLevel.toString());
                         }
-
-                        if (!updates.isEmpty()) {
-                            jmxRemoteLoggingAPI.setLoggersLevels(getSelectedConnection(), updates);
-                        }
-                    } catch (LogControlException | JmxControlException e) {
-                        log.error("Error setting logger level", e);
-                        showNotification(getMessage("exception.logControl"), NotificationType.ERROR);
                     }
-                    showNotification(getMessage("logger.control.apply"), NotificationType.HUMANIZED);
-                    refreshLoggers();
+
+                    if (!updates.isEmpty()) {
+                        jmxRemoteLoggingAPI.setLoggersLevels(getSelectedConnection(), updates);
+                    }
+                } catch (LogControlException | JmxControlException e) {
+                    log.error("Error setting logger level", e);
+                    showNotification(getMessage("exception.logControl"), NotificationType.ERROR);
                 }
+                showNotification(getMessage("logger.control.apply"), NotificationType.HUMANIZED);
+                refreshLoggers();
             }
         });
     }

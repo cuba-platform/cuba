@@ -102,14 +102,11 @@ public class BulkEditAction extends ItemTrackingAction {
         );
 
         Window bulkEditor = target.getFrame().openWindow("bulkEditor", openType, params);
-        bulkEditor.addListener(new Window.CloseListener() {
-            @Override
-            public void windowClosed(String actionId) {
-                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                    target.getDatasource().refresh();
-                }
-                target.requestFocus();
+        bulkEditor.addCloseListener(actionId -> {
+            if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                target.getDatasource().refresh();
             }
+            target.requestFocus();
         });
     }
 }

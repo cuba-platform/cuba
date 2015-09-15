@@ -6,7 +6,7 @@
 package com.haulmont.cuba.web.app.ui.jmxcontrol.inspect;
 
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -75,14 +75,11 @@ public class MbeanInspectWindow extends AbstractEditor {
             return;
         }
 
-        final Window.Editor w = openEditor("jmxConsoleEditAttribute", mba, WindowManager.OpenType.DIALOG);
-        w.addListener(new CloseListener() {
-            @Override
-            public void windowClosed(String actionId) {
-                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                    Object item = w.getItem();
-                    reloadAttribute((ManagedBeanAttribute) item);
-                }
+        Window.Editor w = openEditor("jmxConsoleEditAttribute", mba, OpenType.DIALOG);
+        w.addCloseListener(actionId -> {
+            if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                Object item = w.getItem();
+                reloadAttribute((ManagedBeanAttribute) item);
             }
         });
     }
@@ -212,12 +209,9 @@ public class MbeanInspectWindow extends AbstractEditor {
             params.put("exception", e);
         }
 
-        Window w = openWindow("jmxConsoleOperationResult", WindowManager.OpenType.DIALOG, params);
-        w.addListener(new CloseListener() {
-            @Override
-            public void windowClosed(String actionId) {
-                reloadAttributes();
-            }
+        Window w = openWindow("jmxConsoleOperationResult", OpenType.DIALOG, params);
+        w.addCloseListener(actionId -> {
+            reloadAttributes();
         });
     }
 

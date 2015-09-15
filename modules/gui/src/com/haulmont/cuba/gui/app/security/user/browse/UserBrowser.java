@@ -9,7 +9,7 @@ import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Security;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.app.security.user.edit.UserEditor;
 import com.haulmont.cuba.gui.app.security.user.resetpasswords.ResetPasswordsDialog;
@@ -186,16 +186,13 @@ public class UserBrowser extends AbstractLookup {
                 newUser.setUserRoles(userRoles);
             }
             newUser.setGroup(selectedUser.getGroup());
-            UserEditor editor = (UserEditor) openEditor("sec$User.edit", newUser, WindowManager.OpenType.THIS_TAB);
+            UserEditor editor = (UserEditor) openEditor("sec$User.edit", newUser, OpenType.THIS_TAB);
             editor.initCopy();
-            editor.addListener(new CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                        usersDs.refresh();
-                    }
-                    usersTable.requestFocus();
+            editor.addCloseListener(actionId -> {
+                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                    usersDs.refresh();
                 }
+                usersTable.requestFocus();
             });
         }
     }
@@ -206,14 +203,11 @@ public class UserBrowser extends AbstractLookup {
             @SuppressWarnings("unchecked")
             Window copySettingsWindow = openWindow(
                     "sec$User.copySettings",
-                    WindowManager.OpenType.DIALOG,
+                    OpenType.DIALOG,
                     new SingletonMap("users", selected)
             );
-            copySettingsWindow.addListener(new CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    usersTable.requestFocus();
-                }
+            copySettingsWindow.addCloseListener(actionId -> {
+                usersTable.requestFocus();
             });
         }
     }
@@ -222,35 +216,29 @@ public class UserBrowser extends AbstractLookup {
         final User selectedUser = usersTable.getSingleSelected();
         if (selectedUser != null) {
             Window changePasswordDialog = openWindow("sec$User.changePassword",
-                    WindowManager.OpenType.DIALOG,
+                    OpenType.DIALOG,
                     ParamsMap.of("user", selectedUser));
 
-            changePasswordDialog.addListener(new CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    if (COMMIT_ACTION_ID.equals(actionId)) {
-                        usersDs.updateItem(dataSupplier.reload(selectedUser, "user.browse"));
-                    }
-                    usersTable.requestFocus();
+            changePasswordDialog.addCloseListener(actionId -> {
+                if (COMMIT_ACTION_ID.equals(actionId)) {
+                    usersDs.updateItem(dataSupplier.reload(selectedUser, "user.browse"));
                 }
+                usersTable.requestFocus();
             });
         }
     }
 
     public void changePasswordAtLogon() {
         if (!usersTable.getSelected().isEmpty()) {
-            final ResetPasswordsDialog resetPasswordsDialog = (ResetPasswordsDialog) openWindow("sec$User.resetPasswords", WindowManager.OpenType.DIALOG);
-            resetPasswordsDialog.addListener(new CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                        boolean sendEmails = resetPasswordsDialog.getSendEmails();
-                        boolean generatePasswords = resetPasswordsDialog.getGeneratePasswords();
-                        Set<User> users = usersTable.getSelected();
-                        resetPasswords(users, sendEmails, generatePasswords);
-                    }
-                    usersTable.requestFocus();
+            ResetPasswordsDialog resetPasswordsDialog = (ResetPasswordsDialog) openWindow("sec$User.resetPasswords", OpenType.DIALOG);
+            resetPasswordsDialog.addCloseListener(actionId -> {
+                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                    boolean sendEmails = resetPasswordsDialog.getSendEmails();
+                    boolean generatePasswords = resetPasswordsDialog.getGeneratePasswords();
+                    Set<User> users = usersTable.getSelected();
+                    resetPasswords(users, sendEmails, generatePasswords);
                 }
+                usersTable.requestFocus();
             });
         }
     }
@@ -276,12 +264,9 @@ public class UserBrowser extends AbstractLookup {
                     userPasswords.put(usersDs.getItem(entry.getKey()), entry.getValue());
                 }
                 Map<String, Object> params = Collections.singletonMap("passwords", (Object) userPasswords);
-                Window newPasswordsWindow = openWindow("sec$User.newPasswords", WindowManager.OpenType.DIALOG, params);
-                newPasswordsWindow.addListener(new CloseListener() {
-                    @Override
-                    public void windowClosed(String actionId) {
-                        usersTable.requestFocus();
-                    }
+                Window newPasswordsWindow = openWindow("sec$User.newPasswords", OpenType.DIALOG, params);
+                newPasswordsWindow.addCloseListener(actionId -> {
+                    usersTable.requestFocus();
                 });
             } else {
                 showNotification(String.format(getMessage("changePasswordAtLogonCompleted"), changedPasswords.size()),

@@ -27,8 +27,8 @@ import com.haulmont.cuba.desktop.sys.vcl.JTabbedPaneExt;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -38,9 +38,9 @@ import com.haulmont.cuba.gui.settings.Settings;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.dom4j.Element;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -140,12 +140,23 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     @Override
     public void addListener(CloseListener listener) {
-        if (!listeners.contains(listener))
-            listeners.add(listener);
+        addCloseListener(listener);
     }
 
     @Override
     public void removeListener(CloseListener listener) {
+        removeCloseListener(listener);
+    }
+
+    @Override
+    public void addCloseListener(CloseListener listener) {
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeCloseListener(CloseListener listener) {
         listeners.remove(listener);
     }
 
@@ -182,12 +193,10 @@ public class DesktopWindow implements Window, Component.Disposable,
     public boolean findAndFocusChildComponent() {
         final java.awt.Component focusComponent = getComponentToFocus(getContainer());
         if (focusComponent != null) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    focusComponent.requestFocus();
-                }
+            SwingUtilities.invokeLater(() -> {
+                focusComponent.requestFocus();
             });
+
             return true;
         }
         return false;
@@ -646,22 +655,19 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     protected void requestRepaint() {
         if (!scheduledRepaint) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    getContainer().revalidate();
-                    getContainer().repaint();
+            SwingUtilities.invokeLater(() -> {
+                getContainer().revalidate();
+                getContainer().repaint();
 
-                    java.awt.Container container = getContainer().getTopLevelAncestor();
-                    if (container instanceof DialogWindow) {
-                        DialogWindow dialog = (DialogWindow) container;
-                        if (!dialog.isResizable() && (getHeight() <= 0 || getWidth() <= 0)) {
-                            dialog.pack();
-                        }
+                java.awt.Container container = getContainer().getTopLevelAncestor();
+                if (container instanceof DialogWindow) {
+                    DialogWindow dialog = (DialogWindow) container;
+                    if (!dialog.isResizable() && (getHeight() <= 0 || getWidth() <= 0)) {
+                        dialog.pack();
                     }
-
-                    scheduledRepaint = false;
                 }
+
+                scheduledRepaint = false;
             });
 
             scheduledRepaint = true;
@@ -1157,19 +1163,16 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     protected void showValidationErrors(final ValidationErrors errors) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                StringBuilder buffer = new StringBuilder();
-                for (ValidationErrors.Item error : errors.getAll()) {
-                    buffer.append(error.description).append("\n");
-                }
-                showNotification(
-                        messages.getMainMessage("validationFail.caption"),
-                        buffer.toString(),
-                        NotificationType.HUMANIZED
-                );
+        SwingUtilities.invokeLater(() -> {
+            StringBuilder buffer = new StringBuilder();
+            for (ValidationErrors.Item error : errors.getAll()) {
+                buffer.append(error.description).append("\n");
             }
+            showNotification(
+                    messages.getMainMessage("validationFail.caption"),
+                    buffer.toString(),
+                    NotificationType.HUMANIZED
+            );
         });
     }
 

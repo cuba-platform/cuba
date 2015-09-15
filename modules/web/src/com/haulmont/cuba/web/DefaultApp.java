@@ -66,12 +66,9 @@ public class DefaultApp extends App implements ConnectionListener, UserSubstitut
 
             initExceptionHandlers(true);
             for (final AppUI ui : getAppUIs()) {
-                ui.accessSynchronously(new Runnable() {
-                    @Override
-                    public void run() {
-                        AppWindow appWindow = createAppWindow(ui);
-                        ui.showView(appWindow);
-                    }
+                ui.accessSynchronously(() -> {
+                    AppWindow appWindow = createAppWindow(ui);
+                    ui.showView(appWindow);
                 });
             }
 
@@ -87,16 +84,13 @@ public class DefaultApp extends App implements ConnectionListener, UserSubstitut
             clearSettingsCache();
 
             for (final AppUI ui : getAppUIs()) {
-                ui.accessSynchronously(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (ui.isTestMode()) {
-                            ui.getTestIdManager().reset();
-                        }
-
-                        UIView window = createLoginWindow(ui);
-                        ui.showView(window);
+                ui.accessSynchronously(() -> {
+                    if (ui.isTestMode()) {
+                        ui.getTestIdManager().reset();
                     }
+
+                    UIView window = createLoginWindow(ui);
+                    ui.showView(window);
                 });
             }
             initExceptionHandlers(false);
@@ -132,11 +126,9 @@ public class DefaultApp extends App implements ConnectionListener, UserSubstitut
                 com.haulmont.cuba.gui.components.Window changePasswordWindow = wm.openWindow(changePasswordDialog,
                         WindowManager.OpenType.DIALOG, params);
 
-                changePasswordWindow.addListener(new com.haulmont.cuba.gui.components.Window.CloseListener() {
-                    @Override
-                    public void windowClosed(String actionId) {
-                        for (com.haulmont.cuba.gui.components.Window window : wm.getOpenWindows())
-                            window.setEnabled(true);
+                changePasswordWindow.addCloseListener(actionId -> {
+                    for (com.haulmont.cuba.gui.components.Window window : wm.getOpenWindows()) {
+                        window.setEnabled(true);
                     }
                 });
             }
@@ -172,15 +164,12 @@ public class DefaultApp extends App implements ConnectionListener, UserSubstitut
         clearSettingsCache();
 
         for (final AppUI ui : getAppUIs()) {
-            ui.accessSynchronously(new Runnable() {
-                @Override
-                public void run() {
-                    if (ui.isTestMode()) {
-                        ui.getTestIdManager().reset();
-                    }
-
-                    ui.showView(createAppWindow(ui));
+            ui.accessSynchronously(() -> {
+                if (ui.isTestMode()) {
+                    ui.getTestIdManager().reset();
                 }
+
+                ui.showView(createAppWindow(ui));
             });
         }
     }
