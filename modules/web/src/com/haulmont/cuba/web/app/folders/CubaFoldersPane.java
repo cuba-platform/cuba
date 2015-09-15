@@ -37,6 +37,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.event.Action;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import org.apache.commons.io.FileUtils;
@@ -620,16 +621,18 @@ public class CubaFoldersPane extends VerticalLayout {
     protected class FolderClickListener implements ItemClickEvent.ItemClickListener {
         @Override
         public void itemClick(ItemClickEvent event) {
-            Folder folder = (Folder) event.getItemId();
-            if (getItemClickable(folder)) {
-                openFolder((AbstractSearchFolder) event.getItemId());
-            } else if (isItemExpandable(folder)) {
-                Component tree = event.getComponent();
-                if (tree instanceof Tree) {
-                    if (((Tree) tree).isExpanded(folder))
-                        ((Tree) tree).collapseItem(folder);
-                    else
-                        ((Tree) tree).expandItem(folder);
+            if (event.getButton() == MouseEventDetails.MouseButton.LEFT) {
+                Folder folder = (Folder) event.getItemId();
+                if (getItemClickable(folder)) {
+                    openFolder((AbstractSearchFolder) event.getItemId());
+                } else if (isItemExpandable(folder)) {
+                    Component tree = event.getComponent();
+                    if (tree instanceof Tree) {
+                        if (((Tree) tree).isExpanded(folder))
+                            ((Tree) tree).collapseItem(folder);
+                        else
+                            ((Tree) tree).expandItem(folder);
+                    }
                 }
             }
         }
