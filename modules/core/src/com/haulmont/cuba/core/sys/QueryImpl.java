@@ -46,6 +46,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
     private List<View> views = new ArrayList<>();
     private Integer maxResults;
     private Integer firstResult;
+    private boolean queryById;
 
     private Collection<QueryMacroHandler> macroHandlers;
 
@@ -102,9 +103,9 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
             for (int i = 0; i < views.size(); i++) {
                 if (i == 0)
-                    fetchGroupMgr.setView(query, queryString, views.get(i));
+                    fetchGroupMgr.setView(query, queryString, views.get(i), queryById);
                 else
-                    fetchGroupMgr.addView(query, queryString, views.get(i));
+                    fetchGroupMgr.addView(query, queryString, views.get(i), queryById);
             }
 
             addMacroParams(query);
@@ -378,6 +379,10 @@ public class QueryImpl<T> implements TypedQuery<T> {
         checkState();
         this.queryString = queryString;
         return this;
+    }
+
+    public void setQueryById(boolean queryById) {
+        this.queryById = queryById;
     }
 
     protected static class Param {

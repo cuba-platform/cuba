@@ -22,16 +22,22 @@ public class ViewProperty implements Serializable {
 
     private View view;
 
-    private boolean lazy;
+    private FetchMode fetchMode = FetchMode.AUTO;
 
     public ViewProperty(String name, @Nullable View view) {
-        this(name, view, false);
+        this(name, view, FetchMode.AUTO);
     }
 
+    @Deprecated
     public ViewProperty(String name, @Nullable View view, boolean lazy) {
         this.name = name;
         this.view = view;
-        this.lazy = lazy;
+    }
+
+    public ViewProperty(String name, @Nullable View view, FetchMode fetchMode) {
+        this.name = name;
+        this.view = view;
+        this.fetchMode = fetchMode;
     }
 
     /**
@@ -50,12 +56,15 @@ public class ViewProperty implements Serializable {
     }
 
     /**
-     * Lazyness of a view property means that the persistence implementation will not try to fetch this property
-     * from the database by single SQL statement, but instead will fetch it later with additional SQL.
-     * @return  true if the property will be lazily fetched
+     * @return fetch mode if the property is a reference
      */
+    public FetchMode getFetchMode() {
+        return fetchMode;
+    }
+
+    @Deprecated
     public boolean isLazy() {
-        return lazy;
+        return false;
     }
 
     @Override

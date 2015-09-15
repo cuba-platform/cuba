@@ -112,6 +112,16 @@ public class MetaPropertyPath implements Serializable {
         return metaProperties[metaProperties.length - 1];
     }
 
+    /**
+     * Tests if this path is a nested property of the given path.
+     */
+    public boolean startsWith(MetaPropertyPath other) {
+        if (other.getPath().length > path.length)
+            return false;
+        MetaProperty[] subarray = Arrays.copyOf(this.metaProperties, other.getMetaProperties().length);
+        return Arrays.equals(subarray, other.metaProperties);
+    }
+
     @Override
     public String toString() {
         return new StrBuilder().appendWithSeparators(path, ".").toString();

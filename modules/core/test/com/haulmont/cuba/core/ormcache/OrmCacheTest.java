@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.UUID;
 
 import static com.haulmont.cuba.testsupport.TestSupport.reserialize;
-import static com.haulmont.cuba.testsupport.TestSupport.runAndFail;
+import static com.haulmont.cuba.testsupport.TestSupport.assertFail;
 import static org.junit.Assert.*;
 
 /**
@@ -164,7 +164,7 @@ public class OrmCacheTest {
         }
         User finalUser = reserialize(user);
         // fails on getting Group although the view is provided
-        runAndFail(finalUser::getGroup);
+        assertFail(finalUser::getGroup);
     }
 
     /**

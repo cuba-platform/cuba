@@ -15,11 +15,11 @@ import org.junit.runner.Description;
 public class TestNamePrinter extends TestWatcher {
 
     protected void starting(Description description) {
-        System.out.println(">>>> Starting " + description.getMethodName());
+        System.out.println(">>>\n>>> Starting " + description.getMethodName() + "\n>>>");
     }
 
     @Override
     protected void finished(Description description) {
-        System.out.println(">>>> Finished " + description.getMethodName());
+        System.out.println(">>>>\n>>> Finished " + description.getMethodName() + "\n>>>");
     }
 }

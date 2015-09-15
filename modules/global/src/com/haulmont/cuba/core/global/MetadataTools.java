@@ -148,6 +148,15 @@ public class MetadataTools {
     }
 
     /**
+     * @return true if the first MetaClass is equal or an ancestor of the second.
+     */
+    public boolean isAssignableFrom(MetaClass metaClass, MetaClass other) {
+        Preconditions.checkNotNullArgument(metaClass);
+        Preconditions.checkNotNullArgument(other);
+        return metaClass.equals(other) || metaClass.getDescendants().contains(other);
+    }
+
+    /**
      * Determine whether an object denoted by the given property is merged into persistence context together with the
      * owning object. This is true if the property is ManyToMany, or if it is OneToMany with certain CasacdeType defined.
      */

@@ -154,9 +154,15 @@ public class View implements Serializable {
      * Add a property to this view.
      * @param name  property name
      * @param view  a view for a reference attribute, or null
-     * @param lazy  see {@link com.haulmont.cuba.core.global.ViewProperty#isLazy()}
+     * @param fetchMode fetch mode for a reference attribute
      * @return      this view instance for chaining
      */
+    public View addProperty(String name, @Nullable View view, FetchMode fetchMode) {
+        properties.put(name, new ViewProperty(name, view, fetchMode));
+        return this;
+    }
+
+    @Deprecated
     public View addProperty(String name, @Nullable View view, boolean lazy) {
         properties.put(name, new ViewProperty(name, view, lazy));
         return this;

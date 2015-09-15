@@ -152,6 +152,7 @@ public class EntityManagerImpl implements EntityManager {
     private <T extends Entity> T findWithViews(MetaClass metaClass, Object key, List<View> views) {
         log.debug("find {} by id={}, views={}", metaClass.getJavaClass().getSimpleName(), key, views);
         Query query = createQuery("select e from " + metaClass.getName() + " e where e.id = ?1");
+        ((QueryImpl) query).setQueryById(true);
         query.setParameter(1, key);
         for (View view : views) {
             query.addView(view);

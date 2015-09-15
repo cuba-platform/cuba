@@ -232,7 +232,7 @@ public class AbstractViewRepository implements ViewRepository {
                 .includeSystemProperties(view.isIncludeSystemProperties());
         View copy = new View(viewParams);
         for (ViewProperty property : view.getProperties()) {
-            copy.addProperty(property.getName(), copyView(property.getView()), property.isLazy());
+            copy.addProperty(property.getName(), copyView(property.getView()), property.getFetchMode());
         }
 
         return copy;
@@ -460,7 +460,7 @@ public class AbstractViewRepository implements ViewRepository {
                     if (replacements == null) {
                         replacements = new LinkedList<>();
                     }
-                    replacements.add(new ViewProperty(property.getName(), replacementView, property.isLazy()));
+                    replacements.add(new ViewProperty(property.getName(), replacementView, property.getFetchMode()));
                 } else if (propertyView.getEntityClass() != null && !checked.contains(propertyView)) {
                     replaceOverridden(propertyView, replacementView, checked);
                 }
@@ -469,7 +469,7 @@ public class AbstractViewRepository implements ViewRepository {
 
         if (replacements != null) {
             for (ViewProperty replacement : replacements) {
-                root.addProperty(replacement.getName(), replacement.getView(), replacement.isLazy());
+                root.addProperty(replacement.getName(), replacement.getView(), replacement.getFetchMode());
             }
         }
     }
@@ -583,14 +583,12 @@ public class AbstractViewRepository implements ViewRepository {
                 loadView(rootElem, propElem, refView, visited);
             }
 
-            boolean lazy = Boolean.valueOf(propElem.attributeValue("lazy"));
-            if (lazy && metadata.getTools().isEmbedded(metaProperty)) {
-                log.warn(String.format(
-                        "Embedded property '%s' of class '%s' cannot have lazy view",
-                        metaProperty.getName(), metaClass.getName()));
-                lazy = false;
-            }
-            view.addProperty(propertyName, refView, lazy);
+            FetchMode fetchMode = FetchMode.AUTO;
+            String fetch = propElem.attributeValue("fetch");
+            if (fetch != null)
+                fetchMode = FetchMode.valueOf(fetch);
+
+            view.addProperty(propertyName, refView, fetchMode);
         }
     }
 

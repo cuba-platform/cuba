@@ -80,6 +80,8 @@ public class EclipseLinkLog extends AbstractSessionLog {
 
     @Override
     public boolean shouldLog(int level, String category) {
+        if (category == null)
+            return false;
         Level logbackLevel = levels.get(level);
         if (logbackLevel == null)
             return false;

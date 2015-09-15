@@ -34,7 +34,7 @@ public class TestSupport {
         return result;
     }
 
-    public static void runAndFail(Runnable runnable) {
+    public static void assertFail(Runnable runnable) {
         try {
             runnable.run();
             Assert.fail();
