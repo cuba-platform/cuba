@@ -14,10 +14,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.TableAggregationRow;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaScrollTableWidget;
-import com.vaadin.client.BrowserInfo;
-import com.vaadin.client.ComponentConnector;
-import com.vaadin.client.UIDL;
-import com.vaadin.client.WidgetUtil;
+import com.vaadin.client.*;
 import com.vaadin.shared.ui.table.TableConstants;
 
 import java.util.HashSet;
@@ -538,7 +535,20 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                 Style wrapperStyle = td.getFirstChildElement().getStyle();
                 WidgetUtil.setWidthExcludingPaddingAndBorder(td, totalSpannedWidth, 13, false);
 
-                int wrapperWidth = totalSpannedWidth;
+                int wrapperWidth;
+                ComputedStyle style = new ComputedStyle(td);
+                if (style.getPaddingWidth() > 1.0) {
+                    // this is applied for havana theme, because it has vertical paddings
+                    // for cell-container and width of TD element must be less, then whole row
+                    String tdWidthPx = td.getStyle().getWidth().replace("px", "");
+                    wrapperWidth = Integer.parseInt(tdWidthPx);
+                } else {
+                    // this is applied for halo theme, because it hasn't vertical paddings
+                    // for cell-container and width of TD element must be equal to whole row - 1px
+                    // 1px is the padding-left of :first-child
+                    wrapperWidth = totalSpannedWidth - 1;
+                }
+
                 if (BrowserInfo.get().isWebkit()
                         || BrowserInfo.get().isOpera10()) {
                             /*
