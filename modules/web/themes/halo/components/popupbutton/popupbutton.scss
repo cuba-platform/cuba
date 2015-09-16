@@ -28,7 +28,6 @@
       font-size: $v-font-size;
 
       @include valo-button-borderless-style;
-      @include valo-selection-item-style;
       height: $v-selection-item-height;
       display: block; // Firefox 24 needs this to make position: relative; work
 
