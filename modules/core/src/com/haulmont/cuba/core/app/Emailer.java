@@ -31,6 +31,7 @@ import javax.inject.Inject;
 import javax.mail.internet.AddressException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -41,7 +42,6 @@ import java.util.concurrent.RejectedExecutionException;
 @ManagedBean(EmailerAPI.NAME)
 public class Emailer implements EmailerAPI {
 
-    protected static final String BODY_STORAGE_ENCODING = "UTF-8";
     protected static final String BODY_FILE_EXTENSION = "txt";
 
     private Logger log = LoggerFactory.getLogger(Emailer.class);
@@ -602,18 +602,13 @@ public class Emailer implements EmailerAPI {
     }
 
     protected byte[] bodyTextToBytes(SendingMessage message) {
-        byte[] bodyBytes;
-        try {
-            bodyBytes = message.getContentText().getBytes(BODY_STORAGE_ENCODING);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        byte[] bodyBytes = message.getContentText().getBytes(StandardCharsets.UTF_8);
         return bodyBytes;
     }
 
     protected String bodyTextFromByteArray(byte[] bodyContent) {
         try {
-            return new String(bodyContent, BODY_STORAGE_ENCODING);
+            return new String(bodyContent, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }

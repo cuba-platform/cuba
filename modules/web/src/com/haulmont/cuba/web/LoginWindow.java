@@ -35,6 +35,7 @@ import javax.annotation.Nullable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -311,7 +312,7 @@ public class LoginWindow extends UIView {
             String login;
             String encodedLogin = app.getCookieValue(COOKIE_LOGIN) != null ? app.getCookieValue(COOKIE_LOGIN) : "";
             try {
-                login = URLDecoder.decode(encodedLogin, "UTF-8");
+                login = URLDecoder.decode(encodedLogin, StandardCharsets.UTF_8.name());
             } catch (UnsupportedEncodingException e) {
                 login = encodedLogin;
             }
@@ -496,7 +497,7 @@ public class LoginWindow extends UIView {
 
                         String encodedLogin;
                         try {
-                            encodedLogin = URLEncoder.encode(login, "UTF-8");
+                            encodedLogin = URLEncoder.encode(login, StandardCharsets.UTF_8.name());
                         } catch (UnsupportedEncodingException e) {
                             encodedLogin = login;
                         }

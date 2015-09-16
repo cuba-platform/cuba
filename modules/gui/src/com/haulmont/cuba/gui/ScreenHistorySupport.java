@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -116,7 +117,7 @@ public class ScreenHistorySupport {
                 if (value instanceof String /*|| value instanceof Integer || value instanceof Double*/
                         || value instanceof Boolean) {
                     try {
-                        sb.append(",").append(param.getKey()).append(":").append(URLEncoder.encode(value.toString(), "UTF-8"));
+                        sb.append(",").append(param.getKey()).append(":").append(URLEncoder.encode(value.toString(), StandardCharsets.UTF_8.name()));
                     } catch (UnsupportedEncodingException e) {
                         // impossible
                     }

@@ -14,10 +14,10 @@ import com.haulmont.cuba.core.sys.CubaMailSender;
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.net.QCodec;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import javax.activation.DataHandler;
@@ -30,6 +30,7 @@ import javax.mail.MessagingException;
 import javax.mail.Part;
 import javax.mail.internet.*;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author Alexander Budarov
@@ -39,8 +40,6 @@ import java.io.*;
 public class EmailSender implements EmailSenderAPI {
 
     private Logger log = LoggerFactory.getLogger(EmailSender.class);
-
-    private static final String UTF_8 = "UTF-8";
 
     protected JavaMailSender mailSender;
 
@@ -65,7 +64,7 @@ public class EmailSender implements EmailSenderAPI {
     protected MimeMessage createMimeMessage(SendingMessage sendingMessage) throws MessagingException {
         MimeMessage msg = mailSender.createMimeMessage();
         assignRecipient(sendingMessage, msg);
-        msg.setSubject(sendingMessage.getCaption(), UTF_8);
+        msg.setSubject(sendingMessage.getCaption(), StandardCharsets.UTF_8.name());
         msg.setSentDate(timeSource.currentTimestamp());
 
         assignFromAddress(sendingMessage, msg);
@@ -117,7 +116,7 @@ public class EmailSender implements EmailSenderAPI {
         for (InternetAddress internetAddress : internetAddresses) {
             if (StringUtils.isNotEmpty(internetAddress.getPersonal())) {
                 try {
-                    internetAddress.setPersonal(internetAddress.getPersonal(), UTF_8);
+                    internetAddress.setPersonal(internetAddress.getPersonal(), StandardCharsets.UTF_8.name());
                 } catch (UnsupportedEncodingException e) {
                     throw new MessagingException("Unsupported encoding type", e);
                 }
@@ -157,7 +156,8 @@ public class EmailSender implements EmailSenderAPI {
         }
 
         String disposition = attachment.getDisposition() != null ? attachment.getDisposition() : Part.INLINE;
-        String charset = MimeUtility.mimeCharset(attachment.getEncoding() != null ? attachment.getEncoding() : UTF_8);
+        String charset = MimeUtility.mimeCharset(attachment.getEncoding() != null ?
+                attachment.getEncoding() : StandardCharsets.UTF_8.name());
         String contentTypeValue = String.format("%s; charset=%s; name=%s", mimeType, charset, encodedFileName);
 
         MimeBodyPart attachmentPart = new MimeBodyPart();

@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -93,7 +94,7 @@ public class DesktopAppContextLoader extends AbstractAppContextLoader {
             try {
                 stream = getClass().getResourceAsStream(str);
                 if (stream != null) {
-                    Reader reader = new InputStreamReader(stream, "UTF-8");
+                    Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8.name());
                     properties.load(reader);
                 }
             } catch (IOException e) {
@@ -125,7 +126,7 @@ public class DesktopAppContextLoader extends AbstractAppContextLoader {
             AppContext.setProperty((String) key, value.trim());
         }
 
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (String key : AppContext.getPropertyNames()) {
             list.add(key + "=" + AppContext.getProperty(key));
         }

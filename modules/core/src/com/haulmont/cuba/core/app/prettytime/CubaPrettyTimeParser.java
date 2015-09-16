@@ -16,6 +16,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -26,8 +27,6 @@ import java.util.*;
 public class CubaPrettyTimeParser {
 
     public static final String NAME = "cuba_CubaPrettyTimeParser";
-
-    public static final String ENCODING = "UTF-8";
 
     @Inject
     protected ServerConfig serverConfig;
@@ -49,7 +48,7 @@ public class CubaPrettyTimeParser {
                     if (stream == null) {
                         throw new IllegalStateException("Resource is not found: " + fileName);
                     }
-                    InputStreamReader reader = new InputStreamReader(stream, ENCODING);
+                    InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8.name());
                     Properties properties = new Properties(){
 
                         private Set orderedKeySet = new LinkedHashSet();
@@ -99,5 +98,4 @@ public class CubaPrettyTimeParser {
         }
         return dates.get(dates.size() - 1);
     }
-
 }

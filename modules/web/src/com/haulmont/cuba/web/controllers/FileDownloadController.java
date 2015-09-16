@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.UUID;
 
@@ -99,7 +100,7 @@ public class FileDownloadController {
 
             String fileName;
             try {
-                fileName = URLEncoder.encode(fd.getName(), "UTF-8");
+                fileName = URLEncoder.encode(fd.getName(), StandardCharsets.UTF_8.name());
             } catch (UnsupportedEncodingException e) {
                 log.error(e.toString());
                 error(response);

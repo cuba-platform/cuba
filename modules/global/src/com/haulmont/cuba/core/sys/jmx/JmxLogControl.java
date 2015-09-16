@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +57,7 @@ public class JmxLogControl implements JmxLogControlMBean {
 
         String encodedFileName;
         try {
-            encodedFileName = URLEncoder.encode(fileName, "UTF-8");
+            encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }

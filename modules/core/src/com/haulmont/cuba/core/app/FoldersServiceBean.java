@@ -214,7 +214,7 @@ public class FoldersServiceBean implements FoldersService {
 
         ZipArchiveOutputStream zipOutputStream = new ZipArchiveOutputStream(byteArrayOutputStream);
         zipOutputStream.setMethod(ZipArchiveOutputStream.STORED);
-        zipOutputStream.setEncoding("UTF-8");
+        zipOutputStream.setEncoding(StandardCharsets.UTF_8.name());
         String xml = createXStream().toXML(folder);
         byte[] xmlBytes = xml.getBytes(StandardCharsets.UTF_8);
         ArchiveEntry zipEntryDesign = newStoredEntry("folder.xml", xmlBytes);

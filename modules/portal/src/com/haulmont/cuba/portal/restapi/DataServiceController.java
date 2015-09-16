@@ -18,9 +18,9 @@ import com.haulmont.cuba.portal.config.RestConfig;
 import com.haulmont.cuba.security.entity.EntityOp;
 import freemarker.template.TemplateException;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.json.JSONException;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.*;
 
@@ -302,7 +303,7 @@ public class DataServiceController {
         try {
             response.addHeader("Access-Control-Allow-Origin", "*");
             response.setContentType("text/html");
-            response.setCharacterEncoding("UTF-8");
+            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
             response.setLocale(userSessionSource.getLocale());
 
             String domainDescription = domainDescriptionService.getDomainDescription();

@@ -24,17 +24,17 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.crypto.Cipher;
 import javax.inject.Inject;
 import java.io.*;
 import java.math.BigInteger;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.RSAPublicKeySpec;
@@ -272,7 +272,7 @@ public final class UserSessions implements UserSessionsAPI, AppContext.Listener 
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.DECRYPT_MODE, publicKey);
             byte[] decoded = cipher.doFinal(bytes);
-            String str = new String(decoded, Charset.forName("UTF-8"));
+            String str = new String(decoded, StandardCharsets.UTF_8);
             String[] split = str.split("\\^");
 
             Object[] arr = new Object[7];

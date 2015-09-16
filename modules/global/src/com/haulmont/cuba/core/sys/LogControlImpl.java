@@ -25,6 +25,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -84,7 +85,7 @@ public class LogControlImpl implements LogControl {
                 randomAccessFile.seek(randomAccessFile.getFilePointer() - 1);
                 String line = readUtf8Line(randomAccessFile);
                 if (line != null) {
-                    str = new String(line.getBytes(), "UTF-8");
+                    str = new String(line.getBytes(), StandardCharsets.UTF_8.name());
                     sb.append(str).append("\n");
                 }
             }
@@ -215,6 +216,6 @@ public class LogControlImpl implements LogControl {
             return null;
         }
 
-        return new String(input.toByteArray(), "UTF-8");
+        return new String(input.toByteArray(), StandardCharsets.UTF_8.name());
     }
 }

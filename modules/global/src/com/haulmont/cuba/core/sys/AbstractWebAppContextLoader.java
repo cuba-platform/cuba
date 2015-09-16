@@ -21,6 +21,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 /**
@@ -105,7 +106,7 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
 
                 if (stream != null) {
                     log.trace("Loading app properties from " + str);
-                    try (Reader reader = new InputStreamReader(stream, "UTF-8")) {
+                    try (Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8.name())) {
                         properties.load(reader);
                     }
                 } else

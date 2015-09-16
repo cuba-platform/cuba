@@ -17,6 +17,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +59,7 @@ public class CubaHttpFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-        request.setCharacterEncoding("UTF-8");
+        request.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
         String requestURI = request.getRequestURI();
 

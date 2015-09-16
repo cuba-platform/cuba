@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -167,7 +168,7 @@ public class FileStorage implements FileStorageAPI {
         File logFile = new File(rootDir, "storage.log");
         try {
             try (FileOutputStream fos = new FileOutputStream(logFile, true)) {
-                IOUtils.write(sb.toString(), fos, "UTF-8");
+                IOUtils.write(sb.toString(), fos, StandardCharsets.UTF_8.name());
             }
         } catch (IOException e) {
             log.error("Unable to write log", e);

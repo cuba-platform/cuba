@@ -12,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import javax.mail.internet.MimeUtility;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 /**
@@ -108,9 +109,9 @@ public class CubaFileDownloader extends AbstractExtension {
 
             String fileName;
             if (isChrome) {
-                fileName = MimeUtility.encodeWord(stream.getFileName(), "UTF-8", "Q");
+                fileName = MimeUtility.encodeWord(stream.getFileName(), StandardCharsets.UTF_8.name(), "Q");
             } else {
-                fileName = URLEncoder.encode(stream.getFileName(), "UTF-8").replaceAll("\\+", "%20");
+                fileName = URLEncoder.encode(stream.getFileName(), StandardCharsets.UTF_8.name()).replaceAll("\\+", "%20");
             }
 
             if (stream.getParameter("Content-Disposition") == null) {

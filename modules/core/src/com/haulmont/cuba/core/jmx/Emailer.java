@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -100,7 +101,7 @@ public class Emailer implements EmailerMBean {
     public String sendTestEmail(String addresses) {
         try {
             String att = "<html><body><h1>Test attachment</h1></body></html>";
-            EmailAttachment emailAtt = EmailAttachment.createTextAttachment(att, "UTF-8", "test attachment.html");
+            EmailAttachment emailAtt = EmailAttachment.createTextAttachment(att, StandardCharsets.UTF_8.name(), "test attachment.html");
             emailer.sendEmail(addresses, "Test email", "<html><body><h1>Test email</h1></body></html>", emailAtt);
             return "Email to '" + addresses + "' sent succesfully";
         } catch (Exception e) {

@@ -16,6 +16,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -164,10 +165,7 @@ public class CreditsFrame extends AbstractFrame {
         sb.append("</ol>\n");
         sb.append("</body></html>\n");
 
-        try {
-            exportDisplay.show(new ByteArrayDataProvider(sb.toString().getBytes("UTF-8")), "Credits", ExportFormat.HTML);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        ByteArrayDataProvider dataProvider = new ByteArrayDataProvider(sb.toString().getBytes(StandardCharsets.UTF_8));
+        exportDisplay.show(dataProvider, "Credits", ExportFormat.HTML);
     }
 }

@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author krivopustov
@@ -59,7 +60,7 @@ public class ResourcesImpl extends ConfigurationResourceLoader implements Resour
             return null;
 
         try {
-            return IOUtils.toString(stream, "UTF-8");
+            return IOUtils.toString(stream, StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {

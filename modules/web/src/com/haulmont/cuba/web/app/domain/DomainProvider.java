@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Class providing domain model description. It can be called from the main menu.
@@ -26,10 +26,6 @@ public class DomainProvider implements Runnable {
         String description = service.getDomainDescription();
 
         WebExportDisplay exportDisplay = new WebExportDisplay(true);
-        try {
-            exportDisplay.show(description.getBytes("UTF-8"), "DomainDescription", ExportFormat.HTML);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        exportDisplay.show(description.getBytes(StandardCharsets.UTF_8), "DomainDescription", ExportFormat.HTML);
     }
 }

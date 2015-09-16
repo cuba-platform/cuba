@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -94,8 +95,8 @@ public class LoginServiceController {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST);
                     return;
                 }
-                String name = URLDecoder.decode(fields[0], "UTF-8");
-                String value = URLDecoder.decode(fields[1], "UTF-8");
+                String name = URLDecoder.decode(fields[0], StandardCharsets.UTF_8.name());
+                String value = URLDecoder.decode(fields[1], StandardCharsets.UTF_8.name());
                 name2value.put(name, value);
             }
             username = name2value.get("username");
@@ -189,7 +190,7 @@ public class LoginServiceController {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST);
                 return;
             }
-            sessionUUID = URLDecoder.decode(fields[1], "UTF-8");
+            sessionUUID = URLDecoder.decode(fields[1], StandardCharsets.UTF_8.name());
         } else {
             throw new IllegalStateException("Unsupported content type: " + contentType);
         }
