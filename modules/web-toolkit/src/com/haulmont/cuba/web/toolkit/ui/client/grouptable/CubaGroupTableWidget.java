@@ -538,12 +538,12 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                 int wrapperWidth;
                 ComputedStyle style = new ComputedStyle(td);
                 if (style.getPaddingWidth() > 1.0) {
-                    // this is applied for havana theme, because it has vertical paddings
+                    // this is applied for havana theme, because it has vertical padding
                     // for cell-container and width of TD element must be less, then whole row
                     String tdWidthPx = td.getStyle().getWidth().replace("px", "");
                     wrapperWidth = Integer.parseInt(tdWidthPx);
                 } else {
-                    // this is applied for halo theme, because it hasn't vertical paddings
+                    // this is applied for halo theme, because it hasn't vertical padding
                     // for cell-container and width of TD element must be equal to whole row - 1px
                     // 1px is the padding-left of :first-child
                     wrapperWidth = totalSpannedWidth - 1;
