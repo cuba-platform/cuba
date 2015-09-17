@@ -8,6 +8,10 @@
 @mixin halo-cuba-fileupload($primary-stylename: cuba-fileupload) {
   .#{$primary-stylename} {
     position: relative;
+
+    .v-button {
+      @include box-defaults;
+    }
   }
 
   .#{$primary-stylename}:hover .v-button {
