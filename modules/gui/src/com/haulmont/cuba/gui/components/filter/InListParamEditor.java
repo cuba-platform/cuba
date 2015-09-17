@@ -59,7 +59,8 @@ public class InListParamEditor extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
         getDialogParams()
-            .setWidth(theme.getInt("cuba.gui.filter.FilterListParamEditor.dialog.width"));
+            .setWidth(theme.getInt("cuba.gui.filter.FilterListParamEditor.dialog.width"))
+            .setResizable(true);
 
         values = new HashMap<>((Map<Object, String>) params.get("values"));
         collectionDatasource = (CollectionDatasource) params.get("collectionDatasource");
