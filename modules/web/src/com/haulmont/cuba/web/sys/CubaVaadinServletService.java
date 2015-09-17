@@ -134,7 +134,9 @@ public class CubaVaadinServletService extends VaadinServletService {
         List<RequestHandler> cubaRequestHandlers = new ArrayList<>();
 
         for (RequestHandler handler : requestHandlers) {
-            if (handler instanceof UidlRequestHandler) {
+            if (handler instanceof ServletUIInitHandler) {
+                cubaRequestHandlers.add(new CubaServletUiInitHandler());
+            } else if (handler instanceof UidlRequestHandler) {
                 // replace UidlRequestHandler with CubaUidlRequestHandler
                 cubaRequestHandlers.add(new CubaUidlRequestHandler());
             } else if (handler instanceof PublishedFileHandler) {
@@ -143,7 +145,7 @@ public class CubaVaadinServletService extends VaadinServletService {
                 cubaRequestHandlers.add(new CubaPublishedFileHandler());
             } else if (handler instanceof ServletBootstrapHandler) {
                 // replace ServletBootstrapHandler with CubaApplicationBootstrapHandler
-                cubaRequestHandlers.add(new CubaApplicationBootstrapHandler());
+                cubaRequestHandlers.add(new CubaServletBootstrapHandler());
             } else if (handler instanceof HeartbeatHandler) {
                 // replace HeartbeatHandler with CubaHeartbeatHandler
                 cubaRequestHandlers.add(new CubaHeartbeatHandler());
@@ -227,7 +229,7 @@ public class CubaVaadinServletService extends VaadinServletService {
     }
 
     // Add ability to redirect to base application URL if we have unparsable path tail
-    protected static class CubaApplicationBootstrapHandler extends ServletBootstrapHandler {
+    protected static class CubaServletBootstrapHandler extends ServletBootstrapHandler {
 
         @Override
         public boolean handleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response)
@@ -273,6 +275,15 @@ public class CubaVaadinServletService extends VaadinServletService {
     // Set security context to AppContext for normal UI requests
     protected static class CubaUidlRequestHandler extends UidlRequestHandler {
 
+        @Override
+        public boolean synchronizedHandleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response)
+                throws IOException {
+            return withUserSession(session, () -> super.synchronizedHandleRequest(session, request, response));
+        }
+    }
+
+    // Set security context to AppContext for UI init requests
+    protected static class CubaServletUiInitHandler extends ServletUIInitHandler {
         @Override
         public boolean synchronizedHandleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response)
                 throws IOException {
