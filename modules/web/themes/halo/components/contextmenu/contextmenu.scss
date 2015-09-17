@@ -11,6 +11,13 @@
 
     .v-button {
       @include valo-button-borderless-style;
+      line-height: $v-selection-item-height;
+      padding: 0 $v-selection-item-padding-horizontal*2 0 $v-selection-item-padding-horizontal;
+      @if $v-selection-item-border-radius > 0 {
+        border-radius: $v-selection-item-border-radius;
+      }
+      font-weight: $v-selection-item-font-weight;
+      white-space: nowrap;
       height: $v-selection-item-height;
       display: block; // Firefox 24 needs this to make position: relative; work
 
@@ -20,6 +27,12 @@
 
     .v-button:hover {
       @include valo-selection-item-selected-style;
+    }
+
+    .v-button.v-disabled:hover {
+      background: transparent;
+      color: inherit;
+      text-shadow: none;
     }
   }
 }
