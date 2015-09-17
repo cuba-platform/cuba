@@ -59,7 +59,7 @@ def springSecurityVersion = '4.0.2.RELEASE'
 
 def servletApi = 'org.apache.tomcat:tomcat-servlet-api:8.0.26'
 def groovyArtifact = 'org.codehaus.groovy:groovy-all:2.4.4'
-def poi = 'org.apache.poi:poi:3.12.cuba.1'
+def poi = 'com.haulmont.thirdparty:poi:3.12.cuba.1'
 def postgres = 'org.postgresql:postgresql:9.4-1201-jdbc41'
 def hsqldb = 'org.hsqldb:hsqldb:2.3.3'
 
