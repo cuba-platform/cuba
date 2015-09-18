@@ -285,7 +285,6 @@ public class ViewTest extends CubaTestCase {
             q.setView(view);
 
             User user = (User) q.getSingleResult();
-            em.fetch(user, view);
 
             tx.commit();
             user = reserialize(user);

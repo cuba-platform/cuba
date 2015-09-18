@@ -56,10 +56,6 @@ public class EntityFactory extends TypeFactory {
             Class javaClass = info.getMetaClass().getJavaClass();
             if (view != null) {
                 entity = em.find(javaClass, info.getId(), view);
-
-                if (entity != null) {
-                    em.fetch(entity, view);
-                }
             } else {
                 entity = em.find(javaClass, info.getId());
             }

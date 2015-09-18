@@ -25,12 +25,6 @@ public interface EntityManager {
      * Make an instance managed and persistent.
      *
      * @param entity entity instance
-     * @throws javax.persistence.EntityExistsException
-     *                                  if the entity already exists.
-     *                                  (The EntityExistsException may be thrown when the persist
-     *                                  operation is invoked, or the EntityExistsException or
-     *                                  another PersistenceException may be thrown at flush or
-     *                                  commit time.)
      * @throws IllegalArgumentException if not an entity
      */
     void persist(Entity entity);
@@ -41,8 +35,7 @@ public interface EntityManager {
      *
      * @param entity    entity instance
      * @return the instance that the state was merged to
-     * @throws IllegalArgumentException if instance is not an
-     *                                  entity or is a removed entity
+     * @throws IllegalArgumentException if instance is not an entity or is a removed entity
      */
     <T extends Entity> T merge(T entity);
 
@@ -59,42 +52,40 @@ public interface EntityManager {
      * Find by primary key.
      *
      * @param entityClass   entity class
-     * @param primaryKey    entity id
+     * @param id            entity id
      * @return the found entity instance or null if the entity does not exist
-     * @throws IllegalArgumentException if the first argument does
-     *                                  not denote an entity type or the second argument is not a valid type for that entity's primary key
+     * @throws IllegalArgumentException if the first argument does not denote an entity type or the second argument
+     * is not a valid type for that entity's primary key
      */
     @Nullable
-    <T extends Entity<K>, K> T find(Class<T> entityClass, K primaryKey);
+    <T extends Entity<K>, K> T find(Class<T> entityClass, K id);
 
     /**
      * Find by primary key.
-     * <p/> All non-lazy view properties contained in a combined view are eagerly fetched.
      *
      * @param entityClass   entity class
-     * @param primaryKey    entity id
+     * @param id            entity id
      * @param views         array of views
      * @return the found entity instance or null if the entity does not exist
-     * @throws IllegalArgumentException if the first argument does
-     *                                  not denote an entity type or the second argument is not a valid type for that entity's primary key
+     * @throws IllegalArgumentException if the first argument does not denote an entity type or the second argument
+     * is not a valid type for that entity's primary key
      */
     @Nullable
-    <T extends Entity<K>, K> T find(Class<T> entityClass, K primaryKey, View... views);
+    <T extends Entity<K>, K> T find(Class<T> entityClass, K id, View... views);
 
     /**
      * Find by primary key.
-     * <p/> All non-lazy view properties contained in a combined view are eagerly fetched.
      *
      * @param entityClass   entity class
-     * @param primaryKey    entity id
+     * @param id            entity id
      * @param viewNames     array of view names for this entity
      *
      * @return the found entity instance or null if the entity does not exist
-     * @throws IllegalArgumentException if the first argument does
-     *                                  not denote an entity type or the second argument is not a valid type for that entity's primary key
+     * @throws IllegalArgumentException if the first argument does not denote an entity type or the second argument
+     * is not a valid type for that entity's primary key
      */
     @Nullable
-    <T extends Entity<K>, K> T find(Class<T> entityClass, K primaryKey, String... viewNames);
+    <T extends Entity<K>, K> T find(Class<T> entityClass, K id, String... viewNames);
 
     /**
      * Get an instance, whose state may be lazily fetched.<br>
@@ -105,15 +96,14 @@ public interface EntityManager {
      * be available upon detachment, unless it was accessed by the
      * application while the entity manager was open.
      *
-     * @param entityClass entity class
-     * @param primaryKey entity id
+     * @param entityClass   entity class
+     * @param id            entity id
      * @return the found entity instance
-     * @throws IllegalArgumentException if the first argument does
-     *                                  not denote an entity type or the second argument is not a valid type for that entity's primary key
-     * @throws javax.persistence.EntityNotFoundException
-     *                                  if the entity state cannot be accessed
+     * @throws IllegalArgumentException if the first argument does not denote an entity type or the second argument
+     * is not a valid type for that entity's primary key
+     * @throws javax.persistence.EntityNotFoundException if the entity state cannot be accessed
      */
-    <T extends Entity<K>, K> T getReference(Class<T> entityClass, K primaryKey);
+    <T extends Entity<K>, K> T getReference(Class<T> entityClass, K id);
 
     /**
      * Create an instance of Query for executing a Java Persistence query language statement.
@@ -141,16 +131,14 @@ public interface EntityManager {
     <T> TypedQuery<T> createQuery(String qlString, Class<T> resultClass);
 
     /**
-     * Create an instance of Query for executing
-     * a native SQL statement, e.g., for update or delete.
+     * Create an instance of Query for executing a native SQL statement, e.g., for update or delete.
      *
      * @return the new query instance
      */
     Query createNativeQuery();
 
     /**
-     * Create an instance of Query for executing
-     * a native SQL statement, e.g., for update or delete.<br>
+     * Create an instance of Query for executing a native SQL statement, e.g., for update or delete.<br>
      * Native Query doesn't support named parameters.
      *
      * @param sqlString a native SQL query string
@@ -159,8 +147,7 @@ public interface EntityManager {
     Query createNativeQuery(String sqlString);
 
     /**
-     * Create an instance of Query for executing
-     * a native SQL statement and map its result to an entity.<br>
+     * Create an instance of Query for executing a native SQL statement and map its result to an entity.<br>
      * Native Query doesn't support named parameters.
      *
      * @param sqlString a native SQL query string
@@ -170,31 +157,8 @@ public interface EntityManager {
     <T> TypedQuery<T> createNativeQuery(String sqlString, Class<T> resultClass);
 
     /**
-     * Ensure all view fields, including lazy, are fetched.
-     * @param entity    entity instance
-     * @param view      view instance that may be different from views currently set on this EntityManager
-     * @throws IllegalArgumentException if the entity is in detached state
-     */
-    @Deprecated
-    void fetch(Entity entity, View view);
-
-    /**
      * Reload an entity from DB according to a combined view defined by the given array of views.
-     * <p/> Ensures all combined view attributes, including lazy, are loaded.
-     * <p/> If there is a managed entity with the given id in the current persistence context, the method returns it.
-     * Otherwise the method returns a new object instance.
-     *
-     * @param entityClass   entity class
-     * @param id            entity id
-     * @param viewNames     array of view names
-     * @return              reloaded entity instance, or null if it doesn't exist or has been deleted
-     */
-    @Nullable
-    <T extends Entity<K>, K> T reload(Class<T> entityClass, K id, String... viewNames);
-
-    /**
-     * Reload an entity from DB according to a combined view defined by the given array of views.
-     * <p/> Ensures all combined view attributes, including lazy, are loaded.
+     * <p/> Ensures all combined view attributes are loaded.
      * <p/> If the given entity is in managed state, the method returns the same object instance. If the entity is
      * detached, the method returns a new object instance.
      *
@@ -224,7 +188,7 @@ public interface EntityManager {
 
     /**
      * @return database connection associated with the current transaction.
-     * <p/> Don't close this connection after use, it will be automatically closed on transaction end.
+     * <p> Don't close this connection after use, it will be automatically closed on transaction end.
      */
     Connection getConnection();
 
@@ -232,4 +196,18 @@ public interface EntityManager {
      * @return  underlying implementation provided by ORM
      */
     javax.persistence.EntityManager getDelegate();
+
+    /**
+     * DEPRECATED since v.6
+     */
+    @Deprecated
+    void fetch(Entity entity, View view);
+
+    /**
+     * DEPRECATED since v.6.
+     * Use {@link #find(Class, Object, String...)}
+     */
+    @Deprecated
+    @Nullable
+    <T extends Entity<K>, K> T reload(Class<T> entityClass, K id, String... viewNames);
 }

@@ -124,29 +124,35 @@ public class EntityManagerImpl implements EntityManager {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends Entity<K>, K> T find(Class<T> entityClass, K key) {
-        log.debug("find {} by id={}", entityClass.getSimpleName(), key);
+    public <T extends Entity<K>, K> T find(Class<T> entityClass, K id) {
+        Preconditions.checkNotNullArgument(entityClass, "entityClass is null");
+        Preconditions.checkNotNullArgument(id, "id is null");
+
+        log.debug("find {} by id={}", entityClass.getSimpleName(), id);
         MetaClass metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(entityClass);
         Class<T> javaClass = metaClass.getJavaClass();
 
-        return delegate.find(javaClass, key);
+        return delegate.find(javaClass, id);
     }
 
     @Nullable
     @Override
-    public <T extends Entity<K>, K> T find(Class<T> entityClass, K primaryKey, View... views) {
+    public <T extends Entity<K>, K> T find(Class<T> entityClass, K id, View... views) {
+        Preconditions.checkNotNullArgument(entityClass, "entityClass is null");
+        Preconditions.checkNotNullArgument(id, "id is null");
+
         MetaClass metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(entityClass);
-        return findWithViews(metaClass, primaryKey, Arrays.asList(views));
+        return findWithViews(metaClass, id, Arrays.asList(views));
     }
 
     @Nullable
     @Override
-    public <T extends Entity<K>, K> T find(Class<T> entityClass, K primaryKey, String... viewNames) {
+    public <T extends Entity<K>, K> T find(Class<T> entityClass, K id, String... viewNames) {
         View[] viewArray = new View[viewNames.length];
         for (int i = 0; i < viewNames.length; i++) {
             viewArray[i] = metadata.getViewRepository().getView(entityClass, viewNames[i]);
         }
-        return find(entityClass, primaryKey, viewArray);
+        return find(entityClass, id, viewArray);
     }
 
     private <T extends Entity> T findWithViews(MetaClass metaClass, Object key, List<View> views) {
@@ -162,10 +168,10 @@ public class EntityManagerImpl implements EntityManager {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends Entity<K>, K> T getReference(Class<T> clazz, K key) {
+    public <T extends Entity<K>, K> T getReference(Class<T> clazz, K id) {
         Class<T> effectiveClass = metadata.getExtendedEntities().getEffectiveClass(clazz);
 
-        return delegate.getReference(effectiveClass, key);
+        return delegate.getReference(effectiveClass, id);
     }
 
     @Override
@@ -219,15 +225,6 @@ public class EntityManagerImpl implements EntityManager {
         Preconditions.checkNotNullArgument(id, "id is null");
 
         T entity = find(entityClass, id, viewNames);
-        if (entity != null) {
-            for (String viewName : viewNames) {
-                View view = metadata.getViewRepository().getView(entityClass, viewName);
-                if (view.hasLazyProperties()) {
-                    fetch(entity, view);
-                }
-            }
-        }
-
         return entity;
     }
 
@@ -237,7 +234,7 @@ public class EntityManagerImpl implements EntityManager {
     public <T extends Entity> T reload(T entity, String... viewNames) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
 
-        Entity resultEntity = reload(entity.getClass(), entity.getId(), viewNames);
+        Entity resultEntity = find(entity.getClass(), entity.getId(), viewNames);
         return (T) resultEntity;
     }
 

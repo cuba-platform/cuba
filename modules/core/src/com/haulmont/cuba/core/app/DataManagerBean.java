@@ -59,9 +59,6 @@ public class DataManagerBean implements DataManager {
     protected Persistence persistence;
 
     @Inject
-    protected DataCacheAPI dataCacheAPI;
-
-    @Inject
     protected UserSessionSource userSessionSource;
 
     @Inject
@@ -101,10 +98,6 @@ public class DataManagerBean implements DataManager {
             List<E> resultList = query.getResultList();
             if (!resultList.isEmpty())
                 result = resultList.get(0);
-
-            if (result != null && context.getView() != null) {
-                em.fetch(result, context.getView());
-            }
 
             if (result instanceof BaseGenericIdEntity && context.getLoadDynamicAttributes()) {
                 fetchDynamicAttributes(Collections.singletonList((BaseGenericIdEntity) result));
@@ -488,7 +481,7 @@ public class DataManagerBean implements DataManager {
                 query.setMaxResults(contextQuery.getMaxResults());
         }
 
-        if (!dataCacheAPI.isStoreCacheEnabled() && context.getView() != null) {
+        if (context.getView() != null) {
             query.setView(context.getView());
         }
 

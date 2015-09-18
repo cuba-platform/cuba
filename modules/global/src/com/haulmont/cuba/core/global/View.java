@@ -231,16 +231,10 @@ public class View implements Serializable {
     }
 
     /**
-     * Determine if the whole view graph contains a lazy property.
-     * @see com.haulmont.cuba.core.global.ViewProperty#isLazy()
+     * DEPRECATED since v.6
      */
+    @Deprecated
     public boolean hasLazyProperties() {
-        for (ViewProperty property : getProperties()) {
-            if (property.isLazy())
-                return true;
-            if (property.getView() != null && property.getView().hasLazyProperties())
-                return true;
-        }
         return false;
     }
 }

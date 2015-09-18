@@ -99,8 +99,6 @@
                        value-ref="cuba_PersistenceManagerMBean"/>
                 <entry key="${cuba.webContextName}.cuba:type=ConfigStorage"
                        value-ref="cuba_ConfigStorageMBean"/>
-                <entry key="${cuba.webContextName}.cuba:type=DataCache"
-                       value-ref="cuba_DataCacheMBean"/>
                 <entry key="${cuba.webContextName}.cuba:type=UserSessions"
                        value-ref="cuba_UserSessionsMBean"/>
                 <entry key="${cuba.webContextName}.cuba:type=UniqueNumbers"

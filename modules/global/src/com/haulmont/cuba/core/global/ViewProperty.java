@@ -62,6 +62,9 @@ public class ViewProperty implements Serializable {
         return fetchMode;
     }
 
+    /**
+     * DEPRECATED since v.6
+     */
     @Deprecated
     public boolean isLazy() {
         return false;
