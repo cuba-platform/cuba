@@ -146,6 +146,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected HBoxLayout filtersPopupBox;
     protected Button searchBtn;
     protected Component controlsLayoutGap;
+    protected Object paramEditComponentToFocus;
 
     protected String caption;
     protected int maxResults = -1;
@@ -164,6 +165,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected String initialWindowCaption;
     protected String conditionsLocation;
     protected boolean filterActionsCreated = false;
+    protected boolean delayedFocus;
 
     protected SaveAsAction saveAsAction;
     protected EditAction editAction;
@@ -309,7 +311,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         ftsSearchCriteriaField.setAlignment(Component.Alignment.MIDDLE_LEFT);
         ftsSearchCriteriaField.setWidth(theme.get("cuba.gui.filter.ftsSearchCriteriaField.width"));
         ftsSearchCriteriaField.setInputPrompt(getMessage("Filter.enterSearchPhrase"));
-        ftsSearchCriteriaField.requestFocus();
+        paramEditComponentToFocus = ftsSearchCriteriaField;
         filterHelper.addShortcutListener(ftsSearchCriteriaField, createFtsSearchShortcutListener());
         controlsLayout.add(ftsSearchCriteriaField);
 
@@ -475,6 +477,13 @@ public class FilterDelegateImpl implements FilterDelegate {
         setFilterActionsEnabled();
         setFilterActionsVisible();
         fillConditionsLayout(ConditionsFocusType.FIRST);
+        if (delayedFocus) {
+            delayedFocus = false;
+            requestFocus();
+        } else {
+            requestFocusToParamEditComponent();
+        }
+
         setConditionsLayoutVisible(true);
 
         if (!filterEntity.equals(adHocFilter) && (BooleanUtils.isTrue(filterEntity.getApplyDefault()) ||
@@ -684,6 +693,8 @@ public class FilterDelegateImpl implements FilterDelegate {
             }
         }
 
+        paramEditComponentToFocus = null;
+
         if (hasGroups && conditions.getRootNodes().size() > 1) {
             GroupBoxLayout groupBox = componentsFactory.createComponent(GroupBoxLayout.class);
             groupBox.setWidth("100%");
@@ -799,11 +810,11 @@ public class FilterDelegateImpl implements FilterDelegate {
             switch (conditionsFocusType) {
                 case FIRST:
                     if (firstParamEditor != null)
-                        firstParamEditor.requestFocus();
+                        paramEditComponentToFocus = firstParamEditor;
                     break;
                 case LAST:
                     if (lastParamEditor != null)
-                        lastParamEditor.requestFocus();
+                        paramEditComponentToFocus = lastParamEditor;
             }
         }
 
@@ -1762,6 +1773,29 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     @Override
+    public void requestFocus() {
+        if (filterEntity == null) {
+            delayedFocus = true;
+            return;
+        }
+        if (paramEditComponentToFocus != null) {
+            requestFocusToParamEditComponent();
+        } else if (filtersLookupDisplayed) {
+            filtersLookup.requestFocus();
+        } else if (filtersPopupDisplayed) {
+            filtersPopupButton.requestFocus();
+        }
+    }
+
+    protected void requestFocusToParamEditComponent() {
+        if (paramEditComponentToFocus instanceof ParamEditor) {
+            ((ParamEditor) paramEditComponentToFocus).requestFocus();
+        } else if (paramEditComponentToFocus instanceof TextField) {
+            ((TextField) paramEditComponentToFocus).requestFocus();
+        }
+    }
+
+    @Override
     public void addExpandedStateChangeListener(FDExpandedStateChangeListener listener) {
         if (expandedStateChangeListeners == null) {
             expandedStateChangeListeners = new ArrayList<>();
@@ -1802,6 +1836,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected void addCondition(AbstractCondition condition) {
         conditions.getRootNodes().add(new Node<>(condition));
         fillConditionsLayout(ConditionsFocusType.LAST);
+        requestFocusToParamEditComponent();
         updateFilterModifiedIndicator();
         condition.addListener(new AbstractCondition.Listener() {
             @Override
@@ -1993,6 +2028,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                     initFilterSelectComponents();
                     updateWindowCaption();
                     fillConditionsLayout(ConditionsFocusType.FIRST);
+                    requestFocusToParamEditComponent();
                     updateFilterModifiedIndicator();
                 }
             });

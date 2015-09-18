@@ -98,6 +98,8 @@ public interface FilterDelegate {
     boolean isCollapsable();
     void setCollapsable(boolean collapsable);
 
+    void requestFocus();
+
     class FDExpandedStateChangeEvent {
         private final FilterDelegate delegate;
         private final boolean expanded;

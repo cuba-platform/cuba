@@ -278,6 +278,11 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     }
 
     @Override
+    public void requestFocus() {
+        delegate.requestFocus();
+    }
+
+    @Override
     public void addListener(ExpandListener listener) {
         addExpandedStateChangeListener(new ComponentExpandCollapseListenerWrapper(listener));
     }
