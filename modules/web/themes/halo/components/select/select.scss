@@ -7,7 +7,7 @@
   // todo artamonov remove after fix #PL-5226
   .#{$primary-stylename}-suggestmenu {
     .v-ie9 & {
-      // overflow-y: visible !important;
+      overflow-y: visible !important;
     }
   }
 
