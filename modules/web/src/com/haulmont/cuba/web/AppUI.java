@@ -283,7 +283,7 @@ public class AppUI extends UI implements ErrorHandler {
     }
 
     /**
-     * For internal use only.
+     * INTERNAL.
      */
     public void discardAccumulatedEvents() {
         getRpcProxy(AppUIClientRpc.class).discardAccumulatedEvents();

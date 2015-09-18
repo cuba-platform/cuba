@@ -71,42 +71,42 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
         out.defaultWriteObject();
     }
 
-    /** For internal use. */
+    /** INTERNAL. */
     public boolean __new() {
         return __new;
     }
 
-    /** For internal use. */
+    /** INTERNAL. */
     public void __new(boolean cubaNew) {
         this.__new = cubaNew;
     }
 
-    /** For internal use. */
+    /** INTERNAL. */
     public boolean __managed() {
         return __managed;
     }
 
-    /** For internal use. */
+    /** INTERNAL. */
     public void __managed(boolean cubaManaged) {
         this.__managed = cubaManaged;
     }
 
-    /** For internal use. */
+    /** INTERNAL. */
     public boolean __detached() {
         return __detached;
     }
 
-    /** For internal use. */
+    /** INTERNAL. */
     public void __detached(boolean detached) {
         this.__detached = detached;
     }
 
-    /** For internal use. */
+    /** INTERNAL. */
     public boolean __removed() {
         return __removed;
     }
 
-    /** For internal use. */
+    /** INTERNAL. */
     public void __removed(boolean removed) {
         this.__removed = removed;
     }

@@ -131,7 +131,7 @@ public interface Window extends Frame, Component.HasCaption {
      */
     boolean close(String actionId, boolean force);
 
-    /** For internal use only. Don't call from application code. */
+    /** INTERNAL. Don't call from application code. */
     void closeAndRun(String actionId, Runnable runnable);
 
     /**
@@ -171,7 +171,7 @@ public interface Window extends Frame, Component.HasCaption {
      */
     WindowManager getWindowManager();
 
-    /** For internal use only. Don't call from application code. */
+    /** INTERNAL. Don't call from application code. */
     void setWindowManager(WindowManager windowManager);
 
 
@@ -360,9 +360,9 @@ public interface Window extends Frame, Component.HasCaption {
     }
 
     /**
+     * INTERNAL.
      * Interface implemented by screen controllers which are not themselves windows,
      * but has {@link Window} interface and delegate work to wrapped real window.
-     * <p/> For internal use only.
      */
     interface Wrapper {
         Window getWrappedWindow();

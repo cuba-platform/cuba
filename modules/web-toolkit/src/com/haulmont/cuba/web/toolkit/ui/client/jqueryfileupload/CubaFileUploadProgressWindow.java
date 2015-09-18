@@ -572,7 +572,7 @@ public class CubaFileUploadProgressWindow extends VOverlay implements KeyDownHan
         return curtain;
     }
 
-    /** For internal use only. May be removed or replaced in the future. */
+    /** INTERNAL. May be removed or replaced in the future. */
     public void setResizable(boolean resizability) {
         resizable = resizability;
         if (resizability) {

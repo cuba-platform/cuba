@@ -118,7 +118,7 @@ public final class Datatypes {
         return format;
     }
 
-    /** For internal use only. Don't call from application code. */
+    /** INTERNAL. Don't call from application code. */
     public static void setFormatStrings(Locale locale, FormatStrings formatStrings) {
         instance.putFormat(locale, formatStrings);
     }

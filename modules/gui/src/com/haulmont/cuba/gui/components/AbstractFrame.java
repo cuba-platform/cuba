@@ -41,7 +41,7 @@ public class AbstractFrame implements Frame, Component.Wrapper, Component.Ordere
     public AbstractFrame() {
     }
 
-    /** For internal use only. Don't call from application code. */
+    /** INTERNAL. Don't call from application code. */
     public void setWrappedFrame(Frame frame) {
         this.frame = frame;
     }
@@ -333,7 +333,7 @@ public class AbstractFrame implements Frame, Component.Wrapper, Component.Ordere
         return (T) _companion;
     }
 
-    /** For internal use only. Don't call from application code. */
+    /** INTERNAL. Don't call from application code. */
     public void setCompanion(Object companion) {
         this._companion = companion;
     }

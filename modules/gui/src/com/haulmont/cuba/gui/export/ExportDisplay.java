@@ -55,6 +55,6 @@ public interface ExportDisplay {
      */
     void show(FileDescriptor fileDescriptor);
 
-    /** For internal use only. Don't call from application code. */
+    /** INTERNAL. Don't call from application code. */
     void setFrame(Frame frame);
 }

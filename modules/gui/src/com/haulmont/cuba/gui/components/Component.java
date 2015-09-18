@@ -46,8 +46,9 @@ public interface Component {
      * @return Parent of component.
      */
     Component getParent();
+
     /**
-     * This method for internal use only. <br/>
+     * INTERNAL.<br/>
      *
      * {@link Component.Container#add(Component)} is normally used for adding components
      * to a parent and the used method will call this method implicitly.
@@ -57,7 +58,7 @@ public interface Component {
     void setParent(Component parent);
 
     String getDebugId();
-    /** For internal use only. Managed by debug Id system. */
+    /** INTERNAL. Managed by debug Id system. */
     void setDebugId(String id);
 
     /** Is component in enabled state? */

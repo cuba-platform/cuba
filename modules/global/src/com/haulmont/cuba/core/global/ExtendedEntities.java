@@ -141,8 +141,7 @@ public class ExtendedEntities {
     }
 
     /**
-     * Import replaced meta class from metadata. </br>
-     * CAUTION: For internal use only!
+     * INTERNAL. Import replaced meta class from metadata.
      */
     public void registerReplacedMetaClass(MetaClass metaClass) {
         replacedMetaClasses.put(metaClass.getJavaClass(), metaClass);

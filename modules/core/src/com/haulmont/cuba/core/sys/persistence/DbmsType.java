@@ -9,7 +9,8 @@ import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * System level wrapper around DBMS-related application properties. For internal use only.
+ * INTERNAL.
+ * System level wrapper around DBMS-related application properties.
  *
  * <p>For data conversion on the middleware use {@link DbTypeConverter} obtained from
  * {@link com.haulmont.cuba.core.Persistence} bean.

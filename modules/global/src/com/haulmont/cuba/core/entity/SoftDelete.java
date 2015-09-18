@@ -14,13 +14,29 @@ import java.util.Date;
  */
 public interface SoftDelete {
 
+    /**
+     * Returns true if the entity is deleted.
+     */
     Boolean isDeleted();
 
+    /**
+     * Returns deletion timestamp or null if not deleted.
+     */
     Date getDeleteTs();
 
-    void setDeleteTs(Date deleteTs);
-
+    /**
+     * Returns login name of the user who deleted the entity
+     * or null if not deleted.
+     */
     String getDeletedBy();
 
+    /**
+     * INTERNAL. Sets soft deletion timestamp.
+     */
+    void setDeleteTs(Date deleteTs);
+
+    /**
+     * INTERNAL. Sets login name of the user who deleted the entity.
+     */
     void setDeletedBy(String deletedBy);
 }

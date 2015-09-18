@@ -39,7 +39,7 @@ public interface Frame
      */
     FrameContext getContext();
 
-    /** For internal use only. Don't call from application code. */
+    /** INTERNAL. Don't call from application code. */
     void setContext(FrameContext ctx);
 
     /**
@@ -47,7 +47,7 @@ public interface Frame
      */
     DsContext getDsContext();
 
-    /** For internal use only. Don't call from application code. */
+    /** INTERNAL. Don't call from application code. */
     void setDsContext(DsContext dsContext);
 
     /**
@@ -61,10 +61,10 @@ public interface Frame
      */
     void setMessagesPack(String name);
 
-    /** For internal use only. Don't call from application code. */
+    /** INTERNAL. Don't call from application code. */
     void registerComponent(Component component);
 
-    /** For internal use only. Don't call from application code. */
+    /** INTERNAL. Don't call from application code. */
     @Nullable
     Component getRegisteredComponent(String id);
 

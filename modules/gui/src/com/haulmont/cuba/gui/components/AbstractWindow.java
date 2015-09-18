@@ -104,7 +104,7 @@ public class AbstractWindow extends AbstractFrame
         ((Window) frame).setDescription(description);
     }
 
-    /** For internal use only. Don't call from application code. */
+    /** INTERNAL. Don't call from application code. */
     @Override
     public Window getWrappedWindow() {
         return (Window) frame;
@@ -237,7 +237,7 @@ public class AbstractWindow extends AbstractFrame
         return ((Window) frame).close(actionId, force);
     }
 
-    /** For internal use only. Don't call or override in application code. */
+    /** INTERNAL. Don't call or override in application code. */
     @Override
     public void closeAndRun(String actionId, Runnable runnable) {
         ((Window) frame).closeAndRun(actionId, runnable);
