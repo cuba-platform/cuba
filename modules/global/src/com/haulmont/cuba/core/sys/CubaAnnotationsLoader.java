@@ -39,16 +39,6 @@ public class CubaAnnotationsLoader extends JPAAnnotationsLoader {
     }
 
     @Override
-    protected boolean isMetaPropertyField(Field field) {
-        String name = field.getName();
-        return super.isMetaPropertyField(field)
-                && !name.equals("pcVersionInit")
-                && !name.equals("pcStateManager")
-                && !name.equals("pcDetachedState")
-                && !name.equals("__propertyChangeListeners");
-    }
-
-    @Override
     protected void onPropertyLoaded(MetaProperty metaProperty, Field field) {
         super.onPropertyLoaded(metaProperty, field);
         boolean system = isPrimaryKey(field) || propertyBelongsTo(field, metaProperty, SYSTEM_INTERFACES);
