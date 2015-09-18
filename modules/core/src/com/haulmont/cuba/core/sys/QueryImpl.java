@@ -46,7 +46,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
     private List<View> views = new ArrayList<>();
     private Integer maxResults;
     private Integer firstResult;
-    private boolean queryById;
+    private boolean singleResultExpected;
 
     private Collection<QueryMacroHandler> macroHandlers;
 
@@ -103,9 +103,9 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
             for (int i = 0; i < views.size(); i++) {
                 if (i == 0)
-                    fetchGroupMgr.setView(query, queryString, views.get(i), queryById);
+                    fetchGroupMgr.setView(query, queryString, views.get(i), singleResultExpected);
                 else
-                    fetchGroupMgr.addView(query, queryString, views.get(i), queryById);
+                    fetchGroupMgr.addView(query, queryString, views.get(i), singleResultExpected);
             }
 
             addMacroParams(query);
@@ -201,8 +201,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
         if (log.isDebugEnabled())
             log.debug(queryString.replaceAll("[\\t\\n\\x0B\\f\\r]", " "));
 
-//        if (!isNative && log.isTraceEnabled())
-//            log.trace("JPQL query result class: " + getQuery().getResultClass());
+        singleResultExpected = false;
 
         return getQuery().getResultList();
     }
@@ -212,8 +211,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
         if (log.isDebugEnabled())
             log.debug(queryString.replaceAll("[\\t\\n\\x0B\\f\\r]", " "));
 
-//        if (!isNative && log.isTraceEnabled())
-//            log.trace("JPQL query result class: " + getQuery().getResultClass());
+        singleResultExpected = true;
 
         return getQuery().getSingleResult();
     }
@@ -224,10 +222,14 @@ public class QueryImpl<T> implements TypedQuery<T> {
         if (log.isDebugEnabled())
             log.debug(queryString.replaceAll("[\\t\\n\\x0B\\f\\r]", " "));
 
-//        if (!isNative && log.isTraceEnabled())
-//            log.trace("JPQL query result class: " + getQuery().getResultClass());
-        List<T> resultList = getQuery().getResultList();
-        return Iterables.getFirst(resultList, null);
+        Integer saveMaxResults = maxResults;
+        maxResults = 1;
+        try {
+            List<T> resultList = getQuery().getResultList();
+            return Iterables.getFirst(resultList, null);
+        } finally {
+            maxResults = saveMaxResults;
+        }
     }
 
     @Override
@@ -381,8 +383,8 @@ public class QueryImpl<T> implements TypedQuery<T> {
         return this;
     }
 
-    public void setQueryById(boolean queryById) {
-        this.queryById = queryById;
+    public void setSingleResultExpected(boolean singleResultExpected) {
+        this.singleResultExpected = singleResultExpected;
     }
 
     protected static class Param {

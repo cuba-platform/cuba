@@ -23,6 +23,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author krivopustov
@@ -42,17 +43,17 @@ public class FetchGroupManager {
     @Inject
     private ViewRepository viewRepository;
 
-    public void setView(JpaQuery query, String queryString, @Nullable View view, boolean queryById) {
+    public void setView(JpaQuery query, String queryString, @Nullable View view, boolean singleResultExpected) {
         Preconditions.checkNotNullArgument(query, "query is null");
         if (view != null) {
             FetchGroup fg = new FetchGroup();
-            applyView(query, queryString, fg, view, queryById);
+            applyView(query, queryString, fg, view, singleResultExpected);
         } else {
             query.setHint(QueryHints.FETCH_GROUP, null);
         }
     }
 
-    public void addView(JpaQuery query, String queryString, View view, boolean queryById) {
+    public void addView(JpaQuery query, String queryString, View view, boolean singleResultExpected) {
         Preconditions.checkNotNullArgument(query, "query is null");
         Preconditions.checkNotNullArgument(view, "view is null");
 
@@ -63,14 +64,19 @@ public class FetchGroupManager {
         if (fg == null)
             fg = new FetchGroup();
 
-        applyView(query, queryString, fg, view, queryById);
+        applyView(query, queryString, fg, view, singleResultExpected);
     }
 
-    private void applyView(JpaQuery query, String queryString, FetchGroup fetchGroup, View view, boolean queryById) {
+    private void applyView(JpaQuery query, String queryString, FetchGroup fetchGroup, View view,
+                           boolean singleResultExpected) {
         Set<FetchGroupField> fetchGroupFields = new LinkedHashSet<>();
         processView(view, null, fetchGroupFields);
+
+        Set<String> fetchGroupAttributes = new TreeSet<>();
+        Map<String, String> fetchHints = new HashMap<>();
+
         for (FetchGroupField field : fetchGroupFields) {
-            fetchGroup.addAttribute(field.path());
+            fetchGroupAttributes.add(field.path());
         }
         fetchGroup.setShouldLoadAll(true);
 
@@ -89,14 +95,15 @@ public class FetchGroupManager {
             for (FetchGroupField refField : refFields) {
                 if (refField.fetchMode == FetchMode.UNDEFINED) {
                     if (refField.metaProperty.getRange().getCardinality().isMany()) {
-                        addMasterEntityAttributes(fetchGroup, fetchGroupFields, refField);
+                        List<String> masterAttributes = getMasterEntityAttributes(fetchGroup, fetchGroupFields, refField);
+                        fetchGroupAttributes.addAll(masterAttributes);
                     }
                     continue;
                 }
 
                 boolean selfRef = false;
                 for (MetaProperty mp : refField.metaPropertyPath.getMetaProperties()) {
-                    if (mp.getRange().asClass().equals(metaClass)) {
+                    if (metadataTools.isAssignableFrom(mp.getRange().asClass(), metaClass)) {
                         batchFields.add(refField);
                         selfRef = true;
                         break;
@@ -105,10 +112,20 @@ public class FetchGroupManager {
 
                 if (!selfRef) {
                     if (refField.metaProperty.getRange().getCardinality().isMany()) {
-                        addMasterEntityAttributes(fetchGroup, fetchGroupFields, refField);
-                        batchFields.add(refField);
+                        List<String> masterAttributes = getMasterEntityAttributes(fetchGroup, fetchGroupFields, refField);
+                        fetchGroupAttributes.addAll(masterAttributes);
+
+                        if (refField.fetchMode == FetchMode.JOIN) {
+                            joinFields.add(refField);
+                        } else {
+                            batchFields.add(refField);
+                        }
                     } else {
-                        joinFields.add(refField);
+                        if (refField.fetchMode == FetchMode.BATCH) {
+                            batchFields.add(refField);
+                        } else {
+                            joinFields.add(refField);
+                        }
                     }
                 }
             }
@@ -142,44 +159,55 @@ public class FetchGroupManager {
                     .filter(f -> f.metaProperty.getRange().getCardinality().isMany()).count();
 
             // For query by ID, remove BATCH mode for to-many attributes that have no nested attributes
-            if (queryById && toManyCount <= 1) {
+            if (singleResultExpected && toManyCount <= 1) {
                 for (FetchGroupField batchField : new ArrayList<>(batchFields)) {
                     if (batchField.metaProperty.getRange().getCardinality().isMany()) {
                         boolean hasNested = refFields.stream()
                                 .anyMatch(f -> f != batchField && f.metaPropertyPath.startsWith(batchField.metaPropertyPath));
-                        if (!hasNested) {
+                        if (!hasNested && batchField.fetchMode != FetchMode.BATCH) {
                             batchFields.remove(batchField);
                         }
                     }
                 }
             }
 
-            List<String> debugInfo = new ArrayList<>();
-
             for (FetchGroupField joinField : joinFields) {
                 String attr = alias + "." + joinField.path();
-                query.setHint(QueryHints.LEFT_FETCH, attr);
-                debugInfo.add(attr + "=JOIN");
+                fetchHints.put(attr, QueryHints.LEFT_FETCH);
             }
 
-            if (!queryById || batchFields.size() > 1) {
-                for (FetchGroupField batchField : batchFields) {
+            for (FetchGroupField batchField : batchFields) {
+                if (batchField.fetchMode == FetchMode.BATCH || !singleResultExpected || batchFields.size() > 1) {
                     String attr = alias + "." + batchField.path();
-                    query.setHint(QueryHints.BATCH, attr);
-                    debugInfo.add(attr + "=BATCH");
+                    fetchHints.put(attr, QueryHints.BATCH);
                 }
             }
+        }
 
-            if (!debugInfo.isEmpty() && log.isDebugEnabled())
-                log.debug(StringUtils.join(debugInfo, ", "));
+        if (log.isTraceEnabled())
+            log.trace("Fetch group for " + view + ":\n" + fetchGroupAttributes.stream().collect(Collectors.joining("\n")));
+        for (String attribute : fetchGroupAttributes) {
+            fetchGroup.addAttribute(attribute);
         }
 
         query.setHint(QueryHints.FETCH_GROUP, fetchGroup);
+
+        if (log.isDebugEnabled())
+            log.debug("Fetch modes for " + view + ": " +
+                    fetchHints.entrySet().stream()
+                        .map(e -> e.getKey() + "=" + (e.getValue().equals(QueryHints.LEFT_FETCH) ? "JOIN" : "BATCH"))
+                        .collect(Collectors.joining(", ")));
+        for (Map.Entry<String, String> entry : fetchHints.entrySet()) {
+            query.setHint(entry.getValue(), entry.getKey());
+        }
+
         //query.setHint(QueryHints.BATCH_TYPE, "IN");
     }
 
-    private void addMasterEntityAttributes(FetchGroup fetchGroup, Set<FetchGroupField> fetchGroupFields,
+    private List<String> getMasterEntityAttributes(FetchGroup fetchGroup, Set<FetchGroupField> fetchGroupFields,
                                            FetchGroupField toManyField) {
+        List<String> result = new ArrayList<>();
+
         MetaClass propMetaClass = toManyField.metaProperty.getRange().asClass();
         MetaProperty inverseProp = propMetaClass.getProperties().stream()
                 .filter(mp -> mp.getRange().isClass()
@@ -195,9 +223,10 @@ public class FetchGroupManager {
                     // do not add properties from subclasses
                     && fetchGroupField.metaProperty.getDomain().equals(inverseProp.getRange().asClass())) {
                 String attribute = toManyField.path() + "." + inverseProp.getName() + "." + fetchGroupField.metaProperty.getName();
-                fetchGroup.addAttribute(attribute);
+                result.add(attribute);
             }
         }
+        return result;
     }
 
     private void processView(View view, FetchGroupField parentField, Set<FetchGroupField> fetchGroupFields) {
