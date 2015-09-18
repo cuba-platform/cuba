@@ -40,4 +40,14 @@ public class CubaUpload extends Upload {
             getState().accept = accept;
         }
     }
+
+    @Override
+    public void setCaption(String caption) {
+        setButtonCaption(caption);
+    }
+
+    @Override
+    public String getCaption() {
+        return getButtonCaption();
+    }
 }
