@@ -370,6 +370,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 setFilterActionsEnabled();
                 initFilterSelectComponents();
             }
+            requestFocusToParamEditComponent();
             updateWindowCaption();
         });
     }
