@@ -36,8 +36,14 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
 
     boolean isRequired(FieldConfig field);
     void setRequired(FieldConfig field, boolean required, String message);
+    void setRequired(FieldConfig field, boolean required);
+    String getRequiredMessage(FieldConfig field);
+    void setRequiredMessage(FieldConfig field, String message);
     boolean isRequired(String fieldId);
     void setRequired(String fieldId, boolean required, String message);
+    void setRequired(String fieldId, boolean required);
+    String getRequiredMessage(String fieldId);
+    void setRequiredMessage(String fieldId, String message);
 
     void addValidator(FieldConfig field, com.haulmont.cuba.gui.components.Field.Validator validator);
     void addValidator(String fieldId, com.haulmont.cuba.gui.components.Field.Validator validator);

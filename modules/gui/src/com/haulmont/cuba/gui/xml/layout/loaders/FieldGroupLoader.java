@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.google.common.base.Strings;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -415,8 +416,12 @@ public class FieldGroupLoader extends AbstractFieldLoader {
             String required = element.attributeValue("required");
 
             if (StringUtils.isNotEmpty(required)) {
-                component.setRequired(field, BooleanUtils.toBoolean(required),
-                        loadResourceString(element.attributeValue("requiredMessage")));
+                component.setRequired(field, BooleanUtils.toBoolean(required));
+
+                String requiredMessage = element.attributeValue("requiredMessage");
+                if (!Strings.isNullOrEmpty(requiredMessage)) {
+                    component.setRequiredMessage(field, requiredMessage);
+                }
             }
         }
     }

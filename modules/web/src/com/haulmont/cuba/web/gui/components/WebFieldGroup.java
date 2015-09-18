@@ -596,6 +596,47 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup>
     }
 
     @Override
+    public void setRequired(FieldConfig field, boolean required) {
+        Component fieldComponent = fieldComponents.get(field);
+        if (fieldComponent instanceof Field) {
+            Field cubaField = (Field) fieldComponent;
+            cubaField.setRequired(required);
+        } else {
+            com.vaadin.ui.Field f = component.getField(field.getId());
+            if (f != null) {
+                f.setRequired(required);
+            }
+        }
+    }
+
+    @Override
+    public String getRequiredMessage(FieldConfig field) {
+        Component fieldComponent = fieldComponents.get(field);
+        if (fieldComponent instanceof Field) {
+            Field cubaField = (Field) fieldComponent;
+            return cubaField.getRequiredMessage();
+        } else {
+            com.vaadin.ui.Field f = component.getField(field.getId());
+            return f.getRequiredError();
+        }
+    }
+
+
+    @Override
+    public void setRequiredMessage(FieldConfig field, String message) {
+        Component fieldComponent = fieldComponents.get(field);
+        if (fieldComponent instanceof Field) {
+            Field cubaField = (Field) fieldComponent;
+            cubaField.setRequiredMessage(message);
+        } else {
+            com.vaadin.ui.Field f = component.getField(field.getId());
+            if (f != null) {
+                f.setRequiredError(message);
+            }
+        }
+    }
+
+    @Override
     public boolean isRequired(String fieldId) {
         FieldConfig field = getField(fieldId);
         if (field == null) {
@@ -611,6 +652,34 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup>
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         }
         setRequired(field, required, message);
+    }
+
+    @Override
+    public void setRequired(String fieldId, boolean required) {
+        FieldConfig field = getField(fieldId);
+        if (field == null) {
+            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        }
+        setRequired(field, required);
+    }
+
+
+    @Override
+    public String getRequiredMessage(String fieldId) {
+        FieldConfig field = getField(fieldId);
+        if (field == null) {
+            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        }
+        return getRequiredMessage(field);
+    }
+
+    @Override
+    public void setRequiredMessage(String fieldId, String message) {
+        FieldConfig field = getField(fieldId);
+        if (field == null) {
+            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        }
+        setRequiredMessage(field, message);
     }
 
     @Override

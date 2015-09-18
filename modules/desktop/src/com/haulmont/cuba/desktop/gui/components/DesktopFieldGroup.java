@@ -224,6 +224,56 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     }
 
     @Override
+    public void setRequired(FieldConfig field, boolean required) {
+        Component component = fieldComponents.get(field);
+        if (component instanceof Field) {
+            ((Field) component).setRequired(required);
+        }
+    }
+
+    @Override
+    public String getRequiredMessage(FieldConfig field) {
+        Component component = fieldComponents.get(field);
+        if (component instanceof com.haulmont.cuba.gui.components.Field) {
+            return ((Field) component).getRequiredMessage();
+        }
+        return null;
+    }
+
+    @Override
+    public void setRequiredMessage(FieldConfig field, String message) {
+        Component component = fieldComponents.get(field);
+        if (component instanceof Field) {
+            ((Field) component).setRequiredMessage(message);
+        }
+    }
+
+    @Override
+    public void setRequired(String fieldId, boolean required) {
+        FieldConfig field = fields.get(fieldId);
+        if (field != null) {
+            setRequired(field, required);
+        }
+    }
+
+    @Override
+    public String getRequiredMessage(String fieldId) {
+        FieldConfig field = fields.get(fieldId);
+        if (field != null) {
+            return getRequiredMessage(field);
+        }
+        return null;
+    }
+
+    @Override
+    public void setRequiredMessage(String fieldId, String message) {
+        FieldConfig field = fields.get(fieldId);
+        if (field != null) {
+            setRequiredMessage(field, message);
+        }
+    }
+
+    @Override
     public void addValidator(FieldConfig field, Field.Validator validator) {
         Component component = fieldComponents.get(field);
         if (component instanceof Field) {
