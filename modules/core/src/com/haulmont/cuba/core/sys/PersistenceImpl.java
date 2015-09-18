@@ -140,7 +140,7 @@ public class PersistenceImpl implements Persistence {
 
     @Override
     public DataSource getDataSource() {
-        return (DataSource) AppBeans.get("dataSource");
+        return (DataSource) AppBeans.get("cubaDataSource");
     }
 
     @Override

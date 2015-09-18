@@ -39,7 +39,7 @@ public class SchedulingServiceBean implements SchedulingService {
 
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    protected List<String> beansToIgnore = Arrays.asList("dataSource", "entityManagerFactory", "hibernateSessionFactory",
+    protected List<String> beansToIgnore = Arrays.asList("cubaDataSource", "entityManagerFactory", "hibernateSessionFactory",
             "mailSendTaskExecutor", "scheduler", "sqlSession", "sqlSessionFactory", "transactionManager",
             "cuba_ServerInfoService", "cuba_LoginService", "cuba_LocalizedMessageService");
 

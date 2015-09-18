@@ -21,7 +21,7 @@
 
     <!-- Persistence setup -->
 
-    <bean id="dataSource" class="com.haulmont.cuba.core.sys.CubaJndiObjectFactoryBean">
+    <bean id="cubaDataSource" class="com.haulmont.cuba.core.sys.CubaJndiObjectFactoryBean">
         <property name="jndiNameAppProperty" value="cuba.dataSourceJndiName"/>
         <property name="resourceRef" value="true"/>
     </bean>
@@ -34,13 +34,13 @@
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
           lazy-init="false">
         <property name="persistenceXmlLocation" value="file:${cuba.dataDir}/persistence.xml"/>
-        <property name="dataSource" ref="dataSource"/>
+        <property name="dataSource" ref="cubaDataSource"/>
         <property name="jpaVendorAdapter" ref="jpaVendorAdapter"/>
     </bean>
 
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
-        <property name="dataSource" ref="dataSource"/>
+        <property name="dataSource" ref="cubaDataSource"/>
     </bean>
 
     <tx:annotation-driven order="10"/>
