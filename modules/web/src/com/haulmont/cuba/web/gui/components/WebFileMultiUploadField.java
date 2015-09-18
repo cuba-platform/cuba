@@ -56,7 +56,7 @@ public class WebFileMultiUploadField extends WebAbstractComponent<AbstractCompon
         fileUploading = AppBeans.get(FileUploadingAPI.NAME);
 
         WebBrowser webBrowser = Page.getCurrent().getWebBrowser();
-        if (webBrowser.isIE() && webBrowser.getBrowserMajorVersion() < 10) {
+        if ((webBrowser.isIE() && !webBrowser.isEdge()) && webBrowser.getBrowserMajorVersion() < 10) {
             initOldComponent();
         } else {
             initComponent();
