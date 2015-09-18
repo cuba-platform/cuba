@@ -6,8 +6,8 @@
 @mixin halo-filterselect($primary-stylename: v-filterselect) {
   // todo artamonov remove after fix #PL-5226
   .#{$primary-stylename}-suggestmenu {
-    .v-ie & {
-      overflow-y: visible !important;
+    .v-ie9 & {
+      // overflow-y: visible !important;
     }
   }
 
