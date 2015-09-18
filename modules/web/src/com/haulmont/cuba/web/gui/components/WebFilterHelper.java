@@ -11,6 +11,9 @@ import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
@@ -120,6 +123,8 @@ public class WebFilterHelper implements FilterHelper {
                 Node<AbstractCondition> sourceNode = conditions.getNode(sourceCondition);
                 Node<AbstractCondition> targetNode = conditions.getNode(targetCondition);
 
+                if (isAncestorOf(targetNode, sourceNode)) return;
+
                 boolean moveToTheSameParent = Objects.equals(sourceNode.getParent(), targetNode.getParent());
 
                 if (location == VerticalDropLocation.MIDDLE) {
@@ -164,6 +169,14 @@ public class WebFilterHelper implements FilterHelper {
 
                     refreshConditionsDs();
                 }
+            }
+
+            protected boolean isAncestorOf(Node childNode, Node possibleParentNode) {
+                while (childNode.getParent() != null) {
+                    if (childNode.getParent().equals(possibleParentNode)) return true;
+                    childNode = childNode.getParent();
+                }
+                return false;
             }
 
             protected void refreshConditionsDs() {
