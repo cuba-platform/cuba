@@ -50,6 +50,9 @@ public class FileStorage implements FileStorageAPI {
 
     protected volatile File[] storageRoots;
 
+    /**
+     * INTERNAL. Don't use in application code.
+     */
     public File[] getStorageRoots() {
         if (storageRoots == null) {
             String conf = configuration.getConfig(ServerConfig.class).getFileStorageDir();
@@ -279,6 +282,9 @@ public class FileStorage implements FileStorageAPI {
         return false;
     }
 
+    /**
+     * INTERNAL. Don't use in application code.
+     */
     public File getStorageDir(File rootDir, Date createDate) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(createDate);

@@ -6,7 +6,9 @@
 package com.haulmont.cuba.core.jmx;
 
 import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.app.FileStorageAPI;
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -26,18 +28,28 @@ import java.util.*;
 public class FileStorage implements FileStorageMBean {
 
     @Inject
-    protected com.haulmont.cuba.core.app.FileStorage fileStorage;
-
-    @Inject
     protected Persistence persistence;
 
     @Override
     public File[] getStorageRoots() {
-        return fileStorage.getStorageRoots();
+        FileStorageAPI fileStorageAPI = AppBeans.get(FileStorageAPI.class);
+        if (fileStorageAPI instanceof com.haulmont.cuba.core.app.FileStorage) {
+            return ((com.haulmont.cuba.core.app.FileStorage) fileStorageAPI).getStorageRoots();
+        } else {
+            return new File[0];
+        }
     }
 
     @Override
     public String findOrphanDescriptors() {
+        com.haulmont.cuba.core.app.FileStorage fileStorage;
+        FileStorageAPI fileStorageAPI = AppBeans.get(FileStorageAPI.class);
+        if (fileStorageAPI instanceof com.haulmont.cuba.core.app.FileStorage) {
+            fileStorage = (com.haulmont.cuba.core.app.FileStorage) fileStorageAPI;
+        } else {
+            return "<not supported>";
+        }
+
         File[] roots = getStorageRoots();
         if (roots.length == 0)
             return "No storage directories defined";
@@ -71,6 +83,12 @@ public class FileStorage implements FileStorageMBean {
 
     @Override
     public String findOrphanFiles() {
+        com.haulmont.cuba.core.app.FileStorage fileStorage;
+        FileStorageAPI fileStorageAPI = AppBeans.get(FileStorageAPI.class);
+        if (!(fileStorageAPI instanceof com.haulmont.cuba.core.app.FileStorage)) {
+            return "<not supported>";
+        }
+
         File[] roots = getStorageRoots();
         if (roots.length == 0)
             return "No storage directories defined";
