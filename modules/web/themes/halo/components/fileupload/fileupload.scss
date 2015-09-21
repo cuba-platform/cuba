@@ -41,6 +41,9 @@
     font-size: 200px;
 
     @include box-defaults;
+
+    max-width: 100%;
+    max-height: 100%;
   }
 
   .#{$primary-stylename}.v-has-width .v-button {
