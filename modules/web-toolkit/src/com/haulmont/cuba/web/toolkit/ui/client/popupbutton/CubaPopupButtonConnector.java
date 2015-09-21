@@ -137,7 +137,6 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
                             if (focusWidget instanceof VButton
                                     || focusWidget instanceof CubaFileUploadWidget
                                     || focusWidget instanceof VUpload) {
-                                getWidget().childWidgetFocused(focusWidget);
                                 VButton button;
                                 if (focusWidget instanceof VButton) {
                                     button = (VButton) focusWidget;
@@ -146,6 +145,7 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
                                 } else {
                                     button = ((VUpload) focusWidget).submitButton;
                                 }
+                                getWidget().childWidgetFocused(button);
                                 button.setFocus(true);
                             }
                         }
@@ -157,9 +157,7 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
                         Widget widget = WidgetUtil.findWidget(target, null);
                         if ((widget instanceof VButton
                                 || widget instanceof VUpload
-                                || widget instanceof CubaFileUploadWidget) &&
-                                !widget.getStyleName().contains(SELECTED_ITEM_STYLE)) {
-                            getWidget().childWidgetFocused(widget);
+                                || widget instanceof CubaFileUploadWidget)) {
 
                             VButton button;
                             if (widget instanceof VButton) {
@@ -169,7 +167,10 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
                             } else {
                                 button = ((VUpload) widget).submitButton;
                             }
-                            button.setFocus(true);
+                            if (!button.getStyleName().contains(SELECTED_ITEM_STYLE)) {
+                                getWidget().childWidgetFocused(button);
+                                button.setFocus(true);
+                            }
                         }
                     }
                     break;
