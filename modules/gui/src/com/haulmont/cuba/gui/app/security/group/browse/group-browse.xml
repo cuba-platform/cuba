@@ -24,7 +24,8 @@
         <collectionDatasource
                 id="usersDs"
                 class="com.haulmont.cuba.security.entity.User"
-                view="group.browse">
+                view="group.browse"
+                maxResults="50">
             <query>select u from sec$User u where u.group.id = :ds$groupsDs</query>
         </collectionDatasource>
 
