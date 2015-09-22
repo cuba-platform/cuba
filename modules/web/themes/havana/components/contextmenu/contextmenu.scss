@@ -70,6 +70,24 @@
       }
     }
 
+    .v-ie9 & {
+      .v-button:hover {
+        background: transparent;
+
+        .v-button-caption {
+          color: #000;
+        }
+      }
+
+      .v-button.ie9-hover:hover {
+        background: $cuba-field-selection-color;
+
+        .v-button-caption {
+          color: #fff;
+        }
+      }
+    }
+
     .v-disabled.v-button:hover {
       background: transparent;
 

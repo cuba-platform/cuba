@@ -22,6 +22,27 @@ public class CubaButtonWidget extends VButton {
     }
 
     @Override
+    public void onBrowserEvent(Event event) {
+        if (BrowserInfo.get().isIE9()) {
+            int type = DOM.eventGetType(event);
+            switch (type) {
+                case Event.ONMOUSEOVER:
+                    if (isEnabled() && !getStyleName().contains("ie9-hover")) {
+                        addStyleName("ie9-hover");
+                    }
+                    break;
+                case Event.ONMOUSEOUT:
+                    if (getStyleName().contains("ie9-hover")) {
+                        removeStyleName("ie9-hover");
+                    }
+                    break;
+            }
+        }
+
+        super.onBrowserEvent(event);
+    }
+
+    @Override
     public void onClick(ClickEvent event) {
         if (BrowserInfo.get().isIE() && BrowserInfo.get().getIEVersion() >= 11) {
             // fix focusing of button-wrap in IE11

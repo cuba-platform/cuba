@@ -10,8 +10,11 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Widget;
+import com.haulmont.cuba.web.toolkit.ui.client.button.CubaButtonWidget;
 import com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImpl;
 import com.vaadin.client.BrowserInfo;
+import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.ui.VOverlay;
 
 /**
@@ -77,11 +80,19 @@ public class Tools {
                 switch (event.getTypeInt()) {
                     case Event.ONCLICK:
                         Element target = Element.as(event.getNativeEvent().getEventTarget());
+                        final Widget hoveredButton = WidgetUtil.findWidget(target, null);
+
                         if (getElement().isOrHasChild(target)) {
                             Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
                                 @Override
                                 public void execute() {
                                     hide();
+
+                                    if (BrowserInfo.get().isIE9()) {
+                                        if (hoveredButton instanceof CubaButtonWidget) {
+                                            hoveredButton.removeStyleName("ie9-hover");
+                                        }
+                                    }
                                 }
                             });
                         }

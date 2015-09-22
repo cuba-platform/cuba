@@ -29,6 +29,18 @@
       @include valo-selection-item-selected-style;
     }
 
+    .v-ie9 & {
+      .v-button:hover {
+        background: transparent;
+        color: inherit;
+        text-shadow: none;
+      }
+
+      .v-button.ie9-hover:hover {
+        @include valo-selection-item-selected-style;
+      }
+    }
+
     .v-button.v-disabled:hover {
       background: transparent;
       color: inherit;
