@@ -37,11 +37,6 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
         super.contextInitialized(servletContextEvent);
 
         ServletContext servletContext = servletContextEvent.getServletContext();
-        servletContext.setInitParameter("UI", "com.haulmont.cuba.web.AppUI");
-        servletContext.setInitParameter("UIProvider", "com.haulmont.cuba.web.sys.CubaUIProvider");
-        servletContext.setInitParameter("Application", "com.haulmont.refapp.web.RefApp");
-        servletContext.setInitParameter("widgetset", "com.haulmont.refapp.web.toolkit.ui.RefAppWidgetSet");
-
         CubaApplicationServlet cubaServlet = new CubaApplicationServlet();
         cubaServlet.setClassLoader(Thread.currentThread().getContextClassLoader());
         try {
