@@ -17,11 +17,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ResourceUtils;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Enumeration;
 import java.util.Properties;
 
 /**
@@ -83,7 +85,7 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
         }
 
         // get properties from a set of app.properties files defined in web.xml
-        String propsConfigName = sc.getInitParameter(APP_PROPS_CONFIG_PARAM);
+        String propsConfigName = getAppPropertiesConfig(sc);
         if (propsConfigName == null)
             throw new IllegalStateException(APP_PROPS_CONFIG_PARAM + " servlet context parameter not defined");
 
@@ -133,6 +135,10 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
         }
     }
 
+    protected String getAppPropertiesConfig(ServletContext sc) {
+        return sc.getInitParameter(APP_PROPS_CONFIG_PARAM);
+    }
+
     @Override
     protected void afterInitAppProperties() {
         super.afterInitAppProperties();
@@ -146,6 +152,36 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
         if (!file.exists()) {
             //noinspection ResultOfMethodCallIgnored
             file.mkdirs();
+        }
+    }
+
+    public static class CubaServletConfig implements ServletConfig {
+        protected String name;
+        protected ServletContext servletContext;
+
+        public CubaServletConfig(String name, ServletContext servletContext) {
+            this.name = name;
+            this.servletContext = servletContext;
+        }
+
+        @Override
+        public String getServletName() {
+            return name;
+        }
+
+        @Override
+        public ServletContext getServletContext() {
+            return servletContext;
+        }
+
+        @Override
+        public String getInitParameter(String name) {
+            return servletContext.getInitParameter(name);
+        }
+
+        @Override
+        public Enumeration<String> getInitParameterNames() {
+            return servletContext.getInitParameterNames();
         }
     }
 }

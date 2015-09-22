@@ -45,10 +45,15 @@ public class CubaApplicationServlet extends VaadinServlet {
 
     protected WebStatisticsAccumulator statisticsCounter;
 
+    protected volatile ClassLoader classLoader;
+
     @Override
     protected VaadinServletService createServletService(DeploymentConfiguration deploymentConfiguration)
             throws ServiceException {
         CubaVaadinServletService service = new CubaVaadinServletService(this, deploymentConfiguration);
+        if (classLoader != null) {
+            service.setClassLoader(classLoader);
+        }
         service.init();
         return service;
     }
@@ -60,6 +65,10 @@ public class CubaApplicationServlet extends VaadinServlet {
         statisticsCounter = AppBeans.get(WebStatisticsAccumulator.class);
 
         super.init(servletConfig);
+    }
+
+    public void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
     }
 
     @Override
