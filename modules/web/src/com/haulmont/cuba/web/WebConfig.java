@@ -242,7 +242,7 @@ public interface WebConfig extends Config {
     /**
      * @return Whether to redirect by blank html page on getting URL request action
      */
-    @Property("cuba.web.redirectByPageOnLinkActionEnabled")
+    @Property("cuba.web.useRedirectWithBlankPageForLinkAction")
     @DefaultBoolean(false)
-    boolean getRedirectByPageOnLinkActionEnabled();
+    boolean getUseRedirectWithBlankPageForLinkAction();
 }

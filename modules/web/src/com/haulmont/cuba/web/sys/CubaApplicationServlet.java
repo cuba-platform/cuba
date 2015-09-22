@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.web.sys;
 
+import com.google.common.base.Charsets;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.web.AppUI;
@@ -12,6 +13,7 @@ import com.haulmont.cuba.web.app.WebStatisticsAccumulator;
 import com.haulmont.cuba.web.auth.RequestContext;
 import com.vaadin.server.*;
 import com.vaadin.shared.ApplicationConstants;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +40,8 @@ import java.util.Properties;
 public class CubaApplicationServlet extends VaadinServlet {
 
     private static final long serialVersionUID = -8701539520754293569L;
+
+    public static final String FROM_HTML_REDIRECT_PARAM = "fromCubaHtmlRedirect";
 
     private Logger log = LoggerFactory.getLogger(CubaApplicationServlet.class);
 
@@ -121,10 +125,10 @@ public class CubaApplicationServlet extends VaadinServlet {
 
         boolean needRedirect = action != null;
         if (needRedirect) {
-            if (webConfig.getRedirectByPageOnLinkActionEnabled() &&
+            if (webConfig.getUseRedirectWithBlankPageForLinkAction() &&
                     action != null &&
-                    request.getParameter(AppUI.FROM_HTML_REDIRECT_PARAM) == null) {
-                redirectByBlankHtmlPage(request, response);
+                    request.getParameter(FROM_HTML_REDIRECT_PARAM) == null) {
+                redirectWithBlankHtmlPage(request, response);
             } else {
                 redirectToApp(request, response, contextName, uriParts, action);
             }
@@ -133,7 +137,7 @@ public class CubaApplicationServlet extends VaadinServlet {
         }
     }
 
-    protected void redirectByBlankHtmlPage(HttpServletRequest request, HttpServletResponse response)
+    protected void redirectWithBlankHtmlPage(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
 
         final BufferedWriter page = new BufferedWriter(new OutputStreamWriter(
@@ -143,7 +147,7 @@ public class CubaApplicationServlet extends VaadinServlet {
         stringBuilder.append(request.getRequestURI());
         Map<String, String[]> parameterMap = request.getParameterMap();
         stringBuilder.append("?");
-        stringBuilder.append(AppUI.FROM_HTML_REDIRECT_PARAM);
+        stringBuilder.append(FROM_HTML_REDIRECT_PARAM);
         stringBuilder.append("=true");
 
         for (String key : parameterMap.keySet()) {
@@ -156,23 +160,8 @@ public class CubaApplicationServlet extends VaadinServlet {
         }
         String url = stringBuilder.toString();
 
-        page.write("<!DOCTYPE HTML>");
-        page.write("<head>");
-        page.write("<meta charset=\"UTF-8\"");
-        page.write("<meta http-equiv=\"refresh\" content=\"1;url=");
-        page.write(url);
-        page.write("\">");
-        page.write("<script type=\"text/javascript\">");
-        page.write("<meta charset=\"UTF-8\">");
-        page.write("<meta http-equiv=\"refresh\" content=\"1;url=");
-        page.write(url);
-        page.write("\"><script type=\"text/javascript\">");
-        page.write("window.location.href = \"");
-        page.write(url);
-        page.write("\"</script>");
-        page.write("</head>");
-        page.write("<body/>");
-        page.write("</html>");
+        page.write(String.format(IOUtils.toString(CubaApplicationServlet.class.getResourceAsStream("redirect-page-template.html"),
+                Charsets.UTF_8.name()), url, url, url));
         page.close();
     }
 
@@ -197,7 +186,7 @@ public class CubaApplicationServlet extends VaadinServlet {
             Enumeration parameterNames = request.getParameterNames();
             while (parameterNames.hasMoreElements()) {
                 String name = (String) parameterNames.nextElement();
-                if (!AppUI.FROM_HTML_REDIRECT_PARAM.equals(name)) {
+                if (!FROM_HTML_REDIRECT_PARAM.equals(name)) {
                     params.put(name, request.getParameter(name));
                 }
             }
