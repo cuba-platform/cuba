@@ -40,7 +40,10 @@ public class AppUI extends UI implements ErrorHandler {
 
     public static final String LAST_REQUEST_PARAMS_ATTR = "lastRequestParams";
 
+    public static final String FROM_HTML_REDIRECT_PARAM = "fromCubaHtmlRedirect";
+
     private final static Logger log = LoggerFactory.getLogger(AppUI.class);
+
 
     protected final App app;
 
