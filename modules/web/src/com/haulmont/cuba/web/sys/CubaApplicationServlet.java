@@ -145,11 +145,11 @@ public class CubaApplicationServlet extends VaadinServlet {
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(request.getRequestURI());
-        Map<String, String[]> parameterMap = request.getParameterMap();
         stringBuilder.append("?");
         stringBuilder.append(FROM_HTML_REDIRECT_PARAM);
         stringBuilder.append("=true");
 
+        Map<String, String[]> parameterMap = request.getParameterMap();
         for (String key : parameterMap.keySet()) {
             for (String value : parameterMap.get(key)) {
                 stringBuilder.append("&");
