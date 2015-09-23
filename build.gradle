@@ -33,8 +33,8 @@ apply(plugin: 'cuba')
 cuba {
     artifact {
         group = 'com.haulmont.cuba'
-        version = cubaVersion.replace('-SNAPSHOT', '')
-        isSnapshot = cubaVersion.endsWith('-SNAPSHOT')
+        version = project.cubaVersion.replace('-SNAPSHOT', '')
+        isSnapshot = project.cubaVersion.endsWith('-SNAPSHOT')
     }
 
     ide {
