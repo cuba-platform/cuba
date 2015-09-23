@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.core.global;
 
-import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.*;
 

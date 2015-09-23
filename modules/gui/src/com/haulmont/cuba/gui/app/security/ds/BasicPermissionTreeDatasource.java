@@ -60,7 +60,7 @@ public abstract class BasicPermissionTreeDatasource extends AbstractTreeDatasour
     }
 
     private Node<BasicPermissionTarget> cloneNode(Node<BasicPermissionTarget> node) {
-        Node<BasicPermissionTarget> clone = new Node<BasicPermissionTarget>();
+        Node<BasicPermissionTarget> clone = new Node<>();
         try {
             BasicPermissionTarget targetClone = node.data.clone();
             clone.setData(targetClone);

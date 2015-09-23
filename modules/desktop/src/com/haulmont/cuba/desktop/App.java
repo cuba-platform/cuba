@@ -39,7 +39,6 @@ import org.springframework.remoting.RemoteAccessException;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
-import javax.swing.BoxLayout;
 import javax.swing.plaf.InputMapUIResource;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -607,7 +606,7 @@ public class App implements ConnectionListener {
         clientCacheManager.initialize();
 
         if (connection.isConnected()) {
-            applicationSession = new ApplicationSession(new ConcurrentHashMap<String, Object>());
+            applicationSession = new ApplicationSession(new ConcurrentHashMap<>());
 
             messagesClient.setRemoteSearch(true);
             initExceptionHandlers(true);

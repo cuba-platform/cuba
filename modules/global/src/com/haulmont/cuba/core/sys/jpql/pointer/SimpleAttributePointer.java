@@ -10,9 +10,8 @@ import com.haulmont.cuba.core.sys.jpql.model.Attribute;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 
 /**
- * Author: Alexander Chevelev
- * Date: 21.10.2010
- * Time: 1:45:27
+ * @author chevelev
+ * @version $Id$
  */
 public class SimpleAttributePointer implements Pointer {
     private Entity entity;
@@ -23,6 +22,7 @@ public class SimpleAttributePointer implements Pointer {
         this.attribute = attribute;
     }
 
+    @Override
     public Pointer next(DomainModel model, String field) {
         return NoPointer.instance();
     }

@@ -51,6 +51,7 @@ public class MapHandler implements ResultSetHandler<Map<String, Object>> {
      * @throws SQLException if a database access error occurs
      *
      */
+    @Override
     public Map<String, Object> handle(ResultSet rs) throws SQLException {
         return rs.next() ? this.convert.toMap(rs) : null;
     }

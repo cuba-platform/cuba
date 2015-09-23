@@ -198,7 +198,7 @@ public class ChileAnnotationsLoader implements MetaClassLoader {
 
         initProperties(clazz, metaClass, tasks);
 
-        return new MetadataObjectInfo<MetaClass>(metaClass, tasks);
+        return new MetadataObjectInfo<>(metaClass, tasks);
     }
 
     protected void initProperties(Class<?> clazz, MetaClassImpl metaClass, Collection<MetadataObjectInitTask> tasks) {
@@ -344,7 +344,7 @@ public class ChileAnnotationsLoader implements MetaClassLoader {
 
         tasks.addAll(info.getTasks());
 
-        return new MetadataObjectInfo<MetaProperty>(property, tasks);
+        return new MetadataObjectInfo<>(property, tasks);
     }
 
     @Nullable
@@ -398,7 +398,7 @@ public class ChileAnnotationsLoader implements MetaClassLoader {
 
         tasks.addAll(info.getTasks());
 
-        return new MetadataObjectInfo<MetaProperty>(property, tasks);
+        return new MetadataObjectInfo<>(property, tasks);
     }
 
     protected boolean setterExists(Method getter) {
@@ -435,7 +435,7 @@ public class ChileAnnotationsLoader implements MetaClassLoader {
     protected MetadataObjectInfo<Range> loadRange(MetaProperty metaProperty, Class type, Map<String, Object> map) {
         Datatype datatype = (Datatype) map.get("datatype");
         if (datatype != null) {
-            return new MetadataObjectInfo<Range>(new DatatypeRange(datatype));
+            return new MetadataObjectInfo<>(new DatatypeRange(datatype));
         }
 
         datatype = Datatypes.get(type);
@@ -449,20 +449,20 @@ public class ChileAnnotationsLoader implements MetaClassLoader {
 
                 Class<Enum> returnType = (Class<Enum>) method.getReturnType();
                 if (returnType.isEnum()) {
-                    return new MetadataObjectInfo<Range>(new EnumerationRange(new EnumerationImpl<>(returnType)));
+                    return new MetadataObjectInfo<>(new EnumerationRange(new EnumerationImpl<>(returnType)));
                 }
             } catch (NoSuchMethodException e) {
                 // ignore
             }
-            return new MetadataObjectInfo<Range>(new DatatypeRange(datatype));
+            return new MetadataObjectInfo<>(new DatatypeRange(datatype));
 
         } else if (type.isEnum()) {
-            return new MetadataObjectInfo<Range>(new EnumerationRange(new EnumerationImpl<Enum>(type)));
+            return new MetadataObjectInfo<>(new EnumerationRange(new EnumerationImpl<>(type)));
 
         } else {
             MetaClassImpl rangeClass = (MetaClassImpl) session.getClass(type);
             if (rangeClass != null) {
-                return new MetadataObjectInfo<Range>(new ClassRange(rangeClass));
+                return new MetadataObjectInfo<>(new ClassRange(rangeClass));
             } else {
                 return new MetadataObjectInfo<>(null, Collections.singletonList(new RangeInitTask(metaProperty, type, map)));
             }
@@ -544,7 +544,7 @@ public class ChileAnnotationsLoader implements MetaClassLoader {
         property.setDeclaringClass(field.getDeclaringClass());
         property.setJavaType(field.getType());
 
-        return new MetadataObjectInfo<MetaProperty>(property, tasks);
+        return new MetadataObjectInfo<>(property, tasks);
     }
 
     protected void assignInverse(MetaPropertyImpl property, Range range, String inverseField) {

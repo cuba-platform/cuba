@@ -11,11 +11,16 @@ import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.TwinColSelect;
 import org.apache.commons.lang.StringUtils;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 @SuppressWarnings("serial")
 public class CubaTwinColSelect extends TwinColSelect {
 
     private OptionStyleGenerator styleGenerator;
 
+    @Override
     protected void paintItem(PaintTarget target, Object itemId)
             throws PaintException {
         super.paintItem(target, itemId);

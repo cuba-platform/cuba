@@ -6,6 +6,10 @@ package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public enum FtsChangeType implements EnumClass<String> {
     INSERT("I"),
     UPDATE("U"),
@@ -17,6 +21,7 @@ public enum FtsChangeType implements EnumClass<String> {
         this.id = id;
     }
 
+    @Override
     public String getId() {
         return id;
     }

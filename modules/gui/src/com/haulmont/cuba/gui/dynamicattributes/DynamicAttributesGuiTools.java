@@ -10,7 +10,6 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
-import com.haulmont.cuba.core.entity.CategoryAttributeValue;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.TimeSource;
@@ -71,7 +70,7 @@ public class DynamicAttributesGuiTools {
     public void initDefaultAttributeValues(BaseGenericIdEntity item) {
         Collection<CategoryAttribute> attributes =
                 dynamicAttributes.getAttributesForMetaClass(item.getMetaClass());
-        item.setDynamicAttributes(new HashMap<String, CategoryAttributeValue>());
+        item.setDynamicAttributes(new HashMap<>());
         Date currentTimestamp = AppBeans.get(TimeSource.NAME, TimeSource.class).currentTimestamp();
 
         for (CategoryAttribute categoryAttribute : attributes) {

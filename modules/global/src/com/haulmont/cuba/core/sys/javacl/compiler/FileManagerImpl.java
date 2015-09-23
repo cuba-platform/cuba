@@ -4,28 +4,29 @@
  */
 package com.haulmont.cuba.core.sys.javacl.compiler;
 
-import com.haulmont.cuba.core.sys.javacl.compiler.JavaFileObjectImpl;
-
 import javax.tools.*;
-import java.net.URI;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.ArrayList;
 import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A JavaFileManager which manages Java source and classes. This FileManager
  * delegates to the JavaFileManager and the ClassLoaderImpl provided in the
  * constructor. The sources are all in memory CharSequence instances and the
  * classes are all in memory byte arrays.
+ *
+ * @author degtyarjov
+ * @version $Id$
  */
 final class FileManagerImpl extends ForwardingJavaFileManager<JavaFileManager> {
    // the delegating class loader (passed to the constructor)
    private final ClassLoaderImpl classLoader;
 
    // Internal map of filename URIs to JavaFileObjects.
-   private final Map<URI, JavaFileObject> fileObjects = new HashMap<URI, JavaFileObject>();
+   private final Map<URI, JavaFileObject> fileObjects = new HashMap<>();
 
    /**
     * Construct a new FileManager which forwards to the <var>fileManager</var>
@@ -137,7 +138,7 @@ final class FileManagerImpl extends ForwardingJavaFileManager<JavaFileManager> {
          Set<JavaFileObject.Kind> kinds, boolean recurse) throws IOException {
       Iterable<JavaFileObject> result = super.list(location, packageName, kinds,
             recurse);
-      ArrayList<JavaFileObject> files = new ArrayList<JavaFileObject>();
+      ArrayList<JavaFileObject> files = new ArrayList<>();
       if (location == StandardLocation.CLASS_PATH
             && kinds.contains(JavaFileObject.Kind.CLASS)) {
          for (JavaFileObject file : fileObjects.values()) {

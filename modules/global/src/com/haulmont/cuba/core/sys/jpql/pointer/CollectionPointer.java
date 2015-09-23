@@ -9,9 +9,8 @@ import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 
 /**
- * Author: Alexander Chevelev
- * Date: 01.11.2010
- * Time: 0:27:12
+ * @author chevelev
+ * @version $Id$
  */
 public class CollectionPointer implements com.haulmont.cuba.core.sys.jpql.pointer.Pointer {
     private Entity entity;
@@ -27,8 +26,8 @@ public class CollectionPointer implements com.haulmont.cuba.core.sys.jpql.pointe
         return entity;
     }
 
+    @Override
     public Pointer next(DomainModel model, String field) {
         return NoPointer.instance();
     }
-
 }

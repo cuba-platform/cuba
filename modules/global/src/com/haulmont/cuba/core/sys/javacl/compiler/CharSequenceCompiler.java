@@ -58,13 +58,13 @@ public class CharSequenceCompiler<T> {
                     + "Check that your class path includes tools.jar");
         }
         classLoader = new ClassLoaderImpl(loader);
-        diagnostics = new DiagnosticCollector<JavaFileObject>();
+        diagnostics = new DiagnosticCollector<>();
         final JavaFileManager fileManager = compiler.getStandardFileManager(diagnostics,
                 null, null);
         // create our FileManager which chains to the default file manager
         // and our ClassLoader
         javaFileManager = new FileManagerImpl(fileManager, classLoader);
-        this.options = new ArrayList<String>();
+        this.options = new ArrayList<>();
         if (options != null) { // make a save copy of input options
             for (String option : options) {
                 this.options.add(option);
@@ -101,8 +101,8 @@ public class CharSequenceCompiler<T> {
         if (diagnosticsList != null)
             diagnostics = diagnosticsList;
         else
-            diagnostics = new DiagnosticCollector<JavaFileObject>();
-        Map<String, CharSequence> classes = new HashMap<String, CharSequence>(1);
+            diagnostics = new DiagnosticCollector<>();
+        Map<String, CharSequence> classes = new HashMap<>(1);
         classes.put(qualifiedClassName, javaSource);
         Map<String, Class<T>> compiled = compile(classes, diagnosticsList);
         Class<T> newClass = compiled.get(qualifiedClassName);
@@ -132,7 +132,7 @@ public class CharSequenceCompiler<T> {
             final Map<String, CharSequence> classes,
             final DiagnosticCollector<JavaFileObject> diagnosticsList)
             throws CharSequenceCompilerException {
-        List<JavaFileObject> sources = new ArrayList<JavaFileObject>();
+        List<JavaFileObject> sources = new ArrayList<>();
         for (Map.Entry<String, CharSequence> entry : classes.entrySet()) {
             String qualifiedClassName = entry.getKey();
             CharSequence javaSource = entry.getValue();
@@ -168,17 +168,13 @@ public class CharSequenceCompiler<T> {
         try {
             // For each class name in the input map, get its compiled
             // class and put it in the output map
-            Map<String, Class<T>> compiled = new HashMap<String, Class<T>>();
+            Map<String, Class<T>> compiled = new HashMap<>();
             for (String qualifiedClassName : classLoader.classNames()) {
                 final Class<T> newClass = loadClass(qualifiedClassName);
                 compiled.put(qualifiedClassName, newClass);
             }
             return compiled;
-        } catch (ClassNotFoundException e) {
-            throw new CharSequenceCompilerException(classes.keySet(), e, diagnostics);
-        } catch (IllegalArgumentException e) {
-            throw new CharSequenceCompilerException(classes.keySet(), e, diagnostics);
-        } catch (SecurityException e) {
+        } catch (ClassNotFoundException | SecurityException | IllegalArgumentException e) {
             throw new CharSequenceCompilerException(classes.keySet(), e, diagnostics);
         }
     }

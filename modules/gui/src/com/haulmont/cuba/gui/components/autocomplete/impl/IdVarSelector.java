@@ -24,9 +24,9 @@ import java.util.*;
 public class IdVarSelector implements TreeVisitorAction {
     private QueryVariableContext root;
 
-    private List<ErrorRec> invalidIdVarNodes = new ArrayList<ErrorRec>();
+    private List<ErrorRec> invalidIdVarNodes = new ArrayList<>();
     private DomainModel model;
-    private Deque<QueryVariableContext> stack = new ArrayDeque<QueryVariableContext>();
+    private Deque<QueryVariableContext> stack = new ArrayDeque<>();
 
     public IdVarSelector(DomainModel model) {
         this.model = model;

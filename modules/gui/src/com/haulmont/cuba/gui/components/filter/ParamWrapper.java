@@ -48,7 +48,7 @@ public class ParamWrapper implements Component.HasValue {
                 && !((String) value).startsWith(ParametersHelper.CASE_INSENSITIVE_MARKER)) {
             // try to wrap value for case-insensitive "like" search
             if (condition instanceof PropertyCondition) {
-                Op op = ((PropertyCondition) condition).getOperator();
+                Op op = condition.getOperator();
                 if (Op.CONTAINS.equals(op) || op.equals(Op.DOES_NOT_CONTAIN)) {
                     value = wrapValueForLike(value);
                 } else if (Op.STARTS_WITH.equals(op)) {
@@ -57,7 +57,7 @@ public class ParamWrapper implements Component.HasValue {
                     value = wrapValueForLike(value, true, false);
                 }
             } else if (condition instanceof DynamicAttributesCondition) {
-                Op op = ((DynamicAttributesCondition) condition).getOperator();
+                Op op = condition.getOperator();
                 if (Op.CONTAINS.equals(op) || op.equals(Op.DOES_NOT_CONTAIN)) {
                     value = wrapValueForLike(value);
                 } else if (Op.STARTS_WITH.equals(op)) {
@@ -67,7 +67,7 @@ public class ParamWrapper implements Component.HasValue {
                 }
             } else if (condition instanceof CustomCondition) {
                 String where = ((CustomCondition) condition).getWhere();
-                Op op = ((CustomCondition) condition).getOperator();
+                Op op = condition.getOperator();
                 Matcher matcher = LIKE_PATTERN.matcher(where);
                 if (matcher.find()) {
                     if (Op.STARTS_WITH.equals(op)) {

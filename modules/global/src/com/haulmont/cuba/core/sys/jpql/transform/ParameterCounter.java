@@ -13,19 +13,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Author: Alexander Chevelev
- * Date: 27.03.2011
- * Time: 21:19:38
+ * @author chevelev
+ * @version $Id$
  */
 public class ParameterCounter implements TreeVisitorAction {
     private boolean differentNamesOnly;
     private int totalParameterCount = 0;
-    private Set<String> names = new HashSet<String>();
+    private Set<String> names = new HashSet<>();
 
     public ParameterCounter(boolean differentNamesOnly) {
         this.differentNamesOnly = differentNamesOnly;
     }
 
+    @Override
     public Object pre(Object o) {
         if (o instanceof ParameterNode) {
             ParameterNode node = (ParameterNode) o;
@@ -37,6 +37,7 @@ public class ParameterCounter implements TreeVisitorAction {
         return o;
     }
 
+    @Override
     public Object post(Object o) {
         return o;
     }

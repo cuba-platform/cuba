@@ -4,13 +4,16 @@
  */
 package com.haulmont.cuba.core.sys.javacl;
 
-
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author degtyarjov
+ * @version $Id$
+ */
 public class ProxyClassLoader extends ClassLoader {
     Map<String, TimestampClass> compiled;
-    ThreadLocal<Map<String, TimestampClass>> removedFromCompilation = new ThreadLocal<Map<String, TimestampClass>>();
+    ThreadLocal<Map<String, TimestampClass>> removedFromCompilation = new ThreadLocal<>();
 
     ProxyClassLoader(ClassLoader parent, Map<String, TimestampClass> compiled) {
         super(parent);
@@ -30,7 +33,7 @@ public class ProxyClassLoader extends ClassLoader {
     public TimestampClass removeFromCache(String className) {
         Map<String, TimestampClass> removedFromCompilationMap = removedFromCompilation.get();
         if (removedFromCompilationMap == null) {
-            removedFromCompilationMap = new HashMap<String, TimestampClass>();
+            removedFromCompilationMap = new HashMap<>();
             removedFromCompilation.set(removedFromCompilationMap);
         }
 

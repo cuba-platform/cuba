@@ -254,7 +254,6 @@ public final class ConfigUtil {
      */
     public static final String NO_DEFAULT = new String();
 
-
     /**
      * Get the default value of a configuration interface method. If a
      * {@link Default} annotation is present then that string is converted

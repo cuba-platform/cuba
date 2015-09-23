@@ -272,7 +272,7 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
 
     protected void fireItemChanged(T prevItem) {
         if (itemChangeListeners != null && !itemChangeListeners.isEmpty()) {
-            ItemChangeEvent<T> itemChangeEvent = new ItemChangeEvent<T>(this, prevItem, getItem());
+            ItemChangeEvent<T> itemChangeEvent = new ItemChangeEvent<>(this, prevItem, getItem());
 
             for (ItemChangeListener<T> listener : new ArrayList<>(itemChangeListeners)) {
                 listener.itemChanged(itemChangeEvent);
@@ -308,7 +308,7 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
             if (itemPropertyChangeListeners != null && !itemPropertyChangeListeners.isEmpty()) {
                 AbstractDatasource<T> ds = AbstractDatasource.this;
                 ItemPropertyChangeEvent<T> itemPropertyChangeEvent =
-                        new ItemPropertyChangeEvent<T>(ds, (T) e.getItem(), e.getProperty(), e.getPrevValue(), e.getValue());
+                        new ItemPropertyChangeEvent<>(ds, (T) e.getItem(), e.getProperty(), e.getPrevValue(), e.getValue());
 
                 for (ItemPropertyChangeListener<T> listener : new ArrayList<>(itemPropertyChangeListeners)) {
                     listener.itemPropertyChanged(itemPropertyChangeEvent);

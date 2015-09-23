@@ -97,7 +97,7 @@ public class ScreensHelper {
     }
 
     protected enum ScreenType {
-        BROWSER, EDITOR, ALL;
+        BROWSER, EDITOR, ALL
     }
 
     public Map<String, Object> getAvailableBrowserScreens(Class entityClass) {

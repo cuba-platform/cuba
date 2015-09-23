@@ -76,6 +76,7 @@ public class BasicRowProcessor implements RowProcessor {
      * will be set to <code>null</code> if the column was SQL NULL.
      *
      */
+    @Override
     public Object[] toArray(ResultSet rs) throws SQLException {
         ResultSetMetaData meta = rs.getMetaData();
         int cols = meta.getColumnCount();
@@ -92,6 +93,7 @@ public class BasicRowProcessor implements RowProcessor {
      * Convert a <code>ResultSet</code> row into a JavaBean.  This
      * implementation delegates to a BeanProcessor instance.
      */
+    @Override
     public Object toBean(ResultSet rs, Class type) throws SQLException {
         return this.convert.toBean(rs, type);
     }
@@ -100,6 +102,7 @@ public class BasicRowProcessor implements RowProcessor {
      * Convert a <code>ResultSet</code> into a <code>List</code> of JavaBeans.
      * This implementation delegates to a BeanProcessor instance.
      */
+    @Override
     public List toBeanList(ResultSet rs, Class type) throws SQLException {
         return this.convert.toBeanList(rs, type);
     }
@@ -110,6 +113,7 @@ public class BasicRowProcessor implements RowProcessor {
      * names as keys.  Calls to <code>map.get("COL")</code> and
      * <code>map.get("col")</code> return the same value.
      */
+    @Override
     public Map toMap(ResultSet rs) throws SQLException {
         Map result = new CaseInsensitiveHashMap();
         ResultSetMetaData rsmd = rs.getMetaData();
@@ -132,6 +136,7 @@ public class BasicRowProcessor implements RowProcessor {
         /**
          * @see java.util.Map#containsKey(java.lang.Object)
          */
+        @Override
         public boolean containsKey(Object key) {
             return super.containsKey(key.toString().toLowerCase());
         }
@@ -139,6 +144,7 @@ public class BasicRowProcessor implements RowProcessor {
         /**
          * @see java.util.Map#get(java.lang.Object)
          */
+        @Override
         public Object get(Object key) {
             return super.get(key.toString().toLowerCase());
         }
@@ -146,6 +152,7 @@ public class BasicRowProcessor implements RowProcessor {
         /**
          * @see java.util.Map#put(java.lang.Object, java.lang.Object)
          */
+        @Override
         public Object put(Object key, Object value) {
             return super.put(key.toString().toLowerCase(), value);
         }
@@ -153,6 +160,7 @@ public class BasicRowProcessor implements RowProcessor {
         /**
          * @see java.util.Map#putAll(java.util.Map)
          */
+        @Override
         public void putAll(Map m) {
             Iterator iter = m.keySet().iterator();
             while (iter.hasNext()) {
@@ -165,9 +173,9 @@ public class BasicRowProcessor implements RowProcessor {
         /**
          * @see java.util.Map#remove(java.lang.Object)
          */
+        @Override
         public Object remove(Object key) {
             return super.remove(key.toString().toLowerCase());
         }
     }
-
 }

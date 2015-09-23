@@ -111,7 +111,7 @@ public class FilterSelectWindow extends AbstractWindow {
     }
 
     public void search() {
-        fillDatasource((String) nameFilterField.getValue());
+        fillDatasource(nameFilterField.getValue());
     }
 
     protected void fillDatasource(String nameFilterText) {

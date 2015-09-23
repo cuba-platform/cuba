@@ -207,10 +207,9 @@ public class FileTypesHelper {
     /**
      * File extension to MIME type mapping.
      */
-    private static Map<String, String> extToMIMEMap = new HashMap<String, String>();
+    private static Map<String, String> extToMIMEMap = new HashMap<>();
 
     static {
-
         // Initialize extension to MIME map
         final StringTokenizer lines = new StringTokenizer(initialExtToMIMEMap,
                 ",");

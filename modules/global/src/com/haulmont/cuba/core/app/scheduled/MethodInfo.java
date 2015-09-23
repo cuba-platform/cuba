@@ -18,7 +18,7 @@ import java.util.List;
 public class MethodInfo implements Serializable {
 
     private String name;
-    private List<MethodParameterInfo> parameters = new ArrayList<MethodParameterInfo>();
+    private List<MethodParameterInfo> parameters = new ArrayList<>();
 
     public MethodInfo(String name, List<MethodParameterInfo> parameters) {
         this.name = name;

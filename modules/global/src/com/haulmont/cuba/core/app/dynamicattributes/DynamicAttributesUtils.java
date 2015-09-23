@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.core.app.dynamicattributes;
 
-import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;

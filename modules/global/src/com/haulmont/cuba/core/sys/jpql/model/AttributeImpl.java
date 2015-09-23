@@ -30,6 +30,7 @@ public class AttributeImpl implements Attribute {
         this.referencedEntityName = referencedEntityName;
     }
 
+    @Override
     public Class getSimpleType() {
         if (simpleType == null)
             throw new IllegalStateException("Not a simpletype attribute");
@@ -37,19 +38,22 @@ public class AttributeImpl implements Attribute {
         return simpleType;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
-
+    @Override
     public boolean isEntityReferenceAttribute() {
         return referencedEntityName != null;
     }
 
+    @Override
     public boolean isCollection() {
         return collection;
     }
 
+    @Override
     public String getReferencedEntityName() {
         if (referencedEntityName == null)
             throw new IllegalStateException("Not a referenced entity attribute");
@@ -57,6 +61,7 @@ public class AttributeImpl implements Attribute {
         return referencedEntityName;
     }
 
+    @Override
     public String getUserFriendlyName() {
         return userFriendlyName;
     }

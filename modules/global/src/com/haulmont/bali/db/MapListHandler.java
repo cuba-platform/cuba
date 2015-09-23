@@ -10,8 +10,11 @@ import java.util.ArrayList;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class MapListHandler implements ResultSetHandler<List<Map<String, Object>>>
-{
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+public class MapListHandler implements ResultSetHandler<List<Map<String, Object>>> {
     /**
      * The RowProcessor implementation to use when converting rows
      * into Maps.
@@ -25,8 +28,9 @@ public class MapListHandler implements ResultSetHandler<List<Map<String, Object>
         this.convert = convert;
     }
 
+    @Override
     public List<Map<String, Object>> handle(ResultSet rs) throws SQLException {
-        List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> result = new ArrayList<>();
         while (rs.next()) {
             result.add(convert.toMap(rs));
         }

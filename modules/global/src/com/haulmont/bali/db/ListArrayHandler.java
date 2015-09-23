@@ -9,6 +9,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class ListArrayHandler implements ResultSetHandler<List<Object[]>> {
 
     /**
@@ -25,8 +29,9 @@ public class ListArrayHandler implements ResultSetHandler<List<Object[]>> {
         this.convert = convert;
     }
 
+    @Override
     public List<Object[]> handle(ResultSet rs) throws SQLException {
-        List<Object[]> result = new ArrayList<Object[]>();
+        List<Object[]> result = new ArrayList<>();
         while (rs.next()) {
             result.add(convert.toArray(rs));
         }

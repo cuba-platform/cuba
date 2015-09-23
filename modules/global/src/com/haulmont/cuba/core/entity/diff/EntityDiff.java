@@ -39,7 +39,7 @@ public class EntityDiff extends AbstractNotPersistentEntity implements Serializa
 
     private BaseEntity afterEntity;
 
-    private List<EntityPropertyDiff> propertyDiffs = new ArrayList<EntityPropertyDiff>();
+    private List<EntityPropertyDiff> propertyDiffs = new ArrayList<>();
 
     public EntityDiff(View diffView) {
         this.diffView = diffView;

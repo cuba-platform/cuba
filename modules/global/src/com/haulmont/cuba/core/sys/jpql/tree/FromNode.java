@@ -15,9 +15,8 @@ import org.antlr.runtime.tree.Tree;
 import java.util.List;
 
 /**
- * Author: Alexander Chevelev
- * Date: 30.10.2010
- * Time: 4:15:07
+ * @author chevelev
+ * @version $Id$
  */
 public class FromNode extends BaseCustomNode {
     private Token fromT;
@@ -43,6 +42,7 @@ public class FromNode extends BaseCustomNode {
         return result;
     }
 
+    @Override
     public CommonTree treeToQueryPre(QueryBuilder sb, List<ErrorRec> invalidNodes) {
         sb.appendSpace();
         sb.appendString(fromT.getText());

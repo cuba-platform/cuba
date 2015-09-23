@@ -23,7 +23,7 @@ public class IntegerListTypeFactory extends TypeFactory {
 
     @Override
     public Object build(String string) {
-        List<Integer> integerList = new ArrayList<Integer>();
+        List<Integer> integerList = new ArrayList<>();
         if (StringUtils.isNotEmpty(string)) {
             String[] elements = string.split(" ");
             for (String element : elements) {

@@ -45,7 +45,7 @@ public class Node<T> implements Serializable {
      */
     public List<Node<T>> getChildren() {
         if (this.children == null) {
-            this.children = new ArrayList<Node<T>>();
+            this.children = new ArrayList<>();
         }
         return this.children;
     }
@@ -84,7 +84,7 @@ public class Node<T> implements Serializable {
      */
     public void addChild(Node<T> child) {
         if (children == null) {
-            children = new ArrayList<Node<T>>();
+            children = new ArrayList<>();
         }
         child.parent = this;
         children.add(child);

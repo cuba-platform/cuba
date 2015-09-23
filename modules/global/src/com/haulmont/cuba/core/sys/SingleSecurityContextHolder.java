@@ -6,18 +6,19 @@
 package com.haulmont.cuba.core.sys;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class SingleSecurityContextHolder implements SecurityContextHolder {
 
     private SecurityContext ctx;
 
+    @Override
     public SecurityContext get() {
         return ctx;
     }
 
+    @Override
     public void set(SecurityContext value) {
         ctx = value;
     }

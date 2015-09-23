@@ -64,7 +64,7 @@ public class SchedulingServiceBean implements SchedulingService {
 
     @Override
     public Map<String, List<MethodInfo>> getAvailableBeans() {
-        Map<String, List<MethodInfo>> result = new TreeMap<String, List<MethodInfo>>();
+        Map<String, List<MethodInfo>> result = new TreeMap<>();
 
         String[] beanNames = AppContext.getApplicationContext().getBeanDefinitionNames();
         for (String name : beanNames) {
@@ -81,7 +81,7 @@ public class SchedulingServiceBean implements SchedulingService {
     }
 
     protected List<MethodInfo> getAvailableMethods(String beanName) {
-        List<MethodInfo> methods = new ArrayList<MethodInfo>();
+        List<MethodInfo> methods = new ArrayList<>();
         try {
             AutowireCapableBeanFactory beanFactory = AppContext.getApplicationContext().getAutowireCapableBeanFactory();
             if (beanFactory instanceof CubaDefaultListableBeanFactory) {
@@ -138,7 +138,7 @@ public class SchedulingServiceBean implements SchedulingService {
 
     @Override
     public List<String> getAvailableUsers() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
 
         Transaction tx = persistence.createTransaction();
         try {
@@ -186,7 +186,7 @@ public class SchedulingServiceBean implements SchedulingService {
     }
 
     private List<MethodParameterInfo> getMethodParameters(Method method) {
-        ArrayList<MethodParameterInfo> params = new ArrayList<MethodParameterInfo>();
+        ArrayList<MethodParameterInfo> params = new ArrayList<>();
 
         Class<?>[] parameterTypes = method.getParameterTypes();
 

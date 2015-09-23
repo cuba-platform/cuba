@@ -93,7 +93,7 @@ public class MenuCommand {
     }
 
     private Map<String, Object> loadParams(Element descriptor) {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         for (Element element : Dom4j.elements(descriptor, "param")) {
             String value = element.attributeValue("value");
             EntityLoadInfo info = EntityLoadInfo.parse(value);

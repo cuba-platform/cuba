@@ -10,8 +10,13 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.remoting.support.RemoteInvocation;
 import org.springframework.remoting.support.RemoteInvocationFactory;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class CubaRemoteInvocationFactory implements RemoteInvocationFactory {
 
+    @Override
     public RemoteInvocation createRemoteInvocation(MethodInvocation methodInvocation) {
         SecurityContext securityContext = AppContext.getSecurityContext();
         return new CubaRemoteInvocation(methodInvocation, securityContext == null ? null : securityContext.getSessionId());

@@ -10,14 +10,13 @@ import com.haulmont.cuba.core.sys.jpql.InferredType;
 import java.util.*;
 
 /**
- * User: Alex Chevelev
- * Date: 13.10.2010
- * Time: 20:41:31
+ * @author chevelev
+ * @version $Id$
  */
 public class EntityImpl implements Entity {
     private String name;
-    private List<String> attributeNames = new ArrayList<String>();
-    private Map<String, AttributeImpl> name2attribute = new HashMap<String, AttributeImpl>();
+    private List<String> attributeNames = new ArrayList<>();
+    private Map<String, AttributeImpl> name2attribute = new HashMap<>();
     private String userFriendlyName;
 
     public EntityImpl(String name) {
@@ -27,10 +26,12 @@ public class EntityImpl implements Entity {
         this.name = name;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getUserFriendlyName() {
         return userFriendlyName;
     }
@@ -43,6 +44,7 @@ public class EntityImpl implements Entity {
         addSingleValueAttribute(aClass, name, null);
     }
 
+    @Override
     public void addSingleValueAttribute(Class aClass, String name, String userFriendlyName) {
         if (aClass == null)
             throw new NullPointerException("No attribute type passed");
@@ -55,12 +57,14 @@ public class EntityImpl implements Entity {
         name2attribute.put(name, attribute);
     }
 
+    @Override
     public AttributeImpl getAttributeByName(String attributeName) {
         return name2attribute.get(attributeName);
     }
 
+    @Override
     public List<Attribute> findAttributesStartingWith(String fieldNamePattern, Set<InferredType> expectedTypes) {
-        List<Attribute> result = new ArrayList<Attribute>();
+        List<Attribute> result = new ArrayList<>();
         for (Map.Entry<String, AttributeImpl> entry : name2attribute.entrySet()) {
             if (entry.getKey().startsWith(fieldNamePattern)) {
                 for (InferredType expectedType : expectedTypes) {
@@ -79,6 +83,7 @@ public class EntityImpl implements Entity {
         addReferenceAttribute(referencedEntityName, name, null);
     }
 
+    @Override
     public void addReferenceAttribute(String referencedEntityName, String name, String userFriendlyName) {
         if (referencedEntityName == null)
             throw new NullPointerException("No referencedEntityName passed");
@@ -95,6 +100,7 @@ public class EntityImpl implements Entity {
         addCollectionReferenceAttribute(referencedEntityName, name, null);
     }
 
+    @Override
     public void addCollectionReferenceAttribute(String referencedEntityName, String name, String userFriendlyName) {
         if (referencedEntityName == null)
             throw new NullPointerException("No referencedEntityName passed");
@@ -107,6 +113,7 @@ public class EntityImpl implements Entity {
         name2attribute.put(name, attribute);
     }
 
+    @Override
     public void addAttributeCopy(Attribute attribute) {
         if (attribute == null)
             throw new NullPointerException("No attribute passed");

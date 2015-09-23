@@ -13,9 +13,8 @@ import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 
 /**
- * Author: Alexander Chevelev
- * Date: 06.04.2011
- * Time: 16:46:32
+ * @author chevelev
+ * @version $Id$
  */
 public class VariableEntityReference implements EntityReference {
     private String entityName;
@@ -26,23 +25,28 @@ public class VariableEntityReference implements EntityReference {
         this.entityVariableName = entityVariableNameInQuery;
     }
 
+    @Override
     public String replaceEntries(String queryPart, String replaceablePart) {
         return queryPart.replaceAll("\\{E\\}", entityVariableName);
     }
 
+    @Override
     public void renameVariableIn(PathNode node) {
         node.renameVariableTo(entityVariableName);
     }
 
+    @Override
     public Tree createNode() {
         return new CommonTree(new CommonToken(JPA2Lexer.WORD, entityVariableName));
     }
 
+    @Override
     public boolean isJoinableTo(IdentificationVariableNode node) {
         return entityName.equals(node.getEntityName());
     }
 
 
+    @Override
     public PathEntityReference addFieldPath(String fieldPath) {
         PathNode pathNode = new PathNode(JPA2Lexer.T_SELECTED_FIELD, entityVariableName);
         pathNode.addDefaultChildren(fieldPath);

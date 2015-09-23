@@ -76,13 +76,13 @@ public class ConfigSetter extends ConfigAccessorMethod {
     /**
      * The ConfigSetter factory.
      */
-    public static final Factory FACTORY = new Factory()
-    {
+    public static final Factory FACTORY = new Factory() {
         /**
          * {@inheritDoc}
          * The method has the name set*, has a void return type and
          * one parameter.
          */
+        @Override
         public boolean canHandle(Method method) {
             String methodName = method.getName();
             Class returnType = method.getReturnType();
@@ -93,6 +93,7 @@ public class ConfigSetter extends ConfigAccessorMethod {
         }
 
         /* Inherited. */
+        @Override
         public ConfigMethod newInstance(Class<?> configInterface, Method method) {
             return new ConfigSetter(configInterface, method);
         }

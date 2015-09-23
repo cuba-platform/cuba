@@ -90,7 +90,7 @@ public class HierarchicalPropertyDatasourceImpl<T extends Entity<K>, K>
         Collection<K> ids = getItemIds();
 
         if (hierarchyPropertyName != null) {
-            Set<K> result = new LinkedHashSet<K>();
+            Set<K> result = new LinkedHashSet<>();
             for (K id : ids) {
                 Entity<K> item = getItemNN(id);
                 Object value = item.getValue(hierarchyPropertyName);
@@ -98,7 +98,7 @@ public class HierarchicalPropertyDatasourceImpl<T extends Entity<K>, K>
             }
             return result;
         } else {
-            return new LinkedHashSet<K>(ids);
+            return new LinkedHashSet<>(ids);
         }
     }
 

@@ -16,9 +16,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Author: Alexander Chevelev
- * Date: 30.10.2010
- * Time: 4:15:07
+ * @author chevelev
+ * @version $Id$
  */
 public class PathNode extends BaseCustomNode {
     private String entityVariableName;
@@ -66,6 +65,7 @@ public class PathNode extends BaseCustomNode {
         return (token != null ? token.getText() : "") + "Path entity variable: " + entityVariableName;
     }
 
+    @Override
     public CommonTree treeToQueryPre(QueryBuilder sb, List<ErrorRec> invalidNodes) {
         sb.appendString(asPathString());
         return null;

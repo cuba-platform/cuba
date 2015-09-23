@@ -44,7 +44,7 @@ public class EntityLog implements EntityLogAPI {
 
     private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-    private ThreadLocal<Boolean> entityLogSwitchedOn = new ThreadLocal<Boolean>();
+    private ThreadLocal<Boolean> entityLogSwitchedOn = new ThreadLocal<>();
 
     @Inject
     protected TimeSource timeSource;
@@ -68,6 +68,7 @@ public class EntityLog implements EntityLogAPI {
         entityLogSwitchedOn.set(enabled);
     }
 
+    @Override
     public synchronized boolean isEnabled() {
         return !Boolean.FALSE.equals(entityLogSwitchedOn.get()) && config.getEnabled();
     }
@@ -130,14 +131,16 @@ public class EntityLog implements EntityLogAPI {
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            Query q = em.createQuery("select e from sec$LoggedEntity e where e.auto = true or e.manual = true");
+            TypedQuery<LoggedEntity> q = em.createQuery(
+                    "select e from sec$LoggedEntity e where e.auto = true or e.manual = true",
+                    LoggedEntity.class);
 //            q.setView(null);
             List<LoggedEntity> list = q.getResultList();
             for (LoggedEntity loggedEntity : list) {
                 if (loggedEntity.getName() == null) {
                     throw new IllegalStateException("Unable to initialize EntityLog: empty LoggedEntity.name");
                 }
-                Set<String> attributes = new HashSet<String>();
+                Set<String> attributes = new HashSet<>();
                 for (LoggedAttribute loggedAttribute : loggedEntity.getAttributes()) {
                     if (loggedAttribute.getName() == null) {
                         throw new IllegalStateException("Unable to initialize EntityLog: empty LoggedAttribute.name");
@@ -332,8 +335,10 @@ public class EntityLog implements EntityLogAPI {
     }
 
     protected Set<String> getAllAttributes(Entity entity) {
-        if (entity == null) return null;
-        Set<String> attributes = new HashSet<String>();
+        if (entity == null) {
+            return null;
+        }
+        Set<String> attributes = new HashSet<>();
         for (MetaProperty metaProperty : metadata.getSession().getClassNN(entity.getClass()).getProperties()) {
             attributes.add(metaProperty.getName());
         }

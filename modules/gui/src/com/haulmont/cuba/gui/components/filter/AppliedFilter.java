@@ -6,11 +6,7 @@
 package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.bali.datastruct.Node;
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.DateDatatype;
 import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -21,7 +17,6 @@ import com.haulmont.cuba.security.entity.FilterEntity;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
-import javax.persistence.TemporalType;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

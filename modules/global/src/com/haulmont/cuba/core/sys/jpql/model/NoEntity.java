@@ -11,9 +11,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Author: Alexander Chevelev
- * Date: 26.10.2010
- * Time: 23:25:43
+ * @author chevelev
+ * @version $Id$
  */
 public class NoEntity implements Entity{
     public static final NoEntity instance = new NoEntity();
@@ -21,22 +20,27 @@ public class NoEntity implements Entity{
     private NoEntity() {
     }
 
+    @Override
     public String getName() {
         return null;
     }
 
+    @Override
     public String getUserFriendlyName() {
         return null;
     }
 
+    @Override
     public Attribute getAttributeByName(String attributeName) {
         return null;
     }
 
+    @Override
     public List<Attribute> findAttributesStartingWith(String fieldNamePattern, Set<InferredType> expectedTypes) {
         return null;
     }
 
+    @Override
     public void addAttributeCopy(Attribute attribute) {
     }
 
@@ -44,12 +48,15 @@ public class NoEntity implements Entity{
         return instance;
     }
 
+    @Override
     public void addSingleValueAttribute(Class aClass, String name, String userFriendlyName) {
     }
 
+    @Override
     public void addReferenceAttribute(String referencedEntityName, String name, String userFriendlyName) {
     }
 
+    @Override
     public void addCollectionReferenceAttribute(String referencedEntityName, String name, String userFriendlyName) {
     }
 }

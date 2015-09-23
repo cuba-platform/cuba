@@ -10,6 +10,10 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class EntityComparator<T extends Entity> extends AbstractComparator<T> {
     private MetaPropertyPath propertyPath;
     private MetaProperty property;
@@ -28,6 +32,7 @@ public class EntityComparator<T extends Entity> extends AbstractComparator<T> {
 */
     }
 
+    @Override
     public int compare(T o1, T o2) {
         Object v1 = getValue(o1);
         Object v2 = getValue(o2);

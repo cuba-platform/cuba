@@ -22,7 +22,7 @@ import java.util.List;
 public class ConditionsTree extends Tree<AbstractCondition> {
 
     public ConditionsTree() {
-        super(new ArrayList<Node<AbstractCondition>>());
+        super(new ArrayList<>());
     }
 
     /**

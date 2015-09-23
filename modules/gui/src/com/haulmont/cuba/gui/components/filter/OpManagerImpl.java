@@ -21,6 +21,7 @@ import static com.haulmont.cuba.gui.components.filter.Op.*;
 @ManagedBean(OpManager.NAME)
 public class OpManagerImpl implements OpManager {
 
+    @Override
     public EnumSet<Op> availableOps(Class javaClass) {
         if (String.class.equals(javaClass))
             return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, CONTAINS, DOES_NOT_CONTAIN, NOT_EMPTY, STARTS_WITH, ENDS_WITH);
@@ -40,5 +41,4 @@ public class OpManagerImpl implements OpManager {
         else
             throw new UnsupportedOperationException("Unsupported java class: " + javaClass);
     }
-
 }

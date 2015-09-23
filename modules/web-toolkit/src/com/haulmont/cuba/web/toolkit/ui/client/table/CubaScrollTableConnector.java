@@ -13,7 +13,6 @@ import com.google.gwt.user.client.Event;
 import com.haulmont.cuba.web.toolkit.ui.CubaTable;
 import com.vaadin.client.*;
 import com.vaadin.client.communication.StateChangeEvent;
-import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.table.TableConnector;
 import com.vaadin.shared.ui.Connect;
 

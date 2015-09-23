@@ -26,7 +26,7 @@ public abstract class AbstractTreeTableDatasource<T extends Entity<K>, K>
         private final EntityComparator<T> entityComparator;
 
         private TreeTableNodeComparator(MetaPropertyPath propertyPath, boolean asc) {
-            entityComparator = new EntityComparator<T>(propertyPath, asc);
+            entityComparator = new EntityComparator<>(propertyPath, asc);
         }
 
         @Override
@@ -68,6 +68,6 @@ public abstract class AbstractTreeTableDatasource<T extends Entity<K>, K>
         final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
         final boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
 
-        return  new TreeTableNodeComparator<T>(propertyPath, asc);
+        return new TreeTableNodeComparator<>(propertyPath, asc);
     }
 }

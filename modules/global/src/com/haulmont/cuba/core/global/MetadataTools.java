@@ -559,7 +559,6 @@ public class MetadataTools {
      * or empty list
      */
     public List<String> getRelatedProperties(Class<?> entityClass, String property) {
-        List<String> result = new ArrayList<>();
         MetaClass metaClass = metadata.getClassNN(entityClass);
         return getRelatedProperties(metaClass.getPropertyNN(property));
     }

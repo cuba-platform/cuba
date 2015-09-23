@@ -56,7 +56,7 @@ public class CharSequenceCompilerException extends Exception {
       // create a new HashSet because the set passed in may not
       // be Serializable. For example, Map.keySet() returns a non-Serializable
       // set.
-      classNames = new HashSet<String>(qualifiedClassNames);
+      classNames = new HashSet<>(qualifiedClassNames);
    }
 
    private void setDiagnostics(DiagnosticCollector<JavaFileObject> diagnostics) {

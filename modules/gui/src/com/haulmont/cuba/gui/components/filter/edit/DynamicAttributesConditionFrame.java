@@ -32,8 +32,6 @@ import org.apache.commons.lang.RandomStringUtils;
 import javax.inject.Inject;
 import java.util.*;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-
 /**
  * @author devyatkin
  * @version $Id$

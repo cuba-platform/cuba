@@ -11,12 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * User: Alex Chevelev
- * Date: 13.10.2010
- * Time: 20:42:50
+ * @author chevelev
+ * @version $Id$
  */
 public class DomainModel {
-    private List<Entity> entities = new ArrayList<Entity>();
+    private List<Entity> entities = new ArrayList<>();
 
     public DomainModel(Entity... initialEntities) {
         for (Entity initialEntity : initialEntities) {
@@ -32,7 +31,7 @@ public class DomainModel {
     }
 
     public List<Entity> findEntitiesStartingWith(String lastWord) {
-        List<Entity> result = new ArrayList<Entity>();
+        List<Entity> result = new ArrayList<>();
         for (Entity entity : entities) {
             String name = entity.getName();
             if (name.startsWith(lastWord)) {

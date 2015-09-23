@@ -758,7 +758,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
         @SuppressWarnings({"unchecked"})
         List<T> list = new LinkedList<>(collection);
-        Collections.sort(list, new EntityComparator<T>(propertyPath, asc));
+        Collections.sort(list, new EntityComparator<>(propertyPath, asc));
         collection.clear();
         collection.addAll(list);
     }
@@ -787,7 +787,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         if (itemId == null) return null;
         Collection<T> collection = __getCollection();
         if ((collection != null) && !collection.isEmpty() && !itemId.equals(lastItemId())) {
-            List<T> list = new ArrayList<T>(collection);
+            List<T> list = new ArrayList<>(collection);
             T currentItem = getItem(itemId);
             return list.get(list.indexOf(currentItem) + 1).getId();
         }

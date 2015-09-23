@@ -8,8 +8,6 @@ package com.haulmont.cuba.gui.components.filter.condition;
 import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.annotations.MetaClass;
-import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
@@ -221,5 +219,4 @@ public class DynamicAttributesCondition extends AbstractCondition {
         }
         return super.getLocCaption();
     }
-
 }

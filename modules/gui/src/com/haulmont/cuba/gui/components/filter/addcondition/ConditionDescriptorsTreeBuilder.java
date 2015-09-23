@@ -20,9 +20,9 @@ import com.haulmont.cuba.gui.components.filter.descriptor.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.dom4j.Element;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -106,8 +106,8 @@ public class ConditionDescriptorsTreeBuilder {
         HeaderConditionDescriptor customHeaderDescriptor = new HeaderConditionDescriptor("customConditions",
                 messages.getMessage(ConditionDescriptorsTreeBuilder.class, "AddCondition.customConditions"), filterComponentName, datasource);
 
-        Node<AbstractConditionDescriptor> propertyHeaderNode = new Node<AbstractConditionDescriptor>(propertyHeaderDescriptor);
-        Node<AbstractConditionDescriptor> customHeaderNode = new Node<AbstractConditionDescriptor>(customHeaderDescriptor);
+        Node<AbstractConditionDescriptor> propertyHeaderNode = new Node<>(propertyHeaderDescriptor);
+        Node<AbstractConditionDescriptor> customHeaderNode = new Node<>(customHeaderDescriptor);
         int currentDepth = 0;
 
         for (AbstractConditionDescriptor propertyDescriptor : propertyDescriptors) {
@@ -138,11 +138,11 @@ public class ConditionDescriptorsTreeBuilder {
             rootNodes.add(customHeaderNode);
 
         if (security.isSpecificPermitted(CUSTOM_CONDITIONS_PERMISSION)) {
-            rootNodes.add(new Node<AbstractConditionDescriptor>(new CustomConditionCreator(filterComponentName, datasource)));
+            rootNodes.add(new Node<>(new CustomConditionCreator(filterComponentName, datasource)));
         }
 
         if (!dynamicAttributes.getAttributesForMetaClass(datasource.getMetaClass()).isEmpty()) {
-            rootNodes.add(new Node<AbstractConditionDescriptor>(new DynamicAttributesConditionCreator(filterComponentName, datasource, "")));
+            rootNodes.add(new Node<>(new DynamicAttributesConditionCreator(filterComponentName, datasource, "")));
         }
 
         tree.setRootNodes(rootNodes);
@@ -186,7 +186,7 @@ public class ConditionDescriptorsTreeBuilder {
             MetaClass childMetaClass = metaProperty.getRange().asClass();
             if (!dynamicAttributes.getAttributesForMetaClass(childMetaClass).isEmpty()) {
                 DynamicAttributesConditionCreator descriptor = new DynamicAttributesConditionCreator(filterComponentName, filter.getDatasource(), propertyId);
-                Node<AbstractConditionDescriptor> newNode = new Node<AbstractConditionDescriptor>(descriptor);
+                Node<AbstractConditionDescriptor> newNode = new Node<>(descriptor);
                 parentNode.addChild(newNode);
             }
         }

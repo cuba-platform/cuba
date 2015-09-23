@@ -29,7 +29,7 @@ public class QueryTransformerAstBased implements QueryTransformer {
     private DomainModel model;
     private String query;
     private QueryTreeTransformer queryTreeTransformer;
-    private Set<String> addedParams = new HashSet<String>();
+    private Set<String> addedParams = new HashSet<>();
     private String returnedEntityName;
     private String mainEntityName;
 
@@ -50,12 +50,11 @@ public class QueryTransformerAstBased implements QueryTransformer {
         }
     }
 
-
     private void initQueryAnalyzer(DomainModel model, String query) throws RecognitionException {
         queryTreeTransformer = new QueryTreeTransformer();
         queryTreeTransformer.prepare(model, query);
 
-        List<CommonErrorNode> errorNodes = new ArrayList<CommonErrorNode>(queryTreeTransformer.getErrorNodes());
+        List<CommonErrorNode> errorNodes = new ArrayList<>(queryTreeTransformer.getErrorNodes());
         List<ErrorRec> invalidIdVarNodes = queryTreeTransformer.getInvalidIdVarNodes();
         for (ErrorRec invalidIdVarNode : invalidIdVarNodes) {
             if (errorNodes.contains(invalidIdVarNode.node)) {
@@ -63,7 +62,7 @@ public class QueryTransformerAstBased implements QueryTransformer {
             }
         }
 
-        List<ErrorRec> errors = new ArrayList<ErrorRec>(queryTreeTransformer.getInvalidIdVarNodes());
+        List<ErrorRec> errors = new ArrayList<>(queryTreeTransformer.getInvalidIdVarNodes());
         for (CommonErrorNode errorNode : errorNodes) {
             ErrorRec rec = new ErrorRec(errorNode, "CommonErrorNode");
             errors.add(rec);
@@ -85,6 +84,7 @@ public class QueryTransformerAstBased implements QueryTransformer {
         return treeToQuery.getQueryString().trim();
     }
 
+    @Override
     public Set<String> getAddedParams() {
         return addedParams;
     }
@@ -251,5 +251,4 @@ public class QueryTransformerAstBased implements QueryTransformer {
 
         queryTreeTransformer.mixinWhereConditionsIntoTree(whereTree);
     }
-
 }

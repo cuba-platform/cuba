@@ -7,14 +7,16 @@ package com.haulmont.cuba.gui.components.filter.condition;
 
 import com.google.common.base.Strings;
 import com.haulmont.chile.core.annotations.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
-import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
 import com.haulmont.cuba.gui.components.filter.Op;
 import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor;
+import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
 import com.haulmont.cuba.gui.components.filter.operationedit.PropertyOperationEditor;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.BooleanUtils;
@@ -83,7 +85,7 @@ public class PropertyCondition extends AbstractCondition {
             com.haulmont.chile.core.model.MetaClass metaClass = metadata.getClassNN(param.getJavaClass());
             String primaryKeyName = metadata.getTools().getPrimaryKeyName(metaClass);
 
-            sb.append("." + primaryKeyName);
+            sb.append(".").append(primaryKeyName);
         }
 
         if (operator != Op.NOT_EMPTY)

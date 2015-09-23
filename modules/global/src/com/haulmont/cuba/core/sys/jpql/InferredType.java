@@ -8,27 +8,30 @@ package com.haulmont.cuba.core.sys.jpql;
 import com.haulmont.cuba.core.sys.jpql.model.Attribute;
 
 /**
- * Author: Alexander Chevelev
- * Date: 05.04.2011
- * Time: 3:09:53
+ * @author chevelev
+ * @version $Id$
  */
 public enum InferredType {
     Collection {
+        @Override
         public boolean matches(Attribute attribute) {
             return attribute.isCollection() && attribute.isEntityReferenceAttribute();
         }
     },
     Entity {
+        @Override
         public boolean matches(Attribute attribute) {
             return !attribute.isCollection() && attribute.isEntityReferenceAttribute();
         }
     },
     Date {
+        @Override
         public boolean matches(Attribute attribute) {
             return java.util.Date.class.isAssignableFrom(attribute.getSimpleType());
         }
     },
     Any {
+        @Override
         public boolean matches(Attribute attribute) {
             return true;
         }

@@ -13,9 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Author: Alexander Chevelev
- * Date: 06.04.2011
- * Time: 17:13:12
+ * @author chevelev
+ * @version $Id$
  */
 public class PathEntityReference implements EntityReference {
     private PathNode pathNode;
@@ -26,10 +25,12 @@ public class PathEntityReference implements EntityReference {
         this.pathNode = pathNode.dupNode();
     }
 
+    @Override
     public String replaceEntries(String queryPart, String replaceablePart) {
         return queryPart.replaceAll("\\{E\\}", pathNode.asPathString());
     }
 
+    @Override
     public void renameVariableIn(PathNode node) {
         node.renameVariableTo(pathNode.getEntityVariableName());
         List newChildren = new ArrayList(pathNode.dupNode().getChildren());
@@ -39,15 +40,18 @@ public class PathEntityReference implements EntityReference {
         node.addChildren(newChildren);
     }
 
+    @Override
     public Tree createNode() {
         return pathNode.dupNode();
     }
 
+    @Override
     public boolean isJoinableTo(IdentificationVariableNode node) {
         return pathStartingEntityName.equals(node.getEntityName()) &&
                 pathNode.getEntityVariableName().equals(node.getVariableName());
     }
 
+    @Override
     public PathEntityReference addFieldPath(String fieldPath) {
         PathNode newPathNode = pathNode.dupNode();
         newPathNode.addDefaultChildren(fieldPath);

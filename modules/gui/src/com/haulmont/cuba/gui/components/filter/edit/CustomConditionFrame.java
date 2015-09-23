@@ -345,7 +345,7 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
 
         condition.setWhere(where);
         condition.setUnary(ParamType.UNARY.equals(type));
-        condition.setInExpr(BooleanUtils.isTrue((Boolean) inExprCb.getValue()));
+        condition.setInExpr(BooleanUtils.isTrue(inExprCb.getValue()));
 
         Class javaClass = getParamJavaClass(type);
         condition.setJavaClass(javaClass);

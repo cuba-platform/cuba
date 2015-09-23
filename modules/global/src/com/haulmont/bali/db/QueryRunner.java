@@ -87,8 +87,8 @@ public class QueryRunner {
         try {
             stmt = this.prepareStatement(conn, sql);
 
-            for (int i = 0; i < params.length; i++) {
-                this.fillStatement(stmt, params[i], paramTypes);
+            for (Object[] param : params) {
+                this.fillStatement(stmt, param, paramTypes);
                 stmt.addBatch();
             }
             rows = stmt.executeBatch();
@@ -437,7 +437,7 @@ public class QueryRunner {
     protected void rethrow(SQLException cause, String sql, Object[] params)
         throws SQLException {
 
-        StringBuffer msg = new StringBuffer(cause.getMessage());
+        StringBuilder msg = new StringBuilder(cause.getMessage());
 
         msg.append(" Query: ");
         msg.append(sql);

@@ -54,7 +54,7 @@ public class AppContext {
 
     private static SecurityContextHolder securityContextHolder = new ThreadLocalSecurityContextHolder();
 
-    private static Set<Listener> listeners = new LinkedHashSet<Listener>();
+    private static Set<Listener> listeners = new LinkedHashSet<>();
 
     private static volatile boolean started;
     private static volatile boolean listenersNotified;

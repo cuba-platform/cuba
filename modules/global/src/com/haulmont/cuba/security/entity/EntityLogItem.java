@@ -30,18 +30,18 @@ public class EntityLogItem extends BaseUuidEntity {
 
     private static final long serialVersionUID = 5859030306889056606L;
 
-    public enum Type implements EnumClass<String>
-    {
+    public enum Type implements EnumClass<String> {
         CREATE("C"),
         MODIFY("M"),
         DELETE("D");
 
         private String id;
 
-        private Type(String id) {
+        Type(String id) {
             this.id = id;
         }
 
+        @Override
         public String getId() {
             return id;
         }

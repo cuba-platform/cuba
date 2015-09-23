@@ -6,12 +6,12 @@
 package com.haulmont.cuba.gui.components.filter.edit;
 
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
+import com.haulmont.cuba.gui.components.AbstractFrame;
+import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.Map;
 
 /**

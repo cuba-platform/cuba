@@ -35,6 +35,7 @@ public class SessionAttributeEditor extends AbstractEditor {
         FieldGroup.FieldConfig field = fields.getField("datatype");
         fields.addCustomField(field,
                 new FieldGroup.CustomFieldGenerator() {
+                    @Override
                     public Component generateField(Datasource datasource, String propertyId) {
                         LookupField lookup = AppConfig.getFactory().createComponent(LookupField.class);
                         lookup.setDatasource(datasource, propertyId);

@@ -347,7 +347,7 @@ public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDele
     }
 
     public List<MethodParameterInfo> getMethodParameters() {
-        ArrayList<MethodParameterInfo> result = new ArrayList<MethodParameterInfo>();
+        ArrayList<MethodParameterInfo> result = new ArrayList<>();
         String xml = getMethodParamsXml();
         if (!StringUtils.isBlank(xml)) {
             Document doc = Dom4j.readDocument(xml);

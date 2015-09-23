@@ -10,7 +10,6 @@ import com.haulmont.cuba.core.global.Configuration;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.core.MethodParameter;
@@ -55,6 +54,7 @@ public class CubaDefaultListableBeanFactory extends DefaultListableBeanFactory {
      *
      * @param beanName the name of the bean to reset
      */
+    @Override
     protected void resetBeanDefinition(String beanName) {
         String[] dependentBeans = getDependentBeans(beanName);
         super.resetBeanDefinition(beanName);

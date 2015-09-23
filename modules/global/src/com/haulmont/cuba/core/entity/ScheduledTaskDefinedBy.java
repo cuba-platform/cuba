@@ -6,6 +6,10 @@ package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public enum ScheduledTaskDefinedBy implements EnumClass<String> {
     BEAN("B"),
     CLASS("C"),
@@ -17,6 +21,7 @@ public enum ScheduledTaskDefinedBy implements EnumClass<String> {
         this.id = id;
     }
 
+    @Override
     public String getId() {
         return id;
     }

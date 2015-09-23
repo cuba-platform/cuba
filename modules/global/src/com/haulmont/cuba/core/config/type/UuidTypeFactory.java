@@ -7,8 +7,6 @@ package com.haulmont.cuba.core.config.type;
 
 import com.haulmont.cuba.core.global.UuidProvider;
 
-import java.util.UUID;
-
 /**
  * @author krivopustov
  * @version $Id$

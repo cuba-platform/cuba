@@ -23,11 +23,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @ManagedBean(ObjectsCacheManagerAPI.NAME)
 public class ObjectsCacheManager implements ObjectsCacheManagerAPI {
 
-    protected ConcurrentMap<String, ObjectsCacheInstance> instances =
-            new ConcurrentHashMap<String, ObjectsCacheInstance>();
+    protected ConcurrentMap<String, ObjectsCacheInstance> instances = new ConcurrentHashMap<>();
 
-    protected ConcurrentMap<String, ObjectsCacheController> controllers =
-            new ConcurrentHashMap<String, ObjectsCacheController>();
+    protected ConcurrentMap<String, ObjectsCacheController> controllers = new ConcurrentHashMap<>();
 
     protected Logger log = LoggerFactory.getLogger(getClass());
 

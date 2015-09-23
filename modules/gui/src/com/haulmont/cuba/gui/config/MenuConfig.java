@@ -153,7 +153,7 @@ public class MenuConfig {
                 String id = element.attributeValue("id");
 
                 if (StringUtils.isBlank(id)) {
-                    log.warn(String.format("Invalid menu-config: 'id' attribute not defined"));
+                    log.warn("Invalid menu-config: 'id' attribute not defined");
                 }
 
                 menuItem = new MenuItem(currentParentItem, id);

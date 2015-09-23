@@ -101,16 +101,15 @@ public abstract class ConditionFrame<T extends AbstractCondition> extends Abstra
             return false;
 
         if (hidden != null) {
-            condition.setHidden((Boolean) hidden.getValue());
+            condition.setHidden(hidden.getValue());
         }
         if (required != null) {
-            condition.setRequired((Boolean) required.getValue());
+            condition.setRequired(required.getValue());
         }
         if (width != null) {
-            condition.setWidth((Integer) width.getValue());
+            condition.setWidth(width.getValue());
         }
 
         return true;
     }
-
 }

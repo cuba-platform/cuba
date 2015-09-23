@@ -249,7 +249,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     protected void doSort() {
-        List<T> list = new ArrayList<T>(data.values());
+        List<T> list = new ArrayList<>(data.values());
         Collections.sort(list, createEntityComparator());
         data.clear();
         for (T t : list) {
@@ -368,7 +368,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
 
         // Get items
-        List<Object> collectionItems = new ArrayList<Object>(data.values());
+        List<Object> collectionItems = new ArrayList<>(data.values());
         // Clear container
         data.clear();
         // Notify listeners

@@ -53,6 +53,7 @@ public class GroupTableLoader extends TableLoader {
                 }
             }
             context.addPostInitTask(new PostInitTask() {
+                @Override
                 public void execute(Context context, Frame window) {
                     ((GroupTable) component).groupBy(groupProperties.toArray());
                 }

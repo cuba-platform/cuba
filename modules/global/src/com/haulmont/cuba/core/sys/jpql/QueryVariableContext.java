@@ -15,14 +15,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Author: Alexander Chevelev
- * Date: 20.10.2010
- * Time: 19:29:29
+ * @author chevelev
+ * @version $Id$
  */
 public class QueryVariableContext {
-    private Map<String, Entity> entityVariableName2entity = new HashMap<String, Entity>();
+    private Map<String, Entity> entityVariableName2entity = new HashMap<>();
     private QueryNode node;
-    private List<QueryVariableContext> children = new ArrayList<QueryVariableContext>();
+    private List<QueryVariableContext> children = new ArrayList<>();
     private Entity entity;
     private boolean propagateVariablesUpstairs = true;
     private QueryVariableContext parent = null;

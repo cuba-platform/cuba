@@ -50,9 +50,6 @@ public class DataServiceController {
     protected ConversionFactory conversionFactory = new ConversionFactory();
 
     @Inject
-    protected MetadataTools metadataTools;
-
-    @Inject
     protected DataService dataService;
 
     @Inject
@@ -154,7 +151,7 @@ public class DataServiceController {
                 return;
             }
 
-            Map<String, String[]> queryParams = new HashMap<String, String[]>(request.getParameterMap());
+            Map<String, String[]> queryParams = new HashMap<>(request.getParameterMap());
             queryParams.remove("e");
             queryParams.remove("q");
             queryParams.remove("view");

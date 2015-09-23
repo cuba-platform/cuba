@@ -19,7 +19,7 @@ public class HintResponse {
 
     public HintResponse(String errorMessage, List<String> causeErrorMessage) {
         this.errorMessage = errorMessage;
-        this.causeErrorMessage = new ArrayList<String>(causeErrorMessage);
+        this.causeErrorMessage = new ArrayList<>(causeErrorMessage);
         options = Collections.emptyList();
     }
 
@@ -31,7 +31,7 @@ public class HintResponse {
     }
 
     public List<String> getOptions() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (Option option : options) {
             result.add(option.getValue());
         }
@@ -41,6 +41,7 @@ public class HintResponse {
 
     public List<Option> getOptionObjects() {
         Collections.sort(options, new Comparator<Option>() {
+            @Override
             public int compare(Option o1, Option o2) {
                 return o1.getValue().compareTo(o2.getValue());
             }

@@ -46,8 +46,7 @@ public abstract class BackgroundTask<T, V> {
 
     private final long timeoutMilliseconds;
 
-    private final List<ProgressListener<T, V>> progressListeners =
-            Collections.synchronizedList(new ArrayList<ProgressListener<T, V>>());
+    private final List<ProgressListener<T, V>> progressListeners = Collections.synchronizedList(new ArrayList<>());
 
     /**
      * Create a task with timeout.

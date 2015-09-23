@@ -5,18 +5,12 @@
 
 package com.haulmont.cuba.gui.components.filter;
 
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.UUID;
-
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public enum Op {
     EQUAL("=", false),

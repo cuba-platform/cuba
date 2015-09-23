@@ -426,7 +426,7 @@ public class DesktopWindowManager extends WindowManager {
         }
 
         windowFrame.getWindowManager().attachTab(breadCrumbs,
-                new Stack<Map.Entry<Window, Integer>>(),
+                new Stack<>(),
                 window,
                 getWindowHashCode(window),
                 tabContent, openModes);
@@ -656,7 +656,7 @@ public class DesktopWindowManager extends WindowManager {
             }
         }
         if (!pushed) {
-            stacks.get(breadCrumbs).push(new AbstractMap.SimpleEntry<Window, Integer>(currentWindow, null));
+            stacks.get(breadCrumbs).push(new AbstractMap.SimpleEntry<>(currentWindow, null));
         }
 
         windows.remove(window);
@@ -716,7 +716,7 @@ public class DesktopWindowManager extends WindowManager {
         window.setHeight("100%");
 
         final WindowBreadCrumbs breadCrumbs = createBreadCrumbs();
-        stacks.put(breadCrumbs, new Stack<Map.Entry<Window, Integer>>());
+        stacks.put(breadCrumbs, new Stack<>());
 
         breadCrumbs.addWindow(window);
         JComponent tabContent = createNewTab(window, caption, description, breadCrumbs, tabPosition);

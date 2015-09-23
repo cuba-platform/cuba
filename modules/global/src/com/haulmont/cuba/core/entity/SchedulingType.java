@@ -6,6 +6,10 @@ package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public enum SchedulingType implements EnumClass<String> {
     CRON("C"),
     PERIOD("P");
@@ -16,6 +20,7 @@ public enum SchedulingType implements EnumClass<String> {
         this.id = id;
     }
 
+    @Override
     public String getId() {
         return id;
     }

@@ -8,7 +8,6 @@ package com.haulmont.cuba.core.global;
 import groovy.lang.Binding;
 
 import javax.annotation.Nullable;
-import java.io.InputStream;
 import java.util.Map;
 
 /**

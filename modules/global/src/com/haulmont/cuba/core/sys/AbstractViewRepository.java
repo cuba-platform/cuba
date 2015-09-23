@@ -47,7 +47,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class AbstractViewRepository implements ViewRepository {
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     protected List<String> readFileNames = new LinkedList<>();
 
@@ -98,7 +98,7 @@ public class AbstractViewRepository implements ViewRepository {
             checkDuplicates(rootElem);
 
             for (Element viewElem : Dom4j.elements(rootElem, "view")) {
-                deployView(rootElem, viewElem, new HashSet<ViewInfo>());
+                deployView(rootElem, viewElem, new HashSet<>());
             }
         }
 
@@ -214,7 +214,7 @@ public class AbstractViewRepository implements ViewRepository {
         try {
             checkInitialized();
 
-            View view = retrieveView(metaClass, name, new HashSet<ViewInfo>());
+            View view = retrieveView(metaClass, name, new HashSet<>());
             return copyView(view);
         } finally {
             lock.readLock().unlock();
@@ -325,7 +325,7 @@ public class AbstractViewRepository implements ViewRepository {
             addFile(rootElem, resourceUrl);
 
             for (Element viewElem : Dom4j.elements(rootElem, "view")) {
-                deployView(rootElem, viewElem, new HashSet<ViewInfo>());
+                deployView(rootElem, viewElem, new HashSet<>());
             }
         } finally {
             lock.writeLock().unlock();
@@ -376,7 +376,7 @@ public class AbstractViewRepository implements ViewRepository {
     public View deployView(Element rootElem, Element viewElem) {
         lock.writeLock().lock();
         try {
-            return deployView(rootElem, viewElem, new HashSet<ViewInfo>());
+            return deployView(rootElem, viewElem, new HashSet<>());
         } finally {
             lock.writeLock().unlock();
         }

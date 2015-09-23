@@ -45,7 +45,7 @@ public class LoadContext<E extends Entity> implements Serializable {
      * @param entityClass   class of the loaded entities
      */
     public static <E extends Entity> LoadContext<E> create(Class<E> entityClass) {
-        return new LoadContext<E>(entityClass);
+        return new LoadContext<>(entityClass);
     }
 
     /**

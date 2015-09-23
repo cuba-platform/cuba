@@ -16,18 +16,15 @@ import org.antlr.runtime.CharStream;
  */
 
 /**
- * Author: Alexander Chevelev
- * Date: 16.10.2010
- * Time: 12:56:36
+ * @author chevelev
+ * @version $Id$
  */
-
-
-
 public class AntlrNoCaseStringStream extends ANTLRStringStream {
     public AntlrNoCaseStringStream(String str) {
         super(str);
     }
 
+    @Override
     public int LA(int i) {
         if (i == 0) {
             return 0; // undefined

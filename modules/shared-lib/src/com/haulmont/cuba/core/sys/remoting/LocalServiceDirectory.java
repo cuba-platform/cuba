@@ -12,13 +12,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class LocalServiceDirectory {
 
-    private static Map<String, LocalServiceInvoker> invokers = new ConcurrentHashMap<String, LocalServiceInvoker>();
+    private static Map<String, LocalServiceInvoker> invokers = new ConcurrentHashMap<>();
 
     private static Logger log = LoggerFactory.getLogger(LocalServiceDirectory.class);
 

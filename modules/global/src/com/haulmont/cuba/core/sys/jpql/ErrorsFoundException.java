@@ -9,9 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Author: Alexander Chevelev
- * Date: 01.04.2011
- * Time: 18:36:09
+ * @author chevelev
+ * @version $Id$
  */
 public class ErrorsFoundException extends RuntimeException{
     private List<ErrorRec> errorRecs;
@@ -21,7 +20,7 @@ public class ErrorsFoundException extends RuntimeException{
 
     public ErrorsFoundException(String message, List<ErrorRec> errorRecs) {
         super(message);
-        this.errorRecs = new ArrayList<ErrorRec>(errorRecs);
+        this.errorRecs = new ArrayList<>(errorRecs);
     }
 
     public List<ErrorRec> getErrorRecs() {

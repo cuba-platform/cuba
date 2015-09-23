@@ -10,6 +10,10 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class EntityByIdComparator<T extends Entity<K>, K> extends AbstractComparator<K> {
     private MetaPropertyPath propertyPath;
     private MetaProperty property;
@@ -24,6 +28,7 @@ public class EntityByIdComparator<T extends Entity<K>, K> extends AbstractCompar
         this.datasource = datasource;
     }
 
+    @Override
     public int compare(K key1, K key2) {
         Object o1 = getValue(datasource.getItem(key1));
         Object o2 = getValue(datasource.getItem(key2));

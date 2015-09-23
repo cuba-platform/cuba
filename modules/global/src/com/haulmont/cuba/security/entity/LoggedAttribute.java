@@ -8,7 +8,6 @@ import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
 
 /**
  * Configuration element of <code>EntityLog</code> bean.

@@ -6,7 +6,6 @@
 package com.haulmont.cuba.gui.app.core.scheduled;
 
 import com.haulmont.cuba.core.app.SchedulingService;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
@@ -14,8 +13,6 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import org.apache.commons.lang.BooleanUtils;
 
 import javax.inject.Inject;
@@ -95,7 +92,7 @@ public class ScheduledTaskBrowser extends AbstractWindow {
         public void actionPerform(Component component) {
             ScheduledTask task = tasksTable.getSingleSelected();
             if (task != null) {
-                Map<String, Object> params = new HashMap<String, Object>();
+                Map<String, Object> params = new HashMap<>();
                 params.put("task", task);
                 openWindow("sys$ScheduledExecution.browse", WindowManager.OpenType.THIS_TAB, params);
             }

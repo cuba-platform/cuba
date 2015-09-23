@@ -28,7 +28,7 @@ public class EntityPath {
 
     public static EntityPath parseEntityPath(String lastWord) {
         String[] parts = lastWord.split("\\.");
-        EntityPath result = new EntityPath();;
+        EntityPath result = new EntityPath();
         if (parts.length > 0) {
             result.topEntityVariableName = parts[0];
             int consumedPartsCount = 1;

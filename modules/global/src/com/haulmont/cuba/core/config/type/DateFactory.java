@@ -14,6 +14,7 @@ import java.text.ParseException;
  * @version $Id$
  */
 public class DateFactory extends TypeFactory {
+    @Override
     public Object build(String string) {
         if (string == null)
             return null;

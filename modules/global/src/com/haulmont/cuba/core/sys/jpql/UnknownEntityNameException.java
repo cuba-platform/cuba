@@ -6,9 +6,8 @@
 package com.haulmont.cuba.core.sys.jpql;
 
 /**
- * User: Alex Chevelev
- * Date: 14.10.2010
- * Time: 0:06:42
+ * @author chevelev
+ * @version $Id$
  */
 public class UnknownEntityNameException extends Throwable {
     private String entityName;

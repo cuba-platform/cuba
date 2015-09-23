@@ -23,13 +23,6 @@ import java.util.List;
  */
 public class JpqlSuggestionFactory {
 
-//    public JpqlSuggestionFactory(int senderCursorPosition, int prefixLength) {
-//        this.prefixLength = prefixLength;
-//
-//        startPosition = senderCursorPosition - prefixLength;
-//        endPosition = senderCursorPosition;
-//    }
-
     protected static Suggestion produce(AutoCompleteSupport sender, String value, String description, int senderCursorPosition, int prefixLength) {
         String valueSuffix = value.substring(prefixLength);
         String displayedValue;
@@ -65,9 +58,10 @@ public class JpqlSuggestionFactory {
             String prefix = response.getLastWord();
             List<Option> options = response.getOptionObjects();
 
-            List<Suggestion> result = new ArrayList<Suggestion>();
+            List<Suggestion> result = new ArrayList<>();
             for (Option option : options) {
-                Suggestion suggestion = JpqlSuggestionFactory.produce(sender, option.getValue(), option.getDescription(), senderCursorPosition, prefix == null ? 0 : prefix.length());
+                Suggestion suggestion = JpqlSuggestionFactory.produce(sender, option.getValue(), option.getDescription(),
+                        senderCursorPosition, prefix == null ? 0 : prefix.length());
                 result.add(suggestion);
             }
             return result;

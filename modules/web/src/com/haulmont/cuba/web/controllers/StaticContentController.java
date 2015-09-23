@@ -80,6 +80,7 @@ public class StaticContentController implements LastModified {
             this.url = url;
         }
 
+        @Override
         public long getLastModified() {
             return lastModified;
         }
@@ -95,6 +96,7 @@ public class StaticContentController implements LastModified {
                 resp.setContentLength(contentLength);
         }
 
+        @Override
         public void respondGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
             setHeaders(resp);
             final OutputStream os;
@@ -112,6 +114,7 @@ public class StaticContentController implements LastModified {
             }
         }
 
+        @Override
         public void respondHead(HttpServletRequest req, HttpServletResponse resp) throws IOException {
             if (willDeflate())
                 throw new UnsupportedOperationException();

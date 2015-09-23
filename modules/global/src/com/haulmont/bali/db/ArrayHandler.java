@@ -4,6 +4,7 @@
  */
 package com.haulmont.bali.db;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -12,7 +13,10 @@ import java.sql.SQLException;
  * <code>ResultSet</code> into an <code>Object[]</code>. This class is
  * thread safe.
  *
+ * @author krivopustov
+ * @version $Id$
  */
+@ThreadSafe
 public class ArrayHandler implements ResultSetHandler<Object[]> {
 
     /**
@@ -55,8 +59,8 @@ public class ArrayHandler implements ResultSetHandler<Object[]> {
      *
      * @throws SQLException if a database access error occurs
      */
+    @Override
     public Object[] handle(ResultSet rs) throws SQLException {
         return rs.next() ? this.convert.toArray(rs) : null;
     }
-
 }

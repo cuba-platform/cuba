@@ -14,17 +14,16 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Author: Alexander Chevelev
- * Date: 27.03.2011
- * Time: 0:36:19
+ * @author chevelev
+ * @version $Id$
  */
 public class VariableManipulator implements TreeVisitorAction {
-    private List<PathNode> variableUses = new ArrayList<PathNode>();
+    private List<PathNode> variableUses = new ArrayList<>();
 
     public VariableManipulator() {
     }
 
-
+    @Override
     public Object pre(Object o) {
         // todo небезопасен, если изменяемое дерево определяет свои собственные переменные
         if (o instanceof PathNode) {
@@ -34,12 +33,13 @@ public class VariableManipulator implements TreeVisitorAction {
         return o;
     }
 
+    @Override
     public Object post(Object o) {
         return o;
     }
 
     public Set<String> getUsedVariableNames() {
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
         for (PathNode variableUse : variableUses) {
             result.add(variableUse.getEntityVariableName());
         }

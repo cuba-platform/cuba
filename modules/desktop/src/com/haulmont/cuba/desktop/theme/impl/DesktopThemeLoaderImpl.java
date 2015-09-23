@@ -37,9 +37,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * <p>$Id$</p>
- *
  * @author Alexander Budarov
+ * @version $Id$
  */
 @ManagedBean(DesktopThemeLoader.NAME)
 public class DesktopThemeLoaderImpl implements DesktopThemeLoader {
@@ -57,12 +56,13 @@ public class DesktopThemeLoaderImpl implements DesktopThemeLoader {
     // like '255 128 0'
     private static final Pattern DECIMAL_COLOR_PATTERN = Pattern.compile("^(\\d+)\\s+(\\d+)\\s+(\\d+)$");
 
+    @Override
     public DesktopTheme loadTheme(String themeName) {
         String themeLocations = config.getResourceLocations();
         StrTokenizer tokenizer = new StrTokenizer(themeLocations);
         String[] locationList = tokenizer.getTokenArray();
 
-        List<String> resourceLocationList = new ArrayList<String>();
+        List<String> resourceLocationList = new ArrayList<>();
         DesktopThemeImpl theme = createTheme(themeName, locationList);
         theme.setName(themeName);
         for (String location : locationList) {
@@ -113,11 +113,7 @@ public class DesktopThemeLoaderImpl implements DesktopThemeLoader {
             try {
                 Class themeClass = Class.forName(themeClassName);
                 return (DesktopThemeImpl) themeClass.newInstance();
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (InstantiationException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
+            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -229,7 +225,7 @@ public class DesktopThemeLoaderImpl implements DesktopThemeLoader {
             if (componentsElement != null) {
                 String componentsStr = componentsElement.getTextTrim();
                 StrTokenizer tokenizer = new StrTokenizer(componentsStr);
-                components = new ArrayList<Class>();
+                components = new ArrayList<>();
                 for (String className : tokenizer.getTokenArray()) {
                     try {
                         components.add(Class.forName(className));
@@ -240,7 +236,7 @@ public class DesktopThemeLoaderImpl implements DesktopThemeLoader {
             }
         }
 
-        List<ComponentDecorator> decorators = new ArrayList<ComponentDecorator>();
+        List<ComponentDecorator> decorators = new ArrayList<>();
         for (Element childElement : (List<Element>) element.elements()) {
             if (!componentsSubTag.equals(childElement.getName())) {
                 ComponentDecorator decorator = loadDecorator(childElement);
@@ -514,5 +510,4 @@ public class DesktopThemeLoaderImpl implements DesktopThemeLoader {
         log.error("Unparseable color value: " + value);
         return null;
     }
-
 }

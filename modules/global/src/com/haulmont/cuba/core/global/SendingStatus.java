@@ -8,11 +8,9 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
 /**
- * <p>$Id$</p>
- *
  * @author ovchinnikov
+ * @version $Id$
  */
-
 public enum SendingStatus implements EnumClass<Integer> {
     QUEUE(0),
     SENDING(100),
@@ -25,6 +23,7 @@ public enum SendingStatus implements EnumClass<Integer> {
         this.id=id;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }

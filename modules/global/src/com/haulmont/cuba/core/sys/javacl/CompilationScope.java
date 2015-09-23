@@ -10,10 +10,14 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.util.HashSet;
 
+/**
+ * @author degtyarjov
+ * @version $Id$
+ */
 class CompilationScope {
-    final HashSet<String> compilationNeeded = new HashSet<String>();
+    final HashSet<String> compilationNeeded = new HashSet<>();
 
-    private final HashSet<String> processed = new HashSet<String>();
+    private final HashSet<String> processed = new HashSet<>();
     private final JavaClassLoader javaClassLoader;
     private final String rootClassName;
     private final SourceProvider sourceProvider;

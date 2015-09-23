@@ -39,7 +39,7 @@ public class SaveFilterWindow extends AbstractWindow {
     }
 
     public void commit() {
-        if (Strings.isNullOrEmpty((String) filterName.getValue())) {
+        if (Strings.isNullOrEmpty(filterName.getValue())) {
             showNotification(getMessage("SaveFilter.fillName"), NotificationType.WARNING);
             return;
         }

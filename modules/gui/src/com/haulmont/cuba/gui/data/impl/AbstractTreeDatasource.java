@@ -148,7 +148,7 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
         }
 
         // Get items
-        List<Object> collectionItems = new ArrayList<Object>(data.values());
+        List<Object> collectionItems = new ArrayList<>(data.values());
         // Clear container
         data.clear();
 

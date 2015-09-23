@@ -34,7 +34,7 @@ public class PersistenceManagerClient implements PersistenceManagerService {
         Integer maxFetchUI;
     }
 
-    protected Map<String, CacheEntry> cache = new ConcurrentHashMap<String, CacheEntry>();
+    protected Map<String, CacheEntry> cache = new ConcurrentHashMap<>();
 
     protected volatile String dbmsType;
     protected volatile String dbmsVersion;

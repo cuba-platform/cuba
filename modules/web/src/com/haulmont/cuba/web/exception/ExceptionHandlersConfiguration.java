@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class ExceptionHandlersConfiguration {
 
-    private List<Class> handlerClasses = new ArrayList<Class>();
+    private List<Class> handlerClasses = new ArrayList<>();
 
     /**
      * Set the list of exception handler class names, usually from spring.xml.

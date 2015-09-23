@@ -46,7 +46,7 @@ public class PortalAuthenticationServiceImpl implements PortalAuthenticationServ
     }
 
     private List<GrantedAuthority> getRoleUserAuthorities(PortalSession portalSession) {
-        final List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
+        final List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
         if (!portalSession.isAuthenticated()) {
             return grantedAuthorities;
         } else {

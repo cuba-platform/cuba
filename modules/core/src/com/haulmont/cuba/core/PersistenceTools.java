@@ -6,35 +6,23 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.impl.UUIDDatatype;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.UuidProvider;
+import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
+import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
-import org.eclipse.persistence.indirection.ValueHolderInterface;
-import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
-import org.eclipse.persistence.internal.indirection.DatabaseValueHolder;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
-import org.eclipse.persistence.queries.FetchGroup;
-import org.eclipse.persistence.queries.FetchGroupTracker;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.persistence.JoinColumn;
-import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Utility class to provide common functionality related to persistence.

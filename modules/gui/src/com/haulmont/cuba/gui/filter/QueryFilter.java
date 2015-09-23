@@ -158,7 +158,7 @@ public class QueryFilter {
 
     private Condition refine(Condition src, Set<String> params) {
         Condition copy = src.copy();
-        List<Condition> list = new ArrayList<Condition>();
+        List<Condition> list = new ArrayList<>();
         for (Condition condition : src.getConditions()) {
             if (isActual(condition, params)) {
                 list.add(refine(condition, params));

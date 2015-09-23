@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.*;
 
 /**

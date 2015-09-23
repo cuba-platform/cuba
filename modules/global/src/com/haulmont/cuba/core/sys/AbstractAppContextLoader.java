@@ -8,11 +8,9 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.cuba.core.sys.persistence.EclipseLinkCustomizer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
-import org.eclipse.persistence.annotations.TransientCompatibleAnnotations;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.ResourceUtils;
 
-import javax.persistence.Temporal;
 import java.io.File;
 
 /**

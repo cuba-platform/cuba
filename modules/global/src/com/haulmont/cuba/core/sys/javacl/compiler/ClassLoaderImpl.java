@@ -19,7 +19,7 @@ import java.util.Map;
  * A custom ClassLoader which maps class names to JavaFileObjectImpl instances.
  */
 final class ClassLoaderImpl extends ClassLoader {
-    private final Map<String, JavaFileObject> classes = new HashMap<String, JavaFileObject>();
+    private final Map<String, JavaFileObject> classes = new HashMap<>();
     private final ProxyClassLoader proxyClassLoader;
 
     ClassLoaderImpl(final ProxyClassLoader proxyClassLoader) {

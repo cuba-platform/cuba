@@ -14,9 +14,8 @@ import org.antlr.runtime.tree.Tree;
 import java.util.List;
 
 /**
- * Author: Alexander Chevelev
- * Date: 20.10.2010
- * Time: 23:20:41
+ * @author chevelev
+ * @version $Id$
  */
 public class QueryNode extends BaseCustomNode {
     private Token lastToken;
@@ -53,11 +52,13 @@ public class QueryNode extends BaseCustomNode {
         return super.toStringTree();
     }
 
+    @Override
     public CommonTree treeToQueryPre(QueryBuilder sb, List<ErrorRec> invalidNodes) {
         sb.appendString(getText());
         return this;
     }
 
+    @Override
     public CommonTree treeToQueryPost(QueryBuilder sb, List<ErrorRec> invalidNodes) {
         if (parent != null) {
             if (' ' == sb.getLast())

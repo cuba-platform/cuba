@@ -32,6 +32,7 @@ public abstract class AbstractGenericExceptionHandler implements GenericExceptio
         this.classNames = Arrays.asList(classNames);
     }
 
+    @Override
     public boolean handle(Throwable exception, WindowManager windowManager) {
         //noinspection unchecked
         List<Throwable> list = ExceptionUtils.getThrowableList(exception);
@@ -80,5 +81,4 @@ public abstract class AbstractGenericExceptionHandler implements GenericExceptio
      */
     protected abstract void doHandle(String className, String message, @Nullable Throwable throwable,
                                      WindowManager windowManager);
-
 }

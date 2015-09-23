@@ -15,9 +15,8 @@ import org.antlr.runtime.tree.Tree;
 import java.util.List;
 
 /**
- * Author: Alexander Chevelev
- * Date: 30.10.2010
- * Time: 4:15:07
+ * @author chevelev
+ * @version $Id$
  */
 public class CollectionMemberNode extends BaseJoinNode {
 
@@ -41,12 +40,14 @@ public class CollectionMemberNode extends BaseJoinNode {
         return result;
     }
 
+    @Override
     public CommonTree treeToQueryPre(QueryBuilder sb, List<ErrorRec> invalidNodes) {
         sb.appendSpace();
         sb.appendString("in(");
         return this;
     }
 
+    @Override
     public CommonTree treeToQueryPost(QueryBuilder sb, List<ErrorRec> invalidNodes) {
         // должно появится после определения сущности, из которой выбирают, поэтому в post
         sb.appendString(")");

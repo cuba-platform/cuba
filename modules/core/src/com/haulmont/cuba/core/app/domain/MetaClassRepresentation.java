@@ -248,7 +248,7 @@ public class MetaClassRepresentation {
         }
 
         public Collection<MetaClassRepViewProperty> getProperties() {
-            Collection<MetaClassRepViewProperty> result = new ArrayList<MetaClassRepViewProperty>();
+            Collection<MetaClassRepViewProperty> result = new ArrayList<>();
             MetaClass meta = getMetaClass(view.getEntityClass());
             for (ViewProperty property : view.getProperties()) {
                 if (!MetaClassRepresentation.viewPropertyReadPermitted(meta, property))

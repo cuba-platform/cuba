@@ -8,11 +8,15 @@ import com.haulmont.cuba.gui.xml.ParameterInfo;
 
 import java.util.*;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class LogicalCondition extends Condition {
 
     private final LogicalOp operation;
 
-    private List<Condition> conditions = new ArrayList<Condition>();
+    private List<Condition> conditions = new ArrayList<>();
 
     public LogicalCondition(LogicalOp operation) {
         this.operation = operation;
@@ -27,6 +31,7 @@ public class LogicalCondition extends Condition {
         return conditions;
     }
 
+    @Override
     public void setConditions(List<Condition> conditions) {
         this.conditions = conditions;
     }
@@ -57,7 +62,7 @@ public class LogicalCondition extends Condition {
 
     @Override
     public Set<ParameterInfo> getParameters() {
-        Set<ParameterInfo> set = new HashSet<ParameterInfo>();
+        Set<ParameterInfo> set = new HashSet<>();
         for (Condition condition : conditions) {
             set.addAll(condition.getParameters());
         }
@@ -66,7 +71,7 @@ public class LogicalCondition extends Condition {
 
     @Override
     public Set<String> getJoins() {
-        Set<String> set = new LinkedHashSet<String>();
+        Set<String> set = new LinkedHashSet<>();
         for (Condition condition : conditions) {
             set.addAll(condition.getJoins());
         }

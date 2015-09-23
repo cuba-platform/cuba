@@ -129,7 +129,7 @@ public final class ReflectionHelper {
      * @return          the array of argument types
      */
     public static Class[] getParamTypes(Object... params) {
-        List<Class> paramClasses = new ArrayList<Class>();
+        List<Class> paramClasses = new ArrayList<>();
         for (Object param : params) {
             if (param == null)
                 throw new IllegalStateException("Null parameter");

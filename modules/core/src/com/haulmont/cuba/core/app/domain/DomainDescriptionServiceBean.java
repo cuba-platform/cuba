@@ -71,6 +71,7 @@ public class DomainDescriptionServiceBean implements DomainDescriptionService {
 
         }
         Collections.sort(classes, new Comparator<MetaClassRepresentation>() {
+            @Override
             public int compare(MetaClassRepresentation o1, MetaClassRepresentation o2) {
                 return o1.getName().compareTo(o2.getName());
             }

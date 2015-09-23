@@ -78,6 +78,7 @@ public class EntityClassPropertyDiff extends EntityPropertyDiff {
         return itemState;
     }
 
+    @Override
     public void setItemState(ItemState itemState) {
         this.itemState = itemState;
     }

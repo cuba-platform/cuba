@@ -15,9 +15,8 @@ import org.antlr.runtime.tree.Tree;
 import java.util.List;
 
 /**
- * Author: Alexander Chevelev
- * Date: 01.04.2011
- * Time: 20:22:32
+ * @author chevelev
+ * @version $Id$
  */
 public class JoinVariableNode extends BaseJoinNode {
     private String joinSpec;
@@ -43,6 +42,7 @@ public class JoinVariableNode extends BaseJoinNode {
         return result;
     }
 
+    @Override
     public CommonTree treeToQueryPre(QueryBuilder sb, List<ErrorRec> invalidNodes) {
         sb.appendSpace();
         sb.appendString(joinSpec);
@@ -50,6 +50,7 @@ public class JoinVariableNode extends BaseJoinNode {
         return this;
     }
 
+    @Override
     public CommonTree treeToQueryPost(QueryBuilder sb, List<ErrorRec> invalidNodes) {
         // должно появится после определения сущности, из которой выбирают, поэтому в post
         sb.appendSpace();

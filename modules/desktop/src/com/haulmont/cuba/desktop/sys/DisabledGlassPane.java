@@ -15,9 +15,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseMotionAdapter;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DisabledGlassPane extends JComponent implements KeyListener {
 
@@ -78,13 +77,16 @@ public class DisabledGlassPane extends JComponent implements KeyListener {
     //
     //  Implement the KeyListener to consume events
     //
+    @Override
     public void keyPressed(KeyEvent e) {
         e.consume();
     }
 
+    @Override
     public void keyTyped(KeyEvent e) {
     }
 
+    @Override
     public void keyReleased(KeyEvent e) {
         e.consume();
     }

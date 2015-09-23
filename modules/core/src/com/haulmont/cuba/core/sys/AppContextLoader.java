@@ -11,10 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.eclipse.persistence.annotations.TransientCompatibleAnnotations;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import javax.persistence.Temporal;
 
 /**
  * {@link AppContext} loader of the middleware web application.

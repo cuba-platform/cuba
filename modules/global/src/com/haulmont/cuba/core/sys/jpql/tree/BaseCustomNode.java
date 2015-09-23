@@ -14,19 +14,20 @@ import org.antlr.runtime.tree.Tree;
 import java.util.List;
 
 /**
- * Author: Alexander Chevelev
- * Date: 26.03.2011
- * Time: 15:40:55
+ * @author chevelev
+ * @version $Id$
  */
 public class BaseCustomNode extends CommonTree implements TreeToQueryCapable {
     public BaseCustomNode(Token t) {
         super(t);
     }
 
+    @Override
     public CommonTree treeToQueryPre(QueryBuilder sb, List<ErrorRec> invalidNodes) {
         return this;
     }
 
+    @Override
     public CommonTree treeToQueryPost(QueryBuilder sb, List<ErrorRec> invalidNodes) {
         return this;
     }

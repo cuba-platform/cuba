@@ -4,6 +4,7 @@
  */
 package com.haulmont.bali.db;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -36,6 +37,7 @@ import java.util.Map;
  *
  * @since DbUtils 1.1
  */
+@ThreadSafe
 public class BeanProcessor {
 
     /**
@@ -332,7 +334,7 @@ public class BeanProcessor {
     private PropertyDescriptor[] propertyDescriptors(Class c)
         throws SQLException {
         // Introspector caches BeanInfo classes for better performance
-        BeanInfo beanInfo = null;
+        BeanInfo beanInfo;
         try {
             beanInfo = Introspector.getBeanInfo(c);
 
@@ -447,7 +449,5 @@ public class BeanProcessor {
         } else {
             return rs.getObject(index);
         }
-
     }
-
 }

@@ -10,9 +10,8 @@ import com.haulmont.cuba.core.sys.jpql.tree.PathNode;
 import org.antlr.runtime.tree.Tree;
 
 /**
- * Author: Alexander Chevelev
- * Date: 13.04.2011
- * Time: 17:59:30
+ * @author chevelev
+ * @version $Id$
  */
 public class EntityNameEntityReference implements EntityReference {
     private String entityName;
@@ -21,18 +20,22 @@ public class EntityNameEntityReference implements EntityReference {
         this.entityName = entityName;
     }
 
+    @Override
     public String replaceEntries(String queryPart, String replaceablePart) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void renameVariableIn(PathNode node) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Tree createNode() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean isJoinableTo(IdentificationVariableNode node) {
         return entityName.equals(node.getEntityName());
     }

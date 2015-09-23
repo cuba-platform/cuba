@@ -37,6 +37,7 @@ public class PropertyConditionFrame extends ConditionFrame<PropertyCondition> {
         super.init(params);
     }
 
+    @Override
     public void setCondition(PropertyCondition condition) {
         super.setCondition(condition);
         if (operationComponent != null)
@@ -69,7 +70,7 @@ public class PropertyConditionFrame extends ConditionFrame<PropertyCondition> {
     public boolean commit() {
         if (!super.commit())
             return false;
-        condition.setCaption((String) caption.getValue());
+        condition.setCaption(caption.getValue());
         return true;
     }
 }

@@ -299,7 +299,7 @@ public abstract class AbstractMessages implements Messages {
         if (notFound != null)
             return defaultValue;
 
-        msg = searchMessage(packs, key, locale, false, new HashSet<String>());
+        msg = searchMessage(packs, key, locale, false, new HashSet<>());
         if (msg != null) {
             cache(cacheKey, msg);
             return msg;
@@ -307,7 +307,7 @@ public abstract class AbstractMessages implements Messages {
 
         if (searchMainIfNotFound) {
             String tmpCacheKey = makeCacheKey(mainMessagePack, key, locale, false);
-            msg = searchMessage(tmpCacheKey, key, locale, false, new HashSet<String>());
+            msg = searchMessage(tmpCacheKey, key, locale, false, new HashSet<>());
             if (msg != null) {
                 cache(cacheKey, msg);
                 return msg;

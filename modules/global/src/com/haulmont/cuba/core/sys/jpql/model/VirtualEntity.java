@@ -6,9 +6,8 @@
 package com.haulmont.cuba.core.sys.jpql.model;
 
 /**
- * Author: Alexander Chevelev
- * Date: 20.10.2010
- * Time: 22:42:00
+ * @author chevelev
+ * @version $Id$
  */
 public class VirtualEntity extends EntityImpl {
     public static int idx = 0;

@@ -50,7 +50,7 @@ public class FilterParser {
 
                 String type = el.attributeValue("type");
                 condition = createCondition(ConditionType.valueOf(type), el, filter, xml);
-                Node<AbstractCondition> node = new Node<AbstractCondition>(condition);
+                Node<AbstractCondition> node = new Node<>(condition);
                 if (parentNode != null)
                     parentNode.addChild(node);
                 else

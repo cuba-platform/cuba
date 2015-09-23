@@ -4,11 +4,12 @@
  */
 package com.haulmont.cuba.core.sys;
 
-import com.google.common.base.Predicate;
-
-import java.io.File;
 import java.util.List;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public interface DbUpdater {
 
     String NAME = "cuba_DbUpdater";

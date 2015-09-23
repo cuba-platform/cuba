@@ -65,7 +65,7 @@ public class UserSetHelper {
     }
 
     public static String createIdsString(Set entities) {
-        return createIdsString(new HashSet<String>(), entities);
+        return createIdsString(new HashSet<>(), entities);
     }
 
     public static String createIdsString(Set<String> current, Collection entities) {

@@ -16,18 +16,17 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Author: Alexander Chevelev
- * Date: 26.03.2011
- * Time: 3:09:04
+ * @author chevelev
+ * @version $Id$
  */
 public class TreeToQuery implements TreeVisitorAction {
     private QueryBuilder sb = new QueryBuilder();
-    private List<ErrorRec> invalidNodes = new ArrayList<ErrorRec>();
+    private List<ErrorRec> invalidNodes = new ArrayList<>();
 
+    @Override
     public Object pre(Object t) {
         if (!(t instanceof CommonTree)) {
             return t;
-
         }
 
         if (t instanceof CommonErrorNode) {
@@ -84,6 +83,7 @@ public class TreeToQuery implements TreeVisitorAction {
         return (node.childIndex == 0 && node.parent.childIndex > 0 && node.parent.parent.getChild(node.parent.childIndex - 1).getType() == JPA2Lexer.LPAREN );
     }
 
+    @Override
     public Object post(Object t) {
         if (!(t instanceof CommonTree))
             return t;

@@ -8,9 +8,8 @@ package com.haulmont.cuba.core.sys.jpql.pointer;
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 
 /**
- * Author: Alexander Chevelev
- * Date: 21.10.2010
- * Time: 1:47:08
+ * @author chevelev
+ * @version $Id$
  */
 public class NoPointer implements Pointer {
     private static final NoPointer instance = new NoPointer();
@@ -22,8 +21,8 @@ public class NoPointer implements Pointer {
         return instance;
     }
 
+    @Override
     public Pointer next(DomainModel model, String field) {
         return this;
     }
-
 }

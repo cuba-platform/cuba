@@ -19,21 +19,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Author: Alexander Chevelev
- * Date: 26.03.2011
- * Time: 1:56:20
+ * @author chevelev
+ * @version $Id$
  */
 public class QueryTreeTransformer extends QueryTreeAnalyzer {
 
     public QueryTreeTransformer() {
     }
 
-
     public void mixinWhereConditionsIntoTree(CommonTree whereTreeToMixIn) {
         CommonTree whereTreeToMixWithin = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_CONDITION);
         if (whereTreeToMixWithin == null) {
             FromNode fromNode = (FromNode) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
-            List<Tree> endingNodes = new ArrayList<Tree>();
+            List<Tree> endingNodes = new ArrayList<>();
             int deletionCount = tree.getChildCount() - (fromNode.getChildIndex() + 1);
             for (int i = 0; i < deletionCount; i++) {
                 endingNodes.add((Tree) tree.deleteChild(fromNode.getChildIndex() + 1));
@@ -295,4 +293,3 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
         return (List<T>) childrenByClass;
     }
 }
-

@@ -12,13 +12,12 @@ import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.CubaClassPathXmlApplicationContext;
 import com.haulmont.cuba.core.sys.javacl.compiler.CharSequenceCompiler;
 import org.apache.commons.lang.StringUtils;
+import org.perf4j.log4j.Log4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.perf4j.log4j.Log4JStopWatch;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.ApplicationContext;
@@ -35,7 +34,6 @@ import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
 import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -114,6 +112,7 @@ public class JavaClassLoader extends URLClassLoader implements BeanFactoryAware,
         compiled.clear();
     }
 
+    @Override
     public Class loadClass(final String fullClassName, boolean resolve) throws ClassNotFoundException {
         String containerClassName = StringUtils.substringBefore(fullClassName, "$");
 

@@ -67,9 +67,9 @@ public class Scheduling implements SchedulingAPI {
     @Inject
     protected ServerInfoService serverInfoService;
 
-    protected Map<ScheduledTask, Long> runningTasks = new ConcurrentHashMap<ScheduledTask, Long>();
+    protected Map<ScheduledTask, Long> runningTasks = new ConcurrentHashMap<>();
 
-    protected Map<ScheduledTask, Long> lastStartCache = new HashMap<ScheduledTask, Long>();
+    protected Map<ScheduledTask, Long> lastStartCache = new HashMap<>();
 
     protected volatile long schedulingStartTime;
 

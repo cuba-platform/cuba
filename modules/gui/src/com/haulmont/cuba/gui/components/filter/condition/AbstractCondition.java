@@ -396,8 +396,6 @@ public abstract class AbstractCondition extends AbstractNotPersistentEntity {
         return operationEditor;
     }
 
-    ;
-
     public abstract AbstractCondition createCopy();
 
     public boolean canBeRequired() {
