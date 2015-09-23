@@ -38,10 +38,10 @@ public @interface Stringify {
      * The name of a method that can convert an object to its primitive
      * (ultimately string) form.
      */
-    public String method() default "";
+    String method() default "";
 
     /**
      * A class that can convert an object to its string form.
      */
-    public Class<? extends TypeStringify> stringify();
+    Class<? extends TypeStringify> stringify();
 }

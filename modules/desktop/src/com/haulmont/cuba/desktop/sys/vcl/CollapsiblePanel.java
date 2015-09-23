@@ -44,9 +44,9 @@ public class CollapsiblePanel extends JPanel {
 
     public interface CollapseListener extends java.util.EventListener {
 
-        public void collapsed();
+        void collapsed();
 
-        public void expanded();
+        void expanded();
     }
 
     private java.util.List<CollapseListener> collapseListeners;

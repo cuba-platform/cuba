@@ -32,5 +32,5 @@ public @interface DefaultString {
     /**
      * The default value.
      */
-    public String value();
+    String value();
 }

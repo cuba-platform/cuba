@@ -32,5 +32,5 @@ public @interface Property {
     /**
      * The property name.
      */
-    public String value();
+    String value();
 }

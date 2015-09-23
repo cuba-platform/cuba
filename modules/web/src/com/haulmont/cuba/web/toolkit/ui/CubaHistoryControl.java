@@ -20,9 +20,8 @@ public class CubaHistoryControl extends AbstractExtension {
     protected HistoryBackHandler handler;
 
     public CubaHistoryControl() {
-        registerRpc(new CubaHistoryControlServerRpc() {
-            @Override
-            public void onHistoryBackPerformed() {
+        registerRpc((CubaHistoryControlServerRpc) () -> {
+            if (handler != null) {
                 handler.onHistoryBackPerformed();
             }
         });
@@ -39,7 +38,7 @@ public class CubaHistoryControl extends AbstractExtension {
         return Layout.class;
     }
 
-    public static interface HistoryBackHandler {
+    public interface HistoryBackHandler {
 
         void onHistoryBackPerformed();
     }

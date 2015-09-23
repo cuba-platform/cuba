@@ -43,7 +43,7 @@ public interface TestingService {
 
     @SupportedByClient
     @Logging(Logging.Type.BRIEF)
-    public static class TestException extends Exception {
+    class TestException extends Exception {
 
         public TestException(String message) {
             super(message);

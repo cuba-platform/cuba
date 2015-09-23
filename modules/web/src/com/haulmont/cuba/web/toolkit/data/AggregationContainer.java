@@ -32,7 +32,7 @@ public interface AggregationContainer extends Container {
 
     Map<Object, Object> aggregate(Context context);
 
-    public class Context {
+    class Context {
         private final Collection itemIds;
 
         public Context(Collection itemIds) {

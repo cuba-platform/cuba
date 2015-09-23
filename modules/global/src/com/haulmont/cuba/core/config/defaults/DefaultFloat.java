@@ -32,5 +32,5 @@ public @interface DefaultFloat {
     /**
      * The default value.
      */
-    public float value();
+    float value();
 }

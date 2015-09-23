@@ -16,12 +16,11 @@ import javax.annotation.Nullable;
  */
 public interface UserFormatTools {
 
-    public static final String NAME = "cuba_UserFormatTools";
+    String NAME = "cuba_UserFormatTools";
 
     String formatSubstitution(@Nonnull User user, @Nullable User substitutedUser);
 
     String formatOfficial(User user);
 
     String formatUser(@Nonnull User user, @Nullable User substitutedUser);
-
 }

@@ -21,7 +21,7 @@ public interface Coordinator {
 
     String NAME = "cuba_SchedulingCoordinator";
 
-    public interface Context {
+    interface Context {
         List<ScheduledTask> getTasks();
     }
 

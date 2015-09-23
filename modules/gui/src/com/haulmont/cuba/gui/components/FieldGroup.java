@@ -98,7 +98,7 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
         TOP
     }
 
-    public class FieldConfig implements HasXmlDescriptor, HasCaption, HasFormatter {
+    class FieldConfig implements HasXmlDescriptor, HasCaption, HasFormatter {
         private String id;
         private String caption;
         private String description;
@@ -229,7 +229,7 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
         }
     }
 
-    public class FieldsValidationException extends ValidationException {
+    class FieldsValidationException extends ValidationException {
         private Map<FieldConfig, Exception> problemFields;
 
         public FieldsValidationException() {

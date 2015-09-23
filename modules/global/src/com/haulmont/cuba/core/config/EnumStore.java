@@ -21,5 +21,5 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 public @interface EnumStore {
 
-    public EnumStoreMode value();
+    EnumStoreMode value();
 }

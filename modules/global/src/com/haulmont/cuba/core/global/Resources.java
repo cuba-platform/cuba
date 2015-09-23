@@ -27,7 +27,7 @@ import java.io.InputStream;
  */
 public interface Resources extends ResourceLoader {
 
-    public static final String NAME = "cuba_Resources";
+    String NAME = "cuba_Resources";
 
     /**
      * Searches for a resource according to the rules explained in {@link Resources} and returns the resource as stream

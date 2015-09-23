@@ -14,7 +14,7 @@ public interface DateField extends Field {
 
     String NAME = "dateField";
 
-    public enum Resolution {
+    enum Resolution {
         MSEC,
         SEC,
         MIN,

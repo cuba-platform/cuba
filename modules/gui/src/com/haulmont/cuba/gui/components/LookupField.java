@@ -61,7 +61,7 @@ public interface LookupField extends OptionsField {
     /**
      * Interface to be implemented if {@link #setNewOptionAllowed(boolean)} is set to true.
      */
-    public interface NewOptionHandler {
+    interface NewOptionHandler {
         /**
          * Called when user enters a value which is not in the options list, and presses Enter.
          * @param caption value entered by user

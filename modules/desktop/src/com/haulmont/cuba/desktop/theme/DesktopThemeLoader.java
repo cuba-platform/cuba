@@ -12,7 +12,7 @@ package com.haulmont.cuba.desktop.theme;
  */
 public interface DesktopThemeLoader {
 
-    public static final String NAME = "cuba_DesktopThemeLoader";
+    String NAME = "cuba_DesktopThemeLoader";
 
-    public DesktopTheme loadTheme(String theme);
+    DesktopTheme loadTheme(String theme);
 }

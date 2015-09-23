@@ -32,5 +32,5 @@ public @interface DefaultBoolean {
     /**
      * The default value.
      */
-    public boolean value();
+    boolean value();
 }

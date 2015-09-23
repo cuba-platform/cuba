@@ -32,5 +32,5 @@ public @interface DefaultLong {
     /**
      * The default value.
      */
-    public long value();
+    long value();
 }

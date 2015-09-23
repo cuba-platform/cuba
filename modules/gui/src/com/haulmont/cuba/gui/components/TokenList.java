@@ -92,7 +92,7 @@ public interface TokenList extends Field, Component.BelongToFrame,
     void setTokenStyleGenerator(TokenStyleGenerator tokenStyleGenerator);
     TokenStyleGenerator getTokenStyleGenerator();
 
-    public interface TokenStyleGenerator {
+    interface TokenStyleGenerator {
         String getStyle(Object itemId);
     }
 

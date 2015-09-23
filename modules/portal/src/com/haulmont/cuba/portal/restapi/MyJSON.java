@@ -32,22 +32,22 @@ public interface MyJSON {
      * @param level level at which this instance is being rendered
      * @return a mutable buffer
      */
-    public StringBuilder asString(int level);
+    StringBuilder asString(int level);
 
-    public static final char FIELD_SEPARATOR  = ',';
-    public static final char MEMBER_SEPARATOR = ',';
-    public static final char VALUE_SEPARATOR  = ':';
-    public static final char IOR_SEPARTOR     = '-';
-    public static final char QUOTE            = '"';
-    public static final char SPACE            = ' ';
-    public static final char OBJECT_START     = '{';
-    public static final char OBJECT_END       = '}';
-    public static final char ARRAY_START      = '[';
-    public static final char ARRAY_END        = ']';
+    char FIELD_SEPARATOR  = ',';
+    char MEMBER_SEPARATOR = ',';
+    char VALUE_SEPARATOR  = ':';
+    char IOR_SEPARTOR     = '-';
+    char QUOTE            = '"';
+    char SPACE            = ' ';
+    char OBJECT_START     = '{';
+    char OBJECT_END       = '}';
+    char ARRAY_START      = '[';
+    char ARRAY_END        = ']';
 
-    public static final String NEWLINE        = "\r\n";
-    public static final String NULL_LITERAL   = "null";
-    public static final String REF_MARKER     = "ref";
-    public static final String ID_MARKER      = "id";
-    public static final String ARRAY_EMPTY    = "[]";
+    String NEWLINE        = "\r\n";
+    String NULL_LITERAL   = "null";
+    String REF_MARKER     = "ref";
+    String ID_MARKER      = "id";
+    String ARRAY_EMPTY    = "[]";
 }

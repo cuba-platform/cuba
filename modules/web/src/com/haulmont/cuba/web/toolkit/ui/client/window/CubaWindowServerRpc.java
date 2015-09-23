@@ -13,7 +13,7 @@ import com.vaadin.shared.communication.ServerRpc;
  */
 public interface CubaWindowServerRpc extends ServerRpc {
 
-    public void onWindowContextMenu();
+    void onWindowContextMenu();
 
-    public void performContextMenuAction(String actionKey);
+    void performContextMenuAction(String actionKey);
 }

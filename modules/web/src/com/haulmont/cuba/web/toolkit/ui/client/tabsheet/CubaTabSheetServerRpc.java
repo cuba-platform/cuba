@@ -13,7 +13,7 @@ import com.vaadin.shared.communication.ServerRpc;
  */
 public interface CubaTabSheetServerRpc extends ServerRpc {
 
-    public void onTabContextMenu(int tabIndex);
+    void onTabContextMenu(int tabIndex);
 
-    public void performAction(int tabIndex, String actionKey);
+    void performAction(int tabIndex, String actionKey);
 }

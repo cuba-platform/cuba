@@ -94,7 +94,7 @@ public abstract class ConfigMethod {
     /**
      * Interface describing a configuration method factory.
      */
-    public static interface Factory
+    public interface Factory
     {
         /**
          * Test whether this factory can handle a particular configuration interface
@@ -103,7 +103,7 @@ public abstract class ConfigMethod {
          * @param method The method.
          * @return Whether this factory can handle the method.
          */
-        public boolean canHandle(Method method);
+        boolean canHandle(Method method);
 
 
         /**
@@ -114,6 +114,6 @@ public abstract class ConfigMethod {
          * @param method          The method.
          * @return The method implementation.
          */
-        public ConfigMethod newInstance(Class<?> configInterface, Method method);
+        ConfigMethod newInstance(Class<?> configInterface, Method method);
     }
 }

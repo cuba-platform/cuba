@@ -297,7 +297,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
     protected abstract void setSelectedItem(Object item);
 
     public interface ValueWrapper<T> {
-        public T getValue();
+        T getValue();
     }
 
     public class EntityWrapper implements ValueWrapper<Entity> {

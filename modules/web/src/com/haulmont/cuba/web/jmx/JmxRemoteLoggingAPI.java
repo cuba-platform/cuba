@@ -137,7 +137,7 @@ public interface JmxRemoteLoggingAPI {
      */
     List<String> getAvailableContexts(JmxInstance instance);
 
-    public class LoggingHostInfo {
+    class LoggingHostInfo {
         private List<String> loggerNames;
         private List<String> appenders;
         private List<String> logFileNames;

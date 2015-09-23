@@ -16,7 +16,7 @@ import java.util.Locale;
  */
 public interface CubaAuthProvider extends Filter {
 
-    public static final String NAME = "cuba_AuthProvider";
+    String NAME = "cuba_AuthProvider";
 
     /**
      * Login procedure with user and password.

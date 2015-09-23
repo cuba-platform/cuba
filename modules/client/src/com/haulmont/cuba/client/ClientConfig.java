@@ -71,14 +71,14 @@ public interface ClientConfig extends Config {
      */
     @Property("cuba.passwordPolicyEnabled")
     @DefaultBoolean(false)
-    public boolean getPasswordPolicyEnabled();
+    boolean getPasswordPolicyEnabled();
 
     /**
      * @return The regular expression which is used by password policy (see also <code>cuba.passwordPolicyEnabled<code/>).
      */
     @Property("cuba.passwordPolicyRegExp")
     @DefaultString("((?=.*\\d)(?=.*\\p{javaLowerCase})(?=.*\\p{javaUpperCase}).{6,20})")
-    public String getPasswordPolicyRegExp();
+    String getPasswordPolicyRegExp();
 
     /**
      * @return If true, all generic filters will require explicit Apply after screen opening. Empty connected table

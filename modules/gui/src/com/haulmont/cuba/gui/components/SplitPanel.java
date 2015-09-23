@@ -12,8 +12,8 @@ public interface SplitPanel extends Component.Container, Component.BelongToFrame
 
     String NAME = "split";
 
-    public static int ORIENTATION_VERTICAL = 0;
-    public static int ORIENTATION_HORIZONTAL = 1;
+    int ORIENTATION_VERTICAL = 0;
+    int ORIENTATION_HORIZONTAL = 1;
 
     int getOrientation();
     void setOrientation(int orientation);

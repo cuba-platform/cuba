@@ -32,5 +32,5 @@ public @interface DefaultDouble {
     /**
      * The default value.
      */
-    public double value();
+    double value();
 }

@@ -32,5 +32,5 @@ public @interface DefaultInt {
     /**
      * The default value.
      */
-    public int value();
+    int value();
 }

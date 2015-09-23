@@ -32,5 +32,5 @@ public @interface DefaultByte {
     /**
      * The default value.
      */
-    public byte value();
+    byte value();
 }

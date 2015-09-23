@@ -32,5 +32,5 @@ public @interface DefaultClass {
     /**
      * The default value.
      */
-    public Class value();
+    Class value();
 }

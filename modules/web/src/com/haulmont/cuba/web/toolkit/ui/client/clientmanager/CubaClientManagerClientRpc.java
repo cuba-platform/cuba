@@ -16,18 +16,18 @@ import java.util.Map;
  */
 public interface CubaClientManagerClientRpc extends ClientRpc {
 
-    public String COMMUNICATION_ERROR_CAPTION_KEY = "communicationErrorCaption";
+    String COMMUNICATION_ERROR_CAPTION_KEY = "communicationErrorCaption";
 
-    public String COMMUNICATION_ERROR_MESSAGE_KEY = "communicationErrorMessage";
+    String COMMUNICATION_ERROR_MESSAGE_KEY = "communicationErrorMessage";
 
-    public String AUTHORIZATION_ERROR_CAPTION_KEY = "authorizationErrorCaption";
+    String AUTHORIZATION_ERROR_CAPTION_KEY = "authorizationErrorCaption";
 
-    public String AUTHORIZATION_ERROR_MESSAGE_KEY = "authorizationErrorMessage";
+    String AUTHORIZATION_ERROR_MESSAGE_KEY = "authorizationErrorMessage";
 
-    public String SESSION_EXPIRED_ERROR_CAPTION_KEY = "sessionExpiredErrorCaption";
+    String SESSION_EXPIRED_ERROR_CAPTION_KEY = "sessionExpiredErrorCaption";
 
-    public String SESSION_EXPIRED_ERROR_MESSAGE_KEY = "sessionExpiredErrorMessage";
+    String SESSION_EXPIRED_ERROR_MESSAGE_KEY = "sessionExpiredErrorMessage";
 
     @NoLayout
-    public void updateSystemMessagesLocale(Map<String, String> localeMap);
+    void updateSystemMessagesLocale(Map<String, String> localeMap);
 }

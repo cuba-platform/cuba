@@ -16,5 +16,5 @@ import java.lang.annotation.ElementType;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
 public @interface Source {
-    public SourceType type();
+    SourceType type();
 }

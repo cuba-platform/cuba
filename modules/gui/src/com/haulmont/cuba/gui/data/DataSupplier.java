@@ -27,7 +27,7 @@ public interface DataSupplier extends DataManager, DataService /* for backward c
      * Do not try to obtain DataSupplier through {@code AppBeans.get()} or by injection to regular Spring beans.
      * Only injection to screens works.
      */
-    public static final String NAME = "ERROR: DataSupplier is not a Spring bean";
+    String NAME = "ERROR: DataSupplier is not a Spring bean";
 
     /**
      * Create a new entity instance

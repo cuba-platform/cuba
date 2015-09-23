@@ -32,5 +32,5 @@ public @interface DefaultShort {
     /**
      * The default value.
      */
-    public short value();
+    short value();
 }

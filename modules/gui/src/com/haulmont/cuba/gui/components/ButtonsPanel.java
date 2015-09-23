@@ -14,7 +14,7 @@ public interface ButtonsPanel extends BoxLayout {
 
     String NAME = "buttonsPanel";
 
-    public interface Provider {
+    interface Provider {
         Collection<Component> getButtons();
     }
 }

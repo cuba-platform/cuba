@@ -27,5 +27,5 @@ public interface ResultSetHandler<T> {
      *
      * @throws SQLException if a database access error occurs
      */
-    public T handle(ResultSet rs) throws SQLException;
+    T handle(ResultSet rs) throws SQLException;
 }

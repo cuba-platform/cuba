@@ -13,5 +13,5 @@ import com.vaadin.shared.communication.ClientRpc;
  */
 public interface CubaTabSheetClientRpc extends ClientRpc {
 
-    public void showTabContextMenu(int tabIndex, ClientAction[] actions);
+    void showTabContextMenu(int tabIndex, ClientAction[] actions);
 }

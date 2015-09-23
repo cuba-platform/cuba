@@ -32,5 +32,5 @@ public @interface DefaultChar {
     /**
      * The default value.
      */
-    public char value();
+    char value();
 }

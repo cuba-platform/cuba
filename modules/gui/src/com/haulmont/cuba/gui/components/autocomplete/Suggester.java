@@ -12,5 +12,5 @@ import java.util.List;
  */
 public interface Suggester {
 
-    public List<Suggestion> getSuggestions(AutoCompleteSupport source, String text, int cursorPosition);
+    List<Suggestion> getSuggestions(AutoCompleteSupport source, String text, int cursorPosition);
 }

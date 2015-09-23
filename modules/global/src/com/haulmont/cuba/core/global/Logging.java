@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Logging {
 
-    public enum Type {
+    enum Type {
         FULL, BRIEF, NONE
     }
 

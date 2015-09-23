@@ -27,14 +27,13 @@ public interface SearchField extends LookupField {
     Mode getMode();
     void setMode(Mode mode);
 
-    public interface SearchNotifications {
-
+    interface SearchNotifications {
         void notFoundSuggestions(String filterString);
 
         void needMinSearchStringLength(String filterString, int minSearchStringLength);
     }
 
-    public enum Mode {
+    enum Mode {
         CASE_SENSITIVE,
         LOWER_CASE,
         UPPER_CASE

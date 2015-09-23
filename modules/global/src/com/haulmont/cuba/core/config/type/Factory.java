@@ -38,10 +38,10 @@ public @interface Factory {
      * The name of a static method that can convert a string to an instance
      * of the class.
      */
-    public String method() default "";
+    String method() default "";
 
     /**
      * A class that can convert a string to an instance of the class.
      */
-    public Class<? extends TypeFactory> factory();
+    Class<? extends TypeFactory> factory();
 }

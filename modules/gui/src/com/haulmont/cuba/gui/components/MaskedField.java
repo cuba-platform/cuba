@@ -26,14 +26,13 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
  */
 public interface MaskedField extends TextField {
 
-    public enum ValueMode implements EnumClass<String> {
-
+    enum ValueMode implements EnumClass<String> {
         MASKED("masked"),
         CLEAR("clear");
 
         private String id;
 
-        private ValueMode(String id) {
+        ValueMode(String id) {
             this.id = id;
         }
 
