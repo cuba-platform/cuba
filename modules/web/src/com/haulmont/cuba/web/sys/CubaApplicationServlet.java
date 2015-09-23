@@ -4,9 +4,9 @@
  */
 package com.haulmont.cuba.web.sys;
 
-import com.google.common.base.Charsets;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.WebStatisticsAccumulator;
@@ -26,6 +26,7 @@ import javax.servlet.http.HttpSession;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,10 +43,12 @@ public class CubaApplicationServlet extends VaadinServlet {
     private static final long serialVersionUID = -8701539520754293569L;
 
     public static final String FROM_HTML_REDIRECT_PARAM = "fromCubaHtmlRedirect";
+    private static final String REDIRECT_PAGE_TEMPLATE_PATH = "/com/haulmont/cuba/web/sys/redirect-page-template.html";
 
     private Logger log = LoggerFactory.getLogger(CubaApplicationServlet.class);
 
     protected WebConfig webConfig;
+    protected Resources resources;
 
     protected WebStatisticsAccumulator statisticsCounter;
 
@@ -67,6 +70,7 @@ public class CubaApplicationServlet extends VaadinServlet {
         Configuration configuration = AppBeans.get(Configuration.NAME);
         webConfig = configuration.getConfig(WebConfig.class);
         statisticsCounter = AppBeans.get(WebStatisticsAccumulator.class);
+        resources = AppBeans.get(Resources.class);
 
         super.init(servletConfig);
     }
@@ -160,8 +164,8 @@ public class CubaApplicationServlet extends VaadinServlet {
         }
         String url = stringBuilder.toString();
 
-        page.write(String.format(IOUtils.toString(CubaApplicationServlet.class.getResourceAsStream("redirect-page-template.html"),
-                Charsets.UTF_8.name()), url, url, url));
+        page.write(String.format(IOUtils.toString(resources.getResourceAsStream(REDIRECT_PAGE_TEMPLATE_PATH),
+                StandardCharsets.UTF_8.name()), url, url));
         page.close();
     }
 
