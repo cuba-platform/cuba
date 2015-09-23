@@ -4,13 +4,15 @@
  * Use is subject to license terms.
  */
 
-include(':cuba-shared-lib', ':cuba-global', ':cuba-core', ':cuba-client', ':cuba-gui', ':cuba-web-toolkit',
-        ':cuba-web', ':cuba-web-themes', ':cuba-desktop', ':cuba-portal',':cuba-web-auth')
+include(':cuba-shared-lib', ':cuba-global', ':cuba-core', 'cuba-core-tests', ':cuba-client', ':cuba-client-tests',
+        ':cuba-gui', ':cuba-web-toolkit', ':cuba-web', ':cuba-web-themes', ':cuba-desktop', ':cuba-portal',':cuba-web-auth')
 rootProject.name = 'cuba'
 project(':cuba-shared-lib').projectDir = new File(settingsDir, 'modules/shared-lib')
 project(':cuba-global').projectDir = new File(settingsDir, 'modules/global')
 project(':cuba-core').projectDir = new File(settingsDir, 'modules/core')
+project(':cuba-core-tests').projectDir = new File(settingsDir, 'modules/core/test')
 project(':cuba-client').projectDir = new File(settingsDir, 'modules/client')
+project(':cuba-client-tests').projectDir = new File(settingsDir, 'modules/client/test')
 project(':cuba-gui').projectDir = new File(settingsDir, 'modules/gui')
 project(':cuba-web-toolkit').projectDir = new File(settingsDir, 'modules/web-toolkit')
 project(':cuba-web').projectDir = new File(settingsDir, 'modules/web')

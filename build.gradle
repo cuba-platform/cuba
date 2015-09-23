@@ -53,7 +53,9 @@ def webAuthModule = project(':cuba-web-auth')
 def webToolkitModule = project(':cuba-web-toolkit')
 def webModule = project(':cuba-web')
 
-def webModuleThemes = project(':cuba-web-themes')
+def webModuleThemesModule = project(':cuba-web-themes')
+def coreTestsModule = project(':cuba-core-tests')
+def clientTestsModule = project(':cuba-client-tests')
 
 apply from: "$rootProject.projectDir/lib.gradle"
 
@@ -294,25 +296,8 @@ configure(coreModule) {
         jvmArgs '-XX:-UseSplitVerifier'
     }
 
-    task testsJar(dependsOn: testClasses, type: Jar) {
-        from sourceSets.test.output.classesDir
-        from sourceSets.test.output.resourcesDir
-        from project.file('test')
-        include 'com/haulmont/cuba/core/CubaTestCase*.class'
-        include 'com/haulmont/cuba/core/CubaTestCase*.java'
-        include 'com/haulmont/cuba/testsupport/*'
-        include '*'
-        includeEmptyDirs = false
-        classifier = 'tests'
-        duplicatesStrategy= DuplicatesStrategy.EXCLUDE
-    }
-
     assembleDbScripts {
         moduleAlias = '10-cuba'
-    }
-
-    artifacts {
-        archives testsJar
     }
 
     task deploy(dependsOn: assemble, type: CubaDeployment) {
@@ -346,20 +331,87 @@ configure(coreModule) {
     }
 }
 
+configure(coreTestsModule) {
+    apply(plugin: 'java')
+    apply(plugin: 'maven')
+    apply(plugin: 'cuba')
+
+    buildDir = file('../build/core-tests')
+
+    sourceSets {
+        main {
+            java {
+                srcDir '.'
+
+                include 'com/haulmont/cuba/core/CubaTestCase.java'
+                include 'com/haulmont/cuba/testsupport/*.java'
+                include '*'
+            }
+            resources {
+                srcDir '.'
+            }
+        }
+    }
+
+    dependencies {
+        compile(coreModule)
+        compile('org.apache.commons:commons-dbcp2:2.1.1')
+        compile('org.jmockit:jmockit:1.15')
+        compile('junit:junit:4.12')
+    }
+
+    task sourceJar(type: Jar) {
+        from file('.')
+        include 'com/haulmont/cuba/core/CubaTestCase*.class'
+        include 'com/haulmont/cuba/core/CubaTestCase*.java'
+        include 'com/haulmont/cuba/testsupport/*'
+        include '*'
+        classifier = 'sources'
+    }
+
+    artifacts {
+        archives sourceJar
+    }
+}
+
 configure(clientModule) {
     dependencies {
         compile(globalModule)
         compile('org.apache.httpcomponents:httpclient:4.5')
     }
+}
 
-    task testsJar(dependsOn: testClasses, type: Jar) {
-        from sourceSets.test.output.classesDir
-        from project.file('test')
-        classifier = 'tests'
+configure(clientTestsModule) {
+    apply(plugin: 'java')
+    apply(plugin: 'maven')
+    apply(plugin: 'cuba')
+
+    buildDir = file('../build/client-tests')
+
+    sourceSets {
+        main {
+            java {
+                srcDir '.'
+            }
+            resources {
+                srcDir '.'
+            }
+        }
+    }
+
+    dependencies {
+        compile(clientModule)
+        compile('org.jmockit:jmockit:1.15')
+        compile('junit:junit:4.12')
+    }
+
+    task sourceJar(type: Jar) {
+        from file('.')
+        classifier = 'sources'
     }
 
     artifacts {
-        archives testsJar
+        archives sourceJar
     }
 }
 
@@ -479,7 +531,7 @@ configure(webModule) {
     }
 }
 
-configure(webModuleThemes) {
+configure(webModuleThemesModule) {
     apply(plugin: 'java')
     apply(plugin: 'maven')
     apply(plugin: 'cuba')
