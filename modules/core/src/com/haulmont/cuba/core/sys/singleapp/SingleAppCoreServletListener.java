@@ -18,7 +18,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 /**
  * @author degtyarjov
@@ -27,11 +26,27 @@ import java.util.stream.Collectors;
 public class SingleAppCoreServletListener implements ServletContextListener {
     protected Object appContextLoader;
 
+    /**
+     * This class and its twin com.haulmont.cuba.web.sys.singleapp.SingleAppWebServletListener separate "web" and "core" classes
+     * to different classloaders when we pack application to single WAR.
+     *
+     * We create 2 URLClassLoaders (1 for core and 1 for web), with predefined (during single WAR build) list of jars (core.dependencies).
+     * So the classloaders load classes from the jars and only if class is not found they delegate loading to base WebAppClassLoader (their parent).
+     *
+     * As a result, core classloader contains core classes, web classloder contains web classes and WebAppClassLoader contains "shared" classes.
+     *
+     * To make sure spring context use necessary classloader we load AppWebContextLoader reflectively, create new instance
+     * and call contextInitialized() reflectively as well.
+     *
+     * As each classloader has its own AppContext version, we can put property with dependencies to AppContext (reflectively as well).
+     * The property will be used on spring context creation, to detect which jars to scan.
+     */
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         try {
             ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-            Class<?> localServiceDirectory = contextClassLoader.loadClass("com.haulmont.cuba.core.sys.remoting.LocalServiceDirectory");
+            //need to put the following class to WebAppClassLoader, to share it between for web and core
+            contextClassLoader.loadClass("com.haulmont.cuba.core.sys.remoting.LocalServiceDirectory");
 
             ServletContext servletContext = sce.getServletContext();
             String dependenciesFile;
@@ -50,8 +65,7 @@ public class SingleAppCoreServletListener implements ServletContextListener {
                             throw new RuntimeException("An error occurred while loading dependency " + name, e);
                         }
                     })
-                    .collect(Collectors.toList())
-                    .toArray(new URL[dependenciesNames.length]);
+                    .toArray(URL[]::new);
             URLClassLoader coreClassLoader = new CubaSingleAppClassLoader(urls, contextClassLoader);
 
             Thread.currentThread().setContextClassLoader(coreClassLoader);

@@ -32,6 +32,9 @@ import java.util.stream.Collectors;
  * @version $Id$
  */
 public class SingleAppWebContextLoader extends WebAppContextLoader {
+    /**
+     * Here we create servlets and filters manually, to make sure the classes would be loaded using necessary classloader.
+     */
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         super.contextInitialized(servletContextEvent);
@@ -42,50 +45,38 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
         try {
             cubaServlet.init(new CubaServletConfig("app_servlet", servletContext));
         } catch (ServletException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("An error occurred while initializing app_servlet servlet", e);
         }
         ServletRegistration.Dynamic cubaServletReg = servletContext.addServlet("app_servlet", cubaServlet);
-        cubaServletReg.setLoadOnStartup(-1);
+        cubaServletReg.setLoadOnStartup(0);
         cubaServletReg.addMapping("/*");
 
         CubaDispatcherServlet cubaDispatcherServlet = new CubaDispatcherServlet();
         try {
             cubaDispatcherServlet.init(new CubaServletConfig("dispatcher", servletContext));
         } catch (ServletException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("An error occurred while initializing dispatcher servlet", e);
         }
         ServletRegistration.Dynamic cubaDispatcherServletReg = servletContext.addServlet("dispatcher", cubaDispatcherServlet);
-        cubaDispatcherServletReg.setLoadOnStartup(-1);
+        cubaDispatcherServletReg.setLoadOnStartup(1);
         cubaDispatcherServletReg.addMapping("/dispatch/*");
 
         CubaHttpFilter cubaHttpFilter = new CubaHttpFilter();
         FilterRegistration.Dynamic cubaHttpFilterReg = servletContext.addFilter("CubaHttpFilter", cubaHttpFilter);
         cubaHttpFilterReg.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
 
-        Filter filter = new Filter() {
-            @Override
-            public void init(FilterConfig filterConfig) throws ServletException {
-
-            }
-
-            @Override
-            public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-                Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-                chain.doFilter(request, response);
-            }
-
-            @Override
-            public void destroy() {
-
-            }
-        };
-
-        FilterRegistration.Dynamic filterReg = servletContext.addFilter("WebSingleWarHttpFilter", filter);
+        FilterRegistration.Dynamic filterReg = servletContext.addFilter("WebSingleWarHttpFilter1", new SetClassLoaderFilter());
         filterReg.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/*");
+        filterReg.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/dispatch/*");
     }
 
     protected ClassPathXmlApplicationContext createClassPathXmlApplicationContext(String[] locations) {
         return new CubaClassPathXmlApplicationContext(locations) {
+            /**
+             * Here we create resource resolver which scans only web jars (and avoid putting core beans to web context)
+             * JAR_DEPENDENCIES properties is filled by com.haulmont.cuba.web.sys.singleapp.SingleAppWebServletListener
+             * during application initialization.
+             */
             @Override
             protected ResourcePatternResolver getResourcePatternResolver() {
                 String jarDependencies = AppContext.getProperty("JAR_DEPENDENCIES");
@@ -119,5 +110,23 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
     @Override
     protected String getAppPropertiesConfig(ServletContext sc) {
         return sc.getInitParameter("appPropertiesConfigWeb");
+    }
+
+    protected static class SetClassLoaderFilter implements Filter {
+        @Override
+        public void init(FilterConfig filterConfig) throws ServletException {
+
+        }
+
+        @Override
+        public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+            Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+            chain.doFilter(request, response);
+        }
+
+        @Override
+        public void destroy() {
+
+        }
     }
 }

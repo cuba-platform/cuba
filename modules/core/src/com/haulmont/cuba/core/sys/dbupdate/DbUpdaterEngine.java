@@ -134,8 +134,14 @@ public class DbUpdaterEngine implements DbUpdater {
 
     protected String getScriptName(ScriptResource resource) {
         String path = resource.getPath();
+        return getScriptName(path);
+    }
+
+    protected String getScriptName(String path) {
         String dir = dbScriptDirectoryPath();
-        return path.substring(dir.length() + 1).replace("\\", "/").replaceAll("^/+", "");
+        path = path.replace("\\", "/");
+        int indexOfDir = path.indexOf(dir);
+        return path.substring(indexOfDir + dir.length() + 1).replaceAll("^/+", "");
     }
 
     protected boolean dbInitialized() {

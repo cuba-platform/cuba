@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 public class DbUpdaterEngineTest extends CubaTestCase {
 
     private File dbmsDir;
+    private File dbmsWebInfDir;
 
     private List<File> mssqlInitFiles = new ArrayList<>();
     private List<File> mssql2012InitFiles = new ArrayList<>();
@@ -37,10 +38,21 @@ public class DbUpdaterEngineTest extends CubaTestCase {
         }
         dbmsDir.mkdirs();
 
+        dbmsWebInfDir = new File(config.getTempDir(), "WEB-INF/db");
+        if (dbmsWebInfDir.exists()) {
+            FileUtils.deleteDirectory(dbmsWebInfDir);
+        }
+        dbmsWebInfDir.mkdirs();
+
         File dir;
         File file;
 
         // Init scripts
+        dir = new File(dbmsWebInfDir, "10-cuba/init/postgres");
+        dir.mkdirs();
+        file = new File(dir, "create-db.sql");
+        file.createNewFile();
+
 
         dir = new File(dbmsDir, "10-cuba/init/mssql");
         dir.mkdirs();
@@ -154,5 +166,19 @@ public class DbUpdaterEngineTest extends CubaTestCase {
         engine.dbmsType = "mssql";
         List<String> moduleDirs = engine.getModuleDirs();
         System.out.println(moduleDirs);
+    }
+
+    public void testGetScriptName() throws Exception {
+        File script = new File(dbmsDir, "50-app/update/mssql-2012/14/app-update-0.sql");
+        DbUpdaterEngine engine = new DbUpdaterEngine();
+        engine.dbScriptsDirectory = dbmsDir.getAbsolutePath();
+        String scriptName = engine.getScriptName(script.getAbsolutePath());
+        assertEquals("50-app/update/mssql-2012/14/app-update-0.sql", scriptName);
+
+        script = new File(dbmsWebInfDir, "10-cuba/init/postgres/create-db.sql");
+        engine = new DbUpdaterEngine();
+        engine.dbScriptsDirectory = "web-inf:db";
+        scriptName = engine.getScriptName(script.getAbsolutePath());
+        assertEquals("10-cuba/init/postgres/create-db.sql", scriptName);
     }
 }

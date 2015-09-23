@@ -30,7 +30,9 @@ import java.util.stream.Collectors;
  * @version $Id$
  */
 public class SingleAppCoreContextLoader extends AppContextLoader {
-
+    /**
+     * Here we create servlets and filters manually, to make sure the classes would be loaded using necessary classloader.
+     */
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         super.contextInitialized(servletContextEvent);
@@ -40,37 +42,24 @@ public class SingleAppCoreContextLoader extends AppContextLoader {
         try {
             remotingServlet.init(new CubaServletConfig("remoting", servletContext));
         } catch (ServletException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("An error occurred while initializing remoting servlet", e);
         }
         ServletRegistration.Dynamic remotingReg = servletContext.addServlet("remoting", remotingServlet);
         remotingReg.addMapping("/remoting/*");
-        remotingReg.setLoadOnStartup(-1);
+        remotingReg.setLoadOnStartup(0);
 
-        Filter filter = new Filter() {
-            @Override
-            public void init(FilterConfig filterConfig) throws ServletException {
-
-            }
-
-            @Override
-            public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-                Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-                chain.doFilter(request, response);
-            }
-
-            @Override
-            public void destroy() {
-
-            }
-        };
-
-        FilterRegistration.Dynamic filterReg = servletContext.addFilter("CoreSingleWarHttpFilter", filter);
+        FilterRegistration.Dynamic filterReg = servletContext.addFilter("CoreSingleWarHttpFilter", new SetClassLoaderFilter());
         filterReg.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/remoting/*");
     }
 
     @Override
     protected ClassPathXmlApplicationContext createClassPathXmlApplicationContext(String[] locations) {
         return new CubaCoreApplicationContext(locations) {
+            /**
+             * Here we create resource resolver which scans only core jars (and avoid putting web beans to core context)
+             * JAR_DEPENDENCIES properties is filled by com.haulmont.cuba.core.sys.singleapp.SingleAppCoreServletListener
+             * during application initialization.
+             */
             @Override
             protected ResourcePatternResolver getResourcePatternResolver() {
                 String jarDependencies = AppContext.getProperty("JAR_DEPENDENCIES");
@@ -104,5 +93,23 @@ public class SingleAppCoreContextLoader extends AppContextLoader {
     @Override
     protected String getAppPropertiesConfig(ServletContext sc) {
         return sc.getInitParameter("appPropertiesConfigCore");
+    }
+
+    protected static class SetClassLoaderFilter implements Filter {
+        @Override
+        public void init(FilterConfig filterConfig) throws ServletException {
+
+        }
+
+        @Override
+        public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+            Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+            chain.doFilter(request, response);
+        }
+
+        @Override
+        public void destroy() {
+
+        }
     }
 }
