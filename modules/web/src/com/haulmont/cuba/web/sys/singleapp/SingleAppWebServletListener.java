@@ -22,25 +22,25 @@ import java.util.Arrays;
 /**
  * @author degtyarjov
  * @version $Id$
+ *
+ * This class and its twin com.haulmont.cuba.core.sys.singleapp.SingleAppCoreServletListener separate "web" and "core" classes
+ * to different classloaders when we pack application to single WAR.
+ *
+ * We create 2 URLClassLoaders (1 for core and 1 for web), with predefined (during single WAR build) list of jars (web.dependencies).
+ * So the classloaders load classes from the jars and only if class is not found they delegate loading to base WebAppClassLoader (their parent).
+ *
+ * As a result, core classloader contains core classes, web classloder contains web classes and WebAppClassLoader contains "shared" classes.
+ *
+ * To make sure spring context use necessary classloader we load AppWebContextLoader reflectively, create new instance
+ * and call contextInitialized() reflectively as well.
+ *
+ * As each classloader has its own AppContext version, we can put property with dependencies to AppContext (reflectively as well).
+ * The property will be used on spring context creation, to detect which jars to scan.
+ *
  */
 public class SingleAppWebServletListener implements ServletContextListener {
     protected Object appContextLoader;
 
-    /**
-     * This class and its twin com.haulmont.cuba.core.sys.singleapp.SingleAppCoreServletListener separate "web" and "core" classes
-     * to different classloaders when we pack application to single WAR.
-     *
-     * We create 2 URLClassLoaders (1 for core and 1 for web), with predefined (during single WAR build) list of jars (web.dependencies).
-     * So the classloaders load classes from the jars and only if class is not found they delegate loading to base WebAppClassLoader (their parent).
-     *
-     * As a result, core classloader contains core classes, web classloder contains web classes and WebAppClassLoader contains "shared" classes.
-     *
-     * To make sure spring context use necessary classloader we load AppWebContextLoader reflectively, create new instance
-     * and call contextInitialized() reflectively as well.
-     *
-     * As each classloader has its own AppContext version, we can put property with dependencies to AppContext (reflectively as well).
-     * The property will be used on spring context creation, to detect which jars to scan.
-     */
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         try {
