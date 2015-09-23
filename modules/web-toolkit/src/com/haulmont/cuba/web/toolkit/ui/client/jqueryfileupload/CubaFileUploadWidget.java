@@ -57,12 +57,9 @@ public class CubaFileUploadWidget extends FlowPanel {
 
         setStyleName(DEFAULT_CLASSNAME);
 
-        if (inputElement != null) {
-            getElement().removeChild(inputElement);
-        }
-
         inputElement = Document.get().createFileInputElement();
         inputElement.setAttribute("name", "files[]");
+        inputElement.setAttribute("title", "");
         DOM.sinkEvents(inputElement, Event.ONFOCUS);
 
         getElement().appendChild(inputElement);
