@@ -36,6 +36,7 @@ public class MessageTools {
      * Prefix defining that the string is actually a key in a localized messages pack.
      */
     public static final String MARK = "msg://";
+    public static final String MAIN_MARK = "mainMsg://";
 
     public static final String NAME = "cuba_MessageTools";
 
@@ -75,21 +76,27 @@ public class MessageTools {
      * <ul>
      * <li>Full: <code>msg://message_pack/message_id</code>
      * <li>Brief: <code>msg://message_id</code>, in this case the first parameter is taken into account
+     * <li>Message from a main messages pack: <code>mainMsg://message_id</code>
      * </ul>
-     * @return localized message or input string itself if it doesn't begin with <code>msg://</code>
+     * @return localized message or input string itself if it doesn't begin with <code>msg://</code> or <code>mainMsg://</code>
      */
     @Nullable
     public String loadString(@Nullable String messagesPack, @Nullable String ref) {
-        if (ref != null && ref.startsWith(MARK)) {
-            String path = ref.substring(6);
-            final String[] strings = path.split("/");
-            if (strings.length == 1 && messagesPack != null) {
-                ref = messages.getMessage(messagesPack, strings[0]);
-            } else if (strings.length == 2) {
-                ref = messages.getMessage(strings[0], strings[1]);
-            } else {
-                throw new UnsupportedOperationException("Unsupported resource string format: '" + ref
-                        + "', messagesPack=" + messagesPack);
+        if (ref != null) {
+            if (ref.startsWith(MARK)) {
+                String path = ref.substring(6);
+                final String[] strings = path.split("/");
+                if (strings.length == 1 && messagesPack != null) {
+                    ref = messages.getMessage(messagesPack, strings[0]);
+                } else if (strings.length == 2) {
+                    ref = messages.getMessage(strings[0], strings[1]);
+                } else {
+                    throw new UnsupportedOperationException("Unsupported resource string format: '" + ref
+                            + "', messagesPack=" + messagesPack);
+                }
+            } else if (ref.startsWith(MAIN_MARK)) {
+                String path = ref.substring(10);
+                return messages.getMainMessage(path);
             }
         }
         return ref;
