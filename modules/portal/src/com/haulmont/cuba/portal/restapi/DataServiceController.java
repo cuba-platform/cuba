@@ -318,7 +318,6 @@ public class DataServiceController {
                              @RequestParam(value = "s") String sessionId,
                              @RequestParam(value = "service") String serviceName,
                              @RequestParam(value = "method") String methodName,
-                             @RequestParam(value = "view", required = false) String view,
                              HttpServletRequest request,
                              HttpServletResponse response) throws IOException {
         if (!authentication.begin(sessionId)) {
