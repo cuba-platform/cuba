@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.security.entity.User;
+import org.junit.Ignore;
 
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.UUID;
  * @author artamonov
  * @version $Id$
  */
+@Ignore
 public class HsqlLikeNullFailTest extends CubaTestCase {
 
     @Override
