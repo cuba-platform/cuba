@@ -245,7 +245,7 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
         List<SimpleConditionNode> conditionNodesWithParameter = conditionNodes.stream()
                 .filter((SimpleConditionNode n) -> {
                     ParameterNode parameter = (ParameterNode) n.getFirstChildWithType(JPA2Lexer.T_PARAMETER);
-                    return parameter.getChild(0).getText().contains(paramName);
+                    return parameter != null && parameter.getChild(0).getText().contains(paramName);
                 }).collect(Collectors.toList());
 
         for (SimpleConditionNode simpleConditionNode : conditionNodesWithParameter) {
