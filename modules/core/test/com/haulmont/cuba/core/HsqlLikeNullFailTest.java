@@ -5,29 +5,33 @@
 
 package com.haulmont.cuba.core;
 
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.security.entity.User;
-import org.junit.Ignore;
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-@Ignore
-public class HsqlLikeNullFailTest extends CubaTestCase {
+public class HsqlLikeNullFailTest {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
 
+    @Before
+    public void setUp() throws Exception {
         User user = new User();
         user.setId(UUID.fromString("de0f39d2-e60a-11e1-9b55-3860770d7eaf"));
         user.setName("Test");
@@ -35,23 +39,32 @@ public class HsqlLikeNullFailTest extends CubaTestCase {
         user.setLoginLowerCase("test");
 
         DataManager dataManager = AppBeans.get(DataManager.NAME);
-        dataManager.commit(new CommitContext(Collections.<Entity>singleton(user)));
+        dataManager.commit(user);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-
-        deleteRecord("SEC_USER", UUID.fromString("de0f39d2-e60a-11e1-9b55-3860770d7eaf"));
+    @After
+    public void tearDown() throws Exception {
+        cont.deleteRecord("SEC_USER", UUID.fromString("de0f39d2-e60a-11e1-9b55-3860770d7eaf"));
     }
 
+    /**
+     * Illustrates the fact that parameter in "like" condition can not be null on HSQL
+     * <p>https://youtrack.haulmont.com/issue/PL-6034
+     */
+    @Test
     public void testLoadListCaseInsensitive() {
         LoadContext<User> loadContext = LoadContext.create(User.class);
-        loadContext.setQueryString("select u from sec$User u where u.name like :custom_searchString or u.login like :custom_searchString")
+        loadContext.setQueryString("select u from sec$User u " +
+                "where u.name like :custom_searchString or u.login like :custom_searchString")
                 .setParameter("custom_searchString", null);
 
         DataManager dataManager = AppBeans.get(DataManager.NAME);
-        List<User> list = dataManager.loadList(loadContext);
-        assertEquals(1, list.size());
+        try {
+            List<User> list = dataManager.loadList(loadContext);
+            assertEquals(0, list.size());
+        } catch (Exception e) {
+            // fails on HSQL
+            assertTrue(e.getMessage().contains("data type cast needed for parameter or null literal"));
+        }
     }
 }
