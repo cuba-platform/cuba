@@ -21,6 +21,7 @@ import com.thoughtworks.xstream.converters.reflection.ExternalizableConverter;
 import org.dom4j.*;
 
 import javax.annotation.ManagedBean;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
@@ -250,7 +251,7 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
     }
 
     @Override
-    public EntityDiff getDifference(EntitySnapshot first, EntitySnapshot second) {
+    public EntityDiff getDifference(@Nullable EntitySnapshot first, EntitySnapshot second) {
         return diffManager.getDifference(first, second);
     }
 

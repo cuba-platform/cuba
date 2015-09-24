@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.entity.diff.EntityDiff;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.User;
 
+import javax.annotation.Nullable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -98,5 +99,5 @@ public interface EntitySnapshotAPI {
      * @param second Second version
      * @return Diffs
      */
-    EntityDiff getDifference(EntitySnapshot first, EntitySnapshot second);
+    EntityDiff getDifference(@Nullable EntitySnapshot first, EntitySnapshot second);
 }
