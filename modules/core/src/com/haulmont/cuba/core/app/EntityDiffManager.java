@@ -95,8 +95,8 @@ public class EntityDiffManager {
             BaseEntity firstEntity = first != null ? snapshotAPI.extractEntity(first) : null;
             BaseEntity secondEntity = snapshotAPI.extractEntity(second);
 
-            result.setBeforeEntity(first);
-            result.setAfterEntity(second);
+            result.setBeforeEntity(firstEntity);
+            result.setAfterEntity(secondEntity);
 
             Stack<Object> diffBranch = new Stack<>();
             diffBranch.push(second);
