@@ -99,7 +99,7 @@ public class DataServiceQueryBuilder {
                     value = ((EnumClass) value).getId();
 
                 } else if (value instanceof Collection) {
-                    List<Object> list = new ArrayList<Object>(((Collection) value).size());
+                    List<Object> list = new ArrayList<>(((Collection) value).size());
                     for (Object item : (Collection) value) {
                         if (item instanceof Entity)
                             list.add(((Entity) item).getId());
