@@ -9,8 +9,13 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 import java.util.Hashtable;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class TestInitialContextFactory implements InitialContextFactory {
 
+    @Override
     public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
         return TestContext.getInstance();
     }

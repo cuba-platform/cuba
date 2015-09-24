@@ -11,12 +11,17 @@ import java.util.ArrayList;
 import java.sql.SQLException;
 import java.sql.Connection;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class TestTransaction implements Transaction {
 
     private int status = Status.STATUS_ACTIVE;
 
-    private List<Synchronization> syncs = new ArrayList<Synchronization>();
+    private List<Synchronization> syncs = new ArrayList<>();
 
+    @Override
     public void commit() throws RollbackException, HeuristicMixedException, HeuristicRollbackException, SecurityException, SystemException {
         if (status != Status.STATUS_ACTIVE)
             throw new SystemException("Unable to commit: invalid tx status: " + status);
@@ -38,6 +43,7 @@ public class TestTransaction implements Transaction {
         }
     }
 
+    @Override
     public void rollback() throws IllegalStateException, SystemException {
         if (status != Status.STATUS_ACTIVE && status != Status.STATUS_MARKED_ROLLBACK)
             throw new SystemException("Unable to rollback: invalid tx status: " + status);
@@ -48,22 +54,27 @@ public class TestTransaction implements Transaction {
         }
     }
 
+    @Override
     public void setRollbackOnly() throws IllegalStateException, SystemException {
         status = Status.STATUS_MARKED_ROLLBACK;
     }
 
+    @Override
     public int getStatus() throws SystemException {
         return status;
     }
 
+    @Override
     public boolean enlistResource(XAResource xaResource) throws RollbackException, IllegalStateException, SystemException {
         return false;
     }
 
+    @Override
     public boolean delistResource(XAResource xaResource, int i) throws IllegalStateException, SystemException {
         return false;
     }
 
+    @Override
     public void registerSynchronization(Synchronization synchronization) throws RollbackException, IllegalStateException, SystemException {
         syncs.add(synchronization);
     }

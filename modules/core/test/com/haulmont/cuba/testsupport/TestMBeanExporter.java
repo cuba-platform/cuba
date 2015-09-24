@@ -4,5 +4,9 @@
  */
 package com.haulmont.cuba.testsupport;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class TestMBeanExporter {
 }
