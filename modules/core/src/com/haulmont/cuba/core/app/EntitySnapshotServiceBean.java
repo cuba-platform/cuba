@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.User;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
@@ -55,7 +56,7 @@ public class EntitySnapshotServiceBean implements EntitySnapshotService {
     }
 
     @Override
-    public EntityDiff getDifference(EntitySnapshot first, EntitySnapshot second) {
+    public EntityDiff getDifference(@Nullable EntitySnapshot first, EntitySnapshot second) {
         return snapshotAPI.getDifference(first, second);
     }
 
