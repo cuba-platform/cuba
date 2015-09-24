@@ -81,12 +81,12 @@ public class TestContainer extends ExternalResource {
                 super.before();
                 initialized = true;
             }
-            cleanupContext();
+            setupContext();
         }
 
         @Override
         public void after() {
-            setupContext();
+            cleanupContext();
             // never stops - do not call super
         }
     }
