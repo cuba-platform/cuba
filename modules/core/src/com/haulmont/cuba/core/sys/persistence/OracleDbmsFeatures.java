@@ -32,7 +32,7 @@ public class OracleDbmsFeatures implements DbmsFeatures {
     @Override
     public Map<String, String> getJpaParameters() {
         Map<String, String> params = new HashMap<>();
-        params.put("eclipselink.target-database", "org.eclipse.persistence.platform.database.OraclePlatform");
+        params.put("eclipselink.target-database", "com.haulmont.cuba.core.sys.persistence.CubaOraclePlatform");
         putDbSchema(params);
         return params;
     }
