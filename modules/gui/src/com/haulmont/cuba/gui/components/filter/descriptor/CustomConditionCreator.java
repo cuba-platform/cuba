@@ -28,7 +28,7 @@ public class CustomConditionCreator extends AbstractConditionDescriptor {
         super(RandomStringUtils.randomAlphabetic(10), filterComponentName, datasource);
 
         Messages messages = AppBeans.get(Messages.NAME);
-        this.locCaption = messages.getMessage(CustomConditionCreator.class, "CustomCondition.new");
+        this.locCaption = messages.getMainMessage("filter.customCondition.new");
         showImmediately = true;
     }
 
@@ -47,7 +47,7 @@ public class CustomConditionCreator extends AbstractConditionDescriptor {
     @Override
     public String getTreeCaption() {
         Messages messages = AppBeans.get(Messages.NAME);
-        return messages.getMessage(CustomConditionCreator.class, "conditionCreator");
+        return messages.getMainMessage("filter.customConditionCreator");
     }
 
     @Override

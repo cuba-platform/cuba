@@ -4,9 +4,8 @@
   -->
 
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
-        caption="msg://FilterSelect.caption"
-        class="com.haulmont.cuba.gui.components.filter.filterselect.FilterSelectWindow"
-        messagesPack="com.haulmont.cuba.gui.components.filter.filterselect">
+        caption="mainMsg://filter.filterSelect.caption"
+        class="com.haulmont.cuba.gui.components.filter.filterselect.FilterSelectWindow">
     <dsContext>
         <collectionDatasource
                 id="filterEntitiesDs"
@@ -15,12 +14,12 @@
     </dsContext>
     <actions>
         <action id="search" invoke="search" shortcut="ENTER" icon="icons/search.png" caption=""/>
-        <action id="select" invoke="select" shortcut="CTRL-ENTER" icon="icons/ok.png" caption="msg://actions.Select"/>
-        <action id="cancel" invoke="cancel" shortcut="ESCAPE" icon="icons/cancel.png" caption="msg://actions.Cancel"/>
+        <action id="select" invoke="select" shortcut="CTRL-ENTER" icon="icons/ok.png" caption="mainMsg://actions.Select"/>
+        <action id="cancel" invoke="cancel" shortcut="ESCAPE" icon="icons/cancel.png" caption="mainMsg://actions.Cancel"/>
     </actions>
     <layout spacing="true" expand="filterEntitiesTable">
         <hbox id="nameFilterBox" width="100%" expand="nameFilterField" spacing="true">
-            <textField id="nameFilterField" width="100%"/>
+            <textField id="nameFilterField"/>
             <button id="searchBtn" action="search"/>
         </hbox>
         <table id="filterEntitiesTable" width="100%" columnControlVisible="false">

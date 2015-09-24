@@ -7,11 +7,9 @@ package com.haulmont.cuba.gui.components.filter.condition;
 
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
 import com.haulmont.cuba.gui.components.filter.GroupType;
 import com.haulmont.cuba.gui.components.filter.descriptor.GroupConditionDescriptor;
+import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
 import com.haulmont.cuba.gui.components.filter.operationedit.GroupOperationEditor;
 import org.dom4j.Element;
 
@@ -36,8 +34,7 @@ public class GroupCondition extends AbstractCondition {
         super(element, null, filterComponentName, null);
         group = true;
         groupType = GroupType.fromXml(element.getName());
-        Messages messages = AppBeans.get(Messages.class);
-        locCaption = messages.getMessage(GroupCondition.class, "GroupType." + groupType);
+        locCaption = groupType.getLocCaption();
         param = null;
     }
 
@@ -45,8 +42,7 @@ public class GroupCondition extends AbstractCondition {
         super(descriptor);
         group = true;
         groupType = descriptor.getGroupType();
-        Messages messages = AppBeans.get(Messages.class);
-        locCaption = messages.getMessage(GroupCondition.class, "GroupType." + groupType);
+        locCaption = groupType.getLocCaption();
         param = null;
     }
 
@@ -61,19 +57,8 @@ public class GroupCondition extends AbstractCondition {
         return operationEditor;
     }
 
-//    @Override
-//    protected void copyFrom(AbstractCondition condition) {
-//        super.copyFrom(condition);
-//        if (condition instanceof GroupCondition) {
-//            this.groupType = ((GroupCondition)condition).groupType;
-//        }
-//    }
-
     @Override
     public AbstractCondition createCopy() {
-//        GroupCondition groupCondition = new GroupCondition();
-//        groupCondition.copyFrom(this);
-//        return groupCondition;
         return new GroupCondition(this);
     }
 

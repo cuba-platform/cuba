@@ -102,9 +102,9 @@ public class ConditionDescriptorsTreeBuilder {
         Collections.sort(customDescriptors, new ConditionDescriptorComparator());
 
         HeaderConditionDescriptor propertyHeaderDescriptor = new HeaderConditionDescriptor("propertyConditions",
-                messages.getMessage(ConditionDescriptorsTreeBuilder.class, "AddCondition.propertyConditions"), filterComponentName, datasource);
+                messages.getMainMessage("filter.addCondition.propertyConditions"), filterComponentName, datasource);
         HeaderConditionDescriptor customHeaderDescriptor = new HeaderConditionDescriptor("customConditions",
-                messages.getMessage(ConditionDescriptorsTreeBuilder.class, "AddCondition.customConditions"), filterComponentName, datasource);
+                messages.getMainMessage("filter.addCondition.customConditions"), filterComponentName, datasource);
 
         Node<AbstractConditionDescriptor> propertyHeaderNode = new Node<>(propertyHeaderDescriptor);
         Node<AbstractConditionDescriptor> customHeaderNode = new Node<>(customHeaderDescriptor);

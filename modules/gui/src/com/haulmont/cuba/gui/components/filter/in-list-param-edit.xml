@@ -5,14 +5,13 @@
 
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
         class="com.haulmont.cuba.gui.components.filter.InListParamEditor"
-        messagesPack="com.haulmont.cuba.gui.components.filter"
-        caption="msg://FilterListParamEditor.caption">
+        caption="mainMsg://filter.inListParamEditor.caption">
     <layout spacing="true">
         <vbox id="valuesLayout" spacing="true"/>
         <hbox id="componentLayout" spacing="true"/>
         <hbox id="buttonsPanel" spacing="true">
-            <button id="commit" invoke="commit" caption="msg://actions.Ok" icon="icons/ok.png"/>
-            <button id="close" invoke="cancel" caption="msg://actions.Cancel" icon="icons/cancel.png"/>
+            <button id="commit" invoke="commit" caption="mainMsg://actions.Ok" icon="icons/ok.png"/>
+            <button id="close" invoke="cancel" caption="mainMsg://actions.Cancel" icon="icons/cancel.png"/>
         </hbox>
     </layout>
 </window>

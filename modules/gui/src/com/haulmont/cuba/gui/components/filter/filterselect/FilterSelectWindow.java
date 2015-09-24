@@ -96,7 +96,7 @@ public class FilterSelectWindow extends AbstractWindow {
     public void select() {
         FilterEntity item = filterEntitiesDs.getItem();
         if (item == null) {
-            showNotification(getMessage("FilterSelect.selectFilterEntity"), NotificationType.WARNING);
+            showNotification(messages.getMainMessage("filter.filterSelect.selectFilterEntity"), NotificationType.WARNING);
         } else {
             close(COMMIT_ACTION_ID);
         }

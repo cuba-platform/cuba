@@ -5,8 +5,7 @@
 
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
         class="com.haulmont.cuba.gui.components.filter.edit.FilterEditor"
-        messagesPack="com.haulmont.cuba.gui.components.filter.edit"
-        caption="msg://caption"
+        caption="mainMsg://filter.editor.caption"
         focusComponent="conditionsTree">
 
     <companions>
@@ -21,7 +20,7 @@
     </dsContext>
 
     <actions>
-        <action id="commit" invoke="commitAndClose" caption="msg://actions.Ok" icon="icons/ok.png" shortcut="CTRL-ENTER"/>
+        <action id="commit" invoke="commitAndClose" caption="mainMsg://actions.Ok" icon="icons/ok.png" shortcut="CTRL-ENTER"/>
     </actions>
 
     <layout spacing="true" expand="mainLayout">
@@ -34,19 +33,19 @@
                     </columns>
                     <rows>
                         <row>
-                            <label id="filterNameLabel" value="msg://filterName" align="MIDDLE_LEFT"/>
-                            <textField id="filterName" width="100%" required="true" requiredMessage="msg://fillFilterName"/>
+                            <label id="filterNameLabel" value="mainMsg://filter.editor.filterName" align="MIDDLE_LEFT"/>
+                            <textField id="filterName" width="100%" required="true" requiredMessage="mainMsg://filter.editor.fillFilterName"/>
                         </row>
                         <row>
-                            <label id="availableForAllLabel" value="msg://availableForAll" align="MIDDLE_LEFT"/>
+                            <label id="availableForAllLabel" value="mainMsg://filter.editor.availableForAll" align="MIDDLE_LEFT"/>
                             <checkBox id="availableForAllCb"/>
                         </row>
                         <row>
-                            <label id="defaultLabel" value="msg://default" align="MIDDLE_LEFT"/>
+                            <label id="defaultLabel" value="mainMsg://filter.editor.default" align="MIDDLE_LEFT"/>
                             <checkBox id="defaultCb"/>
                         </row>
                         <row>
-                            <label id="applyDefaultLabel" value="msg://applyDefault" align="MIDDLE_LEFT"/>
+                            <label id="applyDefaultLabel" value="mainMsg://filter.editor.applyDefault" align="MIDDLE_LEFT"/>
                             <checkBox id="applyDefaultCb"/>
                         </row>
                     </rows>
@@ -61,18 +60,18 @@
                 </hbox>
                 <tree id="conditionsTree" width="100%">
                     <actions>
-                        <action id="add" invoke="addCondition" caption="msg://addCondition"/>
-                        <action id="remove" trackSelection="true" invoke="removeCondition" caption="msg://removeCondition"/>
-                        <action id="addAndGroup" invoke="addAndGroup" caption="msg://addAndGroup"/>
-                        <action id="addOrGroup" invoke="addOrGroup" caption="msg://addOrGroup"/>
-                        <action id="moveConditionUp" trackSelection="true" invoke="moveConditionUp" caption="msg://moveUp" icon="icons/up.png"/>
-                        <action id="moveConditionDown" trackSelection="true" invoke="moveConditionDown" caption="msg://moveDown" icon="icons/down.png"/>
-                        <action id="showComponentName" trackSelection="true" invoke="showComponentName" caption="msg://showComponentName"/>
+                        <action id="add" invoke="addCondition" caption="mainMsg://filter.editor.addCondition"/>
+                        <action id="remove" trackSelection="true" invoke="removeCondition" caption="mainMsg://filter.editor.removeCondition"/>
+                        <action id="addAndGroup" invoke="addAndGroup" caption="mainMsg://filter.editor.addAndGroup"/>
+                        <action id="addOrGroup" invoke="addOrGroup" caption="mainMsg://filter.editor.addOrGroup"/>
+                        <action id="moveConditionUp" trackSelection="true" invoke="moveConditionUp" caption="mainMsg://filter.editor.moveUp" icon="icons/up.png"/>
+                        <action id="moveConditionDown" trackSelection="true" invoke="moveConditionDown" caption="mainMsg://filter.editor.moveDown" icon="icons/down.png"/>
+                        <action id="showComponentName" trackSelection="true" invoke="showComponentName" caption="mainMsg://filter.editor.showComponentName"/>
                     </actions>
                     <treechildren datasource="conditionsDs" captionProperty="locCaption"/>
                 </tree>
             </vbox>
-            <groupBox id="conditionPropertiesLayout" caption="msg://conditionProperties" height="100%" width="theme://cuba.gui.filterEditor.dialog.rightPanel.width">
+            <groupBox id="conditionPropertiesLayout" caption="mainMsg://filter.editor.conditionProperties" height="100%" width="theme://cuba.gui.filterEditor.dialog.rightPanel.width">
                 <scrollBox scrollBars="vertical" height="100%" width="100%">
                     <frame id="customConditionFrame" screen="customConditionFrame" visible="false"/>
                     <frame id="dynamicAttributesConditionFrame" screen="dynamicAttributesConditionFrame" visible="false"/>
@@ -83,7 +82,7 @@
         </hbox>
         <hbox spacing="true">
             <button id="okBtn" action="commit"/>
-            <button id="cancelBtn" invoke="cancel" caption="msg://actions.Cancel" icon="icons/cancel.png"/>
+            <button id="cancelBtn" invoke="cancel" caption="mainMsg://actions.Cancel" icon="icons/cancel.png"/>
         </hbox>
     </layout>
 </window>

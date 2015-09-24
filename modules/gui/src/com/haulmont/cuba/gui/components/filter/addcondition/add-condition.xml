@@ -1,7 +1,6 @@
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
         class="com.haulmont.cuba.gui.components.filter.addcondition.AddConditionWindow"
-        messagesPack="com.haulmont.cuba.gui.components.filter.addcondition"
-        caption="msg://AddCondition.caption">
+        caption="mainMsg://filter.addCondition.caption">
     <dsContext>
         <collectionDatasource
                 id="conditionDescriptorsDs"
@@ -9,13 +8,13 @@
                 datasourceClass="com.haulmont.cuba.gui.components.filter.addcondition.ConditionDescriptorsDs"/>
     </dsContext>
     <actions>
-        <action id="search" invoke="search" shortcut="ENTER" icon="icons/search.png" caption="msg://AddCondition.searchBtn.caption"/>
-        <action id="select" invoke="select" shortcut="CTRL-ENTER" icon="icons/ok.png" caption="msg://actions.Select"/>
-        <action id="cancel" invoke="cancel" shortcut="ESCAPE" icon="icons/cancel.png" caption="msg://actions.Cancel"/>
+        <action id="search" invoke="search" shortcut="ENTER" icon="icons/search.png" caption="mainMsg://filter.addCondition.searchBtn.caption"/>
+        <action id="select" invoke="select" shortcut="CTRL-ENTER" icon="icons/ok.png" caption="mainMsg://actions.Select"/>
+        <action id="cancel" invoke="cancel" shortcut="ESCAPE" icon="icons/cancel.png" caption="mainMsg://actions.Cancel"/>
     </actions>
     <layout spacing="true" expand="tree">
         <hbox spacing="true" expand="treeFilter" width="100%">
-            <label value="msg://AddCondition.filter" align="MIDDLE_LEFT"/>
+            <label value="mainMsg://filter.addCondition.filter" align="MIDDLE_LEFT"/>
             <textField id="treeFilter"/>
             <button id="searchBtn" action="search"/>
         </hbox>

@@ -506,8 +506,7 @@ public class Param {
                             p = datatype.parse(part, userSessionSource1.getLocale());
                         } catch (ParseException ex) {
                             WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
-                            wm.showNotification(messages.getMessage(Param.class,
-                                    "Param.numberInvalid"), Frame.NotificationType.ERROR);
+                            wm.showNotification(messages.getMainMessage("filter.param.numberInvalid"), Frame.NotificationType.ERROR);
                             return;
                         }
                         ((List) v).add(p);
@@ -517,8 +516,7 @@ public class Param {
                         v = datatype.parse((String) e.getValue(), userSessionSource1.getLocale());
                     } catch (ParseException ex) {
                         WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
-                        wm.showNotification(messages.getMessage(Param.class,
-                                "Param.numberInvalid"), Frame.NotificationType.ERROR);
+                        wm.showNotification(messages.getMainMessage("Param.numberInvalid"), Frame.NotificationType.ERROR);
                         return;
                     }
                 }
@@ -543,8 +541,8 @@ public class Param {
         field.setWidth(theme.get("cuba.gui.filter.Param.booleanLookup.width"));
 
         Map<String, Object> values = new HashMap<>();
-        values.put(messages.getMessage(Param.class, "Boolean.TRUE"), Boolean.TRUE);
-        values.put(messages.getMessage(Param.class, "Boolean.FALSE"), Boolean.FALSE);
+        values.put(messages.getMainMessage("filter.param.boolean.true"), Boolean.TRUE);
+        values.put(messages.getMainMessage("filter.param.boolean.false"), Boolean.FALSE);
 
         field.setOptionsMap(values);
         field.addValueChangeListener(e -> _setValue(e.getValue(), valueProperty));
@@ -572,16 +570,14 @@ public class Param {
                         }
                         _setValue(list, valueProperty);
                     } catch (IllegalArgumentException ie) {
-                        AppBeans.get(WindowManagerProvider.class).get().showNotification(messages1.getMessage(Param.class,
-                                "Param.uuid.Err"), Frame.NotificationType.TRAY);
+                        AppBeans.get(WindowManagerProvider.class).get().showNotification(messages1.getMainMessage("filter.param.uuid.Err"), Frame.NotificationType.TRAY);
                         _setValue(null, valueProperty);
                     }
                 } else {
                     try {
                         _setValue(UUID.fromString(strValue), valueProperty);
                     } catch (IllegalArgumentException ie) {
-                        AppBeans.get(WindowManagerProvider.class).get().showNotification(messages1.getMessage(Param.class,
-                                "Param.uuid.Err"), Frame.NotificationType.TRAY);
+                        AppBeans.get(WindowManagerProvider.class).get().showNotification(messages1.getMainMessage("Param.uuid.Err"), Frame.NotificationType.TRAY);
                     }
                 }
             } else if (StringUtils.isBlank(strValue)) {

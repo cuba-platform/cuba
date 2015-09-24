@@ -4,8 +4,7 @@
   -->
 
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
-        class="com.haulmont.cuba.gui.components.filter.edit.GroupConditionFrame"
-        messagesPack="com.haulmont.cuba.gui.components.filter.edit">
+        class="com.haulmont.cuba.gui.components.filter.edit.GroupConditionFrame">
 
     <layout spacing="true">
         <grid id="conditionGrid" spacing="true" width="100%">
@@ -15,7 +14,7 @@
             </columns>
             <rows>
                 <row>
-                    <label id="hiddenLabel" value="msg://hidden" align="MIDDLE_LEFT"/>
+                    <label id="hiddenLabel" value="mainMsg://filter.conditionFrame.hidden" align="MIDDLE_LEFT"/>
                     <checkBox id="hidden"/>
                 </row>
             </rows>

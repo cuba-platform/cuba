@@ -26,9 +26,7 @@ public enum ParamType {
     ENTITY,
     UNARY;
 
-    @Override
-    public String toString() {
-        Messages messages = AppBeans.get(Messages.NAME);
-        return messages.getMessage(this);
+    public String getLocCaption() {
+        return AppBeans.get(Messages.class).getMainMessage("ParamType." + this.name());
     }
 }

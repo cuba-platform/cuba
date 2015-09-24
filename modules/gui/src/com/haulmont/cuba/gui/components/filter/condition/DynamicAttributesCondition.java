@@ -55,7 +55,7 @@ public class DynamicAttributesCondition extends AbstractCondition {
         this.entityAlias = entityAlias;
         this.name = RandomStringUtils.randomAlphabetic(10);
         Messages messages = AppBeans.get(Messages.class);
-        this.locCaption = messages.getMessage(DynamicAttributesCondition.class, "newDynamicAttributeCondition");
+        this.locCaption = messages.getMainMessage("newDynamicAttributeCondition");
         this.propertyPath = propertyPath;
     }
 
@@ -146,8 +146,7 @@ public class DynamicAttributesCondition extends AbstractCondition {
 
     @Override
     public String getOperationCaption() {
-        Messages messages = AppBeans.get(Messages.NAME);
-        return messages.getMessage(operator);
+        return operator.getLocCaption();
     }
 
     @Override
@@ -155,21 +154,6 @@ public class DynamicAttributesCondition extends AbstractCondition {
         operationEditor = new DynamicAttributesOperationEditor(this);
         return operationEditor;
     }
-
-//    @Override
-//    protected Param createParam() {
-//        if (categoryAttributeId != null) {
-//            Class paramJavaClass = unary ? Boolean.class : javaClass;
-//
-//            MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(datasource.getMetaClass(), categoryAttributeId);
-//            Param param = new Param(paramName, paramJavaClass, null, null, datasource,
-//                    metaPropertyPath != null ? metaPropertyPath.getMetaProperty() : null,
-//                    inExpr, required, categoryAttributeId);
-//            return param;
-//        } else {
-//            return super.createParam();
-//        }
-//    }
 
     @Override
     protected void updateText() {

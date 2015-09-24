@@ -102,15 +102,15 @@ public class AddConditionWindow extends AbstractWindow {
     public void select() {
         Set<Entity> selectedItems = tree.getSelected();
         if (selectedItems.isEmpty()) {
-            showNotification(getMessage("AddCondition.selectCondition"), NotificationType.WARNING);
+            showNotification(messages.getMainMessage("filter.addCondition.selectCondition"), NotificationType.WARNING);
             return;
         } else {
             for (Entity item : selectedItems) {
                 if (item instanceof HeaderConditionDescriptor) {
-                    showNotification(getMessage("AddCondition.youSelectedGroup"), NotificationType.WARNING);
+                    showNotification(messages.getMainMessage("filter.addCondition.youSelectedGroup"), NotificationType.WARNING);
                     return;
                 } else if (isEmbeddedProperty((AbstractConditionDescriptor) item)) {
-                    showNotification(getMessage("AddCondition.youSelectedEmbedded"), NotificationType.WARNING);
+                    showNotification(messages.getMainMessage("filter.addCondition.youSelectedEmbedded"), NotificationType.WARNING);
                     return;
                 }
             }

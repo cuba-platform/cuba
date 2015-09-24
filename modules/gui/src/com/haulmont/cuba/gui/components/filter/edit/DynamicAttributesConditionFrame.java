@@ -92,13 +92,13 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
 
     protected String checkCondition() {
         if (categoryLookup.getValue() == null) {
-            return "DynamicAttributesConditionFrame.selectCategory";
+            return "filter.dynamicAttributesConditionFrame.selectCategory";
         }
         if (attributeLookup.getValue() == null) {
-            return "DynamicAttributesConditionFrame.selectAttribute";
+            return "filter.dynamicAttributesConditionFrame.selectAttribute";
         }
         if (operationLookup.getValue() == null) {
-            return "DynamicAttributesConditionFrame.selectOperator";
+            return "filter.dynamicAttributesConditionFrame.selectOperator";
         }
         return null;
     }
@@ -110,7 +110,7 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
 
         String error = checkCondition();
         if (error != null) {
-            showNotification(getMessage(error), Frame.NotificationType.TRAY);
+            showNotification(messages.getMainMessage(error), Frame.NotificationType.TRAY);
             return false;
         }
 

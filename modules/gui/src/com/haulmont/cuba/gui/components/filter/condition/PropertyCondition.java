@@ -10,7 +10,6 @@ import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.gui.components.filter.Op;
@@ -160,8 +159,7 @@ public class PropertyCondition extends AbstractCondition {
 
     @Override
     public String getOperationCaption() {
-        Messages messages = AppBeans.get(Messages.NAME);
-        return messages.getMessage(operator);
+        return operator.getLocCaption();
     }
 
     @Override

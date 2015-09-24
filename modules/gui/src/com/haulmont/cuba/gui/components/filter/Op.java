@@ -51,7 +51,7 @@ public enum Op {
         throw new UnsupportedOperationException("Unsupported operation: " + str);
     }
 
-    public String toString() {
-        return AppBeans.get(Messages.class).getMessage(this);
+    public String getLocCaption() {
+        return AppBeans.get(Messages.class).getMainMessage("Op." + this.name());
     }
 }

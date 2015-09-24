@@ -5,7 +5,6 @@
 
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
         class="com.haulmont.cuba.gui.components.filter.edit.CustomConditionFrame"
-        messagesPack="com.haulmont.cuba.gui.components.filter.edit"
         focusComponent="nameField">
 
     <layout spacing="true">
@@ -17,61 +16,61 @@
             </columns>
             <rows>
                 <row>
-                    <label id="hiddenLabel" value="msg://hidden" align="MIDDLE_LEFT"/>
+                    <label id="hiddenLabel" value="mainMsg://filter.conditionFrame.hidden" align="MIDDLE_LEFT"/>
                     <checkBox id="hidden"/>
                     <label value=""/>
                 </row>
                 <row>
-                    <label id="requiredLabel" value="msg://required" align="MIDDLE_LEFT"/>
+                    <label id="requiredLabel" value="mainMsg://filter.conditionFrame.required" align="MIDDLE_LEFT"/>
                     <checkBox id="required"/>
                     <label value=""/>
                 </row>
                 <row>
-                    <label id="widthLabel" value="msg://width" align="MIDDLE_LEFT"/>
+                    <label id="widthLabel" value="mainMsg://filter.conditionFrame.width" align="MIDDLE_LEFT"/>
                     <lookupField id="width" width="theme://cuba.gui.filterEditor.widthLookup.width"/>
                     <label value=""/>
                 </row>
                 <row>
-                    <label id="defaultValueLayoutLabel" htmlEnabled="true" value="msg://defaultValue" align="MIDDLE_LEFT"/>
+                    <label id="defaultValueLayoutLabel" htmlEnabled="true" value="mainMsg://filter.conditionFrame.defaultValue" align="MIDDLE_LEFT"/>
                     <hbox id="defaultValueLayout" width="100%"/>
                     <label value=""/>
                 </row>
                 <row>
-                    <label id="nameLab" value="msg://CustomConditionFrame.name" align="MIDDLE_LEFT"/>
-                    <textField id="nameField" width="theme://cuba.gui.customConditionFrame.field.width" required="true" requiredMessage="msg://CustomConditionFrame.fillName"/>
+                    <label id="nameLab" value="mainMsg://filter.customConditionFrame.name" align="MIDDLE_LEFT"/>
+                    <textField id="nameField" width="theme://cuba.gui.customConditionFrame.field.width" required="true" requiredMessage="mainMsg://filter.customConditionFrame.fillName"/>
                     <label value=""/>
                 </row>
                 <row>
-                    <label value="msg://CustomConditionFrame.join"/>
+                    <label value="mainMsg://filter.customConditionFrame.join"/>
                     <sourceCodeEditor id="joinField" height="theme://cuba.gui.customConditionFrame.joinField.height" width="theme://cuba.gui.customConditionFrame.field.width"/>
                     <linkButton icon="icons/question-white.png" invoke="getJoinClauseHelp"/>
                 </row>
                 <row>
-                    <label value="msg://CustomConditionFrame.where"/>
+                    <label value="mainMsg://filter.customConditionFrame.where"/>
                     <sourceCodeEditor id="whereField" height="theme://cuba.gui.customConditionFrame.whereField.height" width="theme://cuba.gui.customConditionFrame.field.width"
-                                      required="true" requiredMessage="msg://CustomConditionFrame.fillWhere"/>
+                                      required="true" requiredMessage="mainMsg://filter.customConditionFrame.fillWhere"/>
                     <linkButton icon="icons/question-white.png" invoke="getWhereClauseHelp"/>
                 </row>
                 <row>
-                    <label value="msg://CustomConditionFrame.type" align="MIDDLE_LEFT"/>
+                    <label value="mainMsg://filter.customConditionFrame.type" align="MIDDLE_LEFT"/>
                     <hbox spacing="true" align="MIDDLE_LEFT" width="theme://cuba.gui.customConditionFrame.field.width" expand="typeSelect">
-                        <lookupField id="typeSelect" required="true" requiredMessage="msg://CustomConditionFrame.fillType"/>
-                        <checkBox id="inExprCb" caption="msg://CustomConditionFrame.inExpr" align="MIDDLE_LEFT"/>
+                        <lookupField id="typeSelect" required="true" requiredMessage="mainMsg://filter.customConditionFrame.fillType"/>
+                        <checkBox id="inExprCb" caption="mainMsg://filter.customConditionFrame.inExpr" align="MIDDLE_LEFT"/>
                     </hbox>
                     <label value=""/>
                 </row>
                 <row>
-                    <label id="entityLab" value="msg://CustomConditionFrame.entity" align="MIDDLE_LEFT"/>
-                    <lookupField id="entitySelect" width="theme://cuba.gui.customConditionFrame.field.width" requiredMessage="msg://CustomConditionFrame.fillEntity"/>
+                    <label id="entityLab" value="mainMsg://filter.customConditionFrame.entity" align="MIDDLE_LEFT"/>
+                    <lookupField id="entitySelect" width="theme://cuba.gui.customConditionFrame.field.width" requiredMessage="mainMsg://filter.customConditionFrame.fillEntity"/>
                     <label value=""/>
                 </row>
                 <row>
-                    <label id="paramWhereLab" value="msg://CustomConditionFrame.entityParamWhere"/>
+                    <label id="paramWhereLab" value="mainMsg://filter.customConditionFrame.entityParamWhere"/>
                     <sourceCodeEditor id="entityParamWhereField" height="theme://cuba.gui.customConditionFrame.entityParamWhereField.height" width="theme://cuba.gui.customConditionFrame.field.width"/>
                     <linkButton icon="icons/question-white.png" invoke="getParamWhereClauseHelp"/>
                 </row>
                 <row>
-                    <label id="paramViewLab" value="msg://CustomConditionFrame.entityParamView" align="MIDDLE_LEFT"/>
+                    <label id="paramViewLab" value="mainMsg://filter.customConditionFrame.entityParamView" align="MIDDLE_LEFT"/>
                     <textField id="entityParamViewField" width="theme://cuba.gui.customConditionFrame.field.width"/>
                     <label value=""/>
                 </row>

@@ -119,7 +119,7 @@ public class FilterEditor extends AbstractWindow {
         super.init(params);
 
         if (Boolean.TRUE.equals(useShortConditionForm)) {
-            setCaption(getMessage("captionShortForm"));
+            setCaption(messages.getMainMessage("filter.editor.captionShortForm"));
         }
 
         getDialogParams()
@@ -360,8 +360,8 @@ public class FilterEditor extends AbstractWindow {
 
     public void showComponentName() {
         AbstractCondition item = conditionsDs.getItem();
-        String message = (item != null && item.getParam() != null) ? item.getParam().getName() : getMessage("conditionIsNotSelected");
-        companion.showComponentName(getWindowManager(), getMessage("showComponentName.title"), message);
+        String message = (item != null && item.getParam() != null) ? item.getParam().getName() : messages.getMainMessage("filter.editor.showComponentName.conditionIsNotSelected");
+        companion.showComponentName(getWindowManager(), messages.getMainMessage("filter.editor.showComponentName.title"), message);
     }
 
     public FilterEntity getFilterEntity() {

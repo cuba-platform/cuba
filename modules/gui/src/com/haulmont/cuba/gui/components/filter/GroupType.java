@@ -5,6 +5,9 @@
 
 package com.haulmont.cuba.gui.components.filter;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+
 /**
  * Generic filter grouping condition type.
  *
@@ -32,5 +35,9 @@ public enum GroupType {
                 return groupType;
         }
         throw new UnsupportedOperationException("Unknown xml element: " + xml);
+    }
+
+    public String getLocCaption() {
+        return AppBeans.get(Messages.class).getMainMessage("GroupType." + this.name());
     }
 }

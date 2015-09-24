@@ -70,7 +70,7 @@ public class AppliedFilter {
         if (condition.getHidden()) return;
         if (condition.isGroup()) {
             GroupType groupType = ((GroupCondition) condition).getGroupType();
-            sb.append(messages.getMessage(groupType))
+            sb.append(groupType.getLocCaption())
                     .append("(");
 
             List<Node<AbstractCondition>> visibleChildNodes = new ArrayList<>();
@@ -93,9 +93,9 @@ public class AppliedFilter {
             sb.append(condition.getLocCaption()).append(" ");
             if (condition.getOperator() == Op.NOT_EMPTY) {
                 if (BooleanUtils.isTrue((Boolean) param.getValue())) {
-                    sb.append(messages.getMessage(AppliedFilter.class, "Op.NOT_EMPTY"));
+                    sb.append(messages.getMainMessage("Op.NOT_EMPTY"));
                 } else {
-                    sb.append(messages.getMessage(AppliedFilter.class, "Op.EMPTY"));
+                    sb.append(messages.getMainMessage("Op.EMPTY"));
                 }
             } else {
                 sb.append(condition.getOperationCaption())

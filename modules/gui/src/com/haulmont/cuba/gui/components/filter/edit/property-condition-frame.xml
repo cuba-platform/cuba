@@ -4,8 +4,7 @@
   -->
 
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
-        class="com.haulmont.cuba.gui.components.filter.edit.PropertyConditionFrame"
-        messagesPack="com.haulmont.cuba.gui.components.filter.edit">
+        class="com.haulmont.cuba.gui.components.filter.edit.PropertyConditionFrame">
 
     <layout spacing="true">
         <grid id="conditionGrid" spacing="true" width="100%">
@@ -15,31 +14,31 @@
             </columns>
             <rows>
                 <row>
-                    <label id="hiddenLabel" value="msg://hidden" align="MIDDLE_LEFT"/>
+                    <label id="hiddenLabel" value="mainMsg://filter.conditionFrame.hidden" align="MIDDLE_LEFT"/>
                     <checkBox id="hidden"/>
                 </row>
                 <row>
-                    <label id="requiredLabel" value="msg://required" align="MIDDLE_LEFT"/>
+                    <label id="requiredLabel" value="mainMsg://filter.conditionFrame.required" align="MIDDLE_LEFT"/>
                     <checkBox id="required"/>
                 </row>
                 <row>
-                    <label id="widthLabel" value="msg://width" align="MIDDLE_LEFT"/>
+                    <label id="widthLabel" value="mainMsg://filter.conditionFrame.width" align="MIDDLE_LEFT"/>
                     <lookupField id="width" width="theme://cuba.gui.filterEditor.widthLookup.width"/>
                 </row>
                 <row>
-                    <label id="defaultValueLayoutLabel" htmlEnabled="true" value="msg://defaultValue" align="MIDDLE_LEFT"/>
+                    <label id="defaultValueLayoutLabel" htmlEnabled="true" value="mainMsg://filter.conditionFrame.defaultValue" align="MIDDLE_LEFT"/>
                     <hbox id="defaultValueLayout" align="MIDDLE_LEFT" width="theme://cuba.gui.conditionFrame.textField.width"/>
                 </row>
                 <row>
-                    <label id="propertyLabel" value="msg://property" align="MIDDLE_LEFT"/>
+                    <label id="propertyLabel" value="mainMsg://filter.propertyConditionFrame.property" align="MIDDLE_LEFT"/>
                     <textField id="property" width="theme://cuba.gui.conditionFrame.textField.width" editable="false"/>
                 </row>
                 <row>
-                    <label id="captionLabel" value="msg://filterCaption" align="MIDDLE_LEFT"/>
+                    <label id="captionLabel" value="mainMsg://filter.propertyConditionFrame.filterCaption" align="MIDDLE_LEFT"/>
                     <textField id="caption" width="theme://cuba.gui.conditionFrame.textField.width"/>
                 </row>
                 <row>
-                    <label value="msg://PropertyConditionFrame.operation" align="MIDDLE_LEFT"/>
+                    <label value="mainMsg://filter.propertyConditionFrame.operation" align="MIDDLE_LEFT"/>
                     <hbox id="operationLayout"/>
                 </row>
             </rows>

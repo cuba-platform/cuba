@@ -5,17 +5,16 @@
 
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
         class="com.haulmont.cuba.gui.components.filter.edit.DynamicAttributesConditionEditor"
-        caption="msg://DynamicAttributesConditionEditor.caption"
-        messagesPack="com.haulmont.cuba.gui.components.filter.edit"
+        caption="mainMsg://filter.dynamicAttributesConditionEditor.caption"
         focusComponent="dynamicAttributesConditionFrame.categoryLookup">
     <actions>
-        <action id="commit" invoke="commit" caption="msg://actions.Ok" icon="icons/ok.png" shortcut="CTRL-ENTER"/>
+        <action id="commit" invoke="commit" caption="mainMsg://actions.Ok" icon="icons/ok.png" shortcut="CTRL-ENTER"/>
     </actions>
     <layout spacing="true">
         <frame id="dynamicAttributesConditionFrame" screen="dynamicAttributesConditionFrame"/>
         <hbox spacing="true">
             <button id="commit" action="commit"/>
-            <button id="cancel" invoke="cancel" caption="msg://actions.Cancel" icon="icons/cancel.png"/>
+            <button id="cancel" invoke="cancel" caption="mainMsg://actions.Cancel" icon="icons/cancel.png"/>
         </hbox>
     </layout>
 </window>

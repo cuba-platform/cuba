@@ -42,7 +42,7 @@ public class PropertyOperationEditor extends AbstractOperationEditor {
             popupButton.addAction(operatorChangeAction);
         }
 
-        popupButton.setCaption(messages.getMessage(condition.getOperator()));
+        popupButton.setCaption(condition.getOperator().getLocCaption());
         popupButton.setStyleName("condition-operation-button");
 
         return popupButton;
@@ -64,7 +64,7 @@ public class PropertyOperationEditor extends AbstractOperationEditor {
 
         @Override
         public String getCaption() {
-            return messages.getMessage(op);
+            return op.getLocCaption();
         }
     }
 }

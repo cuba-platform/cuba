@@ -213,7 +213,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             layout.setWidth("100%");
             groupBoxLayout.add(layout);
             if (caption == null)
-                setCaption(getMessage("Filter.groupBoxCaption"));
+                setCaption(getMainMessage("filter.groupBoxCaption"));
         } else {
             Collection<Component> components = layout.getComponents();
             for (Component component : components) {
@@ -254,7 +254,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         searchBtn = componentsFactory.createComponent(Button.class);
         filtersPopupBox.add(searchBtn);
         searchBtn.setStyleName("filter-search-button");
-        searchBtn.setCaption(getMessage("Filter.search"));
+        searchBtn.setCaption(getMainMessage("filter.search"));
         searchBtn.setIcon("icons/search.png");
         searchBtn.setAction(new AbstractAction("search") {
             @Override
@@ -273,7 +273,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         addConditionBtn = componentsFactory.createComponent(LinkButton.class);
         addConditionBtn.setAlignment(Component.Alignment.MIDDLE_LEFT);
-        addConditionBtn.setCaption(getMessage("Filter.addCondition"));
+        addConditionBtn.setCaption(getMainMessage("filter.addCondition"));
         addConditionBtn.setAction(new AbstractAction("openAddConditionDlg") {
             @Override
             public void actionPerform(Component component) {
@@ -310,13 +310,13 @@ public class FilterDelegateImpl implements FilterDelegate {
         ftsSearchCriteriaField = componentsFactory.createComponent(TextField.class);
         ftsSearchCriteriaField.setAlignment(Component.Alignment.MIDDLE_LEFT);
         ftsSearchCriteriaField.setWidth(theme.get("cuba.gui.filter.ftsSearchCriteriaField.width"));
-        ftsSearchCriteriaField.setInputPrompt(getMessage("Filter.enterSearchPhrase"));
+        ftsSearchCriteriaField.setInputPrompt(getMainMessage("filter.enterSearchPhrase"));
         paramEditComponentToFocus = ftsSearchCriteriaField;
         filterHelper.addShortcutListener(ftsSearchCriteriaField, createFtsSearchShortcutListener());
         controlsLayout.add(ftsSearchCriteriaField);
 
         searchBtn = componentsFactory.createComponent(Button.class);
-        searchBtn.setCaption(getMessage("Filter.search"));
+        searchBtn.setCaption(getMainMessage("filter.search"));
         searchBtn.setIcon("icons/search.png");
         searchBtn.setAction(new AbstractAction("search") {
             @Override
@@ -351,7 +351,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected void createFtsSwitch() {
         ftsSwitch = componentsFactory.createComponent(CheckBox.class);
-        ftsSwitch.setCaption(getMessage("Filter.ftsSwitch"));
+        ftsSwitch.setCaption(getMainMessage("filter.ftsSwitch"));
         ftsSwitch.setValue(filterMode == FilterMode.FTS_MODE);
 
         ftsSwitch.addValueChangeListener(e -> {
@@ -705,7 +705,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (hasGroups && conditions.getRootNodes().size() > 1) {
             GroupBoxLayout groupBox = componentsFactory.createComponent(GroupBoxLayout.class);
             groupBox.setWidth("100%");
-            groupBox.setCaption(getMessage("GroupType.AND"));
+            groupBox.setCaption(getMainMessage("GroupType.AND"));
             conditionsLayout.add(groupBox);
             recursivelyCreateConditionsLayout(conditionsFocusType, false, conditions.getRootNodes(), groupBox, 0);
         } else {
@@ -1049,7 +1049,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
             @Override
             public String getCaption() {
-                return formatMessage("Filter.showMore", filterEntities.size());
+                return formatMainMessage("filter.showMore", filterEntities.size());
             }
         });
     }
@@ -1064,7 +1064,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
             @Override
             public String getCaption() {
-                return getMessage("Filter.resetFilter");
+                return getMainMessage("filter.resetFilter");
             }
         });
     }
@@ -1074,7 +1074,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         for (FilterEntity entity : filterEntities) {
             String caption = getFilterCaption(entity);
             if (entity.getIsDefault()) {
-                caption += " " + getMessage("Filter.default");
+                caption += " " + getMainMessage("filter.default");
             }
             captionsMap.put(entity, caption);
         }
@@ -1106,7 +1106,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         adHocFilter.setXml(emptyXml);
         adHocFilter.setComponentId(ComponentsHelper.getFilterComponentPath(filter));
         adHocFilter.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
-        adHocFilter.setName(getMessage("Filter.adHocFilter"));
+        adHocFilter.setName(getMainMessage("filter.adHocFilter"));
     }
 
     protected void addAppliedFilter() {
@@ -1196,21 +1196,21 @@ public class FilterDelegateImpl implements FilterDelegate {
                     name = messages.getMainMessage(folder.getName());
                 }
                 if (BooleanUtils.isTrue(filterEntity.getIsSet()))
-                    name = getMessage("Filter.setPrefix") + " " + name;
+                    name = getMainMessage("filter.setPrefix") + " " + name;
                 else
-                    name = getMessage("Filter.folderPrefix") + " " + name;
+                    name = getMainMessage("filter.folderPrefix") + " " + name;
             }
         } else
             name = "";
         return name;
     }
 
-    protected String getMessage(String key) {
-        return messages.getMessage(FilterDelegateImpl.class, key);
+    protected String formatMainMessage(String key, Object... params) {
+        return messages.formatMainMessage(key, params);
     }
 
-    protected String formatMessage(String key, Object... params) {
-        return messages.formatMessage(FilterDelegateImpl.class, key, params);
+    protected String getMainMessage(String key) {
+        return messages.getMainMessage(key);
     }
 
     @Override
@@ -1375,7 +1375,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         String searchTerm = ftsSearchCriteriaField.getValue();
         if (Strings.isNullOrEmpty(searchTerm) && clientConfig.getGenericFilterChecking()) {
-            windowManager.showNotification(getMessage("Filter.fillSearchCondition"), Frame.NotificationType.TRAY);
+            windowManager.showNotification(getMainMessage("filter.fillSearchCondition"), Frame.NotificationType.TRAY);
             return;
         }
 
@@ -1635,10 +1635,10 @@ public class FilterDelegateImpl implements FilterDelegate {
         com.haulmont.cuba.gui.components.Button addToCurSetBtn = (Button) buttons.getComponent("addToCurSetBtn");
         com.haulmont.cuba.gui.components.Button removeFromCurSetBtn = (Button) buttons.getComponent("removeFromCurSetBtn");
 
-        Action addToSet = table.getAction("addToSet");
+        Action addToSet = table.getAction("filter.addToSet");
 
-        Action addToCurrSet = table.getAction("addToCurSet");
-        Action removeFromCurrSet = table.getAction("removeFromCurSet");
+        Action addToCurrSet = table.getAction("filter.addToCurSet");
+        Action removeFromCurrSet = table.getAction("filter.removeFromCurSet");
 
         if (addToSet != null)
             table.removeAction(addToSet);
@@ -1662,7 +1662,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             if (addToCurSetBtn == null) {
                 addToCurSetBtn = componentsFactory.createComponent(Button.class);
                 addToCurSetBtn.setId("addToCurSetBtn");
-                addToCurSetBtn.setCaption(getMessage("addToCurSet"));
+                addToCurSetBtn.setCaption(getMainMessage("filter.addToCurSet"));
                 buttons.add(addToCurSetBtn);
             } else {
                 addToCurSetBtn.setVisible(true);
@@ -1677,7 +1677,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             if (removeFromCurSetBtn == null) {
                 removeFromCurSetBtn = componentsFactory.createComponent(Button.class);
                 removeFromCurSetBtn.setId("removeFromCurSetBtn");
-                removeFromCurSetBtn.setCaption(getMessage("removeFromCurSet"));
+                removeFromCurSetBtn.setCaption(getMainMessage("filter.removeFromCurSet"));
                 buttons.add(removeFromCurSetBtn);
             } else {
                 removeFromCurSetBtn.setVisible(true);
@@ -1693,7 +1693,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             if (addToSetBtn == null) {
                 addToSetBtn = componentsFactory.createComponent(Button.class);
                 addToSetBtn.setId("addToSetBtn");
-                addToSetBtn.setCaption(getMessage("addToSet"));
+                addToSetBtn.setCaption(getMainMessage("filter.addToSet"));
                 buttons.add(addToSetBtn);
             } else {
                 addToSetBtn.setVisible(true);
@@ -1932,7 +1932,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             if (PersistenceHelper.isNew(filterEntity) && filterEntity.getFolder() == null) {
                 WindowInfo windowInfo = windowConfig.getWindowInfo("saveFilter");
                 Map<String, Object> params = new HashMap<>();
-                if (!getMessage("Filter.adHocFilter").equals(filterEntity.getName())) {
+                if (!getMainMessage("filter.adHocFilter").equals(filterEntity.getName())) {
                     params.put("filterName", filterEntity.getName());
                 }
                 final SaveFilterWindow window = (SaveFilterWindow) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
@@ -1961,7 +1961,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         @Override
         public String getCaption() {
-            return getMessage("Filter.save");
+            return getMainMessage("filter.save");
         }
 
         @Override
@@ -2010,7 +2010,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         @Override
         public String getCaption() {
-            return getMessage("Filter.saveAs");
+            return getMainMessage("filter.saveAs");
         }
     }
 
@@ -2045,7 +2045,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         @Override
         public String getCaption() {
-            return getMessage("Filter.edit");
+            return getMainMessage("filter.edit");
         }
 
         @Override
@@ -2057,7 +2057,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected class MakeDefaultAction extends AbstractAction {
 
         public MakeDefaultAction() {
-            super("Filter.makeDefault");
+            super("filter.makeDefault");
         }
 
         @Override
@@ -2091,8 +2091,8 @@ public class FilterDelegateImpl implements FilterDelegate {
         public void actionPerform(Component component) {
             if (filterEntity == adHocFilter) return;
             windowManager.showOptionDialog(
-                    getMessage("Filter.removeDialogTitle"),
-                    getMessage("Filter.removeDialogMessage"),
+                    getMainMessage("filter.removeDialogTitle"),
+                    getMainMessage("filter.removeDialogMessage"),
                     Frame.MessageType.CONFIRMATION,
                     new Action[]{
                             new DialogAction(Type.YES) {
@@ -2107,7 +2107,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         @Override
         public String getCaption() {
-            return getMessage("Filter.remove");
+            return getMainMessage("filter.remove");
         }
 
         @Override
@@ -2142,7 +2142,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         @Override
         public String getCaption() {
-            return getMessage("Filter.pinApplied");
+            return getMainMessage("filter.pinApplied");
         }
 
         @Override
@@ -2165,7 +2165,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         @Override
         public String getCaption() {
-            return getMessage("Filter." + getId());
+            return getMainMessage("filter." + getId());
         }
 
         @Override
@@ -2176,12 +2176,12 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected class AddToSetAction extends ItemTrackingAction {
         protected AddToSetAction(Table table) {
-            super(table, "addToSet");
+            super(table, "filter.addToSet");
         }
 
         @Override
         public String getCaption() {
-            return getMessage(getId());
+            return getMainMessage(getId());
         }
 
         @Override
@@ -2209,12 +2209,12 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected class RemoveFromSetAction extends ItemTrackingAction {
         protected RemoveFromSetAction(Table table) {
-            super(table, "removeFromCurSet");
+            super(table, "filter.removeFromCurSet");
         }
 
         @Override
         public String getCaption() {
-            return getMessage(getId());
+            return getMainMessage(getId());
         }
 
         @Override
@@ -2247,12 +2247,12 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected class AddToCurrSetAction extends BaseAction {
 
         protected AddToCurrSetAction() {
-            super("addToCurSet");
+            super("filter.addToCurSet");
         }
 
         @Override
         public String getCaption() {
-            return getMessage(getId());
+            return getMainMessage(getId());
         }
 
         @Override

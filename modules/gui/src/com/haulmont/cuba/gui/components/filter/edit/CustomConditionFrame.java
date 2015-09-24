@@ -256,10 +256,12 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
 
 
     protected void fillTypeSelect(Param param) {
-        List<ParamType> values = new LinkedList<>();
-        Collections.addAll(values, ParamType.values());
+        Map<String, Object> values = new LinkedHashMap<>();
+        for (ParamType paramType : ParamType.values()) {
+            values.put(paramType.getLocCaption(), paramType);
+        }
+        typeSelect.setOptionsMap(values);
 
-        typeSelect.setOptionsList(values);
         if (param == null) {
             typeSelect.setValue(ParamType.STRING);
         } else {
@@ -465,17 +467,17 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
 
     public void getJoinClauseHelp() {
         getDialogParams().setModal(false).setWidth(600);
-        showMessageDialog(getMessage("CustomConditionFrame.join"), getMessage("CustomConditionFrame.joinClauseHelp"), MessageType.CONFIRMATION_HTML);
+        showMessageDialog(messages.getMainMessage("filter.customConditionFrame.join"), messages.getMainMessage("filter.customConditionFrame.joinClauseHelp"), MessageType.CONFIRMATION_HTML);
     }
 
     public void getWhereClauseHelp() {
         getDialogParams().setModal(false).setWidth(600);
-        showMessageDialog(getMessage("CustomConditionFrame.where"), getMessage("CustomConditionFrame.whereClauseHelp"), MessageType.CONFIRMATION_HTML);
+        showMessageDialog(messages.getMainMessage("filter.customConditionFrame.where"), messages.getMainMessage("filter.customConditionFrame.whereClauseHelp"), MessageType.CONFIRMATION_HTML);
     }
 
     public void getParamWhereClauseHelp() {
         getDialogParams().setModal(false).setWidth(600);
-        showMessageDialog(getMessage("CustomConditionFrame.entityParamWhere"), getMessage("CustomConditionFrame.paramWhereClauseHelp"), MessageType.CONFIRMATION_HTML);
+        showMessageDialog(messages.getMainMessage("filter.customConditionFrame.entityParamWhere"), messages.getMainMessage("filter.customConditionFrame.paramWhereClauseHelp"), MessageType.CONFIRMATION_HTML);
     }
 
 

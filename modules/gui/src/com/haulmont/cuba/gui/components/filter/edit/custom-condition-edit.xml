@@ -5,18 +5,17 @@
 
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
         class="com.haulmont.cuba.gui.components.filter.edit.CustomConditionEditor"
-        caption="msg://CustomConditionEdit.caption"
-        messagesPack="com.haulmont.cuba.gui.components.filter.edit"
+        caption="mainMsg://filter.customConditionEdit.caption"
         focusComponent="customConditionFrame.nameField">
 
     <actions>
-        <action id="commit" icon="icons/ok.png" caption="msg://actions.Ok" invoke="commit" shortcut="CTRL-ENTER"/>
+        <action id="commit" icon="icons/ok.png" caption="mainMsg://actions.Ok" invoke="commit" shortcut="CTRL-ENTER"/>
     </actions>
     <layout spacing="true">
         <frame id="customConditionFrame" screen="customConditionFrame"/>
         <hbox spacing="true">
             <button id="commit" action="commit"/>
-            <button id="cancel" invoke="cancel" caption="msg://actions.Cancel" icon="icons/cancel.png"/>
+            <button id="cancel" invoke="cancel" caption="mainMsg://actions.Cancel" icon="icons/cancel.png"/>
         </hbox>
     </layout>
 </window>
