@@ -22,6 +22,7 @@ import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.toolkit.ui.CubaDateField;
 import com.haulmont.cuba.web.toolkit.ui.CubaDateFieldWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaMaskedTextField;
+import com.vaadin.data.Property;
 import com.vaadin.ui.HorizontalLayout;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -80,19 +81,26 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         vTimeField.setInvalidAllowed(false);
         vTimeField.setInvalidCommitted(true);
 
-        dateField.addValueChangeListener(event -> {
+        dateField.addValueChangeListener(createDateValueChangeListener());
+        timeField.addValueChangeListener(createTimeValueChangeListener());
+        setResolution(Resolution.MIN);
+
+        component = new CubaDateFieldWrapper(this, innerLayout);
+    }
+
+    protected Property.ValueChangeListener createDateValueChangeListener() {
+        return e -> {
             updateInstance();
 
             if (component != null) {
                 // Repaint error state
                 component.markAsDirty();
             }
-        });
+        };
+    }
 
-        timeField.addValueChangeListener(e -> updateInstance());
-        setResolution(Resolution.MIN);
-
-        component = new CubaDateFieldWrapper(this, innerLayout);
+    protected Component.ValueChangeListener createTimeValueChangeListener() {
+        return event -> updateInstance();
     }
 
     public CubaDateField getDateField() {
@@ -118,6 +126,26 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     @Override
     public String getDateFormat() {
         return dateTimeFormat;
+    }
+
+    @Override
+    public void setDateFormat(String dateFormat) {
+        dateTimeFormat = dateFormat;
+        StringBuilder date = new StringBuilder(dateFormat);
+        StringBuilder time = new StringBuilder(dateFormat);
+        int timeStartPos = findTimeStartPos(dateFormat);
+        if (timeStartPos >= 0) {
+            time.delete(0, timeStartPos);
+            date.delete(timeStartPos, dateFormat.length());
+            timeFormat = StringUtils.trimToEmpty(time.toString());
+            timeField.setFormat(timeFormat);
+            setResolution(resolution);
+        } else if (resolution.ordinal() < Resolution.DAY.ordinal()) {
+            setResolution(Resolution.DAY);
+        }
+
+        this.dateFormat = StringUtils.trimToEmpty(date.toString());
+        dateField.setDateFormat(this.dateFormat);
     }
 
     @Override
@@ -152,26 +180,6 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     @Override
     protected void attachListener(CubaDateFieldWrapper component) {
         // do nothing
-    }
-
-    @Override
-    public void setDateFormat(String dateFormat) {
-        dateTimeFormat = dateFormat;
-        StringBuilder date = new StringBuilder(dateFormat);
-        StringBuilder time = new StringBuilder(dateFormat);
-        int timeStartPos = findTimeStartPos(dateFormat);
-        if (timeStartPos >= 0) {
-            time.delete(0, timeStartPos);
-            date.delete(timeStartPos, dateFormat.length());
-            timeFormat = StringUtils.trimToEmpty(time.toString());
-            timeField.setFormat(timeFormat);
-            setResolution(resolution);
-        } else if (resolution.ordinal() < Resolution.DAY.ordinal()) {
-            setResolution(Resolution.DAY);
-        }
-
-        this.dateFormat = StringUtils.trimToEmpty(date.toString());
-        dateField.setDateFormat(this.dateFormat);
     }
 
     protected int findTimeStartPos(String dateTimeFormat) {
@@ -277,15 +285,15 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     }
 
     @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
         dateField.setEnabled(enabled);
         timeField.setEnabled(enabled);
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
     }
 
     @Override
@@ -314,6 +322,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
             fireValueChanged(value);
         });
 
+        //noinspection unchecked
         datasource.addItemPropertyChangeListener(e -> {
             if (updatingInstance) {
                 return;
@@ -423,8 +432,9 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
     @Override
     public void validate() throws ValidationException {
-        if (!isVisible() || !isEditable() || !isEnabled())
+        if (!isVisible() || !isEditable() || !isEnabled()) {
             return;
+        }
 
         if (isRequired() && dateField.getValue() == null) {
             throw new RequiredValueMissingException(component.getRequiredError(), this);
