@@ -40,7 +40,9 @@ public class CubaSearchSelectWidget extends VFilterSelect {
 
         waitingForFilteringResponse = true;
         client.updateVariable(paintableId, "filter", filter, false);
-        client.updateVariable(paintableId, "page", page, true);
+        client.updateVariable(paintableId, "page", page, immediate);
+        afterUpdateClientVariables();
+
         lastFilter = filter;
         currentPage = page;
     }
@@ -177,20 +179,11 @@ public class CubaSearchSelectWidget extends VFilterSelect {
             case KeyCodes.KEY_TAB:
             case KeyCodes.KEY_ENTER:
                 int selectedIndex = suggestionPopup.menu.getSelectedIndex();
-                if (selectedIndex >= 0) {
-                    /*
-                     * Nothing selected using up/down. Happens e.g. when entering a
-                     * text (causes popup to open) and then pressing enter.
-                     */
-                    if (suggestionPopup.isAttached())
-                        filterOptions(currentPage);
-                } else {
-                    currentSuggestion = currentSuggestions.get(selectedIndex);
-                    if (currentSuggestion != null &&
-                            currentSuggestion.getReplacementString().equals(tb.getText())) {
-                        this.preventFilterAfterSelect = true;
-                        onSuggestionSelected(currentSuggestion);
-                    }
+                currentSuggestion = currentSuggestions.get(selectedIndex);
+                if (currentSuggestion != null &&
+                        currentSuggestion.getReplacementString().equals(tb.getText())) {
+                    this.preventFilterAfterSelect = true;
+                    onSuggestionSelected(currentSuggestion);
                 }
 
                 keyboardNavigation = false;
