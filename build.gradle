@@ -201,10 +201,7 @@ configure(globalModule) {
         releaseNumberPath = "$buildDir/classes/main/com/haulmont/cuba/core/global/release.number"
     }
 
-    task enhance(type: CubaEnhancing) {
-        persistenceConfig = 'cuba-persistence.xml'
-        metadataXml = "$globalModule.projectDir/src/cuba-metadata.xml"
-    }
+    task enhance(type: CubaEnhancing)
 
     task filterDummyEntities {
         ext.srcFile = file('src/cuba-persistence.xml')
@@ -424,9 +421,7 @@ configure(guiModule) {
         testCompile(clientModule.sourceSets.test.output)
     }
 
-    task enhance(type: CubaEnhancing) {
-        metadataXml = "$guiModule.projectDir/src/cuba-gui-metadata.xml"
-    }
+    task enhance(type: CubaEnhancing)
 
     test {
         scanForTestClasses = false
@@ -465,9 +460,7 @@ configure(webModule) {
         testRuntime(servletApi)
     }
 
-    task enhance(type: CubaEnhancing) {
-        metadataXml = "$webModule.projectDir/src/cuba-web-metadata.xml"
-    }
+    task enhance(type: CubaEnhancing)
 
     jar {
         from sourceSets.main.allJava
