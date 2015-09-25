@@ -30,6 +30,11 @@ public class CubaSearchSelect extends CubaComboBox {
     }
 
     @Override
+    protected CubaSearchSelectState getState(boolean markAsDirty) {
+        return (CubaSearchSelectState) super.getState(markAsDirty);
+    }
+
+    @Override
     public void changeVariables(Object source, Map<String, Object> variables) {
         this.repaintOptions = false;
         super.changeVariables(source, variables);
@@ -69,18 +74,15 @@ public class CubaSearchSelect extends CubaComboBox {
     }
 
     @Override
-    public void setNewItemsAllowed(boolean allowNewOptions) {
-        if (allowNewOptions)
-            throw new UnsupportedOperationException();
-    }
-
-    @Override
     public boolean isNewItemsAllowed() {
         return false;
     }
 
-    public static interface FilterHandler {
-        void onFilterChange(String newFilter);
+    @Override
+    public void setNewItemsAllowed(boolean allowNewOptions) {
+        if (allowNewOptions) {
+            throw new UnsupportedOperationException();
+        }
     }
 
     public FilterHandler getFilterHandler() {
@@ -89,5 +91,9 @@ public class CubaSearchSelect extends CubaComboBox {
 
     public void setFilterHandler(FilterHandler filterHandler) {
         this.filterHandler = filterHandler;
+    }
+
+    public interface FilterHandler {
+        void onFilterChange(String newFilter);
     }
 }

@@ -6,6 +6,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SearchField;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.ui.CubaSearchSelect;
@@ -46,70 +47,70 @@ public class WebSearchField extends WebLookupField implements SearchField {
         this.component = new CubaSearchSelect() {
             @Override
             public void setPropertyDataSource(Property newDataSource) {
-                if (newDataSource == null)
+                if (newDataSource == null) {
                     super.setPropertyDataSource(null);
-                else
+                } else {
                     super.setPropertyDataSource(new LookupPropertyAdapter(newDataSource));
+                }
             }
 
             @Override
             public void setComponentError(ErrorMessage componentError) {
                 boolean handled = false;
-                if (componentErrorHandler != null)
+                if (componentErrorHandler != null) {
                     handled = componentErrorHandler.handleError(componentError);
+                }
 
-                if (!handled)
+                if (!handled) {
                     super.setComponentError(componentError);
+                }
             }
         };
 
-        getSearchComponent().setFilterHandler(new CubaSearchSelect.FilterHandler() {
-            @Override
-            public void onFilterChange(String newFilter) {
-                String originalFilter = newFilter;
-                if (mode == Mode.LOWER_CASE) {
-                    newFilter = StringUtils.lowerCase(newFilter);
-                } else if (mode == Mode.UPPER_CASE) {
-                    newFilter = StringUtils.upperCase(newFilter);
-                }
+        getSearchComponent().setFilterHandler(this::executeSearch);
+    }
 
-                if (!isRequired() && StringUtils.isEmpty(newFilter)) {
-                    setValue(null);
-                    if (optionsDatasource.getState() == Datasource.State.VALID) {
-                        optionsDatasource.clear();
-                    }
-                    return;
-                }
+    protected void executeSearch(String newFilter) {
+        String originalFilter = newFilter;
+        if (mode == Mode.LOWER_CASE) {
+            newFilter = StringUtils.lowerCase(newFilter);
+        } else if (mode == Mode.UPPER_CASE) {
+            newFilter = StringUtils.upperCase(newFilter);
+        }
 
-                if (StringUtils.length(newFilter) >= minSearchStringLength) {
-                    optionsDatasource.refresh(Collections.singletonMap(SEARCH_STRING_PARAM, (Object) newFilter));
-                    if (optionsDatasource.getState() == Datasource.State.VALID) {
-                        if (optionsDatasource.size() == 0) {
-                            if (searchNotifications != null)
-                                searchNotifications.notFoundSuggestions(originalFilter);
-                        } else if (optionsDatasource.size() == 1) {
-                            setValue(optionsDatasource.getItems().iterator().next());
-                        }
-                    }
-                } else {
-                    if (optionsDatasource.getState() == Datasource.State.VALID) {
-                        optionsDatasource.clear();
-                    }
+        if (!isRequired() && StringUtils.isEmpty(newFilter)) {
+            setValue(null);
+            if (optionsDatasource.getState() == Datasource.State.VALID) {
+                optionsDatasource.clear();
+            }
+            return;
+        }
 
-                    if (searchNotifications != null && StringUtils.length(newFilter) > 0)
-                        searchNotifications.needMinSearchStringLength(originalFilter, minSearchStringLength);
+        if (StringUtils.length(newFilter) >= minSearchStringLength) {
+            optionsDatasource.refresh(Collections.singletonMap(SEARCH_STRING_PARAM, (Object) newFilter));
+
+            if (optionsDatasource.getState() == Datasource.State.VALID) {
+                if (optionsDatasource.size() == 0) {
+                    if (searchNotifications != null) {
+                        searchNotifications.notFoundSuggestions(originalFilter);
+                    }
+                } else if (optionsDatasource.size() == 1) {
+                    setValue(optionsDatasource.getItems().iterator().next());
                 }
             }
-        });
+        } else {
+            if (optionsDatasource.getState() == Datasource.State.VALID) {
+                optionsDatasource.clear();
+            }
+
+            if (searchNotifications != null && StringUtils.length(newFilter) > 0) {
+                searchNotifications.needMinSearchStringLength(originalFilter, minSearchStringLength);
+            }
+        }
     }
 
-    private CubaSearchSelect getSearchComponent() {
+    protected CubaSearchSelect getSearchComponent() {
         return (CubaSearchSelect) component;
-    }
-
-    @Override
-    public void setMinSearchStringLength(int searchStringLength) {
-        this.minSearchStringLength = searchStringLength;
     }
 
     @Override
@@ -118,13 +119,18 @@ public class WebSearchField extends WebLookupField implements SearchField {
     }
 
     @Override
-    public void setSearchNotifications(SearchNotifications searchNotifications) {
-        this.searchNotifications = searchNotifications;
+    public void setMinSearchStringLength(int searchStringLength) {
+        this.minSearchStringLength = searchStringLength;
     }
 
     @Override
     public SearchNotifications getSearchNotifications() {
         return searchNotifications;
+    }
+
+    @Override
+    public void setSearchNotifications(SearchNotifications searchNotifications) {
+        this.searchNotifications = searchNotifications;
     }
 
     @Override
@@ -145,5 +151,12 @@ public class WebSearchField extends WebLookupField implements SearchField {
     @Override
     public void setMode(Mode mode) {
         this.mode = mode;
+    }
+
+    @Override
+    public void setOptionsDatasource(CollectionDatasource datasource) {
+        super.setOptionsDatasource(datasource);
+
+        ((LookupOptionsDsWrapper) component.getContainerDataSource()).setAutoRefresh(false);
     }
 }

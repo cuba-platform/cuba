@@ -339,6 +339,14 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
         throw new UnsupportedOperationException();
     }
 
+    public boolean isAutoRefresh() {
+        return autoRefresh;
+    }
+
+    public void setAutoRefresh(boolean autoRefresh) {
+        this.autoRefresh = autoRefresh;
+    }
+
     @Override
     public String toString() {
         return "{ds=" + (datasource == null ? "null" : datasource.getId() + "}");
