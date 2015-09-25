@@ -20,7 +20,6 @@ import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.AggregatableTable;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.TableAggregationRow;
-import com.haulmont.cuba.web.toolkit.ui.client.table.CubaScrollTableWidget;
 import com.haulmont.cuba.web.toolkit.ui.client.table.TableCellClickListener;
 import com.vaadin.client.*;
 import com.vaadin.client.ui.*;
@@ -734,5 +733,11 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
             Tools.showPopup(customPopupOverlay, lastClickClientX, lastClickClientY);
         }
+    }
+
+    @Override
+    protected boolean isColumnCollapsingEnabled() {
+        boolean oneColumnLeft = (collapsedColumns.size() >= (columnOrder.length - 1));
+        return !oneColumnLeft;
     }
 }

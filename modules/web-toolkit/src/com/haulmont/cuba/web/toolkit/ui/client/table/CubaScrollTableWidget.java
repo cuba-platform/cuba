@@ -755,4 +755,10 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
             Tools.showPopup(customPopupOverlay, lastClickClientX, lastClickClientY);
         }
     }
+
+    @Override
+    protected boolean isColumnCollapsingEnabled() {
+        boolean oneColumnLeft = (collapsedColumns.size() >= (columnOrder.length - 1));
+        return !oneColumnLeft;
+    }
 }
