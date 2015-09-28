@@ -17,17 +17,24 @@ public class LocalServiceInvocation {
     private String methodName;
     private String[] parameterTypeNames;
     private byte[][] argumentsData;
+    private Object[] notSerializableArguments;
     private UUID sessionId;
 
-    public LocalServiceInvocation(String methodName, String[] parameterTypeNames, byte[][] argumentsData, UUID sessionId) {
+    public LocalServiceInvocation(String methodName, String[] parameterTypeNames,
+                                  byte[][] argumentsData, Object[] notSerializableArguments, UUID sessionId) {
         this.methodName = methodName;
         this.parameterTypeNames = parameterTypeNames;
         this.argumentsData = argumentsData;
+        this.notSerializableArguments = notSerializableArguments;
         this.sessionId = sessionId;
     }
 
     public byte[][] getArgumentsData() {
         return argumentsData;
+    }
+
+    public Object[] getNotSerializableArguments() {
+        return notSerializableArguments;
     }
 
     public String getMethodName() {

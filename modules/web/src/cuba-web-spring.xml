@@ -83,6 +83,7 @@
                 <entry key="cuba_QueryResultsService" value="com.haulmont.cuba.core.app.QueryResultsService"/>
                 <entry key="cuba_DynamicAttributesCacheService" value="com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesCacheService"/>
                 <entry key="cuba_EntityRestoreService" value="com.haulmont.cuba.core.app.EntityRestoreService"/>
+                <entry key="cuba_LocalFileExchangeService" value="com.haulmont.cuba.core.sys.remoting.LocalFileExchangeService"/>
             </map>
         </property>
     </bean>

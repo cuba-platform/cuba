@@ -7,7 +7,9 @@ package com.haulmont.cuba.gui.upload;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
+import com.haulmont.cuba.core.sys.remoting.LocalFileExchangeService;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -256,6 +258,24 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
             throw new FileStorageException(FileStorageException.Type.FILE_NOT_FOUND, fileDescr.getName());
         }
 
+        String useLocalInvocation = AppContext.getProperty("cuba.useLocalServiceInvocation");
+        if (Boolean.valueOf(useLocalInvocation)) {
+            uploadLocally(fileDescr, file);
+        } else {
+            uploadWithServlet(fileId, fileDescr, listener, file);
+        }
+    }
+
+    private void uploadLocally(FileDescriptor fileDescr, File file) {
+        try {
+            AppBeans.get(LocalFileExchangeService.NAME, LocalFileExchangeService.class)
+                    .uploadFile(new FileInputStream(file), fileDescr);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("An error occurred while uploading file locally", e);
+        }
+    }
+
+    private void uploadWithServlet(UUID fileId, FileDescriptor fileDescr, UploadToStorageProgressListener listener, File file) throws FileStorageException, InterruptedIOException {
         for (Iterator<String> iterator = clusterInvocationSupport.getUrlList().iterator(); iterator.hasNext(); ) {
             String url = iterator.next()
                     + CORE_FILE_UPLOAD_CONTEXT

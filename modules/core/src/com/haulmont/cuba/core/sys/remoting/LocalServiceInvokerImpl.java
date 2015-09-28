@@ -49,16 +49,22 @@ public class LocalServiceInvokerImpl implements LocalServiceInvoker {
             }
 
             byte[][] argumentsData = invocation.getArgumentsData();
+            Object[] notSerializableArguments = invocation.getNotSerializableArguments();
             Object[] arguments;
             if (argumentsData == null)
                 arguments = null;
             else {
                 arguments = new Object[argumentsData.length];
                 for (int i = 0; i < argumentsData.length; i++) {
-                    if (argumentsData[i] == null)
-                        arguments[i] = null;
-                    else
+                    if (argumentsData[i] == null) {
+                        if (notSerializableArguments[i] == null) {
+                            arguments[i] = null;
+                        } else {
+                            arguments[i] = notSerializableArguments[i];
+                        }
+                    } else {
                         arguments[i] = Deserializer.deserialize(argumentsData[i]);
+                    }
                 }
             }
 
@@ -68,9 +74,13 @@ public class LocalServiceInvokerImpl implements LocalServiceInvoker {
                 AppContext.setSecurityContext(null);
 
             Method method = target.getClass().getMethod(invocation.getMethodName(), parameterTypes);
-            Serializable data = (Serializable) method.invoke(target, arguments);
+            Object data = method.invoke(target, arguments);
 
-            result.setData(SerializationUtils.serialize(data));
+            if (data instanceof Serializable) {
+                result.setData(SerializationUtils.serialize((Serializable) data));
+            } else {
+                result.setNotSerializableData(data);
+            }
             return result;
         } catch (Throwable t) {
             if (t instanceof InvocationTargetException)

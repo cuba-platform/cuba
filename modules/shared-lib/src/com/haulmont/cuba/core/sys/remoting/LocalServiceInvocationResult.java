@@ -13,6 +13,7 @@ package com.haulmont.cuba.core.sys.remoting;
 public class LocalServiceInvocationResult {
 
     private byte[] data;
+    private Object notSerializableData;
     private byte[] exception;
 
     public byte[] getData() {
@@ -21,6 +22,14 @@ public class LocalServiceInvocationResult {
 
     public void setData(byte[] data) {
         this.data = data;
+    }
+
+    public Object getNotSerializableData() {
+        return notSerializableData;
+    }
+
+    public void setNotSerializableData(Object notSerializableData) {
+        this.notSerializableData = notSerializableData;
     }
 
     public byte[] getException() {

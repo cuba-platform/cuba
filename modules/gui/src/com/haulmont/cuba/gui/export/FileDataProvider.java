@@ -7,10 +7,13 @@ package com.haulmont.cuba.gui.export;
 
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.haulmont.cuba.core.sys.remoting.LocalFileExchangeService;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -18,6 +21,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,6 +65,22 @@ public class FileDataProvider implements ExportDataProvider {
         if (fileDescriptor == null)
             throw new IllegalArgumentException("Null file descriptor");
 
+        String useLocalInvocation = AppContext.getProperty("cuba.useLocalServiceInvocation");
+        if (Boolean.valueOf(useLocalInvocation)) {
+            downloadLocally();
+        } else {
+            downloadWithServlet();
+        }
+
+        return inputStream;
+    }
+
+    protected void downloadLocally() {
+        inputStream = AppBeans.get(LocalFileExchangeService.NAME, LocalFileExchangeService.class)
+                .downloadFile(fileDescriptor);
+    }
+
+    protected void downloadWithServlet() {
         for (Iterator<String> iterator = clusterInvocationSupport.getUrlList().iterator(); iterator.hasNext(); ) {
             String url = iterator.next() + fileDownloadContext +
                     "?s=" + userSessionSource.getUserSession().getId() +
@@ -109,8 +130,6 @@ public class FileDataProvider implements ExportDataProvider {
                 connectionManager = httpClient.getConnectionManager();
             }
         }
-
-        return inputStream;
     }
 
     @Override

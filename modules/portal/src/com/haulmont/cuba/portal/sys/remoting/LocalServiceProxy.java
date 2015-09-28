@@ -98,19 +98,27 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
             }
 
             byte[][] argumentsData;
-            if (args == null)
+            Object[] notSerializableArguments;
+            if (args == null) {
                 argumentsData = null;
-            else {
+                notSerializableArguments = null;
+            } else {
                 argumentsData = new byte[args.length][];
+                notSerializableArguments = new Object[args.length];
                 for (int i = 0; i < args.length; i++) {
-                    Serializable arg = (Serializable) args[i];
-                    argumentsData[i] = SerializationUtils.serialize(arg);
+                    if (args[i] instanceof Serializable) {
+                        Serializable arg = (Serializable) args[i];
+                        argumentsData[i] = SerializationUtils.serialize(arg);
+                    } else {
+                        argumentsData[i] = null;
+                        notSerializableArguments[i] = args[i];
+                    }
                 }
             }
 
             UUID sessionId = AppContext.getSecurityContext() == null ? null : AppContext.getSecurityContext().getSessionId();
             LocalServiceInvocation invocation = new LocalServiceInvocation(
-                    method.getName(), parameterTypeNames, argumentsData, sessionId);
+                    method.getName(), parameterTypeNames, argumentsData, notSerializableArguments, sessionId);
 
             LocalServiceInvocationResult result = invoker.invoke(invocation);
 
@@ -124,7 +132,13 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
                 }
                 throw t;
             } else {
-                return Deserializer.deserialize(result.getData());
+                Object data;
+                if (result.getNotSerializableData() == null) {
+                    data = Deserializer.deserialize(result.getData());
+                } else {
+                    data = result.getNotSerializableData();
+                }
+                return data;
             }
         }
     }
