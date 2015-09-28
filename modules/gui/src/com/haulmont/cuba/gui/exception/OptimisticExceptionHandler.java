@@ -28,13 +28,12 @@ public class OptimisticExceptionHandler extends AbstractGenericExceptionHandler 
     protected Messages messages;
 
     public OptimisticExceptionHandler() {
-        // todo EL
-        super("org.springframework.orm.jpa.JpaOptimisticLockingFailureException"/*, "org.apache.openjpa.persistence.OptimisticLockException"*/);
+        super("javax.persistence.OptimisticLockException");
     }
 
     @Override
     protected void doHandle(String className, String message, @Nullable Throwable throwable, WindowManager windowManager) {
-        Pattern pattern = Pattern.compile("\\[([^-]*)-");
+        Pattern pattern = Pattern.compile("Class> (.+)");
         Matcher matcher = pattern.matcher(message);
         String entityClassName = "";
         if (matcher.find()) {
