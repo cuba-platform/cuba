@@ -692,25 +692,9 @@ public class FilterDelegateImpl implements FilterDelegate {
             conditionsLayout.remove(component);
         }
 
-        boolean hasGroups = false;
-        for (AbstractCondition condition : conditions.getRoots()) {
-            if (condition.isGroup() && !condition.getHidden()) {
-                hasGroups = true;
-                break;
-            }
-        }
-
         paramEditComponentToFocus = null;
 
-        if (hasGroups && conditions.getRootNodes().size() > 1) {
-            GroupBoxLayout groupBox = componentsFactory.createComponent(GroupBoxLayout.class);
-            groupBox.setWidth("100%");
-            groupBox.setCaption(getMainMessage("GroupType.AND"));
-            conditionsLayout.add(groupBox);
-            recursivelyCreateConditionsLayout(conditionsFocusType, false, conditions.getRootNodes(), groupBox, 0);
-        } else {
-            recursivelyCreateConditionsLayout(conditionsFocusType, false, conditions.getRootNodes(), conditionsLayout, 0);
-        }
+        recursivelyCreateConditionsLayout(conditionsFocusType, false, conditions.getRootNodes(), conditionsLayout, 0);
 
         if (!conditionsLayout.getComponents().isEmpty()) layout.setSpacing(true);
     }
