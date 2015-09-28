@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
@@ -698,6 +699,12 @@ public class WebWindow implements Window, Component.Wrapper,
 
     protected void fireWindowClosed(String actionId) {
         if (listeners != null) {
+            if (this instanceof Window.Editor) {
+                Entity item = ((Window.Editor) this).getItem();
+                MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+                metadataTools.traverseAttributes(item, (entity, property) -> entity.removeAllListeners());
+            }
+
             for (Object listener : listeners) {
                 if (listener instanceof CloseListener) {
                     ((CloseListener) listener).windowClosed(actionId);

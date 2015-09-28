@@ -4,8 +4,10 @@
  */
 package com.haulmont.cuba.web.gui;
 
-import com.haulmont.chile.core.model.Instance;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.*;
 import com.vaadin.ui.Button;
 
@@ -55,14 +57,16 @@ public class SelectAction implements Button.ClickListener {
         final Window.Lookup.Handler lookupHandler = window.getLookupHandler();
 
         window.close(Window.SELECT_ACTION_ID);
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
         for (Object obj : selected) {
-            if (obj instanceof Instance) {
-                ((Instance) obj).removeAllListeners();
+            if (obj instanceof Entity) {
+                metadataTools.traverseAttributes((Entity) obj, (entity, property) -> entity.removeAllListeners());
             }
         }
-        if (lookupHandler != null)
+        if (lookupHandler != null) {
             lookupHandler.handleLookup(selected);
-        else
+        } else {
             throw new DevelopmentException("A Lookup.Handler was not passed to lookup window " + window.getId());
+        }
     }
 }

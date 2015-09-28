@@ -6,12 +6,12 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.bali.datastruct.Pair;
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.ComponentSize;
 import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
@@ -1006,6 +1006,12 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     protected void fireWindowClosed(String actionId) {
+        if (this instanceof Window.Editor) {
+            Entity item = ((Window.Editor) this).getItem();
+            MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+            metadataTools.traverseAttributes(item, (entity, property) -> entity.removeAllListeners());
+        }
+
         for (Object listener : listeners) {
             if (listener instanceof CloseListener) {
                 ((CloseListener) listener).windowClosed(actionId);
@@ -1465,8 +1471,9 @@ public class DesktopWindow implements Window, Component.Disposable,
                 }
                 close(Window.SELECT_ACTION_ID);
                 for (Object obj : selected) {
-                    if (obj instanceof Instance) {
-                        ((Instance) obj).removeAllListeners();
+                    if (obj instanceof Entity) {
+                        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+                        metadataTools.traverseAttributes((Entity) obj, (entity, property) -> entity.removeAllListeners());
                     }
                 }
                 handler.handleLookup(selected);
