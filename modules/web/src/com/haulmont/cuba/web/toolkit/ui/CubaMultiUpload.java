@@ -28,7 +28,7 @@ import java.util.Map;
  * @version $Id$
  * @deprecated Use {@link CubaFileUpload}
  */
-@JavaScript(value = "resources/swfobject/swfobject-2.2.js")
+@JavaScript(value = "vaadin://resources/swfobject/swfobject-2.2.js")
 @Deprecated
 public class CubaMultiUpload extends AbstractComponent implements LegacyComponent {
 
