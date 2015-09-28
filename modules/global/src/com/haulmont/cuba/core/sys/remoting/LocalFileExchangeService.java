@@ -7,7 +7,6 @@ package com.haulmont.cuba.core.sys.remoting;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
 
-import java.io.File;
 import java.io.InputStream;
 
 /**
