@@ -32,6 +32,6 @@
 
         <frame id="categoryAttrsFrame" src="/com/haulmont/cuba/gui/app/core/categories/category-attrs-frame.xml"/>
 
-        <frame id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        <frame id="windowActions" screen="editWindowActions"/>
     </layout>
 </window>

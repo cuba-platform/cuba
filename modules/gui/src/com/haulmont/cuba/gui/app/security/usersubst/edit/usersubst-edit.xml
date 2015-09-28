@@ -53,6 +53,6 @@
                 </row>
             </rows>
         </grid>
-        <frame id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml" width="AUTO"/>
+        <frame id="windowActions" screen="editWindowActions" width="AUTO"/>
     </layout>
 </window>

@@ -59,6 +59,6 @@
                 </table>
             </tab>
         </tabSheet>
-        <frame id="buttons" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        <frame id="buttons" screen="editWindowActions"/>
     </layout>
 </window>
