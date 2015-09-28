@@ -316,9 +316,9 @@ public class CubaMaskedFieldWidget extends VTextField {
     protected native void addInputHandler(Element elementID)/*-{
         var temp = this;  // hack to hold on to 'this' reference
 
-        var listener = function (e) {
+        var listener = $entry(function (e) {
             temp.@com.haulmont.cuba.web.toolkit.ui.client.textfield.CubaMaskedFieldWidget::handleInput()();
-        };
+        });
 
         if (elementID.addEventListener) {
             elementID.addEventListener("input", listener, false);

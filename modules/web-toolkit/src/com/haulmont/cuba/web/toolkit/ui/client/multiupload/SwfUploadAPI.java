@@ -14,12 +14,12 @@ import java.util.logging.Logger;
 public class SwfUploadAPI {
     public static native void onReady(Runnable r) /*-{
         if (!$wnd.swfUploadHelper) {
-            var id = $wnd.setInterval(function () {
+            var id = $wnd.setInterval($entry(function () {
                 if ($wnd.swfUploadHelper) {
                     $wnd.clearInterval(id);
                     @com.haulmont.cuba.web.toolkit.ui.client.multiupload.SwfUploadAPI::execRunnable(Ljava/lang/Runnable;)(r);
                 }
-            }, 100);
+            }), 100);
         } else {
             @com.haulmont.cuba.web.toolkit.ui.client.multiupload.SwfUploadAPI::execRunnable(Ljava/lang/Runnable;)(r);
         }

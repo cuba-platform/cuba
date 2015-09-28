@@ -262,33 +262,37 @@ public class CubaMultiUploadWidget extends FormPanel {
     }-*/;
 
     protected native void showUploadButton(String varName, Options opts) /*-{
+        //noinspection JSUnresolvedVariable
         $wnd[varName] = $wnd.swfUploadHelper.create(opts);
     }-*/;
 
+    @SuppressWarnings("JSUnresolvedVariable")
     protected native void setDefaultOptions(Options opts) /*-{
         opts['minimum_flash_version'] = '9.0.28';
-        opts['button_cursor'] = $wnd.SWFUpload.CURSOR.HAND;
-        opts['button_window_mode'] = $wnd.SWFUpload.WINDOW_MODE.TRANSPARENT;
+        //noinspection JSUnresolvedVariable
+        var swfUpload = $wnd.SWFUpload;
+        opts['button_cursor'] = swfUpload.CURSOR.HAND;
+        opts['button_window_mode'] = swfUpload.WINDOW_MODE.TRANSPARENT;
     }-*/;
 
     protected native void setDefaultHandlers(Options opts) /*-{
         var swfu = this;
 
-        opts['swfupload_pre_load_handler'] = function() {
+        opts['swfupload_pre_load_handler'] = $entry(function() {
             swfu.@com.haulmont.cuba.web.toolkit.ui.client.multiupload.CubaMultiUploadWidget::swfLoaded()();
-        };
-        opts['swfupload_load_failed_handler'] = function() {
+        });
+        opts['swfupload_load_failed_handler'] = $entry(function() {
             swfu.@com.haulmont.cuba.web.toolkit.ui.client.multiupload.CubaMultiUploadWidget::swfLoadFailed()();
-        };
-        opts['upload_error_handler'] = function (file, errorCode, message) {
+        });
+        opts['upload_error_handler'] = $entry(function (file, errorCode, message) {
             swfu.@com.haulmont.cuba.web.toolkit.ui.client.multiupload.CubaMultiUploadWidget::errorNotify(Ljava/lang/String;Ljava/lang/String;I)(file.name, message, errorCode);
-        };
-        opts['file_queue_error_handler'] = function (file, errorCode, message) {
+        });
+        opts['file_queue_error_handler'] = $entry(function (file, errorCode, message) {
             swfu.@com.haulmont.cuba.web.toolkit.ui.client.multiupload.CubaMultiUploadWidget::errorNotify(Ljava/lang/String;Ljava/lang/String;I)(file.name, message, errorCode);
-        };
-        opts['queue_complete_handler'] = function (numFilesUploaded) {
+        });
+        opts['queue_complete_handler'] = $entry(function (numFilesUploaded) {
             swfu.@com.haulmont.cuba.web.toolkit.ui.client.multiupload.CubaMultiUploadWidget::queueUploadComplete()();
-        };
+        });
     }-*/;
 
     public static class Options extends Properties {
