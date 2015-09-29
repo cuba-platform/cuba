@@ -54,6 +54,12 @@ public class CubaApplicationServlet extends VaadinServlet {
 
     protected volatile ClassLoader classLoader;
 
+    /*
+        The field is used to prevent double initialization of the servlet.
+        Double initialization might occur during single WAR deployment when we call the method from initializer.
+     */
+    protected volatile boolean initialized = false;
+
     @Override
     protected VaadinServletService createServletService(DeploymentConfiguration deploymentConfiguration)
             throws ServiceException {
@@ -67,12 +73,15 @@ public class CubaApplicationServlet extends VaadinServlet {
 
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
-        Configuration configuration = AppBeans.get(Configuration.NAME);
-        webConfig = configuration.getConfig(WebConfig.class);
-        statisticsCounter = AppBeans.get(WebStatisticsAccumulator.class);
-        resources = AppBeans.get(Resources.class);
+        if (!initialized) {
+            Configuration configuration = AppBeans.get(Configuration.NAME);
+            webConfig = configuration.getConfig(WebConfig.class);
+            statisticsCounter = AppBeans.get(WebStatisticsAccumulator.class);
+            resources = AppBeans.get(Resources.class);
 
-        super.init(servletConfig);
+            super.init(servletConfig);
+            initialized = true;
+        }
     }
 
     public void setClassLoader(ClassLoader classLoader) {

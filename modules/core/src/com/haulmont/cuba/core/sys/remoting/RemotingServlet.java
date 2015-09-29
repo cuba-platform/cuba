@@ -20,6 +20,8 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -37,6 +39,12 @@ public class RemotingServlet extends DispatcherServlet {
     private static final Logger log = LoggerFactory.getLogger(RemotingServlet.class);
 
     private volatile boolean checkCompleted;
+
+    /*
+        The field is used to prevent double initialization of the servlet.
+        Double initialization might occur during single WAR deployment when we call the method from initializer.
+     */
+    protected volatile boolean initialized = false;
 
     @Override
     public String getContextConfigLocation() {
@@ -116,7 +124,7 @@ public class RemotingServlet extends DispatcherServlet {
                 sb.insert(0, "\n*****\n");
                 sb.append("*****");
                 log.warn(" Invalid configuration parameters that may cause problems:" +
-                        sb.toString()
+                                sb.toString()
                 );
             }
             checkCompleted = true;
@@ -140,5 +148,13 @@ public class RemotingServlet extends DispatcherServlet {
                                                    Object handler, Exception ex) throws Exception {
         log.error("Error processing request", ex);
         return super.processHandlerException(request, response, handler, ex);
+    }
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        if (!initialized) {
+            super.init(config);
+            initialized = true;
+        }
     }
 }

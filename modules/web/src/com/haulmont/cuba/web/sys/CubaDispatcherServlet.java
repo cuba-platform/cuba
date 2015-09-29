@@ -13,6 +13,8 @@ import org.springframework.util.ResourceUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import java.io.File;
 
 /**
@@ -24,6 +26,12 @@ public class CubaDispatcherServlet extends DispatcherServlet {
     private static final long serialVersionUID = -4884517938479910144L;
 
     public static final String SPRING_CONTEXT_CONFIG = "cuba.dispatcherSpringContextConfig";
+
+    /*
+        The field is used to prevent double initialization of the servlet.
+        Double initialization might occur during single WAR deployment when we call the method from initializer.
+     */
+    protected volatile boolean initialized = false;
 
     @Override
     public String getContextConfigLocation() {
@@ -79,5 +87,13 @@ public class CubaDispatcherServlet extends DispatcherServlet {
     @Override
     public Class<?> getContextClass() {
         return CubaXmlWebApplicationContext.class;
+    }
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        if (!initialized) {
+            super.init(config);
+            initialized = true;
+        }
     }
 }
