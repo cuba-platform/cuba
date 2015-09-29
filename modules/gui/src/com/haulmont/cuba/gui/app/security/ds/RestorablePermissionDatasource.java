@@ -18,7 +18,7 @@ import java.util.UUID;
 public class RestorablePermissionDatasource extends CollectionDatasourceImpl<Permission, UUID> {
 
     public Permission findRemovedEntity(Predicate<Permission> predicate) {
-        for (Object item : itemToDelete) {
+        for (Object item : itemsToDelete) {
             Permission permission = (Permission) item;
             if (predicate.apply(permission))
                 return permission;
@@ -27,8 +27,8 @@ public class RestorablePermissionDatasource extends CollectionDatasourceImpl<Per
     }
 
     public void restoreEntity(Permission entity) {
-        if (itemToDelete.contains(entity)) {
-            itemToDelete.remove(entity);
+        if (itemsToDelete.contains(entity)) {
+            itemsToDelete.remove(entity);
             includeItem(entity);
         }
     }

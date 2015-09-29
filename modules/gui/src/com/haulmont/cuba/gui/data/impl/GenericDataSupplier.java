@@ -56,6 +56,11 @@ public class GenericDataSupplier implements DataSupplier {
     }
 
     @Override
+    public <E extends Entity> E commit(E entity, @Nullable String viewName) {
+        return dataManager.commit(entity, viewName);
+    }
+
+    @Override
     public <E extends Entity> E commit(E instance) {
         return dataManager.commit(instance);
     }

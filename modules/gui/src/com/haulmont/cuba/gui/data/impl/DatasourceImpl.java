@@ -186,7 +186,7 @@ public class DatasourceImpl<T extends Entity> extends AbstractDatasource<T> impl
         clearCommitLists();
 
         if (item != null && PersistenceHelper.isNew(item)) {
-            itemToCreate.add(item);
+            itemsToCreate.add(item);
             this.modified = true;
         }
     }

@@ -606,6 +606,22 @@ public class MetadataTools {
         internalTraverseAttributes(entity, visitor, new HashSet<>());
     }
 
+    /**
+     * Depth-first traversal of the object graph by the view starting from the specified entity instance.
+     * Visits attributes defined in the view.
+     *
+     * @param view      view instance
+     * @param entity    entity graph entry point
+     * @param visitor   the attribute visitor implementation
+     */
+    public void traverseAttributesByView(View view, Entity entity, EntityAttributeVisitor visitor) {
+        Preconditions.checkNotNullArgument(view, "view is null");
+        Preconditions.checkNotNullArgument(entity, "entity is null");
+        Preconditions.checkNotNullArgument(visitor, "visitor is null");
+
+        internalTraverseAttributesByView(view, entity, visitor, new HashMap<>());
+    }
+
     protected void internalTraverseAttributes(Entity entity, EntityAttributeVisitor visitor, HashSet<Object> visited) {
         if (visited.contains(entity))
             return;
@@ -625,6 +641,39 @@ public class MetadataTools {
                             internalTraverseAttributes((Entity) value, visitor, visited);
                         }
                     }
+                }
+            }
+        }
+    }
+
+    protected void internalTraverseAttributesByView(View view, Entity entity, EntityAttributeVisitor visitor,
+                                                    Map<Entity, Set<View>> visited) {
+        Set<View> views = visited.get(entity);
+        if (views == null) {
+            views = new HashSet<>();
+            visited.put(entity, views);
+        } else if (views.contains(view)) {
+            return;
+        }
+        views.add(view);
+
+        MetaClass metaClass = metadata.getClassNN(entity.getClass());
+
+        for (ViewProperty property : view.getProperties()) {
+            View propertyView = property.getView();
+
+            visitor.visit(entity, metaClass.getPropertyNN(property.getName()));
+
+            Object value = entity.getValue(property.getName());
+
+            if (value != null && propertyView != null) {
+                if (value instanceof Collection) {
+                    for (Object item : ((Collection) value)) {
+                        if (item instanceof Instance)
+                            internalTraverseAttributesByView(propertyView, (Entity) item, visitor, visited);
+                    }
+                } else if (value instanceof Instance) {
+                    internalTraverseAttributesByView(propertyView, (Entity) value, visitor, visited);
                 }
             }
         }

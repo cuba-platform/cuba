@@ -95,10 +95,18 @@ public interface DataManager {
     /**
      * Commits the entity to the database.
      * @param entity    entity instance
-     * @param view      view object, affects returning committed instance
+     * @param view      view object, affects the returned committed instance
      * @return          committed instance
      */
     <E extends Entity> E commit(E entity, @Nullable View view);
+
+    /**
+     * Commits the entity to the database.
+     * @param entity    entity instance
+     * @param viewName  view name, affects the returned committed instance
+     * @return          committed instance
+     */
+    <E extends Entity> E commit(E entity, @Nullable String viewName);
 
     /**
      * Commits the entity to the database.

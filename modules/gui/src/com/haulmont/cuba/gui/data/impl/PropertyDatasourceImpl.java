@@ -155,20 +155,20 @@ public class PropertyDatasourceImpl<T extends Entity>
 
             if (parentDs instanceof CollectionDatasource) {
                 CollectionDatasource parentCollectionDs = (CollectionDatasource) parentDs;
-                for (Object item : itemToCreate) {
+                for (Object item : itemsToCreate) {
                     parentCollectionDs.addItem((Entity) item);
                 }
-                for (Object item : itemToUpdate) {
+                for (Object item : itemsToUpdate) {
                     parentCollectionDs.modifyItem((Entity) item);
                 }
-                for (Object item : itemToDelete) {
+                for (Object item : itemsToDelete) {
                     parentCollectionDs.removeItem((Entity) item);
                 }
                 // after repeated edit of new items the parent datasource can contain items-to-create which are deleted
                 // in this datasource, so we need to delete them
                 for (Iterator it = ((DatasourceImplementation) parentCollectionDs).getItemsToCreate().iterator(); it.hasNext(); ) {
                     Object item = it.next();
-                    if (!itemToCreate.contains(item))
+                    if (!itemsToCreate.contains(item))
                         it.remove();
                 }
 
@@ -188,7 +188,7 @@ public class PropertyDatasourceImpl<T extends Entity>
     public void setItem(T item) {
         if (getItem() != null) {
             InstanceUtils.copy(item, getItem());
-            itemToUpdate.add(item);
+            itemsToUpdate.add(item);
         } else {
             final Instance parentItem = masterDs.getItem();
             parentItem.setValue(metaProperty.getName(), item);

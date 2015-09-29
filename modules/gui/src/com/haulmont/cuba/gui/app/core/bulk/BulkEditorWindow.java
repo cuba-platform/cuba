@@ -593,10 +593,7 @@ public class BulkEditorWindow extends AbstractWindow {
             }
         }
 
-        CommitContext cc = new CommitContext();
-        cc.setCommitInstances(new ArrayList<>(items));
-
-        Set<Entity> commited = dataSupplier.commit(cc);
+        Set<Entity> commited = dataSupplier.commit(new CommitContext(items));
 
         LogFactory.getLog(getClass()).info(String.format(
                 "Applied bulk editing for %s entries of %s. Changed properties: %s",

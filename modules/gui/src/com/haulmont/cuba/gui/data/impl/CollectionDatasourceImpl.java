@@ -307,7 +307,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         attachListener(item);
 
         if (PersistenceHelper.isNew(item)) {
-            itemToCreate.add(item);
+            itemsToCreate.add(item);
         }
 
         modified = true;

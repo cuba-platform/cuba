@@ -224,7 +224,7 @@ public class EditorWindowDelegate extends WindowDelegate {
                 ds.commit();
             } else {
                 DataSupplier supplier = getDataService();
-                item = supplier.commit(item, null);
+                item = supplier.commit(item);
             }
             committed = true;
         }

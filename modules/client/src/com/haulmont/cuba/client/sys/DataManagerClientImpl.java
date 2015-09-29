@@ -84,13 +84,7 @@ public class DataManagerClientImpl implements DataManager {
 
     @Override
     public <E extends Entity> E commit(E entity, @Nullable View view) {
-        CommitContext context = new CommitContext(
-                        Collections.singleton((Entity) entity),
-                        Collections.<Entity>emptyList());
-        if (view != null)
-            context.getViews().put(entity, view);
-
-        Set<Entity> res = commit(context);
+        Set<Entity> res = commit(new CommitContext().addInstanceToCommit(entity, view));
 
         for (Entity e : res) {
             if (e.equals(entity)) {
@@ -102,8 +96,18 @@ public class DataManagerClientImpl implements DataManager {
     }
 
     @Override
+    public <E extends Entity> E commit(E entity, @Nullable String viewName) {
+        if (viewName != null) {
+            View view = metadata.getViewRepository().getView(metadata.getClassNN(entity.getClass()), viewName);
+            return commit(entity, view);
+        } else {
+            return commit(entity, (View) null);
+        }
+    }
+
+    @Override
     public <E extends Entity> E commit(E entity) {
-        return commit(entity, null);
+        return commit(entity, (View) null);
     }
 
     @Override

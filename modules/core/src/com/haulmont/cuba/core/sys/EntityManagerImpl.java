@@ -105,6 +105,24 @@ public class EntityManagerImpl implements EntityManager {
     }
 
     @Override
+    public <T extends Entity> T merge(T entity, @Nullable View view) {
+        T managed = merge(entity);
+        if (view != null) {
+            metadata.getTools().traverseAttributesByView(view, managed, (e, p) -> { /* do nothing, just fetch */ });
+        }
+        return managed;
+    }
+
+    @Override
+    public <T extends Entity> T merge(T entity, @Nullable String viewName) {
+        if (viewName != null) {
+            return merge(entity, metadata.getViewRepository().getView(entity.getClass(), viewName));
+        } else {
+            return merge(entity);
+        }
+    }
+
+    @Override
     public void remove(Entity entity) {
         log.debug("remove {}", entity);
 

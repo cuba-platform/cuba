@@ -428,24 +428,20 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         }
 
         if (getCommitMode() == CommitMode.DATASTORE) {
-            final DataSupplier supplier = getDataSupplier();
-            Set<Entity> commitInstances = new HashSet<>();
-            Set<Entity> deleteInstances = new HashSet<>();
+            DataSupplier supplier = getDataSupplier();
 
-            commitInstances.addAll(itemToCreate);
-            commitInstances.addAll(itemToUpdate);
-            deleteInstances.addAll(itemToDelete);
-
-            CommitContext context =
-                    new CommitContext(commitInstances, deleteInstances);
-            for (Entity entity : commitInstances) {
-                context.getViews().put(entity, getView());
+            CommitContext context = new CommitContext();
+            for (Entity entity : itemsToCreate) {
+                context.addInstanceToCommit(entity, view);
             }
-            for (Entity entity : deleteInstances) {
-                context.getViews().put(entity, getView());
+            for (Entity entity : itemsToUpdate) {
+                context.addInstanceToCommit(entity, view);
+            }
+            for (Entity entity : itemsToDelete) {
+                context.addInstanceToRemove(entity);
             }
 
-            final Set<Entity> committed = supplier.commit(context);
+            Set<Entity> committed = supplier.commit(context);
 
             committed(committed);
         } else {

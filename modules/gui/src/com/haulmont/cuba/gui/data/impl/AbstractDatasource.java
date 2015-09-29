@@ -41,9 +41,9 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
     protected List<ItemPropertyChangeListener<T>> itemPropertyChangeListeners; // lazily initialized list
     protected List<StateChangeListener<T>> stateChangeListeners; // lazily initialized list
 
-    protected Collection<Entity> itemToCreate = new HashSet<>();
-    protected Collection<Entity> itemToUpdate = new HashSet<>();
-    protected Collection<Entity> itemToDelete = new HashSet<>();
+    protected Collection<Entity> itemsToCreate = new HashSet<>();
+    protected Collection<Entity> itemsToUpdate = new HashSet<>();
+    protected Collection<Entity> itemsToDelete = new HashSet<>();
     protected Instance.PropertyChangeListener listener = new ItemListener();
 
     protected boolean listenersEnabled = true;
@@ -83,27 +83,27 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
 
     @Override
     public Collection<T> getItemsToCreate() {
-        return (Collection<T>) itemToCreate;
+        return (Collection<T>) itemsToCreate;
     }
 
     @Override
     public Collection<T> getItemsToUpdate() {
-        return (Collection<T>) itemToUpdate;
+        return (Collection<T>) itemsToUpdate;
     }
 
     @Override
     public Collection<T> getItemsToDelete() {
-        return (Collection<T>) itemToDelete;
+        return (Collection<T>) itemsToDelete;
     }
 
     @Override
     public void modified(T item) {
         if (PersistenceHelper.isNew(item)) {
-            itemToCreate.remove(item);
-            itemToCreate.add(item);
+            itemsToCreate.remove(item);
+            itemsToCreate.add(item);
         } else {
-            itemToUpdate.remove(item);
-            itemToUpdate.add(item);
+            itemsToUpdate.remove(item);
+            itemsToUpdate.add(item);
         }
         modified = true;
     }
@@ -111,9 +111,9 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
     @Override
     public void deleted(T item) {
         if (PersistenceHelper.isNew(item)) {
-            itemToCreate.remove(item);
+            itemsToCreate.remove(item);
         } else {
-            itemToDelete.add(item);
+            itemsToDelete.add(item);
         }
         modified = true;
     }
@@ -239,9 +239,9 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
 
     @Override
     public void clearCommitLists() {
-        itemToCreate.clear();
-        itemToUpdate.clear();
-        itemToDelete.clear();
+        itemsToCreate.clear();
+        itemsToUpdate.clear();
+        itemsToDelete.clear();
     }
 
     @Override

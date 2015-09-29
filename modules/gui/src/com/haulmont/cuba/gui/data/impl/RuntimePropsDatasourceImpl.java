@@ -154,12 +154,12 @@ public class RuntimePropsDatasourceImpl
         item.addPropertyChangeListener(e -> {
             modified = true;
             //noinspection unchecked
-            itemToUpdate.add(item.getCategoryValue(e.getProperty()));
+            itemsToUpdate.add(item.getCategoryValue(e.getProperty()));
         });
 
         this.valid();
         initializedBefore = true;
-        if (!itemToDelete.isEmpty()) {
+        if (!itemsToDelete.isEmpty()) {
             modified = true;
         }
         fireItemChanged(null);
@@ -247,9 +247,9 @@ public class RuntimePropsDatasourceImpl
             Set<Entity> commitInstances = new HashSet<>();
             Set<Entity> deleteInstances = new HashSet<>();
 
-            commitInstances.addAll(itemToCreate);
-            commitInstances.addAll(itemToUpdate);
-            deleteInstances.addAll(itemToDelete);
+            commitInstances.addAll(itemsToCreate);
+            commitInstances.addAll(itemsToUpdate);
+            deleteInstances.addAll(itemsToDelete);
 
             CommitContext cc = new CommitContext(commitInstances, deleteInstances);
 

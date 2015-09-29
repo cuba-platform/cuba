@@ -89,8 +89,13 @@ public class TestDataSupplier implements DataSupplier {
     }
 
     @Override
+    public <E extends Entity> E commit(E entity, @Nullable String viewName) {
+        return null;
+    }
+
+    @Override
     public <E extends Entity> E commit(E instance) {
-        return commit(instance, null);
+        return commit(instance, (View) null);
     }
 
     @Override

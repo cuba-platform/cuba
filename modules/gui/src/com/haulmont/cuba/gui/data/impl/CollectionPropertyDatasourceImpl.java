@@ -83,8 +83,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             if (coll != null && metadata.getTools().isPersistent(metaProperty)) {
                 for (Object collItem : coll) {
                     if (PersistenceHelper.isNew(collItem)) {
-                        itemToCreate.remove(collItem);
-                        itemToCreate.add((T) collItem);
+                        itemsToCreate.remove(collItem);
+                        itemsToCreate.add((T) collItem);
                         modified = true;
                     }
                 }

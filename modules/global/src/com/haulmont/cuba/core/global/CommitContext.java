@@ -6,6 +6,7 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.entity.Entity;
 
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.*;
 
@@ -29,6 +30,9 @@ public class CommitContext implements Serializable {
     protected boolean softDeletion = true;
     protected Map<String, Object> dbHints = new HashMap<>();
 
+    /**
+     * @param commitInstances changed entities to be committed to the database
+     */
     public CommitContext(Entity... commitInstances) {
         this.commitInstances.addAll(Arrays.asList(commitInstances));
     }
@@ -47,6 +51,57 @@ public class CommitContext implements Serializable {
     public CommitContext(Collection commitInstances, Collection removeInstances) {
         this.commitInstances.addAll(commitInstances);
         this.removeInstances.addAll(removeInstances);
+    }
+
+    /**
+     * Adds an entity to be committed to the database.
+     *
+     * @param entity entity instance
+     * @return this instance for chaining
+     */
+    public CommitContext addInstanceToCommit(Entity entity) {
+        commitInstances.add(entity);
+        return this;
+    }
+
+    /**
+     * Adds an entity to be committed to the database.
+     *
+     * @param entity entity instance
+     * @param view   view which is used in merge operation to ensure all required attributes are loaded in the returned instance
+     * @return this instance for chaining
+     */
+    public CommitContext addInstanceToCommit(Entity entity, @Nullable View view) {
+        commitInstances.add(entity);
+        if (view != null)
+            views.put(entity, view);
+        return this;
+    }
+
+    /**
+     * Adds an entity to be committed to the database.
+     *
+     * @param entity   entity instance
+     * @param viewName view which is used in merge operation to ensure all required attributes are loaded in the returned instance
+     * @return this instance for chaining
+     */
+    public CommitContext addInstanceToCommit(Entity entity, @Nullable String viewName) {
+        commitInstances.add(entity);
+        if (viewName != null) {
+            views.put(entity, getViewFromRepository(entity, viewName));
+        }
+        return this;
+    }
+
+    /**
+     * Adds an entity to be removed from the database.
+     *
+     * @param entity entity instance
+     * @return this instance for chaining
+     */
+    public CommitContext addInstanceToRemove(Entity entity) {
+        removeInstances.add(entity);
+        return this;
     }
 
     /**
@@ -80,8 +135,9 @@ public class CommitContext implements Serializable {
     }
 
     /**
-     * Allows to define a view for each committed entity. These views are used after merging changes to fetch merged
-     * entities before returning them to the caller.
+     * Enables defining a view for each committed entity. These views are used in merge operation to ensure all
+     * required attributes are loaded in returned instances.
+     *
      * @return editable map of entities to their views
      */
     public Map<Object, View> getViews() {
@@ -107,5 +163,10 @@ public class CommitContext implements Serializable {
      */
     public void setSoftDeletion(boolean softDeletion) {
         this.softDeletion = softDeletion;
+    }
+
+    private View getViewFromRepository(Entity entity, String viewName) {
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        return metadata.getViewRepository().getView(metadata.getClass(entity.getClass()), viewName);
     }
 }

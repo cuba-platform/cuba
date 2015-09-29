@@ -111,7 +111,7 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
     public void setItem(T item) {
         if (getItem() != null) {
             InstanceUtils.copy(item, getItem());
-            itemToUpdate.add(item);
+            itemsToUpdate.add(item);
         } else {
             final Instance parentItem = masterDs.getItem();
             parentItem.setValue(metaProperty.getName(), item);
