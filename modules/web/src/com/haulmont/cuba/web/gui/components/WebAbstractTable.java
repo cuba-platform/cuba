@@ -483,7 +483,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     protected void initComponent(final T component) {
         component.setMultiSelect(false);
-        component.setNullSelectionAllowed(false);
         component.setImmediate(true);
         component.setValidationVisible(false);
         component.setShowBufferedSourceException(false);
@@ -1342,7 +1341,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public void setMultiSelect(boolean multiselect) {
-        component.setNullSelectionAllowed(multiselect);
         super.setMultiSelect(multiselect);
     }
 

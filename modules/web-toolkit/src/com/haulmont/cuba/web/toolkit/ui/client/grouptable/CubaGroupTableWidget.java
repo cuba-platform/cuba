@@ -394,6 +394,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
             protected String groupKey;
             protected boolean expanded;
             protected Boolean hasCells;
+            protected Element expander;
 
             public CubaGroupTableGroupRow(UIDL uidl, char[] aligns) {
                 super(uidl, aligns);
@@ -578,11 +579,11 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
 
                 container.setInnerHTML("");
 
-                Element groupDiv = DOM.createDiv();
-                groupDiv.setInnerHTML("&nbsp;");
+                expander = DOM.createDiv();
+                expander.setInnerHTML("&nbsp;");
 
-                groupDiv.setClassName(CLASSNAME + "-group-cell-expander");
-                DOM.appendChild(container, groupDiv);
+                expander.setClassName(CLASSNAME + "-group-cell-expander");
+                DOM.appendChild(container, expander);
 
                 Element contentDiv = DOM.createDiv();
                 contentDiv.setInnerHTML(containerInnerHTML);
@@ -602,7 +603,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                         }
                         setRowFocus(this);
 
-                        if (!isSingleSelectMode()) {
+                        if (event.getEventTarget().cast() != expander) {
                             deselectAll();
                             sendSelectedRows(false);
                         }
