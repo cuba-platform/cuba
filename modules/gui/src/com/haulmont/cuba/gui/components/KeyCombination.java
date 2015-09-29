@@ -104,6 +104,7 @@ public class KeyCombination {
         ARROW_RIGHT(39),
         ARROW_DOWN(40),
         BACKSPACE(8),
+        BACKSLASH(220, 0x5C),
         DELETE(46, 0x7F),
         INSERT(45, 0x9B),
         END(35),

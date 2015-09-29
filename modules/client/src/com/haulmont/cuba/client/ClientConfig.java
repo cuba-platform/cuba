@@ -184,11 +184,11 @@ public interface ClientConfig extends Config {
     @DefaultString("CUBA")
     String getSystemID();
 
-    @DefaultString("CTRL-INSERT")
+    @DefaultString("CTRL-BACKSLASH")
     @Property("cuba.gui.tableInsertShortcut")
     String getTableInsertShortcut();
 
-    @DefaultString("CTRL-ALT-INSERT")
+    @DefaultString("CTRL-ALT-BACKSLASH")
     @Property("cuba.gui.tableAddShortcut")
     String getTableAddShortcut();
 
