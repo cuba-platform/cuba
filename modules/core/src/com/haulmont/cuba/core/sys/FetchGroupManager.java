@@ -73,7 +73,7 @@ public class FetchGroupManager {
         processView(view, null, fetchGroupFields);
 
         Set<String> fetchGroupAttributes = new TreeSet<>();
-        Map<String, String> fetchHints = new HashMap<>();
+        Map<String, String> fetchHints = new TreeMap<>(); // sort hints by attribute path
 
         for (FetchGroupField field : fetchGroupFields) {
             fetchGroupAttributes.add(field.path());
