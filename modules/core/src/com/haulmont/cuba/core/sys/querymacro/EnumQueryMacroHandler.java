@@ -10,7 +10,7 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.sys.QueryMacroHandler;
 import org.springframework.context.annotation.Scope;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_EnumQueryMacroHandler")
+@Component("cuba_EnumQueryMacroHandler")
 @Scope("prototype")
 public class EnumQueryMacroHandler implements QueryMacroHandler {
 

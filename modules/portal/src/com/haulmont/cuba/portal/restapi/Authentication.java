@@ -13,7 +13,7 @@ import com.haulmont.cuba.portal.sys.security.PortalSessionFactory;
 import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.UserSession;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.UUID;
 
@@ -21,7 +21,7 @@ import java.util.UUID;
  * @author chevelev
  * @version $Id$
  */
-@ManagedBean(Authentication.NAME)
+@Component(Authentication.NAME)
 public class Authentication {
 
     public static final String NAME = "cuba_RestApiAuthentication";

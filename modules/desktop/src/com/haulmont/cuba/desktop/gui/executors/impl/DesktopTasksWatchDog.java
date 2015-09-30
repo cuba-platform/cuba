@@ -8,14 +8,14 @@ package com.haulmont.cuba.desktop.gui.executors.impl;
 import com.haulmont.cuba.gui.executors.impl.TaskHandlerImpl;
 import com.haulmont.cuba.gui.executors.impl.TasksWatchDog;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.swing.*;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean(TasksWatchDog.NAME)
+@Component(TasksWatchDog.NAME)
 public class DesktopTasksWatchDog extends TasksWatchDog {
 
     @Override

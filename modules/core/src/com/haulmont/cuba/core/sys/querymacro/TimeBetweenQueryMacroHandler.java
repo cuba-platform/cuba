@@ -13,7 +13,7 @@ import groovy.lang.Binding;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.context.annotation.Scope;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_TimeBetweenQueryMacroHandler")
+@Component("cuba_TimeBetweenQueryMacroHandler")
 @Scope("prototype")
 public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
 

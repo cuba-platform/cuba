@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Frame;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
@@ -18,7 +18,7 @@ import javax.inject.Inject;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_FileStorageExceptionHandler")
+@Component("cuba_FileStorageExceptionHandler")
 public class FileStorageExceptionHandler extends AbstractGenericExceptionHandler {
 
     @Inject

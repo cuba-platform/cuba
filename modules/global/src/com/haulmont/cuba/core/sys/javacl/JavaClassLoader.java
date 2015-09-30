@@ -42,7 +42,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-@ManagedBean("cuba_JavaClassLoader")
+@Component("cuba_JavaClassLoader")
 public class JavaClassLoader extends URLClassLoader implements BeanFactoryAware, ApplicationContextAware {
     private static final String JAVA_CLASSPATH = System.getProperty("java.class.path");
     private static final String PATH_SEPARATOR = System.getProperty("path.separator");

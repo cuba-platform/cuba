@@ -15,7 +15,7 @@ import com.haulmont.cuba.web.jmx.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.management.*;
@@ -32,7 +32,7 @@ import static com.haulmont.cuba.web.jmx.JmxConnectionHelper.withConnection;
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean(JmxControlAPI.NAME)
+@Component(JmxControlAPI.NAME)
 public class JmxControlBean implements JmxControlAPI {
 
     private final Logger log = LoggerFactory.getLogger(getClass());

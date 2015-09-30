@@ -13,7 +13,7 @@ import com.haulmont.cuba.core.sys.persistence.SequenceSupport;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -30,7 +30,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(UniqueNumbersAPI.NAME)
+@Component(UniqueNumbersAPI.NAME)
 public class UniqueNumbers implements UniqueNumbersAPI {
 
     @Inject

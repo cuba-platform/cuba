@@ -34,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +48,7 @@ import java.util.UUID;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(LinkHandler.NAME)
+@org.springframework.stereotype.Component(LinkHandler.NAME)
 @Scope("prototype")
 public class LinkHandler {
 

@@ -10,7 +10,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Frame;
 import org.springframework.core.Ordered;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
@@ -20,7 +20,7 @@ import javax.inject.Inject;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_NoSuchScreenHandler")
+@Component("cuba_NoSuchScreenHandler")
 public class NoSuchScreenHandler extends AbstractGenericExceptionHandler implements Ordered {
 
     @Inject

@@ -12,14 +12,14 @@ import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import com.haulmont.cuba.security.app.EntityLogAPI;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_CachingFacadeMBean")
+@Component("cuba_CachingFacadeMBean")
 public class CachingFacade implements CachingFacadeMBean {
 
     @Inject

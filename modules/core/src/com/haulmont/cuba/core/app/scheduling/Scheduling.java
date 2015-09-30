@@ -26,7 +26,7 @@ import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 import org.springframework.scheduling.support.CronSequenceGenerator;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(SchedulingAPI.NAME)
+@Component(SchedulingAPI.NAME)
 public class Scheduling implements SchedulingAPI {
 
     @Inject

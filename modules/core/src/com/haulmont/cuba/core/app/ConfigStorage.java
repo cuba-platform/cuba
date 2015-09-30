@@ -15,7 +15,7 @@ import com.haulmont.cuba.core.entity.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.sql.ResultSet;
@@ -33,7 +33,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(ConfigStorageAPI.NAME)
+@Component(ConfigStorageAPI.NAME)
 public class ConfigStorage implements ConfigStorageAPI {
 
     @Inject

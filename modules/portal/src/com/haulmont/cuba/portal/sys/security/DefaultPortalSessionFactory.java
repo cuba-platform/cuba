@@ -8,7 +8,7 @@ package com.haulmont.cuba.portal.sys.security;
 import com.haulmont.cuba.portal.security.PortalSession;
 import com.haulmont.cuba.security.global.UserSession;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Locale;
@@ -17,7 +17,7 @@ import java.util.Locale;
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean(PortalSessionFactory.NAME)
+@Component(PortalSessionFactory.NAME)
 public class DefaultPortalSessionFactory implements PortalSessionFactory {
 
     @Inject

@@ -7,14 +7,14 @@ package com.haulmont.cuba.core.jmx;
 
 import com.haulmont.cuba.core.app.ServerInfoAPI;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_ServerInfoMBean")
+@Component("cuba_ServerInfoMBean")
 public class ServerInfo implements ServerInfoMBean {
 
     @Inject

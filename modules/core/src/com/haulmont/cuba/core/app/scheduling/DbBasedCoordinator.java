@@ -13,7 +13,7 @@ import com.haulmont.cuba.core.entity.ScheduledTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import javax.persistence.LockModeType;
 import java.util.Date;
@@ -27,7 +27,7 @@ import java.util.List;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(Coordinator.NAME)
+@Component(Coordinator.NAME)
 public class DbBasedCoordinator implements Coordinator {
 
     protected static class ContextImpl implements Context {

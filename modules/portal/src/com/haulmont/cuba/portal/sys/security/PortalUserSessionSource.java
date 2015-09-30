@@ -14,14 +14,14 @@ import com.haulmont.cuba.portal.Connection;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(UserSessionSource.NAME)
+@Component(UserSessionSource.NAME)
 public class PortalUserSessionSource extends AbstractUserSessionSource {
 
     @Inject

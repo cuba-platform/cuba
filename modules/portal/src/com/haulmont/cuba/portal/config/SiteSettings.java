@@ -12,7 +12,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
@@ -21,7 +21,7 @@ import java.util.Properties;
  * @author minaev
  * @version $Id$
  */
-@ManagedBean("cuba_PortalSiteSettings")
+@Component("cuba_PortalSiteSettings")
 public class SiteSettings {
 
     /**

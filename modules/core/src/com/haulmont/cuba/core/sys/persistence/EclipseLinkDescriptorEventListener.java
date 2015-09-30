@@ -21,7 +21,7 @@ import org.eclipse.persistence.descriptors.DescriptorEventListener;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.Vector;
@@ -30,7 +30,7 @@ import java.util.Vector;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(EclipseLinkDescriptorEventListener.NAME)
+@Component(EclipseLinkDescriptorEventListener.NAME)
 public class EclipseLinkDescriptorEventListener implements DescriptorEventListener {
 
     public static final String NAME = "cuba_EclipseLinkDescriptorEventListener";

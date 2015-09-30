@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.UUID;
@@ -19,7 +19,7 @@ import java.util.UUID;
  * @author novikov
  * @version $Id$
  */
-@ManagedBean(ScreenHistory.NAME)
+@Component(ScreenHistory.NAME)
 public class ScreenHistoryBean implements ScreenHistory {
 
     private Logger log = LoggerFactory.getLogger(ScreenHistoryBean.class);

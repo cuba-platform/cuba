@@ -11,7 +11,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Frame;
 import org.springframework.core.Ordered;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
@@ -19,7 +19,7 @@ import javax.inject.Inject;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_AccessDeniedHandler")
+@Component("cuba_AccessDeniedHandler")
 public class AccessDeniedHandler extends AbstractGenericExceptionHandler implements Ordered {
 
     @Inject

@@ -9,13 +9,13 @@ import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean(ThemeConstantsManager.NAME)
+@Component(ThemeConstantsManager.NAME)
 public class DesktopThemeConstantsManager implements ThemeConstantsManager {
     @Override
     public ThemeConstants getConstants() {

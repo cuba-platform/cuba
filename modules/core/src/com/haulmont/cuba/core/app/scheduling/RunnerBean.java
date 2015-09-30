@@ -27,7 +27,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -40,7 +40,7 @@ import java.util.concurrent.*;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(Runner.NAME)
+@Component(Runner.NAME)
 public class RunnerBean implements Runner {
 
     protected static final int MAX_THREADS = 10;

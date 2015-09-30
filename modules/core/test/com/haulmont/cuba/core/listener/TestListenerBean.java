@@ -8,7 +8,7 @@ package com.haulmont.cuba.core.listener;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.entity.Server;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.List;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_TestListenerBean")
+@Component("cuba_TestListenerBean")
 public class TestListenerBean implements
         AfterInsertEntityListener<Server>,
         AfterUpdateEntityListener<Server>,

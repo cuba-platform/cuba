@@ -7,7 +7,7 @@ package com.haulmont.cuba.core.sys.javacl;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 import static java.lang.String.format;
@@ -16,7 +16,7 @@ import static java.lang.String.format;
  * @author degtyarjov
  * @version $Id$
  */
-@ManagedBean("cuba_ClassLoaderManager")
+@Component("cuba_ClassLoaderManager")
 public class ClassLoaderManager implements ClassLoaderManagerMBean {
     @Inject
     protected JavaClassLoader javaClassLoader;

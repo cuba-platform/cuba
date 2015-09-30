@@ -13,7 +13,7 @@ import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.GroupHierarchy;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.List;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_GroupEntityListener")
+@Component("cuba_GroupEntityListener")
 public class GroupEntityListener implements
         BeforeInsertEntityListener<Group>,
         BeforeUpdateEntityListener<Group> {

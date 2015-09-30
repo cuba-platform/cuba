@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.dom4j.Element;
 import org.springframework.core.io.Resource;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.IOException;
@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(WindowConfig.NAME)
+@Component(WindowConfig.NAME)
 public class WindowConfig {
 
     public static final String NAME = "cuba_WindowConfig";

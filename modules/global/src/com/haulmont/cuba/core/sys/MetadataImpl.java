@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(Metadata.NAME)
+@Component(Metadata.NAME)
 public class MetadataImpl implements Metadata {
 
     protected Logger log = LoggerFactory.getLogger(getClass());

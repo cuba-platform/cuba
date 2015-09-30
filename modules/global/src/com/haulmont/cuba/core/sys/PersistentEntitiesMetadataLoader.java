@@ -15,7 +15,7 @@ import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import org.apache.commons.lang.ArrayUtils;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Map;
 
@@ -23,7 +23,7 @@ import java.util.Map;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_PersistentEntitiesMetadataLoader")
+@Component("cuba_PersistentEntitiesMetadataLoader")
 public class PersistentEntitiesMetadataLoader extends JPAMetadataLoader {
 
     public PersistentEntitiesMetadataLoader() {

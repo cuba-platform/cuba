@@ -16,7 +16,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.time.DateUtils;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -27,7 +27,7 @@ import java.util.UUID;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_SchedulingMBean")
+@Component("cuba_SchedulingMBean")
 public class Scheduling implements SchedulingMBean {
 
     @Inject

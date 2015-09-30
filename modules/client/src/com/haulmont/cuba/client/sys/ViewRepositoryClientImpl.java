@@ -8,12 +8,12 @@ package com.haulmont.cuba.client.sys;
 import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.core.sys.AbstractViewRepository;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(ViewRepository.NAME)
+@Component(ViewRepository.NAME)
 public class ViewRepositoryClientImpl extends AbstractViewRepository implements ViewRepository {
 }

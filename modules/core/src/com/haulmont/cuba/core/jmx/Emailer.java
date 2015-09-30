@@ -21,7 +21,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -30,7 +30,7 @@ import java.util.List;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_EmailerMBean")
+@Component("cuba_EmailerMBean")
 public class Emailer implements EmailerMBean {
 
     @Inject

@@ -9,13 +9,13 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
 import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 
 /**
  * @author degtyarjov
  * @version $Id$
  */
-@ManagedBean("report_CategoryAttributeListener")
+@Component("report_CategoryAttributeListener")
 public class CategoryAttributeListener
         implements BeforeInsertEntityListener<CategoryAttribute>, BeforeUpdateEntityListener<CategoryAttribute> {
     @Override

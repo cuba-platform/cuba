@@ -13,7 +13,7 @@ import com.haulmont.cuba.gui.settings.SettingsClient;
 import com.haulmont.cuba.security.app.UserSettingService;
 import org.apache.commons.logging.LogFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Map;
@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean(SettingsClient.NAME)
+@Component(SettingsClient.NAME)
 public class DesktopSettingsClient implements SettingsClient {
 
     @Inject

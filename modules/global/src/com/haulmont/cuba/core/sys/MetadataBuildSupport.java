@@ -13,7 +13,7 @@ import org.apache.commons.lang.text.StrTokenizer;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.io.InputStream;
 import java.util.*;
@@ -22,7 +22,7 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_MetadataBuildSupport")
+@Component("cuba_MetadataBuildSupport")
 public class MetadataBuildSupport {
 
     public static final String PERSISTENCE_CONFIG = "cuba.persistenceConfig";

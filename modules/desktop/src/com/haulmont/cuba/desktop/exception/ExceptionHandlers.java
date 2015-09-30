@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.OrderComparator;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import java.util.*;
 
 /**
@@ -28,7 +28,7 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_ExceptionHandlers")
+@Component("cuba_ExceptionHandlers")
 public class ExceptionHandlers {
 
     protected LinkedList<ExceptionHandler> handlers = new LinkedList<>();

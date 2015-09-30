@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.entity.Server;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.UUID;
 
@@ -18,7 +18,7 @@ import java.util.UUID;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_TestListenerUsingEntityManager")
+@Component("cuba_TestListenerUsingEntityManager")
 public class TestListenerUsingEntityManager
         implements BeforeInsertEntityListener<Server>, BeforeUpdateEntityListener<Server>, BeforeDeleteEntityListener<Server> {
 

@@ -8,7 +8,7 @@ package com.haulmont.cuba.core.listener;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.entity.Server;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +16,7 @@ import java.util.List;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_TestDetachAttachListener")
+@Component("cuba_TestDetachAttachListener")
 public class TestDetachAttachListener implements
         BeforeDetachEntityListener<Server>, BeforeAttachEntityListener<Server> {
 

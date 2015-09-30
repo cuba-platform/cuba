@@ -9,7 +9,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Collection;
@@ -18,7 +18,7 @@ import java.util.Collection;
  * @author degtyarjov
  * @version $Id$
  */
-@ManagedBean(DynamicAttributes.NAME)
+@Component(DynamicAttributes.NAME)
 public class DynamicAttributesImpl implements DynamicAttributes {
     @Inject
     protected DynamicAttributesManagerAPI dynamicAttributesManagerAPI;

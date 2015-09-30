@@ -29,7 +29,7 @@ import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.crypto.Cipher;
 import javax.inject.Inject;
 import java.io.*;
@@ -51,7 +51,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(UserSessionsAPI.NAME)
+@Component(UserSessionsAPI.NAME)
 public final class UserSessions implements UserSessionsAPI, AppContext.Listener {
 
     public static final String NOT_RESTRICTED = "Not restricted";

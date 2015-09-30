@@ -19,7 +19,7 @@ import java.util.List;
  *
  * <p>If you need to handle a specific exception, create a descendant of this class,
  * pass handled exception class names into constructor, implement
- * {@link #doHandle(String, String, Throwable, WindowManager)} method and annotate the class with {@code @ManagedBean}.
+ * {@link #doHandle(String, String, Throwable, WindowManager)} method and annotate the class with {@code @Component}.
  *
  * @author krivopustov
  * @version $Id$

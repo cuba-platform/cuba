@@ -17,7 +17,7 @@ import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Collections;
@@ -33,7 +33,7 @@ import java.util.Set;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(PersistenceTools.NAME)
+@Component(PersistenceTools.NAME)
 public class PersistenceTools {
 
     public static final String NAME = "cuba_PersistenceTools";

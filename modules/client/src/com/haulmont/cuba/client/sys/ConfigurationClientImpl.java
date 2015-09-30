@@ -11,7 +11,7 @@ import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.ConfigHandler;
 import com.haulmont.cuba.core.global.Configuration;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(Configuration.NAME)
+@Component(Configuration.NAME)
 public class ConfigurationClientImpl implements ClientConfiguration {
 
     protected Map<Class, ConfigHandler> handlersCache = new ConcurrentHashMap<>();

@@ -58,7 +58,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 
-import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -70,7 +69,7 @@ import java.util.regex.Pattern;
  * @author gorbunkov
  * @version $Id$
  */
-@ManagedBean(FilterDelegate.NAME)
+@org.springframework.stereotype.Component(FilterDelegate.NAME)
 @Scope("prototype")
 public class FilterDelegateImpl implements FilterDelegate {
 

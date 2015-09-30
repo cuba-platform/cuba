@@ -13,7 +13,7 @@ import com.haulmont.cuba.core.global.FileStorageException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -24,7 +24,7 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_FileStorageMBean")
+@Component("cuba_FileStorageMBean")
 public class FileStorage implements FileStorageMBean {
 
     @Inject

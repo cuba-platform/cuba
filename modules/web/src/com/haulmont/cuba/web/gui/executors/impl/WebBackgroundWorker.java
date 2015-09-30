@@ -21,7 +21,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.*;
@@ -34,7 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean(BackgroundWorker.NAME)
+@Component(BackgroundWorker.NAME)
 public class WebBackgroundWorker implements BackgroundWorker {
     private Logger log = LoggerFactory.getLogger(WebBackgroundWorker.class);
 

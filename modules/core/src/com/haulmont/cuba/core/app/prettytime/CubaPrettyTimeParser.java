@@ -11,7 +11,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.InputStream;
@@ -23,7 +23,7 @@ import java.util.*;
  * @author zaharchenko
  * @version $Id$
  */
-@ManagedBean(CubaPrettyTimeParser.NAME)
+@Component(CubaPrettyTimeParser.NAME)
 public class CubaPrettyTimeParser {
 
     public static final String NAME = "cuba_CubaPrettyTimeParser";

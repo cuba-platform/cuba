@@ -8,14 +8,14 @@ package com.haulmont.cuba.security.jmx;
 import com.haulmont.cuba.security.app.Authenticated;
 import com.haulmont.cuba.security.app.EntityLogAPI;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_EntityLogMBean")
+@Component("cuba_EntityLogMBean")
 public class EntityLog implements EntityLogMBean {
 
     @Inject

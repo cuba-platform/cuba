@@ -7,7 +7,7 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.global.GlobalConfig;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(NumberIdCache.NAME)
+@Component(NumberIdCache.NAME)
 public class NumberIdCache {
 
     public static final String NAME = "cuba_NumberIdCache";

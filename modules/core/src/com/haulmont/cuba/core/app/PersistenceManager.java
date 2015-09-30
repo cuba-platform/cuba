@@ -15,7 +15,7 @@ import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(PersistenceManagerAPI.NAME)
+@Component(PersistenceManagerAPI.NAME)
 public class PersistenceManager implements PersistenceManagerAPI {
 
     protected final Logger log = LoggerFactory.getLogger(getClass());

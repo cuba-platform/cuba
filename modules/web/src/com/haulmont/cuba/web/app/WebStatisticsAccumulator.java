@@ -7,14 +7,14 @@ package com.haulmont.cuba.web.app;
 
 import com.haulmont.cuba.core.sys.StatisticsAccumulator;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author krivenko
  * @version $Id$
  */
-@ManagedBean(WebStatisticsAccumulator.NAME)
+@Component(WebStatisticsAccumulator.NAME)
 public class WebStatisticsAccumulator extends StatisticsAccumulator {
 
     public static final String NAME = "cuba_WebStatisticsAccumulator";

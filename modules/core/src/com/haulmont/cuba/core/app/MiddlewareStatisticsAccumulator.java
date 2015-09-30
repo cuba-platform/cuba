@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.sys.StatisticsAccumulator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author krivenko
  * @version $Id$
  */
-@ManagedBean(MiddlewareStatisticsAccumulator.NAME)
+@Component(MiddlewareStatisticsAccumulator.NAME)
 public class MiddlewareStatisticsAccumulator extends StatisticsAccumulator {
 
     public static final String NAME = "cuba_MiddlewareStatisticsAccumulator";

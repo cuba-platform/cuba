@@ -16,7 +16,7 @@ import com.haulmont.cuba.core.sys.persistence.SequenceSupport;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.math.BigDecimal;
@@ -29,7 +29,7 @@ import java.util.Set;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(NumberIdWorker.NAME)
+@Component(NumberIdWorker.NAME)
 public class NumberIdWorker implements NumberIdSequence {
 
     public static final String NAME = "cuba_NumberIdWorker";

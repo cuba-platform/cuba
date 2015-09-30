@@ -10,7 +10,7 @@ import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.web.WebConfig;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
@@ -19,7 +19,7 @@ import javax.inject.Inject;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(UserSettingsTools.NAME)
+@Component(UserSettingsTools.NAME)
 public class UserSettingsTools {
 
     public static final String NAME = "cuba_UserSettingsTools";

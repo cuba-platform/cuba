@@ -13,7 +13,7 @@ import org.apache.commons.lang.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,7 +29,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_EntityListenerManager")
+@Component("cuba_EntityListenerManager")
 public class EntityListenerManager {
 
     protected static class Key {

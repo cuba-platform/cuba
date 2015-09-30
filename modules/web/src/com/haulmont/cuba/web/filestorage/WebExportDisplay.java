@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import java.io.InputStream;
 
 /**
@@ -29,7 +29,7 @@ import java.io.InputStream;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(ExportDisplay.NAME)
+@Component(ExportDisplay.NAME)
 @Scope("prototype")
 public class WebExportDisplay implements ExportDisplay {
 

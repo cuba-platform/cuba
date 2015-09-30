@@ -10,13 +10,13 @@ import com.haulmont.cuba.core.sys.AbstractUserSessionSource;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.security.global.UserSession;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(UserSessionSource.NAME)
+@Component(UserSessionSource.NAME)
 public class DesktopUserSessionSource extends AbstractUserSessionSource {
 
     @Override

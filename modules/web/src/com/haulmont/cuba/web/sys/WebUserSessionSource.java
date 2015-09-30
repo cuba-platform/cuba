@@ -14,14 +14,14 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.Connection;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(UserSessionSource.NAME)
+@Component(UserSessionSource.NAME)
 public class WebUserSessionSource extends AbstractUserSessionSource {
 
     @Inject

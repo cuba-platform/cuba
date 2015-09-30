@@ -8,7 +8,7 @@ import com.haulmont.cuba.core.sys.QueryMacroHandler;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.context.annotation.Scope;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_DateBeforeQueryMacroHandler")
+@Component("cuba_DateBeforeQueryMacroHandler")
 @Scope("prototype")
 public class DateBeforeMacroHandler implements QueryMacroHandler {
 

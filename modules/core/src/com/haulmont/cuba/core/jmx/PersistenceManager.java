@@ -25,7 +25,7 @@ import org.apache.commons.lang.text.StrBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import javax.persistence.Table;
 import java.io.File;
@@ -38,7 +38,7 @@ import java.util.Set;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_PersistenceManagerMBean")
+@Component("cuba_PersistenceManagerMBean")
 public class PersistenceManager implements PersistenceManagerMBean {
 
     protected static final Logger log = LoggerFactory.getLogger(PersistenceManager.class);

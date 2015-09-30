@@ -11,7 +11,7 @@ import com.haulmont.cuba.core.sys.encryption.EncryptionModule;
 import com.haulmont.cuba.core.sys.encryption.UnsupportedHashMethodException;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.HashSet;
 import java.util.Map;
@@ -24,7 +24,7 @@ import java.util.UUID;
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean("cuba_PasswordEncryptionSupportMBean")
+@Component("cuba_PasswordEncryptionSupportMBean")
 public class PasswordEncryptionSupport implements PasswordEncryptionSupportMBean {
 
     private static final String UNSUPPORTED_HASH_METHOD = "Unsupported Hash method";

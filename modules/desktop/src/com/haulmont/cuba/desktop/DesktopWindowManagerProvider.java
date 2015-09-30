@@ -8,7 +8,7 @@ package com.haulmont.cuba.desktop;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.swing.*;
 
 /**
@@ -18,7 +18,7 @@ import javax.swing.*;
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean(WindowManagerProvider.NAME)
+@Component(WindowManagerProvider.NAME)
 public class DesktopWindowManagerProvider implements WindowManagerProvider {
 
     @Override

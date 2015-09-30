@@ -13,7 +13,7 @@ import com.haulmont.cuba.gui.components.Frame;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.core.Ordered;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.regex.Matcher;
@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_DeletePolicyHandler")
+@Component("cuba_DeletePolicyHandler")
 public class DeletePolicyHandler implements GenericExceptionHandler, Ordered {
 
     @Inject

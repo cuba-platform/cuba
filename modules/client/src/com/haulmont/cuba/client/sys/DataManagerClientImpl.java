@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -23,7 +23,7 @@ import java.util.Set;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(DataManager.NAME)
+@Component(DataManager.NAME)
 public class DataManagerClientImpl implements DataManager {
 
     @Inject

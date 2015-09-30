@@ -9,7 +9,7 @@ import com.haulmont.cuba.core.global.SilentException;
 import com.haulmont.cuba.gui.WindowManager;
 import org.springframework.core.Ordered;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 
 /**
@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_SilentExceptionHandler")
+@Component("cuba_SilentExceptionHandler")
 public class SilentExceptionHandler extends AbstractGenericExceptionHandler implements Ordered {
 
     public SilentExceptionHandler() {

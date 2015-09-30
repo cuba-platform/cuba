@@ -20,7 +20,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.Scope;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -34,7 +34,7 @@ import java.io.InputStream;
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean(ExportDisplay.NAME)
+@Component(ExportDisplay.NAME)
 @Scope("prototype")
 @SuppressWarnings({"UnusedDeclaration"})
 public class DesktopExportDisplay implements ExportDisplay {

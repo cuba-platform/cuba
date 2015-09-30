@@ -12,7 +12,7 @@ import com.haulmont.cuba.core.sys.logging.LogControlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import java.io.IOException;
@@ -27,7 +27,7 @@ import static com.haulmont.cuba.web.jmx.JmxConnectionHelper.withConnection;
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean(JmxRemoteLoggingAPI.NAME)
+@Component(JmxRemoteLoggingAPI.NAME)
 public class JmxRemoteLoggingBean implements JmxRemoteLoggingAPI {
 
     private static final Logger log = LoggerFactory.getLogger(JmxRemoteLoggingBean.class);

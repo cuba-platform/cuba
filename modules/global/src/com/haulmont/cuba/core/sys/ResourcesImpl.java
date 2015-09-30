@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.global.Scripting;
 import org.apache.commons.io.IOUtils;
 import org.springframework.core.io.Resource;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.File;
@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(Resources.NAME)
+@Component(Resources.NAME)
 public class ResourcesImpl extends ConfigurationResourceLoader implements Resources {
 
     @Inject

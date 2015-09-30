@@ -22,7 +22,7 @@ import com.haulmont.cuba.core.global.ViewRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.Serializable;
@@ -33,7 +33,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author degtyarjov
  * @version $Id$
  */
-@ManagedBean(DynamicAttributesManagerAPI.NAME)
+@Component(DynamicAttributesManagerAPI.NAME)
 public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
     Logger log = LoggerFactory.getLogger(DynamicAttributesManager.class);
 

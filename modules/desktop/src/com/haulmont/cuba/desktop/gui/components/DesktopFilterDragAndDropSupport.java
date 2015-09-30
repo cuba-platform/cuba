@@ -15,7 +15,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.swing.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -31,7 +31,7 @@ import java.util.Objects;
  * @author gorbunkov
  * @version $Id$
  */
-@ManagedBean
+@Component
 public class DesktopFilterDragAndDropSupport {
 
     private Logger log = LoggerFactory.getLogger(DesktopFilterDragAndDropSupport.class);

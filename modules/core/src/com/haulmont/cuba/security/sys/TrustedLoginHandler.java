@@ -8,7 +8,7 @@ package com.haulmont.cuba.security.sys;
 import com.haulmont.cuba.core.app.ServerConfig;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.regex.Pattern;
 
@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  * @author gorelov
  * @version $Id$
  */
-@ManagedBean(TrustedLoginHandler.NAME)
+@Component(TrustedLoginHandler.NAME)
 public class TrustedLoginHandler {
     public static final String NAME = "cuba_TrustedLoginHandler";
 

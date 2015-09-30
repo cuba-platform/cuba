@@ -7,7 +7,7 @@ package com.haulmont.cuba.client.sys;
 
 import com.haulmont.cuba.core.global.UuidSource;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -15,7 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(UuidSource.NAME)
+@Component(UuidSource.NAME)
 public class UuidSourceClientImpl implements UuidSource {
 
     @Override

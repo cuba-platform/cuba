@@ -20,7 +20,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
@@ -33,7 +33,7 @@ import java.lang.reflect.Proxy;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(Persistence.NAME)
+@Component(Persistence.NAME)
 public class PersistenceImpl implements Persistence {
 
     private volatile boolean softDeletion = true;

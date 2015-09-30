@@ -5,14 +5,14 @@
 
 package com.haulmont.cuba.core.config;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean
+@Component
 public class TestBeanToInjectConfig {
 
     @Inject

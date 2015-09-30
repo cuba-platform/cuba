@@ -21,7 +21,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.inject.Inject;
@@ -38,7 +38,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean(FileUploadingAPI.NAME)
+@Component(FileUploadingAPI.NAME)
 public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
     protected Map<UUID, File> tempFiles = new ConcurrentHashMap<>();

@@ -13,7 +13,7 @@ import com.haulmont.cuba.core.global.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.io.*;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(LockManagerAPI.NAME)
+@Component(LockManagerAPI.NAME)
 public class LockManager implements LockManagerAPI, ClusterListener<LockInfo> {
 
     private static class LockKey {

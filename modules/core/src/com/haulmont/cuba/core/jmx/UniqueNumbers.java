@@ -7,14 +7,14 @@ package com.haulmont.cuba.core.jmx;
 
 import com.haulmont.cuba.core.app.UniqueNumbersAPI;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_UniqueNumbersMBean")
+@Component("cuba_UniqueNumbersMBean")
 public class UniqueNumbers implements UniqueNumbersMBean {
 
     @Inject

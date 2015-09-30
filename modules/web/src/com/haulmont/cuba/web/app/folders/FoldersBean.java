@@ -24,7 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,7 +34,7 @@ import java.util.Map;
  * @author gorbunkov
  * @version $Id$
  */
-@ManagedBean(Folders.NAME)
+@Component(Folders.NAME)
 public class FoldersBean implements Folders {
 
     private static Logger log = LoggerFactory.getLogger(FoldersBean.class);

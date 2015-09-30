@@ -18,7 +18,7 @@ import org.eclipse.persistence.queries.FetchGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.lang.reflect.Method;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_FetchGroupManager")
+@Component("cuba_FetchGroupManager")
 public class FetchGroupManager {
 
     private Logger log = LoggerFactory.getLogger(FetchGroupManager.class);

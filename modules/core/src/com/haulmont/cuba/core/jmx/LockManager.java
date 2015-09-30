@@ -8,14 +8,14 @@ package com.haulmont.cuba.core.jmx;
 import com.haulmont.cuba.core.app.LockManagerAPI;
 import com.haulmont.cuba.core.global.LockInfo;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_LockManagerMBean")
+@Component("cuba_LockManagerMBean")
 public class LockManager implements LockManagerMBean {
 
     @Inject

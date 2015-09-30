@@ -19,7 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
@@ -32,7 +32,7 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(LoginWorker.NAME)
+@Component(LoginWorker.NAME)
 public class LoginWorkerBean implements LoginWorker {
     private Logger log = LoggerFactory.getLogger(LoginWorkerBean.class);
 

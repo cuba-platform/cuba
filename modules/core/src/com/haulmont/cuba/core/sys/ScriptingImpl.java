@@ -11,14 +11,14 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.sys.javacl.JavaClassLoader;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(Scripting.NAME)
+@Component(Scripting.NAME)
 public class ScriptingImpl extends AbstractScripting {
 
     private String[] scriptEngineRoots;

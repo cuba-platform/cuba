@@ -8,7 +8,7 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.*;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.math.BigDecimal;
@@ -24,7 +24,7 @@ import java.util.TimeZone;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(DatatypeFormatter.NAME)
+@Component(DatatypeFormatter.NAME)
 public class DatatypeFormatter {
 
     public static final String NAME = "cuba_DatatypeFormatter";

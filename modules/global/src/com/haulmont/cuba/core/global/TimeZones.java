@@ -8,7 +8,7 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.bali.util.Preconditions;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Date;
@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(TimeZones.NAME)
+@Component(TimeZones.NAME)
 public class TimeZones {
 
     public static final String NAME = "cuba_TimeZones";

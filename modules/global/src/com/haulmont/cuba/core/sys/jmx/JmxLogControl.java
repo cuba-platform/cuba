@@ -17,7 +17,7 @@ import com.haulmont.cuba.core.sys.jmx.exception.UnrecognizedLogThresholdExceptio
 import com.haulmont.cuba.core.sys.logging.LogControlException;
 import com.haulmont.cuba.core.sys.logging.LoggingHelper;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -31,7 +31,7 @@ import java.util.Map;
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean("cuba_JmxLogControlMBean")
+@Component("cuba_JmxLogControlMBean")
 public class JmxLogControl implements JmxLogControlMBean {
 
     @Inject

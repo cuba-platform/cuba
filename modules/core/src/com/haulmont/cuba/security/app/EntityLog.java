@@ -19,7 +19,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -30,7 +30,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(EntityLogAPI.NAME)
+@Component(EntityLogAPI.NAME)
 public class EntityLog implements EntityLogAPI {
 
     protected Logger log = LoggerFactory.getLogger(EntityLog.class);

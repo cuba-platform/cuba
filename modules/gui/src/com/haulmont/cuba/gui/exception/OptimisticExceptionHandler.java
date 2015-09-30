@@ -9,7 +9,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Frame;
 import org.springframework.core.Ordered;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.regex.Matcher;
@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_OptimisticExceptionHandler")
+@Component("cuba_OptimisticExceptionHandler")
 public class OptimisticExceptionHandler extends AbstractGenericExceptionHandler implements Ordered {
 
     @Inject

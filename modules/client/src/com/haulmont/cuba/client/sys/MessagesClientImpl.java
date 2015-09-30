@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.net.SocketException;
 import java.util.List;
@@ -28,7 +28,7 @@ import java.util.Locale;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(Messages.NAME)
+@Component(Messages.NAME)
 public class MessagesClientImpl extends AbstractMessages {
 
     @Inject

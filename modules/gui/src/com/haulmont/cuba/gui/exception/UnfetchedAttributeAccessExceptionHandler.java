@@ -9,7 +9,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Frame;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
  * @author Konstantin Krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_UnfetchedAttributeAccessExceptionHandler")
+@Component("cuba_UnfetchedAttributeAccessExceptionHandler")
 public class UnfetchedAttributeAccessExceptionHandler extends AbstractGenericExceptionHandler {
 
     private static final Pattern PATTERN = Pattern.compile("at (.+)\\._persistence_get_(.+)\\(");

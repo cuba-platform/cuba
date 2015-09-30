@@ -19,7 +19,7 @@ import com.haulmont.cuba.core.sys.logging.LogFileNotFoundException;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -32,7 +32,7 @@ import java.util.*;
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean(LogControl.NAME)
+@Component(LogControl.NAME)
 public class LogControlImpl implements LogControl {
 
     private final org.slf4j.Logger log = LoggerFactory.getLogger(LogControl.class);

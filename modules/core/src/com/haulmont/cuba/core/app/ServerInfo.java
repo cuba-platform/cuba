@@ -10,7 +10,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +19,7 @@ import java.io.InputStream;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(ServerInfoAPI.NAME)
+@Component(ServerInfoAPI.NAME)
 public class ServerInfo implements ServerInfoAPI {
 
     public static final String CUBA_RELEASE_NUMBER_PATH = "/com/haulmont/cuba/core/global/release.number";

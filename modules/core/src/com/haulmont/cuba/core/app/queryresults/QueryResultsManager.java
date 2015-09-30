@@ -21,7 +21,7 @@ import com.haulmont.cuba.security.entity.UserSessionEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.sql.SQLException;
 import java.util.*;
@@ -32,7 +32,7 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(QueryResultsManagerAPI.NAME)
+@Component(QueryResultsManagerAPI.NAME)
 public class QueryResultsManager implements QueryResultsManagerAPI {
 
     @Inject

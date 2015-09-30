@@ -28,7 +28,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.core.io.Resource;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,7 +41,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_PermissionConfig")
+@Component("cuba_PermissionConfig")
 public class PermissionConfig {
 
     @Inject

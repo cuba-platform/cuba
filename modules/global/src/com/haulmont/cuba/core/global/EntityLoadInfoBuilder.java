@@ -11,7 +11,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Collection;
@@ -24,7 +24,7 @@ import java.util.UUID;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(EntityLoadInfoBuilder.NAME)
+@Component(EntityLoadInfoBuilder.NAME)
 public class EntityLoadInfoBuilder {
 
     public static final String NAME = "cuba_EntityLoadInfoBuilder";

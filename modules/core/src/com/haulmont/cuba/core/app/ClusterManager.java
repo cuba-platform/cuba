@@ -16,7 +16,7 @@ import org.jgroups.*;
 import org.jgroups.conf.XmlConfigurator;
 import org.jgroups.jmx.JmxConfigurator;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.management.MBeanServer;
@@ -34,7 +34,7 @@ import java.util.concurrent.Executors;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(ClusterManagerAPI.NAME)
+@Component(ClusterManagerAPI.NAME)
 public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
 
     protected Logger log = LoggerFactory.getLogger(ClusterManager.class);

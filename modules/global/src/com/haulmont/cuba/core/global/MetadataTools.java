@@ -20,7 +20,7 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -40,7 +40,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(MetadataTools.NAME)
+@Component(MetadataTools.NAME)
 public class MetadataTools {
 
     public static final String NAME = "cuba_MetadataTools";

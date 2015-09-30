@@ -8,7 +8,7 @@ package com.haulmont.cuba.web.auth;
 import com.haulmont.cuba.core.global.Configuration;
 import org.springframework.context.ApplicationContext;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
@@ -18,7 +18,7 @@ import javax.inject.Inject;
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean("cuba_AuthProviderFactory")
+@Component("cuba_AuthProviderFactory")
 public class CubaAuthProviderFactory {
 
     @Inject

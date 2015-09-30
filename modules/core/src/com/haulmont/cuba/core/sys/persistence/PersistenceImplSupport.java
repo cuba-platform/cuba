@@ -24,7 +24,7 @@ import org.springframework.transaction.support.ResourceHolderSupport;
 import org.springframework.transaction.support.ResourceHolderSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -32,7 +32,7 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(PersistenceImplSupport.NAME)
+@Component(PersistenceImplSupport.NAME)
 public class PersistenceImplSupport {
 
     public static final String NAME = "cuba_PersistenceImplSupport";

@@ -10,7 +10,7 @@ import com.vaadin.server.BootstrapListener;
 import com.vaadin.server.BootstrapPageResponse;
 import org.jsoup.nodes.Element;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 
 /**
  * Event listener notified when the bootstrap HTML is about to be generated and
@@ -21,7 +21,7 @@ import javax.annotation.ManagedBean;
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean(CubaBootstrapListener.NAME)
+@Component(CubaBootstrapListener.NAME)
 public class CubaBootstrapListener implements BootstrapListener {
 
     public static final String NAME = "cuba_BootstrapListener";

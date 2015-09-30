@@ -12,7 +12,6 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.gui.components.mainwindow.*;
 
-import javax.annotation.ManagedBean;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(ComponentsFactory.NAME)
+@org.springframework.stereotype.Component(ComponentsFactory.NAME)
 public class WebComponentsFactory implements ComponentsFactory {
 
     private static Map<String, Class<? extends Component>> classes = new HashMap<>();

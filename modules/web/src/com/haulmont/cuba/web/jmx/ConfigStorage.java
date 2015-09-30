@@ -9,7 +9,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.List;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_ConfigStorageMBean")
+@Component("cuba_ConfigStorageMBean")
 public class ConfigStorage implements ConfigStorageMBean {
 
     @Override

@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
  * @author krivenko
  * @version $Id$
  */
-@ManagedBean("cuba_StatisticsCounterMBean")
+@Component("cuba_StatisticsCounterMBean")
 public class StatisticsCounter implements StatisticsCounterMBean {
 
     private Logger log = LoggerFactory.getLogger(StatisticsCounter.class);

@@ -12,7 +12,7 @@ import com.haulmont.cuba.gui.components.Frame;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 
 /**
@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
  * @author degtyarjov
  * @version $Id$
  */
-@ManagedBean("cuba_NumericOverflowExceptionHandler")
+@Component("cuba_NumericOverflowExceptionHandler")
 public class NumericOverflowExceptionHandler extends AbstractGenericExceptionHandler {
 
     public NumericOverflowExceptionHandler() {

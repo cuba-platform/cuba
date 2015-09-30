@@ -12,7 +12,7 @@ import com.haulmont.cuba.gui.components.Frame;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.core.Ordered;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_UniqueConstraintViolationHandler")
+@Component("cuba_UniqueConstraintViolationHandler")
 public class UniqueConstraintViolationHandler implements GenericExceptionHandler, Ordered {
 
     @Inject

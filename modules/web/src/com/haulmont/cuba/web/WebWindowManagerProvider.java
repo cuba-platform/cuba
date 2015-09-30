@@ -8,13 +8,13 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean(WindowManagerProvider.NAME)
+@Component(WindowManagerProvider.NAME)
 public class WebWindowManagerProvider implements WindowManagerProvider {
 
     @Override

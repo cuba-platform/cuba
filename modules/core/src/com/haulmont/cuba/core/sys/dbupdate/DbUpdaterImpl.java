@@ -16,7 +16,7 @@ import groovy.lang.Closure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -27,7 +27,7 @@ import java.util.Map;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(DbUpdater.NAME)
+@Component(DbUpdater.NAME)
 public class DbUpdaterImpl extends DbUpdaterEngine {
 
     @Inject

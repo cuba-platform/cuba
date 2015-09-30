@@ -8,7 +8,7 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.Locale;
 
@@ -16,7 +16,7 @@ import java.util.Locale;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(Messages.NAME)
+@Component(Messages.NAME)
 public class MessagesImpl extends AbstractMessages {
 
     @Inject

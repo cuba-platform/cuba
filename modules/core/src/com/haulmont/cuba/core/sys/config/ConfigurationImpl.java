@@ -13,7 +13,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author krivopustov
  * @version $Id
  */
-@ManagedBean(Configuration.NAME)
+@Component(Configuration.NAME)
 public class ConfigurationImpl implements Configuration, BeanFactoryPostProcessor {
 
     protected Map<Class, ConfigHandler> cache = new ConcurrentHashMap<>();

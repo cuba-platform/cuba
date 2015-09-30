@@ -7,7 +7,7 @@ package com.haulmont.cuba.client.sys;
 
 import com.haulmont.cuba.core.app.PersistenceManagerService;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(PersistenceManagerClient.NAME)
+@Component(PersistenceManagerClient.NAME)
 public class PersistenceManagerClient implements PersistenceManagerService {
 
     public static final String NAME = "cuba_PersistenceManagerClient";

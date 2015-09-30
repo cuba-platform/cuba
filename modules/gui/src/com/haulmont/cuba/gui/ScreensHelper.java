@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.FileNotFoundException;
@@ -32,7 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean(ScreensHelper.NAME)
+@Component(ScreensHelper.NAME)
 public class ScreensHelper {
     public static final String NAME = "cuba_ScreensHelper";
     private static final String EMPTY_SCREEN_CAPTION = "";

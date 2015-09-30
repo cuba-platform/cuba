@@ -14,7 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.Map;
 import java.util.UUID;
@@ -39,7 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(Authentication.NAME)
+@Component(Authentication.NAME)
 public class Authentication {
 
     public static final String NAME = "cuba_Authentication";

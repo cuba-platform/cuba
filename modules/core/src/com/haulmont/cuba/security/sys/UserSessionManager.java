@@ -23,7 +23,7 @@ import com.haulmont.cuba.security.global.UserSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.text.ParseException;
@@ -38,7 +38,7 @@ import java.util.UUID;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(UserSessionManager.NAME)
+@Component(UserSessionManager.NAME)
 public class UserSessionManager implements UserSessionFinder {
 
     public static final String NAME = "cuba_UserSessionManager";

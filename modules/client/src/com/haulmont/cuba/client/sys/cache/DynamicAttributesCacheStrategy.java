@@ -16,7 +16,7 @@ import com.haulmont.cuba.security.global.NoUserSessionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -32,7 +32,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @author degtyarjov
  * @version $Id$
  */
-@ManagedBean(DynamicAttributesCacheStrategy.NAME)
+@Component(DynamicAttributesCacheStrategy.NAME)
 public class DynamicAttributesCacheStrategy implements CachingStrategy {
     public static final String NAME = "cuba_DynamicAttributesCacheStrategy";
 

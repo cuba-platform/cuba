@@ -12,7 +12,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.Collections;
 
@@ -20,7 +20,7 @@ import java.util.Collections;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_ScriptingManagerMBean")
+@Component("cuba_ScriptingManagerMBean")
 public class ScriptingManager implements ScriptingManagerMBean {
 
     protected Logger log = LoggerFactory.getLogger(getClass());

@@ -10,7 +10,7 @@ import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -19,7 +19,7 @@ import javax.inject.Inject;
  * @author kovalenko
  * @version $Id$
  */
-@ManagedBean(UserFormatTools.NAME)
+@Component(UserFormatTools.NAME)
 public class UserFormatToolsImpl implements UserFormatTools {
 
     @Inject

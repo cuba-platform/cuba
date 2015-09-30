@@ -8,7 +8,7 @@ package com.haulmont.cuba.security.jmx;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
 import org.apache.commons.lang.text.StrBuilder;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.UUID;
 
@@ -16,7 +16,7 @@ import java.util.UUID;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_UserSessionsMBean")
+@Component("cuba_UserSessionsMBean")
 public class UserSessions implements UserSessionsMBean {
 
     @Inject

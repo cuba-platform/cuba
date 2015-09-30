@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import javax.mail.Session;
 import java.util.Properties;
@@ -19,7 +19,7 @@ import java.util.Properties;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(CubaMailSender.NAME)
+@Component(CubaMailSender.NAME)
 public class CubaMailSender extends JavaMailSenderImpl {
 
     public static final String NAME = "cuba_MailSender";

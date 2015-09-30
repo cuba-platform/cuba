@@ -22,7 +22,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.springframework.core.io.Resource;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
  * @author Alexander Budarov
  * @version $Id$
  */
-@ManagedBean(DesktopThemeLoader.NAME)
+@Component(DesktopThemeLoader.NAME)
 public class DesktopThemeLoaderImpl implements DesktopThemeLoader {
 
     private static final String BORDER_TAG = "border";

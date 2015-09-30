@@ -15,7 +15,7 @@ import com.haulmont.cuba.security.global.NoUserSessionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -26,7 +26,7 @@ import java.util.concurrent.ExecutionException;
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean(SessionMessagesNotifier.NAME)
+@Component(SessionMessagesNotifier.NAME)
 public class SessionMessagesNotifier {
 
     public final static String NAME = "cuba_SessionMessagesNotifier";

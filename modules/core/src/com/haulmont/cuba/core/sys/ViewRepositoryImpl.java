@@ -7,12 +7,12 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.global.ViewRepository;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(ViewRepository.NAME)
+@Component(ViewRepository.NAME)
 public class ViewRepositoryImpl extends AbstractViewRepository implements ViewRepository {
 }

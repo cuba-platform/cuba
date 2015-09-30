@@ -16,7 +16,7 @@ import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
@@ -25,7 +25,7 @@ import java.util.*;
  * @author degtyarjov
  * @version $Id$
  */
-@ManagedBean(DynamicAttributesGuiTools.NAME)
+@Component(DynamicAttributesGuiTools.NAME)
 public class DynamicAttributesGuiTools {
     public static final String NAME = "cuba_DynamicAttributesGuiTools";
 

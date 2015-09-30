@@ -20,7 +20,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.reflection.ExternalizableConverter;
 import org.dom4j.*;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Date;
@@ -34,7 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean(EntitySnapshotAPI.NAME)
+@Component(EntitySnapshotAPI.NAME)
 public class EntitySnapshotManager implements EntitySnapshotAPI {
 
     @Inject

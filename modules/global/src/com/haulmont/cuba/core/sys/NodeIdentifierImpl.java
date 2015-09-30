@@ -10,13 +10,13 @@ import com.haulmont.cuba.core.global.NodeIdentifier;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean(NodeIdentifier.NAME)
+@Component(NodeIdentifier.NAME)
 public class NodeIdentifierImpl implements NodeIdentifier {
     @Override
     public String getNodeName() {

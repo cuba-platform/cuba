@@ -11,7 +11,7 @@ import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.sys.AbstractScripting;
 import com.haulmont.cuba.core.sys.javacl.JavaClassLoader;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
@@ -19,7 +19,7 @@ import javax.inject.Inject;
  *
  * @author krivopustov
  */
-@ManagedBean(Scripting.NAME)
+@Component(Scripting.NAME)
 public class ScriptingClientImpl extends AbstractScripting {
 
     private String[] scriptEngineRoots;

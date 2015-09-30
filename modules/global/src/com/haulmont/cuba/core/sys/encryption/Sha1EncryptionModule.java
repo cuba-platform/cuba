@@ -10,7 +10,7 @@ import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.nio.charset.StandardCharsets;
@@ -24,7 +24,7 @@ import java.util.UUID;
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean("cuba_Sha1EncryptionModule")
+@Component("cuba_Sha1EncryptionModule")
 public class Sha1EncryptionModule implements EncryptionModule {
 
     protected static final String ALGORITHM = "PBKDF2WithHmacSHA1";

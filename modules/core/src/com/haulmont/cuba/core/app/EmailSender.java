@@ -22,7 +22,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.mail.Message;
@@ -36,7 +36,7 @@ import java.nio.charset.StandardCharsets;
  * @author Alexander Budarov
  * @version $Id$
  */
-@ManagedBean(EmailSenderAPI.NAME)
+@Component(EmailSenderAPI.NAME)
 public class EmailSender implements EmailSenderAPI {
 
     private Logger log = LoggerFactory.getLogger(EmailSender.class);

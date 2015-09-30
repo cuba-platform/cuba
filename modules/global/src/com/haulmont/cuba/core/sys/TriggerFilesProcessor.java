@@ -12,7 +12,7 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.IOException;
@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(TriggerFilesProcessor.NAME)
+@Component(TriggerFilesProcessor.NAME)
 public class TriggerFilesProcessor {
     public static final String NAME = "cuba_TriggerFilesProcessor";
 

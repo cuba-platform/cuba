@@ -12,7 +12,7 @@ import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import com.haulmont.cuba.core.sys.MetadataBuildSupport;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.TimeZone;
@@ -20,12 +20,12 @@ import java.util.TimeZone;
 /**
  * Standard implementation of {@link ServerInfoService} interface.
  *
- * <p>Annotated with <code>@ManagedBean</code> instead of <code>@Service</code> to be available before user login.</p>
+ * <p>Annotated with <code>@Component</code> instead of <code>@Service</code> to be available before user login.</p>
  *
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(ServerInfoService.NAME)
+@Component(ServerInfoService.NAME)
 public class ServerInfoServiceBean implements ServerInfoService {
 
     @Inject

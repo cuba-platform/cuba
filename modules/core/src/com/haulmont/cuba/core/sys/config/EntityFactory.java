@@ -16,14 +16,14 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(TypeFactory.ENTITY_FACTORY_BEAN_NAME)
+@Component(TypeFactory.ENTITY_FACTORY_BEAN_NAME)
 public class EntityFactory extends TypeFactory {
 
     @Inject

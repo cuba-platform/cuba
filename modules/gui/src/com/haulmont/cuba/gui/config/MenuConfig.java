@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.dom4j.Element;
 import org.springframework.core.io.Resource;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +35,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(MenuConfig.NAME)
+@Component(MenuConfig.NAME)
 public class MenuConfig {
 
     public static final String NAME = "cuba_MenuConfig";

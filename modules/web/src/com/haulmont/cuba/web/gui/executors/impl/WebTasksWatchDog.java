@@ -10,7 +10,7 @@ import com.haulmont.cuba.gui.executors.impl.TaskHandlerImpl;
 import com.haulmont.cuba.gui.executors.impl.TasksWatchDog;
 import com.haulmont.cuba.web.WebConfig;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.concurrent.TimeUnit;
 
@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean(TasksWatchDog.NAME)
+@Component(TasksWatchDog.NAME)
 public class WebTasksWatchDog extends TasksWatchDog {
 
     @Inject

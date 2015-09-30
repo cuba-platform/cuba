@@ -13,7 +13,7 @@ import com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondit
 import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
 import org.apache.commons.lang.RandomStringUtils;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +22,7 @@ import java.util.Map;
  * @author gorbunkov
  * @version $Id$
  */
-@ManagedBean(ConditionParamBuilder.NAME)
+@Component(ConditionParamBuilder.NAME)
 public class ConditionParamBuilderImpl implements ConditionParamBuilder{
 
     protected Map<Class, Builder> builders = new HashMap<>();

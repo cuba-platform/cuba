@@ -7,7 +7,7 @@ package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.cuba.core.entity.Entity;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -18,7 +18,7 @@ import static com.haulmont.cuba.gui.components.filter.Op.*;
  * @author gorbunkov
  * @version $Id$
  */
-@ManagedBean(OpManager.NAME)
+@Component(OpManager.NAME)
 public class OpManagerImpl implements OpManager {
 
     @Override

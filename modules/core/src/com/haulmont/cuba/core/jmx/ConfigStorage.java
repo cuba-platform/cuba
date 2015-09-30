@@ -12,7 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.text.StrBuilder;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,7 +23,7 @@ import java.util.Map;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_ConfigStorageMBean")
+@Component("cuba_ConfigStorageMBean")
 public class ConfigStorage implements ConfigStorageMBean {
 
     @Inject

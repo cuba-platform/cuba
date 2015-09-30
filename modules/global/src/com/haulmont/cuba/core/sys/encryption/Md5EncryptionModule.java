@@ -10,14 +10,14 @@ import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean("cuba_Md5EncryptionModule")
+@Component("cuba_Md5EncryptionModule")
 public class Md5EncryptionModule implements EncryptionModule {
 
     @Override

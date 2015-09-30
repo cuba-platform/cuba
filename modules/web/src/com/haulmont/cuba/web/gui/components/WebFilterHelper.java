@@ -40,7 +40,6 @@ import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 
-import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
@@ -49,7 +48,7 @@ import java.util.*;
  * @author gorbunkov
  * @version $Id$
  */
-@ManagedBean(FilterHelper.NAME)
+@org.springframework.stereotype.Component(FilterHelper.NAME)
 public class WebFilterHelper implements FilterHelper {
 
     @Inject

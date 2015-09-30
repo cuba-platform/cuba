@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.sys.QueryMacroHandler;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.context.annotation.Scope;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_TimeTodayQueryMacroHandler")
+@Component("cuba_TimeTodayQueryMacroHandler")
 @Scope("prototype")
 public class TimeTodayQueryMacroHandler implements QueryMacroHandler {
 

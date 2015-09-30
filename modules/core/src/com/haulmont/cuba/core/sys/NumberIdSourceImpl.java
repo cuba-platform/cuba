@@ -8,14 +8,14 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.cuba.core.app.NumberIdWorker;
 import com.haulmont.cuba.core.global.NumberIdSource;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(NumberIdSource.NAME)
+@Component(NumberIdSource.NAME)
 public class NumberIdSourceImpl implements NumberIdSource {
 
     @Inject

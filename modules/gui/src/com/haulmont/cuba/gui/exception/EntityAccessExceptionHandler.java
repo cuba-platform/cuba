@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Frame;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
@@ -20,7 +20,7 @@ import javax.inject.Inject;
  * @author pavlov
  * @version $Id$
  */
-@ManagedBean("cuba_EntityAccessExceptionHandler")
+@Component("cuba_EntityAccessExceptionHandler")
 public class EntityAccessExceptionHandler extends AbstractGenericExceptionHandler {
 
     @Inject

@@ -19,7 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.io.StringReader;
 import java.sql.ResultSet;
@@ -30,7 +30,7 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_EntityLogItemDetachListener")
+@Component("cuba_EntityLogItemDetachListener")
 public class EntityLogItemDetachListener implements BeforeDetachEntityListener<EntityLogItem> {
 
     private Logger log = LoggerFactory.getLogger(getClass());

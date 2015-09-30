@@ -9,7 +9,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.annotation.ExtendedBy;
 import com.haulmont.cuba.core.entity.annotation.Extends;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.HashMap;
@@ -21,7 +21,7 @@ import java.util.Map;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(ExtendedEntities.NAME)
+@Component(ExtendedEntities.NAME)
 public class ExtendedEntities {
 
     public static final String NAME = "cuba_ExtendedEntities";

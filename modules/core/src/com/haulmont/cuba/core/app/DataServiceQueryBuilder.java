@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -29,7 +29,7 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(DataServiceQueryBuilder.NAME)
+@Component(DataServiceQueryBuilder.NAME)
 @Scope("prototype")
 public class DataServiceQueryBuilder {
 

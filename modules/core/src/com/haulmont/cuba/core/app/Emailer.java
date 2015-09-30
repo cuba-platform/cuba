@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.mail.MailSendException;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.inject.Inject;
@@ -39,7 +39,7 @@ import java.util.concurrent.RejectedExecutionException;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(EmailerAPI.NAME)
+@Component(EmailerAPI.NAME)
 public class Emailer implements EmailerAPI {
 
     protected static final String BODY_FILE_EXTENSION = "txt";

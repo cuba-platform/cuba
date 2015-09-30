@@ -7,14 +7,14 @@ package com.haulmont.cuba.web.jmx;
 
 import com.haulmont.cuba.web.app.WebStatisticsAccumulator;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
  * @author krivenko
  * @version $Id$
  */
-@ManagedBean("cuba_StatisticsCounterMBean")
+@Component("cuba_StatisticsCounterMBean")
 public class StatisticsCounter implements StatisticsCounterMBean {
 
     @Inject

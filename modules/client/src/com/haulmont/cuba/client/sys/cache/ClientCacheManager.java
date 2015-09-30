@@ -8,7 +8,7 @@ package com.haulmont.cuba.client.sys.cache;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.AppContext;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,7 +23,7 @@ import java.util.concurrent.locks.Lock;
  * @version $Id$
  */
 
-@ManagedBean(ClientCacheManager.NAME)
+@Component(ClientCacheManager.NAME)
 public class ClientCacheManager {
     public static final String NAME = "cuba_ClientCacheManager";
 

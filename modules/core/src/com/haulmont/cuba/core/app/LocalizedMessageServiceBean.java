@@ -7,7 +7,7 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.global.Messages;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.Locale;
 
@@ -15,7 +15,7 @@ import java.util.Locale;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(LocalizedMessageService.NAME)
+@Component(LocalizedMessageService.NAME)
 public class LocalizedMessageServiceBean implements LocalizedMessageService {
 
     @Inject

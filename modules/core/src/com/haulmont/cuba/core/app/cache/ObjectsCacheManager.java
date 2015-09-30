@@ -9,7 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -20,7 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean(ObjectsCacheManagerAPI.NAME)
+@Component(ObjectsCacheManagerAPI.NAME)
 public class ObjectsCacheManager implements ObjectsCacheManagerAPI {
 
     protected ConcurrentMap<String, ObjectsCacheInstance> instances = new ConcurrentHashMap<>();

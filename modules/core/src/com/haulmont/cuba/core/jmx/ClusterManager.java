@@ -10,14 +10,14 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_ClusterManagerMBean")
+@Component("cuba_ClusterManagerMBean")
 public class ClusterManager implements ClusterManagerMBean {
 
     protected Logger log = LoggerFactory.getLogger(getClass());

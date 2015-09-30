@@ -10,14 +10,14 @@ import com.haulmont.cuba.core.app.cache.ObjectsCacheInstance;
 import com.haulmont.cuba.core.app.cache.ObjectsCacheManagerAPI;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_ObjectsCacheManagerMBean")
+@Component("cuba_ObjectsCacheManagerMBean")
 public class ObjectsCacheManager implements ObjectsCacheManagerMBean {
 
     @Inject

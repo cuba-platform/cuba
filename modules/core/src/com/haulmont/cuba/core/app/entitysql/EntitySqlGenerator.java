@@ -20,7 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -36,7 +36,7 @@ import static java.lang.String.valueOf;
  * @author degtyarjov
  * @version $Id$
  */
-@ManagedBean(EntitySqlGenerator.NAME)
+@Component(EntitySqlGenerator.NAME)
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class EntitySqlGenerator {
 

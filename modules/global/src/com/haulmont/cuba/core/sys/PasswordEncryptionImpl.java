@@ -11,7 +11,7 @@ import com.haulmont.cuba.core.sys.encryption.EncryptionModule;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.codec.binary.Base64;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -23,7 +23,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean(PasswordEncryption.NAME)
+@Component(PasswordEncryption.NAME)
 public class PasswordEncryptionImpl implements PasswordEncryption {
 
     private EncryptionModule encryptionModule;

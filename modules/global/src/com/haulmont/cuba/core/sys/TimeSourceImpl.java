@@ -7,7 +7,7 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.global.TimeSource;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import java.util.Date;
 
 /**
@@ -16,7 +16,7 @@ import java.util.Date;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(TimeSource.NAME)
+@Component(TimeSource.NAME)
 public class TimeSourceImpl implements TimeSource {
 
     @Override
