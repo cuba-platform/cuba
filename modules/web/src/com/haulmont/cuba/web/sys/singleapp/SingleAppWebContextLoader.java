@@ -20,7 +20,6 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import javax.servlet.*;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -91,16 +90,22 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
 
                 return new PathMatchingResourcePatternResolver(this) {
                     @Override
-                    protected Set<Resource> doFindPathMatchingJarResources(Resource rootDirResource, String subPattern) throws IOException {
-                        String url = rootDirResource.getURL().toString();
-                        Matcher matcher = jarNamePattern.matcher(url);
-                        if (matcher.find()) {
-                            String jarName = matcher.group(1);
-                            if (dependencyJars.contains(jarName)) {
-                                return super.doFindPathMatchingJarResources(rootDirResource, subPattern);
-                            }
-                        }
-                        return Collections.emptySet();
+                    public Resource[] getResources(String locationPattern) throws IOException {
+                        Resource[] resources = super.getResources(locationPattern);
+                        return Arrays.stream(resources).filter(resource -> {
+                                    try {
+                                        String url = resource.getURL().toString();
+                                        Matcher matcher = jarNamePattern.matcher(url);
+                                        if (matcher.find()) {
+                                            String jarName = matcher.group(1);
+                                            return dependencyJars.contains(jarName);
+                                        }
+                                        return true;
+                                    } catch (IOException e) {
+                                        throw new RuntimeException("An error occurred while looking for resources", e);
+                                    }
+                                }
+                        ).toArray(Resource[]::new);
                     }
                 };
             }

@@ -10,7 +10,6 @@ import com.haulmont.cuba.core.sys.AppContextLoader;
 import com.haulmont.cuba.core.sys.CubaCoreApplicationContext;
 import com.haulmont.cuba.core.sys.remoting.RemotingServlet;
 import org.apache.commons.lang.StringUtils;
-import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -74,16 +73,22 @@ public class SingleAppCoreContextLoader extends AppContextLoader {
 
                 return new PathMatchingResourcePatternResolver(this) {
                     @Override
-                    protected Set<Resource> doFindPathMatchingJarResources(Resource rootDirResource, String subPattern) throws IOException {
-                        String url = rootDirResource.getURL().toString();
-                        Matcher matcher = jarNamePattern.matcher(url);
-                        if (matcher.find()) {
-                            String jarName = matcher.group(1);
-                            if (dependencyJars.contains(jarName)) {
-                                return super.doFindPathMatchingJarResources(rootDirResource, subPattern);
-                            }
-                        }
-                        return Collections.emptySet();
+                    public Resource[] getResources(String locationPattern) throws IOException {
+                        Resource[] resources = super.getResources(locationPattern);
+                        return Arrays.stream(resources).filter(resource -> {
+                                    try {
+                                        String url = resource.getURL().toString();
+                                        Matcher matcher = jarNamePattern.matcher(url);
+                                        if (matcher.find()) {
+                                            String jarName = matcher.group(1);
+                                            return dependencyJars.contains(jarName);
+                                        }
+                                        return true;
+                                    } catch (IOException e) {
+                                        throw new RuntimeException("An error occurred while looking for resources", e);
+                                    }
+                                }
+                        ).toArray(Resource[]::new);
                     }
                 };
             }
