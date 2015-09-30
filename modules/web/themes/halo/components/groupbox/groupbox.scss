@@ -88,6 +88,17 @@
     white-space: nowrap;
   }
 
+  .#{$primary-stylename}.v-disabled {
+    @include opacity($v-disabled-opacity);
+
+    .#{$primary-stylename}-expander {
+      cursor: default;
+    }
+    .#{$primary-stylename}-caption-text {
+      cursor: default;
+    }
+  }
+
   .#{$primary-stylename}-caption-end-deco {
     display: inline-block;
     height: round(2*$v-unit-size/3 + $v-unit-size/10);

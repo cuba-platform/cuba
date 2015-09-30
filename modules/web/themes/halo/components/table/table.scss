@@ -140,6 +140,10 @@
     }
   }
 
+  .#{$primary-stylename}.v-disabled {
+    @include opacity($v-disabled-opacity);
+  }
+
   .cuba-table-cell-textcut .cuba-table-clickable-cell {
     cursor: $v-link-cursor;
     color: $v-link-font-color;

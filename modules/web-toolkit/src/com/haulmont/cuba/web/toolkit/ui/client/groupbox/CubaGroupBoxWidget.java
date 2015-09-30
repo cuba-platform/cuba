@@ -9,6 +9,7 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.vaadin.client.ui.VPanel;
 
@@ -16,13 +17,15 @@ import com.vaadin.client.ui.VPanel;
  * @author artamonov
  * @version $Id$
  */
-public class CubaGroupBoxWidget extends VPanel {
+public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
 
     public static final String CLASSNAME = "cuba-groupbox";
 
     protected boolean expanded = true;
 
     protected boolean collapsable = false;
+
+    private boolean enabled = true;
 
     protected ExpandHandler expandHandler;
 
@@ -118,8 +121,20 @@ public class CubaGroupBoxWidget extends VPanel {
     }
 
     @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        if (isEnabled() != enabled) {
+            this.enabled = enabled;
+        }
+    }
+
+    @Override
     public void onBrowserEvent(Event event) {
-        if (collapsable && DOM.eventGetType(event) == Event.ONCLICK
+        if (collapsable && DOM.eventGetType(event) == Event.ONCLICK && isEnabled()
                 && (DOM.eventGetTarget(event) == expander || DOM.eventGetTarget(event) == captionNode.getChild(1))) {
             toggleExpanded(event);
         } else {

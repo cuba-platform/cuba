@@ -32,7 +32,7 @@ import static com.haulmont.cuba.web.toolkit.ui.client.Tools.isAnyModifierKeyPres
  * @author devyatkin
  * @version $Id$
  */
-public class CubaScrollTableWidget extends VScrollTable implements ShortcutActionHandler.ShortcutActionHandlerOwner {
+public class CubaScrollTableWidget extends VScrollTable implements ShortcutActionHandler.ShortcutActionHandlerOwner, HasEnabled {
 
     public static final String CUBA_TABLE_CLICKABLE_CELL_STYLE = "cuba-table-clickable-cell";
     public static final String CUBA_TABLE_CLICKABLE_TEXT_STYLE = "cuba-table-clickable-text";
@@ -297,6 +297,18 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
         }
     }
 
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        if (this.isEnabled() != enabled) {
+            this.enabled = enabled;
+        }
+    }
+
     protected class CubaScrollTableHead extends TableHead {
 
         protected final SimplePanel presentationsEditIcon = GWT.create(SimplePanel.class);
@@ -316,7 +328,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
         public void onBrowserEvent(Event event) {
             super.onBrowserEvent(event);
 
-            if (event.getEventTarget().cast() == presentationsEditIcon.getElement()) {
+            if (event.getEventTarget().cast() == presentationsEditIcon.getElement() && isEnabled()) {
                 presentationsEditorPopup = new VOverlay();
                 presentationsEditorPopup.setStyleName("cuba-table-presentations-editor");
                 presentationsEditorPopup.setOwner(CubaScrollTableWidget.this);

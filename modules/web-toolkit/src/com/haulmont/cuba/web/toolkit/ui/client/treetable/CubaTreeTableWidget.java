@@ -34,7 +34,7 @@ import static com.haulmont.cuba.web.toolkit.ui.client.table.CubaScrollTableWidge
  * @author artamonov
  * @version $Id$
  */
-public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHandler.ShortcutActionHandlerOwner {
+public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHandler.ShortcutActionHandlerOwner, HasEnabled {
 
     protected static final String WIDGET_CELL_CLASSNAME = "widget-container";
 
@@ -288,6 +288,18 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
         }
     }
 
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        if (this.isEnabled() != enabled) {
+            this.enabled = enabled;
+        }
+    }
+
     protected class CubaTreeTableTableHead extends TableHead {
 
         protected final SimplePanel presentationsEditIcon = GWT.create(SimplePanel.class);
@@ -307,7 +319,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
         public void onBrowserEvent(Event event) {
             super.onBrowserEvent(event);
 
-            if (event.getEventTarget().cast() == presentationsEditIcon.getElement()) {
+            if (event.getEventTarget().cast() == presentationsEditIcon.getElement() && isEnabled()) {
                 presentationsEditorPopup = new VOverlay();
                 presentationsEditorPopup.setStyleName("cuba-table-presentations-editor");
                 presentationsEditorPopup.setOwner(CubaTreeTableWidget.this);
