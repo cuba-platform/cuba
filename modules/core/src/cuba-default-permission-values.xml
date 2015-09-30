@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2008-2015 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<default-permission-values xmlns="http://schemas.haulmont.com/cuba/default-permission-values.xsd">
+
+    <!-- Screens -->
+    <permission target="addCondition" value="1" type="10"/>
+    <permission target="backgroundWorkProgressWindow" value="1" type="10"/>
+    <permission target="backgroundWorkWindow" value="1" type="10"/>
+    <permission target="customConditionEditor" value="1" type="10"/>
+    <permission target="customConditionFrame" value="1" type="10"/>
+    <permission target="dynamicAttributesConditionEditor" value="1" type="10"/>
+    <permission target="dynamicAttributesConditionFrame" value="1" type="10"/>
+    <permission target="editWindowActions" value="1" type="10"/>
+    <permission target="extendedEditWindowActions" value="1" type="10"/>
+    <permission target="fileUploadDialog" value="1" type="10"/>
+    <permission target="filterEditor" value="1" type="10"/>
+    <permission target="filterSelect" value="1" type="10"/>
+    <permission target="groupConditionFrame" value="1" type="10"/>
+    <permission target="inListParamEditor" value="1" type="10"/>
+    <permission target="layoutAnalyzer" value="1" type="10"/>
+    <permission target="mainWindow" value="1" type="10"/>
+    <permission target="multiuploadDialog" value="1" type="10"/>
+    <permission target="propertyConditionFrame" value="1" type="10"/>
+    <permission target="runtimePropertiesFrame" value="1" type="10"/>
+    <permission target="saveFilter" value="1" type="10"/>
+    <permission target="saveSetInFolder" value="1" type="10"/>
+
+    <!-- Entities -->
+    <permission target="sec$Filter:read" value="1" type="20"/>
+
+    <!-- Specific -->
+    <permission target="cuba.gui.loginToClient" value="1" type="40"/>
+
+</default-permission-values>

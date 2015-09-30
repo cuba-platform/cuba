@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2008-2015 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<xs:schema
+        targetNamespace="http://schemas.haulmont.com/cuba/default-permission-values.xsd"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns="http://schemas.haulmont.com/cuba/default-permission-values.xsd"
+        elementFormDefault="qualified"
+        attributeFormDefault="unqualified"
+        >
+
+    <xs:element name="default-permission-values">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="permission" type="permissionType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="permissionType">
+        <xs:attribute name="target" type="xs:string" use="required"/>
+        <xs:attribute name="value" type="xs:int" use="required"/>
+        <xs:attribute name="type" type="xs:int" use="required"/>
+    </xs:complexType>
+</xs:schema>

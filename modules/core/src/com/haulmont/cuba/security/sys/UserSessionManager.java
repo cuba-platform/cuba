@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.global.UuidSource;
+import com.haulmont.cuba.core.sys.DefaultPermissionValuesConfig;
 import com.haulmont.cuba.core.sys.UserSessionFinder;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.entity.*;
@@ -56,6 +57,9 @@ public class UserSessionManager implements UserSessionFinder {
 
     @Inject
     protected Metadata metadata;
+
+    @Inject
+    protected DefaultPermissionValuesConfig defaultPermissionValuesConfig;
 
     private static Logger log = LoggerFactory.getLogger(UserSessionManager.class);
 
@@ -121,6 +125,13 @@ public class UserSessionManager implements UserSessionFinder {
                 }
             }
         }
+
+        defaultPermissionValuesConfig.getDefaultPermissionValues().forEach((target, permission) -> {
+            if (session.getPermissionValue(permission.getType(), permission.getTarget()) == null) {
+                session.addPermission(permission.getType(), permission.getTarget(),
+                        convertToExtendedEntityTarget(permission), permission.getValue());
+            }
+        });
     }
 
     protected String convertToExtendedEntityTarget(Permission permission) {
