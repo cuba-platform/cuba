@@ -16,7 +16,6 @@ import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import javax.swing.*;
 import java.awt.event.KeyAdapter;
@@ -28,7 +27,7 @@ import java.util.UUID;
  * @author gorbunkov
  * @version $Id$
  */
-@Component(FilterHelper.NAME)
+@org.springframework.stereotype.Component(FilterHelper.NAME)
 public class DesktopFilterHelper implements FilterHelper {
 
     private Logger log = LoggerFactory.getLogger(DesktopFilterHelper.class);
