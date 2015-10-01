@@ -57,6 +57,8 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     protected String debugId;
 
+    protected String styleName;
+
     protected C getImpl() {
         return impl;
     }
@@ -236,13 +238,14 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     @Override
     public String getStyleName() {
-        return null;
+        return styleName;
     }
 
     @Override
     public void setStyleName(String name) {
         DesktopTheme theme = App.getInstance().getTheme();
         if (theme != null) {
+            this.styleName = name;
             theme.applyStyle(this, name);
         }
     }
