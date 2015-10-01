@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.core.jmx;
 
+import com.haulmont.cuba.security.app.Authenticated;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedOperationParameter;
 import org.springframework.jmx.export.annotation.ManagedOperationParameters;
@@ -60,4 +61,11 @@ public interface ConfigStorageMBean {
 
     @ManagedOperation(description = "Clear cache of DB-based properties")
     void clearCache();
+
+    @ManagedOperation(description = "Invoke a getter method of configuration interface and print the result")
+    @ManagedOperationParameters({
+            @ManagedOperationParameter(name = "className", description = "Fully qualified name of a configuration interface"),
+            @ManagedOperationParameter(name = "value", description = "Getter method name")
+    })
+    String getConfigValue(String classFQN, String methodName);
 }

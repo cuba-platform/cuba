@@ -5,11 +5,14 @@
 
 package com.haulmont.cuba.web.jmx;
 
+import com.haulmont.cuba.core.config.ConfigStorageCommon;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,6 +24,9 @@ import java.util.List;
 @Component("cuba_ConfigStorageMBean")
 public class ConfigStorage implements ConfigStorageMBean {
 
+    @Inject
+    protected ConfigStorageCommon configStorageCommon;
+
     @Override
     public String printAppProperties() {
         return printAppProperties(null);
@@ -28,32 +34,22 @@ public class ConfigStorage implements ConfigStorageMBean {
 
     @Override
     public String printAppProperties(String prefix) {
-        List<String> list = new ArrayList<String>();
-        for (String name : AppContext.getPropertyNames()) {
-            if (prefix == null || name.startsWith(prefix)) {
-                list.add(name + "=" + AppContext.getProperty(name));
-            }
-        }
-        Collections.sort(list);
-        return new StrBuilder().appendWithSeparators(list, "\n").toString();
+        return configStorageCommon.printAppProperties(prefix);
     }
 
     @Override
     public String getAppProperty(String name) {
-        if (StringUtils.isBlank(name))
-            return "Enter a property name";
-
-        return name + "=" + AppContext.getProperty(name);
+        return configStorageCommon.getAppProperty(name);
     }
 
     @Override
     public String setAppProperty(String name, String value) {
-        if (StringUtils.isBlank(name))
-            return "Enter a property name";
-        if (StringUtils.isBlank(value))
-            return "Enter a property value";
-
-        AppContext.setProperty(name, value);
-        return "Property " + name + " set to " + value;
+        return configStorageCommon.setAppProperty(name, value);
     }
+
+    @Override
+    public String getConfigValue(String classFQN, String methodName) {
+        return configStorageCommon.getConfigValue(classFQN, methodName);
+    }
+
 }

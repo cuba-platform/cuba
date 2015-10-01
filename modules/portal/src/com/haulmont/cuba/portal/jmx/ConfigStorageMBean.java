@@ -34,4 +34,11 @@ public interface ConfigStorageMBean {
             @ManagedOperationParameter(name = "value", description = "")
     })
     String setAppProperty(String name, String value);
+
+    @ManagedOperation(description = "Invoke a getter method of configuration interface and print the result")
+    @ManagedOperationParameters({
+            @ManagedOperationParameter(name = "className", description = "Fully qualified name of a configuration interface"),
+            @ManagedOperationParameter(name = "value", description = "Getter method name")
+    })
+    String getConfigValue(String classFQN, String methodName);
 }
