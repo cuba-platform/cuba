@@ -103,7 +103,7 @@ public class SingleAppCoreContextLoader extends AppContextLoader {
     protected static class SetClassLoaderFilter implements Filter {
         @Override
         public void init(FilterConfig filterConfig) throws ServletException {
-
+            //do nothing
         }
 
         @Override
@@ -114,7 +114,7 @@ public class SingleAppCoreContextLoader extends AppContextLoader {
 
         @Override
         public void destroy() {
-
+            //do nothing
         }
     }
 }
