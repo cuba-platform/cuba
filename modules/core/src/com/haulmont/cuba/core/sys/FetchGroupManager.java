@@ -353,7 +353,7 @@ public class FetchGroupManager {
             FetchGroupField that = (FetchGroupField) o;
 
             if (!metaClass.equals(that.metaClass)) return false;
-            if (!metaProperty.equals(that.metaProperty)) return false;
+            if (!metaPropertyPath.equals(that.metaPropertyPath)) return false;
 
             return true;
         }
@@ -361,7 +361,7 @@ public class FetchGroupManager {
         @Override
         public int hashCode() {
             int result = metaClass.hashCode();
-            result = 31 * result + metaProperty.hashCode();
+            result = 31 * result + metaPropertyPath.hashCode();
             return result;
         }
 
