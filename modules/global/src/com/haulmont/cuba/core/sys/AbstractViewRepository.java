@@ -245,7 +245,14 @@ public class AbstractViewRepository implements ViewRepository {
         try {
             checkInitialized();
             Map<String, View> viewMap = storage.get(metaClass);
-            return viewMap != null ? viewMap.keySet() : Collections.<String>emptyList();
+            if (viewMap != null && !viewMap.isEmpty()) {
+                Set<String> keySet = new HashSet<>(viewMap.keySet());
+                keySet.remove(View.LOCAL);
+                keySet.remove(View.MINIMAL);
+                return keySet;
+            } else {
+                return Collections.<String>emptyList();
+            }
         } finally {
             lock.readLock().unlock();
         }
