@@ -80,6 +80,13 @@ public class AddConditionWindow extends AbstractWindow {
                 _search(text);
             }
         });
+
+        filterHelper.addShortcutListener(treeFilter, new FilterHelper.ShortcutListener("search", new KeyCombination(KeyCombination.Key.ENTER, null)) {
+            @Override
+            public void handleShortcutPressed() {
+                search();
+            }
+        });
     }
 
     public void expandTreeRoots() {

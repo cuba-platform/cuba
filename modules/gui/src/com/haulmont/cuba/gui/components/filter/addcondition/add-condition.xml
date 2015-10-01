@@ -8,7 +8,6 @@
                 datasourceClass="com.haulmont.cuba.gui.components.filter.addcondition.ConditionDescriptorsDs"/>
     </dsContext>
     <actions>
-        <action id="search" invoke="search" shortcut="ENTER" icon="icons/search.png" caption="mainMsg://filter.addCondition.searchBtn.caption"/>
         <action id="select" invoke="select" shortcut="CTRL-ENTER" icon="icons/ok.png" caption="mainMsg://actions.Select"/>
         <action id="cancel" invoke="cancel" shortcut="ESCAPE" icon="icons/cancel.png" caption="mainMsg://actions.Cancel"/>
     </actions>
@@ -16,7 +15,7 @@
         <hbox spacing="true" expand="treeFilter" width="100%">
             <label value="mainMsg://filter.addCondition.filter" align="MIDDLE_LEFT"/>
             <textField id="treeFilter"/>
-            <button id="searchBtn" action="search"/>
+            <button id="searchBtn" invoke="search" icon="icons/search.png"/>
         </hbox>
         <tree id="tree" width="100%" multiselect="true">
             <treechildren datasource="conditionDescriptorsDs" captionProperty="treeCaption"/>
