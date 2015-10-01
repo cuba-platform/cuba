@@ -24,12 +24,15 @@ public class UnfetchedAttributeAccessExceptionHandler extends AbstractGenericExc
     private static final Pattern PATTERN = Pattern.compile("at (.+)\\._persistence_get_(.+)\\(");
 
     public UnfetchedAttributeAccessExceptionHandler() {
-        super("org.eclipse.persistence.exceptions.ValidationException");
+        super("com.haulmont.cuba.core.global.IllegalEntityStateException",
+                "org.eclipse.persistence.exceptions.ValidationException");
     }
 
     @Override
     protected boolean canHandle(String className, String message, @Nullable Throwable throwable) {
-        return message.contains("An attempt was made to traverse a relationship using indirection that had a null Session");
+        return className.equals("com.haulmont.cuba.core.global.IllegalEntityStateException")
+                || (className.equals("org.eclipse.persistence.exceptions.ValidationException")
+                    && message.contains("An attempt was made to traverse a relationship using indirection that had a null Session"));
     }
 
     @Override
