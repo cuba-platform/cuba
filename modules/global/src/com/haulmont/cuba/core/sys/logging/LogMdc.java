@@ -18,7 +18,8 @@ import org.springframework.context.ApplicationContext;
  */
 public class LogMdc {
 
-    public static final String USER = "user";
+    public static final String USER = "cubaUser";
+    public static final String APPLICATION = "cubaApp";
 
     public static void setup(SecurityContext securityContext) {
         String userProp = AppContext.getProperty("cuba.logUserName");
@@ -45,6 +46,15 @@ public class LogMdc {
                 }
             } else {
                 MDC.remove(USER);
+            }
+        }
+
+        String applicationProp = AppContext.getProperty("cuba.logAppName");
+        if (applicationProp == null || Boolean.valueOf(applicationProp)) {
+            if (securityContext != null) {
+                MDC.put(APPLICATION, "/" + AppContext.getProperty("cuba.webContextName"));
+            } else {
+                MDC.remove(APPLICATION);
             }
         }
     }

@@ -121,6 +121,7 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
                     method.getName(), parameterTypeNames, argumentsData, notSerializableArguments, sessionId);
 
             LocalServiceInvocationResult result = invoker.invoke(invocation);
+            AppContext.setSecurityContext(AppContext.getSecurityContext());//need reset application name in LogMDC for the current thread
 
             // don't use SerializationUtils.deserialize() here to avoid ClassNotFoundException
             if (result.getException() != null) {
