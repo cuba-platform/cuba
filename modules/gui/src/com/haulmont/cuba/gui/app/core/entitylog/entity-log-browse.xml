@@ -14,11 +14,11 @@
     </companions>
 
     <dsContext>
-        <collectionDatasource id="loggedEntityDs"
+        <groupDatasource id="loggedEntityDs"
                               class="com.haulmont.cuba.security.entity.LoggedEntity"
                               view="loggedAttrs">
             <query>select e from sec$LoggedEntity e order by e.name </query>
-        </collectionDatasource>
+        </groupDatasource>
 
         <collectionDatasource id="loggedAttrDs" class="com.haulmont.cuba.security.entity.LoggedAttribute" view="_local">
             <query>select a from sec$LoggedAttribute a where a.entity.id = :ds$loggedEntityDs</query>
