@@ -121,6 +121,18 @@ public class DesktopToolTipManager extends MouseAdapter {
     }
 
     /**
+     * Register tooltip for {@link javax.swing.JLabel}.
+     * Tooltip is displayed when the user hovers over a label
+     * ToolTip text is taken from {@link javax.swing.JComponent#getToolTipText()}.
+     *
+     * @param lbl Label to register
+     */
+    public void registerTooltip(final JLabel lbl) {
+        lbl.removeMouseListener(componentMouseListener);
+        lbl.addMouseListener(componentMouseListener);
+    }
+
+    /**
      * Register tooltip for ToolTipButton.
      * Tooltip is displayed when the user presses the button
      * ToolTip text is taken from {@link javax.swing.JComponent#getToolTipText()} .
@@ -179,7 +191,7 @@ public class DesktopToolTipManager extends MouseAdapter {
         toolTipWindow = toolTip;
 
         tooltipShowing = true;
-        if ((!(field instanceof ToolTipButton)) && (field instanceof AbstractButton)) {
+        if ((!(field instanceof ToolTipButton)) && ((field instanceof AbstractButton) || (field instanceof JLabel))) {
             toolTip.addMouseListener(this);
             field.addMouseListener(this);
         }
@@ -199,7 +211,7 @@ public class DesktopToolTipManager extends MouseAdapter {
 
     private class ComponentMouseListener extends MouseAdapter {
 
-        private AbstractButton btn;
+        private JComponent cmp;
 
         {
             showTimer.setRepeats(false);
@@ -207,7 +219,7 @@ public class DesktopToolTipManager extends MouseAdapter {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (!tooltipShowing)
-                        showTooltip(btn, btn.getToolTipText());
+                        showTooltip(cmp, cmp.getToolTipText());
                 }
             });
         }
@@ -217,13 +229,13 @@ public class DesktopToolTipManager extends MouseAdapter {
             if (window != null) {
                 if (e.getSource() != component && e.getSource() != toolTipWindow && component instanceof AbstractButton) {
                     hideTooltip();
-                    btn = (AbstractButton) e.getSource();
+                    cmp = (JComponent) e.getSource();
                     showTimer.start();
                     return;
                 }
             }
             if (!tooltipShowing) {
-                btn = (AbstractButton) e.getSource();
+                cmp = (JComponent) e.getSource();
                 showTimer.start();
             }
         }

@@ -8,7 +8,7 @@ package com.haulmont.cuba.gui.components;
  * @author abramov
  * @version $Id$
  */
-public interface Label extends DatasourceComponent, Component.HasFormatter {
+public interface Label extends DatasourceComponent, Component.HasFormatter, Component.HasCaption {
 
     String NAME = "label";
 

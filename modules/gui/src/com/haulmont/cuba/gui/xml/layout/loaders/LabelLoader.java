@@ -51,6 +51,9 @@ public class LabelLoader extends AbstractDatasourceComponentLoader {
             component.setValue(caption);
         }
 
+        loadCaption(component, element);
+        loadDescription(component, element);
+
         loadWidth(component, element, Component.AUTO_SIZE);
         loadHeight(component, element, Component.AUTO_SIZE);
 

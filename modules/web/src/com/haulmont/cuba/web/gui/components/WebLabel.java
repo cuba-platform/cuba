@@ -219,4 +219,24 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
         Preconditions.checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
         this.metaProperty = metaPropertyPath.getMetaProperty();
     }
+
+    @Override
+    public String getCaption() {
+        return null;
+    }
+
+    @Override
+    public void setCaption(String caption) {
+        // do nothing
+    }
+
+    @Override
+    public String getDescription() {
+        return component.getDescription();
+    }
+
+    @Override
+    public void setDescription(String description) {
+        component.setDescription(description);
+    }
 }

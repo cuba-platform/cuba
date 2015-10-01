@@ -530,6 +530,7 @@
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasAlign"/>
         <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasCaption"/>
 
         <xs:attributeGroup ref="hasDatasource"/>
         <xs:attribute name="value" type="xs:string" default="msg://"/>
