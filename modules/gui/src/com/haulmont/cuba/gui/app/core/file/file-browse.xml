@@ -25,7 +25,8 @@
         <filter id="genericFilter" datasource="filesDs" margin="false,false,true,false" applyTo="filesTable">
             <properties include=".*"/>
         </filter>
-        <table id="filesTable" editable="false" width="100%">
+
+        <table id="filesTable" editable="false" width="100%" multiselect="true">
             <actions>
                 <action id="create" openType="DIALOG"/>
                 <action id="edit" openType="DIALOG"/>
@@ -38,14 +39,14 @@
                 <button action="filesTable.remove" icon="icons/remove.png"/>
                 <button action="filesTable.excel" icon="icons/excel.png"/>
                 <button action="filesTable.download" icon="icons/save.png"/>
-                <button id="multiupload" icon="icons/copy.png"/>
+                <button id="multiUploadBtn" icon="icons/copy.png"/>
             </buttonsPanel>
             <rowsCount/>
             <columns>
-                <column id="name" caption="msg://name"/>
-                <column id="extension" caption="msg://extension"/>
-                <column id="size" caption="msg://size"/>
-                <column id="createDate" caption="msg://createDate"/>
+                <column id="name"/>
+                <column id="extension"/>
+                <column id="size"/>
+                <column id="createDate"/>
             </columns>
             <rows datasource="filesDs"/>
         </table>

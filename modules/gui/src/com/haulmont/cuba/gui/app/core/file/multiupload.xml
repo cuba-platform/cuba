@@ -5,29 +5,35 @@
 
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
         class="com.haulmont.cuba.gui.app.core.file.MultiUploader"
-        datasource="filesDs"
         messagesPack="com.haulmont.cuba.gui.app.core.file"
         caption="msg://uploadFiles"
         focusComponent="multiUpload">
 
     <dsContext>
-        <collectionDatasource id="filesDs" class="com.haulmont.cuba.core.entity.FileDescriptor"
-                              allowCommit="false"
-                              view="browse" refreshMode="NEVER"/>
+        <collectionDatasource id="filesDs" class="com.haulmont.cuba.core.entity.FileDescriptor" view="_local"
+                              refreshMode="NEVER"/>
     </dsContext>
 
-    <layout spacing="true">
+    <actions>
+        <action id="windowCommit" caption="msg://actions.Ok" invoke="commitAndClose"/>
+        <action id="windowClose" caption="msg://actions.Cancel" invoke="close"/>
+    </actions>
+
+    <layout spacing="true" expand="uploadsTable">
         <hbox spacing="true">
             <multiUpload id="multiUpload" icon="icons/upload.png"/>
             <button action="uploadsTable.remove" icon="icons/remove.png"/>
         </hbox>
 
-        <table id="uploadsTable" editable="true" height="theme://cuba.gui.multiupload.table.height" width="100%">
+        <table id="uploadsTable" editable="true" width="100%">
+            <actions>
+                <action id="remove"/>
+            </actions>
             <columns>
-                <column id="name" caption="msg://name" editable="true"
+                <column id="name" editable="true"
                         required="true" requiredMessage="msg://notNullFileNames"/>
-                <column id="extension" caption="msg://extension" editable="false"/>
-                <column id="size" caption="msg://size" editable="false"/>
+                <column id="extension" editable="false"/>
+                <column id="size" editable="false"/>
             </columns>
             <rows datasource="filesDs"/>
         </table>

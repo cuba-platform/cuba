@@ -23,20 +23,20 @@
             <columns count="2"/>
             <rows>
                 <row>
-                    <label value="msg://name" align="MIDDLE_LEFT"/>
+                    <label value="msg://com.haulmont.cuba.core.entity/FileDescriptor.name" align="MIDDLE_LEFT"/>
                     <textField id="nameField" datasource="fileDs" property="name"
                                width="theme://cuba.gui.file-edit.nameField.width"/>
                 </row>
                 <row>
-                    <label value="msg://extension"/>
+                    <label value="msg://com.haulmont.cuba.core.entity/FileDescriptor.extension"/>
                     <label id="extLabel" datasource="fileDs" property="extension"/>
                 </row>
                 <row>
-                    <label value="msg://size"/>
+                    <label value="msg://com.haulmont.cuba.core.entity/FileDescriptor.size"/>
                     <label id="sizeLabel" datasource="fileDs" property="size"/>
                 </row>
                 <row>
-                    <label value="msg://createDate"/>
+                    <label value="msg://com.haulmont.cuba.core.entity/FileDescriptor.createDate"/>
                     <label id="createDateLabel" datasource="fileDs" property="createDate">
                         <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter"
                                    format="msg://dateTimeFormat"/>

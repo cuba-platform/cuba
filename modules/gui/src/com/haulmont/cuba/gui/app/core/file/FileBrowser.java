@@ -6,16 +6,15 @@ package com.haulmont.cuba.gui.app.core.file;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
-import java.util.Collections;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 
@@ -31,8 +30,8 @@ public class FileBrowser extends AbstractLookup {
     @Inject
     protected CollectionDatasource<FileDescriptor, UUID> filesDs;
 
-    @Resource(name = "multiupload")
-    protected Button uploadBtn;
+    @Inject
+    protected Button multiUploadBtn;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -48,26 +47,19 @@ public class FileBrowser extends AbstractLookup {
             }
         });
 
-        uploadBtn.setAction(new BaseAction("multiupload") {
+        multiUploadBtn.setAction(new BaseAction("multiupload") {
             @Override
             public void actionPerform(Component component) {
-                Map<String, Object> params = Collections.emptyMap();
-
-                Window.Editor window = frame.openEditor("multiuploadDialog", null,
-                        WindowManager.OpenType.DIALOG,
-                        params, null);
-
+                Window window = openWindow("multiuploadDialog", OpenType.DIALOG);
                 window.addCloseListener(actionId -> {
-                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                        List<FileDescriptor> items = ((MultiUploader) window).getFiles();
+                    if (COMMIT_ACTION_ID.equals(actionId)) {
+                        Collection<FileDescriptor> items = ((MultiUploader) window).getFiles();
                         for (FileDescriptor fdesc : items) {
+                            boolean modified = filesDs.isModified();
                             filesDs.addItem(fdesc);
-                        }
-                        if (items.size() > 0) {
-                            filesDs.commit();
+                            ((DatasourceImplementation) filesDs).setModified(modified);
                         }
 
-                        filesTable.refresh();
                         filesTable.requestFocus();
                     }
                 });
