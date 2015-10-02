@@ -26,6 +26,7 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Notification.Type;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -397,7 +398,7 @@ public class LoginWindow extends UIView {
 
         if (StringUtils.isEmpty(login) || StringUtils.isEmpty(password)) {
             String message = messages.getMainMessage("loginWindow.emptyLoginOrPassword", resolvedLocale);
-            new Notification(message, Notification.Type.WARNING_MESSAGE).show(ui.getPage());
+            new Notification(message, Type.WARNING_MESSAGE).show(ui.getPage());
             return;
         }
 
@@ -427,7 +428,7 @@ public class LoginWindow extends UIView {
 
             String title = messages.getMainMessage("loginWindow.loginFailed", resolvedLocale);
             String message = StringUtils.abbreviate(e.getMessage(), 1000);
-            new Notification(title, message, Notification.Type.ERROR_MESSAGE, true).show(ui.getPage());
+            new Notification(title, message, Type.ERROR_MESSAGE, true).show(ui.getPage());
 
             if (loginByRememberMe) {
                 loginByRememberMe = false;
@@ -435,6 +436,12 @@ public class LoginWindow extends UIView {
                 passwordField.removeValueChangeListener(loginChangeListener);
                 loginChangeListener = null;
             }
+        } catch (Exception e) {
+            log.warn("Unable to login", e);
+
+            String title = messages.getMainMessage("loginWindow.loginFailed", resolvedLocale);
+            String message = messages.getMainMessage("loginWindow.pleaseContactAdministrator", resolvedLocale);
+            new Notification(title, message, Type.ERROR_MESSAGE, true).show(ui.getPage());
         }
     }
 
