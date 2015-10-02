@@ -4,6 +4,10 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
@@ -16,6 +20,8 @@ public class CubaRowsCount extends CustomComponent {
 
     protected Button prevButton;
     protected Button nextButton;
+    protected Button firstButton;
+    protected Button lastButton;
     protected Label label;
     protected Button countButton;
 
@@ -44,8 +50,20 @@ public class CubaRowsCount extends CustomComponent {
         contentLayout.setSpacing(true);
         contentLayout.setHeight("-1px");
 
-        prevButton = new CubaButton("<");
-        prevButton.setWidth("-1px");
+        ThemeConstants themeConstants = AppBeans.get(ThemeConstantsManager.class).getConstants();
+        String buttonWidth = themeConstants.get("cuba.gui.rowsCount.arrowButton.width");
+        firstButton = new CubaButton();
+        firstButton.setIcon(WebComponentsHelper.getIcon("icons/rows-count-first.png"));
+        firstButton.setWidth(buttonWidth);
+        firstButton.setStyleName("cuba-paging-change-page");
+        firstButton.addStyleName("cuba-paging-first");
+        contentLayout.addComponent(firstButton);
+
+        contentLayout.setComponentAlignment(firstButton, Alignment.MIDDLE_CENTER);
+
+        prevButton = new CubaButton();
+        prevButton.setIcon(WebComponentsHelper.getIcon("icons/rows-count-prev.png"));
+        prevButton.setWidth(buttonWidth);
         prevButton.setStyleName("cuba-paging-change-page");
         prevButton.addStyleName("cuba-paging-prev");
         contentLayout.addComponent(prevButton);
@@ -64,12 +82,21 @@ public class CubaRowsCount extends CustomComponent {
         contentLayout.addComponent(countButton);
         contentLayout.setComponentAlignment(countButton, Alignment.MIDDLE_CENTER);
 
-        nextButton = new CubaButton(">");
-        nextButton.setWidth("-1px");
+        nextButton = new CubaButton();
+        nextButton.setIcon(WebComponentsHelper.getIcon("icons/rows-count-next.png"));
+        nextButton.setWidth(buttonWidth);
         nextButton.setStyleName("cuba-paging-change-page");
         nextButton.addStyleName("cuba-paging-next");
         contentLayout.addComponent(nextButton);
         contentLayout.setComponentAlignment(nextButton, Alignment.MIDDLE_CENTER);
+
+        lastButton = new CubaButton();
+        lastButton.setIcon(WebComponentsHelper.getIcon("icons/rows-count-last.png"));
+        lastButton.setWidth(buttonWidth);
+        lastButton.setStyleName("cuba-paging-change-page");
+        lastButton.addStyleName("cuba-paging-last");
+        contentLayout.addComponent(lastButton);
+        contentLayout.setComponentAlignment(lastButton, Alignment.MIDDLE_CENTER);
 
         return contentLayout;
     }
@@ -88,5 +115,13 @@ public class CubaRowsCount extends CustomComponent {
 
     public Button getNextButton() {
         return nextButton;
+    }
+
+    public Button getFirstButton() {
+        return firstButton;
+    }
+
+    public Button getLastButton() {
+        return lastButton;
     }
 }

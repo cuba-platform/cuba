@@ -45,6 +45,8 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
             component.getCountButton().addClickListener(event -> onLinkClick());
             component.getPrevButton().addClickListener(event -> onPrevClick());
             component.getNextButton().addClickListener(event -> onNextClick());
+            component.getFirstButton().addClickListener(event -> onFirstClick());
+            component.getLastButton().addClickListener(event -> onLastClick());
 
             if (datasource.getState() == Datasource.State.VALID) {
                 onCollectionChanged();
@@ -94,6 +96,39 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
             refreshDatasource(ds);
             ds.setMaxResults(maxResults);
         }
+        if (owner instanceof WebAbstractTable) {
+            com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) ((WebAbstractTable) owner).getComponent();
+            vTable.setCurrentPageFirstItemIndex(0);
+        }
+    }
+
+    protected void onFirstClick() {
+        if (!(datasource instanceof CollectionDatasource.SupportsPaging)) {
+            return;
+        }
+
+        CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
+        ds.setFirstResult(0);
+        refreshDatasource(ds);
+        if (owner instanceof WebAbstractTable) {
+            com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) ((WebAbstractTable) owner).getComponent();
+            vTable.setCurrentPageFirstItemIndex(0);
+        }
+    }
+
+    protected void onLastClick() {
+        if (!(datasource instanceof CollectionDatasource.SupportsPaging)) {
+            return;
+        }
+
+        CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
+        int count = ((CollectionDatasource.SupportsPaging) datasource).getCount();
+        int itemsToDisplay = count % ds.getMaxResults();
+        if (itemsToDisplay == 0) itemsToDisplay = ds.getMaxResults();
+
+        ds.setFirstResult(count - itemsToDisplay);
+        refreshDatasource(ds);
+
         if (owner instanceof WebAbstractTable) {
             com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) ((WebAbstractTable) owner).getComponent();
             vTable.setCurrentPageFirstItemIndex(0);
@@ -153,6 +188,8 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
                 component.getCountButton().setVisible(false);
                 component.getPrevButton().setVisible(false);
                 component.getNextButton().setVisible(false);
+                component.getFirstButton().setVisible(false);
+                component.getLastButton().setVisible(false);
                 if (size % 100 > 10 && size % 100 < 20) {
                     msgKey = "table.rowsCount.msg2Plural1";
                 } else {
@@ -175,6 +212,8 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
                 component.getCountButton().setVisible(true);
                 component.getPrevButton().setVisible(false);
                 component.getNextButton().setVisible(true);
+                component.getFirstButton().setVisible(false);
+                component.getLastButton().setVisible(true);
                 msgKey = "table.rowsCount.msg1";
                 countValue = "1-" + size;
                 break;
@@ -182,6 +221,8 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
                 component.getCountButton().setVisible(true);
                 component.getPrevButton().setVisible(true);
                 component.getNextButton().setVisible(true);
+                component.getFirstButton().setVisible(true);
+                component.getLastButton().setVisible(true);
                 msgKey = "table.rowsCount.msg1";
                 countValue = (start + 1) + "-" + (start + size);
                 break;
@@ -189,6 +230,8 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
                 component.getCountButton().setVisible(false);
                 component.getPrevButton().setVisible(true);
                 component.getNextButton().setVisible(false);
+                component.getFirstButton().setVisible(true);
+                component.getLastButton().setVisible(false);
                 msgKey = "table.rowsCount.msg2Plural2";
                 countValue = (start + 1) + "-" + (start + size);
                 break;

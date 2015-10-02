@@ -55,6 +55,8 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
 
             impl.getPrevButton().addActionListener(e -> onPrevClick());
             impl.getNextButton().addActionListener(e -> onNextClick());
+            impl.getFirstButton().addActionListener(e -> onFirstClick());
+            impl.getLastButton().addActionListener(e -> onLastClick());
             if (datasource.getState() == Datasource.State.VALID) {
                 onCollectionChanged();
             }
@@ -105,6 +107,8 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
                 impl.getCountButton().setVisible(false);
                 impl.getPrevButton().setVisible(false);
                 impl.getNextButton().setVisible(false);
+                impl.getFirstButton().setVisible(false);
+                impl.getLastButton().setVisible(false);
                 if (size % 100 > 10 && size % 100 < 20) {
                     msgKey = "table.rowsCount.msg2Plural1";
                 } else {
@@ -127,6 +131,8 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
                 impl.getCountButton().setVisible(true);
                 impl.getPrevButton().setVisible(false);
                 impl.getNextButton().setVisible(true);
+                impl.getFirstButton().setVisible(false);
+                impl.getLastButton().setVisible(true);
                 msgKey = "table.rowsCount.msg1";
                 countValue = "1-" + size;
                 break;
@@ -134,6 +140,8 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
                 impl.getCountButton().setVisible(true);
                 impl.getPrevButton().setVisible(true);
                 impl.getNextButton().setVisible(true);
+                impl.getFirstButton().setVisible(true);
+                impl.getLastButton().setVisible(true);
                 msgKey = "table.rowsCount.msg1";
                 countValue = (start + 1) + "-" + (start + size);
                 break;
@@ -141,6 +149,8 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
                 impl.getCountButton().setVisible(false);
                 impl.getPrevButton().setVisible(true);
                 impl.getNextButton().setVisible(false);
+                impl.getFirstButton().setVisible(true);
+                impl.getLastButton().setVisible(false);
                 msgKey = "table.rowsCount.msg2Plural2";
                 countValue = (start + 1) + "-" + (start + size);
                 break;
@@ -206,6 +216,40 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
         }
     }
 
+    protected void onFirstClick() {
+        if (!(datasource instanceof CollectionDatasource.SupportsPaging)) {
+            return;
+        }
+
+        CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
+        ds.setFirstResult(0);
+        refreshDatasource(ds);
+        if (owner instanceof DesktopAbstractTable) {
+            JXTable table = (JXTable) ((DesktopAbstractTable) owner).getComponent();
+            table.scrollRowToVisible(0);
+        }
+    }
+
+    protected void onLastClick() {
+        if (!(datasource instanceof CollectionDatasource.SupportsPaging)) {
+            return;
+        }
+
+        CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
+        int count = ((CollectionDatasource.SupportsPaging) datasource).getCount();
+        int itemsToDisplay = count % ds.getMaxResults();
+        if (itemsToDisplay == 0) itemsToDisplay = ds.getMaxResults();
+
+        ds.setFirstResult(count - itemsToDisplay);
+        refreshDatasource(ds);
+
+        if (owner instanceof DesktopAbstractTable) {
+            JXTable table = (JXTable) ((DesktopAbstractTable) owner).getComponent();
+            table.scrollRowToVisible(0);
+        }
+    }
+
+
     private void refreshDatasource(CollectionDatasource.SupportsPaging ds) {
         refreshing = true;
         try {
@@ -219,11 +263,13 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
 
         private JButton prevButton;
         private JButton nextButton;
+        private JButton firstButton;
+        private JButton lastButton;
         private JLabel label;
         private JButton countButton;
         private MigLayout layout;
 
-        private final Dimension size = new Dimension(35, 25);
+        private final Dimension size = new Dimension(38, 25);
 
         public RowsCountComponent() {
             LC lc = new LC();
@@ -234,6 +280,11 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
                 lc.debug(1000);
             }
             setLayout(layout);
+
+            firstButton = new JButton("<<");
+            add(firstButton);
+            firstButton.setPreferredSize(size);
+            firstButton.setMinimumSize(size);
 
             prevButton = new JButton("<");
             add(prevButton);
@@ -251,6 +302,11 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
             add(nextButton);
             nextButton.setPreferredSize(size);
             nextButton.setMinimumSize(size);
+
+            lastButton = new JButton(">>");
+            add(lastButton);
+            lastButton.setPreferredSize(size);
+            lastButton.setMinimumSize(size);
         }
 
         public JLabel getLabel() {
@@ -267,6 +323,14 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
 
         public JButton getNextButton() {
             return nextButton;
+        }
+
+        public JButton getFirstButton() {
+            return firstButton;
+        }
+
+        public JButton getLastButton() {
+            return lastButton;
         }
     }
 }
