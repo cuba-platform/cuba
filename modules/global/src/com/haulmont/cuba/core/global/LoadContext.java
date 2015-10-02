@@ -4,11 +4,15 @@
  */
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class that defines parameters for loading entities from the database via {@link DataManager}.
@@ -61,16 +65,16 @@ public class LoadContext<E extends Entity> implements Serializable {
      * @param metaClass metaclass of the loaded entities
      */
     public LoadContext(MetaClass metaClass) {
-        Objects.requireNonNull(metaClass, "metaClass is null");
-        this.metaClass = metaClass.getName();
+        Preconditions.checkNotNullArgument(metaClass, "metaClass is null");
+        this.metaClass = AppBeans.get(Metadata.class).getExtendedEntities().getEffectiveMetaClass(metaClass).getName();
     }
 
     /**
      * @param javaClass class of the loaded entities
      */
     public LoadContext(Class<E> javaClass) {
-        Metadata metadata = AppBeans.get(Metadata.NAME);
-        this.metaClass = metadata.getSession().getClassNN(javaClass).getName();
+        Preconditions.checkNotNullArgument(javaClass, "javaClass is null");
+        this.metaClass = AppBeans.get(Metadata.class).getExtendedEntities().getEffectiveMetaClass(javaClass).getName();
     }
 
     /**

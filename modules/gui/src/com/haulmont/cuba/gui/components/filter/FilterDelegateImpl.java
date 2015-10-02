@@ -12,7 +12,6 @@ import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.DataService;
@@ -47,7 +46,6 @@ import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
-import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -907,18 +905,14 @@ public class FilterDelegateImpl implements FilterDelegate {
      * Load filter entities from database and saves them in {@code filterEntities} collection.
      */
     protected void loadFilterEntities() {
-        LoadContext ctx = new LoadContext(metadata.getExtendedEntities().getEffectiveMetaClass(FilterEntity.class));
+        LoadContext<FilterEntity> ctx = LoadContext.create(FilterEntity.class);
         ctx.setView("app");
-
-        User user = userSessionSource.getUserSession().getCurrentOrSubstitutedUser();
-        MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(FilterEntity.class);
-
-        ctx.setQueryString("select f from " + effectiveMetaClass.getName() + " f " +
-                "where f.componentId = :component and (f.user is null or f.user.id = :userId) order by f.name")
+        ctx.setQueryString("select f from sec$Filter f left join f.user u on u.id = :userId " +
+                "where f.componentId = :component order by f.name")
                 .setParameter("component", ComponentsHelper.getFilterComponentPath(filter))
-                .setParameter("userId", user.getId());
+                .setParameter("userId", userSessionSource.getUserSession().getCurrentOrSubstitutedUser().getId());
 
-        filterEntities = new ArrayList<>(dataService.<FilterEntity>loadList(ctx));
+        filterEntities = new ArrayList<>(dataService.loadList(ctx));
     }
 
     protected FilterEntity getDefaultFilter(List<FilterEntity> filters) {
