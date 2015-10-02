@@ -161,7 +161,7 @@ public class CubaFileUploadWidget extends FlowPanel {
         };
     }
 
-    private static native void fireNativeClick(Element element)
+    protected static native void fireNativeClick(Element element)
     /*-{
         element.click();
     }-*/;
@@ -207,6 +207,13 @@ public class CubaFileUploadWidget extends FlowPanel {
 
     public VButton getSubmitButton() {
         return submitButton;
+    }
+
+    @Override
+    protected void onUnload() {
+        super.onUnload();
+
+        fileUpload.destroy();
     }
 
     public interface FilePermissionsHandler {
