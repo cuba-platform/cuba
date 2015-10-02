@@ -200,10 +200,10 @@ public class CreateAction extends BaseAction implements Action.HasOpenType {
             params = Collections.emptyMap();
         }
 
-        openEditor(datasource, item, parentDs, params);
+        internalOpenEditor(datasource, item, parentDs, params);
     }
 
-    protected void openEditor(CollectionDatasource datasource, Entity newItem, Datasource parentDs, Map<String, Object> params) {
+    protected void internalOpenEditor(CollectionDatasource datasource, Entity newItem, Datasource parentDs, Map<String, Object> params) {
         Window.Editor window = target.getFrame().openEditor(getWindowId(), newItem, getOpenType(), params, parentDs);
         window.addCloseListener(actionId -> {
             // move focus to owner

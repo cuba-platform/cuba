@@ -172,13 +172,14 @@ public class EditAction extends BaseAction implements Action.HasOpenType {
                 params = Collections.emptyMap();
             }
 
-            openEditor(parentDs, datasource, params);
+            internalOpenEditor(datasource, datasource.getItem(), parentDs, params);
         }
     }
 
-    protected void openEditor(Datasource parentDs, CollectionDatasource datasource, Map<String, Object> params) {
-        Window.Editor window = target.getFrame().openEditor(getWindowId(), datasource.getItem(),
-                getOpenType(), params, parentDs);
+    protected void internalOpenEditor(CollectionDatasource datasource, Entity existingItem,
+                                      Datasource parentDs, Map<String, Object> params) {
+
+        Window.Editor window = target.getFrame().openEditor(getWindowId(), existingItem, getOpenType(), params, parentDs);
         window.addCloseListener(actionId -> {
             // move focus to owner
             target.requestFocus();
