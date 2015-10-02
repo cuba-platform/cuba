@@ -6,8 +6,8 @@
 package com.haulmont.cuba.gui.components.filter.operationedit;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.VBoxLayout;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
@@ -27,6 +27,6 @@ public class GroupOperationEditor extends AbstractOperationEditor {
 
     @Override
     protected Component createComponent() {
-        return componentsFactory.createComponent(BoxLayout.VBOX);
+        return componentsFactory.createComponent(VBoxLayout.NAME);
     }
 }
