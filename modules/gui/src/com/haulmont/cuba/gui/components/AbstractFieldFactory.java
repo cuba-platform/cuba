@@ -144,6 +144,9 @@ public abstract class AbstractFieldFactory implements FieldFactory {
         maskedField.setDatasource(datasource, property);
         if (xmlDescriptor != null) {
             maskedField.setMask(xmlDescriptor.attributeValue("mask"));
+
+            String valueModeStr = xmlDescriptor.attributeValue("valueMode", MaskedField.ValueMode.CLEAR.getId());
+            maskedField.setValueMode(MaskedField.ValueMode.fromId(valueModeStr));
         }
         return maskedField;
     }
