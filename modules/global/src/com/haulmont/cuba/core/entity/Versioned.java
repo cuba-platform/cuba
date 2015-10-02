@@ -12,7 +12,11 @@ package com.haulmont.cuba.core.entity;
  */
 public interface Versioned {
 
-    String[] PROPERTIES = {"version"};
-
     Integer getVersion();
+
+    /**
+     * Do not set version if you are not sure - it must be null for a new entity or loaded from the database
+     * for a persistent one.
+     */
+    void setVersion(Integer version);
 }

@@ -6,10 +6,13 @@
 package com.haulmont.cuba.testsupport;
 
 import com.haulmont.bali.db.QueryRunner;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.sys.AbstractAppContextLoader;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.AppContextLoader;
@@ -130,12 +133,12 @@ public class TestContainer extends ExternalResource {
         return AppBeans.get(Metadata.class);
     }
 
-    public void deleteRecord(String table, UUID... ids) {
+    public void deleteRecord(String table, Object... ids) {
         deleteRecord(table, "ID", ids);
     }
 
-    public void deleteRecord(String table, String primaryKeyCol, UUID... ids) {
-        for (UUID id : ids) {
+    public void deleteRecord(String table, String primaryKeyCol, Object... ids) {
+        for (Object id : ids) {
             String sql = "delete from " + table + " where " + primaryKeyCol + " = '" + id.toString() + "'";
             QueryRunner runner = new QueryRunner(persistence().getDataSource());
             try {
@@ -143,6 +146,20 @@ public class TestContainer extends ExternalResource {
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    public void deleteRecord(Entity... entities) {
+        for (Entity entity : entities) {
+            MetadataTools metadataTools = metadata().getTools();
+            MetaClass metaClass = metadata().getClassNN(entity.getClass());
+
+            String table = metadataTools.getDatabaseTable(metaClass);
+            String primaryKey = metadataTools.getPrimaryKeyName(metaClass);
+            if (table == null || primaryKey == null)
+                throw new RuntimeException("Unable to determine table or primary key name for " + entity);
+
+            deleteRecord(table, primaryKey, entity.getId());
         }
     }
 

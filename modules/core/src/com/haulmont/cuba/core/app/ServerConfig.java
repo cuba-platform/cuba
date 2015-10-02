@@ -132,4 +132,12 @@ public interface ServerConfig extends Config {
     @Property("cuba.prettyTimeProperties")
     @DefaultString("")
     String getPrettyTimeProperties();
+
+    /**
+     * If set to false, attribute permissions are not enforced on Middleware. This is appropriate if only server-side
+     * clients are used.
+     */
+    @Property("cuba.entityAttributePermissionChecking")
+    @DefaultBoolean(true)
+    boolean getEntityAttributePermissionChecking();
 }

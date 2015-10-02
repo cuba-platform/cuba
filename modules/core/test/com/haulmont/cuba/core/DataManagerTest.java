@@ -95,8 +95,12 @@ public class DataManagerTest extends CubaTestCase {
         loadContext.setQueryString("select u.group from sec$User u where u.id = :userId")
                 .setParameter("userId", UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
 
-        List<User> list = dataManager.loadList(loadContext);
-        assertTrue(list.size() == 1);
+        try {
+            dataManager.loadList(loadContext);
+            fail();
+        } catch (DevelopmentException e) {
+            assertEquals("DataManager cannot execute query for single attributes", e.getMessage());
+        }
     }
 
     public void testLoadListCaseInsensitive() {

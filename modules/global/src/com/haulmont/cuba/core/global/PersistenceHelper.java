@@ -118,6 +118,13 @@ public class PersistenceHelper {
      * @return true if loaded
      */
     public static boolean isLoaded(Object entity, String property) {
+        if (entity instanceof BaseGenericIdEntity
+                && ((BaseGenericIdEntity) entity).__inaccessibleAttributes() != null) {
+            for (String inaccessibleAttr : ((BaseGenericIdEntity) entity).__inaccessibleAttributes()) {
+                if (inaccessibleAttr.equals(property))
+                    return false;
+            }
+        }
         if (entity instanceof FetchGroupTracker) {
             FetchGroup fetchGroup = ((FetchGroupTracker) entity)._persistence_getFetchGroup();
             if (fetchGroup != null)

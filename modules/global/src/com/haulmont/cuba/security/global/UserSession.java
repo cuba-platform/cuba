@@ -44,6 +44,9 @@ public class UserSession implements Serializable {
 
     protected Map<String, Serializable> attributes;
 
+    /**
+     * INTERNAL
+     */
     public UserSession(UUID id, User user, Collection<Role> roles, Locale locale, boolean system) {
         this.id = id;
         this.user = user;
@@ -69,12 +72,18 @@ public class UserSession implements Serializable {
         attributes = new ConcurrentHashMap<>();
     }
 
+    /**
+     * INTERNAL
+     */
     public UserSession(UserSession src, User user, Collection<Role> roles, Locale locale) {
         this(src.id, user, roles, locale, src.system);
         this.user = src.user;
         this.substitutedUser = this.user.equals(user) ? null : user;
     }
 
+    /**
+     * INTERNAL
+     */
     public UserSession(UserSession src) {
         id = src.id;
         user = src.user;
@@ -104,7 +113,7 @@ public class UserSession implements Serializable {
     }
 
     /**
-     * Don't do it
+     * INTERNAL
      */
     public void setUser(User user) {
         this.user = user;
@@ -118,7 +127,7 @@ public class UserSession implements Serializable {
     }
 
     /**
-     * Don't do it
+     * INTERNAL
      */
     public void setSubstitutedUser(User substitutedUser) {
         this.substitutedUser = substitutedUser;
@@ -145,6 +154,9 @@ public class UserSession implements Serializable {
         return locale;
     }
 
+    /**
+     * INTERNAL
+     */
     public void setLocale(Locale locale) {
         this.locale = locale;
     }
@@ -157,6 +169,9 @@ public class UserSession implements Serializable {
         return timeZone;
     }
 
+    /**
+     * INTERNAL
+     */
     public void setTimeZone(TimeZone timeZone) {
         this.timeZone = timeZone;
     }
@@ -168,6 +183,9 @@ public class UserSession implements Serializable {
         return address;
     }
 
+    /**
+     * INTERNAL
+     */
     public void setAddress(String address) {
         this.address = address;
     }
@@ -179,14 +197,17 @@ public class UserSession implements Serializable {
         return clientInfo;
     }
 
+    /**
+     * INTERNAL
+     */
     public void setClientInfo(String clientInfo) {
         this.clientInfo = clientInfo;
     }
 
     /**
-     * This method is used by security subsystem
+     * INTERNAL
      */
-    public void addPermission(PermissionType type, String target, String extTarget, int value) {
+    public void addPermission(PermissionType type, String target, @Nullable String extTarget, int value) {
         Integer currentValue = permissions[type.ordinal()].get(target);
         if (currentValue == null || currentValue < value) {
             permissions[type.ordinal()].put(target, value);
@@ -196,14 +217,14 @@ public class UserSession implements Serializable {
     }
 
     /**
-     * This method is used by security subsystem
+     * INTERNAL
      */
     public void removePermission(PermissionType type, String target) {
         permissions[type.ordinal()].remove(target);
     }
 
     /**
-     * This method is used by security subsystem
+     * INTERNAL
      */
     public Integer getPermissionValue(PermissionType type, String target) {
         return permissions[type.ordinal()].get(target);
@@ -286,7 +307,7 @@ public class UserSession implements Serializable {
     }
 
     /**
-     * This method is used by security subsystem
+     * INTERNAL
      */
     public void addConstraint(String entityName, String joinClause, String whereClause) {
         List<String[]> list = constraints.get(entityName);
@@ -298,7 +319,7 @@ public class UserSession implements Serializable {
     }
 
     /**
-     * This method is used by security subsystem
+     * INTERNAL
      */
     public List<String[]> getConstraints(String entityName) {
         List<String[]> list = constraints.get(entityName);

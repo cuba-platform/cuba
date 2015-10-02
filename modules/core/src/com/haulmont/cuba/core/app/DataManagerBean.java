@@ -26,8 +26,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
@@ -54,6 +54,9 @@ public class DataManagerBean implements DataManager {
 
     @Inject
     protected PersistenceSecurity security;
+
+    @Inject
+    protected AttributeSecuritySupport attributeSecurity;
 
     @Inject
     protected Persistence persistence;
@@ -95,7 +98,7 @@ public class DataManagerBean implements DataManager {
 
             com.haulmont.cuba.core.Query query = createQuery(em, context);
             //noinspection unchecked
-            List<E> resultList = query.getResultList();
+            List<E> resultList = executeQuery(query);
             if (!resultList.isEmpty())
                 result = resultList.get(0);
 
@@ -107,6 +110,8 @@ public class DataManagerBean implements DataManager {
         } finally {
             tx.end();
         }
+
+        attributeSecurity.afterLoad(result);
 
         return result;
     }
@@ -160,6 +165,8 @@ public class DataManagerBean implements DataManager {
         } finally {
             tx.end();
         }
+
+        attributeSecurity.afterLoad(resultList);
 
         return resultList;
     }
@@ -225,6 +232,7 @@ public class DataManagerBean implements DataManager {
                 // persist new
                 for (Entity entity : context.getCommitInstances()) {
                     if (PersistenceHelper.isNew(entity)) {
+                        attributeSecurity.beforePersist(entity);
                         em.persist(entity);
                         res.add(entity);
                         persisted.add(entity);
@@ -238,8 +246,14 @@ public class DataManagerBean implements DataManager {
                 // merge detached
                 for (Entity entity : context.getCommitInstances()) {
                     if (PersistenceHelper.isDetached(entity)) {
+                        attributeSecurity.beforeMerge(entity);
                         View view = context.getViews().get(entity);
-                        Entity merged = em.merge(entity, view);
+                        if (view == null) {
+                            view = viewRepository.getView(entity.getClass(), View.LOCAL);
+                        }
+                        View restrictedView = attributeSecurity.createRestrictedView(view);
+
+                        Entity merged = em.merge(entity, restrictedView);
                         res.add(merged);
                         if (entityHasDynamicAttributes(entity)) {
                             BaseGenericIdEntity originalBaseGenericIdEntity = (BaseGenericIdEntity) entity;
@@ -278,6 +292,16 @@ public class DataManagerBean implements DataManager {
             tx.commit();
         } finally {
             tx.end();
+        }
+
+        for (Entity entity : res) {
+            if (!persisted.contains(entity)) {
+                View view = context.getViews().get(entity);
+                if (view == null) {
+                    view = viewRepository.getView(entity.getClass(), View.LOCAL);
+                }
+                attributeSecurity.afterMerge(entity, view);
+            }
         }
 
         updateReferences(persisted, res);
@@ -415,10 +439,13 @@ public class DataManagerBean implements DataManager {
             }
 
             if (entityLoadInfoBuilder.contains(newInstances, entity)) {
+                attributeSecurity.beforePersist(entity);
                 em.persist(entity);
                 result.add(entity);
             } else {
-                Entity e = em.merge(entity);
+                attributeSecurity.beforeMerge(entity);
+                View view = context.getViews().get(entity);
+                Entity e = em.merge(entity, view);
                 result.add(e);
             }
         }
@@ -486,16 +513,16 @@ public class DataManagerBean implements DataManager {
                 query.setMaxResults(contextQuery.getMaxResults());
         }
 
-        if (context.getView() != null) {
-            query.setView(context.getView());
-        }
+        View view = context.getView() != null ? context.getView() :
+                viewRepository.getView(metadata.getClassNN(context.getMetaClass()), View.LOCAL);
+        View restrictedView = attributeSecurity.createRestrictedView(view);
+        query.setView(restrictedView);
 
         return query;
     }
 
     protected <E extends Entity> List<E> getResultList(LoadContext<E> context, Query query, boolean ensureDistinct) {
-        //noinspection unchecked
-        List<E> list = query.getResultList();
+        List<E> list = executeQuery(query);
         if (!ensureDistinct || list.size() == 0)
             return list;
 
@@ -551,6 +578,23 @@ public class DataManagerBean implements DataManager {
             j++;
         }
         return result;
+    }
+
+    protected <E extends Entity> List<E> executeQuery(Query query) {
+        List<E> list;
+        try {
+            //noinspection unchecked
+            list = query.getResultList();
+        } catch (javax.persistence.PersistenceException e) {
+            if (e.getCause() instanceof org.eclipse.persistence.exceptions.QueryException
+                    && e.getMessage() != null
+                    && e.getMessage().contains("Fetch group cannot be set on report query")) {
+                throw new DevelopmentException("DataManager cannot execute query for single attributes");
+            } else {
+                throw e;
+            }
+        }
+        return list;
     }
 
     protected void checkPermissions(CommitContext context) {

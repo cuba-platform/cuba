@@ -42,6 +42,11 @@ public class StandardEntity extends BaseUuidEntity implements Versioned, Updatab
     }
 
     @Override
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    @Override
     public Date getUpdateTs() {
         return updateTs;
     }

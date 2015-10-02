@@ -54,14 +54,17 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
     @Transient
     protected boolean __removed;
 
+    @Transient
+    protected String[] __inaccessibleAttributes;
+
+    @Transient
+    protected Map<String, CategoryAttributeValue> dynamicAttributes = null;
+
     @Column(name = "CREATE_TS")
     protected Date createTs;
 
     @Column(name = "CREATED_BY", length = LOGIN_FIELD_LEN)
     protected String createdBy;
-
-    @Transient
-    protected Map<String, CategoryAttributeValue> dynamicAttributes = null;
 
     public abstract void setId(T id);
 
@@ -109,6 +112,16 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
     /** INTERNAL. */
     public void __removed(boolean removed) {
         this.__removed = removed;
+    }
+
+    /** INTERNAL */
+    public String[] __inaccessibleAttributes() {
+        return __inaccessibleAttributes;
+    }
+
+    /** INTERNAL */
+    public void __inaccessibleAttributes(String[] __inaccessibleAttributes) {
+        this.__inaccessibleAttributes = __inaccessibleAttributes;
     }
 
     @Override

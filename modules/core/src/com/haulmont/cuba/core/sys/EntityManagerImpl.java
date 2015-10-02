@@ -268,7 +268,10 @@ public class EntityManagerImpl implements EntityManager {
         return delegate.unwrap(Connection.class);
     }
 
-    private void deepCopyIgnoringNulls(Entity source, Entity dest) {
+    /**
+     * Copies all property values from source to dest excluding null values.
+     */
+    protected void deepCopyIgnoringNulls(Entity source, Entity dest) {
         for (MetaProperty srcProperty : source.getMetaClass().getProperties()) {
             String name = srcProperty.getName();
 
