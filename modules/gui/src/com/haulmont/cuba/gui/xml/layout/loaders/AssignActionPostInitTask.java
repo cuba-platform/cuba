@@ -29,40 +29,38 @@ public class AssignActionPostInitTask implements ComponentLoader.PostInitTask {
 
     @Override
     public void execute(ComponentLoader.Context context, Frame window) {
-        final String[] elements = ValuePathHelper.parse(actionName);
+        String[] elements = ValuePathHelper.parse(actionName);
         if (elements.length > 1) {
             final String id = elements[elements.length - 1];
             String[] subPath = (String[]) ArrayUtils.subarray(elements, 0, elements.length - 1);
 
             // using this.frame to look up the component inside the actual frame
-            final Component holder = this.frame.getComponent(ValuePathHelper.format(subPath));
-            if (holder != null) {
-                if (holder instanceof Component.ActionsHolder) {
-                    final Action action = ((Component.ActionsHolder) holder).getAction(id);
-                    if (action != null) {
-                        this.component.setAction(action);
-                    } else {
-                        throw new GuiDevelopmentException(String.format(
-                                "Can't find action '%s' in '%s'", id, holder.getId()), context.getFullFrameId(),
-                                "Holder ID", holder.getId());
-                    }
-                } else {
-                    throw new GuiDevelopmentException(String.format(
-                            "Component '%s' can't contain actions", holder.getId()), context.getFullFrameId(),
-                            "Holder ID", holder.getId());
-                }
-            } else {
+            Component holder = this.frame.getComponent(ValuePathHelper.format(subPath));
+            if (holder == null) {
                 throw new GuiDevelopmentException(
                         "Can't find component: " + Arrays.toString(subPath) + " for action: " + actionName,
                         context.getFullFrameId(), "Component ID", Arrays.toString(subPath));
             }
+
+            if (!(holder instanceof Component.ActionsHolder)) {
+                throw new GuiDevelopmentException(String.format(
+                        "Component '%s' can't contain actions", holder.getId()), context.getFullFrameId(),
+                        "Holder ID", holder.getId());
+            }
+
+            Action action = ((Component.ActionsHolder) holder).getAction(id);
+            if (action == null) {
+                throw new GuiDevelopmentException(String.format(
+                        "Can't find action '%s' in '%s'", id, holder.getId()), context.getFullFrameId(),
+                        "Holder ID", holder.getId());
+            }
+
+            this.component.setAction(action);
         } else if (elements.length == 1) {
             final String id = elements[0];
             final Action action = window.getAction(id);
 
-            if (action != null) {
-                this.component.setAction(action);
-            } else {
+            if (action == null) {
                 String message = "Can't find action " + id;
                 if (Window.Editor.WINDOW_COMMIT.equals(id) || Window.Editor.WINDOW_COMMIT_AND_CLOSE.equals(id))
                     message += ". This may happen if you are opening an AbstractEditor-based screen by openWindow() method, " +
@@ -70,6 +68,8 @@ public class AssignActionPostInitTask implements ComponentLoader.PostInitTask {
                             "with '.edit' to open it as editor from the main menu.";
                 throw new GuiDevelopmentException(message, context.getFullFrameId());
             }
+
+            this.component.setAction(action);
         } else {
             throw new GuiDevelopmentException("Empty action name", context.getFullFrameId());
         }

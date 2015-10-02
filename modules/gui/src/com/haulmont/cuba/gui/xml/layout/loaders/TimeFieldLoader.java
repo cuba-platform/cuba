@@ -4,10 +4,8 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.TimeField;
-import com.haulmont.cuba.gui.xml.layout.*;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -15,27 +13,27 @@ import org.dom4j.Element;
  * @author krivopustov
  * @version $Id$
  */
-public class TimeFieldLoader extends AbstractFieldLoader {
+public class TimeFieldLoader extends AbstractFieldLoader<TimeField> {
 
-    public TimeFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context, config, factory);
+    @Override
+    public void createComponent() {
+        resultComponent = (TimeField) factory.createComponent(TimeField.NAME);
+        loadId(resultComponent, element);
     }
 
     @Override
-    protected void initComponent(Field field, Element element, Component parent) {
-        super.initComponent(field, element, parent);
-
-        TimeField component = (TimeField) field;
+    public void loadComponent() {
+        super.loadComponent();
 
         String timeFormat = element.attributeValue("timeFormat");
         if (StringUtils.isNotEmpty(timeFormat)) {
             timeFormat = loadResourceString(timeFormat);
-            component.setFormat(timeFormat);
+            resultComponent.setFormat(timeFormat);
         }
 
         String showSeconds = element.attributeValue("showSeconds");
         if (StringUtils.isNotEmpty(showSeconds)) {
-            component.setShowSeconds(Boolean.valueOf(showSeconds));
+            resultComponent.setShowSeconds(Boolean.valueOf(showSeconds));
         }
     }
 

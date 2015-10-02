@@ -5,52 +5,45 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.BoxLayout;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.VBoxLayout;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.dom4j.Element;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-public class AppWorkAreaLoader extends ContainerLoader {
+public class AppWorkAreaLoader extends ContainerLoader<AppWorkArea> {
 
-    public AppWorkAreaLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context, config, factory);
+    protected ComponentLoader initialLayoutLoader;
+
+    @Override
+    public void createComponent() {
+        resultComponent = (AppWorkArea) factory.createComponent(AppWorkArea.NAME);
+        loadId(resultComponent, element);
+
+        Element initialLayoutElement = element.element("initialLayout");
+        initialLayoutLoader = getLoader(initialLayoutElement, VBoxLayout.NAME);
+        initialLayoutLoader.createComponent();
+        VBoxLayout initialLayout = (VBoxLayout) initialLayoutLoader.getResultComponent();
+        resultComponent.setInitialLayout(initialLayout);
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        AppWorkArea component = (AppWorkArea) factory.createComponent(element.getName());
+    public void loadComponent() {
+        loadId(resultComponent, element);
+        assignFrame(resultComponent);
 
-        initComponent(component, element, parent);
+        loadEnable(resultComponent, element);
+        loadVisible(resultComponent, element);
 
-        return component;
-    }
+        loadStyleName(resultComponent, element);
+        loadAlign(resultComponent, element);
 
-    protected void initComponent(AppWorkArea component, Element element, Component parent) {
-        loadId(component, element);
+        loadWidth(resultComponent, element);
+        loadHeight(resultComponent, element);
 
-        loadEnable(component, element);
-        loadVisible(component, element);
-
-        loadStyleName(component, element);
-        loadAlign(component, element);
-
-        loadWidth(component, element);
-        loadHeight(component, element);
-
-        assignFrame(component);
-
-        Element initialLayoutElement = element.element("initialLayout");
-        if (initialLayoutElement != null) {
-            com.haulmont.cuba.gui.xml.layout.ComponentLoader boxLoader = getLoader(BoxLayout.VBOX);
-            VBoxLayout initialLayout = (VBoxLayout) boxLoader.loadComponent(factory, initialLayoutElement, null);
-            component.setInitialLayout(initialLayout);
-        }
+        initialLayoutLoader.loadComponent();
     }
 }

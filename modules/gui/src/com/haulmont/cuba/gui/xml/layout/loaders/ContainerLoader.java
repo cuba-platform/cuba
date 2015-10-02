@@ -7,16 +7,12 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ExpandingLayout;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -24,50 +20,47 @@ import java.util.List;
  * @author abramov
  * @version $Id$
  */
-public abstract class ContainerLoader extends ComponentLoader {
-    protected ComponentsFactory factory;
-    protected LayoutLoaderConfig config;
+public abstract class ContainerLoader<T extends Component> extends AbstractComponentLoader<T> {
 
-    public ContainerLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context);
-        this.config = config;
-        this.factory = factory;
-    }
+    protected List<ComponentLoader> pendingLoadComponents = new ArrayList<>();
 
-    protected Collection<Component> loadSubComponents(Component.Container component, Element element, String... exceptTags) {
-        final List<Component> res = new ArrayList<>();
-
-        final LayoutLoader loader = new LayoutLoader(context, factory, config);
-        loader.setLocale(getLocale());
-        loader.setMessagesPack(getMessagesPack());
-
-        for (Element subElement : (Collection<Element>) element.elements()) {
-            String name = subElement.getName();
-            if (exceptTags != null && Arrays.binarySearch(exceptTags, name) < 0) {
-                Component subComponent = loader.loadComponent(subElement, component);
-                component.add(subComponent);
-                res.add(subComponent);
-            }
+    protected void loadSubComponents() {
+        for (ComponentLoader componentLoader : pendingLoadComponents) {
+            componentLoader.loadComponent();
         }
 
-        return res;
+        pendingLoadComponents.clear();
     }
 
     protected void loadSpacing(Component.Spacing layout, Element element) {
-        final String spacing = element.attributeValue("spacing");
+        String spacing = element.attributeValue("spacing");
         if (!StringUtils.isEmpty(spacing)) {
             layout.setSpacing(Boolean.valueOf(spacing));
         }
     }
 
-    protected void loadSubComponentsAndExpand(ExpandingLayout layout, Element element, String... exceptTags) {
-        loadSubComponents(layout, element, exceptTags);
+    protected void createSubComponents(Component.Container container, Element containerElement) {
+        LayoutLoader loader = new LayoutLoader(context, factory, layoutLoaderConfig);
+        loader.setLocale(getLocale());
+        loader.setMessagesPack(getMessagesPack());
 
-        final String expand = element.attributeValue("expand");
+        //noinspection unchecked
+        for (Element subElement : (Collection<Element>) containerElement.elements()) {
+            ComponentLoader componentLoader = loader.createComponent(subElement);
+            pendingLoadComponents.add(componentLoader);
+
+            container.add(componentLoader.getResultComponent());
+        }
+    }
+
+    protected void loadSubComponentsAndExpand(ExpandingLayout layout, Element element) {
+        loadSubComponents();
+
+        String expand = element.attributeValue("expand");
         if (!StringUtils.isEmpty(expand)) {
-            final String[] parts = expand.split(";");
-            final String targetId = parts[0];
-            final Component componentToExpand = layout.getOwnComponent(targetId);
+            String[] parts = expand.split(";");
+            String targetId = parts[0];
+            Component componentToExpand = layout.getOwnComponent(targetId);
 
             if (componentToExpand != null) {
                 String height = find(parts, "height");
@@ -81,41 +74,12 @@ public abstract class ContainerLoader extends ComponentLoader {
         }
     }
 
-    private String find(String[] parts, String name) {
+    protected final String find(String[] parts, String name) {
         for (String part : parts) {
             if (part.trim().startsWith(name + "=")) {
                 return part.trim().substring((name + "=").length()).trim();
             }
         }
         return null;
-    }
-
-    protected com.haulmont.cuba.gui.xml.layout.ComponentLoader getLoader(String name) {
-        Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> loaderClass = config.getLoader(name);
-        if (loaderClass == null) {
-            throw new GuiDevelopmentException("Unknown component: " + name, context.getFullFrameId());
-        }
-
-        com.haulmont.cuba.gui.xml.layout.ComponentLoader loader;
-        try {
-            final Constructor<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> constructor =
-                    loaderClass.getConstructor(Context.class, LayoutLoaderConfig.class, ComponentsFactory.class);
-            loader = constructor.newInstance(context, config, factory);
-
-            loader.setLocale(locale);
-            loader.setMessagesPack(messagesPack);
-        } catch (NoSuchMethodException e) {
-            try {
-                loader = loaderClass.newInstance();
-                loader.setLocale(locale);
-                loader.setMessagesPack(messagesPack);
-            } catch (InstantiationException | IllegalAccessException e1) {
-                throw new GuiDevelopmentException("Loader instatiation error: " + e1, context.getFullFrameId());
-            }
-        } catch (InvocationTargetException | IllegalAccessException | InstantiationException e) {
-            throw new GuiDevelopmentException("Loader instatiation error: " + e, context.getFullFrameId());
-        }
-
-        return loader;
     }
 }

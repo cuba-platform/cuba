@@ -6,55 +6,38 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.TextField;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.dom4j.Element;
 
 /**
  * @author abramov
  * @version $Id$
  */
-public class TextFieldLoader extends AbstractTextFieldLoader {
-
-    private static final Logger log = LoggerFactory.getLogger(TextFieldLoader.class);
-
-    public TextFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context, config, factory);
-    }
-
+public class TextFieldLoader extends AbstractTextFieldLoader<TextField> {
     @Override
-    protected void initComponent(Field field, Element element, Component parent) {
-        super.initComponent(field, element, parent);
+    public void loadComponent() {
+        super.loadComponent();
 
-        if (element.attribute("rows") != null || element.attribute("cols") != null) {
-            log.warn("For textField element specified rows or cols attribute, use textArea for this purpose");
-        }
-        if (element.attribute("secret") != null) {
-            log.warn("For textField element specified secret attribute, use passwordField for this purpose");
-        }
-
-        TextField component = (TextField) field;
-
-        loadMaxLength(element, component);
-        loadTrimming(element, component);
+        loadMaxLength(resultComponent, element);
+        loadTrimming(resultComponent, element);
 
         String datatypeAttribute = element.attributeValue("datatype");
         if (StringUtils.isNotEmpty(datatypeAttribute)) {
             Datatype datatype = Datatypes.get(datatypeAttribute);
-            component.setDatatype(datatype);
+            resultComponent.setDatatype(datatype);
         }
 
-        component.setFormatter(loadFormatter(element));
+        resultComponent.setFormatter(loadFormatter(element));
 
         String inputPrompt = element.attributeValue("inputPrompt");
         if (StringUtils.isNotBlank(inputPrompt)) {
-            component.setInputPrompt(loadResourceString(inputPrompt));
+            resultComponent.setInputPrompt(loadResourceString(inputPrompt));
         }
+    }
+
+    @Override
+    public void createComponent() {
+        resultComponent = (TextField) factory.createComponent(TextField.NAME);
+        loadId(resultComponent, element);
     }
 }

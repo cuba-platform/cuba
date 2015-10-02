@@ -6,10 +6,10 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.LookupField;
+import com.haulmont.cuba.gui.components.TokenList;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -18,48 +18,72 @@ import org.dom4j.Element;
  * @author gorodnov
  * @version $Id$
  */
-public class TokenListLoader extends AbstractFieldLoader {
-
-    public TokenListLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context, config, factory);
+public class TokenListLoader extends AbstractFieldLoader<TokenList> {
+    @Override
+    public void createComponent() {
+        resultComponent = (TokenList) factory.createComponent(TokenList.NAME);
+        loadId(resultComponent, element);
     }
 
     @Override
-    protected void initComponent(Field field, Element element, Component parent) {
-        TokenList component = (TokenList) field;
+    public void loadComponent() {
+        assignXmlDescriptor(resultComponent, element);
+        assignFrame(resultComponent);
 
-        assignXmlDescriptor(component, element);
-        loadId(component, element);
-        loadDatasource(component, element);
+        loadDatasource(resultComponent, element);
 
-        loadVisible(component, element);
-        loadEditable(component, element);
-        loadEnable(component, element);
+        loadVisible(resultComponent, element);
+        loadEditable(resultComponent, element);
+        loadEnable(resultComponent, element);
 
-        loadStyleName(component, element);
+        loadStyleName(resultComponent, element);
 
-        loadCaption(component, element);
-        loadDescription(component, element);
+        loadCaption(resultComponent, element);
+        loadDescription(resultComponent, element);
 
-        loadHeight(component, element);
-        loadWidth(component, element);
+        loadHeight(resultComponent, element);
+        loadWidth(resultComponent, element);
 
-        String captionProperty = element.attributeValue("captionProperty");
-        if (!StringUtils.isEmpty(captionProperty)) {
-            component.setCaptionMode(CaptionMode.PROPERTY);
-            component.setCaptionProperty(captionProperty);
+        loadCaptionProperty(resultComponent, element);
+        loadPosition(resultComponent, element);
+
+        loadInline(resultComponent, element);
+
+        loadLookup(resultComponent, element);
+
+        loadButton(resultComponent, element);
+
+        loadSimple(resultComponent, element);
+    }
+
+    protected void loadSimple(TokenList component, Element element) {
+        String simple = element.attributeValue("simple");
+        if (!StringUtils.isEmpty(simple)) {
+            component.setSimple(BooleanUtils.toBoolean(simple));
+        } else {
+            component.setSimple(false);
         }
+    }
 
-        String position = element.attributeValue("position");
-        if (!StringUtils.isEmpty(position)) {
-            component.setPosition(TokenList.Position.valueOf(position));
+    protected void loadButton(TokenList component, Element element) {
+        Element buttonElement = element.element("button");
+        if (buttonElement != null) {
+            String caption = buttonElement.attributeValue("caption");
+            if (caption != null) {
+                if (!StringUtils.isEmpty(caption)) {
+                    caption = loadResourceString(caption);
+                }
+                component.setAddButtonCaption(caption);
+            }
+
+            String icon = buttonElement.attributeValue("icon");
+            if (!StringUtils.isEmpty(icon)) {
+                component.setAddButtonIcon(loadResourceString(icon));
+            }
         }
+    }
 
-        String inline = element.attributeValue("inline");
-        if (!StringUtils.isEmpty(inline)) {
-            component.setInline(BooleanUtils.toBoolean(inline));
-        }
-
+    protected void loadLookup(TokenList component, Element element) {
         Element lookupElement = element.element("lookup");
         if (lookupElement == null) {
             throw new GuiDevelopmentException("'tokenList' must contain 'lookup' element", context.getFullFrameId(),
@@ -99,38 +123,37 @@ public class TokenListLoader extends AbstractFieldLoader {
         }
 
         loadFilterMode(component, lookupElement);
+    }
 
-        Element buttonElement = element.element("button");
-        if (buttonElement != null) {
-            String caption = buttonElement.attributeValue("caption");
-            if (caption != null) {
-                if (!StringUtils.isEmpty(caption))
-                    caption = loadResourceString(caption);
-                component.setAddButtonCaption(caption);
-            }
-
-            String icon = buttonElement.attributeValue("icon");
-            if (!StringUtils.isEmpty(icon)) {
-                component.setAddButtonIcon(loadResourceString(icon));
-            }
+    protected void loadInline(TokenList component, Element element) {
+        String inline = element.attributeValue("inline");
+        if (!StringUtils.isEmpty(inline)) {
+            component.setInline(BooleanUtils.toBoolean(inline));
         }
+    }
 
-        String simple = element.attributeValue("simple");
-        if (!StringUtils.isEmpty(simple)) {
-            component.setSimple(BooleanUtils.toBoolean(simple));
-        } else {
-            component.setSimple(false);
+    protected void loadPosition(TokenList component, Element element) {
+        String position = element.attributeValue("position");
+        if (!StringUtils.isEmpty(position)) {
+            component.setPosition(TokenList.Position.valueOf(position));
         }
+    }
 
-        assignFrame(component);
+    protected void loadCaptionProperty(TokenList component, Element element) {
+        String captionProperty = element.attributeValue("captionProperty");
+        if (!StringUtils.isEmpty(captionProperty)) {
+            component.setCaptionMode(CaptionMode.PROPERTY);
+            component.setCaptionProperty(captionProperty);
+        }
     }
 
     protected void loadDatasource(TokenList component, Element element) {
         final String datasource = element.attributeValue("datasource");
         if (!StringUtils.isEmpty(datasource)) {
             CollectionDatasource ds = (CollectionDatasource) context.getDsContext().get(datasource);
-            if (ds == null)
+            if (ds == null) {
                 throw new GuiDevelopmentException(String.format("Datasource '%s' is not defined", datasource), context.getFullFrameId());
+            }
             component.setDatasource(ds);
         }
     }

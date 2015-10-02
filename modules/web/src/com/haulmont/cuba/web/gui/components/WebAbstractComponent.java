@@ -11,6 +11,7 @@ import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.web.AppUI;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Layout;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.dom4j.Element;
@@ -104,9 +105,15 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     @Override
     public void setId(String id) {
-        this.id = id;
-        if (this.component != null && AppUI.getCurrent().isTestMode()) {
-            this.component.setCubaId(id);
+        if (!ObjectUtils.equals(this.id, id)) {
+            this.id = id;
+            if (this.component != null && AppUI.getCurrent().isTestMode()) {
+                this.component.setCubaId(id);
+            }
+
+            if (frame != null) {
+                frame.registerComponent(this);
+            }
         }
     }
 
@@ -227,10 +234,13 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
     @Override
     public void setAlignment(Alignment alignment) {
         this.alignment = alignment;
-        final com.vaadin.ui.Component component = this.getComposition().getParent();
-        if (component instanceof Layout.AlignmentHandler) {
-            ((Layout.AlignmentHandler) component).setComponentAlignment(this.getComposition(),
-                    WebComponentsHelper.convertAlignment(alignment));
+
+        if (getComposition().getParent() != null) {
+            com.vaadin.ui.Component component = this.getComposition().getParent();
+            if (component instanceof Layout.AlignmentHandler) {
+                ((Layout.AlignmentHandler) component).setComponentAlignment(this.getComposition(),
+                        WebComponentsHelper.convertAlignment(alignment));
+            }
         }
     }
 

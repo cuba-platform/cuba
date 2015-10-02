@@ -4,17 +4,17 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.VBoxLayout;
 
 /**
  * @author abramov
  * @version $Id$
  */
-public class TableLoader extends AbstractTableLoader<Table> {
+public class VBoxLayoutLoader extends AbstractBoxLoader<VBoxLayout> {
     @Override
     public void createComponent() {
-        resultComponent = (Table) factory.createComponent(Table.NAME);
+        resultComponent = (VBoxLayout) factory.createComponent(VBoxLayout.NAME);
         loadId(resultComponent, element);
-        createButtonsPanel(resultComponent, element);
+        createSubComponents(resultComponent, element);
     }
 }

@@ -4,47 +4,37 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.FlowBoxLayout;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import org.dom4j.Element;
 
 /**
  * @author gorodnov
  * @version $Id$
  */
-public class FlowBoxLayoutLoader extends ContainerLoader {
-
-    public FlowBoxLayoutLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context, config, factory);
+public class FlowBoxLayoutLoader extends ContainerLoader<FlowBoxLayout> {
+    @Override
+    public void createComponent() {
+        resultComponent = (FlowBoxLayout) factory.createComponent(FlowBoxLayout.NAME);
+        loadId(resultComponent, element);
+        createSubComponents(resultComponent, element);
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final FlowBoxLayout component = (FlowBoxLayout) factory.createComponent(element.getName());
+    public void loadComponent() {
+        assignXmlDescriptor(resultComponent, element);
+        assignFrame(resultComponent);
 
-        initComponent(component, element, parent);
+        loadId(resultComponent, element);
+        loadEnable(resultComponent, element);
+        loadVisible(resultComponent, element);
 
-        return component;
-    }
+        loadStyleName(resultComponent, element);
 
-    protected void initComponent(FlowBoxLayout component, Element element, Component parent) {
-        assignXmlDescriptor(component, element);
-        loadId(component, element);
-        loadEnable(component, element);
-        loadVisible(component, element);
+        loadSpacing(resultComponent, element);
+        loadMargin(resultComponent, element);
 
-        loadStyleName(component, element);
+        loadHeight(resultComponent, element);
+        loadWidth(resultComponent, element);
 
-        loadSpacing(component, element);
-        loadMargin(component, element);
-
-        loadSubComponents(component, element, "visible");
-
-        loadHeight(component, element);
-        loadWidth(component, element);
-
-        assignFrame(component);
+        loadSubComponents();
     }
 }

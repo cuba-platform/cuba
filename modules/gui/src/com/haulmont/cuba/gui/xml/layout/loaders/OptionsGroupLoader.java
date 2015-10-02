@@ -5,11 +5,11 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.DatasourceComponent;
+import com.haulmont.cuba.gui.components.OptionsGroup;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -18,22 +18,7 @@ import org.dom4j.Element;
  * @author abramov
  * @version $Id$
  */
-public class OptionsGroupLoader extends AbstractFieldLoader {
-
-    public OptionsGroupLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context, config, factory);
-    }
-
-    @Override
-    protected void initComponent(Field field, Element element, Component parent) {
-        super.initComponent(field, element, parent);
-
-        OptionsGroup component = (OptionsGroup) field;
-
-        loadOrientation(component, element);
-        loadCaptionProperty(component, element);
-    }
-
+public class OptionsGroupLoader extends AbstractFieldLoader<OptionsGroup> {
     protected void loadCaptionProperty(OptionsGroup component, Element element) {
         String captionProperty = element.attributeValue("captionProperty");
         if (!StringUtils.isEmpty(captionProperty)) {
@@ -44,12 +29,12 @@ public class OptionsGroupLoader extends AbstractFieldLoader {
 
     @Override
     protected void loadDatasource(DatasourceComponent component, Element element) {
-        final String multiselect = element.attributeValue("multiselect");
+        String multiselect = element.attributeValue("multiselect");
         ((OptionsGroup) component).setMultiSelect(BooleanUtils.toBoolean(multiselect));
 
-        final String datasource = element.attributeValue("optionsDatasource");
+        String datasource = element.attributeValue("optionsDatasource");
         if (!StringUtils.isEmpty(datasource)) {
-            final Datasource ds = context.getDsContext().get(datasource);
+            Datasource ds = context.getDsContext().get(datasource);
             ((OptionsGroup) component).setOptionsDatasource((CollectionDatasource) ds);
         }
 
@@ -71,5 +56,19 @@ public class OptionsGroupLoader extends AbstractFieldLoader {
             throw new GuiDevelopmentException("Invalid orientation value for option group: " +
                     orientation, context.getFullFrameId(), "OptionsGroup ID", component.getId());
         }
+    }
+
+    @Override
+    public void createComponent() {
+        resultComponent = (OptionsGroup) factory.createComponent(OptionsGroup.NAME);
+        loadId(resultComponent, element);
+    }
+
+    @Override
+    public void loadComponent() {
+        super.loadComponent();
+
+        loadOrientation(resultComponent, element);
+        loadCaptionProperty(resultComponent, element);
     }
 }

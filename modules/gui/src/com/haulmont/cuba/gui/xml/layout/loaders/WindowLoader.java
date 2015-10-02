@@ -5,13 +5,9 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -26,51 +22,60 @@ import java.util.Map;
  * @author abramov
  * @version $Id$
  */
-public class WindowLoader extends FrameLoader implements ComponentLoader {
+public class WindowLoader extends FrameLoader<Window> {
 
-    public WindowLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context, config, factory);
-    }
-
-    @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final Window window = createComponent(factory);
-
-        context.setFrame(window);
-
-        assignXmlDescriptor(window, element);
-        loadMessagesPack(window, element);
-        loadCaption(window, element);
-        loadActions(window, element);
-
-        final Element layoutElement = element.element("layout");
-        if (layoutElement == null)
-            throw new GuiDevelopmentException("Required 'layout' element is not found", context.getFullFrameId());
-
-        loadSubComponentsAndExpand(window, layoutElement);
-        loadSpacing(window, layoutElement);
-        loadMargin(window, layoutElement);
-        loadWidth(window, layoutElement);
-        loadHeight(window, layoutElement);
-        loadStyleName(window, layoutElement);
-        loadVisible(window, layoutElement);
-
-        loadTimers(factory, window, element);
-
-        loadFocusedComponent(window, element);
-
-        return window;
-    }
+    protected String windowId;
 
     protected Window createComponent(ComponentsFactory factory) {
         return factory.createComponent(Window.class);
     }
 
-    public static class Editor extends WindowLoader {
-        public Editor(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-            super(context, config, factory);
+    @Override
+    public void createComponent() {
+        resultComponent = createComponent(factory);
+        resultComponent.setId(windowId);
+
+        Element layoutElement = element.element("layout");
+        createSubComponents(resultComponent, layoutElement);
+    }
+
+    @Override
+    public void loadComponent() {
+        context.setFrame(resultComponent);
+
+        assignXmlDescriptor(resultComponent, element);
+        loadMessagesPack(resultComponent, element);
+        loadCaption(resultComponent, element);
+        loadActions(resultComponent, element);
+
+        Element layoutElement = element.element("layout");
+        if (layoutElement == null) {
+            throw new GuiDevelopmentException("Required 'layout' element is not found", context.getFullFrameId());
         }
 
+        loadSpacing(resultComponent, layoutElement);
+        loadMargin(resultComponent, layoutElement);
+        loadWidth(resultComponent, layoutElement);
+        loadHeight(resultComponent, layoutElement);
+        loadStyleName(resultComponent, layoutElement);
+        loadVisible(resultComponent, layoutElement);
+
+        loadTimers(factory, resultComponent, element);
+
+        loadSubComponentsAndExpand(resultComponent, layoutElement);
+
+        loadFocusedComponent(resultComponent, element);
+    }
+
+    public String getWindowId() {
+        return windowId;
+    }
+
+    public void setWindowId(String windowId) {
+        this.windowId = windowId;
+    }
+
+    public static class Editor extends WindowLoader {
         @Override
         protected Window createComponent(ComponentsFactory factory) {
             return factory.createComponent(Window.Editor.class);
@@ -78,10 +83,6 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
     }
 
     public static class Lookup extends WindowLoader {
-        public Lookup(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-            super(context, config, factory);
-        }
-
         @Override
         protected Window createComponent(ComponentsFactory factory) {
             return factory.createComponent(Window.Lookup.class);
@@ -99,7 +100,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
     }
 
     protected void loadTimer(ComponentsFactory factory, final Window component, Element element) {
-        final Timer timer = factory.createTimer();
+        Timer timer = factory.createTimer();
         timer.setXmlDescriptor(element);
         timer.setId(element.attributeValue("id"));
         String delay = element.attributeValue("delay");
@@ -151,41 +152,31 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         window.setFocusComponent(componentId);
     }
 
-    protected void addInitTimerMethodTask(final Timer timer, final String timerMethodName) {
-        context.addPostInitTask(new PostInitTask() {
-            @Override
-            public void execute(Context context, final Frame window) {
-                Method timerMethod;
-                try {
-                    timerMethod = window.getClass().getMethod(timerMethodName, Timer.class);
-                } catch (NoSuchMethodException e) {
-                    Map<String, Object> params = new HashMap<>(2);
-                    params.put("Timer Id", timer.getId());
-                    params.put("Method name", timerMethodName);
+    protected void addInitTimerMethodTask(Timer timer, String timerMethodName) {
+        context.addPostInitTask((context1, window) -> {
+            Method timerMethod;
+            try {
+                timerMethod = window.getClass().getMethod(timerMethodName, Timer.class);
+            } catch (NoSuchMethodException e) {
+                Map<String, Object> params = new HashMap<>(2);
+                params.put("Timer Id", timer.getId());
+                params.put("Method name", timerMethodName);
 
-                    throw new GuiDevelopmentException("Unable to find invoke method for timer",
-                            context.getFullFrameId(), params);
-                }
-
-                final Method timerInvokeMethod = timerMethod;
-
-                timer.addActionListener(t -> {
-                    try {
-                        timerInvokeMethod.invoke(window, t);
-                    } catch (IllegalAccessException | InvocationTargetException e) {
-                        throw new RuntimeException("Unable to invoke onTimer", e);
-                    }
-                });
+                throw new GuiDevelopmentException("Unable to find invoke method for timer",
+                        context1.getFullFrameId(), params);
             }
+
+            timer.addActionListener(t -> {
+                try {
+                    timerMethod.invoke(window, t);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new RuntimeException("Unable to invoke onTimer", e);
+                }
+            });
         });
     }
 
-    protected void addAutoStartTimerTask(final Timer timer) {
-        context.addPostInitTask(new PostInitTask() {
-            @Override
-            public void execute(Context context, Frame window) {
-                timer.start();
-            }
-        });
+    protected void addAutoStartTimerTask(Timer timer) {
+        context.addPostInitTask((context1, window) -> timer.start());
     }
 }

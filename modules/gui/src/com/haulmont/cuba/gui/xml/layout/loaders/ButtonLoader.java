@@ -5,9 +5,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Button;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.xml.DeclarativeAction;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -15,42 +13,7 @@ import org.dom4j.Element;
  * @author abramov
  * @version $Id$
  */
-public class ButtonLoader extends com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoader {
-    public ButtonLoader(Context context) {
-        super(context);
-    }
-
-    @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final Button component = (Button) factory.createComponent(element.getName());
-
-        initComponent(component, element, parent);
-
-        return component;
-    }
-
-    protected void initComponent(Button component, Element element, Component parent) {
-        assignXmlDescriptor(component, element);
-        loadId(component, element);
-
-        boolean enabled = loadEnable(component, element);
-        boolean visible = loadVisible(component, element);
-
-        loadStyleName(component, element);
-
-        loadCaption(component, element);
-        loadDescription(component, element);
-        loadAction(component, element);
-        loadIcon(component, element);
-
-        loadWidth(component, element);
-        loadHeight(component, element);
-        loadAlign(component, element);
-
-        assignFrame(component);
-
-        loadInvoke(component, enabled, visible, element);
-    }
+public class ButtonLoader extends AbstractComponentLoader<Button> {
 
     protected void loadInvoke(Button component, boolean enabled, boolean visible, Element element) {
         if (!StringUtils.isBlank(element.attributeValue("action"))) {
@@ -74,5 +37,33 @@ public class ButtonLoader extends com.haulmont.cuba.gui.xml.layout.loaders.Compo
                 component.getFrame()
         );
         component.setAction(action);
+    }
+
+    @Override
+    public void createComponent() {
+        resultComponent = (Button) factory.createComponent(Button.NAME);
+        loadId(resultComponent, element);
+    }
+
+    @Override
+    public void loadComponent() {
+        assignXmlDescriptor(resultComponent, element);
+        assignFrame(resultComponent);
+
+        boolean enabled = loadEnable(resultComponent, element);
+        boolean visible = loadVisible(resultComponent, element);
+
+        loadStyleName(resultComponent, element);
+
+        loadCaption(resultComponent, element);
+        loadDescription(resultComponent, element);
+        loadAction(resultComponent, element);
+        loadIcon(resultComponent, element);
+
+        loadWidth(resultComponent, element);
+        loadHeight(resultComponent, element);
+        loadAlign(resultComponent, element);
+
+        loadInvoke(resultComponent, enabled, visible, element);
     }
 }

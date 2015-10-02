@@ -4,102 +4,101 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TabSheet;
+import com.haulmont.cuba.gui.components.VBoxLayout;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author abramov
  * @version $Id$
  */
-public class TabSheetLoader extends ContainerLoader {
+public class TabSheetLoader extends ContainerLoader<TabSheet> {
 
-    public TabSheetLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context, config, factory);
-    }
+    protected Map<Element, TabSheet.Tab> pendingLoadTabs = new LinkedHashMap<>();
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        TabSheet component = (TabSheet) factory.createComponent(TabSheet.NAME);
+    public void createComponent() {
+        resultComponent = (TabSheet) factory.createComponent(TabSheet.NAME);
+        loadId(resultComponent, element);
 
-        initComponent(component, factory, element, parent);
-
-        return component;
-    }
-
-    protected void initComponent(TabSheet component, ComponentsFactory factory, Element element, Component parent) {
-        assignXmlDescriptor(component, element);
-        loadId(component, element);
-        loadVisible(component, element);
-
-        loadStyleName(component, element);
-
-        loadHeight(component, element);
-        loadWidth(component, element);
-
-        @SuppressWarnings("unchecked")
-        final List<Element> tabElements = element.elements("tab");
+        //noinspection unchecked
+        List<Element> tabElements = element.elements("tab");
         for (Element tabElement : tabElements) {
             final String name = tabElement.attributeValue("id");
 
             boolean lazy = Boolean.valueOf(tabElement.attributeValue("lazy"));
-
-            final ComponentLoader tabComponentLoader = getLoader(BoxLayout.VBOX);
-            final TabSheet.Tab tab;
-
+            ComponentLoader tabComponentLoader = getLoader(tabElement, VBoxLayout.NAME);
+            TabSheet.Tab tab;
             if (lazy) {
-                tab = component.addLazyTab(name, tabElement, tabComponentLoader);
+                tab = resultComponent.addLazyTab(name, tabElement, tabComponentLoader);
             } else {
-                Component tabComponent = tabComponentLoader.loadComponent(factory, tabElement, null);
+                tabComponentLoader.createComponent();
+
+                Component tabComponent = tabComponentLoader.getResultComponent();
                 tabComponent.setEnabled(true);
                 tabComponent.setVisible(true);
 
-                tab = component.addTab(name, tabComponent);
+                tab = resultComponent.addTab(name, tabComponent);
+
+                pendingLoadComponents.add(tabComponentLoader);
             }
 
-            final String detachable = tabElement.attributeValue("detachable");
-            if (StringUtils.isNotEmpty(detachable)) {
-                tab.setDetachable(Boolean.valueOf(detachable));
-            }
+            pendingLoadTabs.put(tabElement, tab);
+        }
+    }
 
-            String caption = tabElement.attributeValue("caption");
+    @Override
+    public void loadComponent() {
+        assignFrame(resultComponent);
+        assignXmlDescriptor(resultComponent, element);
 
-            if (!StringUtils.isEmpty(caption)) {
-                caption = loadResourceString(caption);
-                tab.setCaption(caption);
-            }
+        loadVisible(resultComponent, element);
+        loadStyleName(resultComponent, element);
+        loadAlign(resultComponent, element);
 
-            String visible = tabElement.attributeValue("visible");
-            if (StringUtils.isNotEmpty(visible)) {
-                tab.setVisible(Boolean.valueOf(visible));
-            }
+        loadHeight(resultComponent, element);
+        loadWidth(resultComponent, element);
 
-            String enable = tabElement.attributeValue("enable");
-            if (enable == null) {
-                final Element e = tabElement.element("enable");
-                if (e != null) {
-                    // todo remove obsolete way
-                    enable = e.getText();
+        @SuppressWarnings("unchecked")
+        List<Element> tabElements = element.elements("tab");
+        for (Element tabElement : tabElements) {
+            TabSheet.Tab tab = pendingLoadTabs.remove(tabElement);
+            if (tab != null) {
+                String detachable = tabElement.attributeValue("detachable");
+                if (StringUtils.isNotEmpty(detachable)) {
+                    tab.setDetachable(Boolean.valueOf(detachable));
                 }
-            }
 
-            String style = tabElement.attributeValue("stylename");
-            if (style != null) {
-                tab.setStyleName(style);
-            }
+                String caption = tabElement.attributeValue("caption");
+                if (!StringUtils.isEmpty(caption)) {
+                    caption = loadResourceString(caption);
+                    tab.setCaption(caption);
+                }
 
-            if (!StringUtils.isEmpty(enable)) {
-                tab.setEnabled(Boolean.valueOf(enable));
+                String visible = tabElement.attributeValue("visible");
+                if (StringUtils.isNotEmpty(visible)) {
+                    tab.setVisible(Boolean.valueOf(visible));
+                }
+
+                String style = tabElement.attributeValue("stylename");
+                if (style != null) {
+                    tab.setStyleName(style);
+                }
+
+                String enable = tabElement.attributeValue("enable");
+                if (!StringUtils.isEmpty(enable)) {
+                    tab.setEnabled(Boolean.valueOf(enable));
+                }
             }
         }
 
-        assignFrame(component);
+        loadSubComponents();
     }
 }

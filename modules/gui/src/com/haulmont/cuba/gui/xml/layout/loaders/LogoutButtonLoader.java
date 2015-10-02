@@ -5,45 +5,35 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.mainwindow.LogoutButton;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import org.dom4j.Element;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-public class LogoutButtonLoader extends ComponentLoader {
-    public LogoutButtonLoader(Context context) {
-        super(context);
+public class LogoutButtonLoader extends AbstractComponentLoader<LogoutButton> {
+    @Override
+    public void createComponent() {
+        resultComponent = (LogoutButton) factory.createComponent(LogoutButton.NAME);
+        loadId(resultComponent, element);
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        LogoutButton component = (LogoutButton) factory.createComponent(element.getName());
+    public void loadComponent() {
+        assignXmlDescriptor(resultComponent, element);
+        assignFrame(resultComponent);
 
-        initComponent(component, element, parent);
+        loadCaption(resultComponent, element);
+        loadDescription(resultComponent, element);
 
-        return component;
-    }
+        loadStyleName(resultComponent, element);
+        loadAlign(resultComponent, element);
+        loadIcon(resultComponent, element);
 
-    protected void initComponent(LogoutButton component, Element element, Component parent) {
-        loadId(component, element);
+        loadWidth(resultComponent, element);
+        loadHeight(resultComponent, element);
 
-        loadCaption(component, element);
-        loadDescription(component, element);
-
-        loadStyleName(component, element);
-        loadAlign(component, element);
-        loadIcon(component, element);
-
-        loadWidth(component, element);
-        loadHeight(component, element);
-
-        loadEnable(component, element);
-        loadVisible(component, element);
-
-        assignFrame(component);
+        loadEnable(resultComponent, element);
+        loadVisible(resultComponent, element);
     }
 }

@@ -10,8 +10,6 @@ import com.haulmont.cuba.desktop.DetachedFrame;
 import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
 import com.haulmont.cuba.desktop.sys.ButtonTabComponent;
 import com.haulmont.cuba.desktop.sys.vcl.JTabbedPaneExt;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
@@ -118,7 +116,7 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
             throw new IllegalStateException("Component already has parent");
         }
 
-        final TabImpl tab = new TabImpl(name, component, false);
+        TabImpl tab = new TabImpl(name, component, false);
 
         tabs.add(tab);
         components.put(component, name);
@@ -184,7 +182,7 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
         }
     }
 
-    protected void setTabComponent(final TabImpl tab, int componentIndex) {
+    protected void setTabComponent(TabImpl tab, int componentIndex) {
         ButtonTabComponent.CloseListener closeListener = new ButtonTabComponent.CloseListener(){
             @Override
             public void onTabClose(int tabIndex) {
@@ -368,25 +366,22 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
         // init component SelectedTabChangeListener only when needed, making sure it is
         // after all lazy tabs listeners
         if (!componentTabChangeListenerInitialized) {
-            impl.addChangeListener(new ChangeListener() {
-                @Override
-                public void stateChanged(ChangeEvent e) {
-                    // Init lazy tab if needed
-                    initLazyTab((JComponent) impl.getSelectedComponent());
-                    // Fire GUI listener
-                    fireTabChanged();
-                    // Execute outstanding post init tasks after GUI listener.
-                    // We suppose that context.executePostInitTasks() executes a task once and then remove it from task list.
-                    if (context != null) {
-                        context.executePostInitTasks();
-                    }
+            impl.addChangeListener(e -> {
+                // Init lazy tab if needed
+                initLazyTab((JComponent) impl.getSelectedComponent());
+                // Fire GUI listener
+                fireTabChanged();
+                // Execute outstanding post init tasks after GUI listener.
+                // We suppose that context.executePostInitTasks() executes a task once and then remove it from task list.
+                if (context != null) {
+                    context.executePostInitTasks();
+                }
 
-                    Window window = com.haulmont.cuba.gui.ComponentsHelper.getWindow(DesktopTabSheet.this);
-                    if (window != null) {
-                        ((DsContextImplementation) window.getDsContext()).resumeSuspended();
-                    } else {
-                        log.warn("Please specify Frame for TabSheet");
-                    }
+                Window window = ComponentsHelper.getWindow(DesktopTabSheet.this);
+                if (window != null) {
+                    ((DsContextImplementation) window.getDsContext()).resumeSuspended();
+                } else {
+                    log.warn("Please specify Frame for TabSheet");
                 }
             });
             componentTabChangeListenerInitialized = true;
@@ -401,38 +396,42 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
                 break;
             }
         }
-        if (lti == null) // already initialized
-            return;
 
-        if (!lti.getTab().isEnabled())
+        if (lti == null) { // already initialized
             return;
+        }
+
+        if (!lti.getTab().isEnabled()) {
+            return;
+        }
 
         lazyTabs.remove(lti);
 
-        Component comp = lti.loader.loadComponent(AppConfig.getFactory(), lti.descriptor, null);
-        comp.setWidth("100%");
-        lti.tabContent.add(comp);
-        lti.tabContent.expand(comp, "", "");
+        lti.loader.createComponent();
 
-        comp.setParent(this);
+        Component lazyContent = lti.loader.getResultComponent();
 
-        if (comp instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
-            ((DesktopAbstractComponent) comp).setParentEnabled(false);
+        lazyContent.setWidth("100%");
+        lti.tabContent.add(lazyContent);
+        lti.tabContent.expand(lazyContent, "", "");
+        lazyContent.setParent(this);
+
+        lti.loader.loadComponent();
+
+        if (lazyContent instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
+            ((DesktopAbstractComponent) lazyContent).setParentEnabled(false);
         }
 
         final Window window = ComponentsHelper.getWindow(DesktopTabSheet.this);
         if (window != null) {
             ComponentsHelper.walkComponents(
                     lti.tabContent,
-                    new ComponentVisitor() {
-                        @Override
-                        public void visit(Component component, String name) {
-                            if (component instanceof HasSettings) {
-                                Settings settings = window.getSettings();
-                                if (settings != null) {
-                                    Element e = settings.get(name);
-                                    ((HasSettings) component).applySettings(e);
-                                }
+                    (component, name) -> {
+                        if (component instanceof HasSettings) {
+                            Settings settings = window.getSettings();
+                            if (settings != null) {
+                                Element e = settings.get(name);
+                                ((HasSettings) component).applySettings(e);
                             }
                         }
                     }

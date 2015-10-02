@@ -329,7 +329,7 @@ public class DesktopFrame
             }
             return wrapper;
         } catch (Throwable e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to init frame controller", e);
         }
     }
 

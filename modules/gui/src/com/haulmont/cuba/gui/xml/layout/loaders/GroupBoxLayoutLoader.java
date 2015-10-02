@@ -5,80 +5,47 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GroupBoxLayout;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 /**
  * @author abramov
  * @version $Id$
  */
-public class GroupBoxLayoutLoader extends ContainerLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
+public class GroupBoxLayoutLoader extends ContainerLoader<GroupBoxLayout> {
 
-    public GroupBoxLayoutLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context, config, factory);
+    @Override
+    public void createComponent() {
+        resultComponent = (GroupBoxLayout) factory.createComponent(GroupBoxLayout.NAME);
+        loadId(resultComponent, element);
+        loadOrientation(resultComponent, element);
+        createSubComponents(resultComponent, element);
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        GroupBoxLayout component = (GroupBoxLayout) factory.createComponent(element.getName());
+    public void loadComponent() {
+        assignXmlDescriptor(resultComponent, element);
+        assignFrame(resultComponent);
 
-        initComponent(component, element, parent);
+        loadCaption(resultComponent, element);
+        loadDescription(resultComponent, element);
 
-        return component;
-    }
+        loadAlign(resultComponent, element);
+        loadVisible(resultComponent, element);
+        loadEnable(resultComponent, element);
 
-    protected void initComponent(GroupBoxLayout component, Element element, Component parent) {
-        assignXmlDescriptor(component, element);
-        loadId(component, element);
+        loadOrientation(resultComponent, element);
 
-        loadCaption(component, element);
+        loadCollapsible(resultComponent, element, false);
 
-        if (StringUtils.isEmpty(component.getCaption())) {
-            // for backward compatibility
-            Element captionElement = element.element("caption");
-            if (captionElement != null) {
-                String caption = captionElement.attributeValue("label");
-                if (!StringUtils.isEmpty(caption)) {
-                    caption = loadResourceString(caption);
-                    component.setCaption(caption);
-                }
-            }
-        }
+        loadStyleName(resultComponent, element);
 
-        if (StringUtils.isEmpty(component.getCaption())) {
-            // for backward compatibility
-            Element descriptionElement = element.element("description");
-            if (descriptionElement != null) {
-                String description = descriptionElement.attributeValue("label");
-                if (!StringUtils.isEmpty(description)) {
-                    description = loadResourceString(description);
-                    component.setDescription(description);
-                }
-            }
-        }
+        loadHeight(resultComponent, element);
+        loadWidth(resultComponent, element);
 
-        loadAlign(component, element);
-        loadVisible(component, element);
-        loadEnable(component, element);
+        loadSpacing(resultComponent, element);
 
-        loadOrientation(component, element);
-
-        loadSubComponentsAndExpand(component, element, "caption", "description", "visible");
-
-        loadCollapsible(component, element, false);
-
-        loadStyleName(component, element);
-
-        loadHeight(component, element);
-        loadWidth(component, element);
-
-        loadSpacing(component, element);
-
-        assignFrame(component);
+        loadSubComponentsAndExpand(resultComponent, element);
     }
 
     protected void loadOrientation(GroupBoxLayout component, Element element) {

@@ -8,8 +8,10 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.components.BulkEditor;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Field;
+import com.haulmont.cuba.gui.components.ListComponent;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -22,78 +24,9 @@ import java.util.Map;
  * @author artamonov
  * @version $Id$
  */
-public class BulkEditorLoader extends ComponentLoader {
+public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
 
-    public BulkEditorLoader(Context context) {
-        super(context);
-    }
-
-    @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        BulkEditor component = (BulkEditor) factory.createComponent(element.getName());
-
-        initComponent(component, element, parent);
-
-        return component;
-    }
-
-    protected void initComponent(final BulkEditor component, Element element, Component parent) {
-        assignXmlDescriptor(component, element);
-        loadId(component, element);
-
-        loadEnable(component, element);
-        loadVisible(component, element);
-
-        loadStyleName(component, element);
-
-        loadCaption(component, element);
-        loadDescription(component, element);
-        loadIcon(component, element);
-
-        loadWidth(component, element);
-        loadAlign(component, element);
-
-        assignFrame(component);
-
-        if (!userSessionSource.getUserSession().isSpecificPermitted(BulkEditor.PERMISSION)) {
-            component.setVisible(false);
-        }
-
-        String openType = element.attributeValue("openType");
-        if (StringUtils.isNotEmpty(openType)) {
-            component.setOpenType(WindowManager.OpenType.valueOf(openType));
-        }
-
-        String exclude = element.attributeValue("exclude");
-        if (StringUtils.isNotBlank(exclude)) {
-            component.setExcludePropertiesRegex(exclude.replace(" ", ""));
-        }
-
-        final String listComponent = element.attributeValue("for");
-        if (StringUtils.isEmpty(listComponent)) {
-            throw new GuiDevelopmentException("'for' attribute of bulk editor is not specified",
-                    context.getFullFrameId(), "componentId", component.getId());
-        }
-
-        context.addPostInitTask(new PostInitTask() {
-            @Override
-            public void execute(Context context, Frame window) {
-                if (component.getListComponent() == null) {
-                    Component bindComponent = component.getFrame().getComponent(listComponent);
-                    if (!(bindComponent instanceof ListComponent)) {
-                        throw new GuiDevelopmentException("Specify 'for' attribute: id of table or tree",
-                                context.getFullFrameId(), "componentId", component.getId());
-                    }
-
-                    component.setListComponent((ListComponent) bindComponent);
-                }
-            }
-        });
-
-        loadValidators(component, element);
-    }
-
-    private void loadValidators(BulkEditor component, Element element) {
+    protected void loadValidators(BulkEditor component, Element element) {
         List<Element> validatorElements = Dom4j.elements(element, "validator");
         if (!validatorElements.isEmpty()) {
             List<Field.Validator> modelValidators = new ArrayList<>();
@@ -118,5 +51,64 @@ public class BulkEditorLoader extends ComponentLoader {
                 component.setModelValidators(modelValidators);
             }
         }
+    }
+
+    @Override
+    public void createComponent() {
+        resultComponent = (BulkEditor) factory.createComponent(BulkEditor.NAME);
+        loadId(resultComponent, element);
+    }
+
+    @Override
+    public void loadComponent() {
+        assignXmlDescriptor(resultComponent, element);
+        assignFrame(resultComponent);
+
+        loadEnable(resultComponent, element);
+        loadVisible(resultComponent, element);
+
+        loadStyleName(resultComponent, element);
+
+        loadCaption(resultComponent, element);
+        loadDescription(resultComponent, element);
+        loadIcon(resultComponent, element);
+
+        loadWidth(resultComponent, element);
+        loadAlign(resultComponent, element);
+
+        if (!userSessionSource.getUserSession().isSpecificPermitted(BulkEditor.PERMISSION)) {
+            resultComponent.setVisible(false);
+        }
+
+        String openType = element.attributeValue("openType");
+        if (StringUtils.isNotEmpty(openType)) {
+            resultComponent.setOpenType(WindowManager.OpenType.valueOf(openType));
+        }
+
+        String exclude = element.attributeValue("exclude");
+        if (StringUtils.isNotBlank(exclude)) {
+            resultComponent.setExcludePropertiesRegex(exclude.replace(" ", ""));
+        }
+
+        String listComponent = element.attributeValue("for");
+        if (StringUtils.isEmpty(listComponent)) {
+            throw new GuiDevelopmentException("'for' attribute of bulk editor is not specified",
+                    context.getFullFrameId(), "componentId", resultComponent.getId());
+        }
+
+        context.addPostInitTask((context1, window) -> {
+            // todo artamonov here we can use post wrap instead of post init
+            if (resultComponent.getListComponent() == null) {
+                Component bindComponent = resultComponent.getFrame().getComponent(listComponent);
+                if (!(bindComponent instanceof ListComponent)) {
+                    throw new GuiDevelopmentException("Specify 'for' attribute: id of table or tree",
+                            context1.getFullFrameId(), "componentId", resultComponent.getId());
+                }
+
+                resultComponent.setListComponent((ListComponent) bindComponent);
+            }
+        });
+
+        loadValidators(resultComponent, element);
     }
 }

@@ -5,41 +5,30 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.mainwindow.TimeZoneIndicator;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import org.dom4j.Element;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-public class TimeZoneIndicatorLoader extends ComponentLoader {
-    public TimeZoneIndicatorLoader(Context context) {
-        super(context);
+public class TimeZoneIndicatorLoader extends AbstractComponentLoader<TimeZoneIndicator> {
+    @Override
+    public void createComponent() {
+        resultComponent = (TimeZoneIndicator) factory.createComponent(TimeZoneIndicator.NAME);
+        loadId(resultComponent, element);
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        TimeZoneIndicator component = (TimeZoneIndicator) factory.createComponent(element.getName());
+    public void loadComponent() {
+        assignFrame(resultComponent);
 
-        initComponent(component, element, parent);
+        loadStyleName(resultComponent, element);
+        loadAlign(resultComponent, element);
 
-        return component;
-    }
+        loadWidth(resultComponent, element);
+        loadHeight(resultComponent, element);
 
-    protected void initComponent(TimeZoneIndicator component, Element element, Component parent) {
-        loadId(component, element);
-
-        loadStyleName(component, element);
-        loadAlign(component, element);
-
-        loadWidth(component, element);
-        loadHeight(component, element);
-
-        loadEnable(component, element);
-        loadVisible(component, element);
-
-        assignFrame(component);
+        loadEnable(resultComponent, element);
+        loadVisible(resultComponent, element);
     }
 }

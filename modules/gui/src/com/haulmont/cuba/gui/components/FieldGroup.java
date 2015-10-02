@@ -227,6 +227,11 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
         public void setMetaPropertyPath(MetaPropertyPath metaPropertyPath) {
             this.metaPropertyPath = metaPropertyPath;
         }
+
+        @Override
+        public String toString() {
+            return id;
+        }
     }
 
     class FieldsValidationException extends ValidationException {

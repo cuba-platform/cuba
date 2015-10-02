@@ -5,43 +5,32 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import org.dom4j.Element;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-public class UserIndicatorLoader extends ComponentLoader {
-    public UserIndicatorLoader(Context context) {
-        super(context);
+public class UserIndicatorLoader extends AbstractComponentLoader<UserIndicator> {
+    @Override
+    public void createComponent() {
+        resultComponent = (UserIndicator) factory.createComponent(UserIndicator.NAME);
+        loadId(resultComponent, element);
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        UserIndicator component = (UserIndicator) factory.createComponent(element.getName());
+    public void loadComponent() {
+        assignFrame(resultComponent);
 
-        initComponent(component, element, parent);
+        loadStyleName(resultComponent, element);
+        loadAlign(resultComponent, element);
 
-        return component;
-    }
+        loadWidth(resultComponent, element);
+        loadHeight(resultComponent, element);
 
-    protected void initComponent(UserIndicator component, Element element, Component parent) {
-        loadId(component, element);
+        loadEnable(resultComponent, element);
+        loadVisible(resultComponent, element);
 
-        loadStyleName(component, element);
-        loadAlign(component, element);
-
-        loadWidth(component, element);
-        loadHeight(component, element);
-
-        loadEnable(component, element);
-        loadVisible(component, element);
-
-        assignFrame(component);
-
-        component.refreshUserSubstitutions();
+        context.addPostInitTask((context1, window) -> resultComponent.refreshUserSubstitutions());
     }
 }

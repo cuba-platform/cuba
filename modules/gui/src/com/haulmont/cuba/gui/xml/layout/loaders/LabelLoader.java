@@ -6,59 +6,47 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Label;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
-import org.dom4j.Element;
 
 /**
  * @author abramov
  * @version $Id$
  */
-public class LabelLoader extends AbstractDatasourceComponentLoader {
-
-    public LabelLoader(Context context) {
-        super(context);
+public class LabelLoader extends AbstractDatasourceComponentLoader<Label> {
+    @Override
+    public void createComponent() {
+        resultComponent = (Label) factory.createComponent(Label.NAME);
+        loadId(resultComponent, element);
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        Label component = (Label) factory.createComponent(element.getName());
+    public void loadComponent() {
+        assignXmlDescriptor(resultComponent, element);
+        assignFrame(resultComponent);
 
-        initComponent(component, element, parent);
+        loadDatasource(resultComponent, element);
 
-        return component;
-    }
-
-    protected void initComponent(Label component, Element element, Component parent) {
-        assignXmlDescriptor(component, element);
-        loadId(component, element);
-        loadDatasource(component, element);
-
-        loadVisible(component, element);
-
-        loadAlign(component, element);
-
-        loadStyleName(component, element);
+        loadVisible(resultComponent, element);
+        loadAlign(resultComponent, element);
+        loadStyleName(resultComponent, element);
 
         String htmlEnabled = element.attributeValue("htmlEnabled");
         if (StringUtils.isNotEmpty(htmlEnabled)) {
-            component.setHtmlEnabled(Boolean.valueOf(htmlEnabled));
+            resultComponent.setHtmlEnabled(Boolean.valueOf(htmlEnabled));
         }
 
         String caption = element.attributeValue("value");
         if (StringUtils.isNotEmpty(caption)) {
             caption = loadResourceString(caption);
-            component.setValue(caption);
+            resultComponent.setValue(caption);
         }
+        
+        loadCaption(resultComponent, element);
+        loadDescription(resultComponent, element);
 
-        loadCaption(component, element);
-        loadDescription(component, element);
+        loadWidth(resultComponent, element, Component.AUTO_SIZE);
+        loadHeight(resultComponent, element, Component.AUTO_SIZE);
 
-        loadWidth(component, element, Component.AUTO_SIZE);
-        loadHeight(component, element, Component.AUTO_SIZE);
-
-        component.setFormatter(loadFormatter(element));
-
-        assignFrame(component);
+        resultComponent.setFormatter(loadFormatter(element));
     }
 }

@@ -6,11 +6,10 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.SearchPickerField;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -19,50 +18,38 @@ import org.dom4j.Element;
  * @version $Id$
  */
 public class SearchPickerFieldLoader extends SearchFieldLoader {
-
-    public SearchPickerFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context, config, factory);
+    @Override
+    public void createComponent() {
+        resultComponent = (SearchPickerField) factory.createComponent(SearchPickerField.NAME);
+        loadId(resultComponent, element);
     }
 
     @Override
-    protected void initComponent(Field field, Element element, Component parent) {
-        super.initComponent(field, element, parent);
+    public void loadComponent() {
+        super.loadComponent();
 
-        SearchPickerField component = (SearchPickerField) field;
+        SearchPickerField searchPickerField = (SearchPickerField) resultComponent;
 
         String metaClass = element.attributeValue("metaClass");
         if (!StringUtils.isEmpty(metaClass)) {
             Metadata metadata = AppBeans.get(Metadata.NAME);
-            component.setMetaClass(metadata.getSession().getClass(metaClass));
+            searchPickerField.setMetaClass(metadata.getSession().getClass(metaClass));
         }
 
-        loadActions(component, element);
-        if (component.getActions().isEmpty()) {
-            component.addLookupAction();
-            component.addOpenAction();
+        loadActions(searchPickerField, element);
+        if (searchPickerField.getActions().isEmpty()) {
+            searchPickerField.addLookupAction();
+            searchPickerField.addOpenAction();
         }
 
         String minSearchStringLength = element.attributeValue("minSearchStringLength");
         if (StringUtils.isNotEmpty(minSearchStringLength)) {
-            component.setMinSearchStringLength(Integer.parseInt(minSearchStringLength));
+            searchPickerField.setMinSearchStringLength(Integer.parseInt(minSearchStringLength));
         }
     }
 
     @Override
     protected Action loadDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {
-        String id = element.attributeValue("id");
-        if (id == null)
-            throw new GuiDevelopmentException("No action ID provided", context.getFullFrameId());
-
-        if (StringUtils.isBlank(element.attributeValue("invoke"))) {
-            // Try to create a standard picker action
-            for (PickerField.ActionType type : PickerField.ActionType.values()) {
-                if (type.getId().equals(id)) {
-                    return type.createAction((PickerField) actionsHolder);
-                }
-            }
-        }
-
-        return super.loadDeclarativeAction(actionsHolder, element);
+        return loadPickerDeclarativeAction(actionsHolder, element);
     }
 }

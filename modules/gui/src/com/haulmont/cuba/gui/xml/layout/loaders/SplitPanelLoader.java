@@ -4,69 +4,53 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.SplitPanel;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.cuba.gui.components.VBoxLayout;
 import org.apache.commons.lang.StringUtils;
-import org.dom4j.Element;
-
-import java.util.Collection;
 
 /**
  * @author abramov
  * @version $Id$
  */
-public class SplitPanelLoader extends ContainerLoader{
+public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
+    @Override
+    public void createComponent() {
+        resultComponent = (SplitPanel) factory.createComponent(SplitPanel.NAME);
+        loadId(resultComponent, element);
 
-    public SplitPanelLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context, config, factory);
+        String orientation = element.attributeValue("orientation");
+        if (StringUtils.isEmpty(orientation)) {
+            resultComponent.setOrientation(SplitPanel.ORIENTATION_VERTICAL);
+        } else if ("vertical".equalsIgnoreCase(orientation)) {
+            resultComponent.setOrientation(SplitPanel.ORIENTATION_VERTICAL);
+        } else if ("horizontal".equalsIgnoreCase(orientation)) {
+            resultComponent.setOrientation(SplitPanel.ORIENTATION_HORIZONTAL);
+        }
+
+        createSubComponents(resultComponent, element);
+        if (resultComponent.getOwnComponents().size() == 1) {
+            resultComponent.add(factory.createComponent(VBoxLayout.NAME));
+        }
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        SplitPanel component = (SplitPanel) factory.createComponent(element.getName());
+    public void loadComponent() {
+        assignXmlDescriptor(resultComponent, element);
+        assignFrame(resultComponent);
 
-        initComponent(component, factory, element, parent);
+        loadVisible(resultComponent, element);
+        loadStyleName(resultComponent, element);
 
-        return component;
-    }
-
-    protected void initComponent(SplitPanel component, ComponentsFactory factory, Element element, Component parent) {
-        assignXmlDescriptor(component, element);
-        loadId(component, element);
-
-        final String orientation = element.attributeValue("orientation");
-        if (StringUtils.isEmpty(orientation)) {
-            component.setOrientation(SplitPanel.ORIENTATION_VERTICAL);
-        } else if ("vertical".equalsIgnoreCase(orientation)) {
-            component.setOrientation(SplitPanel.ORIENTATION_VERTICAL);
-        } else if ("horizontal".equalsIgnoreCase(orientation)) {
-            component.setOrientation(SplitPanel.ORIENTATION_HORIZONTAL);
-        }
-
-        loadVisible(component, element);
-        loadStyleName(component, element);
-
-        final Collection<Component> components = loadSubComponents(component, element, "visible");
-        if (components.size() == 0) {
-            throw new GuiDevelopmentException("Split panel must contain at least one child component",
-                    context.getFullFrameId());
-        } else if (components.size() == 1) {
-            component.add(factory.createComponent(BoxLayout.VBOX));
-        }
-
-        final String pos = element.attributeValue("pos");
+        String pos = element.attributeValue("pos");
         if (!StringUtils.isEmpty(pos)) {
-            component.setSplitPosition(Integer.parseInt(pos));
+            resultComponent.setSplitPosition(Integer.parseInt(pos));
         }
 
-        loadHeight(component, element, Component.AUTO_SIZE);
-        loadWidth(component, element, Component.AUTO_SIZE);
-        loadAlign(component, element);
+        loadHeight(resultComponent, element, Component.AUTO_SIZE);
+        loadWidth(resultComponent, element, Component.AUTO_SIZE);
+        loadAlign(resultComponent, element);
 
-        assignFrame(component);
+        loadSubComponents();
     }
 }

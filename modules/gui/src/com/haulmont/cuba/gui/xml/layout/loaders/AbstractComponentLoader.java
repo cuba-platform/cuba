@@ -15,24 +15,31 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component.Alignment;
 import com.haulmont.cuba.gui.components.validators.*;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.gui.xml.DeclarativeAction;
 import com.haulmont.cuba.gui.xml.DeclarativeTrackingAction;
+import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 
 /**
  * @author abramov
  * @version $Id$
  */
-public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
+public abstract class AbstractComponentLoader<T extends Component> implements ComponentLoader<T> {
 
     protected Locale locale;
     protected String messagesPack;
@@ -47,10 +54,13 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
     protected ThemeConstants themeConstants;
+    protected ComponentsFactory factory;
+    protected LayoutLoaderConfig layoutLoaderConfig;
+    protected Element element;
 
-    protected ComponentLoader(Context context) {
-        this.context = context;
+    protected T resultComponent;
 
+    protected AbstractComponentLoader() {
         ThemeConstantsManager themeConstantsManager = AppBeans.get(ThemeConstantsManager.NAME);
         this.themeConstants = themeConstantsManager.getConstants();
     }
@@ -60,6 +70,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         return context;
     }
 
+    @Override
     public void setContext(Context context) {
         this.context = context;
     }
@@ -84,15 +95,49 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         this.messagesPack = name;
     }
 
+    @Override
+    public ComponentsFactory getFactory() {
+        return factory;
+    }
+
+    @Override
+    public void setFactory(ComponentsFactory factory) {
+        this.factory = factory;
+    }
+
+    @Override
+    public void setElement(Element element) {
+        this.element = element;
+    }
+
+    @Override
+    public Element getElement(Element element) {
+        return element;
+    }
+
+    @Override
+    public T getResultComponent() {
+        return resultComponent;
+    }
+
+    @Override
+    public LayoutLoaderConfig getLayoutLoaderConfig() {
+        return layoutLoaderConfig;
+    }
+
+    @Override
+    public void setLayoutLoaderConfig(LayoutLoaderConfig layoutLoaderConfig) {
+        this.layoutLoaderConfig = layoutLoaderConfig;
+    }
+
     protected void loadId(Component component, Element element) {
-        final String id = element.attributeValue("id");
+        String id = element.attributeValue("id");
         component.setId(id);
     }
 
     protected void loadStyleName(Component component, Element element) {
-        final String styleName = element.attributeValue("stylename");
-        if (!StringUtils.isEmpty(styleName)) {
-            component.setStyleName(styleName);
+        if (element.attribute("stylename") != null) {
+            component.setStyleName(element.attributeValue("stylename"));
         }
     }
 
@@ -159,13 +204,6 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         }
 
         String visible = element.attributeValue("visible");
-        if (visible == null) {
-            final Element e = element.element("visible");
-            if (e != null) {
-                visible = e.getText();
-            }
-        }
-
         if (!StringUtils.isEmpty(visible)) {
             Boolean visibleValue = Boolean.valueOf(visible);
             component.setVisible(visibleValue);
@@ -178,14 +216,6 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
 
     protected boolean loadEnable(Component component, Element element) {
         String enable = element.attributeValue("enable");
-        if (enable == null) {
-            // todo artamonov remove in 6.0
-            final Element e = element.element("enable");
-            if (e != null) {
-                enable = e.getText();
-            }
-        }
-
         if (!StringUtils.isEmpty(enable)) {
             Boolean enabled = Boolean.valueOf(enable);
             component.setEnabled(enabled);
@@ -211,15 +241,10 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         return value;
     }
 
-    protected void loadAlign(final Component component, Element element) {
-        final String align = element.attributeValue("align");
+    protected void loadAlign(Component component, Element element) {
+        String align = element.attributeValue("align");
         if (!StringUtils.isBlank(align)) {
-            context.addPostInitTask(new PostInitTask() {
-                @Override
-                public void execute(Context context, Frame window) {
-                    component.setAlignment(Component.Alignment.valueOf(align));
-                }
-            });
+            component.setAlignment(Alignment.valueOf(align));
         }
     }
 
@@ -287,10 +312,10 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
                 }
 
                 layout.setMargin(
-                    Boolean.valueOf(StringUtils.trimToEmpty(margins[0])),
-                    Boolean.valueOf(StringUtils.trimToEmpty(margins[1])),
-                    Boolean.valueOf(StringUtils.trimToEmpty(margins[2])),
-                    Boolean.valueOf(StringUtils.trimToEmpty(margins[3]))
+                        Boolean.valueOf(StringUtils.trimToEmpty(margins[0])),
+                        Boolean.valueOf(StringUtils.trimToEmpty(margins[1])),
+                        Boolean.valueOf(StringUtils.trimToEmpty(margins[2])),
+                        Boolean.valueOf(StringUtils.trimToEmpty(margins[3]))
                 );
             } else {
                 layout.setMargin(Boolean.valueOf(margin));
@@ -439,5 +464,114 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
                     actionsHolder
             );
         }
+    }
+
+    protected Action loadPickerDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {
+        String id = element.attributeValue("id");
+        if (id == null) {
+            Element component = element;
+            for (int i = 0; i < 2; i++) {
+                if (component.getParent() != null) {
+                    component = component.getParent();
+                } else {
+                    throw new GuiDevelopmentException("No action ID provided for " + element.getName(), context.getFullFrameId());
+                }
+            }
+            throw new GuiDevelopmentException("No action ID provided for " + element.getName(), context.getFullFrameId(),
+                    "PickerField ID", component.attributeValue("id"));
+        }
+
+        if (StringUtils.isBlank(element.attributeValue("invoke"))) {
+            // Try to create a standard picker action
+            for (PickerField.ActionType type : PickerField.ActionType.values()) {
+                if (type.getId().equals(id)) {
+                    Action action = type.createAction((PickerField) actionsHolder);
+                    if (type != PickerField.ActionType.LOOKUP && type != PickerField.ActionType.OPEN) {
+                        return action;
+                    }
+
+                    String openTypeString = element.attributeValue("openType");
+                    if (openTypeString == null) {
+                        return action;
+                    }
+
+                    WindowManager.OpenType openType;
+                    try {
+                        openType = WindowManager.OpenType.valueOf(openTypeString);
+                    } catch (IllegalArgumentException e) {
+                        throw new GuiDevelopmentException(
+                                "Unknown open type: '" + openTypeString + "' for action: '" + id + "'", context.getFullFrameId());
+                    }
+
+                    if (action instanceof PickerField.LookupAction) {
+                        ((PickerField.LookupAction) action).setLookupScreenOpenType(openType);
+                    } else if (action instanceof PickerField.OpenAction) {
+                        ((PickerField.OpenAction) action).setEditScreenOpenType(openType);
+                    }
+                    return action;
+                }
+            }
+        }
+
+        return loadDeclarativeAction(actionsHolder, element);
+    }
+
+    protected Formatter loadFormatter(Element element) {
+        final Element formatterElement = element.element("formatter");
+        if (formatterElement != null) {
+            final String className = formatterElement.attributeValue("class");
+
+            if (StringUtils.isEmpty(className)) {
+                throw new GuiDevelopmentException("Formatter's attribute 'class' is not specified", context.getCurrentFrameId());
+            }
+
+            Class<?> aClass = scripting.loadClass(className);
+            if (aClass == null) {
+                throw new GuiDevelopmentException(String.format("Class %s is not found", className), context.getFullFrameId());
+            }
+
+            try {
+                final Constructor<?> constructor = aClass.getConstructor(Element.class);
+                try {
+                    return (Formatter) constructor.newInstance(formatterElement);
+                } catch (Throwable e) {
+                    throw new GuiDevelopmentException("Unable to instatiate class " + className + ": " + e.toString(),
+                            context.getFullFrameId());
+                }
+            } catch (NoSuchMethodException e) {
+                try {
+                    return (Formatter) aClass.newInstance();
+                } catch (Exception e1) {
+                    throw new GuiDevelopmentException("Unable to instatiate class " + className + ": " + e1.toString(),
+                            context.getFullFrameId());
+                }
+            }
+        } else {
+            return null;
+        }
+    }
+
+    protected ComponentLoader getLoader(Element element, String name) {
+        Class<? extends ComponentLoader> loaderClass = layoutLoaderConfig.getLoader(name);
+        if (loaderClass == null) {
+            throw new GuiDevelopmentException("Unknown component: " + name, context.getFullFrameId());
+        }
+
+        ComponentLoader loader;
+        try {
+            Constructor<? extends ComponentLoader> constructor = loaderClass.getConstructor();
+            loader = constructor.newInstance();
+
+            loader.setLocale(locale);
+            loader.setMessagesPack(messagesPack);
+            loader.setContext(context);
+            loader.setLayoutLoaderConfig(layoutLoaderConfig);
+            loader.setFactory(factory);
+            loader.setElement(element);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
+            throw new GuiDevelopmentException("Loader instatiation error: " + e, context.getFullFrameId());
+        }
+
+        return loader;
     }
 }

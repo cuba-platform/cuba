@@ -18,11 +18,8 @@ import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.FieldGroup;
-import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -38,148 +35,15 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  * @author gorodnov
  * @version $Id$
  */
-public class FieldGroupLoader extends AbstractFieldLoader {
+public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
     protected DynamicAttributes dynamicAttributes = AppBeans.get(DynamicAttributes.NAME);
 
-    public FieldGroupLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context, config, factory);
-    }
-
-    @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final FieldGroup component = (FieldGroup) factory.createComponent(element.getName());
-
-        initComponent(component, element, parent);
-
-        return component;
-    }
-
-    protected void initComponent(final FieldGroup component, Element element, Component parent) {
-        assignXmlDescriptor(component, element);
-        loadId(component, element);
-
-        assignFrame(component);
-
-        loadVisible(component, element);
-
-        final Datasource ds = loadDatasource(element);
-        if (element.elements("column").isEmpty()) {
-            final List<FieldGroup.FieldConfig> rootFields = loadFields(component, element, ds);
-            for (final FieldGroup.FieldConfig field : rootFields) {
-                component.addField(field);
-            }
-        } else {
-            @SuppressWarnings("unchecked")
-            final List<Element> columnElements = element.elements("column");
-            @SuppressWarnings("unchecked")
-            final List<Element> fieldElements = element.elements("field");
-            if (fieldElements.size() > 0) {
-                Map<String, Object> params = new HashMap<>();
-                String fieldGroupId = component.getId();
-                if (StringUtils.isNotEmpty(fieldGroupId))
-                    params.put("FieldGroup ID", fieldGroupId);
-                throw new GuiDevelopmentException("FieldGroup field elements should be placed within its column.", context.getFullFrameId(), params);
-            }
-            component.setColumns(columnElements.size());
-
-            int colIndex = 0;
-            for (final Element columnElement : columnElements) {
-                String flex = columnElement.attributeValue("flex");
-                if (StringUtils.isNotEmpty(flex)) {
-                    component.setColumnExpandRatio(colIndex, Float.parseFloat(flex));
-                }
-
-                String width = loadThemeString(columnElement.attributeValue("width"));
-
-                final List<FieldGroup.FieldConfig> columnFields = loadFields(component, columnElement, ds);
-                for (final FieldGroup.FieldConfig field : columnFields) {
-                    component.addField(field, colIndex);
-                    if (StringUtils.isNotEmpty(width) && field.getWidth() == null) {
-                        field.setWidth(width);
-                    }
-                }
-
-                String columnFieldCaptionWidth = columnElement.attributeValue("fieldCaptionWidth");
-                if (StringUtils.isNotEmpty(columnFieldCaptionWidth)) {
-                    if (columnFieldCaptionWidth.startsWith(MessageTools.MARK)) {
-                        columnFieldCaptionWidth = loadResourceString(columnFieldCaptionWidth);
-                    }
-                    if (columnFieldCaptionWidth.endsWith("px")) {
-                        columnFieldCaptionWidth = columnFieldCaptionWidth.substring(0, columnFieldCaptionWidth.indexOf("px"));
-                    }
-
-                    component.setFieldCaptionWidth(colIndex, Integer.parseInt(columnFieldCaptionWidth));
-                }
-
-                colIndex++;
-            }
-        }
-
-        addDynamicAttributes(component, ds);
-
-        component.setDatasource(ds);
-
-        loadEditable(component, element);
-        loadEnable(component, element);
-
-        loadStyleName(component, element);
-
-        loadCaption(component, element);
-
-        loadHeight(component, element);
-        loadWidth(component, element);
-        loadAlign(component, element);
-
-        loadBorder(component, element);
-
-        loadCaptionAlignment(component, element);
-
-        loadFieldCaptionWidth(component, element);
-
-        final List<FieldGroup.FieldConfig> fields = component.getFields();
-        for (final FieldGroup.FieldConfig field : fields) {
-            if (!field.isCustom()) {
-                if (!DynamicAttributesUtils.isDynamicAttribute(field.getId())) {//the following does not make sense for dynamic attrs
-                    loadValidators(component, field);
-                    loadRequired(component, field);
-                    loadEnable(component, field);
-                    loadVisible(component, field);
-                }
-
-                loadEditable(component, field);
-            }
-        }
-
-        // deffer attribute loading for custom fields
-        context.addPostInitTask(new PostInitTask() {
-            @Override
-            public void execute(Context context, Frame window) {
-                final List<FieldGroup.FieldConfig> fields = component.getFields();
-                for (final FieldGroup.FieldConfig field : fields) {
-                    if (field.isCustom()) {
-                        Component fieldComponent = component.getFieldComponent(field);
-                        if (fieldComponent != null) {
-                            loadValidators(component, field);
-                            loadRequired(component, field);
-                            loadEditable(component, field);
-                            loadEnable(component, field);
-                            loadVisible(component, field);
-                        } else {
-                            LogFactory.getLog(FieldGroupLoader.class).warn(
-                                    "Missing component for custom field " + field.getId());
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    protected void addDynamicAttributes(FieldGroup fieldGroup, Datasource ds) {
+    protected void addDynamicAttributes(FieldGroup resultComponent, Datasource ds) {
         if (ds != null && AppBeans.get(MetadataTools.NAME, MetadataTools.class).isPersistent(ds.getMetaClass())) {
             DynamicAttributesGuiTools dynamicAttributesGuiTools =
                     AppBeans.get(DynamicAttributesGuiTools.NAME, DynamicAttributesGuiTools.class);
             Set<CategoryAttribute> attributesToShow =
-                    dynamicAttributesGuiTools.getAttributesToShowOnTheScreen(ds.getMetaClass(), context.getFullFrameId(), fieldGroup.getId());
+                    dynamicAttributesGuiTools.getAttributesToShowOnTheScreen(ds.getMetaClass(), context.getFullFrameId(), resultComponent.getId());
             if (CollectionUtils.isNotEmpty(attributesToShow)) {
                 ds.setLoadDynamicAttributes(true);
                 for (CategoryAttribute attribute : attributesToShow) {
@@ -196,12 +60,12 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                             "validation.required.defaultMsg",
                             attribute.getName()));
 
-                    if (fieldGroup.getWidth() > 0) {
+                    if (resultComponent.getWidth() > 0) {
                         field.setWidth("100%");
                     } else {
                         field.setWidth(FieldGroup.DEFAULT_FIELD_WIDTH);
                     }
-                    fieldGroup.addField(field);
+                    resultComponent.addField(field);
                 }
             }
 
@@ -209,7 +73,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         }
     }
 
-    protected void loadFieldCaptionWidth(FieldGroup component, Element element) {
+    protected void loadFieldCaptionWidth(FieldGroup resultComponent, Element element) {
         String fieldCaptionWidth = element.attributeValue("fieldCaptionWidth");
         if (StringUtils.isNotEmpty(fieldCaptionWidth)) {
             if (fieldCaptionWidth.startsWith(MessageTools.MARK)) {
@@ -219,12 +83,12 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                 fieldCaptionWidth = fieldCaptionWidth.substring(0, fieldCaptionWidth.indexOf("px"));
             }
 
-            component.setFieldCaptionWidth(Integer.parseInt(fieldCaptionWidth));
+            resultComponent.setFieldCaptionWidth(Integer.parseInt(fieldCaptionWidth));
         }
     }
 
     protected Datasource loadDatasource(Element element) {
-        final String datasource = element.attributeValue("datasource");
+        String datasource = element.attributeValue("datasource");
         if (!StringUtils.isBlank(datasource)) {
             Datasource ds = context.getDsContext().get(datasource);
             if (ds == null) {
@@ -235,25 +99,27 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         return null;
     }
 
-    protected List<FieldGroup.FieldConfig> loadFields(FieldGroup component, Element element, Datasource ds) {
+    protected List<FieldGroup.FieldConfig> loadFields(FieldGroup resultComponent, Element element, Datasource ds) {
         @SuppressWarnings("unchecked")
-        final List<Element> fieldElements = element.elements("field");
+        List<Element> fieldElements = element.elements("field");
         if (!fieldElements.isEmpty()) {
-            return loadFields(component, fieldElements, ds);
+            return loadFields(resultComponent, fieldElements, ds);
         }
         return Collections.emptyList();
     }
 
-    protected List<FieldGroup.FieldConfig> loadFields(FieldGroup component, List<Element> elements, Datasource ds) {
-        final List<FieldGroup.FieldConfig> fields = new ArrayList<>(elements.size());
+    protected List<FieldGroup.FieldConfig> loadFields(FieldGroup resultComponent, List<Element> elements, Datasource ds) {
+        List<FieldGroup.FieldConfig> fields = new ArrayList<>(elements.size());
         List<String> ids = new ArrayList<>();
-        for (final Element fieldElement : elements) {
-            FieldGroup.FieldConfig field = loadField(component, fieldElement, ds);
+        for (Element fieldElement : elements) {
+            FieldGroup.FieldConfig field = loadField(fieldElement, ds);
             if (ids.contains(field.getId())) {
                 Map<String, Object> params = new HashMap<>();
-                String fieldGroupId = component.getId();
-                if (StringUtils.isNotEmpty(fieldGroupId))
+                String fieldGroupId = resultComponent.getId();
+                if (StringUtils.isNotEmpty(fieldGroupId)) {
                     params.put("FieldGroup ID", fieldGroupId);
+                }
+
                 throw new GuiDevelopmentException(String.format("FieldGroup column contains duplicate fields '%s'.", field.getId()), context.getFullFrameId(), params);
             }
             fields.add(field);
@@ -262,10 +128,10 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         return fields;
     }
 
-    protected FieldGroup.FieldConfig loadField(FieldGroup component, Element element, Datasource ds) {
-        final String id = element.attributeValue("id");
+    protected FieldGroup.FieldConfig loadField(Element element, Datasource ds) {
+        String id = element.attributeValue("id");
 
-        final Datasource datasource = loadDatasource(element);
+        Datasource datasource = loadDatasource(element);
         if (datasource != null) {
             ds = datasource;
         }
@@ -276,14 +142,15 @@ public class FieldGroupLoader extends AbstractFieldLoader {
             customField = BooleanUtils.toBoolean(custom);
         }
 
-        if (!customField && ds == null)
+        if (!customField && ds == null) {
             throw new GuiDevelopmentException(String.format("Datasource is not defined for FieldGroup field '%s'. " +
                     "Only custom fields can have no datasource.", id), context.getFullFrameId());
+        }
 
         MetaPropertyPath metaPropertyPath = null;
 
         if (ds != null) {
-            final MetaClass metaClass = ds.getMetaClass();
+            MetaClass metaClass = ds.getMetaClass();
             metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
                     .resolveMetaPropertyPath(ds.getMetaClass(), id);
             if (metaPropertyPath == null) {
@@ -294,7 +161,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
             }
         }
 
-        final FieldGroup.FieldConfig field = new FieldGroup.FieldConfig(id);
+        FieldGroup.FieldConfig field = new FieldGroup.FieldConfig(id);
         field.setMetaPropertyPath(metaPropertyPath);
         if (datasource != null) {
             field.setDatasource(datasource);
@@ -337,26 +204,27 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         return field;
     }
 
-    protected void loadValidators(FieldGroup component, FieldGroup.FieldConfig field) {
+    protected void loadValidators(FieldGroup resultComponent, FieldGroup.FieldConfig field) {
         Element descriptor = field.getXmlDescriptor();
         @SuppressWarnings("unchecked")
-        final List<Element> validatorElements = (descriptor == null) ? null : descriptor.elements("validator");
+        List<Element> validatorElements = (descriptor == null) ? null : descriptor.elements("validator");
         if (validatorElements != null) {
             if (!validatorElements.isEmpty()) {
                 for (Element validatorElement : validatorElements) {
-                    final Field.Validator validator = loadValidator(validatorElement);
+                    Field.Validator validator = loadValidator(validatorElement);
                     if (validator != null) {
-                        component.addValidator(field, validator);
+                        resultComponent.addValidator(field, validator);
                     }
                 }
             }
         } else {
             Datasource ds;
             if (field.getDatasource() == null) {
-                ds = component.getDatasource();
+                ds = resultComponent.getDatasource();
             } else {
                 ds = field.getDatasource();
             }
+
             if (ds != null) {
                 MetaPropertyPath metaPropertyPath = field.getMetaPropertyPath();
                 if (metaPropertyPath != null) {
@@ -369,17 +237,17 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                     }
 
                     if (validator != null) {
-                        component.addValidator(field, validator);
+                        resultComponent.addValidator(field, validator);
                     }
                 }
             }
         }
     }
 
-    protected void loadRequired(FieldGroup component, FieldGroup.FieldConfig field) {
+    protected void loadRequired(FieldGroup resultComponent, FieldGroup.FieldConfig field) {
         if (!field.isCustom()) {
             boolean isMandatory = false;
-            MetaClass metaClass = getMetaClass(component, field);
+            MetaClass metaClass = getMetaClass(resultComponent, field);
             if (metaClass != null) {
                 MetaPropertyPath propertyPath = field.getMetaPropertyPath();
 
@@ -390,8 +258,8 @@ public class FieldGroupLoader extends AbstractFieldLoader {
             }
 
             Element element = field.getXmlDescriptor();
-            final String required = element.attributeValue("required");
 
+            String required = element.attributeValue("required");
             if (StringUtils.isNotEmpty(required)) {
                 isMandatory = BooleanUtils.toBoolean(required);
             }
@@ -407,20 +275,20 @@ public class FieldGroupLoader extends AbstractFieldLoader {
             }
 
             String requiredError = loadResourceString(requiredMsg);
-            component.setRequired(field, isMandatory, requiredError);
+            resultComponent.setRequired(field, isMandatory, requiredError);
         } else {
             Element element = field.getXmlDescriptor();
-            if (element == null)
+            if (element == null) {
                 return;
+            }
 
             String required = element.attributeValue("required");
-
             if (StringUtils.isNotEmpty(required)) {
-                component.setRequired(field, BooleanUtils.toBoolean(required));
+                resultComponent.setRequired(field, BooleanUtils.toBoolean(required));
 
                 String requiredMessage = element.attributeValue("requiredMessage");
                 if (!Strings.isNullOrEmpty(requiredMessage)) {
-                    component.setRequiredMessage(field, requiredMessage);
+                    resultComponent.setRequiredMessage(field, requiredMessage);
                 }
             }
         }
@@ -438,22 +306,22 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                 return;
             }
         }
-        final String editable = element.attributeValue("editable");
+        String editable = element.attributeValue("editable");
         if (!StringUtils.isEmpty(editable)) {
             fieldGroup.setEditable(BooleanUtils.toBoolean(editable));
         }
     }
 
-    protected void loadEditable(FieldGroup component, FieldGroup.FieldConfig field) {
+    protected void loadEditable(FieldGroup resultComponent, FieldGroup.FieldConfig field) {
         if (field.isCustom()) {
             Element element = field.getXmlDescriptor();
-            final String editable = element.attributeValue("editable");
+            String editable = element.attributeValue("editable");
             if (!StringUtils.isEmpty(editable)) {
-                component.setEditable(field, BooleanUtils.toBoolean(editable));
+                resultComponent.setEditable(field, BooleanUtils.toBoolean(editable));
             }
         } else {
-            if (component.isEditable()) {
-                MetaClass metaClass = getMetaClass(component, field);
+            if (resultComponent.isEditable()) {
+                MetaClass metaClass = getMetaClass(resultComponent, field);
                 MetaPropertyPath propertyPath = field.getMetaPropertyPath();
 
                 checkNotNullArgument(propertyPath, "Could not resolve property path '%s' in '%s'", field.getId(), metaClass);
@@ -461,28 +329,30 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                 boolean editableFromPermissions = security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString());
 
                 if (!editableFromPermissions) {
-                    component.setEditable(field, false);
+                    resultComponent.setEditable(field, false);
                     boolean visible = security.isEntityAttrReadPermitted(metaClass, propertyPath.toString());
 
-                    component.setVisible(field, visible);
+                    resultComponent.setVisible(field, visible);
                 } else if (!DynamicAttributesUtils.isDynamicAttribute(propertyPath.getMetaProperty())) {
                     Element element = field.getXmlDescriptor();
-                    final String editable = element.attributeValue("editable");
+                    String editable = element.attributeValue("editable");
                     if (!StringUtils.isEmpty(editable)) {
-                        component.setEditable(field, BooleanUtils.toBoolean(editable));
+                        resultComponent.setEditable(field, BooleanUtils.toBoolean(editable));
                     }
                 }
             }
         }
     }
 
-    protected MetaClass getMetaClass(FieldGroup component, FieldGroup.FieldConfig field) {
-        if (field.isCustom()) return null;
+    protected MetaClass getMetaClass(FieldGroup resultComponent, FieldGroup.FieldConfig field) {
+        if (field.isCustom()) {
+            return null;
+        }
         Datasource datasource;
         if (field.getDatasource() != null) {
             datasource = field.getDatasource();
-        } else if (component.getDatasource() != null) {
-            datasource = component.getDatasource();
+        } else if (resultComponent.getDatasource() != null) {
+            datasource = resultComponent.getDatasource();
         } else {
             throw new GuiDevelopmentException(String.format("Unable to get datasource for field '%s'",
                     field.getId()), context.getFullFrameId());
@@ -490,26 +360,148 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         return datasource.getMetaClass();
     }
 
-    protected void loadEnable(FieldGroup component, FieldGroup.FieldConfig field) {
+    protected void loadEnable(FieldGroup resultComponent, FieldGroup.FieldConfig field) {
         Element element = field.getXmlDescriptor();
-        final String enable = element.attributeValue("enable");
+        String enable = element.attributeValue("enable");
         if (!StringUtils.isEmpty(enable)) {
-            component.setEnabled(field, component.isEnabled() && BooleanUtils.toBoolean(enable));
+            resultComponent.setEnabled(field, resultComponent.isEnabled() && BooleanUtils.toBoolean(enable));
         }
     }
 
-    protected void loadVisible(FieldGroup component, FieldGroup.FieldConfig field) {
+    protected void loadVisible(FieldGroup resultComponent, FieldGroup.FieldConfig field) {
         Element element = field.getXmlDescriptor();
-        final String visible = element.attributeValue("visible");
+        String visible = element.attributeValue("visible");
         if (!StringUtils.isEmpty(visible)) {
-            component.setVisible(field, component.isVisible() && BooleanUtils.toBoolean(visible));
+            resultComponent.setVisible(field, resultComponent.isVisible() && BooleanUtils.toBoolean(visible));
         }
     }
 
-    protected void loadCaptionAlignment(FieldGroup component, Element element) {
+    protected void loadCaptionAlignment(FieldGroup resultComponent, Element element) {
         String captionAlignment = element.attributeValue("captionAlignment");
         if (!StringUtils.isEmpty(captionAlignment)) {
-            component.setCaptionAlignment(FieldGroup.FieldCaptionAlignment.valueOf(captionAlignment));
+            resultComponent.setCaptionAlignment(FieldGroup.FieldCaptionAlignment.valueOf(captionAlignment));
         }
+    }
+
+    @Override
+    public void createComponent() {
+        resultComponent = (FieldGroup) factory.createComponent(FieldGroup.NAME);
+        loadId(resultComponent, element);
+    }
+
+    @Override
+    public void loadComponent() {
+        assignFrame(resultComponent);
+        assignXmlDescriptor(resultComponent, element);
+
+        loadVisible(resultComponent, element);
+
+        Datasource ds = loadDatasource(element);
+        if (element.elements("column").isEmpty()) {
+            List<FieldGroup.FieldConfig> rootFields = loadFields(resultComponent, element, ds);
+            for (FieldGroup.FieldConfig field : rootFields) {
+                resultComponent.addField(field);
+            }
+        } else {
+            @SuppressWarnings("unchecked")
+            List<Element> columnElements = element.elements("column");
+            @SuppressWarnings("unchecked")
+            List<Element> fieldElements = element.elements("field");
+            if (fieldElements.size() > 0) {
+                Map<String, Object> params = new HashMap<>();
+                String fieldGroupId = resultComponent.getId();
+                if (StringUtils.isNotEmpty(fieldGroupId)) {
+                    params.put("FieldGroup ID", fieldGroupId);
+                }
+                throw new GuiDevelopmentException("FieldGroup field elements should be placed within its column.", context.getFullFrameId(), params);
+            }
+            resultComponent.setColumns(columnElements.size());
+
+            int colIndex = 0;
+            for (Element columnElement : columnElements) {
+                String flex = columnElement.attributeValue("flex");
+                if (StringUtils.isNotEmpty(flex)) {
+                    resultComponent.setColumnExpandRatio(colIndex, Float.parseFloat(flex));
+                }
+
+                String width = loadThemeString(columnElement.attributeValue("width"));
+
+                List<FieldGroup.FieldConfig> columnFields = loadFields(resultComponent, columnElement, ds);
+                for (FieldGroup.FieldConfig field : columnFields) {
+                    resultComponent.addField(field, colIndex);
+                    if (StringUtils.isNotEmpty(width) && field.getWidth() == null) {
+                        field.setWidth(width);
+                    }
+                }
+
+                String columnFieldCaptionWidth = columnElement.attributeValue("fieldCaptionWidth");
+                if (StringUtils.isNotEmpty(columnFieldCaptionWidth)) {
+                    if (columnFieldCaptionWidth.startsWith(MessageTools.MARK)) {
+                        columnFieldCaptionWidth = loadResourceString(columnFieldCaptionWidth);
+                    }
+                    if (columnFieldCaptionWidth.endsWith("px")) {
+                        columnFieldCaptionWidth = columnFieldCaptionWidth.substring(0, columnFieldCaptionWidth.indexOf("px"));
+                    }
+
+                    resultComponent.setFieldCaptionWidth(colIndex, Integer.parseInt(columnFieldCaptionWidth));
+                }
+
+                colIndex++;
+            }
+        }
+
+        addDynamicAttributes(resultComponent, ds);
+
+        resultComponent.setDatasource(ds);
+
+        loadEditable(resultComponent, element);
+        loadEnable(resultComponent, element);
+
+        loadStyleName(resultComponent, element);
+
+        loadCaption(resultComponent, element);
+
+        loadHeight(resultComponent, element);
+        loadWidth(resultComponent, element);
+        loadAlign(resultComponent, element);
+
+        loadBorder(resultComponent, element);
+
+        loadCaptionAlignment(resultComponent, element);
+
+        loadFieldCaptionWidth(resultComponent, element);
+
+        List<FieldGroup.FieldConfig> fields = resultComponent.getFields();
+        for (FieldGroup.FieldConfig field : fields) {
+            if (!field.isCustom()) {
+                if (!DynamicAttributesUtils.isDynamicAttribute(field.getId())) {//the following does not make sense for dynamic attrs
+                    loadValidators(resultComponent, field);
+                    loadRequired(resultComponent, field);
+                    loadEnable(resultComponent, field);
+                    loadVisible(resultComponent, field);
+                }
+
+                loadEditable(resultComponent, field);
+            }
+        }
+
+        // deffer attribute loading for custom fields
+        context.addPostInitTask((context1, window) -> {
+            for (FieldGroup.FieldConfig field : resultComponent.getFields()) {
+                if (field.isCustom()) {
+                    Component fieldComponent = resultComponent.getFieldComponent(field);
+                    if (fieldComponent != null) {
+                        loadValidators(resultComponent, field);
+                        loadRequired(resultComponent, field);
+                        loadEditable(resultComponent, field);
+                        loadEnable(resultComponent, field);
+                        loadVisible(resultComponent, field);
+                    } else {
+                        LogFactory.getLog(FieldGroupLoader.class).warn(
+                                "Missing component for custom field " + field.getId());
+                    }
+                }
+            }
+        });
     }
 }

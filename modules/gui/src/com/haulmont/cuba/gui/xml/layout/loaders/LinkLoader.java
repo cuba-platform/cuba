@@ -6,57 +6,46 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Link;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
-import org.dom4j.Element;
 
 /**
  * @author abramov
  * @version $Id$
  */
-public class LinkLoader extends AbstractDatasourceComponentLoader {
-
-    public LinkLoader(Context context) {
-        super(context);
+public class LinkLoader extends AbstractComponentLoader<Link> {
+    @Override
+    public void createComponent() {
+        resultComponent = (Link) factory.createComponent(Link.NAME);
+        loadId(resultComponent, element);
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final Link component = (Link) factory.createComponent("link");
+    public void loadComponent() {
+        assignXmlDescriptor(resultComponent, element);
+        assignFrame(resultComponent);
 
-        initComponent(component, element, parent);
-
-        return component;
-    }
-
-    protected void initComponent(Link component, Element element, Component parent) {
-        assignXmlDescriptor(component, element);
-        loadId(component, element);
-
-        loadVisible(component, element);
-        loadAlign(component, element);
-        loadStyleName(component, element);
-        loadDescription(component, element);
-        loadCaption(component, element);
+        loadVisible(resultComponent, element);
+        loadAlign(resultComponent, element);
+        loadStyleName(resultComponent, element);
+        loadDescription(resultComponent, element);
+        loadCaption(resultComponent, element);
 
         String url = element.attributeValue("url");
         if (StringUtils.isNotEmpty(url)) {
-            component.setUrl(url);
+            resultComponent.setUrl(url);
         }
 
         String target = element.attributeValue("target");
         if (StringUtils.isNotEmpty(target)) {
-            component.setTarget(target);
+            resultComponent.setTarget(target);
         }
 
         String icon = element.attributeValue("icon");
         if (StringUtils.isNotEmpty(icon)) {
-            component.setIcon(icon);
+            resultComponent.setIcon(icon);
         }
 
-        loadWidth(component, element, Component.AUTO_SIZE);
-        loadHeight(component, element, Component.AUTO_SIZE);
-
-        assignFrame(component);
+        loadWidth(resultComponent, element, Component.AUTO_SIZE);
+        loadHeight(resultComponent, element, Component.AUTO_SIZE);
     }
 }

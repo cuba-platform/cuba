@@ -7,7 +7,6 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.WindowManager;
@@ -18,9 +17,9 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.settings.Settings;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.dom4j.Element;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
@@ -70,7 +69,7 @@ public class WindowDelegate {
             }
             return wrapper;
         } catch (Throwable e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to init window controller", e);
         }
     }
 
@@ -83,15 +82,17 @@ public class WindowDelegate {
         Element element = ((Component.HasXmlDescriptor) window).getXmlDescriptor();
         String datasourceName = element.attributeValue("datasource");
         if (!StringUtils.isEmpty(datasourceName)) {
-            final DsContext context = window.getDsContext();
+            DsContext context = window.getDsContext();
             if (context != null) {
                 ds = context.get(datasourceName);
             }
         }
-        if (ds == null)
+
+        if (ds == null) {
             throw new GuiDevelopmentException("Can't find main datasource", window.getId());
-        else
-            return ds;
+        }
+
+        return ds;
     }
 
     public Settings getSettings() {
@@ -104,32 +105,29 @@ public class WindowDelegate {
 
             ComponentsHelper.walkComponents(
                     window,
-                    new ComponentVisitor() {
-                        @Override
-                        public void visit(Component component, String name) {
-                            if (component instanceof Component.HasSettings) {
-                                log.trace("Saving settings for : " + name + " : " + component);
+                    (component, name) -> {
+                        if (component instanceof Component.HasSettings) {
+                            log.trace("Saving settings for : " + name + " : " + component);
 
-                                if (visitedIds.contains(name)) {
-                                    log.warn("Names of some HasSettings components clashed, set Id for component explicitly, name=" + name);
-                                }
-
-                                visitedIds.add(name);
-
-                                Element e = WindowDelegate.this.settings.get(name);
-                                boolean modified = ((Component.HasSettings) component).saveSettings(e);
-
-                                if (component instanceof Component.HasPresentations
-                                        && ((Component.HasPresentations) component).isUsePresentations()) {
-                                    Object def = ((Component.HasPresentations) component).getDefaultPresentationId();
-                                    e.addAttribute("presentation", def != null ? def.toString() : "");
-                                    Presentations presentations = ((Component.HasPresentations) component).getPresentations();
-                                    if (presentations != null) {
-                                        presentations.commit();
-                                    }
-                                }
-                                WindowDelegate.this.settings.setModified(modified);
+                            if (visitedIds.contains(name)) {
+                                log.warn("Names of some HasSettings components clashed, set Id for component explicitly, name=" + name);
                             }
+
+                            visitedIds.add(name);
+
+                            Element e = WindowDelegate.this.settings.get(name);
+                            boolean modified = ((Component.HasSettings) component).saveSettings(e);
+
+                            if (component instanceof Component.HasPresentations
+                                    && ((Component.HasPresentations) component).isUsePresentations()) {
+                                Object def = ((Component.HasPresentations) component).getDefaultPresentationId();
+                                e.addAttribute("presentation", def != null ? def.toString() : "");
+                                Presentations presentations = ((Component.HasPresentations) component).getPresentations();
+                                if (presentations != null) {
+                                    presentations.commit();
+                                }
+                            }
+                            WindowDelegate.this.settings.setModified(modified);
                         }
                     }
             );
@@ -145,19 +143,16 @@ public class WindowDelegate {
         this.settings = settings;
         ComponentsHelper.walkComponents(
                 window,
-                new ComponentVisitor() {
-                    @Override
-                    public void visit(Component component, String name) {
-                        if (component instanceof Component.HasSettings) {
-                            log.trace("Applying settings for : " + name + " : " + component);
-                            Element e = WindowDelegate.this.settings.get(name);
-                            ((Component.HasSettings) component).applySettings(e);
-                            if (component instanceof Component.HasPresentations && e.attributeValue("presentation") != null) {
-                                final String def = e.attributeValue("presentation");
-                                if (!StringUtils.isEmpty(def)) {
-                                    UUID defaultId = UUID.fromString(def);
-                                    ((Component.HasPresentations) component).applyPresentationAsDefault(defaultId);
-                                }
+                (component, name) -> {
+                    if (component instanceof Component.HasSettings) {
+                        log.trace("Applying settings for : " + name + " : " + component);
+                        Element e = WindowDelegate.this.settings.get(name);
+                        ((Component.HasSettings) component).applySettings(e);
+                        if (component instanceof Component.HasPresentations && e.attributeValue("presentation") != null) {
+                            final String def = e.attributeValue("presentation");
+                            if (!StringUtils.isEmpty(def)) {
+                                UUID defaultId = UUID.fromString(def);
+                                ((Component.HasPresentations) component).applyPresentationAsDefault(defaultId);
                             }
                         }
                     }
@@ -168,12 +163,9 @@ public class WindowDelegate {
     public void disposeComponents() {
         ComponentsHelper.walkComponents(
                 window,
-                new ComponentVisitor() {
-                    @Override
-                    public void visit(Component component, String name) {
-                        if (component instanceof Component.Disposable) {
-                            ((Component.Disposable) component).dispose();
-                        }
+                (component, name) -> {
+                    if (component instanceof Component.Disposable) {
+                        ((Component.Disposable) component).dispose();
                     }
                 }
         );
@@ -200,15 +192,17 @@ public class WindowDelegate {
     }
 
     public void postValidate(ValidationErrors errors) {
-        if (wrapper instanceof AbstractWindow)
+        if (wrapper instanceof AbstractWindow) {
             ((AbstractWindow) wrapper).postValidate(errors);
+        }
     }
 
     public boolean preClose(String actionId) {
-        if (wrapper instanceof AbstractWindow)
+        if (wrapper instanceof AbstractWindow) {
             return ((AbstractWindow) wrapper).preClose(actionId);
-        else
-            return true;
+        }
+
+        return true;
     }
 
     public Window openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {

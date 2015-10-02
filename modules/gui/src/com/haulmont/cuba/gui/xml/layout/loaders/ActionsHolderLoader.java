@@ -18,11 +18,7 @@ import org.dom4j.Element;
  * @author artamonov
  * @version $Id$
  */
-public abstract class ActionsHolderLoader extends ComponentLoader {
-
-    protected ActionsHolderLoader(Context context) {
-        super(context);
-    }
+public abstract class ActionsHolderLoader<T extends Component.ActionsHolder> extends AbstractComponentLoader<T> {
 
     @Override
     protected Action loadDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {

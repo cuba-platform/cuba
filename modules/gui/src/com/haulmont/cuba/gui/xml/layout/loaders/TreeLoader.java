@@ -5,11 +5,8 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -17,58 +14,45 @@ import org.dom4j.Element;
  * @author krivopustov
  * @version $Id$
  */
-public class TreeLoader extends ActionsHolderLoader {
-
-    protected ComponentsFactory factory;
-    protected LayoutLoaderConfig config;
-
-    public TreeLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context);
-        this.config = config;
-        this.factory = factory;
+public class TreeLoader extends ActionsHolderLoader<Tree> {
+    @Override
+    public void createComponent() {
+        resultComponent = (Tree) factory.createComponent(Tree.NAME);
+        loadId(resultComponent, element);
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        Tree component = (Tree) factory.createComponent(element.getName());
+    public void loadComponent() {
+        assignXmlDescriptor(resultComponent, element);
+        assignFrame(resultComponent);
 
-        initComponent(component, element, parent);
+        loadVisible(resultComponent, element);
 
-        return component;
-    }
+        loadEnable(resultComponent, element);
+        loadEditable(resultComponent, element);
 
-    protected void initComponent(Tree component, Element element, Component parent) {
-        assignXmlDescriptor(component, element);
-        loadId(component, element);
-        loadVisible(component, element);
+        loadHeight(resultComponent, element);
+        loadWidth(resultComponent, element);
 
-        loadEnable(component, element);
-        loadEditable(component, element);
+        loadStyleName(resultComponent, element);
 
-        loadHeight(component, element);
-        loadWidth(component, element);
-
-        loadStyleName(component, element);
-
-        assignFrame(component);
-
-        loadActions(component, element);
+        loadActions(resultComponent, element);
 
         String multiselect = element.attributeValue("multiselect");
         if (StringUtils.isNotEmpty(multiselect)) {
-            component.setMultiSelect(Boolean.valueOf(multiselect));
+            resultComponent.setMultiSelect(Boolean.valueOf(multiselect));
         }
 
         Element itemsElem = element.element("treechildren");
         String datasource = itemsElem.attributeValue("datasource");
         if (!StringUtils.isBlank(datasource)) {
             HierarchicalDatasource ds = (HierarchicalDatasource) context.getDsContext().get(datasource);
-            component.setDatasource(ds);
+            resultComponent.setDatasource(ds);
 
             String captionProperty = itemsElem.attributeValue("captionProperty");
             if (!StringUtils.isEmpty(captionProperty)) {
-                component.setCaptionProperty(captionProperty);
-                component.setCaptionMode(CaptionMode.PROPERTY);
+                resultComponent.setCaptionProperty(captionProperty);
+                resultComponent.setCaptionMode(CaptionMode.PROPERTY);
             }
         }
     }

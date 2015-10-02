@@ -15,9 +15,10 @@ import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Frame;
+import org.apache.commons.lang.ObjectUtils;
+import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.dom4j.Element;
 
 import javax.swing.*;
 import java.util.Locale;
@@ -99,12 +100,18 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     @Override
     public void setId(String id) {
-        this.id = id;
+        if (!ObjectUtils.equals(this.id, id)) {
+            this.id = id;
 
-        C impl = getImpl();
-        if (impl != null) {
-            impl.putClientProperty(getSwingPropertyId(), id);
-            impl.setName(id);
+            C impl = getImpl();
+            if (impl != null) {
+                impl.putClientProperty(getSwingPropertyId(), id);
+                impl.setName(id);
+            }
+
+            if (frame != null) {
+                frame.registerComponent(this);
+            }
         }
     }
 
@@ -232,8 +239,10 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     @Override
     public void setAlignment(Alignment alignment) {
-        this.alignment = alignment;
-        requestContainerUpdate();
+        if (this.alignment != alignment) {
+            this.alignment = alignment;
+            requestContainerUpdate();
+        }
     }
 
     @Override

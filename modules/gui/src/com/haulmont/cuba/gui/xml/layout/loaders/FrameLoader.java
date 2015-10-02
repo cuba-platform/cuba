@@ -6,16 +6,15 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.gui.*;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractFrame;
+import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.WrappedFrame;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
-import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -28,95 +27,38 @@ import java.util.Map;
  * @author abramov
  * @version $Id$
  */
-public class FrameLoader extends ContainerLoader implements ComponentLoader {
+public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
 
-    public FrameLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context, config, factory);
-    }
+    private Element layoutElement;
+    private ComponentLoaderContext innerContext;
+    private Element rootFrameElement;
 
-    @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-
-        final Map<String, Object> params = context.getParams();
-        XmlInheritanceProcessor processor = new XmlInheritanceProcessor(element.getDocument(), params);
-        element = processor.getResultRoot();
-
-        Frame component = (Frame) factory.createComponent("frame");
-
-        WindowCreationHelper.deployViews(element);
-
-        final Element dsContextElement = element.element("dsContext");
-        final DsContextLoader contextLoader = new DsContextLoader(context.getDsContext().getDataSupplier());
-
-        final DsContext dsContext = contextLoader.loadDatasources(dsContextElement, context.getDsContext());
-
-        ComponentLoaderContext parentContext = (ComponentLoaderContext) getContext();
-
-        String frameId = parentContext.getCurrentFrameId();
-        if (parentContext.getFullFrameId() != null)
-            frameId = parentContext.getFullFrameId() + "." + frameId;
-
-        ComponentLoaderContext newContext = new ComponentLoaderContext(dsContext, params);
-
-        newContext.setCurrentFrameId(parentContext.getCurrentFrameId());
-        newContext.setFullFrameId(frameId);
-        newContext.setFrame(component);
-        newContext.setParent(parentContext);
-        setContext(newContext);
-
-        assignXmlDescriptor(component, element);
-        loadId(component, element);
-        loadVisible(component, element);
-        loadStyleName(component, element);
-        loadMessagesPack(component, element);
-        loadActions(component, element);
-
-        final Element layoutElement = element.element("layout");
-        if (layoutElement == null)
-            throw new GuiDevelopmentException("Required element 'layout' is not found", context.getFullFrameId());
-
-        loadSubComponentsAndExpand(component, layoutElement);
-        loadSpacing(component, layoutElement);
-        loadMargin(component, layoutElement);
-        loadWidth(component, layoutElement);
-        loadHeight(component, layoutElement);
-        loadStyleName(component, layoutElement);
-
-        FrameContext frameContext = new FrameContextImpl(component, params);
-        component.setContext(frameContext);
-
-        if (dsContext != null) {
-            component.setDsContext(dsContext);
-
-            for (Datasource ds : dsContext.getAll()) {
-                if (ds instanceof DatasourceImplementation) {
-                    ((DatasourceImplementation) ds).initialized();
-                }
+    protected Frame wrapByCustomClass(Frame frame) {
+        String screenClass = element.attributeValue("class");
+        if (!StringUtils.isBlank(screenClass)) {
+            Class<?> aClass = scripting.loadClass(screenClass);
+            if (aClass == null) {
+                aClass = ReflectionHelper.getClass(screenClass);
             }
+            if (aClass == null) {
+                String msg = messages.getMainMessage("unableToLoadControllerClass");
 
-            dsContext.setFrameContext(frameContext);
+                throw new GuiDevelopmentException(msg, frame.getId());
+            }
+            return ((WrappedFrame) frame).wrapBy(aClass);
         }
-        component = wrapByCustomClass(component, element, params, parentContext);
-
-        parentContext.getPostInitTasks().addAll(newContext.getPostInitTasks());
-
-        return component;
+        return frame;
     }
 
-    protected Frame wrapByCustomClass(Frame frame, Element element, Map<String, Object> params,
-                                       ComponentLoaderContext parentContext) {
-        final String screenClass = element.attributeValue("class");
+    protected void initWrapperFrame(Frame wrappingFrame, Element rootFrameElement, Map<String, Object> params,
+                                    ComponentLoaderContext parentContext) {
+        String screenClass = rootFrameElement.attributeValue("class");
         if (!StringUtils.isBlank(screenClass)) {
             try {
-                Class<?> aClass = scripting.loadClass(screenClass);
-                if (aClass == null)
-                    aClass = ReflectionHelper.getClass(screenClass);
-                Frame wrappingFrame = ((WrappedFrame) frame).wrapBy(aClass);
-
                 String loggingId = context.getFullFrameId();
 
                 if (wrappingFrame instanceof AbstractFrame) {
-                    Element companionsElem = element.element("companions");
+                    Element companionsElem = rootFrameElement.element("companions");
                     if (companionsElem != null) {
                         StopWatch companionStopWatch = new Log4JStopWatch(loggingId + "#" +
                                 UIPerformanceLogger.LifeCycle.COMPANION,
@@ -137,14 +79,11 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
                 dependencyInjector.inject();
 
                 injectStopWatch.stop();
-
-                return wrappingFrame;
             } catch (Throwable e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Unable to init custom frame class", e);
             }
         } else {
-            parentContext.addPostInitTask(new FrameLoaderPostInitTask(frame, params, false));
-            return frame;
+            parentContext.addPostInitTask(new FrameLoaderPostInitTask(wrappingFrame, params, false));
         }
     }
 
@@ -162,7 +101,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
                     CompanionDependencyInjector cdi = new CompanionDependencyInjector(frame, companion);
                     cdi.inject();
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException("Unable to init companion for frame", e);
                 }
             }
         }
@@ -177,6 +116,95 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
             frame.setMessagesPack(this.messagesPack);
             setMessagesPack(this.messagesPack);
         }
+    }
+
+    @Override
+    public void createComponent() {
+        //noinspection unchecked
+        Frame clientSpecificFrame = (T) factory.createComponent(Frame.NAME);
+        loadId(clientSpecificFrame, element);
+
+        Map<String, Object> params = context.getParams();
+        XmlInheritanceProcessor processor = new XmlInheritanceProcessor(element.getDocument(), params);
+        rootFrameElement = processor.getResultRoot();
+
+        ComponentLoaderContext parentContext = (ComponentLoaderContext) getContext();
+
+        String frameId = parentContext.getCurrentFrameId();
+        if (parentContext.getFullFrameId() != null) {
+            frameId = parentContext.getFullFrameId() + "." + frameId;
+        }
+
+        innerContext = new ComponentLoaderContext(params);
+        innerContext.setCurrentFrameId(parentContext.getCurrentFrameId());
+        innerContext.setFullFrameId(frameId);
+        innerContext.setFrame(clientSpecificFrame);
+        innerContext.setParent(parentContext);
+        setContext(innerContext);
+
+        layoutElement = element.element("layout");
+        if (layoutElement == null) {
+            throw new GuiDevelopmentException("Required element 'layout' is not found", this.context.getFullFrameId());
+        }
+
+        createSubComponents(clientSpecificFrame, layoutElement);
+
+        setContext(parentContext);
+
+        //noinspection unchecked
+        resultComponent = (T) wrapByCustomClass(clientSpecificFrame);
+    }
+
+    @Override
+    public void loadComponent() {
+        WindowCreationHelper.deployViews(rootFrameElement);
+
+        Element dsContextElement = rootFrameElement.element("dsContext");
+        DsContextLoader contextLoader = new DsContextLoader(context.getDsContext().getDataSupplier());
+
+        DsContext dsContext = contextLoader.loadDatasources(dsContextElement, context.getDsContext());
+
+        assignXmlDescriptor(resultComponent, rootFrameElement);
+
+        loadVisible(resultComponent, element);
+        loadMessagesPack(resultComponent, rootFrameElement);
+        loadActions(resultComponent, rootFrameElement);
+
+        loadSpacing(resultComponent, layoutElement);
+        loadMargin(resultComponent, layoutElement);
+        loadWidth(resultComponent, layoutElement);
+        loadHeight(resultComponent, layoutElement);
+        loadStyleName(resultComponent, layoutElement);
+
+        // we can override stylename on frame element
+        loadStyleName(resultComponent, element);
+        ComponentLoaderContext parentContext = (ComponentLoaderContext) getContext();
+        setContext(innerContext);
+
+        FrameContext frameContext = new FrameContextImpl(resultComponent, context.getParams());
+        resultComponent.setContext(frameContext);
+
+        if (dsContext != null) {
+            resultComponent.setDsContext(dsContext);
+
+            for (Datasource ds : dsContext.getAll()) {
+                if (ds instanceof DatasourceImplementation) {
+                    ((DatasourceImplementation) ds).initialized();
+                }
+            }
+
+            dsContext.setFrameContext(frameContext);
+        }
+
+        innerContext.setDsContext(dsContext);
+
+        loadSubComponentsAndExpand(resultComponent, layoutElement);
+
+        initWrapperFrame(resultComponent, rootFrameElement, parentContext.getParams(), parentContext);
+
+        parentContext.getPostInitTasks().addAll(innerContext.getPostInitTasks());
+
+        setContext(parentContext);
     }
 
     protected class FrameLoaderPostInitTask implements PostInitTask {

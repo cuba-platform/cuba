@@ -10,6 +10,15 @@ package com.haulmont.cuba.gui.components;
  */
 public interface BoxLayout extends ExpandingLayout, Component.OrderedContainer,
                                    Component.Spacing, Component.Margin, Component.BelongToFrame {
+    /**
+     * @deprecated Use {@link VBoxLayout#NAME}
+     */
+    @Deprecated
     String VBOX = "vbox";
+
+    /**
+     * @deprecated Use {@link HBoxLayout#NAME}
+     */
+    @Deprecated
     String HBOX = "hbox";
 }

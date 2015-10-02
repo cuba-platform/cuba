@@ -6,13 +6,8 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.DateDatatype;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DateField;
-import com.haulmont.cuba.gui.components.Field;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
-import org.dom4j.Element;
 
 import javax.persistence.TemporalType;
 
@@ -20,23 +15,23 @@ import javax.persistence.TemporalType;
  * @author abramov
  * @version $Id$
  */
-public class DateFieldLoader extends AbstractFieldLoader {
-    public DateFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context, config, factory);
+public class DateFieldLoader extends AbstractFieldLoader<DateField> {
+    @Override
+    public void createComponent() {
+        resultComponent = (DateField) factory.createComponent(DateField.NAME);
+        loadId(resultComponent, element);
     }
 
     @Override
-    protected void initComponent(Field field, Element element, Component parent) {
-        super.initComponent(field, element, parent);
-
-        DateField component = (DateField) field;
+    public void loadComponent() {
+        super.loadComponent();
 
         TemporalType tt = null;
-        if (component.getMetaProperty() != null) {
-            if (component.getMetaProperty().getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME))) {
+        if (resultComponent.getMetaProperty() != null) {
+            if (resultComponent.getMetaProperty().getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME))) {
                 tt = TemporalType.DATE;
-            } else if (component.getMetaProperty().getAnnotations() != null) {
-                tt = (TemporalType) component.getMetaProperty().getAnnotations().get("temporal");
+            } else if (resultComponent.getMetaProperty().getAnnotations() != null) {
+                tt = (TemporalType) resultComponent.getMetaProperty().getAnnotations().get("temporal");
             }
         }
 
@@ -45,7 +40,7 @@ public class DateFieldLoader extends AbstractFieldLoader {
         String mainDateFormat = null;
         if (StringUtils.isNotEmpty(resolution)) {
             DateField.Resolution res = DateField.Resolution.valueOf(resolution);
-            component.setResolution(res);
+            resultComponent.setResolution(res);
             if (dateFormat == null) {
                 if (res == DateField.Resolution.DAY) {
                     mainDateFormat = "dateFormat";
@@ -54,7 +49,7 @@ public class DateFieldLoader extends AbstractFieldLoader {
                 }
             }
         } else if (tt == TemporalType.DATE) {
-            component.setResolution(DateField.Resolution.DAY);
+            resultComponent.setResolution(DateField.Resolution.DAY);
         }
 
         String formatStr;
@@ -69,6 +64,6 @@ public class DateFieldLoader extends AbstractFieldLoader {
                 formatStr = messages.getMainMessage("dateTimeFormat");
             }
         }
-        component.setDateFormat(formatStr);
+        resultComponent.setDateFormat(formatStr);
     }
 }

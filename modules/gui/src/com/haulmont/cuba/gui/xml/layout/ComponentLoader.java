@@ -19,7 +19,7 @@ import java.util.Map;
  * @author abramov
  * @version $Id$
  */
-public interface ComponentLoader {
+public interface ComponentLoader<T extends Component> {
 
     interface Context {
         Map<String, Object> getParams();
@@ -55,6 +55,7 @@ public interface ComponentLoader {
     }
 
     Context getContext();
+    void setContext(Context context);
 
     Locale getLocale();
     void setLocale(Locale locale);
@@ -62,13 +63,33 @@ public interface ComponentLoader {
     String getMessagesPack();
     void setMessagesPack(String name);
 
+    ComponentsFactory getFactory();
+    void setFactory(ComponentsFactory factory);
+
+    LayoutLoaderConfig getLayoutLoaderConfig();
+    void setLayoutLoaderConfig(LayoutLoaderConfig config);
+
+    Element getElement(Element element);
+    void setElement(Element element);
+
     /**
-     * Load component by XML definition.
+     * Creates result component by XML-element and loads its Id. Also creates all nested components.
      *
-     * @param factory   factory instance
-     * @param element   XML-element defining the component
-     * @param parent    already created parent component instance
-     * @return          a new component instance initialized according to XML definition
+     * @see #getResultComponent()
      */
-    Component loadComponent(ComponentsFactory factory, Element element, Component parent);
+    void createComponent();
+
+    /**
+     * Loads component properties by XML definition.
+     *
+     * @see #getElement(Element)
+     */
+    void loadComponent();
+
+    /**
+     * Returns previously created instance of component.
+     *
+     * @see #createComponent()
+     */
+    Component getResultComponent();
 }

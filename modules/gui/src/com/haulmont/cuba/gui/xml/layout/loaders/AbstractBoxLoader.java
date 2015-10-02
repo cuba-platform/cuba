@@ -5,31 +5,32 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
+import com.haulmont.cuba.gui.components.BoxLayout;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-public class AppMenuLoader extends AbstractComponentLoader<AppMenu> {
-    @Override
-    public void createComponent() {
-        resultComponent = (AppMenu) factory.createComponent(AppMenu.NAME);
-        loadId(resultComponent, element);
-    }
-
+public abstract class AbstractBoxLoader<T extends BoxLayout> extends ContainerLoader<T> {
     @Override
     public void loadComponent() {
         assignXmlDescriptor(resultComponent, element);
         assignFrame(resultComponent);
 
+        loadId(resultComponent, element);
         loadEnable(resultComponent, element);
         loadVisible(resultComponent, element);
 
         loadStyleName(resultComponent, element);
+
         loadAlign(resultComponent, element);
 
-        loadWidth(resultComponent, element);
+        loadSpacing(resultComponent, element);
+        loadMargin(resultComponent, element);
+
         loadHeight(resultComponent, element);
+        loadWidth(resultComponent, element);
+
+        loadSubComponentsAndExpand(resultComponent, element);
     }
 }

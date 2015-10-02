@@ -5,8 +5,6 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.TextInputField;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -14,20 +12,16 @@ import org.dom4j.Element;
  * @author abramov
  * @version $Id$
  */
-public abstract class AbstractTextFieldLoader extends AbstractFieldLoader {
+public abstract class AbstractTextFieldLoader<T extends TextInputField> extends AbstractFieldLoader<T> {
 
-    public AbstractTextFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context, config, factory);
-    }
-
-    protected void loadTrimming(Element element, TextInputField.TrimSupported component) {
+    protected void loadTrimming(TextInputField.TrimSupported component, Element element) {
         String trim = element.attributeValue("trim");
         if (!StringUtils.isEmpty(trim)) {
             component.setTrimming(Boolean.valueOf(trim));
         }
     }
 
-    protected void loadMaxLength(Element element, TextInputField.MaxLengthLimited component) {
+    protected void loadMaxLength(TextInputField.MaxLengthLimited component, Element element) {
         final String maxLength = element.attributeValue("maxLength");
         if (!StringUtils.isEmpty(maxLength)) {
             component.setMaxLength(Integer.parseInt(maxLength));

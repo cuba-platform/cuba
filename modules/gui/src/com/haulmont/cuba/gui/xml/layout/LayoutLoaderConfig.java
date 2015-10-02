@@ -18,15 +18,14 @@ import java.util.Map;
  */
 public class LayoutLoaderConfig {
 
-    private Map<String, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader>> loaders = new HashMap<>();
+    private Map<String, Class<? extends ComponentLoader>> loaders = new HashMap<>();
 
     private static LayoutLoaderConfig windowLoaders = new LayoutLoaderConfig();
     private static LayoutLoaderConfig editorLoaders = new LayoutLoaderConfig();
     private static LayoutLoaderConfig lookupLoaders = new LayoutLoaderConfig();
     private static LayoutLoaderConfig frameLoaders = new LayoutLoaderConfig();
 
-    private static Map<String, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader>> customLoaders =
-            new HashMap<>();
+    private static Map<String, Class<? extends ComponentLoader>> customLoaders = new HashMap<>();
 
     static {
         windowLoaders.register("window", WindowLoader.class);
@@ -43,8 +42,8 @@ public class LayoutLoaderConfig {
     }
 
     private static void registerComponents(LayoutLoaderConfig config) {
-        config.register(BoxLayout.HBOX, HBoxLoader.class);
-        config.register(BoxLayout.VBOX, VBoxLoader.class);
+        config.register(HBoxLayout.NAME, HBoxLayoutLoader.class);
+        config.register(VBoxLayout.NAME, VBoxLayoutLoader.class);
         config.register(GridLayout.NAME, GridLayoutLoader.class);
         config.register(ScrollBoxLayout.NAME, ScrollBoxLayoutLoader.class);
         config.register(GroupBoxLayout.NAME, GroupBoxLayoutLoader.class);
@@ -52,8 +51,8 @@ public class LayoutLoaderConfig {
         config.register(FlowBoxLayout.NAME, FlowBoxLayoutLoader.class);
 
         config.register(Button.NAME, ButtonLoader.class);
-        config.register(LinkButton.NAME, ButtonLoader.class);
-        config.register(CheckBox.NAME, AbstractFieldLoader.class);
+        config.register(LinkButton.NAME, LinkButtonLoader.class);
+        config.register(CheckBox.NAME, CheckBoxLoader.class);
         config.register(Label.NAME, LabelLoader.class);
         config.register(Link.NAME, LinkLoader.class);
 
@@ -75,7 +74,7 @@ public class LayoutLoaderConfig {
         config.register(FileMultiUploadField.NAME, FileMultiUploadFieldLoader.class);
 
         config.register(Table.NAME, TableLoader.class);
-        config.register(TreeTable.NAME, TableLoader.class);
+        config.register(TreeTable.NAME, TreeTableLoader.class);
         config.register(GroupTable.NAME, GroupTableLoader.class);
 
         config.register(Frame.NAME, FrameComponentLoader.class);
@@ -109,7 +108,7 @@ public class LayoutLoaderConfig {
         config.register(TimeZoneIndicator.NAME, TimeZoneIndicatorLoader.class);
     }
 
-    public static void registerLoader(String tagName, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> aClass) {
+    public static void registerLoader(String tagName, Class<? extends ComponentLoader> aClass) {
         customLoaders.put(tagName, aClass);
     }
 
@@ -138,7 +137,7 @@ public class LayoutLoaderConfig {
         return lookupLoaders;
     }
 
-    public Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> getLoader(String name) {
+    public Class<? extends ComponentLoader> getLoader(String name) {
         final Class<? extends ComponentLoader> loader = customLoaders.get(name);
         if (loader == null) {
             return loaders.get(name);
@@ -147,7 +146,7 @@ public class LayoutLoaderConfig {
         return loader;
     }
 
-    protected void register(String name, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> loader) {
+    protected void register(String name, Class<? extends ComponentLoader> loader) {
         loaders.put(name, loader);
     }
 }

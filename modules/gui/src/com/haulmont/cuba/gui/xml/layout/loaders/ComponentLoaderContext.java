@@ -31,8 +31,7 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
 
     protected ComponentLoader.Context parent;
 
-    public ComponentLoaderContext(DsContext dsContext, Map<String, Object> parameters) {
-        this.dsContext = dsContext;
+    public ComponentLoaderContext(Map<String, Object> parameters) {
         this.parameters = parameters;
     }
 
@@ -44,6 +43,10 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
     @Override
     public DsContext getDsContext() {
         return dsContext;
+    }
+
+    public void setDsContext(DsContext dsContext) {
+        this.dsContext = dsContext;
     }
 
     @Override

@@ -4,8 +4,6 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.Component;
@@ -277,11 +275,10 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         Layout layout = (Layout) tabContent.getComponent();
         layout.setSizeFull();
 
-        final Tab tab = new Tab(name, tabContent);
-
+        Tab tab = new Tab(name, tabContent);
         tabs.put(name, tab);
 
-        final com.vaadin.ui.Component tabComponent = WebComponentsHelper.unwrap(tabContent);
+        com.vaadin.ui.Component tabComponent = WebComponentsHelper.unwrap(tabContent);
         tabComponent.setSizeFull();
 
         tabMapping.put(tabComponent, new ComponentDescriptor(name, tabContent));
@@ -292,12 +289,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         context = loader.getContext();
 
         if (!postInitTaskAdded) {
-            context.addPostInitTask(new ComponentLoader.PostInitTask() {
-                @Override
-                public void execute(ComponentLoader.Context context, Frame window) {
-                    initComponentTabChangeListener();
-                }
-            });
+            context.addPostInitTask((context1, window) -> initComponentTabChangeListener());
             postInitTaskAdded = true;
         }
 
@@ -418,23 +410,20 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         // init component SelectedTabChangeListener only when needed, making sure it is
         // after all lazy tabs listeners
         if (!componentTabChangeListenerInitialized) {
-            component.addSelectedTabChangeListener(new com.vaadin.ui.TabSheet.SelectedTabChangeListener() {
-                @Override
-                public void selectedTabChange(com.vaadin.ui.TabSheet.SelectedTabChangeEvent event) {
-                    // Fire GUI listener
-                    fireTabChanged();
-                    // Execute outstanding post init tasks after GUI listener.
-                    // We suppose that context.executePostInitTasks() executes a task once and then remove it from task list.
-                    if (context != null) {
-                        context.executePostInitTasks();
-                    }
+            component.addSelectedTabChangeListener(event -> {
+                // Fire GUI listener
+                fireTabChanged();
+                // Execute outstanding post init tasks after GUI listener.
+                // We suppose that context.executePostInitTasks() executes a task once and then remove it from task list.
+                if (context != null) {
+                    context.executePostInitTasks();
+                }
 
-                    Window window = com.haulmont.cuba.gui.ComponentsHelper.getWindow(WebTabSheet.this);
-                    if (window != null) {
-                        ((DsContextImplementation) window.getDsContext()).resumeSuspended();
-                    } else {
-                        LogFactory.getLog(WebTabSheet.class).warn("Please specify Frame for TabSheet");
-                    }
+                Window window = ComponentsHelper.getWindow(WebTabSheet.this);
+                if (window != null) {
+                    ((DsContextImplementation) window.getDsContext()).resumeSuspended();
+                } else {
+                    LogFactory.getLog(WebTabSheet.class).warn("Please specify Frame for TabSheet");
                 }
             });
             componentTabChangeListenerInitialized = true;
@@ -468,27 +457,28 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
             com.vaadin.ui.Component selectedTab = WebTabSheet.this.component.getSelectedTab();
             com.vaadin.ui.Component tabComponent = tabContent.getComponent();
             if (selectedTab == tabComponent && lazyTabs.remove(tabComponent)) {
-                Component comp = loader.loadComponent(AppConfig.getFactory(), descriptor, null);
+                loader.createComponent();
 
-                tabContent.add(comp);
-                com.vaadin.ui.Component impl = WebComponentsHelper.getComposition(comp);
+                Component lazyContent = loader.getResultComponent();
+
+                tabContent.add(lazyContent);
+                com.vaadin.ui.Component impl = WebComponentsHelper.getComposition(lazyContent);
                 impl.setSizeFull();
 
-                comp.setParent(WebTabSheet.this);
+                lazyContent.setParent(WebTabSheet.this);
 
-                final Window window = com.haulmont.cuba.gui.ComponentsHelper.getWindow(WebTabSheet.this);
+                loader.loadComponent();
+
+                Window window = com.haulmont.cuba.gui.ComponentsHelper.getWindow(WebTabSheet.this);
                 if (window != null) {
                     com.haulmont.cuba.gui.ComponentsHelper.walkComponents(
                             tabContent,
-                            new ComponentVisitor() {
-                                @Override
-                                public void visit(Component component, String name) {
-                                    if (component instanceof HasSettings) {
-                                        Settings settings = window.getSettings();
-                                        if (settings != null) {
-                                            Element e = settings.get(name);
-                                            ((HasSettings) component).applySettings(e);
-                                        }
+                            (component1, name) -> {
+                                if (component1 instanceof HasSettings) {
+                                    Settings settings = window.getSettings();
+                                    if (settings != null) {
+                                        Element e = settings.get(name);
+                                        ((HasSettings) component1).applySettings(e);
                                     }
                                 }
                             }
@@ -496,12 +486,9 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
 
                     // init debug ids after all
                     if (AppUI.getCurrent().isTestMode()) {
-                        context.addPostInitTask(new ComponentLoader.PostInitTask() {
-                            @Override
-                            public void execute(ComponentLoader.Context context, Frame window) {
-                                AppWindow appWindow = AppUI.getCurrent().getAppWindow();
-                                appWindow.getWindowManager().initDebugIds(window);
-                            }
+                        context.addPostInitTask((context1, window1) -> {
+                            AppWindow appWindow = AppUI.getCurrent().getAppWindow();
+                            appWindow.getWindowManager().initDebugIds(window1);
                         });
                     }
                 }

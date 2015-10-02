@@ -7,9 +7,8 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GridLayout;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
@@ -21,31 +20,16 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
+public class GridLayoutLoader extends ContainerLoader<GridLayout> {
     protected boolean[][] spanMatrix;
 
-    public GridLayoutLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context, config, factory);
-    }
-
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        GridLayout component = (GridLayout) factory.createComponent(element.getName());
+    public void createComponent() {
+        resultComponent = (GridLayout) factory.createComponent(GridLayout.NAME);
+        loadId(resultComponent, element);
 
-        initComponent(component, element, parent);
-
-        return component;
-    }
-
-    protected void initComponent(GridLayout component, Element element, Component parent) {
-        loadId(component, element);
-        loadEnable(component, element);
-        loadVisible(component, element);
-
-        loadStyleName(component, element);
-
-        final Element columnsElement = element.element("columns");
-        final Element rowsElement = element.element("rows");
+        Element columnsElement = element.element("columns");
+        Element rowsElement = element.element("rows");
 
         int columnCount;
         @SuppressWarnings("unchecked")
@@ -55,43 +39,37 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
                 columnCount = Integer.parseInt(columnsElement.attributeValue("count"));
             } catch (NumberFormatException e) {
                 throw new GuiDevelopmentException("'grid' element must contain either a set of 'column' elements or a 'count' attribute",
-                        context.getFullFrameId(), "Grid ID", component.getId());
+                        context.getFullFrameId(), "Grid ID", resultComponent.getId());
             }
-            component.setColumns(columnCount);
+            resultComponent.setColumns(columnCount);
             for (int i = 0; i < columnCount; i++) {
-                component.setColumnExpandRatio(i, 1);
+                resultComponent.setColumnExpandRatio(i, 1);
             }
         } else {
             String countAttr =  columnsElement.attributeValue("count");
             if (StringUtils.isNotEmpty(countAttr)) {
-                throw new GuiDevelopmentException("'grid' element can't contain a set of 'column' elements and a 'count' attribute", context.getFullFrameId(), "Grid ID", component.getId());
+                throw new GuiDevelopmentException("'grid' element can't contain a set of 'column' elements and a 'count' attribute",
+                        context.getFullFrameId(), "Grid ID", resultComponent.getId());
             }
             columnCount = columnElements.size();
-            component.setColumns(columnCount);
+            resultComponent.setColumns(columnCount);
             int i = 0;
             for (Element columnElement : columnElements) {
-                final String flex = columnElement.attributeValue("flex");
+                String flex = columnElement.attributeValue("flex");
                 if (!StringUtils.isEmpty(flex)) {
-                    component.setColumnExpandRatio(i, Float.parseFloat(flex));
+                    resultComponent.setColumnExpandRatio(i, Float.parseFloat(flex));
                 }
                 i++;
             }
         }
 
         @SuppressWarnings("unchecked")
-        final List<Element> rowElements = rowsElement.elements("row");
-        final Set<Element> invisibleRows = new HashSet<>();
+        List<Element> rowElements = rowsElement.elements("row");
+        Set<Element> invisibleRows = new HashSet<>();
 
         int rowCount = 0;
         for (Element rowElement : rowElements) {
             String visible = rowElement.attributeValue("visible");
-            if (visible == null) {
-                final Element e = rowElement.element("visible");
-                if (e != null) {
-                    visible = e.getText();
-                }
-            }
-
             if (!StringUtils.isEmpty(visible)) {
                 Boolean value = Boolean.valueOf(visible);
 
@@ -105,13 +83,13 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
             }
         }
 
-        component.setRows(rowCount);
+        resultComponent.setRows(rowCount);
 
         int j = 0;
         for (Element rowElement : rowElements) {
             final String flex = rowElement.attributeValue("flex");
             if (!StringUtils.isEmpty(flex)) {
-                component.setRowExpandRatio(j, Float.parseFloat(flex));
+                resultComponent.setRowExpandRatio(j, Float.parseFloat(flex));
             }
             j++;
         }
@@ -121,24 +99,34 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
         int row = 0;
         for (Element rowElement : rowElements) {
             if (!invisibleRows.contains(rowElement)) {
-                loadSubComponents(component, rowElement, row);
+                createSubComponents(resultComponent, rowElement, row);
                 row++;
             }
         }
-
-        loadSpacing(component, element);
-        loadMargin(component, element);
-
-        loadWidth(component, element);
-        loadHeight(component, element);
-
-        loadAlign(component, element);
-
-        assignFrame(component);
     }
 
-    protected void loadSubComponents(GridLayout component, Element element, int row) {
-        final LayoutLoader loader = new LayoutLoader(context, factory, config);
+    @Override
+    public void loadComponent() {
+        assignFrame(resultComponent);
+
+        loadEnable(resultComponent, element);
+        loadVisible(resultComponent, element);
+
+        loadStyleName(resultComponent, element);
+
+        loadSpacing(resultComponent, element);
+        loadMargin(resultComponent, element);
+
+        loadWidth(resultComponent, element);
+        loadHeight(resultComponent, element);
+
+        loadAlign(resultComponent, element);
+
+        loadSubComponents();
+    }
+
+    protected void createSubComponents(GridLayout gridLayout, Element element, int row) {
+        LayoutLoader loader = new LayoutLoader(context, factory, layoutLoaderConfig);
         loader.setLocale(getLocale());
         loader.setMessagesPack(getMessagesPack());
 
@@ -146,14 +134,17 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
 
         //noinspection unchecked
         for (Element subElement : (Collection<Element>) element.elements()) {
-            final Component subComponent = loader.loadComponent(subElement, component);
+            ComponentLoader componentLoader = loader.createComponent(subElement);
+            pendingLoadComponents.add(componentLoader);
+
+            Component subComponent = componentLoader.getResultComponent();
 
             String colspan = subElement.attributeValue("colspan");
             String rowspan = subElement.attributeValue("rowspan");
 
             if (col >= spanMatrix.length) {
                 Map<String, Object> params = new HashMap<>();
-                params.put("Grid ID", component.getId());
+                params.put("Grid ID", gridLayout.getId());
                 String rowId = element.attributeValue("id");
                 if (StringUtils.isNotEmpty(rowId)) {
                     params.put("Row ID", rowId);
@@ -167,7 +158,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
             }
 
             if (StringUtils.isEmpty(colspan) && StringUtils.isEmpty(rowspan)) {
-                addSubComponent(component, subComponent, col, row, col, row);
+                addSubComponent(gridLayout, subComponent, col, row, col, row);
             } else {
                 int cspan = 1;
                 int rspan = 1;
@@ -199,7 +190,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
                 int endColumn = col + cspan - 1;
                 int endRow = row + rspan - 1;
 
-                addSubComponent(component, subComponent, col, row, endColumn, endRow);
+                addSubComponent(gridLayout, subComponent, col, row, endColumn, endRow);
             }
 
             col++;

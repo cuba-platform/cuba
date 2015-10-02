@@ -4,59 +4,42 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PopupButton;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
-import org.dom4j.Element;
 
 /**
  * @author pavlov
  * @version $Id$
  */
-public class PopupButtonLoader extends ComponentLoader {
-
-    protected LayoutLoaderConfig config;
-    protected ComponentsFactory factory;
-
-    public PopupButtonLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context);
-        this.config = config;
-        this.factory = factory;
+public class PopupButtonLoader extends AbstractComponentLoader<PopupButton> {
+    @Override
+    public void createComponent() {
+        resultComponent = (PopupButton) factory.createComponent(PopupButton.NAME);
+        loadId(resultComponent, element);
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        PopupButton component = (PopupButton) factory.createComponent(element.getName());
+    public void loadComponent() {
+        assignXmlDescriptor(resultComponent, element);
+        assignFrame(resultComponent);
 
-        initComponent(component, element, parent);
+        loadVisible(resultComponent, element);
+        loadEnable(resultComponent, element);
+        loadAlign(resultComponent, element);
 
-        return component;
-    }
+        loadStyleName(resultComponent, element);
 
-    protected void initComponent(PopupButton component, Element element, Component parent) {
-        assignXmlDescriptor(component, element);
-        loadId(component, element);
-        loadVisible(component, element);
-        loadEnable(component, element);
-        loadAlign(component, element);
+        loadCaption(resultComponent, element);
+        loadDescription(resultComponent, element);
+        loadIcon(resultComponent, element);
 
-        loadStyleName(component, element);
+        loadWidth(resultComponent, element);
 
-        loadCaption(component, element);
-        loadDescription(component, element);
-        loadIcon(component, element);
-
-        loadWidth(component, element);
-
-        assignFrame(component);
-
-        loadActions(component, element);
+        loadActions(resultComponent, element);
 
         String menuWidth = element.attributeValue("menuWidth");
         if (!StringUtils.isEmpty(menuWidth)) {
-            component.setMenuWidth(menuWidth);
+            resultComponent.setMenuWidth(menuWidth);
         }
     }
 }

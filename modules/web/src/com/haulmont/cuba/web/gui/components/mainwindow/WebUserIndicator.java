@@ -109,7 +109,7 @@ public class WebUserIndicator extends WebAbstractComponent<HorizontalLayout> imp
         TimeSource timeSource = AppBeans.get(TimeSource.NAME);
         DataService dataService = AppBeans.get(DataService.NAME);
 
-        LoadContext ctx = new LoadContext(UserSubstitution.class);
+        LoadContext<UserSubstitution> ctx = new LoadContext<>(UserSubstitution.class);
         LoadContext.Query query = ctx.setQueryString("select us from sec$UserSubstitution us " +
                 "where us.user.id = :userId and (us.endDate is null or us.endDate >= :currentDate) " +
                 "and (us.startDate is null or us.startDate <= :currentDate) " +

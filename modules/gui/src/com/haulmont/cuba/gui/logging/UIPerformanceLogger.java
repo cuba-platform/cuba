@@ -15,7 +15,7 @@ package com.haulmont.cuba.gui.logging;
 public interface UIPerformanceLogger {
 
     enum LifeCycle {
-        LOAD_DESCRIPTOR("loadDescriptor"),
+        LOAD("load"),
         XML("xml"),
         INIT("init"),
         READY("ready"),

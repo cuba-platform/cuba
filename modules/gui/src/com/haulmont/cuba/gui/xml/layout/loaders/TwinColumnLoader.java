@@ -4,10 +4,11 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.DatasourceComponent;
+import com.haulmont.cuba.gui.components.TwinColumn;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.xml.layout.*;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -15,45 +16,44 @@ import org.dom4j.Element;
  * @author Gorodnov
  * @version $Id$
  */
-public class TwinColumnLoader extends AbstractFieldLoader {
-
-    public TwinColumnLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context, config, factory);
+public class TwinColumnLoader extends AbstractFieldLoader<TwinColumn> {
+    @Override
+    public void createComponent() {
+        resultComponent = (TwinColumn) factory.createComponent(TwinColumn.NAME);
+        loadId(resultComponent, element);
     }
 
     @Override
-    protected void initComponent(Field field, Element element, Component parent) {
-        super.initComponent(field, element, parent);
-
-        TwinColumn component = (TwinColumn) field;
+    public void loadComponent() {
+        super.loadComponent();
 
         String captionProperty = element.attributeValue("captionProperty");
         if (!StringUtils.isEmpty(captionProperty)) {
-            component.setCaptionMode(CaptionMode.PROPERTY);
-            component.setCaptionProperty(captionProperty);
+            resultComponent.setCaptionMode(CaptionMode.PROPERTY);
+            resultComponent.setCaptionProperty(captionProperty);
         }
 
         String columns = element.attributeValue("columns");
         if (!StringUtils.isEmpty(columns)) {
-            component.setColumns(Integer.parseInt(columns));
+            resultComponent.setColumns(Integer.parseInt(columns));
         }
 
         String rows = element.attributeValue("rows");
         if (!StringUtils.isEmpty(rows)) {
-            component.setRows(Integer.parseInt(rows));
+            resultComponent.setRows(Integer.parseInt(rows));
         }
 
         String addBtnEnabled = element.attributeValue("addAllBtnEnabled");
         if (!StringUtils.isEmpty(addBtnEnabled)) {
-            component.setAddAllBtnEnabled(Boolean.valueOf(addBtnEnabled));
+            resultComponent.setAddAllBtnEnabled(Boolean.valueOf(addBtnEnabled));
         }
     }
 
     @Override
     protected void loadDatasource(DatasourceComponent component, Element element) {
-        final String datasource = element.attributeValue("optionsDatasource");
+        String datasource = element.attributeValue("optionsDatasource");
         if (!StringUtils.isEmpty(datasource)) {
-            final Datasource ds = context.getDsContext().get(datasource);
+            Datasource ds = context.getDsContext().get(datasource);
             ((TwinColumn) component).setOptionsDatasource((CollectionDatasource) ds);
         }
 

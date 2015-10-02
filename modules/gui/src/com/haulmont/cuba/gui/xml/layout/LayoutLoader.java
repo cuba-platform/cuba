@@ -4,14 +4,15 @@
  */
 package com.haulmont.cuba.gui.xml.layout;
 
+import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.core.global.TemplateHelper;
-import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
+import com.haulmont.cuba.gui.xml.layout.loaders.WindowLoader;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -37,13 +38,12 @@ import java.util.regex.Pattern;
  * @version $Id$
  */
 public class LayoutLoader {
-
     protected ComponentLoader.Context context;
-    private ComponentsFactory factory;
-    private LayoutLoaderConfig config;
+    protected ComponentsFactory factory;
+    protected LayoutLoaderConfig config;
 
-    private Locale locale;
-    private String messagesPack;
+    protected Locale locale;
+    protected String messagesPack;
 
     public static final Pattern COMMENT_PATTERN = Pattern.compile("<!--.*?-->", Pattern.DOTALL);
 
@@ -110,24 +110,6 @@ public class LayoutLoader {
         this.messagesPack = messagesPack;
     }
 
-    public Component loadComponent(InputStream stream, Component parent) {
-        Document doc = Dom4j.readDocument(stream);
-        Element element = doc.getRootElement();
-        return loadComponent(element, parent);
-    }
-
-    public Component loadComponent(InputStream stream, Component parent, Map<String, Object> params) {
-        StopWatch xmlLoadWatch = new Log4JStopWatch(context.getCurrentFrameId() + "#" +
-                UIPerformanceLogger.LifeCycle.XML,
-                Logger.getLogger(UIPerformanceLogger.class));
-
-        Document doc = parseDescriptor(stream, params == null ? Collections.<String, Object>emptyMap() : params);
-        Element element = doc.getRootElement();
-        xmlLoadWatch.stop();
-
-        return loadComponent(element, parent);
-    }
-
     protected ComponentLoader getLoader(Element element) {
         Class<? extends ComponentLoader> loaderClass = config.getLoader(element.getName());
         if (loaderClass == null) {
@@ -136,31 +118,47 @@ public class LayoutLoader {
 
         ComponentLoader loader;
         try {
-            final Constructor<? extends ComponentLoader> constructor =
-                    loaderClass.getConstructor(ComponentLoader.Context.class, LayoutLoaderConfig.class, ComponentsFactory.class);
-            loader = constructor.newInstance(context, config, factory);
+            Constructor<? extends ComponentLoader> constructor = loaderClass.getConstructor();
+            loader = constructor.newInstance();
 
             loader.setLocale(locale);
             loader.setMessagesPack(messagesPack);
-        } catch (NoSuchMethodException e) {
-            try {
-                final Constructor<? extends ComponentLoader> constructor = loaderClass.getConstructor(ComponentLoader.Context.class);
-                loader = constructor.newInstance(context);
-                loader.setLocale(locale);
-                loader.setMessagesPack(messagesPack);
-            } catch (Throwable e1) {
-                throw new GuiDevelopmentException("Loader instatiation error: " + e1, context.getFullFrameId());
-            }
-        } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            loader.setContext(context);
+            loader.setLayoutLoaderConfig(config);
+            loader.setFactory(factory);
+            loader.setElement(element);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
             throw new GuiDevelopmentException("Loader instatiation error: " + e, context.getFullFrameId());
         }
 
         return loader;
     }
 
-    public Component loadComponent(Element element, Component parent) {
+    public Pair<ComponentLoader, Element> createFrameComponent(InputStream stream, Map<String, Object> params) {
+        StopWatch xmlLoadWatch = new Log4JStopWatch(context.getCurrentFrameId() + "#" +
+                UIPerformanceLogger.LifeCycle.XML,
+                Logger.getLogger(UIPerformanceLogger.class));
+
+        Document doc = parseDescriptor(stream, params == null ? Collections.<String, Object>emptyMap() : params);
+        Element element = doc.getRootElement();
+        xmlLoadWatch.stop();
+
+        return new Pair<>(createComponent(element), element);
+    }
+
+    public ComponentLoader createComponent(Element element) {
         ComponentLoader loader = getLoader(element);
-        return loader.loadComponent(factory, element, parent);
+
+        loader.createComponent();
+        return loader;
+    }
+
+    public ComponentLoader createWindow(Element element, String windowId) {
+        ComponentLoader loader = getLoader(element);
+        ((WindowLoader) loader).setWindowId(windowId);
+
+        loader.createComponent();
+        return loader;
     }
 
     public Locale getLocale() {

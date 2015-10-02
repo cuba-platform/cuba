@@ -5,36 +5,30 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ResizableTextArea;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.dom4j.Element;
 
 /**
  * @author subbotin
  * @version $Id$
  */
 public class ResizableTextAreaLoader extends TextAreaLoader {
-
-    public ResizableTextAreaLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context, config, factory);
+    @Override
+    public void createComponent() {
+        resultComponent = (ResizableTextArea) factory.createComponent(ResizableTextArea.NAME);
+        loadId(resultComponent, element);
     }
 
     @Override
-    protected void initComponent(Field field, Element element, Component parent) {
-        super.initComponent(field, element, parent);
+    public void loadComponent() {
+        super.loadComponent();
 
-        if (field instanceof ResizableTextArea) {
-            ResizableTextArea textArea = (ResizableTextArea) field;
-            String resizable = element.attributeValue("resizable");
+        ResizableTextArea textArea = (ResizableTextArea) resultComponent;
+        String resizable = element.attributeValue("resizable");
 
-            if (StringUtils.isNotEmpty(resizable)) {
-                textArea.setResizable(BooleanUtils.toBoolean(resizable));
-            }
+        if (StringUtils.isNotEmpty(resizable)) {
+            textArea.setResizable(BooleanUtils.toBoolean(resizable));
         }
     }
 }

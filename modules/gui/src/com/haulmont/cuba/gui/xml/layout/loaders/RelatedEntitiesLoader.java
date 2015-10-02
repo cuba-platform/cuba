@@ -9,11 +9,9 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.RelatedEntities;
 import com.haulmont.cuba.gui.config.WindowConfig;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -21,41 +19,34 @@ import org.dom4j.Element;
  * @author artamonov
  * @version $Id$
  */
-public class RelatedEntitiesLoader extends ComponentLoader {
+public class RelatedEntitiesLoader extends AbstractComponentLoader<RelatedEntities> {
 
-    public RelatedEntitiesLoader(Context context) {
-        super(context);
+    @Override
+    public void createComponent() {
+        resultComponent = (RelatedEntities) factory.createComponent(RelatedEntities.NAME);
+        loadId(resultComponent, element);
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final RelatedEntities component = (RelatedEntities) factory.createComponent(RelatedEntities.NAME);
+    public void loadComponent() {
+        assignFrame(resultComponent);
 
-        initComponent(component, element, parent);
+        loadCaption(resultComponent, element);
+        loadWidth(resultComponent, element);
 
-        return component;
-    }
-
-    protected void initComponent(final RelatedEntities component, Element element, Component parent) {
-        loadId(component, element);
-        loadCaption(component, element);
-        loadWidth(component, element);
-
-        loadStyleName(component, element);
-        loadEnable(component, element);
-        loadVisible(component, element);
-        loadAlign(component, element);
-
-        assignFrame(component);
+        loadStyleName(resultComponent, element);
+        loadEnable(resultComponent, element);
+        loadVisible(resultComponent, element);
+        loadAlign(resultComponent, element);
 
         String openType = element.attributeValue("openType");
         if (StringUtils.isNotEmpty(openType)) {
-            component.setOpenType(WindowManager.OpenType.valueOf(openType));
+            resultComponent.setOpenType(WindowManager.OpenType.valueOf(openType));
         }
 
         String exclude = element.attributeValue("exclude");
         if (StringUtils.isNotBlank(exclude)) {
-            component.setExcludePropertiesRegex(exclude);
+            resultComponent.setExcludePropertiesRegex(exclude);
         }
 
         for (Object routeObject : element.elements("property")) {
@@ -64,7 +55,7 @@ public class RelatedEntitiesLoader extends ComponentLoader {
             String property = routeElement.attributeValue("name");
             if (StringUtils.isEmpty(property)) {
                 throw new GuiDevelopmentException("Name attribute for related entities property is not specified",
-                        context.getFullFrameId(), "componentId", component.getId());
+                        context.getFullFrameId(), "componentId", resultComponent.getId());
             }
 
             String caption = loadResourceString(routeElement.attributeValue("caption"));
@@ -75,31 +66,28 @@ public class RelatedEntitiesLoader extends ComponentLoader {
                 WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
                 if (windowConfig.findWindowInfo(screen) == null) {
                     throw new GuiDevelopmentException("Screen for custom route in related entities not found",
-                            context.getFullFrameId(), "componentId", component.getId());
+                            context.getFullFrameId(), "componentId", resultComponent.getId());
                 }
             }
 
-            component.addPropertyOption(property, screen, caption, filterCaption);
+            resultComponent.addPropertyOption(property, screen, caption, filterCaption);
         }
 
-        final String listComponent = element.attributeValue("for");
+        String listComponent = element.attributeValue("for");
         if (StringUtils.isEmpty(listComponent)) {
             throw new GuiDevelopmentException("for' attribute of related entities is not specified",
-                    context.getFullFrameId(), "componentId", component.getId());
+                    context.getFullFrameId(), "componentId", resultComponent.getId());
         }
 
-        context.addPostInitTask(new PostInitTask() {
-            @Override
-            public void execute(Context context, Frame window) {
-                if (component.getListComponent() == null) {
-                    Component bindComponent = component.getFrame().getComponent(listComponent);
-                    if (!(bindComponent instanceof ListComponent)) {
-                        throw new GuiDevelopmentException("Specify 'for' attribute: id of table or tree",
-                                context.getFullFrameId(), "componentId", component.getId());
-                    }
-
-                    component.setListComponent((ListComponent) bindComponent);
+        context.addPostInitTask((context1, window) -> {
+            if (resultComponent.getListComponent() == null) {
+                Component bindComponent = resultComponent.getFrame().getComponent(listComponent);
+                if (!(bindComponent instanceof ListComponent)) {
+                    throw new GuiDevelopmentException("Specify 'for' attribute: id of table or tree",
+                            context1.getFullFrameId(), "componentId", resultComponent.getId());
                 }
+
+                resultComponent.setListComponent((ListComponent) bindComponent);
             }
         });
     }

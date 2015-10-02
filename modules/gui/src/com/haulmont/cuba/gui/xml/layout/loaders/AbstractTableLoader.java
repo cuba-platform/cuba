@@ -19,17 +19,14 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.aggregation.AggregationStrategy;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.dom4j.Element;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -39,63 +36,47 @@ import java.util.Set;
  * @author abramov
  * @version $Id$
  */
-public abstract class AbstractTableLoader extends ActionsHolderLoader {
+public abstract class AbstractTableLoader<T extends Table> extends ActionsHolderLoader<T> {
 
     private Logger log = LoggerFactory.getLogger(getClass());
-
-    protected ComponentsFactory factory;
-    protected LayoutLoaderConfig config;
 
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
     protected DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.NAME);
     protected DynamicAttributes dynamicAttributes = AppBeans.get(DynamicAttributes.NAME);
 
-    public AbstractTableLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context);
-        this.factory = factory;
-        this.config = config;
-    }
+    protected ComponentLoader buttonsPanelLoader;
+    protected Element panelElement;
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        Table component = (Table) factory.createComponent(element.getName());
+    public void loadComponent() {
+        assignXmlDescriptor(resultComponent, element);
+        assignFrame(resultComponent);
 
-        initComponent(component, element, parent);
+        loadEnable(resultComponent, element);
+        loadVisible(resultComponent, element);
+        loadEditable(resultComponent, element);
+        loadValidators(resultComponent, element);
 
-        return component;
-    }
+        loadAlign(resultComponent, element);
+        loadStyleName(resultComponent, element);
 
-    protected void initComponent(Table component, Element element, Component parent) {
-        assignXmlDescriptor(component, element);
-        loadId(component, element);
+        loadHeight(resultComponent, element);
+        loadWidth(resultComponent, element);
 
-        assignFrame(component);
+        loadSortable(resultComponent, element);
+        loadReorderingAllowed(resultComponent, element);
+        loadColumnControlVisible(resultComponent, element);
+        loadAggregatable(resultComponent, element);
+        loadAggregationStyle(resultComponent, element);
 
-        loadEnable(component, element);
-        loadVisible(component, element);
-        loadEditable(component, element);
-        loadValidators(component, element);
+        loadPresentations(resultComponent, element);
 
-        loadAlign(component, element);
-        loadStyleName(component, element);
+        loadActions(resultComponent, element);
+        loadContextMenuEnabled(resultComponent, element);
+        loadMultiLineCells(resultComponent, element);
 
-        loadHeight(component, element);
-        loadWidth(component, element);
-
-        loadSortable(component, element);
-        loadReorderingAllowed(component, element);
-        loadColumnControlVisible(component, element);
-        loadAggregatable(component, element);
-        loadAggregationStyle(component, element);
-
-        loadPresentations(component, element);
-
-        loadActions(component, element);
-        loadContextMenuEnabled(component, element);
-        loadMultiLineCells(component, element);
-
-        final Element columnsElement = element.element("columns");
-        final Element rowsElement = element.element("rows");
+        Element columnsElement = element.element("columns");
+        Element rowsElement = element.element("rows");
 
         if (rowsElement == null) {
             throw new GuiDevelopmentException("Table doesn't have 'rows' element", context.getCurrentFrameId(),
@@ -111,19 +92,18 @@ public abstract class AbstractTableLoader extends ActionsHolderLoader {
         }
 
         if (!StringUtils.isEmpty(rowHeaderMode)) {
-            component.setRowHeaderMode(Table.RowHeaderMode.valueOf(rowHeaderMode));
+            resultComponent.setRowHeaderMode(Table.RowHeaderMode.valueOf(rowHeaderMode));
         }
 
-        loadButtonsPanel(component, element);
+        loadButtonsPanel(resultComponent);
 
-        loadRowsCount(component, element); // must be before datasource setting
+        loadRowsCount(resultComponent, element); // must be before datasource setting
 
-        final String datasource = rowsElement.attributeValue("datasource");
+        String datasource = rowsElement.attributeValue("datasource");
         if (StringUtils.isBlank(datasource)) {
             throw new GuiDevelopmentException("Table 'rows' element doesn't have 'datasource' attribute",
                     context.getCurrentFrameId(), "Table ID", element.attributeValue("id"));
         }
-        context.getFullFrameId();
 
         Datasource ds = context.getDsContext().get(datasource);
         if (ds == null) {
@@ -138,23 +118,23 @@ public abstract class AbstractTableLoader extends ActionsHolderLoader {
         List<Table.Column> availableColumns;
 
         if (columnsElement != null) {
-            availableColumns = loadColumns(component, columnsElement, cds);
+            availableColumns = loadColumns(resultComponent, columnsElement, cds);
         } else {
             availableColumns = new ArrayList<>();
         }
 
         for (Table.Column column : availableColumns) {
-            component.addColumn(column);
-            loadValidators(component, column);
-            loadRequired(component, column);
+            resultComponent.addColumn(column);
+            loadValidators(resultComponent, column);
+            loadRequired(resultComponent, column);
         }
 
-        addDynamicAttributes(component, ds, availableColumns);
+        addDynamicAttributes(resultComponent, ds, availableColumns);
 
-        component.setDatasource(cds);
+        resultComponent.setDatasource(cds);
 
-        final String multiselect = element.attributeValue("multiselect");
-        component.setMultiSelect(BooleanUtils.toBoolean(multiselect));
+        String multiselect = element.attributeValue("multiselect");
+        resultComponent.setMultiSelect(BooleanUtils.toBoolean(multiselect));
     }
 
     protected void addDynamicAttributes(Table component, Datasource ds, List<Table.Column> availableColumns) {
@@ -189,24 +169,24 @@ public abstract class AbstractTableLoader extends ActionsHolderLoader {
     }
 
     protected void loadMultiLineCells(Table table, Element element) {
-        final String allowMultiStringCells = element.attributeValue("allowMultiStringCells");
+        String allowMultiStringCells = element.attributeValue("allowMultiStringCells");
         if (StringUtils.isNotBlank(allowMultiStringCells)) {
             table.setAllowMultiStringCells(BooleanUtils.toBoolean(allowMultiStringCells));
         }
 
-        final String multiLineCells = element.attributeValue("multiLineCells");
+        String multiLineCells = element.attributeValue("multiLineCells");
         if (StringUtils.isNotBlank(multiLineCells)) {
             table.setMultiLineCells(BooleanUtils.toBoolean(multiLineCells));
         }
     }
 
     protected void loadContextMenuEnabled(Table table, Element element) {
-        final String allowPopupMenu = element.attributeValue("allowPopupMenu");
+        String allowPopupMenu = element.attributeValue("allowPopupMenu");
         if (StringUtils.isNotBlank(allowPopupMenu)) {
             table.setAllowPopupMenu(BooleanUtils.toBoolean(allowPopupMenu));
         }
 
-        final String contextMenuEnabled = element.attributeValue("contextMenuEnabled");
+        String contextMenuEnabled = element.attributeValue("contextMenuEnabled");
         if (StringUtils.isNotBlank(contextMenuEnabled)) {
             table.setContextMenuEnabled(BooleanUtils.toBoolean(contextMenuEnabled));
         }
@@ -222,9 +202,9 @@ public abstract class AbstractTableLoader extends ActionsHolderLoader {
     }
 
     protected List<Table.Column> loadColumns(Table component, Element columnsElement, CollectionDatasource ds) {
-        final List<Table.Column> columns = new ArrayList<>();
+        List<Table.Column> columns = new ArrayList<>();
         //noinspection unchecked
-        for (final Element columnElement : (Collection<Element>) columnsElement.elements("column")) {
+        for (Element columnElement : (Collection<Element>) columnsElement.elements("column")) {
             String visible = columnElement.attributeValue("visible");
             if (StringUtils.isEmpty(visible) || Boolean.valueOf(visible)) {
                 columns.add(loadColumn(columnElement, ds));
@@ -251,16 +231,26 @@ public abstract class AbstractTableLoader extends ActionsHolderLoader {
         }
     }
 
-    protected void loadButtonsPanel(Component.HasButtonsPanel component, Element element) {
-        Element panelElement = element.element("buttonsPanel");
+    protected void createButtonsPanel(T table, Element element) {
+        panelElement = element.element("buttonsPanel");
         if (panelElement != null) {
-            Window window = ComponentsHelper.getWindowImplementation((Component.BelongToFrame) component);
+            ButtonsPanelLoader loader = (ButtonsPanelLoader) getLoader(panelElement, ButtonsPanel.NAME);
+            loader.createComponent();
+            ButtonsPanel panel = loader.getResultComponent();
 
-            ButtonsPanelLoader loader = (ButtonsPanelLoader) getLoader(ButtonsPanel.NAME);
-            ButtonsPanel panel = (ButtonsPanel) loader.loadComponent(factory, panelElement, null);
+            table.setButtonsPanel(panel);
 
-            component.setButtonsPanel(panel);
+            buttonsPanelLoader = loader;
+        }
+    }
 
+    protected void loadButtonsPanel(T component) {
+        if (buttonsPanelLoader != null) {
+            //noinspection unchecked
+            buttonsPanelLoader.loadComponent();
+            ButtonsPanel panel = (ButtonsPanel) buttonsPanelLoader.getResultComponent();
+
+            Window window = ComponentsHelper.getWindowImplementation(component);
             String alwaysVisible = panelElement.attributeValue("alwaysVisible");
             panel.setVisible(!(window instanceof Window.Lookup) || "true".equals(alwaysVisible));
         }
@@ -268,7 +258,7 @@ public abstract class AbstractTableLoader extends ActionsHolderLoader {
 
     protected void loadRequired(Table component, Table.Column column) {
         Element element = column.getXmlDescriptor();
-        final String required = element.attributeValue("required");
+        String required = element.attributeValue("required");
         if (!StringUtils.isEmpty(required)) {
             String requiredMsg = element.attributeValue("requiredMessage");
             component.setRequired(column, BooleanUtils.toBoolean(required), loadResourceString(requiredMsg));
@@ -276,12 +266,12 @@ public abstract class AbstractTableLoader extends ActionsHolderLoader {
     }
 
     protected void loadValidators(Table component, Table.Column column) {
-        @SuppressWarnings("unchecked") final
+        @SuppressWarnings("unchecked")
         List<Element> validatorElements = column.getXmlDescriptor().elements("validator");
 
         if (!validatorElements.isEmpty()) {
             for (Element validatorElement : validatorElements) {
-                final Field.Validator validator = loadValidator(validatorElement);
+                Field.Validator validator = loadValidator(validatorElement);
                 if (validator != null) {
                     component.addValidator(column, validator);
                 }
@@ -296,35 +286,19 @@ public abstract class AbstractTableLoader extends ActionsHolderLoader {
     }
 
     protected Table.Column loadColumn(Element element, Datasource ds) {
-        final String id = element.attributeValue("id");
+        String id = element.attributeValue("id");
 
-        final MetaPropertyPath metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
+        MetaPropertyPath metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
                 .resolveMetaPropertyPath(ds.getMetaClass(), id);
 
-        final Table.Column column = new Table.Column(metaPropertyPath != null ? metaPropertyPath : id);
+        Table.Column column = new Table.Column(metaPropertyPath != null ? metaPropertyPath : id);
 
         String editable = element.attributeValue("editable");
-        if (editable == null) {
-            // todo artamonov remove in 5.3
-            final Element e = element.element("editable");
-            if (e != null) {
-                editable = e.getText();
-            }
-        }
-
         if (!StringUtils.isEmpty(editable)) {
             column.setEditable(Boolean.valueOf(editable));
         }
 
         String collapsed = element.attributeValue("collapsed");
-        if (collapsed == null) {
-            // todo artamonov remove in 5.3
-            final Element e = element.element("collapsed");
-            if (e != null) {
-                collapsed = e.getText();
-            }
-        }
-
         if (!StringUtils.isEmpty(collapsed)) {
             column.setCollapsed(Boolean.valueOf(collapsed));
         }
@@ -441,42 +415,9 @@ public abstract class AbstractTableLoader extends ActionsHolderLoader {
         }
     }
 
-    protected Formatter loadFormatter(Element element) {
-        final Element formatterElement = element.element("formatter");
-        if (formatterElement != null) {
-            final String className = formatterElement.attributeValue("class");
-
-            if (StringUtils.isEmpty(className)) {
-                throw new GuiDevelopmentException("Formatter's attribute 'class' is not specified", context.getCurrentFrameId());
-            }
-
-            Class<?> aClass = scripting.loadClass(className);
-            if (aClass == null) {
-                throw new GuiDevelopmentException(String.format("Class %s is not found", className), context.getFullFrameId());
-            }
-
-            try {
-                final Constructor<?> constructor = aClass.getConstructor(Element.class);
-                try {
-                    return (Formatter) constructor.newInstance(formatterElement);
-                } catch (Throwable e) {
-                    throw new RuntimeException(e);
-                }
-            } catch (NoSuchMethodException e) {
-                try {
-                    return (Formatter) aClass.newInstance();
-                } catch (Exception e1) {
-                    throw new RuntimeException(e1);
-                }
-            }
-        } else {
-            return null;
-        }
-    }
-
     protected void loadValidators(Table component, Element element) {
         @SuppressWarnings("unchecked")
-        final List<Element> validatorElements = element.elements("validator");
+        List<Element> validatorElements = element.elements("validator");
 
         for (Element validatorElement : validatorElements) {
             final Field.Validator validator = loadValidator(validatorElement);
@@ -487,52 +428,23 @@ public abstract class AbstractTableLoader extends ActionsHolderLoader {
     }
 
     protected void loadSortable(Table component, Element element) {
-        final String sortable = element.attributeValue("sortable");
+        String sortable = element.attributeValue("sortable");
         if (!StringUtils.isEmpty(sortable)) {
             component.setSortable(Boolean.valueOf(sortable));
         }
     }
 
     protected void loadReorderingAllowed(Table component, Element element) {
-        final String reorderingAllowed = element.attributeValue("reorderingAllowed");
+        String reorderingAllowed = element.attributeValue("reorderingAllowed");
         if (!StringUtils.isEmpty(reorderingAllowed)) {
             component.setColumnReorderingAllowed(Boolean.valueOf(reorderingAllowed));
         }
     }
 
     protected void loadColumnControlVisible(Table component, Element element) {
-        final String columnControlVisible = element.attributeValue("columnControlVisible");
+        String columnControlVisible = element.attributeValue("columnControlVisible");
         if (!StringUtils.isEmpty(columnControlVisible)) {
             component.setColumnControlVisible(Boolean.valueOf(columnControlVisible));
         }
-    }
-
-    protected com.haulmont.cuba.gui.xml.layout.ComponentLoader getLoader(String name) {
-        Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> loaderClass = config.getLoader(name);
-        if (loaderClass == null) {
-            throw new GuiDevelopmentException("Unknown component: " + name, context.getFullFrameId());
-        }
-
-        com.haulmont.cuba.gui.xml.layout.ComponentLoader loader;
-        try {
-            final Constructor<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> constructor =
-                    loaderClass.getConstructor(Context.class, LayoutLoaderConfig.class, ComponentsFactory.class);
-            loader = constructor.newInstance(context, config, factory);
-
-            loader.setLocale(locale);
-            loader.setMessagesPack(messagesPack);
-        } catch (NoSuchMethodException e) {
-            try {
-                loader = loaderClass.newInstance();
-            } catch (InstantiationException | IllegalAccessException e1) {
-                throw new GuiDevelopmentException("Loader instantiation error: " + e1, context.getFullFrameId());
-            }
-            loader.setLocale(locale);
-            loader.setMessagesPack(messagesPack);
-        } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
-            throw new GuiDevelopmentException("Loader instantiation error: " + e, context.getFullFrameId());
-        }
-
-        return loader;
     }
 }

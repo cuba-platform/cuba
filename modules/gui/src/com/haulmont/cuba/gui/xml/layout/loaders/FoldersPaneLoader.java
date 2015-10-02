@@ -5,51 +5,32 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import org.dom4j.Element;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-public class FoldersPaneLoader extends ComponentLoader {
-    public FoldersPaneLoader(Context context) {
-        super(context);
+public class FoldersPaneLoader extends AbstractComponentLoader<FoldersPane> {
+    @Override
+    public void createComponent() {
+        resultComponent = (FoldersPane) factory.createComponent(FoldersPane.NAME);
+        loadId(resultComponent, element);
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        FoldersPane component = (FoldersPane) factory.createComponent(element.getName());
+    public void loadComponent() {
+        assignFrame(resultComponent);
 
-        initComponent(component, element, parent);
+        loadStyleName(resultComponent, element);
+        loadAlign(resultComponent, element);
 
-        return component;
-    }
+        loadWidth(resultComponent, element);
+        loadHeight(resultComponent, element);
 
-    protected void initComponent(final FoldersPane component, Element element, Component parent) {
-        loadId(component, element);
+        loadEnable(resultComponent, element);
+        loadVisible(resultComponent, element);
 
-        loadStyleName(component, element);
-        loadAlign(component, element);
-
-        loadWidth(component, element);
-        loadHeight(component, element);
-
-        loadEnable(component, element);
-        loadVisible(component, element);
-
-        assignFrame(component);
-
-        context.addPostInitTask(new PostInitTask() {
-            @Override
-            public void execute(Context context, Frame window) {
-                if (component.isVisible() && component.isEnabled()) {
-                    component.loadFolders();
-                }
-            }
-        });
+        context.addPostInitTask((context1, window) -> resultComponent.loadFolders());
     }
 }

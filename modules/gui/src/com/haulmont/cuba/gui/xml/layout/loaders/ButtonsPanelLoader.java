@@ -8,9 +8,6 @@ import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.ButtonsPanel;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import org.dom4j.Element;
 
 import java.lang.reflect.Constructor;
 import java.util.Collection;
@@ -19,62 +16,57 @@ import java.util.Collection;
  * @author gorodnov
  * @version $Id$
  */
-public class ButtonsPanelLoader extends ContainerLoader {
-    public ButtonsPanelLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context, config, factory);
+public class ButtonsPanelLoader extends ContainerLoader<ButtonsPanel> {
+
+    protected void applyButtonsProvider(ButtonsPanel panel, ButtonsPanel.Provider buttonsProvider)
+            throws IllegalAccessException, InstantiationException {
+
+        Collection<Component> buttons = buttonsProvider.getButtons();
+        for (Component button : buttons) {
+            panel.add(button);
+        }
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final ButtonsPanel component = (ButtonsPanel) factory.createComponent(element.getName());
-
-        initComponent(component, element, factory);
-
-        return component;
+    public void createComponent() {
+        resultComponent = (ButtonsPanel) factory.createComponent(ButtonsPanel.NAME);
+        loadId(resultComponent, element);
+        createSubComponents(resultComponent, element);
     }
 
-    protected void initComponent(ButtonsPanel component, Element element, ComponentsFactory factory) {
-        assignXmlDescriptor(component, element);
-        loadId(component, element);
-        loadVisible(component, element);
-        loadEnable(component, element);
-        
-        loadStyleName(component, element);
-        loadAlign(component, element);
+    @Override
+    public void loadComponent() {
+        assignXmlDescriptor(resultComponent, element);
+        assignFrame(resultComponent);
 
-        loadWidth(component, element);
-        loadHeight(component, element);
+        loadId(resultComponent, element);
+        loadVisible(resultComponent, element);
+        loadEnable(resultComponent, element);
+
+        loadStyleName(resultComponent, element);
+        loadAlign(resultComponent, element);
+
+        loadWidth(resultComponent, element);
+        loadHeight(resultComponent, element);
 
         if (!element.elements().isEmpty()) {
-            loadSubComponents(component, element, "visible");
+            loadSubComponents();
         } else {
             String className = element.attributeValue("providerClass");
             if (className != null) {
-                final Class<ButtonsPanel.Provider> clazz = ReflectionHelper.getClass(className);
+                Class<ButtonsPanel.Provider> clazz = ReflectionHelper.getClass(className);
 
                 try {
-                    final Constructor<ButtonsPanel.Provider> constructor = clazz.getConstructor();
-                    final ButtonsPanel.Provider instance = constructor.newInstance();
-                    applyButtonsProvider(factory, component, instance);
+                    Constructor<ButtonsPanel.Provider> constructor = clazz.getConstructor();
+                    ButtonsPanel.Provider instance = constructor.newInstance();
+                    applyButtonsProvider(resultComponent, instance);
                 } catch (Throwable e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException("Unable to apply buttons provider", e);
                 }
-
             } else {
                 throw new GuiDevelopmentException("'buttonsPanel' element must contain 'class' attribute or at least one 'button' element",
                         context.getFullFrameId());
             }
-        }
-
-        assignFrame(component);
-    }
-
-    protected void applyButtonsProvider(ComponentsFactory factory, ButtonsPanel panel, ButtonsPanel.Provider buttonsProvider)
-            throws IllegalAccessException, InstantiationException {
-
-        Collection<Component> buttons = buttonsProvider.getButtons();
-        for (final Component button : buttons) {
-            panel.add(button);
         }
     }
 }

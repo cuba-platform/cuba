@@ -214,7 +214,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup>
     }
 
     @Override
-    public void addCustomField(final FieldConfig fieldConfig, final CustomFieldGenerator fieldGenerator) {
+    public void addCustomField(FieldConfig fieldConfig, CustomFieldGenerator fieldGenerator) {
         if (!fieldConfig.isCustom()) {
             throw new IllegalStateException(String.format("Field '%s' must be defined as custom", fieldConfig.getId()));
         }

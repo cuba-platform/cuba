@@ -5,9 +5,7 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ProgressBar;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -16,42 +14,33 @@ import org.dom4j.Element;
  * @author Alexander Budarov
  * @version $Id$
  */
-public class ProgressBarLoader extends ComponentLoader {
-
-    public ProgressBarLoader(Context context) {
-        super(context);
+public class ProgressBarLoader extends AbstractComponentLoader<ProgressBar> {
+    @Override
+    public void createComponent() {
+        resultComponent = (ProgressBar) factory.createComponent(ProgressBar.NAME);
+        loadId(resultComponent, element);
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final ProgressBar component = (ProgressBar) factory.createComponent(element.getName());
+    public void loadComponent() {
+        assignXmlDescriptor(resultComponent, element);
+        assignFrame(resultComponent);
 
-        initComponent(component, element, parent);
+        loadVisible(resultComponent, element);
+        loadEditable(resultComponent, element);
+        loadEnable(resultComponent, element);
 
-        return component;
+        loadStyleName(resultComponent, element);
+
+        loadHeight(resultComponent, element);
+        loadWidth(resultComponent, element);
+        loadAlign(resultComponent, element);
+
+        loadIndeterminate(resultComponent, element);
     }
 
-    protected void initComponent(ProgressBar component, Element element, Component parent) {
-        assignXmlDescriptor(component, element);
-        loadId(component, element);
-
-        loadVisible(component, element);
-        loadEditable(component, element);
-        loadEnable(component, element);
-
-        loadStyleName(component, element);
-
-        loadHeight(component, element);
-        loadWidth(component, element);
-        loadAlign(component, element);
-
-        loadIndeterminate(component, element);
-
-        assignFrame(component);
-    }
-
-    private void loadIndeterminate(ProgressBar component, Element element) {
-        final String indeterminate = element.attributeValue("indeterminate");
+    protected void loadIndeterminate(ProgressBar component, Element element) {
+        String indeterminate = element.attributeValue("indeterminate");
         if (!StringUtils.isEmpty(indeterminate)) {
             component.setIndeterminate(BooleanUtils.toBoolean(indeterminate));
         }

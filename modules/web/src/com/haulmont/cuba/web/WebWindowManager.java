@@ -1273,19 +1273,16 @@ public class WebWindowManager extends WindowManager {
         WebWindow windowImpl = (WebWindow) ((Window.Wrapper) mainWindow).getWrappedWindow();
 
         // bind system UI components to AbstractMainWindow
-        ComponentsHelper.walkComponents(windowImpl, new ComponentFinder() {
-            @Override
-            public boolean visit(com.haulmont.cuba.gui.components.Component component) {
-                if (component instanceof AppWorkArea) {
-                    ((AbstractMainWindow) mainWindow).setWorkArea((AppWorkArea) component);
-                } else if (component instanceof UserIndicator) {
-                    ((AbstractMainWindow) mainWindow).setUserIndicator((UserIndicator) component);
-                } else if (component instanceof FoldersPane) {
-                    ((AbstractMainWindow) mainWindow).setFoldersPane((FoldersPane) component);
-                }
-
-                return false;
+        ComponentsHelper.walkComponents(windowImpl, component -> {
+            if (component instanceof AppWorkArea) {
+                ((AbstractMainWindow) mainWindow).setWorkArea((AppWorkArea) component);
+            } else if (component instanceof UserIndicator) {
+                ((AbstractMainWindow) mainWindow).setUserIndicator((UserIndicator) component);
+            } else if (component instanceof FoldersPane) {
+                ((AbstractMainWindow) mainWindow).setFoldersPane((FoldersPane) component);
             }
+
+            return false;
         });
 
         // attach main window to UI
@@ -1296,16 +1293,13 @@ public class WebWindowManager extends WindowManager {
         appWindow.setMainWindow((Window.MainWindow) mainWindow);
 
         // load menu
-        ComponentsHelper.walkComponents(windowImpl, new ComponentFinder() {
-            @Override
-            public boolean visit(com.haulmont.cuba.gui.components.Component component) {
-                if (component instanceof AppMenu) {
-                    ((AppMenu) component).loadMenu();
-                    return true;
-                }
-
-                return false;
+        ComponentsHelper.walkComponents(windowImpl, component -> {
+            if (component instanceof AppMenu) {
+                ((AppMenu) component).loadMenu();
+                return true;
             }
+
+            return false;
         });
 
         AppWorkArea workArea = appWindow.getMainWindow().getWorkArea();

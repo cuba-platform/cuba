@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.gui;
 
+import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -120,7 +121,7 @@ public abstract class WindowManager {
         checkPermission(windowInfo);
 
         StopWatch loadDescriptorWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
-                UIPerformanceLogger.LifeCycle.LOAD_DESCRIPTOR,
+                UIPerformanceLogger.LifeCycle.LOAD,
                 Logger.getLogger(UIPerformanceLogger.class));
 
         String templatePath = windowInfo.getTemplate();
@@ -146,34 +147,40 @@ public abstract class WindowManager {
 
         preloadMainScreenClass(element);//try to load main screen class to resolve dynamic compilation dependencies issues
 
-        WindowCreationHelper.deployViews(element);
-
-        final DsContext dsContext = loadDsContext(element);
-        final ComponentLoaderContext componentLoaderContext = new ComponentLoaderContext(dsContext, params);
+        ComponentLoaderContext componentLoaderContext = new ComponentLoaderContext(params);
         componentLoaderContext.setFullFrameId(windowInfo.getId());
         componentLoaderContext.setCurrentFrameId(windowInfo.getId());
 
-        final Window window = loadLayout(windowInfo.getTemplate(), element, componentLoaderContext, layoutConfig);
+        ComponentLoader windowLoader = createLayout(windowInfo, element, componentLoaderContext, layoutConfig);
+        Window clientSpecificWindow = (Window) windowLoader.getResultComponent();
+        Window windowWrapper = wrapByCustomClass(clientSpecificWindow, element);
 
-        window.setId(windowInfo.getId());
+        WindowCreationHelper.deployViews(element);
 
-        initDatasources(window, dsContext, params);
+        DsContext dsContext = loadDsContext(element);
+        initDatasources(clientSpecificWindow, dsContext, params);
 
-        WindowContext windowContext = new WindowContextImpl(window, openType, params);
-        window.setContext(windowContext);
+        componentLoaderContext.setDsContext(dsContext);
+
+        WindowContext windowContext = new WindowContextImpl(clientSpecificWindow, openType, params);
+        clientSpecificWindow.setContext(windowContext);
         dsContext.setFrameContext(windowContext);
 
-        window.setWindowManager(this);
+        //noinspection unchecked
+        windowLoader.loadComponent();
+
+        clientSpecificWindow.setWindowManager(this);
 
         loadDescriptorWatch.stop();
 
-        final Window windowWrapper = wrapByCustomClass(window, element, params);
+        initWrapperFrame(windowWrapper, element, params);
+
         componentLoaderContext.setFrame(windowWrapper);
         componentLoaderContext.executePostInitTasks();
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
         if (configuration.getConfig(GlobalConfig.class).getTestMode()) {
-            initDebugIds(window);
+            initDebugIds(clientSpecificWindow);
         }
 
         StopWatch uiPermissionsWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
@@ -181,7 +188,7 @@ public abstract class WindowManager {
                 Logger.getLogger(UIPerformanceLogger.class));
 
         // apply ui permissions
-        WindowCreationHelper.applyUiPermissions(window);
+        WindowCreationHelper.applyUiPermissions(clientSpecificWindow);
 
         uiPermissionsWatch.stop();
 
@@ -189,22 +196,23 @@ public abstract class WindowManager {
     }
 
     private void preloadMainScreenClass(Element element) {
-        final String screenClass = element.attributeValue("class");
+        String screenClass = element.attributeValue("class");
         if (!StringUtils.isBlank(screenClass)) {
             scripting.loadClass(screenClass);
         }
     }
 
-    protected void initDebugIds(final Frame frame) {
+    protected void initDebugIds(Frame frame) {
     }
 
     private void checkPermission(WindowInfo windowInfo) {
         boolean permitted = security.isScreenPermitted(windowInfo.getId());
-        if (!permitted)
+        if (!permitted) {
             throw new AccessDeniedException(PermissionType.SCREEN, windowInfo.getId());
+        }
     }
 
-    protected void initDatasources(final Window window, DsContext dsContext, Map<String, Object> params) {
+    protected void initDatasources(Window window, DsContext dsContext, Map<String, Object> params) {
         window.setDsContext(dsContext);
 
         for (Datasource ds : dsContext.getAll()) {
@@ -214,8 +222,11 @@ public abstract class WindowManager {
         }
     }
 
-    protected Window loadLayout(String descriptorPath, Element rootElement, ComponentLoader.Context context, LayoutLoaderConfig layoutConfig) {
-        final LayoutLoader layoutLoader = new LayoutLoader(context, AppConfig.getFactory(), layoutConfig);
+    protected ComponentLoader createLayout(WindowInfo windowInfo, Element rootElement,
+                                           ComponentLoader.Context context, LayoutLoaderConfig layoutConfig) {
+        String descriptorPath = windowInfo.getTemplate();
+
+        LayoutLoader layoutLoader = new LayoutLoader(context, AppConfig.getFactory(), layoutConfig);
         layoutLoader.setLocale(getLocale());
         if (!StringUtils.isEmpty(descriptorPath)) {
             if (descriptorPath.contains("/")) {
@@ -228,9 +239,9 @@ public abstract class WindowManager {
 
             layoutLoader.setMessagesPack(path);
         }
-
-        final Window window = (Window) layoutLoader.loadComponent(rootElement, null);
-        return window;
+        //noinspection UnnecessaryLocalVariable
+        ComponentLoader windowLoader = layoutLoader.createWindow(rootElement, windowInfo.getId());
+        return windowLoader;
     }
 
     protected DsContext loadDsContext(Element element) {
@@ -244,16 +255,17 @@ public abstract class WindowManager {
             try {
                 dataSupplier = (DataSupplier) aClass.newInstance();
             } catch (InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Unable to create data supplier for screen", e);
             }
         }
 
+        //noinspection UnnecessaryLocalVariable
         DsContext dsContext = new DsContextLoader(dataSupplier).loadDatasources(element.element("dsContext"), null);
         return dsContext;
     }
 
     protected Window createWindow(WindowInfo windowInfo, Map params) {
-        final Window window;
+        Window window;
         try {
             window = (Window) windowInfo.getScreenClass().newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
@@ -462,8 +474,8 @@ public abstract class WindowManager {
 
         setItemWatch.stop();
 
-        final String caption = loadCaption(window, params);
-        final String description = loadDescription(window, params);
+        String caption = loadCaption(window, params);
+        String description = loadDescription(window, params);
         showWindow(window, caption, description, openType, false);
 
         return (Window.Editor) window;
@@ -485,10 +497,10 @@ public abstract class WindowManager {
         if (template != null) {
             window = createWindow(windowInfo, openType, params, LayoutLoaderConfig.getLookupLoaders());
 
-            final Element element = ((Component.HasXmlDescriptor) window).getXmlDescriptor();
-            final String lookupComponent = element.attributeValue("lookupComponent");
+            Element element = ((Component.HasXmlDescriptor) window).getXmlDescriptor();
+            String lookupComponent = element.attributeValue("lookupComponent");
             if (!StringUtils.isEmpty(lookupComponent)) {
-                final Component component = window.getComponent(lookupComponent);
+                Component component = window.getComponent(lookupComponent);
                 ((Window.Lookup) window).setLookupComponent(component);
             }
         } else {
@@ -506,8 +518,8 @@ public abstract class WindowManager {
 
         ((Window.Lookup) window).setLookupHandler(handler);
 
-        final String caption = loadCaption(window, params);
-        final String description = loadDescription(window, params);
+        String caption = loadCaption(window, params);
+        String description = loadDescription(window, params);
 
         showWindow(window, caption, description, openType, false);
 
@@ -522,22 +534,27 @@ public abstract class WindowManager {
         return openFrame(parentFrame, parent, windowInfo, Collections.<String, Object>emptyMap());
     }
 
-    public Frame openFrame(Frame parentFrame, Component parent, WindowInfo windowInfo,
-                                          Map<String, Object> params) {
+    public Frame openFrame(Frame parentFrame, Component parent, WindowInfo windowInfo, Map<String, Object> params) {
+        return openFrame(parentFrame, parent, null, windowInfo, params);
+    }
+
+    public Frame openFrame(Frame parentFrame, Component parent, @Nullable String id,
+                           WindowInfo windowInfo, Map<String, Object> params) {
         if (params == null) {
             params = Collections.emptyMap();
         }
 
-        //Parameters can be useful later
+        // Parameters can be useful later
         params = createParametersMap(windowInfo, params);
 
         String src = windowInfo.getTemplate();
 
-        ComponentLoaderContext context = new ComponentLoaderContext(parentFrame.getDsContext(), params);
+        ComponentLoaderContext context = new ComponentLoaderContext(params);
+        context.setDsContext(parentFrame.getDsContext());
         context.setFullFrameId(windowInfo.getId());
+        context.setCurrentFrameId(windowInfo.getId());
 
-        final LayoutLoader loader =
-                new LayoutLoader(context, AppConfig.getFactory(), LayoutLoaderConfig.getFrameLoaders());
+        LayoutLoader loader = new LayoutLoader(context, AppConfig.getFactory(), LayoutLoaderConfig.getFrameLoaders());
         loader.setLocale(getLocale());
         loader.setMessagesPack(parentFrame.getMessagesPack());
 
@@ -547,29 +564,32 @@ public abstract class WindowManager {
         }
 
         StopWatch loadDescriptorWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
-                UIPerformanceLogger.LifeCycle.LOAD_DESCRIPTOR,
+                UIPerformanceLogger.LifeCycle.LOAD,
                 Logger.getLogger(UIPerformanceLogger.class));
 
-        final Frame component;
+        Frame component;
         try {
-            context.setCurrentFrameId(windowInfo.getId());
-            component = (Frame) loader.loadComponent(stream, parent, context.getParams());
+            Pair<ComponentLoader, Element> loaderElementPair = loader.createFrameComponent(stream, context.getParams());
+            component = (Frame) loaderElementPair.getFirst().getResultComponent();
+
+            component.setId(id != null ? id : windowInfo.getId());
+            if (parent != null) {
+                showFrame(parent, component);
+            }
+
+            loaderElementPair.getFirst().loadComponent();
         } finally {
             IOUtils.closeQuietly(stream);
         }
+
         if (component.getMessagesPack() == null) {
             component.setMessagesPack(parentFrame.getMessagesPack());
         }
 
-        component.setId(windowInfo.getId());
-        component.setFrame(parentFrame);
         context.setFrame(component);
         context.executePostInitTasks();
 
         loadDescriptorWatch.stop();
-
-        if (parent != null)
-            showFrame(parent, component);
 
         initDebugIds(component);
 
@@ -577,17 +597,17 @@ public abstract class WindowManager {
     }
 
     protected Map<String, Object> createParametersMap(WindowInfo windowInfo, Map<String, Object> params) {
-        final Map<String, Object> map = new HashMap<>(params.size());
+        Map<String, Object> map = new HashMap<>(params.size());
 
-        final Element element = windowInfo.getDescriptor();
+        Element element = windowInfo.getDescriptor();
         if (element != null) {
             Element paramsElement = element.element("params") != null ? element.element("params") : element;
             if (paramsElement != null) {
                 @SuppressWarnings({"unchecked"})
-                final List<Element> paramElements = paramsElement.elements("param");
+                List<Element> paramElements = paramsElement.elements("param");
                 for (Element paramElement : paramElements) {
-                    final String name = paramElement.attributeValue("name");
-                    final String value = paramElement.attributeValue("value");
+                    String name = paramElement.attributeValue("name");
+                    String value = paramElement.attributeValue("value");
                     if ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
                         Boolean booleanValue = Boolean.valueOf(value);
                         map.put(name, booleanValue);
@@ -597,7 +617,6 @@ public abstract class WindowManager {
                 }
             }
         }
-
         map.putAll(params);
 
         return map;
@@ -656,44 +675,46 @@ public abstract class WindowManager {
         return userSessionSource.getUserSession().getLocale();
     }
 
-    protected Window wrapByCustomClass(Window window, Element element, Map<String, Object> params) {
-        final String screenClass = element.attributeValue("class");
+    protected Window wrapByCustomClass(Frame window, Element element) {
+        String screenClass = element.attributeValue("class");
         if (!StringUtils.isBlank(screenClass)) {
             Class<?> aClass = scripting.loadClass(screenClass);
             if (aClass == null) {
                 String msg = messages.getMainMessage("unableToLoadControllerClass");
                 throw new GuiDevelopmentException(msg, window.getId());
             }
+            //noinspection UnnecessaryLocalVariable
             Window wrappingWindow = ((WrappedWindow) window).wrapBy(aClass);
-
-            if (wrappingWindow instanceof AbstractWindow) {
-                Element companionsElem = element.element("companions");
-                if (companionsElem != null) {
-                    StopWatch companionStopWatch = new Log4JStopWatch(window.getId() + "#" +
-                            UIPerformanceLogger.LifeCycle.COMPANION,
-                            Logger.getLogger(UIPerformanceLogger.class));
-
-                    initCompanion(companionsElem, (AbstractWindow) wrappingWindow);
-
-                    companionStopWatch.stop();
-                }
-            }
-
-            StopWatch injectStopWatch = new Log4JStopWatch(window.getId() + "#" +
-                    UIPerformanceLogger.LifeCycle.INJECTION,
-                    Logger.getLogger(UIPerformanceLogger.class));
-
-            ControllerDependencyInjector dependencyInjector = new ControllerDependencyInjector(wrappingWindow, params);
-            dependencyInjector.inject();
-
-            injectStopWatch.stop();
-
-            init(wrappingWindow, params);
-
             return wrappingWindow;
-        } else {
-            throw new GuiDevelopmentException("'class' attribute is not defined in XML descriptor", window.getId());
         }
+
+        throw new GuiDevelopmentException("'class' attribute is not defined in XML descriptor", window.getId());
+    }
+
+    protected void initWrapperFrame(Window wrappingWindow, Element element, Map<String, Object> params) {
+        if (wrappingWindow instanceof AbstractWindow) {
+            Element companionsElem = element.element("companions");
+            if (companionsElem != null) {
+                StopWatch companionStopWatch = new Log4JStopWatch(wrappingWindow.getId() + "#" +
+                        UIPerformanceLogger.LifeCycle.COMPANION,
+                        Logger.getLogger(UIPerformanceLogger.class));
+
+                initCompanion(companionsElem, (AbstractWindow) wrappingWindow);
+
+                companionStopWatch.stop();
+            }
+        }
+
+        StopWatch injectStopWatch = new Log4JStopWatch(wrappingWindow.getId() + "#" +
+                UIPerformanceLogger.LifeCycle.INJECTION,
+                Logger.getLogger(UIPerformanceLogger.class));
+
+        ControllerDependencyInjector dependencyInjector = new ControllerDependencyInjector(wrappingWindow, params);
+        dependencyInjector.inject();
+
+        injectStopWatch.stop();
+
+        init(wrappingWindow, params);
     }
 
     protected void init(Window window, Map<String, Object> params) {
@@ -722,7 +743,7 @@ public abstract class WindowManager {
                     CompanionDependencyInjector cdi = new CompanionDependencyInjector(window, companion);
                     cdi.inject();
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException("Unable to init Companion", e);
                 }
             }
         }

@@ -5,11 +5,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.HtmlBoxLayout;
-import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -17,38 +13,31 @@ import org.dom4j.Element;
  * @author gorodnov
  * @version $Id$
  */
-public class HtmlBoxLayoutLoader extends ContainerLoader implements ComponentLoader {
+public class HtmlBoxLayoutLoader extends ContainerLoader<HtmlBoxLayout> {
 
-    public HtmlBoxLayoutLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context, config, factory);
+    @Override
+    public void createComponent() {
+        resultComponent = (HtmlBoxLayout) factory.createComponent(HtmlBoxLayout.NAME);
+        loadId(resultComponent, element);
+        createSubComponents(resultComponent, element);
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        HtmlBoxLayout component = (HtmlBoxLayout) factory.createComponent(HtmlBoxLayout.NAME);
+    public void loadComponent() {
+        assignXmlDescriptor(resultComponent, element);
+        assignFrame(resultComponent);
 
-        initComponent(component, element, parent);
+        loadVisible(resultComponent, element);
+        loadEnable(resultComponent, element);
 
-        return component;
-    }
+        loadStyleName(resultComponent, element);
 
-    protected void initComponent(HtmlBoxLayout component, Element element, Component parent) {
-        assignXmlDescriptor(component, element);
-        loadId(component, element);
-        loadVisible(component, element);
-        loadEnable(component, element);
+        loadAlign(resultComponent, element);
 
-        loadStyleName(component, element);
+        loadTemplate(resultComponent, element);
 
-        loadAlign(component, element);
-
-        loadTemplate(component, element);
-        loadSubComponents(component, element, "visible");
-
-        loadHeight(component, element);
-        loadWidth(component, element);
-
-        assignFrame(component);
+        loadHeight(resultComponent, element);
+        loadWidth(resultComponent, element);
     }
 
     protected void loadTemplate(HtmlBoxLayout htmlBox, Element element) {

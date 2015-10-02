@@ -4,27 +4,23 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.PasswordField;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import org.dom4j.Element;
 
 /**
  * @author abramov
  * @version $Id$
  */
-public class PasswordFieldLoader extends AbstractTextFieldLoader {
-
-    public PasswordFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context, config, factory);
+public class PasswordFieldLoader extends AbstractTextFieldLoader<PasswordField> {
+    @Override
+    public void createComponent() {
+        resultComponent = (PasswordField) factory.createComponent(PasswordField.NAME);
+        loadId(resultComponent, element);
     }
 
     @Override
-    protected void initComponent(Field field, Element element, Component parent) {
-        super.initComponent(field, element, parent);
+    public void loadComponent() {
+        super.loadComponent();
 
-        loadMaxLength(element, (PasswordField)field);
+        loadMaxLength(resultComponent, element);
     }
 }

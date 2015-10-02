@@ -5,11 +5,7 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.SourceCodeEditor;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -17,16 +13,18 @@ import org.dom4j.Element;
  * @author artamonov
  * @version $Id$
  */
-public class SourceCodeEditorLoader extends AbstractFieldLoader {
-    public SourceCodeEditorLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context, config, factory);
+public class SourceCodeEditorLoader extends AbstractFieldLoader<SourceCodeEditor> {
+    @Override
+    public void createComponent() {
+        resultComponent = (SourceCodeEditor) factory.createComponent(SourceCodeEditor.NAME);
+        loadId(resultComponent, element);
     }
 
     @Override
-    protected void initComponent(Field field, Element element, Component parent) {
-        super.initComponent(field, element, parent);
+    public void loadComponent() {
+        super.loadComponent();
 
-        loadMode((SourceCodeEditor) field, element);
+        loadMode(resultComponent, element);
     }
 
     protected void loadMode(SourceCodeEditor component, Element element) {

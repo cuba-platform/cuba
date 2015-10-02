@@ -5,10 +5,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -19,72 +16,52 @@ import java.util.List;
  * @author abramov
  * @version $Id$
  */
-public class AbstractFieldLoader extends AbstractDatasourceComponentLoader {
-
-    protected LayoutLoaderConfig config;
-    protected ComponentsFactory factory;
-
-    public AbstractFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context);
-        this.config = config;
-        this.factory = factory;
-    }
+public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatasourceComponentLoader<T> {
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final Field component = (Field) factory.createComponent(element.getName());
+    public void loadComponent() {
+        assignFrame(resultComponent);
+        assignXmlDescriptor(resultComponent, element);
+        loadDatasource(resultComponent, element);
 
-        initComponent(component, element, parent);
+        loadVisible(resultComponent, element);
+        loadEditable(resultComponent, element);
+        loadEnable(resultComponent, element);
 
-        return component;
-    }
+        loadStyleName(resultComponent, element);
 
-    protected void initComponent(Field component, Element element, Component parent) {
-        assignXmlDescriptor(component, element);
-        loadId(component, element);
-        loadDatasource(component, element);
+        loadCaption(resultComponent, element);
+        loadDescription(resultComponent, element);
 
-        loadVisible(component, element);
-        loadEditable(component, element);
-        loadEnable(component, element);
+        loadValidators(resultComponent, element);
+        loadRequired(resultComponent, element);
 
-        loadStyleName(component, element);
-
-        loadCaption(component, element);
-        loadDescription(component, element);
-
-        loadValidators(component, element);
-        loadRequired(component, element);
-
-        loadHeight(component, element);
-        loadWidth(component, element);
-        loadAlign(component, element);
-
-        assignFrame(component);
+        loadHeight(resultComponent, element);
+        loadWidth(resultComponent, element);
+        loadAlign(resultComponent, element);
     }
 
     protected void loadRequired(Field component, Element element) {
-        final String required = element.attributeValue("required");
+        String required = element.attributeValue("required");
         if (!StringUtils.isEmpty(required)) {
             component.setRequired(BooleanUtils.toBoolean(required));
         }
-        String msg = element.attributeValue("requiredMessage");
-        if (msg != null) {
-            component.setRequiredMessage(loadResourceString(msg));
+
+        String requiredMessage = element.attributeValue("requiredMessage");
+        if (requiredMessage != null) {
+            component.setRequiredMessage(loadResourceString(requiredMessage));
         } else if (component.isRequired() && component.getDatasource() != null) {
-            component.setRequiredMessage(
-                    messageTools.getDefaultRequiredMessage(component.getMetaProperty())
-            );
+            component.setRequiredMessage(messageTools.getDefaultRequiredMessage(component.getMetaProperty()));
         }
     }
 
     protected void loadValidators(Field component, Element element) {
         @SuppressWarnings({"unchecked"})
-        final List<Element> validatorElements = element.elements("validator");
+        List<Element> validatorElements = element.elements("validator");
 
         if (!validatorElements.isEmpty()) {
             for (Element validatorElement : validatorElements) {
-                final Field.Validator validator = loadValidator(validatorElement);
+                Field.Validator validator = loadValidator(validatorElement);
                 if (validator != null) {
                     component.addValidator(validator);
                 }
