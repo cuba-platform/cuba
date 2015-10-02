@@ -24,7 +24,7 @@ import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.EntityOp;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -158,8 +158,6 @@ public class EditAction extends BaseAction implements Action.HasOpenType {
     public void actionPerform(Component component) {
         final Set selected = target.getSelected();
         if (selected.size() == 1) {
-            String windowID = getWindowId();
-
             Datasource parentDs = null;
             final CollectionDatasource datasource = target.getDatasource();
             if (datasource instanceof PropertyDatasource) {
@@ -168,37 +166,42 @@ public class EditAction extends BaseAction implements Action.HasOpenType {
                     parentDs = datasource;
                 }
             }
-            final Datasource pDs = parentDs;
 
             Map<String, Object> params = getWindowParams();
-            if (params == null)
-                params = new HashMap<>();
+            if (params == null) {
+                params = Collections.emptyMap();
+            }
 
-            Window.Editor window = target.getFrame().openEditor(windowID, datasource.getItem(), getOpenType(), params, parentDs);
-            window.addCloseListener(actionId -> {
-                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                    Entity item = window.getItem();
-                    if (item != null) {
-                        if (pDs == null) {
-                            //noinspection unchecked
-                            datasource.updateItem(item);
-                        }
-                        afterCommit(item);
-                        if (afterCommitHandler != null) {
-                            afterCommitHandler.handle(item);
-                        }
+            openEditor(parentDs, datasource, params);
+        }
+    }
+
+    protected void openEditor(Datasource parentDs, CollectionDatasource datasource, Map<String, Object> params) {
+        Window.Editor window = target.getFrame().openEditor(getWindowId(), datasource.getItem(),
+                getOpenType(), params, parentDs);
+        window.addCloseListener(actionId -> {
+            // move focus to owner
+            target.requestFocus();
+
+            if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                Entity editedItem = window.getItem();
+                if (editedItem != null) {
+                    if (parentDs == null) {
+                        //noinspection unchecked
+                        datasource.updateItem(editedItem);
+                    }
+                    afterCommit(editedItem);
+                    if (afterCommitHandler != null) {
+                        afterCommitHandler.handle(editedItem);
                     }
                 }
+            }
 
-                // move focus to owner
-                target.requestFocus();
-
-                afterWindowClosed(window);
-                if (afterWindowClosedHandler != null) {
-                    afterWindowClosedHandler.handle(window);
-                }
-            });
-        }
+            afterWindowClosed(window);
+            if (afterWindowClosedHandler != null) {
+                afterWindowClosedHandler.handle(window);
+            }
+        });
     }
 
     /**

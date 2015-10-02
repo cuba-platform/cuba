@@ -19,7 +19,7 @@ import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -194,32 +194,36 @@ public class CreateAction extends BaseAction implements Action.HasOpenType {
                 parentDs = datasource;
             }
         }
-        final Datasource pDs = parentDs;
 
         Map<String, Object> params = getWindowParams();
-        if (params == null)
-            params = new HashMap<>();
+        if (params == null) {
+            params = Collections.emptyMap();
+        }
 
-        Window.Editor window = target.getFrame().openEditor(getWindowId(), item, getOpenType(), params, parentDs);
+        openEditor(datasource, item, parentDs, params);
+    }
+
+    protected void openEditor(CollectionDatasource datasource, Entity newItem, Datasource parentDs, Map<String, Object> params) {
+        Window.Editor window = target.getFrame().openEditor(getWindowId(), newItem, getOpenType(), params, parentDs);
         window.addCloseListener(actionId -> {
+            // move focus to owner
+            target.requestFocus();
+
             if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                Entity item1 = window.getItem();
-                if (item1 != null) {
-                    if (pDs == null) {
+                Entity editedItem = window.getItem();
+                if (editedItem != null) {
+                    if (parentDs == null) {
                         boolean modified = datasource.isModified();
-                        datasource.addItem(item1);
+                        datasource.addItem(editedItem);
                         ((DatasourceImplementation) datasource).setModified(modified);
                     }
-                    target.setSelected(item1);
-                    afterCommit(item1);
+                    target.setSelected(editedItem);
+                    afterCommit(editedItem);
                     if (afterCommitHandler != null) {
-                        afterCommitHandler.handle(item1);
+                        afterCommitHandler.handle(editedItem);
                     }
                 }
             }
-
-            // move focus to owner
-            target.requestFocus();
 
             afterWindowClosed(window);
             if (afterWindowClosedHandler != null) {
