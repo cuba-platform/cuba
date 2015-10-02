@@ -5,7 +5,7 @@
 
 package com.haulmont.cuba.core.sys.remoting;
 
-import com.haulmont.cuba.core.app.FileStorage;
+import com.haulmont.cuba.core.app.FileStorageAPI;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ import java.io.InputStream;
 @Service(LocalFileExchangeService.NAME)
 public class LocalFileExchangeServiceBean implements LocalFileExchangeService {
     @Inject
-    protected FileStorage fileStorage;
+    protected FileStorageAPI fileStorage;
 
     @Override
     public void uploadFile(InputStream inputStream, FileDescriptor fileDescriptor) {
