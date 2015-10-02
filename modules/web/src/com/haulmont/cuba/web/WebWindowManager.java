@@ -1080,7 +1080,7 @@ public class WebWindowManager extends WindowManager {
         window.setResizable(false);
         window.setModal(true);
 
-        final VerticalLayout layout = new VerticalLayout();
+        VerticalLayout layout = new VerticalLayout();
         layout.setStyleName("cuba-app-option-dialog");
         layout.setSpacing(true);
         window.setContent(layout);
@@ -1091,30 +1091,14 @@ public class WebWindowManager extends WindowManager {
         HorizontalLayout buttonsContainer = new HorizontalLayout();
         buttonsContainer.setSpacing(true);
 
-        for (final Action action : actions) {
-            final Button button = WebComponentsHelper.createButton();
+        Map<Action, Button> buttonMap = new HashMap<>();
+        for (Action action : actions) {
+            Button button = WebComponentsHelper.createButton();
             button.setCaption(action.getCaption());
-            button.addClickListener(new Button.ClickListener() {
-                @Override
-                public void buttonClick(Button.ClickEvent event) {
-                    action.actionPerform(null);
-                    ui.removeWindow(window);
-                }
+            button.addClickListener(event -> {
+                action.actionPerform(null);
+                ui.removeWindow(window);
             });
-
-            if (action instanceof DialogAction) {
-                switch (((DialogAction) action).getType()) {
-                    case OK:
-                    case YES:
-                        WebComponentsHelper.setClickShortcut(button, clientConfig.getCommitShortcut());
-                        break;
-                    case NO:
-                    case CANCEL:
-                    case CLOSE:
-                        WebComponentsHelper.setClickShortcut(button, clientConfig.getCloseShortcut());
-                        break;
-                }
-            }
 
             if (StringUtils.isNotEmpty(action.getIcon())) {
                 button.setIcon(WebComponentsHelper.getIcon(action.getIcon()));
@@ -1132,7 +1116,11 @@ public class WebWindowManager extends WindowManager {
             }
 
             buttonsContainer.addComponent(button);
+            buttonMap.put(action, button);
         }
+
+        assingDialogShortcuts(buttonMap);
+
         if (buttonsContainer.getComponentCount() == 1) {
             ((Button) buttonsContainer.getComponent(0)).focus();
         }
@@ -1148,6 +1136,49 @@ public class WebWindowManager extends WindowManager {
 
         ui.addWindow(window);
         window.center();
+    }
+
+    protected void assingDialogShortcuts(Map<Action, Button> buttonMap) {
+        List<DialogAction> dialogActions = new ArrayList<>();
+        for (Action action : buttonMap.keySet()) {
+            if (action instanceof DialogAction) {
+                dialogActions.add((DialogAction) action);
+            }
+        }
+
+        // find action for commit shortcut
+        Action firstOkAction = dialogActions.stream()
+                .filter(action -> action.getType() == Type.OK)
+                .findFirst().get();
+        if (firstOkAction == null) {
+            firstOkAction = dialogActions.stream()
+                    .filter(action -> action.getType() == Type.YES)
+                    .findFirst().get();
+        }
+        if (firstOkAction != null) {
+            WebComponentsHelper.setClickShortcut(buttonMap.get(firstOkAction), clientConfig.getCommitShortcut());
+        }
+
+        // find action for close shortcut
+        Action firstCancelAction = dialogActions.stream()
+                .filter(action -> action.getType() == Type.CANCEL)
+                .findFirst().get();
+
+        if (firstCancelAction == null) {
+            firstCancelAction = dialogActions.stream()
+                    .filter(action -> action.getType() == Type.CLOSE)
+                    .findFirst().get();
+
+            if (firstCancelAction == null) {
+                firstCancelAction = dialogActions.stream()
+                        .filter(action -> action.getType() == Type.NO)
+                        .findFirst().get();
+            }
+        }
+
+        if (firstCancelAction != null) {
+            WebComponentsHelper.setClickShortcut(buttonMap.get(firstCancelAction), clientConfig.getCloseShortcut());
+        }
     }
 
     @Override
@@ -1232,8 +1263,8 @@ public class WebWindowManager extends WindowManager {
     }
 
     @Override
-    protected void checkCanOpenWindow(WindowInfo windowInfo, WindowManager.OpenType openType, Map<String, Object> params) {
-        if (WindowManager.OpenType.NEW_TAB.equals(openType)) {
+    protected void checkCanOpenWindow(WindowInfo windowInfo, OpenType openType, Map<String, Object> params) {
+        if (OpenType.NEW_TAB.equals(openType)) {
             //noinspection StatementWithEmptyBody
             if (!windowInfo.getMultipleOpen() && getWindow(getHash(windowInfo, params)) != null) {
                 //window is already open
@@ -1254,7 +1285,7 @@ public class WebWindowManager extends WindowManager {
     protected void initMainWindow(WindowInfo windowInfo) {
         String template = windowInfo.getTemplate();
 
-        final Window mainWindow;
+        Window mainWindow;
         Map<String, Object> params = Collections.emptyMap();
         if (template != null) {
             //noinspection unchecked
