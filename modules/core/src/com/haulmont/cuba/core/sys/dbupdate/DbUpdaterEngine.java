@@ -17,8 +17,6 @@ import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.text.StrMatcher;
-import org.apache.commons.lang.text.StrTokenizer;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +26,7 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -314,12 +313,8 @@ public class DbUpdaterEngine implements DbUpdater {
             log.error(e.getMessage());
             throw new RuntimeException("An error occurred while executing SQL script", e);
         }
-        StrTokenizer tokenizer = new StrTokenizer(script,
-                StrMatcher.charSetMatcher(SQL_DELIMITER),
-                StrMatcher.singleQuoteMatcher()
-        );
-        while (tokenizer.hasNext()) {
-            String sql = tokenizer.nextToken().trim();
+        ScriptSplitter splitter = new ScriptSplitter(SQL_DELIMITER);
+        for (String sql : splitter.split(script)) {
             if (!isEmpty(sql)) {
                 log.debug("Executing SQL:\n" + sql);
                 try {
@@ -423,4 +418,20 @@ public class DbUpdaterEngine implements DbUpdater {
         boolean run(ScriptResource file);
     }
 
+    public static class ScriptSplitter {
+
+        private String delimiter;
+
+        public ScriptSplitter(String delimiter) {
+            this.delimiter = delimiter;
+        }
+
+        public List<String> split(java.lang.String script) {
+            String qd = Pattern.quote(delimiter);
+            String[] commands = script.split("(?<!" + qd + ")" + qd + "(?!" + qd + ")"); // regex for ^: (?<!\^)\^(?!\^)
+            return Arrays.asList(commands).stream()
+                    .map(s -> s.replace(delimiter + delimiter, delimiter))
+                    .collect(Collectors.toList());
+        }
+    }
 }
