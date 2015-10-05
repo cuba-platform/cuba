@@ -63,21 +63,21 @@ public class FeedbackWindow extends AbstractWindow {
             try {
                 mainBody.validate();
             } catch (ValidationException ve) {
-                sb.append(ve.getMessage()).append("<br>");
+                sb.append(ve.getMessage()).append('\n');
             }
         }
         if (reason.isRequired() && reason.isVisible()) {
             try {
                 reason.validate();
             } catch (ValidationException ve) {
-                sb.append(ve.getMessage()).append("<br>");
+                sb.append(ve.getMessage()).append('\n');
             }
         }
         if (reasonFreeText.isRequired() && reasonFreeText.isVisible()) {
             try {
                 reasonFreeText.validate();
             } catch (ValidationException ve) {
-                sb.append(ve.getMessage()).append("<br>");
+                sb.append(ve.getMessage()).append('\n');
             }
         }
         if(sb.length() > 0){
