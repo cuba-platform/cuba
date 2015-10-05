@@ -7,7 +7,6 @@ package com.haulmont.cuba.core.app;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 
-import java.io.File;
 import java.io.InputStream;
 
 /**
@@ -38,15 +37,6 @@ public interface FileStorageAPI {
      * @throws FileStorageException     if something goes wrong
      */
     void saveFile(FileDescriptor fileDescr, byte[] data) throws FileStorageException;
-
-    /**
-     * Relocate an existing file into storage.
-     * @param fileDescr             file descriptor
-     * @param file                  existing file
-     * @throws IllegalArgumentException if arguments are incorrect
-     * @throws FileStorageException     if something goes wrong
-     */
-    void putFile(FileDescriptor fileDescr, File file) throws FileStorageException;
 
     /**
      * Remove a file from the file storage.

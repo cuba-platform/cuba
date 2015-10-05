@@ -33,8 +33,8 @@ public class FileStorage implements FileStorageMBean {
     @Override
     public File[] getStorageRoots() {
         FileStorageAPI fileStorageAPI = AppBeans.get(FileStorageAPI.class);
-        if (fileStorageAPI instanceof com.haulmont.cuba.core.app.FileStorage) {
-            return ((com.haulmont.cuba.core.app.FileStorage) fileStorageAPI).getStorageRoots();
+        if (fileStorageAPI instanceof com.haulmont.cuba.core.app.filestorage.FileStorage) {
+            return ((com.haulmont.cuba.core.app.filestorage.FileStorage) fileStorageAPI).getStorageRoots();
         } else {
             return new File[0];
         }
@@ -42,10 +42,10 @@ public class FileStorage implements FileStorageMBean {
 
     @Override
     public String findOrphanDescriptors() {
-        com.haulmont.cuba.core.app.FileStorage fileStorage;
+        com.haulmont.cuba.core.app.filestorage.FileStorage fileStorage;
         FileStorageAPI fileStorageAPI = AppBeans.get(FileStorageAPI.class);
-        if (fileStorageAPI instanceof com.haulmont.cuba.core.app.FileStorage) {
-            fileStorage = (com.haulmont.cuba.core.app.FileStorage) fileStorageAPI;
+        if (fileStorageAPI instanceof com.haulmont.cuba.core.app.filestorage.FileStorage) {
+            fileStorage = (com.haulmont.cuba.core.app.filestorage.FileStorage) fileStorageAPI;
         } else {
             return "<not supported>";
         }
@@ -62,7 +62,7 @@ public class FileStorage implements FileStorageMBean {
             List<FileDescriptor> fileDescriptors = query.getResultList();
             for (FileDescriptor fileDescriptor : fileDescriptors) {
                 File dir = fileStorage.getStorageDir(roots[0], fileDescriptor.getCreateDate());
-                File file = new File(dir, com.haulmont.cuba.core.app.FileStorage.getFileName(fileDescriptor));
+                File file = new File(dir, com.haulmont.cuba.core.app.filestorage.FileStorage.getFileName(fileDescriptor));
                 if (!file.exists()) {
                     sb.append(fileDescriptor.getId())
                             .append(", ")
@@ -83,9 +83,9 @@ public class FileStorage implements FileStorageMBean {
 
     @Override
     public String findOrphanFiles() {
-        com.haulmont.cuba.core.app.FileStorage fileStorage;
+        com.haulmont.cuba.core.app.filestorage.FileStorage fileStorage;
         FileStorageAPI fileStorageAPI = AppBeans.get(FileStorageAPI.class);
-        if (!(fileStorageAPI instanceof com.haulmont.cuba.core.app.FileStorage)) {
+        if (!(fileStorageAPI instanceof com.haulmont.cuba.core.app.filestorage.FileStorage)) {
             return "<not supported>";
         }
 
@@ -122,7 +122,7 @@ public class FileStorage implements FileStorageMBean {
 
         Set<String> descriptorsFileNames = new HashSet<>();
         for (FileDescriptor fileDescriptor : fileDescriptors) {
-            descriptorsFileNames.add(com.haulmont.cuba.core.app.FileStorage.getFileName(fileDescriptor));
+            descriptorsFileNames.add(com.haulmont.cuba.core.app.filestorage.FileStorage.getFileName(fileDescriptor));
         }
 
         for (File file : systemFiles) {

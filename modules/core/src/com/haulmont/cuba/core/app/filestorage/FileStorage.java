@@ -2,8 +2,10 @@
  * Copyright (c) 2008-2013 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
-package com.haulmont.cuba.core.app;
+package com.haulmont.cuba.core.app.filestorage;
 
+import com.haulmont.cuba.core.app.FileStorageAPI;
+import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -247,21 +249,6 @@ public class FileStorage implements FileStorageAPI {
             return IOUtils.toByteArray(inputStream);
         } catch (IOException e) {
             throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fileDescr.getId().toString(), e);
-        } finally {
-            IOUtils.closeQuietly(inputStream);
-        }
-    }
-
-    @Override
-    public void putFile(final FileDescriptor fileDescr, final File file) throws FileStorageException {
-        checkNotNullArgument(file, "File is null");
-
-        FileInputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(file);
-            saveStream(fileDescr, inputStream);
-        } catch (FileNotFoundException e) {
-            throw new FileStorageException(FileStorageException.Type.FILE_NOT_FOUND, file.getAbsolutePath(), e);
         } finally {
             IOUtils.closeQuietly(inputStream);
         }
