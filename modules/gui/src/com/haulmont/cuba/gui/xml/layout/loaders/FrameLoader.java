@@ -52,39 +52,10 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
 
     protected void initWrapperFrame(Frame wrappingFrame, Element rootFrameElement, Map<String, Object> params,
                                     ComponentLoaderContext parentContext) {
-        String screenClass = rootFrameElement.attributeValue("class");
-        if (!StringUtils.isBlank(screenClass)) {
-            try {
-                String loggingId = context.getFullFrameId();
+        parentContext.addPostInitTask(new FrameInjectPostInitTask(wrappingFrame, params));
 
-                if (wrappingFrame instanceof AbstractFrame) {
-                    Element companionsElem = rootFrameElement.element("companions");
-                    if (companionsElem != null) {
-                        StopWatch companionStopWatch = new Log4JStopWatch(loggingId + "#" +
-                                UIPerformanceLogger.LifeCycle.COMPANION,
-                                Logger.getLogger(UIPerformanceLogger.class));
-
-                        initCompanion(companionsElem, (AbstractFrame) wrappingFrame);
-
-                        companionStopWatch.stop();
-                    }
-                }
-                parentContext.addPostInitTask(new FrameLoaderPostInitTask(wrappingFrame, params, true));
-
-                StopWatch injectStopWatch = new Log4JStopWatch(loggingId + "#" +
-                        UIPerformanceLogger.LifeCycle.INJECTION,
-                        Logger.getLogger(UIPerformanceLogger.class));
-
-                ControllerDependencyInjector dependencyInjector = new ControllerDependencyInjector(wrappingFrame, params);
-                dependencyInjector.inject();
-
-                injectStopWatch.stop();
-            } catch (Throwable e) {
-                throw new RuntimeException("Unable to init custom frame class", e);
-            }
-        } else {
-            parentContext.addPostInitTask(new FrameLoaderPostInitTask(wrappingFrame, params, false));
-        }
+        boolean wrapped = StringUtils.isNotBlank(rootFrameElement.attributeValue("class"));
+        parentContext.addPostInitTask(new FrameLoaderPostInitTask(wrappingFrame, params, wrapped));
     }
 
     protected void initCompanion(Element companionsElem, AbstractFrame frame) {
@@ -207,11 +178,51 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
         setContext(parentContext);
     }
 
+    protected class FrameInjectPostInitTask implements PostInitTask {
+        protected final Frame wrappingFrame;
+        protected final Map<String, Object> params;
+
+        public FrameInjectPostInitTask(Frame wrappingFrame, Map<String, Object> params) {
+            this.wrappingFrame = wrappingFrame;
+            this.params = params;
+        }
+
+        @Override
+        public void execute(Context context, Frame window) {
+            String loggingId = context.getFullFrameId();
+            try {
+                if (wrappingFrame instanceof AbstractFrame) {
+                    Element companionsElem = rootFrameElement.element("companions");
+                    if (companionsElem != null) {
+                        StopWatch companionStopWatch = new Log4JStopWatch(loggingId + "#" +
+                                UIPerformanceLogger.LifeCycle.COMPANION,
+                                Logger.getLogger(UIPerformanceLogger.class));
+
+                        initCompanion(companionsElem, (AbstractFrame) wrappingFrame);
+
+                        companionStopWatch.stop();
+                    }
+                }
+
+                StopWatch injectStopWatch = new Log4JStopWatch(loggingId + "#" +
+                        UIPerformanceLogger.LifeCycle.INJECTION,
+                        Logger.getLogger(UIPerformanceLogger.class));
+
+                ControllerDependencyInjector dependencyInjector = new ControllerDependencyInjector(wrappingFrame, params);
+                dependencyInjector.inject();
+
+                injectStopWatch.stop();
+            } catch (Throwable e) {
+                throw new RuntimeException("Unable to init custom frame class", e);
+            }
+        }
+    }
+
     protected class FrameLoaderPostInitTask implements PostInitTask {
 
-        private Frame frame;
-        private Map<String, Object> params;
-        private boolean wrapped;
+        protected final Frame frame;
+        protected final Map<String, Object> params;
+        protected final boolean wrapped;
 
         public FrameLoaderPostInitTask(Frame frame, Map<String, Object> params, boolean wrapped) {
             this.frame = frame;
