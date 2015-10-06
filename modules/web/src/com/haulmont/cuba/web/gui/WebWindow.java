@@ -149,8 +149,16 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public void registerComponent(Component component) {
-        if (component.getId() != null)
+        if (component.getId() != null) {
             allComponents.put(component.getId(), component);
+        }
+    }
+
+    @Override
+    public void unregisterComponent(Component component) {
+        if (component.getId() != null) {
+            allComponents.remove(component.getId());
+        }
     }
 
     @Nullable
@@ -1174,7 +1182,6 @@ public class WebWindow implements Window, Component.Wrapper,
         public boolean isLocked() {
             return ((EditorWindowDelegate) delegate).isLocked();
         }
-
     }
 
     public static class Lookup extends WebWindow implements Window.Lookup {

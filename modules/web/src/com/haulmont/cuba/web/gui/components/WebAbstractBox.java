@@ -123,6 +123,8 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
         }
     }
 
+
+
     @Override
     public Component getOwnComponent(String id) {
         return componentByIds.get(id);

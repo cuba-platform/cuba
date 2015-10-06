@@ -575,6 +575,8 @@ public abstract class WindowManager {
             component.setId(id != null ? id : windowInfo.getId());
             if (parent != null) {
                 showFrame(parent, component);
+            } else {
+                component.setFrame(parentFrame);
             }
 
             loaderElementPair.getFirst().loadComponent();

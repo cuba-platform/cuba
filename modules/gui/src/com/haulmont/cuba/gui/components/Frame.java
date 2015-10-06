@@ -65,6 +65,9 @@ public interface Frame
     void registerComponent(Component component);
 
     /** INTERNAL. Don't call from application code. */
+    void unregisterComponent(Component component);
+
+    /** INTERNAL. Don't call from application code. */
     @Nullable
     Component getRegisteredComponent(String id);
 

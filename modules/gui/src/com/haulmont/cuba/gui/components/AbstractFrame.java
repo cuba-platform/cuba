@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nonnull;
@@ -63,7 +64,22 @@ public class AbstractFrame implements Frame, Component.Wrapper, Component.Ordere
 
     @Override
     public void setId(String id) {
+        String currentId = getId();
+
+        if (!ObjectUtils.equals(currentId, id)) {
+            if (getFrame() != null) {
+                getFrame().unregisterComponent(this);
+            }
+        }
+
         frame.setId(id);
+
+        // register this wrapper instead of underlying frame
+        if (!ObjectUtils.equals(currentId, id)) {
+            if (getFrame() != null) {
+                getFrame().registerComponent(this);
+            }
+        }
     }
 
     @Override
@@ -291,6 +307,11 @@ public class AbstractFrame implements Frame, Component.Wrapper, Component.Ordere
     @Override
     public void registerComponent(Component component) {
         frame.registerComponent(component);
+    }
+
+    @Override
+    public void unregisterComponent(Component component) {
+        frame.unregisterComponent(component);
     }
 
     @Nullable

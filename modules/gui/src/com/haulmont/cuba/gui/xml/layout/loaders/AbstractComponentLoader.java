@@ -424,6 +424,10 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     }
 
     protected Action loadDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {
+        return loadDeclarativeActionDefault(actionsHolder, element);
+    }
+
+    protected Action loadDeclarativeActionDefault(Component.ActionsHolder actionsHolder, Element element) {
         String id = element.attributeValue("id");
         if (id == null) {
             Element component = element;
@@ -513,7 +517,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
             }
         }
 
-        return loadDeclarativeAction(actionsHolder, element);
+        return loadDeclarativeActionDefault(actionsHolder, element);
     }
 
     protected Formatter loadFormatter(Element element) {

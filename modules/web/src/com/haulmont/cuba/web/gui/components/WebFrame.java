@@ -134,9 +134,17 @@ public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
     }
 
     @Override
-    public void registerComponent(com.haulmont.cuba.gui.components.Component component) {
-        if (component.getId() != null)
+    public void registerComponent(Component component) {
+        if (component.getId() != null) {
             allComponents.put(component.getId(), component);
+        }
+    }
+
+    @Override
+    public void unregisterComponent(Component component) {
+        if (component.getId() != null) {
+            allComponents.remove(component.getId());
+        }
     }
 
     @Nullable

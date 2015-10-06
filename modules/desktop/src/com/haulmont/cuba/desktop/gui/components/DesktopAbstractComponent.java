@@ -101,7 +101,9 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     @Override
     public void setId(String id) {
         if (!ObjectUtils.equals(this.id, id)) {
-            this.id = id;
+            if (frame != null) {
+                frame.unregisterComponent(this);
+            }
 
             C impl = getImpl();
             if (impl != null) {

@@ -106,6 +106,10 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
     @Override
     public void setId(String id) {
         if (!ObjectUtils.equals(this.id, id)) {
+            if (frame != null) {
+                frame.unregisterComponent(this);
+            }
+
             this.id = id;
             if (this.component != null && AppUI.getCurrent().isTestMode()) {
                 this.component.setCubaId(id);

@@ -96,8 +96,16 @@ public class DesktopFrame
 
     @Override
     public void registerComponent(Component component) {
-        if (component.getId() != null)
+        if (component.getId() != null) {
             allComponents.put(component.getId(), component);
+        }
+    }
+
+    @Override
+    public void unregisterComponent(Component component) {
+        if (component.getId() != null) {
+            allComponents.remove(component.getId());
+        }
     }
 
     @Nullable
