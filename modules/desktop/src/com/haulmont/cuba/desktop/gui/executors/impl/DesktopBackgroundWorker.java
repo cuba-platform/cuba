@@ -48,9 +48,12 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         checkNotNull(task);
 
         // create task handler
-        TaskExecutor<T, V> taskExecutor = new DesktopTaskExecutor<>(task);
+        DesktopTaskExecutor<T, V> taskExecutor = new DesktopTaskExecutor<>(task);
+        TaskHandlerImpl<T, V> taskHandler = new TaskHandlerImpl<>(taskExecutor, watchDog);
 
-        return new TaskHandlerImpl<>(taskExecutor, watchDog);
+        taskExecutor.setTaskHandler(taskHandler);
+
+        return taskHandler;
     }
 
     /**
@@ -71,6 +74,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         private volatile boolean isInterrupted = false;
 
         private Map<String, Object> params;
+        private TaskHandlerImpl<T, V> taskHandler;
 
         private DesktopTaskExecutor(BackgroundTask<T, V> runnableTask) {
             this.runnableTask = runnableTask;
@@ -87,6 +91,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
         @Override
         protected final V doInBackground() throws Exception {
+            Thread.currentThread().setName("BackgroundTaskThread");
             try {
                 if (!isInterrupted) {
                     // do not run any activity if canceled before start
@@ -112,7 +117,10 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
             } catch (Exception ex) {
                 if (!(ex instanceof InterruptedException) && !isCancelled())
                     taskException = ex;
+            } finally {
+                watchDog.removeTask(taskHandler);
             }
+
             return result;
         }
 
@@ -211,6 +219,10 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         @Override
         public final void handleProgress(T... changes) {
             publish(changes);
+        }
+
+        public void setTaskHandler(TaskHandlerImpl<T,V> taskHandler) {
+            this.taskHandler = taskHandler;
         }
     }
 }

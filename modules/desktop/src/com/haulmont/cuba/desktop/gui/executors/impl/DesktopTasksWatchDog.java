@@ -19,7 +19,7 @@ import javax.swing.*;
 public class DesktopTasksWatchDog extends TasksWatchDog {
 
     @Override
-    protected boolean checkHangup(long actualTimeMs, final TaskHandlerImpl taskHandler) {
+    protected synchronized boolean checkHangup(long actualTimeMs, final TaskHandlerImpl taskHandler) {
 
         long timeout = taskHandler.getTimeoutMs();
 

@@ -109,6 +109,8 @@ public class WebBackgroundWorker implements BackgroundWorker {
         // create task handler
         final TaskHandlerImpl<T, V> taskHandler = new TaskHandlerImpl<>(taskExecutor, watchDog);
 
+        taskExecutor.setTaskHandler(taskHandler);
+
         // add timer to AppWindow for UI ping
         CubaTimer.ActionListener timerListener = new CubaTimer.ActionListener() {
             private long intentVersion = 0;
@@ -187,6 +189,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
         private volatile Exception taskException = null;
 
         private Map<String, Object> params;
+        private TaskHandlerImpl<T, V> taskHandler;
 
         private WebTaskExecutor(App app, BackgroundTask<T, V> runnableTask,
                                 WebTimerListener webTimerListener) {
@@ -208,6 +211,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
         @Override
         public final void run() {
+            Thread.currentThread().setName("BackgroundTaskThread");
             // Set security permissions
             AppContext.setSecurityContext(securityContext);
 
@@ -249,6 +253,8 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 }
                 // Remove from executions
                 app.removeBackgroundTask(this);
+
+                watchDog.removeTask(taskHandler);
             }
         }
 
@@ -399,6 +405,10 @@ public class WebBackgroundWorker implements BackgroundWorker {
                     finalizer = null;
                 }
             }
+        }
+
+        public void setTaskHandler(TaskHandlerImpl<T,V> taskHandler) {
+            this.taskHandler = taskHandler;
         }
     }
 }

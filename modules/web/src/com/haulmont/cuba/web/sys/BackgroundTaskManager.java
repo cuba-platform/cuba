@@ -23,7 +23,7 @@ public class BackgroundTaskManager {
     private transient Set<Thread> taskSet;
 
     public BackgroundTaskManager() {
-        taskSet = Collections.synchronizedSet(new LinkedHashSet<Thread>());
+        taskSet = Collections.synchronizedSet(new LinkedHashSet<>());
     }
 
     /**

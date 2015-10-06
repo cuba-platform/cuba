@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.WatchDog;
 
+import javax.annotation.concurrent.ThreadSafe;
 import javax.inject.Inject;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -22,6 +23,7 @@ import java.util.Set;
  * @author artamonov
  * @version $Id$
  */
+@ThreadSafe
 public abstract class TasksWatchDog implements WatchDog {
 
     @Inject
@@ -43,7 +45,7 @@ public abstract class TasksWatchDog implements WatchDog {
 
         long actual = timeSource.currentTimestamp().getTime();
 
-        List<BackgroundTaskHandler> forRemove = new LinkedList<>();
+        List<TaskHandlerImpl> forRemove = new LinkedList<>();
         for (TaskHandlerImpl task : watches) {
             if (task.isCancelled() || task.isDone()) {
                 forRemove.add(task);
@@ -80,10 +82,15 @@ public abstract class TasksWatchDog implements WatchDog {
     /**
      * {@inheritDoc}
      *
-     * @param backroundTask Task handler
+     * @param taskHandler Task handler
      */
     @Override
-    public synchronized void manageTask(TaskHandlerImpl backroundTask) {
-        watches.add(backroundTask);
+    public synchronized void manageTask(TaskHandlerImpl taskHandler) {
+        watches.add(taskHandler);
+    }
+
+    @Override
+    public synchronized void removeTask(TaskHandlerImpl taskHandler) {
+        watches.remove(taskHandler);
     }
 }

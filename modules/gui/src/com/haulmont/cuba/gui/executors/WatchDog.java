@@ -17,24 +17,31 @@ public interface WatchDog {
     String NAME = "cuba_BackgroundWorker_WatchDog";
 
     /**
-     * Add task under WatchDog control
+     * Add task under WatchDog control.
      *
-     * @param backroundTask Task handler
+     * @param taskHandler task handler
      */
-    void manageTask(TaskHandlerImpl backroundTask);
+    void manageTask(TaskHandlerImpl taskHandler);
 
     /**
-     * Remove finished, canceled or hangup tasks
+     * Task completed, remove it from watches.
+     *
+     * @param taskHandler task handler
+     */
+    void removeTask(TaskHandlerImpl taskHandler);
+
+    /**
+     * Remove finished, canceled or hangup tasks.
      */
     void cleanupTasks();
 
     /**
-     * Stop execution of all background tasks
+     * Stop execution of all background tasks.
      */
     void stopTasks();
 
     /**
-     * @return Active tasks count
+     * @return active tasks count
      */
     int getActiveTasksCount();
 }
