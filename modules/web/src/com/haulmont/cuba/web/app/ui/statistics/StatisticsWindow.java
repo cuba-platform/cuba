@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.GroupDatasource;
+import com.haulmont.cuba.web.app.ui.jmxinstance.edit.JmxInstanceEditor;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
 import com.haulmont.cuba.web.jmx.JmxControlException;
 
@@ -99,7 +100,8 @@ public class StatisticsWindow extends AbstractWindow {
         jmxConnectionField.addAction(new AbstractAction("actions.Add") {
             @Override
             public void actionPerform(Component component) {
-                AbstractEditor<JmxInstance> instanceEditor = openEditor("sys$JmxInstance.edit", new JmxInstance(), OpenType.DIALOG);
+                JmxInstanceEditor instanceEditor = (JmxInstanceEditor) openEditor("sys$JmxInstance.edit",
+                        new JmxInstance(), OpenType.DIALOG);
                 instanceEditor.addCloseListener(actionId -> {
                     if (COMMIT_ACTION_ID.equals(actionId)) {
                         jmxInstancesDs.refresh();

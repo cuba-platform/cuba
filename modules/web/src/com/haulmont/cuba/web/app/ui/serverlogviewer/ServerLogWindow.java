@@ -20,6 +20,7 @@ import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.app.ui.jmxinstance.edit.JmxInstanceEditor;
 import com.haulmont.cuba.web.export.LogDataProvider;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
@@ -145,7 +146,8 @@ public class ServerLogWindow extends AbstractWindow {
         jmxConnectionField.addAction(new AbstractAction("actions.Add") {
             @Override
             public void actionPerform(Component component) {
-                AbstractEditor<JmxInstance> instanceEditor = openEditor("sys$JmxInstance.edit", new JmxInstance(), OpenType.DIALOG);
+                JmxInstanceEditor instanceEditor = (JmxInstanceEditor) openEditor("sys$JmxInstance.edit",
+                        new JmxInstance(), OpenType.DIALOG);
                 instanceEditor.addCloseListener(actionId -> {
                     if (COMMIT_ACTION_ID.equals(actionId)) {
                         jmxInstancesDs.refresh();

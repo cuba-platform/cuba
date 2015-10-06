@@ -121,7 +121,7 @@ public interface Frame
      *                    datasource instead of directly to database
      * @return created window
      */
-    <T extends Entity> Window.Editor openEditor(String windowAlias, T item, WindowManager.OpenType openType,
+    Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType,
                                     Map<String, Object> params, Datasource parentDs);
 
     /**
@@ -133,7 +133,7 @@ public interface Frame
      * @param params      parameters to pass to <code>init()</code> method of the screen's controller
      * @return created window
      */
-    <T extends Entity> Window.Editor openEditor(String windowAlias, T item, WindowManager.OpenType openType,
+    Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType,
                                     Map<String, Object> params);
 
     /**
@@ -146,8 +146,7 @@ public interface Frame
      *                    datasource instead of directly to database
      * @return created window
      */
-    <T extends Entity> Window.Editor openEditor(String windowAlias, T item, WindowManager.OpenType openType,
-                                    Datasource parentDs);
+    Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs);
 
     /**
      * Open an edit screen.
@@ -157,7 +156,7 @@ public interface Frame
      * @param openType    how to open the screen
      * @return created window
      */
-    <T extends Entity> Window.Editor openEditor(String windowAlias, T item, WindowManager.OpenType openType);
+    Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType);
 
     /**
      * Open a lookup screen.

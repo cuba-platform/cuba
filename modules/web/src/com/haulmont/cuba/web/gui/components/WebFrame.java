@@ -187,25 +187,25 @@ public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
     }
 
     @Override
-    public <T extends Entity> Window.Editor openEditor(String windowAlias, T item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
+    public Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().openEditor(windowInfo, item, openType, params, parentDs);
     }
 
     @Override
-    public <T extends Entity> Window.Editor openEditor(String windowAlias, T item, WindowManager.OpenType openType, Map<String, Object> params) {
+    public Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().openEditor(windowInfo, item, openType, params);
     }
 
     @Override
-    public <T extends Entity> Window.Editor openEditor(String windowAlias, T item, WindowManager.OpenType openType, Datasource parentDs) {
+    public Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().openEditor(windowInfo, item, openType, parentDs);
     }
 
     @Override
-    public <T extends Entity> Window.Editor openEditor(String windowAlias, T item, WindowManager.OpenType openType) {
+    public Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().openEditor(windowInfo, item, openType);
     }

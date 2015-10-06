@@ -369,28 +369,24 @@ public class AbstractFrame implements Frame, Component.Wrapper, Component.Ordere
         return (AbstractWindow) frame.openWindow(windowAlias, openType);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T extends Entity> AbstractEditor<T> openEditor(String windowAlias, T item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
-        return (AbstractEditor<T>) frame.openEditor(windowAlias, item, openType, params, parentDs);
+    public AbstractEditor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
+        return (AbstractEditor) frame.openEditor(windowAlias, item, openType, params, parentDs);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T extends Entity> AbstractEditor<T> openEditor(String windowAlias, T item, WindowManager.OpenType openType, Map<String, Object> params) {
-        return (AbstractEditor<T>) frame.openEditor(windowAlias, item, openType, params);
+    public AbstractEditor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
+        return (AbstractEditor) frame.openEditor(windowAlias, item, openType, params);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T extends Entity> AbstractEditor<T> openEditor(String windowAlias, T item, WindowManager.OpenType openType, Datasource parentDs) {
-        return (AbstractEditor<T>) frame.openEditor(windowAlias, item, openType, Collections.<String, Object>emptyMap(), parentDs);
+    public AbstractEditor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
+        return (AbstractEditor) frame.openEditor(windowAlias, item, openType, Collections.<String, Object>emptyMap(), parentDs);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T extends Entity> AbstractEditor<T> openEditor(String windowAlias, T item, WindowManager.OpenType openType) {
-        return (AbstractEditor<T>) frame.openEditor(windowAlias, item, openType, Collections.<String, Object>emptyMap());
+    public AbstractEditor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
+        return (AbstractEditor) frame.openEditor(windowAlias, item, openType, Collections.<String, Object>emptyMap());
     }
 
     @Override

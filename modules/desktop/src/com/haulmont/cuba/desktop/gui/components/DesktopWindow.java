@@ -527,22 +527,22 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     @Override
-    public <T extends Entity> Window.Editor openEditor(String windowAlias, T item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
+    public Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
         return delegate.openEditor(windowAlias, item, openType, params, parentDs);
     }
 
     @Override
-    public <T extends Entity> Window.Editor openEditor(String windowAlias, T item, WindowManager.OpenType openType, Map<String, Object> params) {
+    public Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
         return delegate.openEditor(windowAlias, item, openType, params);
     }
 
     @Override
-    public <T extends Entity> Window.Editor openEditor(String windowAlias, T item, WindowManager.OpenType openType, Datasource parentDs) {
+    public Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
         return delegate.openEditor(windowAlias, item, openType, parentDs);
     }
 
     @Override
-    public <T extends Entity> Window.Editor openEditor(String windowAlias, T item, WindowManager.OpenType openType) {
+    public Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
         return delegate.openEditor(windowAlias, item, openType);
     }
 
