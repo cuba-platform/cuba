@@ -99,6 +99,8 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
         XmlInheritanceProcessor processor = new XmlInheritanceProcessor(element.getDocument(), params);
         rootFrameElement = processor.getResultRoot();
 
+        loadMessagesPack(clientSpecificFrame, rootFrameElement);
+
         ComponentLoaderContext parentContext = (ComponentLoaderContext) getContext();
 
         String frameId = parentContext.getCurrentFrameId();
@@ -138,7 +140,6 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
         assignXmlDescriptor(resultComponent, rootFrameElement);
 
         loadVisible(resultComponent, element);
-        loadMessagesPack(resultComponent, rootFrameElement);
         loadActions(resultComponent, rootFrameElement);
 
         loadSpacing(resultComponent, layoutElement);
