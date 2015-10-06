@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
+import com.haulmont.cuba.gui.xml.layout.loaders.FrameLoader;
 import com.haulmont.cuba.gui.xml.layout.loaders.WindowLoader;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -134,7 +135,7 @@ public class LayoutLoader {
         return loader;
     }
 
-    public Pair<ComponentLoader, Element> createFrameComponent(InputStream stream, Map<String, Object> params) {
+    public Pair<ComponentLoader, Element> createFrameComponent(InputStream stream, String id, Map<String, Object> params) {
         StopWatch xmlLoadWatch = new Log4JStopWatch(context.getCurrentFrameId() + "#" +
                 UIPerformanceLogger.LifeCycle.XML,
                 Logger.getLogger(UIPerformanceLogger.class));
@@ -143,7 +144,12 @@ public class LayoutLoader {
         Element element = doc.getRootElement();
         xmlLoadWatch.stop();
 
-        return new Pair<>(createComponent(element), element);
+        ComponentLoader loader = getLoader(element);
+        ((FrameLoader) loader).setFrameId(id);
+
+        loader.createComponent();
+
+        return new Pair<>(loader, element);
     }
 
     public ComponentLoader createComponent(Element element) {

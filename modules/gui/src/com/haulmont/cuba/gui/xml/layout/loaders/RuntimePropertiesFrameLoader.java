@@ -59,9 +59,9 @@ public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
         }
 
         String currentFrameId = context.getCurrentFrameId();
+        context.setCurrentFrameId(frameId);
         try {
-            context.setCurrentFrameId(frameId);
-            Pair<ComponentLoader, Element> loaderElementPair = layoutLoader.createFrameComponent(stream, context.getParams());
+            Pair<ComponentLoader, Element> loaderElementPair = layoutLoader.createFrameComponent(stream, frameId, context.getParams());
             frameLoader = loaderElementPair.getFirst();
             resultComponent = (Frame) frameLoader.getResultComponent();
         } finally {
@@ -113,8 +113,6 @@ public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
         if (element.attributeValue("id") != null) {
             screenPath = element.attributeValue("id");
         }
-
-        String frameId = screenPath;
         if (context.getFrame() != null) {
             String parentId = context.getFullFrameId();
             if (StringUtils.isNotEmpty(parentId)) {

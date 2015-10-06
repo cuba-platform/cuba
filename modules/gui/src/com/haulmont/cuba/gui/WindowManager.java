@@ -568,11 +568,11 @@ public abstract class WindowManager {
                 Logger.getLogger(UIPerformanceLogger.class));
 
         Frame component;
+        String frameId = id != null ? id : windowInfo.getId();
         try {
-            Pair<ComponentLoader, Element> loaderElementPair = loader.createFrameComponent(stream, context.getParams());
+            Pair<ComponentLoader, Element> loaderElementPair = loader.createFrameComponent(stream, frameId, context.getParams());
             component = (Frame) loaderElementPair.getFirst().getResultComponent();
 
-            component.setId(id != null ? id : windowInfo.getId());
             if (parent != null) {
                 showFrame(parent, component);
             } else {

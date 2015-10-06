@@ -66,9 +66,9 @@ public class FrameComponentLoader extends ContainerLoader<Frame> {
         }
 
         String currentFrameId = context.getCurrentFrameId();
+        context.setCurrentFrameId(frameId);
         try {
-            context.setCurrentFrameId(frameId);
-            Pair<ComponentLoader, Element> loaderElementPair = layoutLoader.createFrameComponent(stream, context.getParams());
+            Pair<ComponentLoader, Element> loaderElementPair = layoutLoader.createFrameComponent(stream, frameId, context.getParams());
             frameLoader = loaderElementPair.getFirst();
             resultComponent = (Frame) frameLoader.getResultComponent();
         } finally {
@@ -84,7 +84,6 @@ public class FrameComponentLoader extends ContainerLoader<Frame> {
         }
 
         assignXmlDescriptor(resultComponent, element);
-        loadId(resultComponent, element);
         loadVisible(resultComponent, element);
 
         loadStyleName(resultComponent, element);
@@ -103,6 +102,12 @@ public class FrameComponentLoader extends ContainerLoader<Frame> {
         String screenPath = StringUtils.isEmpty(screenId) ? src : screenId;
         if (element.attributeValue("id") != null) {
             screenPath = element.attributeValue("id");
+        }
+        if (context.getFrame() != null) {
+            String parentId = context.getFullFrameId();
+            if (StringUtils.isNotEmpty(parentId)) {
+                screenPath = parentId + "." + screenPath;
+            }
         }
 
         StopWatch loadDescriptorWatch = new Log4JStopWatch(screenPath + "#" +

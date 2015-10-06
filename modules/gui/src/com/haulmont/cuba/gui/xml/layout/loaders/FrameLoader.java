@@ -29,9 +29,11 @@ import java.util.Map;
  */
 public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
 
-    private Element layoutElement;
-    private ComponentLoaderContext innerContext;
-    private Element rootFrameElement;
+    protected Element layoutElement;
+    protected ComponentLoaderContext innerContext;
+    protected Element rootFrameElement;
+
+    protected String frameId;
 
     protected Frame wrapByCustomClass(Frame frame) {
         String screenClass = element.attributeValue("class");
@@ -93,7 +95,7 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
     public void createComponent() {
         //noinspection unchecked
         Frame clientSpecificFrame = (T) factory.createComponent(Frame.NAME);
-        loadId(clientSpecificFrame, element);
+        clientSpecificFrame.setId(frameId);
 
         Map<String, Object> params = context.getParams();
         XmlInheritanceProcessor processor = new XmlInheritanceProcessor(element.getDocument(), params);
@@ -139,7 +141,7 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
 
         assignXmlDescriptor(resultComponent, rootFrameElement);
 
-        loadVisible(resultComponent, element);
+        loadVisible(resultComponent, layoutElement);
         loadActions(resultComponent, rootFrameElement);
 
         loadSpacing(resultComponent, layoutElement);
@@ -148,8 +150,6 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
         loadHeight(resultComponent, layoutElement);
         loadStyleName(resultComponent, layoutElement);
 
-        // we can override stylename on frame element
-        loadStyleName(resultComponent, element);
         ComponentLoaderContext parentContext = (ComponentLoaderContext) getContext();
         setContext(innerContext);
 
@@ -177,6 +177,14 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
         parentContext.getPostInitTasks().addAll(innerContext.getPostInitTasks());
 
         setContext(parentContext);
+    }
+
+    public String getFrameId() {
+        return frameId;
+    }
+
+    public void setFrameId(String frameId) {
+        this.frameId = frameId;
     }
 
     protected class FrameInjectPostInitTask implements PostInitTask {
