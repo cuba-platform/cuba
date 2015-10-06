@@ -286,14 +286,19 @@ public class FetchGroupManager {
 
     private void includeSystemProperties(View view, FetchGroupField parentField, Set<FetchGroupField> fetchGroupFields) {
         Class<? extends Entity> entityClass = view.getEntityClass();
+        MetaClass metaClass = metadata.getClassNN(entityClass);
         if (BaseEntity.class.isAssignableFrom(entityClass)) {
             for (String property : getInterfaceProperties(BaseEntity.class)) {
-                fetchGroupFields.add(createFetchGroupField(entityClass, parentField, property));
+                if (metadataTools.isPersistent(metaClass.getPropertyNN(property))) {
+                    fetchGroupFields.add(createFetchGroupField(entityClass, parentField, property));
+                }
             }
         }
         if (Updatable.class.isAssignableFrom(entityClass)) {
             for (String property : getInterfaceProperties(Updatable.class)) {
-                fetchGroupFields.add(createFetchGroupField(entityClass, parentField, property));
+                if (metadataTools.isPersistent(metaClass.getPropertyNN(property))) {
+                    fetchGroupFields.add(createFetchGroupField(entityClass, parentField, property));
+                }
             }
         }
     }
