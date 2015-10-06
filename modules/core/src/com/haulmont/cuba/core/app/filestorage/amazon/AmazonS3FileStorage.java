@@ -63,7 +63,8 @@ public class AmazonS3FileStorage implements FileStorageAPI {
 
         // how big is the overall request stream going to be once we add the signature
         // 'headers' to each chunk?
-        long totalLength = AWS4SignerForChunkedUpload.calculateChunkedContentLength(fileDescr.getSize(), 4096);
+        long totalLength = AWS4SignerForChunkedUpload.calculateChunkedContentLength(
+                fileDescr.getSize(), amazonConfiguration.getChunkSize());
         headers.put("content-length", "" + totalLength);
 
         String authorization = signer.computeSignature(headers,

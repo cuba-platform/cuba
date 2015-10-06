@@ -7,6 +7,7 @@ package com.haulmont.cuba.core.app.filestorage.amazon;
 
 import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.Property;
+import com.haulmont.cuba.core.config.defaults.DefaultInt;
 
 /**
  * @author degtyarjov
@@ -24,4 +25,8 @@ public interface AmazonConfiguration extends Config {
 
     @Property("amazon.s3.bucket")
     String getBucket();
+
+    @Property("amazon.s3.chunkSize")
+    @DefaultInt(4096)
+    int getChunkSize();
 }
