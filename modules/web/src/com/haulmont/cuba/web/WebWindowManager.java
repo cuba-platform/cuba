@@ -1119,7 +1119,7 @@ public class WebWindowManager extends WindowManager {
             buttonMap.put(action, button);
         }
 
-        assingDialogShortcuts(buttonMap);
+        assignDialogShortcuts(buttonMap);
 
         if (buttonsContainer.getComponentCount() == 1) {
             ((Button) buttonsContainer.getComponent(0)).focus();
@@ -1138,7 +1138,7 @@ public class WebWindowManager extends WindowManager {
         window.center();
     }
 
-    protected void assingDialogShortcuts(Map<Action, Button> buttonMap) {
+    protected void assignDialogShortcuts(Map<Action, Button> buttonMap) {
         List<DialogAction> dialogActions = new ArrayList<>();
         for (Action action : buttonMap.keySet()) {
             if (action instanceof DialogAction) {
@@ -1149,11 +1149,11 @@ public class WebWindowManager extends WindowManager {
         // find action for commit shortcut
         Action firstOkAction = dialogActions.stream()
                 .filter(action -> action.getType() == Type.OK)
-                .findFirst().get();
+                .findFirst().orElse(null);
         if (firstOkAction == null) {
             firstOkAction = dialogActions.stream()
                     .filter(action -> action.getType() == Type.YES)
-                    .findFirst().get();
+                    .findFirst().orElse(null);
         }
         if (firstOkAction != null) {
             WebComponentsHelper.setClickShortcut(buttonMap.get(firstOkAction), clientConfig.getCommitShortcut());
@@ -1162,17 +1162,17 @@ public class WebWindowManager extends WindowManager {
         // find action for close shortcut
         Action firstCancelAction = dialogActions.stream()
                 .filter(action -> action.getType() == Type.CANCEL)
-                .findFirst().get();
+                .findFirst().orElse(null);
 
         if (firstCancelAction == null) {
             firstCancelAction = dialogActions.stream()
                     .filter(action -> action.getType() == Type.CLOSE)
-                    .findFirst().get();
+                    .findFirst().orElse(null);
 
             if (firstCancelAction == null) {
                 firstCancelAction = dialogActions.stream()
                         .filter(action -> action.getType() == Type.NO)
-                        .findFirst().get();
+                        .findFirst().orElse(null);
             }
         }
 
