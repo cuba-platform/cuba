@@ -161,11 +161,15 @@ public class CubaTimer extends AbstractExtension implements CubaTimerServerRpc {
     public void addActionListener(ActionListener listener) {
         if (!actionListeners.contains(listener)) {
             actionListeners.add(listener);
+
+            markAsDirty();
         }
     }
 
     public void removeActionListener(ActionListener listener) {
-        actionListeners.remove(listener);
+        if (actionListeners.remove(listener)) {
+            markAsDirty();
+        }
     }
 
     public void addStopListener(StopListener listener) {
@@ -174,12 +178,16 @@ public class CubaTimer extends AbstractExtension implements CubaTimerServerRpc {
         }
         if (!stopListeners.contains(listener)) {
             stopListeners.add(listener);
+
+            markAsDirty();
         }
     }
 
     public void removeStopListeners(StopListener listener) {
         if (stopListeners != null) {
-            stopListeners.remove(listener);
+            if (stopListeners.remove(listener)) {
+                markAsDirty();
+            }
         }
     }
 }
