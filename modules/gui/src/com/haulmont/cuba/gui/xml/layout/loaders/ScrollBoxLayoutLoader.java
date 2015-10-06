@@ -56,6 +56,7 @@ public class ScrollBoxLayoutLoader extends ContainerLoader<ScrollBoxLayout> {
     public void createComponent() {
         resultComponent = (ScrollBoxLayout) factory.createComponent(ScrollBoxLayout.NAME);
         loadId(resultComponent, element);
+        loadOrientation(resultComponent, element);
         createSubComponents(resultComponent, element);
     }
 
@@ -69,7 +70,6 @@ public class ScrollBoxLayoutLoader extends ContainerLoader<ScrollBoxLayout> {
         loadStyleName(resultComponent, element);
 
         loadAlign(resultComponent, element);
-        loadOrientation(resultComponent, element);
         loadScrollBars(resultComponent, element);
 
         loadSpacing(resultComponent, element);
