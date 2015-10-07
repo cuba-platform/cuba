@@ -28,6 +28,7 @@ import com.haulmont.cuba.security.entity.FilterEntity;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -170,6 +171,7 @@ public class RelatedAction extends AbstractAction {
         return FilterParser.getXml(tree, Param.ValueProperty.VALUE);
     }
 
+    @Nullable
     protected List<UUID> getRelatedIds(Set<Entity> selectedParents) {
         if (selectedParents.isEmpty()) {
             return Collections.emptyList();
@@ -181,7 +183,8 @@ public class RelatedAction extends AbstractAction {
 
             String parentMetaClass = metaClass.getName();
 
-            return relatedEntitiesService.getRelatedIds(parentIds, parentMetaClass, metaProperty.getName());
+            List<UUID> relatedIds = relatedEntitiesService.getRelatedIds(parentIds, parentMetaClass, metaProperty.getName());
+            return relatedIds.isEmpty() ? null : relatedIds;
         }
     }
 }
