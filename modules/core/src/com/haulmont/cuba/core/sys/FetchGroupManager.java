@@ -209,23 +209,24 @@ public class FetchGroupManager {
         List<String> result = new ArrayList<>();
 
         MetaClass propMetaClass = toManyField.metaProperty.getRange().asClass();
-        MetaProperty inverseProp = propMetaClass.getProperties().stream()
+        propMetaClass.getProperties().stream()
                 .filter(mp -> mp.getRange().isClass()
                         && metadataTools.isPersistent(mp)
                         && metadataTools.isAssignableFrom(mp.getRange().asClass(), toManyField.metaClass))
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Cannot find inverse property for " + toManyField.metaProperty));
+                .ifPresent(inverseProp -> {
+                    for (FetchGroupField fetchGroupField : fetchGroupFields) {
+                        if (fetchGroupField.metaClass.equals(toManyField.metaClass)
+                                // add only local properties
+                                && !fetchGroupField.metaProperty.getRange().isClass()
+                                // do not add properties from subclasses
+                                && fetchGroupField.metaProperty.getDomain().equals(inverseProp.getRange().asClass())) {
+                            String attribute = toManyField.path() + "." + inverseProp.getName() + "." + fetchGroupField.metaProperty.getName();
+                            result.add(attribute);
+                        }
+                    }
+        });
 
-        for (FetchGroupField fetchGroupField : fetchGroupFields) {
-            if (fetchGroupField.metaClass.equals(toManyField.metaClass)
-                    // add only local properties
-                    && !fetchGroupField.metaProperty.getRange().isClass()
-                    // do not add properties from subclasses
-                    && fetchGroupField.metaProperty.getDomain().equals(inverseProp.getRange().asClass())) {
-                String attribute = toManyField.path() + "." + inverseProp.getName() + "." + fetchGroupField.metaProperty.getName();
-                result.add(attribute);
-            }
-        }
         return result;
     }
 
