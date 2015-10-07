@@ -58,7 +58,7 @@ public class AssignActionPostInitTask implements ComponentLoader.PostInitTask {
             this.component.setAction(action);
         } else if (elements.length == 1) {
             final String id = elements[0];
-            final Action action = window.getAction(id);
+            final Action action = frame.getAction(id);
 
             if (action == null) {
                 String message = "Can't find action " + id;
