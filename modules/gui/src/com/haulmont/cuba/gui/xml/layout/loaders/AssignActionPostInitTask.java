@@ -58,7 +58,7 @@ public class AssignActionPostInitTask implements ComponentLoader.PostInitTask {
             this.component.setAction(action);
         } else if (elements.length == 1) {
             final String id = elements[0];
-            final Action action = frame.getAction(id);
+            Action action = getActionRecursively(frame, id);
 
             if (action == null) {
                 String message = "Can't find action " + id;
@@ -73,5 +73,16 @@ public class AssignActionPostInitTask implements ComponentLoader.PostInitTask {
         } else {
             throw new GuiDevelopmentException("Empty action name", context.getFullFrameId());
         }
+    }
+
+    protected Action getActionRecursively(Frame frame, String actionId) {
+        Action action = frame.getAction(actionId);
+        if (action == null) {
+            Frame parentFrame = frame.getFrame();
+            if (parentFrame != frame) {
+                return getActionRecursively(parentFrame, actionId);
+            }
+        }
+        return action;
     }
 }
