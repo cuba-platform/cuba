@@ -13,7 +13,7 @@ import java.util.Collection;
  * @author abramov
  * @version $Id$
  */
-public interface TabSheet extends Component, Component.BelongToFrame {
+public interface TabSheet extends Component.Container, Component.BelongToFrame {
 
     String NAME = "tabSheet";
 

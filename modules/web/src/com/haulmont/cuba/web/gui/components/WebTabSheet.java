@@ -28,7 +28,7 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements TabSheet, Component.Container {
+public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements TabSheet {
 
     protected boolean postInitTaskAdded;
     protected boolean componentTabChangeListenerInitialized;
