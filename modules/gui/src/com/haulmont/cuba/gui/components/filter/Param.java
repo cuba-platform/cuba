@@ -181,12 +181,19 @@ public class Param {
         }
 
         if (inExpr) {
-            String[] parts = text.split(",");
-            List list = new ArrayList(parts.length);
-            for (String part : parts) {
-                list.add(parseSingleValue(part));
+            if (StringUtils.isBlank(text)) {
+                value = new ArrayList<>();
+            } else {
+                String[] parts = text.split(",");
+                List list = new ArrayList(parts.length);
+                for (String part : parts) {
+                    Object value = parseSingleValue(part);
+                    if (value != null) {
+                        list.add(value);
+                    }
+                }
+                value = list;
             }
-            value = list;
         } else {
             value = parseSingleValue(text);
         }
