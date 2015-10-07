@@ -91,15 +91,7 @@ public class PropertyCondition extends AbstractCondition {
             sb.append(" ").append(operator.getText());
 
         if (!operator.isUnary()) {
-            if (inExpr) {
-                sb.append(" (");
-            } else {
-                sb.append(" ");
-            }
-            sb.append(":").append(param.getName());
-            if (inExpr) {
-                sb.append(")");
-            }
+            sb.append(" :").append(param.getName());
 
             if (operator == Op.NOT_IN) {
                 sb.append(") or (").append(entityAlias).append(".").append(name).append(" is null)) ");

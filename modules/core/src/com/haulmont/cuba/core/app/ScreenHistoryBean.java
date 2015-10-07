@@ -57,7 +57,7 @@ public class ScreenHistoryBean implements ScreenHistory {
                     List<UUID> toDelete = list.subList(start, end);
 
                     Query deleteQuery = persistence.getEntityManager().createQuery(
-                            "delete from sec$ScreenHistory h where h.id in (?1)");
+                            "delete from sec$ScreenHistory h where h.id in ?1");
                     deleteQuery.setParameter(1, toDelete);
                     deleteQuery.executeUpdate();
                     tx.commitRetaining();
