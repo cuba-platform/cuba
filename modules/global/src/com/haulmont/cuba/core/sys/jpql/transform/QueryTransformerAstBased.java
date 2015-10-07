@@ -69,7 +69,7 @@ public class QueryTransformerAstBased implements QueryTransformer {
         }
 
         if (!errors.isEmpty()) {
-            throw new ErrorsFoundException("Errors found", errors);
+            throw new QueryErrorsFoundException("Errors found", errors);
         }
     }
 

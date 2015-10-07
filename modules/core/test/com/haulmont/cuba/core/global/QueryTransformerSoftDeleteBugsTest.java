@@ -108,14 +108,14 @@ public class QueryTransformerSoftDeleteBugsTest extends TestCase {
         QueryTransformerRegex transformer = new QueryTransformerRegex(
                 "select j from taxi$IndividualTelephone it, taxi$Job j\n" +
                         "where it.telephone like :phoneNumber and it.individual.id = j.caller.id\n" +
-                        "and j.executionStatus not in (:notActiveStatuses)");
+                        "and j.executionStatus not in :notActiveStatuses");
 
         transformer.addWhere("{E}.deleteTs is null");
         String res = transformer.getResult();
         assertEquals(
                 "select j from taxi$IndividualTelephone it, taxi$Job j\n" +
                         "where it.telephone like :phoneNumber and it.individual.id = j.caller.id\n" +
-                        "and j.executionStatus not in (:notActiveStatuses) and (it.deleteTs is null)",
+                        "and j.executionStatus not in :notActiveStatuses and (it.deleteTs is null)",
                 res);
     }
 }

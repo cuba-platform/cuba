@@ -7,16 +7,15 @@ package com.haulmont.cuba.core.sys;
 import com.google.common.collect.Iterables;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.TypedQuery;
-import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.persistence.DbmsFeatures;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.jpa.JpaQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.persistence.FlushModeType;
@@ -135,8 +134,6 @@ public class QueryImpl<T> implements TypedQuery<T> {
         for (Param param : params) {
             if (param.value instanceof String && ((String) param.value).startsWith("(?i)"))
                 result = replaceCaseInsensitiveParam(result, param);
-            if (param.value instanceof Collection)
-                result = replaceCollectionParam(result, param);
         }
 
         return result;
@@ -164,27 +161,13 @@ public class QueryImpl<T> implements TypedQuery<T> {
         return result;
     }
 
-    private String replaceCollectionParam(String queryStr, Param param) {
-        if (!(param.name instanceof String))
-            throw new UnsupportedOperationException("Only named collection parameters are supported");
-
-        Collection collection = (Collection) param.value;
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < collection.size(); i++) {
-            sb.append(":").append(param.name).append(i+1);
-            if (i < collection.size() - 1)
-                sb.append(",");
-        }
-        return queryStr.replace(":" + param.name, sb.toString());
-    }
-
     private void addMacroParams(javax.persistence.TypedQuery jpaQuery) {
         if (macroHandlers != null) {
             for (QueryMacroHandler handler : macroHandlers) {
 
                 Map<String, Object> namedParams = new HashMap<>();
                 for (Param param : params) {
-                    if (param.name instanceof String && !(param.value instanceof Collection))
+                    if (param.name instanceof String)
                         namedParams.put((String) param.name, param.value);
                 }
                 handler.setQueryParams(namedParams);
@@ -263,18 +246,23 @@ public class QueryImpl<T> implements TypedQuery<T> {
         checkState();
 
         if (implicitConversions) {
-            if (value instanceof Entity)
-                value = ((BaseEntity) value).getId();
-            else if (value instanceof Collection) {
-                List<Object> list = new ArrayList<>(((Collection) value).size());
-                for (Object obj : ((Collection) value)) {
-                    list.add(obj instanceof Entity ? ((Entity) obj).getId() : obj);
-                }
-                value = list;
-            }
+            value = handleImplicitConversions(value);
         }
         params.add(new Param(name, value));
         return this;
+    }
+
+    private Object handleImplicitConversions(Object value) {
+        if (value instanceof Entity)
+            value = ((Entity) value).getId();
+        else if (value instanceof Collection) {
+            List<Object> list = new ArrayList<>(((Collection) value).size());
+            for (Object obj : ((Collection) value)) {
+                list.add(obj instanceof Entity ? ((Entity) obj).getId() : obj);
+            }
+            value = list;
+        }
+        return value;
     }
 
     @Override
@@ -298,10 +286,11 @@ public class QueryImpl<T> implements TypedQuery<T> {
             try {
                 value = ReflectionHelper.newInstance(c, value);
             } catch (NoSuchMethodException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Error setting parameter value", e);
             }
-        } else if (implicitConversions && value instanceof Entity)
-            value = ((BaseEntity) value).getId();
+        } else if (implicitConversions) {
+            value = handleImplicitConversions(value);
+        }
 
         params.add(new Param(position, value));
         return this;
@@ -405,29 +394,15 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
         public void apply(JpaQuery query) {
             if (temporalType != null) {
-                if (name instanceof Integer) {
+                if (name instanceof Integer)
                     query.setParameter((int) name, (Date) value, temporalType);
-                } else {
+                else
                     query.setParameter((String) name, (Date) value, temporalType);
-                }
             } else {
-                if (name instanceof Integer) {
+                if (name instanceof Integer)
                     query.setParameter((int) name, value);
-                } else {
-                    if (value instanceof Collection) {
-                        applyCollection(query, (String) name, (Collection) value);
-                    } else {
-                        query.setParameter((String) name, value);
-                    }
-                }
-            }
-        }
-
-        private void applyCollection(JpaQuery query, String name, Collection collection) {
-            int i = 1;
-            for (Object value : collection) {
-                query.setParameter(name + i, value);
-                i++;
+                else
+                    query.setParameter((String) name, value);
             }
         }
 

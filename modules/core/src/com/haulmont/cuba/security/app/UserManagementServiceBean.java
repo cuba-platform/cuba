@@ -125,7 +125,7 @@ public class UserManagementServiceBean implements UserManagementService {
                     throw new IllegalStateException("Could not found target access group with id: " + targetAccessGroupId);
             }
 
-            TypedQuery<User> query = em.createQuery("select u from sec$User u where u.id in (:userIds)", User.class);
+            TypedQuery<User> query = em.createQuery("select u from sec$User u where u.id in :userIds", User.class);
             query.setParameter("userIds", userIds);
             query.setViewName(MOVE_USER_TO_GROUP_VIEW);
 
@@ -232,7 +232,7 @@ public class UserManagementServiceBean implements UserManagementService {
         try {
             EntityManager em = persistence.getEntityManager();
 
-            Query query = em.createQuery("delete from sec$RememberMeToken rt where rt.user.id in (:userIds)");
+            Query query = em.createQuery("delete from sec$RememberMeToken rt where rt.user.id in :userIds");
             query.setParameter("userIds", userIds);
             query.executeUpdate();
 
@@ -445,7 +445,7 @@ public class UserManagementServiceBean implements UserManagementService {
         try {
             EntityManager em = persistence.getEntityManager();
 
-            TypedQuery<User> query = em.createQuery("select u from sec$User u where u.id in (:userIds)", User.class);
+            TypedQuery<User> query = em.createQuery("select u from sec$User u where u.id in :userIds", User.class);
             query.setParameter("userIds", userIds);
             query.setViewName(RESET_PASSWORD_VIEW);
 

@@ -41,7 +41,7 @@ public class UserSetHelper {
 
         String listOfId = createIdsString(ids);
         String randomName = RandomStringUtils.randomAlphabetic(10);
-        condition.addText(entityAlias + ".id in (:component$" + componentId + "." + randomName + ")");
+        condition.addText(entityAlias + ".id in :component$" + componentId + "." + randomName);
 
         Element param = condition.addElement("param");
         param.addAttribute("name", "component$" + componentId + "." + randomName);

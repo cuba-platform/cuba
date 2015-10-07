@@ -150,8 +150,6 @@ public class BulkEditorWindow extends AbstractWindow {
         datasource.setAllowCommit(false);
 
         createDataComponents();
-
-        datasource.refresh();
     }
 
     protected void createDataComponents() {
@@ -552,7 +550,7 @@ public class BulkEditorWindow extends AbstractWindow {
     }
 
     protected List<Entity> loadItems(View view) {
-        LoadContext lc = new LoadContext(metaClass);
+        LoadContext<Entity> lc = new LoadContext<>(metaClass);
         lc.setSoftDeletion(false);
 
         List<UUID> ids = new ArrayList<>();

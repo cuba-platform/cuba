@@ -6,7 +6,7 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
-import com.haulmont.cuba.core.sys.jpql.ErrorsFoundException;
+import com.haulmont.cuba.core.sys.jpql.QueryErrorsFoundException;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
 import com.haulmont.cuba.core.sys.jpql.model.EntityImpl;
@@ -602,7 +602,7 @@ public class QueryTransformerAstBasedTest {
             new QueryTransformerAstBased(model,
                     "select h from sec$GroupHierarchy h join h.parent.constraints c group by c.level order by c.level having c.level > 0");
             fail("Incorrectly placed 'having' passed");
-        } catch (ErrorsFoundException e) {
+        } catch (QueryErrorsFoundException e) {
         }
     }
 
@@ -614,7 +614,7 @@ public class QueryTransformerAstBasedTest {
             new QueryTransformerAstBased(model,
                     "select h from sec$GroupHierarchy h join h.parent.constraints");
             fail("Not named join variable passed");
-        } catch (ErrorsFoundException e) {
+        } catch (QueryErrorsFoundException e) {
         }
     }
 

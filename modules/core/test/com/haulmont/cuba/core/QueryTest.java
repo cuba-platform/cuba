@@ -304,7 +304,7 @@ public class QueryTest extends CubaTestCase {
     public void testListParameter() throws Exception {
         try (Transaction tx = persistence.createTransaction()) {
             TypedQuery<User> query = persistence.getEntityManager().createQuery(
-                    "select u from sec$User u where u.id in (:ids) order by u.createTs", User.class);
+                    "select u from sec$User u where u.id in :ids order by u.createTs", User.class);
             query.setParameter("ids", Arrays.asList(UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"), userId, user2Id));
             List<User> list = query.getResultList();
             assertEquals(3, list.size());
@@ -326,7 +326,7 @@ public class QueryTest extends CubaTestCase {
 
         try (Transaction tx = persistence.createTransaction()) {
             TypedQuery<User> query = persistence.getEntityManager().createQuery(
-                    "select u from sec$User u where u.id in (:ids) order by u.createTs", User.class);
+                    "select u from sec$User u where u.id in :ids order by u.createTs", User.class);
             query.setParameter("ids", Arrays.asList(user1, user2, user3));
             List<User> list = query.getResultList();
             assertEquals(3, list.size());
@@ -334,18 +334,26 @@ public class QueryTest extends CubaTestCase {
             tx.commit();
         }
 
-        // Positional parameters are not supported
+        // Positional parameters
 
         try (Transaction tx = persistence.createTransaction()) {
             TypedQuery<User> query = persistence.getEntityManager().createQuery(
-                    "select u from sec$User u where u.id in (?1) order by u.createTs", User.class);
+                    "select u from sec$User u where u.id in ?1 order by u.createTs", User.class);
+            query.setParameter(1, Arrays.asList(user1.getId(), user2.getId(), user3.getId()));
+            List<User> list = query.getResultList();
+            assertEquals(3, list.size());
+
+            tx.commit();
+        }
+
+        // Positional parameters with implicit conversion
+
+        try (Transaction tx = persistence.createTransaction()) {
+            TypedQuery<User> query = persistence.getEntityManager().createQuery(
+                    "select u from sec$User u where u.id in ?1 order by u.createTs", User.class);
             query.setParameter(1, Arrays.asList(user1, user2, user3));
-            try {
-                query.getResultList();
-                fail();
-            } catch (UnsupportedOperationException e) {
-                // ok
-            }
+            List<User> list = query.getResultList();
+            assertEquals(3, list.size());
 
             tx.commit();
         }

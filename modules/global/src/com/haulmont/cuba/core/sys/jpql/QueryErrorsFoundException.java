@@ -12,13 +12,14 @@ import java.util.List;
  * @author chevelev
  * @version $Id$
  */
-public class ErrorsFoundException extends RuntimeException{
+public class QueryErrorsFoundException extends RuntimeException{
+
     private List<ErrorRec> errorRecs;
 
-    public ErrorsFoundException() {
+    public QueryErrorsFoundException() {
     }
 
-    public ErrorsFoundException(String message, List<ErrorRec> errorRecs) {
+    public QueryErrorsFoundException(String message, List<ErrorRec> errorRecs) {
         super(message);
         this.errorRecs = new ArrayList<>(errorRecs);
     }
@@ -28,11 +29,11 @@ public class ErrorsFoundException extends RuntimeException{
     }
 
     @Override
-    public String toString() {
-        String result = "";
+    public String getMessage() {
+        String message = super.getMessage();
         for (ErrorRec rec : errorRecs) {
-            result += rec + "\n"; 
+            message += "\n" + rec;
         }
-        return result;
+        return message;
     }
 }
