@@ -89,7 +89,7 @@ public class AmazonS3FileStorage implements FileStorageAPI {
 
             // get the request stream and start writing the user data as chunks, as outlined
             // above;
-            byte[] buffer = new byte[4096];
+            byte[] buffer = new byte[amazonConfiguration.getChunkSize()];
             DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
 
             int bytesRead;
