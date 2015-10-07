@@ -189,11 +189,6 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         }
 
         @Override
-        public void setCaptionStyleName(String styleName) {
-            setStyleName(styleName);
-        }
-
-        @Override
         public void setStyleName(String styleName) {
             com.vaadin.ui.TabSheet.Tab vaadinTab = WebTabSheet.this.component.getTab(WebComponentsHelper.unwrap(component));
             vaadinTab.setStyleName(styleName);

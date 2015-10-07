@@ -60,14 +60,6 @@ public interface TabSheet extends Component.Container, Component.BelongToFrame {
         void setCloseHandler(TabCloseHandler tabCloseHandler);
 
         /**
-         * Set style for UI element that represents tab header caption.
-         * @param styleName style styleName
-         * @deprecated Use {@link #setStyleName} instead
-         */
-        @Deprecated
-        void setCaptionStyleName(String styleName);
-
-        /**
          * Set style for UI element that represents tab header.
          * @param styleName style
          */

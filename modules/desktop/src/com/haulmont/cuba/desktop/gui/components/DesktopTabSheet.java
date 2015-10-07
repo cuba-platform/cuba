@@ -628,11 +628,6 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
         }
 
         @Override
-        public void setCaptionStyleName(String styleName) {
-            setStyleName(styleName);
-        }
-
-        @Override
         public void setStyleName(String styleName) {
             this.styleName = styleName;
 
