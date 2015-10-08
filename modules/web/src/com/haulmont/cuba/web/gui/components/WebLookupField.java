@@ -189,6 +189,7 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
     public void setNullOption(Object nullOption) {
         this.nullOption = nullOption;
         if (nullOption != null) {
+            setInputPrompt(null);
             if (optionsDatasource != null) {
                 initNullEntity();
             } else {
@@ -307,6 +308,9 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
 
     @Override
     public void setInputPrompt(String inputPrompt) {
+        if (inputPrompt != null) {
+            setNullOption(null);
+        }
         component.setInputPrompt(inputPrompt);
     }
 
