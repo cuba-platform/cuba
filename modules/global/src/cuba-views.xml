@@ -226,6 +226,7 @@
         <property name="attributes" view="_local"/>
         <property name="auto"/>
         <property name="manual"/>
+        <property name="name"/>
     </view>
 
     <view class="com.haulmont.cuba.security.entity.EntityLogItem"
