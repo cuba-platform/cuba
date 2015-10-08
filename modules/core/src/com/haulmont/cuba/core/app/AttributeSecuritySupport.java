@@ -197,7 +197,10 @@ public class AttributeSecuritySupport {
         @Override
         public void visit(Entity entity, MetaProperty property) {
             MetaClass metaClass = metadata.getClassNN(entity.getClass());
-            if (!security.isEntityAttrUpdatePermitted(metaClass, property.getName())) {
+            if (!metadataTools.isSystem(property)
+                    && !property.isReadOnly()
+                    && !security.isEntityAttrUpdatePermitted(metaClass, property.getName())
+                    && PersistenceHelper.isLoaded(entity, property.getName())) {
                 entity.setValue(property.getName(), null);
             }
         }
@@ -209,7 +212,11 @@ public class AttributeSecuritySupport {
             MetaClass metaClass = metadata.getClassNN(entity.getClass());
             if (!security.isEntityAttrReadPermitted(metaClass, property.getName())) {
                 addInaccessibleAttribute((BaseGenericIdEntity) entity, property.getName());
-                entity.setValue(property.getName(), null);
+                if (!metadataTools.isSystem(property)
+                        && !property.isReadOnly()
+                        && PersistenceHelper.isLoaded(entity, property.getName())) {
+                    entity.setValue(property.getName(), null);
+                }
             }
         }
     }
