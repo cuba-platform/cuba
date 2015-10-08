@@ -213,6 +213,7 @@ public class UserEditor extends AbstractEditor<User> {
                     } else {
                         passwField.setRequired(true);
                     }
+                    passwField.addValueChangeListener(e -> ((DatasourceImplementation) userDs).setModified(true));
                 } else {
                     passwField.setVisible(false);
                 }
@@ -233,6 +234,7 @@ public class UserEditor extends AbstractEditor<User> {
                     } else {
                         confirmPasswField.setRequired(true);
                     }
+                    confirmPasswField.addValueChangeListener(e -> ((DatasourceImplementation) userDs).setModified(true));
                 } else {
                     confirmPasswField.setVisible(false);
                 }
