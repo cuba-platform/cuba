@@ -50,12 +50,23 @@
         <property name="changePasswordAtNextLogon"/>
     </view>
 
-    <view class="com.haulmont.cuba.security.entity.User" name="user.resetPassword" extends="_local">
+    <view class="com.haulmont.cuba.security.entity.User" name="user.resetPassword">
+        <property name="password"/>
+        <property name="changePasswordAtNextLogon"/>
+    </view>
+
+    <view class="com.haulmont.cuba.security.entity.User" name="user.check">
+        <property name="password"/>
     </view>
 
     <view class="com.haulmont.cuba.security.entity.User" name="user.timeZone">
         <property name="timeZone"/>
         <property name="timeZoneAuto"/>
+    </view>
+
+    <view class="com.haulmont.cuba.security.entity.User" name="user.changePassword">
+        <property name="password"/>
+        <property name="changePasswordAtNextLogon"/>
     </view>
 
     <view class="com.haulmont.cuba.security.entity.UserSubstitution" name="user.edit">

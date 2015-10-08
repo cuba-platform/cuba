@@ -42,6 +42,10 @@ public class UserManagementServiceBean implements UserManagementService {
 
     protected static final String RESET_PASSWORD_VIEW = "user.resetPassword";
 
+    protected static final String CHANGE_PASSWORD_VIEW = "user.changePassword";
+
+    protected static final String CHECK_PASSWORD_VIEW = "user.check";
+
     protected Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
@@ -214,7 +218,7 @@ public class UserManagementServiceBean implements UserManagementService {
         try {
             EntityManager em = persistence.getEntityManager();
 
-            user = em.find(User.class, userId, RESET_PASSWORD_VIEW);
+            user = em.find(User.class, userId, CHECK_PASSWORD_VIEW);
             if (user == null)
                 throw new RuntimeException("Unable to find user with id: " + userId);
 
@@ -316,7 +320,7 @@ public class UserManagementServiceBean implements UserManagementService {
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            User user = em.find(User.class, userId, "user.timeZone");
+            User user = em.find(User.class, userId, CHANGE_PASSWORD_VIEW);
             if (user == null) {
                 throw new EntityAccessException();
             }
