@@ -105,6 +105,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
                 frame.unregisterComponent(this);
             }
 
+            this.id = id;
             C impl = getImpl();
             if (impl != null) {
                 impl.putClientProperty(getSwingPropertyId(), id);
