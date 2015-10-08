@@ -116,7 +116,15 @@ public class AttributeSecuritySupport {
         if (!config.getEntityAttributePermissionChecking()) {
             return;
         }
-        metadata.getTools().traverseAttributes(entity, new ClearReadOnlyAttributesVisitor());
+        // check only immediate attributes, otherwise persisted entity can be unusable for calling code
+        MetaClass metaClass = metadata.getClassNN(entity.getClass());
+        for (MetaProperty metaProperty : metaClass.getProperties()) {
+            if (!metadataTools.isSystem(metaProperty)
+                    && !metaProperty.isReadOnly()
+                    && !security.isEntityAttrUpdatePermitted(metaClass, metaProperty.getName())) {
+                entity.setValue(metaProperty.getName(), null);
+            }
+        }
     }
 
     /**
@@ -193,28 +201,13 @@ public class AttributeSecuritySupport {
         }
     }
 
-    private class ClearReadOnlyAttributesVisitor implements EntityAttributeVisitor {
-        @Override
-        public void visit(Entity entity, MetaProperty property) {
-            MetaClass metaClass = metadata.getClassNN(entity.getClass());
-            if (!metadataTools.isSystem(property)
-                    && !property.isReadOnly()
-                    && !security.isEntityAttrUpdatePermitted(metaClass, property.getName())
-                    && PersistenceHelper.isLoaded(entity, property.getName())) {
-                entity.setValue(property.getName(), null);
-            }
-        }
-    }
-
     private class ClearInaccessibleAttributesVisitor implements EntityAttributeVisitor {
         @Override
         public void visit(Entity entity, MetaProperty property) {
             MetaClass metaClass = metadata.getClassNN(entity.getClass());
             if (!security.isEntityAttrReadPermitted(metaClass, property.getName())) {
                 addInaccessibleAttribute((BaseGenericIdEntity) entity, property.getName());
-                if (!metadataTools.isSystem(property)
-                        && !property.isReadOnly()
-                        && PersistenceHelper.isLoaded(entity, property.getName())) {
+                if (!metadataTools.isSystem(property) && !property.isReadOnly()) {
                     entity.setValue(property.getName(), null);
                 }
             }
