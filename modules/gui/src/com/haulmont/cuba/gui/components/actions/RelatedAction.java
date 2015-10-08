@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.components.filter.*;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
 import com.haulmont.cuba.gui.components.filter.descriptor.PropertyConditionDescriptor;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -156,13 +157,20 @@ public class RelatedAction extends AbstractAction {
         PropertyConditionDescriptor conditionDescriptor = new PropertyConditionDescriptor("id", "id", AppConfig.getMessagesPack(), filterComponentName, component.getDatasource());
 
         PropertyCondition condition = (PropertyCondition) conditionDescriptor.createCondition();
-        condition.setInExpr(true);
         condition.setHidden(true);
-        condition.setOperator(Op.IN);
 
         ConditionParamBuilder paramBuilder = AppBeans.get(ConditionParamBuilder.class);
-        Param param = new Param(paramBuilder.createParamName(condition), UUID.class, "", "", component.getDatasource(), metaClass.getProperty("id"), true, true);
-        param.setValue(ids);
+        Param param;
+        if (!ids.isEmpty()) {
+            condition.setInExpr(true);
+            condition.setOperator(Op.IN);
+            param = new Param(paramBuilder.createParamName(condition), UUID.class, "", "", component.getDatasource(), metaClass.getProperty("id"), true, true);
+            param.setValue(ids);
+        } else {
+            condition.setOperator(Op.NOT_EMPTY);
+            param = new Param(paramBuilder.createParamName(condition), Boolean.class, "", "", component.getDatasource(), metaClass.getProperty("id"), false, true);
+            param.setValue(false);
+        }
 
         condition.setParam(param);
 
@@ -171,7 +179,6 @@ public class RelatedAction extends AbstractAction {
         return FilterParser.getXml(tree, Param.ValueProperty.VALUE);
     }
 
-    @Nullable
     protected List<UUID> getRelatedIds(Set<Entity> selectedParents) {
         if (selectedParents.isEmpty()) {
             return Collections.emptyList();
@@ -184,7 +191,7 @@ public class RelatedAction extends AbstractAction {
             String parentMetaClass = metaClass.getName();
 
             List<UUID> relatedIds = relatedEntitiesService.getRelatedIds(parentIds, parentMetaClass, metaProperty.getName());
-            return relatedIds.isEmpty() ? null : relatedIds;
+            return relatedIds;
         }
     }
 }
