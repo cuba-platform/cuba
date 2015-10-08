@@ -25,6 +25,7 @@ import static javax.swing.KeyStroke.getKeyStroke;
 public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> implements TextArea {
 
     protected JComponent composition;
+    protected int rows;
 
     public DesktopTextArea() {
         setRows(5);
@@ -94,12 +95,34 @@ public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> impleme
 
     @Override
     public int getRows() {
-        return impl.getRows();
+        return this.rows;
     }
 
     @Override
     public void setRows(int rows) {
+        this.rows = 5;
+
         impl.setRows(rows);
+
+        int minHeight = impl.getPreferredSize().height;
+        int minWidth = impl.getPreferredSize().width;
+
+        Insets insets = impl.getInsets();
+        minWidth += insets.left + insets.right;
+        minHeight += insets.bottom + insets.top;
+
+        composition.setMinimumSize(new Dimension(minWidth, minHeight));
+    }
+
+    @Override
+    public void setHeight(String height) {
+        super.setHeight(height);
+
+        if (getHeight() >= 0) {
+            impl.setRows(1);
+        } else {
+            impl.setRows(this.rows);
+        }
 
         int minHeight = impl.getPreferredSize().height;
         int minWidth = impl.getPreferredSize().width;

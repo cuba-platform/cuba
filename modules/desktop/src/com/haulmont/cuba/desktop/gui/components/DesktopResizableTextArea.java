@@ -14,9 +14,18 @@ import org.dom4j.Element;
  */
 public class DesktopResizableTextArea extends DesktopTextArea implements ResizableTextArea {
 
+    protected boolean resizable = false;
+    protected boolean settingsEnabled = true;
+
     @Override
     public boolean isResizable() {
-        return false;
+        return resizable;
+    }
+
+    @Override
+    public void setResizable(boolean resizable) {
+        this.resizable = resizable;
+        //Do nothing, because desktop text area is not resizable
     }
 
     @Override
@@ -26,11 +35,6 @@ public class DesktopResizableTextArea extends DesktopTextArea implements Resizab
 
     @Override
     public void removeResizeListener(com.haulmont.cuba.gui.components.ResizeListener resizeListener) {
-        //Do nothing, because desktop text area is not resizable
-    }
-
-    @Override
-    public void setResizable(boolean resizable) {
         //Do nothing, because desktop text area is not resizable
     }
 
@@ -56,11 +60,12 @@ public class DesktopResizableTextArea extends DesktopTextArea implements Resizab
 
     @Override
     public boolean isSettingsEnabled() {
-        return false;
+        return settingsEnabled;
     }
 
     @Override
     public void setSettingsEnabled(boolean settingsEnabled) {
+        this.settingsEnabled = settingsEnabled;
         //Do nothing, because desktop text area is not resizable
     }
 }
