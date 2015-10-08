@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.client.resizabletextarea.CubaResizableTextAreaWrapperServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.resizabletextarea.CubaResizableTextAreaWrapperState;
 import com.vaadin.server.AbstractErrorMessage;
@@ -64,7 +65,7 @@ public class CubaResizableTextAreaWrapper extends CustomField {
     @Override
     public ErrorMessage getErrorMessage() {
         ErrorMessage superError = super.getErrorMessage();
-        if (!textArea.isReadOnly() && isRequired() && textArea.isEmpty()) {
+        if (!textArea.isReadOnly() && WebComponentsHelper.isComponentEnabled(this) && isRequired() && textArea.isEmpty()) {
             ErrorMessage error = AbstractErrorMessage.getErrorMessageForException(
                     new com.vaadin.data.Validator.EmptyValueException(getRequiredError()));
             if (error != null) {

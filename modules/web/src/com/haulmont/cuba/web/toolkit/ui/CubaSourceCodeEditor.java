@@ -6,6 +6,7 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.gui.components.autocomplete.AutoCompleteSupport;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.server.AbstractErrorMessage;
 import com.vaadin.server.CompositeErrorMessage;
 import com.vaadin.server.ErrorMessage;
@@ -40,7 +41,7 @@ public class CubaSourceCodeEditor extends AceEditor implements AutoCompleteSuppo
     @Override
     public ErrorMessage getErrorMessage() {
         ErrorMessage superError = super.getErrorMessage();
-        if (!isReadOnly() && isRequired() && isEmpty()) {
+        if (!isReadOnly() && WebComponentsHelper.isComponentEnabled(this) && isRequired() && isEmpty()) {
             ErrorMessage error = AbstractErrorMessage.getErrorMessageForException(
                     new com.vaadin.data.Validator.EmptyValueException(getRequiredError()));
             if (error != null) {
