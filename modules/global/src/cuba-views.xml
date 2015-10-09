@@ -232,9 +232,7 @@
     <view class="com.haulmont.cuba.security.entity.EntityLogItem"
           extends="_local"
           name="logView">
-        <property name="user">
-            <property name="login"/>
-        </property>
+        <property name="user" view="_minimal"/>
     </view>
 
     <view class="com.haulmont.cuba.security.entity.UserSubstitution" name="usersubst.edit">
