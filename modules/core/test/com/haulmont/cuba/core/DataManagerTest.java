@@ -150,4 +150,45 @@ public class DataManagerTest extends CubaTestCase {
         List<User> list = dataManager.loadList(loadContext);
         assertEquals(1, list.size());
     }
+
+    public void testGetCount() throws Exception {
+        LoadContext<User> loadContext = LoadContext.create(User.class).setQuery(
+                LoadContext.createQuery("select u from sec$User u where u.login = :login").setParameter("login", "admin"));
+
+        long count = dataManager.getCount(loadContext);
+        assertEquals(1, count);
+
+        loadContext.getQuery().setParameter("login", "cc1aa09f-c5d5-4bd1-896c-cb774d2e2898");
+        count = dataManager.getCount(loadContext);
+        assertEquals(0, count);
+    }
+
+    public void testExtendedLoadContext() throws Exception {
+        LoadContext<User> loadContext = new MyLoadContext<>(User.class, "test").setQuery(
+                LoadContext.createQuery("select u from sec$User u where u.login = :login").setParameter("login", "admin"));
+
+        long count = dataManager.getCount(loadContext);
+        assertEquals(1, count);
+
+    }
+
+    public static class MyLoadContext<E extends Entity> extends LoadContext<E> {
+
+        private String info;
+
+        public MyLoadContext() {
+        }
+
+        public MyLoadContext(Class<E> javaClass, String info) {
+            super(javaClass);
+            this.info = info;
+        }
+
+        @Override
+        public MyLoadContext<?> copy() {
+            MyLoadContext<?> copy = (MyLoadContext) super.copy();
+            copy.info = info;
+            return copy;
+        }
+    }
 }

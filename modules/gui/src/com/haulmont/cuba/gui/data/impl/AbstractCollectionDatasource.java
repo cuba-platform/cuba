@@ -522,29 +522,24 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
     /**
      * Return number of rows for the current query set in the datasource.
-     * <p>This method transforms the current query to "select count()" query with the same conditions, and sends it
-     * to the middleware.</p>
      *
      * @return number of rows. In case of error returns 0 and sets {@link #dataLoadError} field to the exception object
      */
     public int getCount() {
-        LoadContext context = new LoadContext(metaClass);
+        LoadContext<Entity> context = new LoadContext<>(metaClass);
         LoadContext.Query q = createLoadContextQuery(context, savedParameters == null ? Collections.<String, Object>emptyMap() : savedParameters);
         context.setSoftDeletion(isSoftDeletion());
         if (q == null)
             return 0;
 
-        QueryTransformer transformer = QueryTransformerFactory.createTransformer(q.getQueryString());
-        transformer.replaceWithCount();
-        String jpqlQuery = transformer.getResult();
-        q.setQueryString(jpqlQuery);
-
         prepareLoadContext(context);
 
         dataLoadError = null;
         try {
-            List res = dataSupplier.loadList(context);
-            return res.isEmpty() ? 0 : ((Long) res.get(0)).intValue();
+            long res = dataSupplier.getCount(context);
+            if (res > Integer.MAX_VALUE)
+                throw new RuntimeException("Number of records is too big: " + res);
+            return (int) res;
         } catch (Throwable e) {
             dataLoadError = e;
         }

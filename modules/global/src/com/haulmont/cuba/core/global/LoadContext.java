@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Class that defines parameters for loading entities from the database via {@link DataManager}.
@@ -75,6 +76,9 @@ public class LoadContext<E extends Entity> implements Serializable {
     public LoadContext(Class<E> javaClass) {
         Preconditions.checkNotNullArgument(javaClass, "javaClass is null");
         this.metaClass = AppBeans.get(Metadata.class).getExtendedEntities().getEffectiveMetaClass(javaClass).getName();
+    }
+
+    protected LoadContext() {
     }
 
     /**
@@ -212,6 +216,28 @@ public class LoadContext<E extends Entity> implements Serializable {
         return this;
     }
 
+    /**
+     * Creates a copy of this LoadContext instance.
+     */
+    public LoadContext<?> copy() {
+        LoadContext<?> ctx;
+        try {
+            ctx = getClass().newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException("Error copying LoadContext", e);
+        }
+        ctx.metaClass = metaClass;
+        ctx.setQuery(query.copy());
+        ctx.view = view;
+        ctx.id = id;
+        ctx.softDeletion = softDeletion;
+        ctx.prevQueries.addAll(prevQueries.stream().map(Query::copy).collect(Collectors.toList()));
+        ctx.queryKey = queryKey;
+        ctx.dbHints.putAll(dbHints);
+        ctx.loadDynamicAttributes = loadDynamicAttributes;
+        return ctx;
+    }
+
     @Override
     public String toString() {
         return "LoadContext{" +
@@ -311,6 +337,17 @@ public class LoadContext<E extends Entity> implements Serializable {
          */
         public int getMaxResults() {
             return maxResults;
+        }
+
+        /**
+         * Creates a copy of this Query instance.
+         */
+        public Query copy() {
+            Query query = new Query(queryString);
+            query.parameters.putAll(parameters);
+            query.firstResult = firstResult;
+            query.maxResults = maxResults;
+            return query;
         }
 
         @Override

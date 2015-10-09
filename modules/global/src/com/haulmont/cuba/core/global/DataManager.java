@@ -45,6 +45,13 @@ public interface DataManager {
     <E extends Entity> List<E> loadList(LoadContext<E> context);
 
     /**
+     * Returns the number of entity instances for the given query passed in the {@link LoadContext}.
+     * @param context   defines the query
+     * @return          number of instances in the database
+     */
+    long getCount(LoadContext<? extends Entity> context);
+
+    /**
      * Reloads the entity instance from database with the view specified.
      * @param entity        reloading instance
      * @param viewName      view name

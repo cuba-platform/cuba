@@ -40,4 +40,9 @@ public class DataServiceBean implements DataService {
     public <E extends Entity> List<E> loadList(LoadContext<E> context) {
         return dataManager.loadList(context);
     }
+
+    @Override
+    public long getCount(LoadContext<? extends Entity> context) {
+        return dataManager.getCount(context);
+    }
 }

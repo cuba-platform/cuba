@@ -48,4 +48,11 @@ public interface DataService {
      * @return          a list of detached instances, or empty list if nothing found
      */
     <E extends Entity> List<E> loadList(LoadContext<E> context);
+
+    /**
+     * Returns the number of entity instances for the given query passed in the {@link LoadContext}.
+     * @param context   defines the query
+     * @return          number of instances in the database
+     */
+    long getCount(LoadContext<? extends Entity> context);
 }

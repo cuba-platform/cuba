@@ -97,6 +97,8 @@ public class DataManagerBean implements DataManager {
             persistence.getEntityManagerContext().setDbHints(context.getDbHints());
 
             com.haulmont.cuba.core.Query query = createQuery(em, context);
+            query.setView(createRestrictedView(context));
+
             //noinspection unchecked
             List<E> resultList = executeQuery(query);
             if (!resultList.isEmpty())
@@ -120,12 +122,12 @@ public class DataManagerBean implements DataManager {
     public <E extends Entity> List<E> loadList(LoadContext<E> context) {
         if (log.isDebugEnabled())
             log.debug("loadList: metaClass=" + context.getMetaClass() + ", view=" + context.getView()
-                    + (context.getPrevQueries().isEmpty() ? "" : ", to selected")
+                    + (context.getPrevQueries().isEmpty() ? "" : ", from selected")
                     + ", query=" + (context.getQuery() == null ? null : DataServiceQueryBuilder.printQuery(context.getQuery().getQueryString()))
                     + (context.getQuery() == null || context.getQuery().getFirstResult() == 0 ? "" : ", first=" + context.getQuery().getFirstResult())
                     + (context.getQuery() == null || context.getQuery().getMaxResults() == 0 ? "" : ", max=" + context.getQuery().getMaxResults()));
 
-        final MetaClass metaClass = metadata.getSession().getClass(context.getMetaClass());
+        MetaClass metaClass = metadata.getClassNN(context.getMetaClass());
 
         if (!security.isEntityOpPermitted(metaClass, EntityOp.READ)) {
             log.debug("reading of " + metaClass + " not permitted, returning empty list");
@@ -138,7 +140,7 @@ public class DataManagerBean implements DataManager {
 
         Transaction tx = persistence.createTransaction();
         try {
-            final EntityManager em = persistence.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             em.setSoftDeletion(context.isSoftDeletion());
             persistence.getEntityManagerContext().setDbHints(context.getDbHints());
 
@@ -152,6 +154,8 @@ public class DataManagerBean implements DataManager {
                 }
             }
             Query query = createQuery(em, context);
+            query.setView(createRestrictedView(context));
+
             resultList = getResultList(context, query, ensureDistinct);
 
             // Fetch dynamic attributes
@@ -169,6 +173,45 @@ public class DataManagerBean implements DataManager {
         attributeSecurity.afterLoad(resultList);
 
         return resultList;
+    }
+
+    @Override
+    public long getCount(LoadContext<? extends Entity> context) {
+        if (log.isDebugEnabled())
+            log.debug("getCount: metaClass=" + context.getMetaClass()
+                    + (context.getPrevQueries().isEmpty() ? "" : ", from selected")
+                    + ", query=" + (context.getQuery() == null ? null : DataServiceQueryBuilder.printQuery(context.getQuery().getQueryString())));
+
+        MetaClass metaClass = metadata.getClassNN(context.getMetaClass());
+
+        if (!security.isEntityOpPermitted(metaClass, EntityOp.READ)) {
+            log.debug("reading of " + metaClass + " not permitted, returning 0");
+            return 0;
+        }
+
+        QueryTransformer transformer = QueryTransformerFactory.createTransformer(context.getQuery().getQueryString());
+        transformer.replaceWithCount();
+        context = context.copy();
+        context.getQuery().setQueryString(transformer.getResult());
+
+        queryResultsManager.savePreviousQueryResults(context);
+
+        Number result;
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            em.setSoftDeletion(context.isSoftDeletion());
+            persistence.getEntityManagerContext().setDbHints(context.getDbHints());
+
+            Query query = createQuery(em, context);
+            result = (Number) query.getSingleResult();
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+        return result.longValue();
     }
 
     @Override
@@ -513,12 +556,13 @@ public class DataManagerBean implements DataManager {
                 query.setMaxResults(contextQuery.getMaxResults());
         }
 
+        return query;
+    }
+
+    protected View createRestrictedView(LoadContext context) {
         View view = context.getView() != null ? context.getView() :
                 viewRepository.getView(metadata.getClassNN(context.getMetaClass()), View.LOCAL);
-        View restrictedView = attributeSecurity.createRestrictedView(view);
-        query.setView(restrictedView);
-
-        return query;
+        return attributeSecurity.createRestrictedView(view);
     }
 
     protected <E extends Entity> List<E> getResultList(LoadContext<E> context, Query query, boolean ensureDistinct) {

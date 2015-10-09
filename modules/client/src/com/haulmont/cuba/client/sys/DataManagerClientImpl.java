@@ -45,6 +45,11 @@ public class DataManagerClientImpl implements DataManager {
     }
 
     @Override
+    public long getCount(LoadContext<? extends Entity> context) {
+        return dataService.getCount(context);
+    }
+
+    @Override
     public <E extends Entity> E reload(E entity, String viewName) {
         Objects.requireNonNull(viewName, "viewName is null");
         return reload(entity, metadata.getViewRepository().getView(entity.getClass(), viewName));
