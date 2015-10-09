@@ -59,6 +59,11 @@ public class TestDataSupplier implements DataSupplier {
     }
 
     @Override
+    public long getCount(LoadContext<? extends Entity> context) {
+        return 0;
+    }
+
+    @Override
     public <E extends Entity> E newInstance(MetaClass metaClass) {
         return null;
     }
