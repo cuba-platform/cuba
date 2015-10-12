@@ -225,6 +225,9 @@ public class FetchGroupManager {
                             result.add(attribute);
                         }
                     }
+                    if (result.isEmpty()) {
+                        result.add(toManyField.path() + "." + inverseProp.getName() + ".id");
+                    }
         });
 
         return result;
