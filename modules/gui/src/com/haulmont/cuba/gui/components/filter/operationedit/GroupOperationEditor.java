@@ -19,14 +19,12 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
  */
 public class GroupOperationEditor extends AbstractOperationEditor {
 
-    protected ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.class);
-
     public GroupOperationEditor(AbstractCondition condition) {
         super(condition);
     }
 
     @Override
     protected Component createComponent() {
-        return componentsFactory.createComponent(VBoxLayout.NAME);
+        return AppBeans.get(ComponentsFactory.class).createComponent(VBoxLayout.NAME);
     }
 }

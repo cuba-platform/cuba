@@ -96,7 +96,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
                     tempFiles.put(uuid, file);
                 }
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, file.getAbsolutePath());
         }
 

@@ -59,7 +59,7 @@ public abstract class AbstractScripting implements Scripting {
 
     protected volatile GroovyScriptEngine gse;
 
-    protected GroovyClassLoader gcl;
+    protected volatile GroovyClassLoader gcl;
 
     protected GenericKeyedObjectPool<String, Script> pool;
 

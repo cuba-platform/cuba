@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -52,7 +53,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
     }
 
     /**
-     * Simple wrapper for {@link com.haulmont.cuba.gui.components.Timer.TimerListener}
+     * Simple wrapper for {@link com.haulmont.cuba.gui.components.Timer.ActionListener}
      */
     private static class WebTimerListener {
 
@@ -179,8 +180,8 @@ public class WebBackgroundWorker implements BackgroundWorker {
         // handleDone completed or canceled
         private volatile boolean closed = false;
 
-        private volatile long intentVersion = 0;
-        private final List<T> intents = Collections.synchronizedList(new LinkedList<T>());
+        private volatile AtomicLong intentVersion = new AtomicLong(0);
+        private final List<T> intents = Collections.synchronizedList(new LinkedList<>());
 
         private SecurityContext securityContext;
         private UUID userId;
@@ -262,7 +263,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
         @Override
         public final void handleProgress(T... changes) {
             synchronized (intents) {
-                intentVersion++;
+                intentVersion.incrementAndGet();
                 intents.addAll(Arrays.asList(changes));
             }
         }
@@ -363,7 +364,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
         }
 
         public final long getIntentVersion() {
-            return intentVersion;
+            return intentVersion.get();
         }
 
         public final void handleIntents() {

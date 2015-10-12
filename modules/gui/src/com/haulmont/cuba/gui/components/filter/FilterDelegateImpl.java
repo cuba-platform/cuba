@@ -757,7 +757,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             }
 
             //groupBox for group conditions must occupy the whole line in conditions grid
-            Integer conditionWidth = condition.isGroup() ? conditionsCount : condition.getWidth();
+            Integer conditionWidth = condition.isGroup() ? (Integer)conditionsCount : condition.getWidth();
             int nextColumnEnd = nextColumnStart + conditionWidth - 1;
             if (nextColumnEnd >= conditionsCount) {
                 //complete current row in grid with gaps if next cell will be on next row
@@ -2262,7 +2262,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
     }
 
-    protected class AppliedFilterHolder {
+    protected static class AppliedFilterHolder {
         public final AppliedFilter filter;
         public final Component.Container layout;
         public final Button button;

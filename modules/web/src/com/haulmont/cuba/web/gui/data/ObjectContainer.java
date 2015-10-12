@@ -30,7 +30,7 @@ public class ObjectContainer implements com.vaadin.data.Container, Container.Ite
     protected List<ItemSetChangeListener> itemSetChangeListeners = null;
     protected boolean ignoreListeners;
 
-    protected static List<String> methodsName = new ArrayList<>();
+    protected static final List<String> methodsName = new ArrayList<>();
     static {
         methodsName.add("getName");
         methodsName.add("getCaption");

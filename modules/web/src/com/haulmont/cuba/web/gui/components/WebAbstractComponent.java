@@ -17,6 +17,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.dom4j.Element;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -28,10 +29,10 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
     implements
         Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame {
 
-    public static final List<Sizeable.Unit> UNIT_SYMBOLS = Arrays.asList(
+    public static final List<Sizeable.Unit> UNIT_SYMBOLS = Collections.unmodifiableList(Arrays.asList(
             Sizeable.Unit.PIXELS, Sizeable.Unit.POINTS, Sizeable.Unit.PICAS,
             Sizeable.Unit.EM, Sizeable.Unit.EX, Sizeable.Unit.MM,
-            Sizeable.Unit.CM, Sizeable.Unit.INCH, Sizeable.Unit.PERCENTAGE);
+            Sizeable.Unit.CM, Sizeable.Unit.INCH, Sizeable.Unit.PERCENTAGE));
 
     protected String id;
     protected T component;

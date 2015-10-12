@@ -36,10 +36,10 @@ import java.util.regex.Pattern;
  */
 public class ConditionDescriptorsTreeBuilder {
 
-    protected static final List<String> defaultExcludedProps = Collections.unmodifiableList(Arrays.asList("version"));
+    protected static final List<String> defaultExcludedProps = Collections.unmodifiableList(Collections.singletonList("version"));
     protected static final String CUSTOM_CONDITIONS_PERMISSION = "cuba.gui.filter.customConditions";
 
-    protected static Logger log = LoggerFactory.getLogger(ConditionDescriptorsTreeBuilder.class);
+    protected static final Logger log = LoggerFactory.getLogger(ConditionDescriptorsTreeBuilder.class);
 
     protected Filter filter;
     protected int hierarchyDepth;
@@ -252,7 +252,7 @@ public class ConditionDescriptorsTreeBuilder {
         return filterComponentName;
     }
 
-    private class ConditionDescriptorComparator implements Comparator<AbstractConditionDescriptor> {
+    private static class ConditionDescriptorComparator implements Comparator<AbstractConditionDescriptor> {
         @Override
         public int compare(AbstractConditionDescriptor cd1, AbstractConditionDescriptor cd2) {
             return cd1.getLocCaption().compareTo(cd2.getLocCaption());

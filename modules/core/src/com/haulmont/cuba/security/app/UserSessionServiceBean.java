@@ -136,7 +136,7 @@ public class UserSessionServiceBean implements UserSessionService {
 
                     String name = entry.getKey();
                     String dateTimeMillis = name.substring(MESSAGE_ATTR_PREFIX.length());
-                    Date dateTime = new Date(Long.valueOf(dateTimeMillis));
+                    Date dateTime = new Date(Long.parseLong(dateTimeMillis));
 
                     sb.append(datatype.format(dateTime, userSession.getLocale())).append("\n");
                     sb.append(entry.getValue());

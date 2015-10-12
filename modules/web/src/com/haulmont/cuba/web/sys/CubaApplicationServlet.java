@@ -163,12 +163,15 @@ public class CubaApplicationServlet extends VaadinServlet {
         stringBuilder.append("=true");
 
         Map<String, String[]> parameterMap = request.getParameterMap();
-        for (String key : parameterMap.keySet()) {
-            for (String value : parameterMap.get(key)) {
+
+        for (Map.Entry<String, String[]> paramEntry : parameterMap.entrySet()) {
+            String[] paramValue = paramEntry.getValue();
+
+            for (String paramPart : paramValue) {
                 stringBuilder.append("&");
-                stringBuilder.append(key);
+                stringBuilder.append(paramEntry.getKey());
                 stringBuilder.append("=");
-                stringBuilder.append(value);
+                stringBuilder.append(paramPart);
             }
         }
         String url = stringBuilder.toString();

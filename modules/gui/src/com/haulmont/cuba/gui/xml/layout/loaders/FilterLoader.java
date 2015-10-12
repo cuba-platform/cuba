@@ -65,7 +65,7 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
 
         String columnsQty = element.attributeValue("columnsCount");
         if (!Strings.isNullOrEmpty(columnsQty)) {
-            resultComponent.setColumnsCount(Integer.valueOf(columnsQty));
+            resultComponent.setColumnsCount(Integer.parseInt(columnsQty));
         }
 
         String folderActionsEnabled = element.attributeValue("folderActionsEnabled");

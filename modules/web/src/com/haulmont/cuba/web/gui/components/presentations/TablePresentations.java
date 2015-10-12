@@ -33,8 +33,8 @@ import java.util.*;
 public class TablePresentations extends VerticalLayout {
 
     public static final String CUSTOM_STYLE_NAME_PREFIX = "cs";
-    protected static String MENUITEM_STYLE_CURRENT = "cuba-table-presentations-menuitem-current";
-    protected static String MENUITEM_STYLE_DEFAULT = "cuba-table-presentations-menuitem-default";
+    protected static final String MENUITEM_STYLE_CURRENT = "cuba-table-presentations-menuitem-current";
+    protected static final String MENUITEM_STYLE_DEFAULT = "cuba-table-presentations-menuitem-default";
 
     protected CubaMenuBar menuBar;
     protected WebPopupButton button;
@@ -156,11 +156,11 @@ public class TablePresentations extends VerticalLayout {
 
     protected void applyStylesForItem(com.vaadin.ui.MenuBar.MenuItem item, List<String> styles) {
         styles.remove(CUSTOM_STYLE_NAME_PREFIX);
-        String joinedStyle = CUSTOM_STYLE_NAME_PREFIX;
+        StringBuilder joinedStyle = new StringBuilder(CUSTOM_STYLE_NAME_PREFIX);
         for (String style : styles) {
-            joinedStyle += " " + style;
+            joinedStyle.append(" ").append(style);
         }
-        item.setStyleName(joinedStyle);
+        item.setStyleName(joinedStyle.toString());
     }
 
     protected void initLayout() {

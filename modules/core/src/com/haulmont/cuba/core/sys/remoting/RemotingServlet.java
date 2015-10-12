@@ -109,7 +109,7 @@ public class RemotingServlet extends DispatcherServlet {
                 sb.append("***** cuba.webHostName=").append(config.getWebHostName())
                         .append(", actual=").append(request.getServerName()).append("\n");
             }
-            if (request.getServerPort() != Integer.valueOf(config.getWebPort())) {
+            if (request.getServerPort() != Integer.parseInt(config.getWebPort())) {
                 sb.append("***** cuba.webPort=").append(config.getWebPort())
                         .append(", actual=").append(request.getServerPort()).append("\n");
             }

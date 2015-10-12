@@ -5,9 +5,11 @@
 
 package com.haulmont.cuba.core.jmx;
 
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.scheduling.SchedulingAPI;
-import com.haulmont.cuba.core.entity.ScheduledExecution;
 import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -15,8 +17,8 @@ import com.haulmont.cuba.security.app.Authenticated;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.time.DateUtils;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -100,7 +102,7 @@ public class Scheduling implements SchedulingMBean {
             Date startDate = DateUtils.addHours(timeSource.currentTimestamp(), -Integer.valueOf(age));
             query.setParameter(1, startDate);
             if (maxPeriod != null) {
-                query.setParameter(2, Integer.valueOf(maxPeriod) * 3600);
+                query.setParameter(2, Integer.parseInt(maxPeriod) * 3600);
             }
             list = query.getResultList();
 

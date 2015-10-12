@@ -14,14 +14,12 @@ import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventListener;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.Vector;
@@ -34,8 +32,6 @@ import java.util.Vector;
 public class EclipseLinkDescriptorEventListener implements DescriptorEventListener {
 
     public static final String NAME = "cuba_EclipseLinkDescriptorEventListener";
-
-    private Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
     protected EntityListenerManager manager;

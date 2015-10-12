@@ -30,7 +30,7 @@ public class HsqlSequenceSupport implements SequenceSupport {
 
     @Override
     public String deleteSequenceSql(String sequenceName) {
-        return "drop sequence " + (sequenceName != null ? sequenceName.toUpperCase() : sequenceName);
+        return "drop sequence " + (sequenceName != null ? sequenceName.toUpperCase() : null);
     }
 
     @Override

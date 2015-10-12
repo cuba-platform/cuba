@@ -34,6 +34,10 @@ public class ThemeConstants {
             value = value.substring(0, value.length() - 2);
         }
 
+        if (value == null) {
+            throw new IllegalArgumentException("Null value for theme key " + key);
+        }
+
         return Integer.parseInt(value);
     }
 }

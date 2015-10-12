@@ -251,9 +251,10 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         if (debugId != null) {
             TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
 
-            for (com.vaadin.ui.Component tabComponent : tabMapping.keySet()) {
+            for (Map.Entry<com.vaadin.ui.Component, ComponentDescriptor> tabEntry : tabMapping.entrySet()) {
+                com.vaadin.ui.Component tabComponent = tabEntry.getKey();
                 com.vaadin.ui.TabSheet.Tab tab = component.getTab(tabComponent);
-                ComponentDescriptor componentDescriptor = tabMapping.get(tabComponent);
+                ComponentDescriptor componentDescriptor = tabEntry.getValue();
                 String name = componentDescriptor.name;
 
                 component.setTestId(tab, testIdManager.getTestId(debugId + "." + name));

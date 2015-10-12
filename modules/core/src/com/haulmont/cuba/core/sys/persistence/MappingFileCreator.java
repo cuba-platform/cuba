@@ -71,18 +71,21 @@ class MappingFileCreator {
 
         // search for higher order extensions
         Map<Class, Class> classes = new HashMap<>();
-        for (Class originalClass : extendedClasses.keySet()) {
-            Class extClass = extendedClasses.get(originalClass);
+
+        for (Map.Entry<Class, Class> mappingEntry : extendedClasses.entrySet()) {
+            Class originalClass = mappingEntry.getKey();
+            Class extClass = mappingEntry.getValue();
             Class lastExtClass = null;
             Class aClass = extendedClasses.get(extClass);
             while (aClass != null) {
                 lastExtClass = aClass;
                 aClass = extendedClasses.get(aClass);
             }
-            if (lastExtClass != null)
+            if (lastExtClass != null) {
                 classes.put(originalClass, lastExtClass);
-            else
+            } else {
                 classes.put(originalClass, extClass);
+            }
         }
 
         Map<Class<?>, List<Attr>> mappings = new LinkedHashMap<>();

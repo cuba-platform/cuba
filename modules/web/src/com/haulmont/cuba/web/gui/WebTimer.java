@@ -157,7 +157,7 @@ public class WebTimer extends WebAbstractComponent<Label> implements com.haulmon
                 return false;
             }
 
-            CubaTimerActionListenerWrapper that = (CubaTimerActionListenerWrapper) obj;
+            CubaTimerStopListenerWrapper that = (CubaTimerStopListenerWrapper) obj;
 
             return this.listener.equals(that.listener);
         }

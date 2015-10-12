@@ -69,9 +69,10 @@ public class ControlLoggerWindow extends AbstractWindow {
 
     public void apply() {
         levels.clear();
-        for (String loggerName : fieldMap.keySet()) {
-            Level logLevel = fieldMap.get(loggerName).getValue();
 
+        for (Map.Entry<String, LookupField> logEntry : fieldMap.entrySet()) {
+            String loggerName = logEntry.getKey();
+            Level logLevel = logEntry.getValue().getValue();
             levels.put(loggerName, logLevel);
         }
         close(COMMIT_ACTION_ID);

@@ -21,7 +21,7 @@ import java.util.*;
  */
 public class ConditionDescriptorsDs extends AbstractTreeDatasource<AbstractConditionDescriptor, UUID> {
 
-    protected String filter;
+    protected String conditionsFilter;
 
     protected boolean filterApplied = false;
 
@@ -40,7 +40,7 @@ public class ConditionDescriptorsDs extends AbstractTreeDatasource<AbstractCondi
      * @param filter filter string
      */
     public void setFilter(String filter) {
-        this.filter = filter;
+        this.conditionsFilter = filter;
         filterApplied = false;
         filteredItemsIds = new ArrayList<>();
         for (UUID rootId : getRootItemIds()) {
@@ -52,6 +52,7 @@ public class ConditionDescriptorsDs extends AbstractTreeDatasource<AbstractCondi
 
     /**
      * Checks whether an item or any of its child passes filter and fills internal collection of filtered items
+     *
      * @return true if item or any of its child passes filter
      */
     protected boolean recursivelyFindSelectedItems(UUID itemId) {
@@ -59,15 +60,18 @@ public class ConditionDescriptorsDs extends AbstractTreeDatasource<AbstractCondi
         for (UUID childId : getChildren(itemId)) {
             passesFilter |= recursivelyFindSelectedItems(childId);
         }
-        if (passesFilter)
+        if (passesFilter) {
             filteredItemsIds.add(itemId);
+        }
         return passesFilter;
     }
 
     protected boolean passesFilter(UUID itemId) {
-        if (Strings.isNullOrEmpty(filter)) return true;
+        if (Strings.isNullOrEmpty(conditionsFilter)) {
+            return true;
+        }
         AbstractConditionDescriptor item = getItem(itemId);
-        return item != null && item.getTreeCaption().toLowerCase().contains(filter.toLowerCase());
+        return item != null && item.getTreeCaption().toLowerCase().contains(conditionsFilter.toLowerCase());
     }
 
     @Override

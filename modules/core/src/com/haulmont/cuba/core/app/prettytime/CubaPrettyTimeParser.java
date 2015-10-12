@@ -49,8 +49,7 @@ public class CubaPrettyTimeParser {
                         throw new IllegalStateException("Resource is not found: " + fileName);
                     }
                     InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8.name());
-                    Properties properties = new Properties(){
-
+                    Properties properties = new Properties() {
                         private Set orderedKeySet = new LinkedHashSet();
 
                         @Override
@@ -76,13 +75,12 @@ public class CubaPrettyTimeParser {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
     }
 
     public Date parse(String input) {
         String formattedValue = " " + input.toLowerCase().replaceAll("\\s+", " ") + " ";
-        for (String key : replacements.keySet()) {
-            formattedValue = formattedValue.replace(" " + key + " ", " " + replacements.get(key) + " ");
+        for (Map.Entry<String, String> entry : replacements.entrySet()) {
+            formattedValue = formattedValue.replace(" " + entry.getKey() + " ", " " + entry.getValue() + " ");
         }
         formattedValue = formattedValue.trim();
         List<Date> dates = new PrettyTimeParser().parse(formattedValue);

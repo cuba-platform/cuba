@@ -39,7 +39,7 @@ public class MssqlSequenceSupport implements SequenceSupport {
 
     @Override
     public String deleteSequenceSql(String sequenceName) {
-        return "drop table " + (sequenceName != null ? sequenceName.toUpperCase() : sequenceName);
+        return "drop table " + (sequenceName != null ? sequenceName.toUpperCase() : null);
     }
 
     @Override

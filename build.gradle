@@ -115,6 +115,8 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
 
         testCompile('org.jmockit:jmockit:1.15')
         testCompile('junit:junit:4.12')
+
+        findbugs 'com.google.code.findbugs:findbugs:3.0.1'
     }
 
     task sourceJar(type: Jar) {

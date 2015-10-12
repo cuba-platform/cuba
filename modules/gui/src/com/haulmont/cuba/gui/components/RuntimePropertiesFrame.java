@@ -179,7 +179,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         int rowsPerColumn;
         int propertiesCount = rds.getPropertiesFilteredByCategory().size();
         if (StringUtils.isNotBlank(cols)) {
-            if (propertiesCount % Integer.valueOf(cols) == 0) {
+            if (propertiesCount % Integer.parseInt(cols) == 0) {
                 rowsPerColumn = propertiesCount / Integer.parseInt(cols);
             } else {
                 rowsPerColumn = propertiesCount / Integer.parseInt(cols) + 1;

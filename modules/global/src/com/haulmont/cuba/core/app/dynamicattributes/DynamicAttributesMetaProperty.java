@@ -26,6 +26,9 @@ import java.lang.reflect.AnnotatedElement;
  * @version $Id$
  */
 public class DynamicAttributesMetaProperty extends MetadataObjectImpl implements MetaProperty {
+
+    private static final long serialVersionUID = 839160118855669248L;
+
     protected final MetaClass metaClass;
     protected final transient Range range;
     protected final Class javaClass;

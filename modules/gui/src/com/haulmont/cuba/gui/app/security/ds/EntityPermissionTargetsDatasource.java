@@ -31,7 +31,7 @@ public class EntityPermissionTargetsDatasource extends CollectionDatasourceImpl<
 
     protected List<OperationPermissionTarget> targets;
 
-    protected Predicate<OperationPermissionTarget> filter;
+    protected Predicate<OperationPermissionTarget> permissionsFilter;
 
     protected CollectionDatasource<Permission, UUID> permissionDs;
 
@@ -70,7 +70,7 @@ public class EntityPermissionTargetsDatasource extends CollectionDatasourceImpl<
         data.clear();
 
         for (OperationPermissionTarget target : targets) {
-            if ((filter == null) || (filter.apply(target)))
+            if ((filter == null) || (permissionsFilter.apply(target)))
                 data.put(target.getId(), target);
         }
     }
@@ -111,11 +111,11 @@ public class EntityPermissionTargetsDatasource extends CollectionDatasourceImpl<
     }
 
     public Predicate<OperationPermissionTarget> getFilter() {
-        return filter;
+        return permissionsFilter;
     }
 
     public void setFilter(Predicate<OperationPermissionTarget> filter) {
-        this.filter = filter;
+        this.permissionsFilter = filter;
     }
 
     public CollectionDatasource<Permission, UUID> getPermissionDs() {

@@ -76,7 +76,7 @@ public class NumberIdWorker implements NumberIdSequence {
             else if (value instanceof BigDecimal)
                 return ((BigDecimal) value).longValue();
             else if (value instanceof String)
-                return Long.valueOf((String) value);
+                return Long.parseLong((String) value);
             else if (value == null)
                 throw new IllegalStateException("No value returned");
             else

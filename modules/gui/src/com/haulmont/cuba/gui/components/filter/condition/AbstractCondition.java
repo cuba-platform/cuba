@@ -115,7 +115,7 @@ public abstract class AbstractCondition extends AbstractNotPersistentEntity {
         required = Boolean.valueOf(element.attributeValue("required"));
         entityParamWhere = element.attributeValue("paramWhere");
         entityParamView = element.attributeValue("paramView");
-        width = Strings.isNullOrEmpty(element.attributeValue("width")) ? 1 : Integer.valueOf(element.attributeValue("width"));
+        width = Strings.isNullOrEmpty(element.attributeValue("width")) ? 1 : Integer.parseInt(element.attributeValue("width"));
         this.datasource = datasource;
 
         resolveParam(element);
