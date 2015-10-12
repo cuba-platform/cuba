@@ -12,6 +12,9 @@ import java.util.Date;
 import java.util.Map;
 
 /**
+ * @author ${USER}
+ * @version $Id$
+ *
  * Sample AWS4 signer demonstrating how to sign 'chunked' uploads
  */
 public class AWS4SignerForChunkedUpload extends AWS4SignerBase {

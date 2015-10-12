@@ -12,6 +12,9 @@ import java.util.Date;
 import java.util.Map;
 
 /**
+ * @author ${USER}
+ * @version $Id$
+ *
  * Sample AWS4 signer demonstrating how to sign requests to Amazon S3 using an
  * 'Authorization' header.
  */

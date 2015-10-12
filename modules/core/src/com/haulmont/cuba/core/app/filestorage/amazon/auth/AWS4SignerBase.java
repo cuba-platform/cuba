@@ -17,6 +17,9 @@ import java.util.*;
 
 
 /**
+ * @author ${USER}
+ * @version $Id$
+ *
  * Common methods and properties for all AWS4 signer variants
  */
 public abstract class AWS4SignerBase {
