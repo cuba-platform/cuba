@@ -241,4 +241,11 @@
         <property name="startDate"/>
         <property name="endDate"/>
     </view>
+
+    <view class="com.haulmont.cuba.core.entity.FileDescriptor" name="browse">
+        <property name="name"/>
+        <property name="extension"/>
+        <property name="size"/>
+        <property name="createDate"/>
+    </view>
 </views>

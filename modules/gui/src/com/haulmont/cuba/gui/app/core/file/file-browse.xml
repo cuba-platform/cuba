@@ -9,10 +9,6 @@
         lookupComponent="filesTable"
         focusComponent="genericFilter">
 
-    <metadataContext>
-        <deployViews name="/com/haulmont/cuba/gui/app/core/file/file.views.xml"/>
-    </metadataContext>
-
     <dsContext>
         <collectionDatasource id="filesDs" class="com.haulmont.cuba.core.entity.FileDescriptor" view="browse">
             <query>
