@@ -47,10 +47,6 @@ public class HsqlLikeNullFailTest {
         cont.deleteRecord("SEC_USER", UUID.fromString("de0f39d2-e60a-11e1-9b55-3860770d7eaf"));
     }
 
-    /**
-     * Illustrates the fact that parameter in "like" condition can not be null on HSQL
-     * <p>https://youtrack.haulmont.com/issue/PL-6034
-     */
     @Test
     public void testLoadListCaseInsensitive() {
         LoadContext<User> loadContext = LoadContext.create(User.class);
@@ -59,12 +55,7 @@ public class HsqlLikeNullFailTest {
                 .setParameter("custom_searchString", null);
 
         DataManager dataManager = AppBeans.get(DataManager.NAME);
-        try {
-            List<User> list = dataManager.loadList(loadContext);
-            assertEquals(0, list.size());
-        } catch (Exception e) {
-            // fails on HSQL
-            assertTrue(e.getMessage().contains("data type cast needed for parameter or null literal"));
-        }
+        List<User> list = dataManager.loadList(loadContext);
+        assertEquals(0, list.size());
     }
 }
