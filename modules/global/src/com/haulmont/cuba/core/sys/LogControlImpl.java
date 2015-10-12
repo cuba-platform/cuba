@@ -8,6 +8,7 @@ package com.haulmont.cuba.core.sys;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.filter.ThresholdFilter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import com.haulmont.cuba.core.global.Configuration;
@@ -18,13 +19,14 @@ import com.haulmont.cuba.core.sys.logging.LogControlException;
 import com.haulmont.cuba.core.sys.logging.LogFileNotFoundException;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -145,26 +147,56 @@ public class LogControlImpl implements LogControl {
 
     @Override
     public List<String> getAppenders() {
-        Set<String> set = new HashSet<>();
+        return new ArrayList<>(getAllAppenders().keySet());
+    }
+
+    protected Map<String, Appender> getAllAppenders() {
+        Map<String, Appender> map = new HashMap<>();
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
         for (Logger logger : context.getLoggerList()) {
             for (Iterator<Appender<ILoggingEvent>> index = logger.iteratorForAppenders(); index.hasNext();) {
                 Appender<ILoggingEvent> appender = index.next();
-                set.add(appender.getName());
+                map.put(appender.getName(), appender);
             }
         }
-        return new ArrayList<>(set);
+        return map;
     }
 
     @Override
     public Level getAppenderThreshold(String appenderName) throws AppenderThresholdNotSupported {
-        // TODO Logback
+        for (Map.Entry<String, Appender> entry : getAllAppenders().entrySet()) {
+            if (entry.getKey().equals(appenderName)) {
+                Appender appender = entry.getValue();
+                for (Object filter : appender.getCopyOfAttachedFiltersList()) {
+                    if (filter instanceof ThresholdFilter) {
+                        try {
+                            Field field = filter.getClass().getDeclaredField("level");
+                            field.setAccessible(true);
+                            return (Level) field.get(filter);
+                        } catch (NoSuchFieldException | IllegalAccessException e) {
+                            log.error("Error getting appender " + appenderName + " level", e);
+                            throw new AppenderThresholdNotSupported(appenderName);
+                        }
+                    }
+                }
+            }
+        }
         throw new AppenderThresholdNotSupported(appenderName);
     }
 
     @Override
     public void setAppenderThreshold(String appenderName, Level threshold) throws AppenderThresholdNotSupported {
-        // TODO Logback
+        for (Map.Entry<String, Appender> entry : getAllAppenders().entrySet()) {
+            if (entry.getKey().equals(appenderName)) {
+                Appender appender = entry.getValue();
+                for (Object filter : appender.getCopyOfAttachedFiltersList()) {
+                    if (filter instanceof ThresholdFilter) {
+                        ((ThresholdFilter) filter).setLevel(threshold.levelStr);
+                        return;
+                    }
+                }
+            }
+        }
         throw new AppenderThresholdNotSupported(appenderName);
     }
 
