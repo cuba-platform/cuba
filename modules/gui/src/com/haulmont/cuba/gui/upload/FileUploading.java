@@ -12,16 +12,16 @@ import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
 import com.haulmont.cuba.core.sys.remoting.LocalFileExchangeService;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
 import org.apache.commons.io.FilenameUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.inject.Inject;
@@ -267,10 +267,10 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
     }
 
     private void uploadLocally(FileDescriptor fileDescr, File file) {
-        try {
+        try (FileInputStream inputStream = new FileInputStream(file)) {
             AppBeans.get(LocalFileExchangeService.NAME, LocalFileExchangeService.class)
-                    .uploadFile(new FileInputStream(file), fileDescr);
-        } catch (FileNotFoundException e) {
+                    .uploadFile(inputStream, fileDescr);
+        } catch (IOException e) {
             throw new RuntimeException("An error occurred while uploading file locally", e);
         }
     }
