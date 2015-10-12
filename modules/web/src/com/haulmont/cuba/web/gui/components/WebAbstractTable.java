@@ -412,17 +412,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
-    public boolean isAllowMultiStringCells() {
-        return component.isMultiLineCells();
-    }
-
-    @Override
-    public void setAllowMultiStringCells(boolean value) {
-        component.setMultiLineCells(value);
-        component.setPageLength(0);
-    }
-
-    @Override
     public boolean isAggregatable() {
         return component.isAggregatable();
     }
@@ -455,16 +444,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     @Override
     public com.vaadin.ui.Component getComposition() {
         return componentComposition;
-    }
-
-    @Override
-    public boolean isAllowPopupMenu() {
-        return component.isContextMenuEnabled();
-    }
-
-    @Override
-    public void setAllowPopupMenu(boolean value) {
-        component.setContextMenuEnabled(value);
     }
 
     @Override

@@ -1058,16 +1058,6 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     }
 
     @Override
-    public boolean isAllowPopupMenu() {
-        return contextMenuEnabled;
-    }
-
-    @Override
-    public void setAllowPopupMenu(boolean allowPopupMenu) {
-        this.contextMenuEnabled = allowPopupMenu;
-    }
-
-    @Override
     public boolean isContextMenuEnabled() {
         return contextMenuEnabled;
     }
@@ -1242,16 +1232,6 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
             topPanel.add(DesktopComponentsHelper.getComposition(rowsCount), BorderLayout.EAST);
             topPanel.setVisible(true);
         }
-    }
-
-    @Override
-    public boolean isAllowMultiStringCells() {
-        return multiLineCells;
-    }
-
-    @Override
-    public void setAllowMultiStringCells(boolean allowMultiStringCells) {
-        this.multiLineCells = allowMultiStringCells;
     }
 
     @Override

@@ -146,12 +146,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                 for (CategoryAttribute attribute : attributesToShow) {
                     final MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(ds.getMetaClass(), attribute);
 
-                    Object columnWithSameId = CollectionUtils.find(availableColumns, new org.apache.commons.collections.Predicate() {
-                        @Override
-                        public boolean evaluate(Object o) {
-                            return ((Table.Column) o).getId().equals(metaPropertyPath);
-                        }
-                    });
+                    Object columnWithSameId = CollectionUtils.find(availableColumns,
+                            o -> ((Table.Column) o).getId().equals(metaPropertyPath));
 
                     if (columnWithSameId != null) {
                         continue;
@@ -169,11 +165,6 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
     }
 
     protected void loadMultiLineCells(Table table, Element element) {
-        String allowMultiStringCells = element.attributeValue("allowMultiStringCells");
-        if (StringUtils.isNotBlank(allowMultiStringCells)) {
-            table.setAllowMultiStringCells(BooleanUtils.toBoolean(allowMultiStringCells));
-        }
-
         String multiLineCells = element.attributeValue("multiLineCells");
         if (StringUtils.isNotBlank(multiLineCells)) {
             table.setMultiLineCells(BooleanUtils.toBoolean(multiLineCells));
@@ -181,11 +172,6 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
     }
 
     protected void loadContextMenuEnabled(Table table, Element element) {
-        String allowPopupMenu = element.attributeValue("allowPopupMenu");
-        if (StringUtils.isNotBlank(allowPopupMenu)) {
-            table.setAllowPopupMenu(BooleanUtils.toBoolean(allowPopupMenu));
-        }
-
         String contextMenuEnabled = element.attributeValue("contextMenuEnabled");
         if (StringUtils.isNotBlank(contextMenuEnabled)) {
             table.setContextMenuEnabled(BooleanUtils.toBoolean(contextMenuEnabled));

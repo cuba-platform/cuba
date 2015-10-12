@@ -138,31 +138,8 @@ public interface Table<E extends Entity>
     RowsCount getRowsCount();
     void setRowsCount(RowsCount rowsCount);
 
-    /**
-     * Use {@link #isMultiLineCells()}
-     */
-    @Deprecated
-    boolean isAllowMultiStringCells();
-    /**
-     * Use {@link #setMultiLineCells(boolean)}
-     */
-    @Deprecated
-    void setAllowMultiStringCells(boolean value);
-
     boolean isMultiLineCells();
     void setMultiLineCells(boolean multiLineCells);
-
-    /**
-     * Use {@link #isContextMenuEnabled()}
-     */
-    @Deprecated
-    boolean isAllowPopupMenu();
-
-    /**
-     * Use {@link #setContextMenuEnabled(boolean)}
-     */
-    @Deprecated
-    void setAllowPopupMenu(boolean value);
 
     boolean isContextMenuEnabled();
     void setContextMenuEnabled(boolean contextMenuEnabled);
