@@ -374,6 +374,7 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
                 // Execute outstanding post init tasks after GUI listener.
                 // We suppose that context.executePostInitTasks() executes a task once and then remove it from task list.
                 if (context != null) {
+                    context.executeInjectTasks();
                     context.executePostInitTasks();
                 }
 

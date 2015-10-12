@@ -173,7 +173,7 @@ public abstract class WindowManager {
 
         loadDescriptorWatch.stop();
 
-        initWrapperFrame(windowWrapper, element, params);
+        initWrapperFrame(windowWrapper, componentLoaderContext, element, params);
 
         componentLoaderContext.setFrame(windowWrapper);
         componentLoaderContext.executePostInitTasks();
@@ -588,6 +588,7 @@ public abstract class WindowManager {
             component.setMessagesPack(parentFrame.getMessagesPack());
         }
 
+        context.executeInjectTasks();
         context.setFrame(component);
         context.executePostInitTasks();
 
@@ -693,7 +694,8 @@ public abstract class WindowManager {
         throw new GuiDevelopmentException("'class' attribute is not defined in XML descriptor", window.getId());
     }
 
-    protected void initWrapperFrame(Window wrappingWindow, Element element, Map<String, Object> params) {
+    protected void initWrapperFrame(Window wrappingWindow, ComponentLoaderContext context, Element element,
+                                    Map<String, Object> params) {
         if (wrappingWindow instanceof AbstractWindow) {
             Element companionsElem = element.element("companions");
             if (companionsElem != null) {
@@ -715,6 +717,8 @@ public abstract class WindowManager {
         dependencyInjector.inject();
 
         injectStopWatch.stop();
+
+        context.executeInjectTasks();
 
         init(wrappingWindow, params);
     }

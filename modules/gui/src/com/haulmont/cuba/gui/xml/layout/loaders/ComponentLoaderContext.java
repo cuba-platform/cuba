@@ -27,6 +27,8 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
     protected transient Binding binding;
 
     protected List<ComponentLoader.PostInitTask> postInitTasks = new ArrayList<>();
+    protected List<ComponentLoader.InjectTask> injectTasks = new ArrayList<>();
+
     protected Map<String, Object> parameters;
 
     protected ComponentLoader.Context parent;
@@ -113,12 +115,34 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
         }
     }
 
+    @Override
+    public void addInjectTask(ComponentLoader.InjectTask task) {
+        injectTasks.add(task);
+    }
+
+    @Override
+    public void executeInjectTasks() {
+        if (!getInjectTasks().isEmpty()) {
+            new InjectTaskExecutor(getInjectTasks().get(0)).run();
+        }
+    }
+
+    public List<ComponentLoader.InjectTask> getInjectTasks() {
+        return injectTasks;
+    }
+
     public List<ComponentLoader.PostInitTask> getPostInitTasks() {
         return postInitTasks;
     }
 
     protected void removeTask(ComponentLoader.PostInitTask task, ComponentLoaderContext context) {
         if (context.getPostInitTasks().remove(task) && context.getParent() != null) {
+            removeTask(task, (ComponentLoaderContext) context.getParent());
+        }
+    }
+
+    protected void removeTask(ComponentLoader.InjectTask task, ComponentLoaderContext context) {
+        if (context.getInjectTasks().remove(task) && context.getParent() != null) {
             removeTask(task, (ComponentLoaderContext) context.getParent());
         }
     }
@@ -137,6 +161,24 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
             task.execute(ComponentLoaderContext.this, frame);
             if (!getPostInitTasks().isEmpty()) {
                 new TaskExecutor(getPostInitTasks().get(0)).run();
+            }
+        }
+    }
+
+    private class InjectTaskExecutor implements Runnable {
+
+        private final ComponentLoader.InjectTask task;
+
+        private InjectTaskExecutor(ComponentLoader.InjectTask task) {
+            this.task = task;
+        }
+
+        @Override
+        public void run() {
+            removeTask(task, ComponentLoaderContext.this);
+            task.execute(ComponentLoaderContext.this, frame);
+            if (!getInjectTasks().isEmpty()) {
+                new InjectTaskExecutor(getInjectTasks().get(0)).run();
             }
         }
     }

@@ -54,7 +54,7 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
 
     protected void initWrapperFrame(Frame wrappingFrame, Element rootFrameElement, Map<String, Object> params,
                                     ComponentLoaderContext parentContext) {
-        parentContext.addPostInitTask(new FrameInjectPostInitTask(wrappingFrame, params));
+        parentContext.addInjectTask(new FrameInjectPostInitTask(wrappingFrame, params));
 
         boolean wrapped = StringUtils.isNotBlank(rootFrameElement.attributeValue("class"));
         parentContext.addPostInitTask(new FrameLoaderPostInitTask(wrappingFrame, params, wrapped));
@@ -174,6 +174,7 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
 
         initWrapperFrame(resultComponent, rootFrameElement, parentContext.getParams(), parentContext);
 
+        parentContext.getInjectTasks().addAll(innerContext.getInjectTasks());
         parentContext.getPostInitTasks().addAll(innerContext.getPostInitTasks());
 
         setContext(parentContext);
@@ -187,7 +188,7 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
         this.frameId = frameId;
     }
 
-    protected class FrameInjectPostInitTask implements PostInitTask {
+    protected class FrameInjectPostInitTask implements InjectTask {
         protected final Frame wrappingFrame;
         protected final Map<String, Object> params;
 
