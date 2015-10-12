@@ -8,13 +8,15 @@ package com.haulmont.cuba.gui.app.core.categories;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 /**
  * @author degtyarjov
  * @version $Id$
  */
 @MetaClass(name = "sys$ScreenAndComponent")
-public class ScreenAndComponent extends AbstractNotPersistentEntity{
+@SystemLevel
+public class ScreenAndComponent extends AbstractNotPersistentEntity {
     @MetaProperty
     protected String screen;
 
