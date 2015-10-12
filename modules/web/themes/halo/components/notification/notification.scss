@@ -10,12 +10,16 @@
     h1 {
       display: block;
       text-align: center;
-      font-size: 24px;
+      font-size: $v-font-size--h1;
     }
 
     p {
       white-space: normal;
-      font-size: 14px;
+      font-size: $v-font-size;
+    }
+
+    .#{$primary-stylename}-caption {
+      font-size: $v-font-size--h1;
     }
   }
 
@@ -25,13 +29,13 @@
     h1 {
       display: block;
       color: #2980B9;
-      font-size: 17px;
+      font-size: $v-font-size--h2;
     }
 
     p {
       display: block;
       color: #2C3E50;
-      font-size: 14px;
+      font-size: $v-font-size;
     }
   }
 
