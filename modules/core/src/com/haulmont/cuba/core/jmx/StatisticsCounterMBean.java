@@ -41,7 +41,7 @@ public interface StatisticsCounterMBean {
 
     int getDbConnectionPoolNumIdle();
 
-    int getDbConnectionPoolMaxActive();
+    int getDbConnectionPoolMaxTotal();
 
     double getAvgDbConnectionPoolNumActive();
 

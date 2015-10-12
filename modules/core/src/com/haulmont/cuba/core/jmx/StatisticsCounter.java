@@ -138,8 +138,8 @@ public class StatisticsCounter implements StatisticsCounterMBean {
     }
 
     @Override
-    public int getDbConnectionPoolMaxActive() {
-        return getDbConnectionPoolMBeanAttr("maxActive");
+    public int getDbConnectionPoolMaxTotal() {
+        return getDbConnectionPoolMBeanAttr("maxTotal");
     }
 
     @Override

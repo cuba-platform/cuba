@@ -8,9 +8,9 @@
     <Resource
       name="jdbc/CubaDS"
       type="javax.sql.DataSource"
-      maxActive="4"
+      maxTotal="4"
       maxIdle="2"
-      maxWait="5000"
+      maxWaitMillis="5000"
       driverClassName="org.hsqldb.jdbcDriver"
       username="sa"
       password=""

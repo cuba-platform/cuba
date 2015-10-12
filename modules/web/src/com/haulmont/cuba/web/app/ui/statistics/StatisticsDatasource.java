@@ -242,7 +242,7 @@ public class StatisticsDatasource extends GroupDatasourceImpl<PerformanceParamet
                 PerformanceParameter param = getParameter("Active Connections");
                 param.setCurrent(((Integer) attr.getValue()).doubleValue());
 
-                attr = findAttribute(coreAppName + ".cuba:type=StatisticsCounter", "DbConnectionPoolMaxActive");
+                attr = findAttribute(coreAppName + ".cuba:type=StatisticsCounter", "DbConnectionPoolMaxTotal");
                 if (attr != null) {
                     String max = integerFormatter.format(((Integer) attr.getValue()).doubleValue());
                     param.setDisplayName(param.getParameterName() + " (Max = " + max + ")");
