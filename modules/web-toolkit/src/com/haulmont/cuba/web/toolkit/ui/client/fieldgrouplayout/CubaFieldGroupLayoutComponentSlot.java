@@ -16,8 +16,6 @@ import com.vaadin.client.VCaption;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.ui.ManagedLayout;
 import com.vaadin.client.ui.VCheckBox;
-import com.vaadin.client.ui.checkbox.CheckBoxConnector;
-import com.vaadin.client.ui.label.LabelConnector;
 import com.vaadin.shared.ui.AlignmentInfo;
 
 /**
@@ -41,10 +39,8 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot implem
     public CubaFieldGroupLayoutComponentSlot(String baseClassName, ComponentConnector child, ManagedLayout layout) {
         super(baseClassName, child, layout);
 
-        if (!(child instanceof CheckBoxConnector || child instanceof LabelConnector)) {
-            // set line-height 25px for all captions exclude captions for CheckBox and Label
-            getWrapperElement().addClassName("cuba-full-height-widget");
-        }
+        // set line-height 25px for all captions exclude captions for CheckBox and Label
+        getWrapperElement().addClassName("cuba-full-height-widget");
     }
 
     protected boolean isCaptionInline() {

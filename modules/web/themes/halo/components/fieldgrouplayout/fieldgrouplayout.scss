@@ -19,7 +19,7 @@
   }
 
   .#{$primary-stylename}-slot > .v-checkbox {
-    vertical-align: middle;
+    top: round($v-unit-size/4);
   }
 
   .#{$primary-stylename}-slot.inline > .v-caption.caption-indicators {
