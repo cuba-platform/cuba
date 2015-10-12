@@ -6,6 +6,7 @@
 package com.haulmont.cuba.core.sys.persistence;
 
 import org.eclipse.persistence.annotations.TransientCompatibleAnnotations;
+import org.eclipse.persistence.expressions.ExpressionOperator;
 
 import javax.persistence.Temporal;
 
@@ -17,5 +18,7 @@ public class EclipseLinkCustomizer {
 
     public static void initTransientCompatibleAnnotations() {
         TransientCompatibleAnnotations.getTransientCompatibleAnnotations().add(Temporal.class.getName());
+
+        ExpressionOperator.addOperator(new CubaIsNullExpressionOperator());
     }
 }

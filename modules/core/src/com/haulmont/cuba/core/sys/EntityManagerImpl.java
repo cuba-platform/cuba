@@ -71,7 +71,7 @@ public class EntityManagerImpl implements EntityManager {
     @Override
     public void setSoftDeletion(boolean softDeletion) {
         this.softDeletion = softDeletion;
-        delegate.setProperty("disableSoftDelete", softDeletion ? 0 : 1);
+        delegate.setProperty("cuba.disableSoftDelete", !softDeletion);
     }
 
     @Override
