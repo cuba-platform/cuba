@@ -15,7 +15,7 @@ import java.net.URLEncoder;
 import java.util.Map;
 
 /**
- * @author ${USER}
+ * @author degtyarjov
  * @version $Id$
  *
  * Various Http helper routines

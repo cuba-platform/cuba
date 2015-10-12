@@ -17,7 +17,7 @@ import java.util.*;
 
 
 /**
- * @author ${USER}
+ * @author degtyarjov
  * @version $Id$
  *
  * Common methods and properties for all AWS4 signer variants

@@ -8,7 +8,7 @@ package com.haulmont.cuba.core.app.filestorage.amazon.util;
 import java.util.Locale;
 
 /**
- * @author ${USER}
+ * @author degtyarjov
  * @version $Id$
  *
  * Utilities for encoding and decoding binary data to and from different forms.

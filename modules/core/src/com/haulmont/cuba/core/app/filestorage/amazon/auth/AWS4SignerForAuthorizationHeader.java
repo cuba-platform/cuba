@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * @author ${USER}
+ * @author degtyarjov
  * @version $Id$
  *
  * Sample AWS4 signer demonstrating how to sign requests to Amazon S3 using an
