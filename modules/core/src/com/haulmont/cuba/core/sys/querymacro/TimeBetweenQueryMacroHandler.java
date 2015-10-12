@@ -32,15 +32,15 @@ public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
     protected static final Pattern PARAM_PATTERN = Pattern.compile("(now)\\s*([\\d\\s+-]*)");
     protected static final Pattern QUERY_PARAM_PATTERN = Pattern.compile(":(\\w+)");
 
-    protected static final Map<String, Object> units =
-            new ImmutableMap.Builder<String, Object>()
-                    .put("year", Calendar.YEAR)
-                    .put("month", Calendar.MONTH)
-                    .put("day", Calendar.DAY_OF_MONTH)
-                    .put("hour", Calendar.HOUR_OF_DAY)
-                    .put("minute", Calendar.MINUTE)
-                    .put("second", Calendar.SECOND)
-                    .build();
+    protected static final Map<String, Object> units = new HashMap<>();
+    static {
+        units.put("year", Calendar.YEAR);
+        units.put("month", Calendar.MONTH);
+        units.put("day", Calendar.DAY_OF_MONTH);
+        units.put("hour", Calendar.HOUR_OF_DAY);
+        units.put("minute", Calendar.MINUTE);
+        units.put("second", Calendar.SECOND);
+    }
 
     protected int count;
     protected Map<String, Object> params = new HashMap<>();
