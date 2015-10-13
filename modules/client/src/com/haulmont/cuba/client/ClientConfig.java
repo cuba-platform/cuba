@@ -267,4 +267,8 @@ public interface ClientConfig extends Config {
     @Property("cuba.manualScreenSettingsSaving")
     @DefaultBoolean(false)
     boolean getManualScreenSettingsSaving();
+
+    @Property("cuba.showIconsForPopupMenuActions")
+    @DefaultBoolean(false)
+    boolean getShowIconsForPopupMenuActions();
 }

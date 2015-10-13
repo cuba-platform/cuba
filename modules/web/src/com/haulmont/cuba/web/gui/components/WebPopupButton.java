@@ -4,6 +4,9 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.web.AppUI;
@@ -167,7 +170,10 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
             }
         };
         button.setAction(new PopupActionWrapper(action));
-        button.setIcon(null); // don't show icons to look the same as Table actions
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+        button.setIcon(clientConfig.getShowIconsForPopupMenuActions() ? action.getIcon() : null);
+
 
         Button vButton = (Button) button.getComposition();
         vButton.setImmediate(true);
