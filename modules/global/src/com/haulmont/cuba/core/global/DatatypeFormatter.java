@@ -7,8 +7,8 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.*;
-
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.math.BigDecimal;
@@ -40,8 +40,7 @@ public class DatatypeFormatter {
      * @return string representation or empty string if the value is null
      */
     public String formatDate(@Nullable Date value) {
-        DateDatatype datatype = (DateDatatype) Datatypes.get(DateDatatype.NAME);
-        return datatype.format(value, uss.getLocale());
+        return Datatypes.get(DateDatatype.NAME).format(value, uss.getLocale());
     }
 
     /**
@@ -49,8 +48,7 @@ public class DatatypeFormatter {
      * @return string representation or empty string if the value is null
      */
     public String formatTime(@Nullable Date value) {
-        TimeDatatype datatype = (TimeDatatype) Datatypes.get(TimeDatatype.NAME);
-        return datatype.format(value, uss.getLocale());
+        return Datatypes.get(TimeDatatype.NAME).format(value, uss.getLocale());
     }
 
     /**
@@ -63,8 +61,7 @@ public class DatatypeFormatter {
         if (tz != null)
             value = timeZones.convert(value, TimeZone.getDefault(), tz);
 
-        DateTimeDatatype datatype = (DateTimeDatatype) Datatypes.get(DateTimeDatatype.NAME);
-        return datatype.format(value, uss.getLocale());
+        return Datatypes.get(DateTimeDatatype.NAME).format(value, uss.getLocale());
     }
 
     /**
@@ -72,8 +69,7 @@ public class DatatypeFormatter {
      * @return string representation or empty string if the value is null
      */
     public String formatDouble(@Nullable Double value) {
-        DoubleDatatype datatype = (DoubleDatatype) Datatypes.get(DoubleDatatype.NAME);
-        return datatype.format(value, uss.getLocale());
+        return Datatypes.get(DoubleDatatype.NAME).format(value, uss.getLocale());
     }
 
     /**
@@ -81,8 +77,7 @@ public class DatatypeFormatter {
      * @return string representation or empty string if the value is null
      */
     public String formatBigDecimal(@Nullable BigDecimal value) {
-        BigDecimalDatatype datatype = (BigDecimalDatatype) Datatypes.get(BigDecimalDatatype.NAME);
-        return datatype.format(value, uss.getLocale());
+        return Datatypes.get(BigDecimalDatatype.NAME).format(value, uss.getLocale());
     }
 
     /**
@@ -90,8 +85,7 @@ public class DatatypeFormatter {
      * @return string representation or empty string if the value is null
      */
     public String formatBoolean(@Nullable Boolean value) {
-        BooleanDatatype datatype = (BooleanDatatype) Datatypes.get(BooleanDatatype.NAME);
-        return datatype.format(value, uss.getLocale());
+        return Datatypes.get(BooleanDatatype.NAME).format(value, uss.getLocale());
     }
 
     /**
@@ -99,8 +93,7 @@ public class DatatypeFormatter {
      * @return string representation or empty string if the value is null
      */
     public String formatInteger(@Nullable Integer value) {
-        IntegerDatatype datatype = (IntegerDatatype) Datatypes.get(IntegerDatatype.NAME);
-        return datatype.format(value, uss.getLocale());
+        return Datatypes.get(IntegerDatatype.NAME).format(value, uss.getLocale());
     }
 
     /**
@@ -108,8 +101,7 @@ public class DatatypeFormatter {
      * @return string representation or empty string if the value is null
      */
     public String formatLong(@Nullable Long value) {
-        LongDatatype datatype = (LongDatatype) Datatypes.get(LongDatatype.NAME);
-        return datatype.format(value, uss.getLocale());
+        return Datatypes.get(LongDatatype.NAME).format(value, uss.getLocale());
     }
 
     /**

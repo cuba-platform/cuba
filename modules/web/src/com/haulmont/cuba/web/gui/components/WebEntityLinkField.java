@@ -85,11 +85,9 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
                 Datatype datatype = Datatypes.getNN(value.getClass());
 
                 if (locale != null) {
-                    //noinspection unchecked
                     return datatype.format(value, locale);
                 }
 
-                //noinspection unchecked
                 return datatype.format(value);
             }
 

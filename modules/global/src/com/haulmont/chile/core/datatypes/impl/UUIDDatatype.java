@@ -36,13 +36,13 @@ public class UUIDDatatype implements Datatype<UUID> {
 
     @Nonnull
     @Override
-    public String format(UUID value) {
+    public String format(Object value) {
         return value == null ? "" : value.toString();
     }
 
     @Override
     @Nonnull
-    public String format(UUID value, Locale locale) {
+    public String format(Object value, Locale locale) {
         return format(value);
     }
 
@@ -62,7 +62,7 @@ public class UUIDDatatype implements Datatype<UUID> {
     }
 
     @Override
-    public void write(PreparedStatement statement, int index, UUID value) throws SQLException {
+    public void write(PreparedStatement statement, int index, Object value) throws SQLException {
         throw new UnsupportedOperationException();
     }
 

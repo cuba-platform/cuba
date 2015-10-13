@@ -99,7 +99,7 @@ public class EntitySnapshot extends BaseUuidEntity {
            name += this.author.getCaption() + " ";
         }
 
-        Datatype<Date> datatype = Datatypes.get(DateTimeDatatype.NAME);
+        Datatype datatype = Datatypes.get(DateTimeDatatype.NAME);
 
         UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
         if (userSessionSource != null && userSessionSource.checkCurrentUserSession()) {

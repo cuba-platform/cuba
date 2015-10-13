@@ -54,7 +54,6 @@ public abstract class AggregatableDelegate<K> {
 
                         UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
                         Locale locale = userSessionSource.getLocale();
-                        //noinspection unchecked
                         formattedValue = Datatypes.getNN(resultClass).format(value, locale);
                     } else {
                         formattedValue = value.toString();
@@ -65,7 +64,6 @@ public abstract class AggregatableDelegate<K> {
 
                         UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
                         Locale locale = userSessionSource.getLocale();
-                        //noinspection unchecked
                         formattedValue = Datatypes.getNN(resultClass).format(value, locale);
                     } else {
                         formattedValue = value.toString();

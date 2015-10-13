@@ -30,13 +30,13 @@ public class BooleanDatatype implements Datatype<Boolean> {
 
     @Nonnull
     @Override
-    public String format(Boolean value) {
-        return value == null ? "" : Boolean.toString(value);
+    public String format(Object value) {
+        return value == null ? "" : Boolean.toString((Boolean) value);
     }
 
     @Nonnull
     @Override
-    public String format(Boolean value, Locale locale) {
+    public String format(Object value, Locale locale) {
         if (value == null) {
             return "";
         }
@@ -46,7 +46,7 @@ public class BooleanDatatype implements Datatype<Boolean> {
             return format(value);
         }
 
-        return value ? formatStrings.getTrueString() : formatStrings.getFalseString();
+        return (boolean) value ? formatStrings.getTrueString() : formatStrings.getFalseString();
     }
 
     @Override
@@ -104,11 +104,11 @@ public class BooleanDatatype implements Datatype<Boolean> {
     }
 
     @Override
-    public void write(PreparedStatement statement, int index, Boolean value) throws SQLException {
+    public void write(PreparedStatement statement, int index, Object value) throws SQLException {
         if (value == null) {
             statement.setString(index, null);
         } else {
-            statement.setBoolean(index, value);
+            statement.setBoolean(index, (Boolean) value);
         }
     }
 

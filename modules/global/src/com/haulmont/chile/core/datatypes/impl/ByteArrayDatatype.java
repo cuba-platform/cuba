@@ -37,16 +37,16 @@ public class ByteArrayDatatype implements Datatype<byte[]> {
 
     @Nonnull
     @Override
-    public String format(byte[] value) {
+    public String format(Object value) {
         if (value == null)
             return "";
 
-        return new String(Base64.encodeBase64(value), StandardCharsets.UTF_8);
+        return new String(Base64.encodeBase64((byte[]) value), StandardCharsets.UTF_8);
     }
 
     @Nonnull
     @Override
-    public String format(byte[] value, Locale locale) {
+    public String format(Object value, Locale locale) {
         if (value == null)
             return "";
 
@@ -73,11 +73,11 @@ public class ByteArrayDatatype implements Datatype<byte[]> {
     }
 
     @Override
-    public void write(PreparedStatement statement, int index, byte[] value) throws SQLException {
+    public void write(PreparedStatement statement, int index, Object value) throws SQLException {
         if (value == null) {
             statement.setNull(index, getSqlType());
         } else {
-            statement.setBytes(index, value);
+            statement.setBytes(index, (byte[]) value);
         }
     }
 

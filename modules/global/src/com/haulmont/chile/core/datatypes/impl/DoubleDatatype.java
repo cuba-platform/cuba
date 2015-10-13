@@ -34,13 +34,13 @@ public class DoubleDatatype extends NumberDatatype implements Datatype<Double> {
 
     @Nonnull
     @Override
-    public String format(Double value) {
+    public String format(Object value) {
         return value == null ? "" : createFormat().format(value);
     }
 
     @Nonnull
     @Override
-    public String format(Double value, Locale locale) {
+    public String format(Object value, Locale locale) {
         if (value == null) {
             return "";
         }
@@ -102,11 +102,11 @@ public class DoubleDatatype extends NumberDatatype implements Datatype<Double> {
     }
 
     @Override
-    public void write(PreparedStatement statement, int index, Double value) throws SQLException {
+    public void write(PreparedStatement statement, int index, Object value) throws SQLException {
         if (value == null) {
             statement.setString(index, null);
         } else {
-            statement.setDouble(index, value);
+            statement.setDouble(index, (Double) value);
         }
     }
 

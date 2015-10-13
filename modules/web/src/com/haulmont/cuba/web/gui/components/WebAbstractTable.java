@@ -1632,8 +1632,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                     Datatype datatype = Datatypes.get(value.getClass());
                     if (datatype != null) {
                         UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
-
-                        //noinspection unchecked
                         cellText = datatype.format(value, sessionSource.getLocale());
                     } else {
                         cellText = value.toString();

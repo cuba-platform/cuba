@@ -34,13 +34,13 @@ public class LongDatatype extends NumberDatatype implements Datatype<Long> {
 
     @Nonnull
     @Override
-    public String format(Long value) {
+    public String format(Object value) {
         return value == null ? "" : createFormat().format(value);
     }
 
     @Nonnull
     @Override
-    public String format(Long value, Locale locale) {
+    public String format(Object value, Locale locale) {
         if (value == null) {
             return "";
         }
@@ -124,11 +124,11 @@ public class LongDatatype extends NumberDatatype implements Datatype<Long> {
     }
 
     @Override
-    public void write(PreparedStatement statement, int index, Long value) throws SQLException {
+    public void write(PreparedStatement statement, int index, Object value) throws SQLException {
         if (value == null) {
             statement.setString(index, null);
         } else {
-            statement.setLong(index, value);
+            statement.setLong(index, (Long) value);
         }
     }
 

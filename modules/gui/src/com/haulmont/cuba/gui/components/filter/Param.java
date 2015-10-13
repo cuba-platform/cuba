@@ -311,7 +311,7 @@ public class Param {
             case DATATYPE:
                 return FilterConditionUtils.formatParamValue(this, v);
             case UNARY:
-                Datatype<Object> datatype = Datatypes.getNN(javaClass);
+                Datatype datatype = Datatypes.getNN(javaClass);
                 return datatype.format(v, userSessionSource.getLocale());
 
             default:

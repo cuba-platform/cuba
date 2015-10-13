@@ -249,10 +249,7 @@ public class InListParamEditor extends AbstractWindow {
     protected String addDate(Date date) {
         UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
         Locale locale = sessionSource.getUserSession().getLocale();
-        Datatype datatype = Datatypes.get(itemClass);
-
-        String str = datatype.format(date, locale);
-
+        String str = Datatypes.getNN(itemClass).format(date, locale);
         values.put(date, str);
         return str;
     }

@@ -85,7 +85,6 @@ public class MetadataTools {
                     return datatypeFormatter.formatDateTime((Date) value);
                 }
             }
-            //noinspection unchecked
             return datatype.format(value, userSessionSource.getLocale());
         } else if (range.isEnum()) {
             return messages.getMessage((Enum) value);

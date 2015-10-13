@@ -359,9 +359,7 @@ public class EntityLog implements EntityLogAPI {
         else if (value instanceof Instance) {
             return ((Instance) value).getInstanceName();
         } else if (value instanceof Date) {
-            Datatype datatype = Datatypes.getNN(value.getClass());
-            //noinspection unchecked
-            return datatype.format(value);
+            return Datatypes.getNN(value.getClass()).format(value);
         } else if (value instanceof Iterable) {
             StringBuilder sb = new StringBuilder();
             sb.append("[");

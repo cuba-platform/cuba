@@ -36,13 +36,13 @@ public class IntegerDatatype extends NumberDatatype implements Datatype<Integer>
 
     @Nonnull
     @Override
-    public String format(Integer value) {
+    public String format(Object value) {
         return value == null ? "" : createFormat().format(value);
     }
 
     @Nonnull
     @Override
-    public String format(Integer value, Locale locale) {
+    public String format(Object value, Locale locale) {
         if (value == null)
             return "";
 
@@ -126,11 +126,11 @@ public class IntegerDatatype extends NumberDatatype implements Datatype<Integer>
     }
 
     @Override
-    public void write(PreparedStatement statement, int index, Integer value) throws SQLException {
+    public void write(PreparedStatement statement, int index, Object value) throws SQLException {
         if (value == null) {
             statement.setString(index, null);
         } else {
-            statement.setInt(index, value);
+            statement.setInt(index, (Integer) value);
         }
     }
 

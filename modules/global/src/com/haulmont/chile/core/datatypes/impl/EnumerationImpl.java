@@ -42,7 +42,7 @@ public class EnumerationImpl<T extends Enum> implements Enumeration<T> {
 
     @Nonnull
     @Override
-    public String format(T value) {
+    public String format(Object value) {
         if (value == null) return "";
 
         final Object v = ((EnumClass) value).getId();
@@ -51,7 +51,7 @@ public class EnumerationImpl<T extends Enum> implements Enumeration<T> {
 
     @Nonnull
     @Override
-    public String format(T value, Locale locale) {
+    public String format(Object value, Locale locale) {
         return format(value);
     }
 
@@ -79,7 +79,7 @@ public class EnumerationImpl<T extends Enum> implements Enumeration<T> {
     }
 
     @Override
-    public void write(PreparedStatement statement, int index, T value) throws SQLException {
+    public void write(PreparedStatement statement, int index, Object value) throws SQLException {
         throw new UnsupportedOperationException();
     }
 

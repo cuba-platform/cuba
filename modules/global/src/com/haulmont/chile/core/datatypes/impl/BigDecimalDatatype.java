@@ -46,13 +46,13 @@ public class BigDecimalDatatype extends NumberDatatype implements Datatype<BigDe
 
     @Nonnull
     @Override
-    public String format(BigDecimal value) {
+    public String format(Object value) {
         return value == null ? "" : createFormat().format(value);
     }
 
     @Nonnull
     @Override
-    public String format(BigDecimal value, Locale locale) {
+    public String format(Object value, Locale locale) {
         if (value == null) {
             return "";
         }
@@ -115,11 +115,11 @@ public class BigDecimalDatatype extends NumberDatatype implements Datatype<BigDe
     }
 
     @Override
-    public void write(PreparedStatement statement, int index, BigDecimal value) throws SQLException {
+    public void write(PreparedStatement statement, int index, Object value) throws SQLException {
         if (value == null) {
             statement.setString(index, null);
         } else {
-            statement.setBigDecimal(index, value);
+            statement.setBigDecimal(index, (BigDecimal) value);
         }
     }
 

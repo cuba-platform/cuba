@@ -25,13 +25,13 @@ public class StringDatatype implements Datatype<String> {
 
     @Nonnull
     @Override
-	public String format(String value) {
-		return value == null ? "" : value;
+	public String format(Object value) {
+		return value == null ? "" : (String) value;
 	}
 
     @Nonnull
     @Override
-    public String format(String value, Locale locale) {
+    public String format(Object value, Locale locale) {
         return format(value);
     }
 
@@ -66,11 +66,11 @@ public class StringDatatype implements Datatype<String> {
 	}
 
     @Override
-	public void write(PreparedStatement statement, int index, String value) throws SQLException {
+	public void write(PreparedStatement statement, int index, Object value) throws SQLException {
 		if (value == null) {
 			statement.setString(index, null);
 		} else {
-			statement.setString(index, value);
+			statement.setString(index, (String) value);
 		}
 	}
 

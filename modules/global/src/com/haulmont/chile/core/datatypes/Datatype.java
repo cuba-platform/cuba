@@ -29,11 +29,11 @@ public interface Datatype<T> {
 
     /** Converts value to String. Returns an empty string for null value.  */
     @Nonnull
-    String format(@Nullable T value);
+    String format(@Nullable Object value);
 
     /** Converts value to String taking into account local formats. Returns an empty string for null value. */
     @Nonnull
-    String format(@Nullable T value, Locale locale);
+    String format(@Nullable Object value, Locale locale);
 
     /** Parses value from String */
     @Nullable
@@ -48,7 +48,7 @@ public interface Datatype<T> {
     T read(ResultSet resultSet, int index) throws SQLException;
 
     /** Write value to the JDBC Statement*/
-    void write(PreparedStatement statement, int index, @Nullable T value) throws SQLException;
+    void write(PreparedStatement statement, int index, @Nullable Object value) throws SQLException;
 
     /** Corresponding SQL type */
     int getSqlType();

@@ -111,7 +111,6 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
             Datatype datatype = getActualDatatype();
 
             if (datatype != null && stringDatatype != datatype) {
-                //noinspection unchecked
                 formattedValue = datatype.format(value, locale);
             } else {
                 MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);

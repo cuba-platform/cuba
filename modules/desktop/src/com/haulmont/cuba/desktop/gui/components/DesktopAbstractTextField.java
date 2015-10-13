@@ -283,7 +283,6 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
                 // used for properly parsing BigDecimal values
                 Object datatypeValue = datatype.parse(rawValue, locale);
 
-                //noinspection unchecked
                 String formattedValue;
                 if (valueFormatter.getFormatter() == null) {
                     formattedValue = datatype.format(datatypeValue, locale);

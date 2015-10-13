@@ -483,7 +483,7 @@ public class XMLConvertor implements Convertor {
                     if (value == null) {
                         encodeNull(child);
                     } else {
-                        String str = property.getRange().<Object>asDatatype().format(value);
+                        String str = property.getRange().asDatatype().format(value);
                         encodeBasic(child, str, property.getJavaType());
                     }
                     break;

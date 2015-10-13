@@ -41,7 +41,7 @@ public class DateDatatype implements Datatype<Date> {
 
     @Nonnull
     @Override
-    public String format(Date value) {
+    public String format(Object value) {
         if (value == null) {
             return "";
         }
@@ -57,7 +57,7 @@ public class DateDatatype implements Datatype<Date> {
 
     @Nonnull
     @Override
-    public String format(Date value, Locale locale) {
+    public String format(Object value, Locale locale) {
         if (value == null) {
             return "";
         }
@@ -136,11 +136,11 @@ public class DateDatatype implements Datatype<Date> {
     }
 
     @Override
-    public void write(PreparedStatement statement, int index, Date value) throws SQLException {
+    public void write(PreparedStatement statement, int index, Object value) throws SQLException {
         if (value == null) {
             statement.setString(index, null);
         } else {
-            statement.setDate(index, new java.sql.Date(value.getTime()));
+            statement.setDate(index, new java.sql.Date(((Date) value).getTime()));
         }
     }
 
