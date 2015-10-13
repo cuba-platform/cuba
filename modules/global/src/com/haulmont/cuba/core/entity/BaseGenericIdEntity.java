@@ -183,7 +183,7 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getValue(String property) {
+    public <V> V getValue(String property) {
         if (DynamicAttributesUtils.isDynamicAttribute(property)) {
             if (PersistenceHelper.isNew(this) && dynamicAttributes == null) {
                     dynamicAttributes = new HashMap<>();
@@ -192,7 +192,7 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
             Preconditions.checkState(dynamicAttributes != null, "Dynamic attributes should be loaded explicitly");
             CategoryAttributeValue categoryAttributeValue = dynamicAttributes.get(DynamicAttributesUtils.decodeAttributeCode(property));
             if (categoryAttributeValue != null) {
-                return (T) categoryAttributeValue.getValue();
+                return (V) categoryAttributeValue.getValue();
             } else {
                 return null;
             }
@@ -208,5 +208,21 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
     @Nullable
     public Map<String, CategoryAttributeValue> getDynamicAttributes() {
         return dynamicAttributes;
+    }
+
+    @Override
+    public String toString() {
+        String state = "";
+        if (__new)
+            state += "new,";
+        if (__managed)
+            state += "managed,";
+        if (__detached)
+            state += "detached,";
+        if (__removed)
+            state += "removed,";
+        if (state.length() > 0)
+            state = state.substring(0, state.length() - 1);
+        return super.toString() + " [" + state + "]";
     }
 }

@@ -81,6 +81,7 @@ public abstract class AbstractInstance implements Instance {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getValue(String s) {
         return (T) getMethodsCache().invokeGetter(this, s);
