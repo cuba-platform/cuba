@@ -86,4 +86,13 @@ public class CubaWindowWidget extends VWindow {
             }
         }
     }
+
+    @Override
+    public void setCaption(String c, String iconURL, boolean asHtml) {
+        if (c == null) {
+            c = "&nbsp";
+            asHtml = true;
+        }
+        super.setCaption(c, iconURL, asHtml);
+    }
 }
