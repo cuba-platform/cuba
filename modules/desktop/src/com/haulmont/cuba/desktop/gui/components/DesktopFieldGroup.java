@@ -116,6 +116,11 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         return fieldComponents.get(fieldConfig);
     }
 
+    @Override
+    public List<Component> getOwnComponents() {
+        return new ArrayList<>(fieldComponents.values());
+    }
+
     private void fillColumnFields(int col, FieldConfig field) {
         List<FieldConfig> fields = columnFields.get(col);
         if (fields == null) {

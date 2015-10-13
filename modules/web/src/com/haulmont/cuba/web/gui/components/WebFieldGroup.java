@@ -130,6 +130,11 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup>
     }
 
     @Override
+    public List<Component> getOwnComponents() {
+        return new ArrayList<>(fieldComponents.values());
+    }
+
+    @Override
     public void addField(FieldConfig field) {
         fields.put(field.getId(), field);
         fieldsColumn.put(field, 0);
