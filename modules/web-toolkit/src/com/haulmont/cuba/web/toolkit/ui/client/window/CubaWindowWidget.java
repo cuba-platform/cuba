@@ -89,10 +89,47 @@ public class CubaWindowWidget extends VWindow {
 
     @Override
     public void setCaption(String c, String iconURL, boolean asHtml) {
-        if (c == null) {
+        if (isBlank(c)) {
             c = "&nbsp";
             asHtml = true;
         }
         super.setCaption(c, iconURL, asHtml);
+    }
+
+    protected boolean isBlank(String str) {
+        int strLen;
+        if (str == null || (strLen = str.length()) == 0) {
+            return true;
+        }
+        for (int i = 0; i < strLen; i++) {
+            if (!isWhitespace(str.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    protected boolean isWhitespace(int ch) {
+        char[] whitespaces = {
+                ' ',        // space
+                '\u00A0',   // a non-breaking space
+                '\u2007',   // a non-breaking space
+                '\u202F',   // a non-breaking space
+                '\t',       // U+0009 HORIZONTAL TABULATION
+                '\n',       // U+000A LINE FEED
+                '\u000B',   // U+000B VERTICAL TABULATION
+                '\f',       // U+000C FORM FEED
+                '\r',       // U+000D CARRIAGE RETURN
+                '\u001C',   // U+001C FILE SEPARATOR
+                '\u001D',   // U+001D GROUP SEPARATOR
+                '\u001E',   // U+001E RECORD SEPARATOR
+                '\u001F',   // U+001F UNIT SEPARATOR
+        };
+        for (int i = 0; i < whitespaces.length; i++) {
+            if (ch == whitespaces[i]) {
+                return true;
+            }
+        }
+        return false;
     }
 }
