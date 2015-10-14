@@ -37,6 +37,7 @@ public class JQueryFileUploadOverlay {
         var upload = $wnd.jQuery(fileInput);
 
         upload.fileupload({
+            dropZone: upload,
             dataType: 'json',
             autoUpload : false,
             sequentialUploads: true
@@ -125,13 +126,5 @@ public class JQueryFileUploadOverlay {
 
     protected void fileUploadStart(String fileName) {
         // change file name in upload window
-    }
-
-    protected native void destroy(Element fileInput) /*-{
-        $wnd.jQuery(fileInput).fileupload('destroy');
-    }-*/;
-
-    public void destroy() {
-        destroy(fileInput);
     }
 }

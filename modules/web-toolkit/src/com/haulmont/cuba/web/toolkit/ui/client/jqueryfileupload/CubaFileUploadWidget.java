@@ -209,20 +209,11 @@ public class CubaFileUploadWidget extends FlowPanel {
         return submitButton;
     }
 
-    @Override
-    protected void onUnload() {
-        super.onUnload();
-
-        fileUpload.destroy();
-    }
-
     public interface FilePermissionsHandler {
-
         void fileSizeLimitExceeded(String filename);
     }
 
     public interface QueueUploadListener {
-
         void uploadFinished();
     }
 }
