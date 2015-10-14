@@ -38,7 +38,7 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
             @Override
             public void actionPerformedAfterValidation(ActionEvent e) {
                 if (action != null) {
-                    if (shouldBeFocused && !impl.isFocusOwner()) {
+                    if (shouldBeFocused && !impl.isFocusOwner() && impl.isFocusable()) {
                         return;
                     }
 
