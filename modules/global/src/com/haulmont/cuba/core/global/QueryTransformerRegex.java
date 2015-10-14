@@ -347,7 +347,7 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         String alias = null;
         while (entityMatcher.find()) {
             String matchedAlias = entityMatcher.group(EP_ALIAS);
-            if (matchedAlias.equalsIgnoreCase(firstAlias)) {
+            if (matchedAlias != null && matchedAlias.equalsIgnoreCase(firstAlias)) {
                 alias = matchedAlias;
                 break;
             }

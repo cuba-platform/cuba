@@ -376,4 +376,12 @@ public class QueryTransformerRegexTest extends TestCase {
                 "SELECT    distinct  h.level from sec$Constraint u, sec$GroupHierarchy h join h.parent.constraints c where h.userGroup = :par",
                 res);
     }
+
+    public void testNpeInReplaceOrderBy() {
+        QueryTransformerRegex transformer = new QueryTransformerRegex(
+                "select drB from taxi$DriverBan drB where drB.driver.id = :ds_driverDs order by drB.from");
+        String[] properties = new String[]{"driver.name", "driver.callsignName"};
+
+        transformer.replaceOrderBy(true, properties);
+    }
 }
