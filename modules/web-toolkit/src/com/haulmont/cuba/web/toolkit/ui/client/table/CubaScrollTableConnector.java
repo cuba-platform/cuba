@@ -201,10 +201,12 @@ public class CubaScrollTableConnector extends TableConnector {
                     return;
                 }
 
-                if (Element.as(event.getNativeEvent().getEventTarget())
-                        .getClassName().contains("v-table-caption-container")) {
-                    DomEvent.fireNativeEvent(event.getNativeEvent(),
-                            getWidget());
+                Element element = Element.as(event.getNativeEvent().getEventTarget());
+                if ("div".equalsIgnoreCase(element.getTagName())) {
+                    String className = element.getClassName();
+                    if (className != null && className.contains("v-table-caption-container")) {
+                        DomEvent.fireNativeEvent(event.getNativeEvent(), getWidget());
+                    }
                 }
             }
         });
