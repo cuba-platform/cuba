@@ -70,8 +70,9 @@ public class EntityPermissionTargetsDatasource extends CollectionDatasourceImpl<
         data.clear();
 
         for (OperationPermissionTarget target : targets) {
-            if ((filter == null) || (permissionsFilter.apply(target)))
+            if ((permissionsFilter == null) || (permissionsFilter.apply(target))) {
                 data.put(target.getId(), target);
+            }
         }
     }
 

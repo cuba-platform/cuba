@@ -30,7 +30,7 @@ public class MultiplePermissionTargetsDatasource extends CollectionDatasourceImp
 
     private List<MultiplePermissionTarget> targets;
 
-    private Predicate<MultiplePermissionTarget> filter;
+    private Predicate<MultiplePermissionTarget> permissionsFilter;
 
     private CollectionDatasource<Permission, UUID> permissionDs;
 
@@ -63,8 +63,9 @@ public class MultiplePermissionTargetsDatasource extends CollectionDatasourceImp
         clear();
 
         for (MultiplePermissionTarget target : targets) {
-            if ((filter == null) || (filter.apply(target)))
+            if ((permissionsFilter == null) || (permissionsFilter.apply(target))) {
                 data.put(target.getId(), target);
+            }
         }
     }
 
@@ -96,11 +97,11 @@ public class MultiplePermissionTargetsDatasource extends CollectionDatasourceImp
     }
 
     public Predicate<MultiplePermissionTarget> getFilter() {
-        return filter;
+        return permissionsFilter;
     }
 
     public void setFilter(Predicate<MultiplePermissionTarget> filter) {
-        this.filter = filter;
+        this.permissionsFilter = filter;
     }
 
     public CollectionDatasource<Permission, UUID> getPermissionDs() {
