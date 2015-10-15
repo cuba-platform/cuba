@@ -10,6 +10,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
+import org.eclipse.persistence.platform.database.SQLServerPlatform;
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -28,6 +29,8 @@ public class UuidConverter implements Converter {
     public Object convertObjectValueToDataValue(Object objectValue, Session session) {
         if (session.getPlatform() instanceof PostgreSQLPlatform) {
             return objectValue;
+        } else if (session.getPlatform() instanceof SQLServerPlatform) {
+            return objectValue != null ? objectValue.toString().toUpperCase() : null; // for correct binding of batch query results
         } else if (session.getPlatform() instanceof OraclePlatform) {
             return objectValue != null ? objectValue.toString().replace("-", "") : null;
         } else {
