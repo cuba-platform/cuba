@@ -6,7 +6,7 @@
 package com.haulmont.cuba.core.sys.persistence;
 
 import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.platform.database.OraclePlatform;
+import org.eclipse.persistence.platform.database.oracle.Oracle10Platform;
 
 import java.util.UUID;
 
@@ -14,7 +14,7 @@ import java.util.UUID;
  * @author Konstantin Krivopustov
  * @version $Id$
  */
-public class CubaOraclePlatform extends OraclePlatform {
+public class CubaOraclePlatform extends Oracle10Platform {
 
     @Override
     public Object convertObject(Object sourceObject, Class javaClass) throws ConversionException {
