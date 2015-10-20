@@ -10,9 +10,6 @@
     <screen id="settings"
             template="/com/haulmont/cuba/web/app/ui/core/settings/settings-window.xml"/>
 
-    <screen id="feedback"
-            template="/com/haulmont/cuba/web/app/ui/core/feedback/feedback-window.xml"/>
-
     <screen id="logWindow"
             class="com.haulmont.cuba.web.log.LogWindowLauncher"/>
 

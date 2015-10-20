@@ -31,7 +31,6 @@
         <item id="printDomain"/>
         <separator/>
         <item id="settings"/>
-        <item id="feedback"/>
         <item id="logWindow"/>
         <separator/>
         <item id="sec$ScreenHistory.browse"/>

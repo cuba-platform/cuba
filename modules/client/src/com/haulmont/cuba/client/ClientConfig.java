@@ -172,7 +172,7 @@ public interface ClientConfig extends Config {
     String getGenericFilterControlsLayout();
 
     /**
-     * Support e-mail. Exception reports and feedback emails are sent to this address.
+     * Support e-mail. Exception report emails are sent to this address.
      */
     @Property("cuba.supportEmail")
     String getSupportEmail();
