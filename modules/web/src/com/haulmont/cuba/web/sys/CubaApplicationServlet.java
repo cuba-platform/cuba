@@ -6,6 +6,7 @@ package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
@@ -55,9 +56,9 @@ public class CubaApplicationServlet extends VaadinServlet {
     protected volatile ClassLoader classLoader;
 
     /*
-        The field is used to prevent double initialization of the servlet.
-        Double initialization might occur during single WAR deployment when we call the method from initializer.
-     */
+       The field is used to prevent double initialization of the servlet.
+       Double initialization might occur during single WAR deployment when we call the method from initializer.
+    */
     protected volatile boolean initialized = false;
 
     @Override
@@ -78,6 +79,11 @@ public class CubaApplicationServlet extends VaadinServlet {
             webConfig = configuration.getConfig(WebConfig.class);
             statisticsCounter = AppBeans.get(WebStatisticsAccumulator.class);
             resources = AppBeans.get(Resources.class);
+
+            if (configuration.getConfig(GlobalConfig.class).getTestMode()) {
+                System.setProperty(getPackageName() + "." + "disable-xsrf-protection",
+                        "true");
+            }
 
             super.init(servletConfig);
             initialized = true;
@@ -249,5 +255,18 @@ public class CubaApplicationServlet extends VaadinServlet {
         }
 
         return pathInfo.startsWith(prefix);
+    }
+
+    protected String getPackageName() {
+        String pkgName;
+        final Package pkg = this.getClass().getPackage();
+        if (pkg != null) {
+            pkgName = pkg.getName();
+        } else {
+            final String className = this.getClass().getName();
+            pkgName = new String(className.toCharArray(), 0,
+                    className.lastIndexOf('.'));
+        }
+        return pkgName;
     }
 }

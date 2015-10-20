@@ -7,6 +7,7 @@ package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
@@ -17,6 +18,7 @@ import com.haulmont.cuba.web.auth.RequestContext;
 import com.haulmont.cuba.web.toolkit.ui.CubaFileUpload;
 import com.vaadin.server.*;
 import com.vaadin.server.communication.*;
+import com.vaadin.ui.Component;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
@@ -47,12 +49,15 @@ public class CubaVaadinServletService extends VaadinServletService {
 
     protected final String webResourceTimestamp;
 
+    protected boolean testMode;
+
     public CubaVaadinServletService(VaadinServlet servlet, DeploymentConfiguration deploymentConfiguration)
             throws ServiceException {
         super(servlet, deploymentConfiguration);
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
         webConfig = configuration.getConfig(WebConfig.class);
+        testMode = configuration.getConfig(GlobalConfig.class).getTestMode();
 
         ServletContext sc = servlet.getServletContext();
         String resourcesTimestamp = sc.getInitParameter("webResourcesTs");
@@ -288,6 +293,25 @@ public class CubaVaadinServletService extends VaadinServletService {
         public boolean synchronizedHandleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response)
                 throws IOException {
             return withUserSession(session, () -> super.synchronizedHandleRequest(session, request, response));
+        }
+    }
+
+    @Override
+    protected VaadinSession createVaadinSession(VaadinRequest request) throws ServiceException {
+        if (testMode) {
+            return new VaadinSession(this) {
+                @Override
+                public String createConnectorId(ClientConnector connector) {
+                    if (connector instanceof Component) {
+                        Component component = (Component) connector;
+                        return component.getId() == null ? super
+                                .createConnectorId(connector) : component.getId();
+                    }
+                    return super.createConnectorId(connector);
+                }
+            };
+        } else {
+            return super.createVaadinSession(request);
         }
     }
 }
