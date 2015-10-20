@@ -24,9 +24,6 @@ public class ViewProperty implements Serializable {
 
     private FetchMode fetchMode = FetchMode.AUTO;
 
-    @Deprecated
-    private boolean lazy = false;
-
     public ViewProperty(String name, @Nullable View view) {
         this(name, view, FetchMode.AUTO);
     }
