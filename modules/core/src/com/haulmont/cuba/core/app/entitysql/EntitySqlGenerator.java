@@ -19,8 +19,8 @@ import com.haulmont.cuba.core.global.Metadata;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
-
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -204,15 +204,16 @@ public class EntitySqlGenerator {
             }
         }
 
-        table.collectMetadata(javaClass);
         if (ancestor != null) {
             collectTableMetadata(ancestor, table);
         }
+        table.collectMetadata(javaClass);
     }
 
     protected class Table {
         protected Table parent;
         protected String name;
+        protected String idColumn;
         protected String discriminatorColumn;
         protected DiscriminatorType discriminatorType;
         protected Map<String, String> fieldToColumnMapping = new LinkedHashMap<>();
@@ -281,8 +282,11 @@ public class EntitySqlGenerator {
             if (clazz == null) return;
             PrimaryKeyJoinColumn primaryKey = (PrimaryKeyJoinColumn) clazz.getAnnotation(PrimaryKeyJoinColumn.class);
             if (primaryKey != null) {
-                fieldToColumnMapping.put(ID, primaryKey.name());
+                idColumn = primaryKey.name();
+            } else {
+                idColumn = resolveIdColumn();
             }
+            fieldToColumnMapping.put(ID, idColumn);
 
             if (discriminatorValue == null) {
                 DiscriminatorValue discriminatorValueAnnotation = (DiscriminatorValue) clazz.getAnnotation(DiscriminatorValue.class);
@@ -300,10 +304,19 @@ public class EntitySqlGenerator {
             fieldToColumnMapping.putAll(collectFields(clazz));
         }
 
+        private String resolveIdColumn() {
+            if (idColumn != null) {
+                return idColumn;
+            } else if (parent != null) {
+                return parent.resolveIdColumn();
+            }
+
+            return ID.toUpperCase();
+        }
+
         private Map<String, String> collectFields(Class clazz) {
             Map<String, String> result = new LinkedHashMap<>();
             for (Field field : clazz.getDeclaredFields()) {
-
                 Embedded embedded = field.getAnnotation(Embedded.class);
                 AttributeOverrides overrides = field.getAnnotation(AttributeOverrides.class);
                 Column columnAnnotation = field.getAnnotation(Column.class);
