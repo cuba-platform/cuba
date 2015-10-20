@@ -37,8 +37,10 @@ public interface ConfigStorageMBean {
 
     @ManagedOperation(description = "Invoke a getter method of configuration interface and print the result")
     @ManagedOperationParameters({
-            @ManagedOperationParameter(name = "className", description = "Fully qualified name of a configuration interface"),
-            @ManagedOperationParameter(name = "value", description = "Getter method name")
+            @ManagedOperationParameter(name = "classFQN", description = "Fully qualified name of a configuration interface"),
+            @ManagedOperationParameter(name = "methodName", description = "Getter method name"),
+            @ManagedOperationParameter(name = "userLogin", description = "User login that will be used for creating a user session. " +
+                    "You can leave this field blank when using JMX console from CUBA application.")
     })
-    String getConfigValue(String classFQN, String methodName);
+    String getConfigValue(String classFQN, String methodName, String userLogin);
 }

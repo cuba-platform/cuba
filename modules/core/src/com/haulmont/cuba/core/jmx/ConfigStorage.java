@@ -127,6 +127,6 @@ public class ConfigStorage implements ConfigStorageMBean {
     @Override
     @Authenticated
     public String getConfigValue(String classFQN, String methodName) {
-        return configStorageCommon.getConfigValue(classFQN, methodName);
+        return configStorageCommon.getConfigValue(classFQN, methodName, null, null);
     }
 }

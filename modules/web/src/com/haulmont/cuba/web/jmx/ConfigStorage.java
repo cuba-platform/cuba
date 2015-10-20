@@ -6,9 +6,7 @@
 package com.haulmont.cuba.web.jmx;
 
 import com.haulmont.cuba.core.config.ConfigStorageCommon;
-import com.haulmont.cuba.core.sys.AppContext;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.text.StrBuilder;
+import com.haulmont.cuba.web.auth.WebAuthConfig;
 
 import org.springframework.stereotype.Component;
 
@@ -26,6 +24,9 @@ public class ConfigStorage implements ConfigStorageMBean {
 
     @Inject
     protected ConfigStorageCommon configStorageCommon;
+
+    @Inject
+    protected WebAuthConfig webAuthConfig;
 
     @Override
     public String printAppProperties() {
@@ -48,8 +49,9 @@ public class ConfigStorage implements ConfigStorageMBean {
     }
 
     @Override
-    public String getConfigValue(String classFQN, String methodName) {
-        return configStorageCommon.getConfigValue(classFQN, methodName);
+    public String getConfigValue(String classFQN, String methodName, String userLogin) {
+        String trustedPassword = webAuthConfig.getTrustedClientPassword();
+        return configStorageCommon.getConfigValue(classFQN, methodName, userLogin, trustedPassword);
     }
 
 }
