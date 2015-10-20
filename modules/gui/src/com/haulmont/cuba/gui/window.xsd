@@ -94,6 +94,20 @@
         </xs:union>
     </xs:simpleType>
 
+    <xs:simpleType name="resourceString">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="msg://"/>
+                    <xs:enumeration value="mainMsg://"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
     <xs:simpleType name="orientation">
         <xs:restriction base="xs:string">
             <xs:enumeration value="horizontal"/>
@@ -324,8 +338,8 @@
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasCaption">
-        <xs:attribute name="caption" type="xs:string" default="msg://"/>
-        <xs:attribute name="description" type="xs:string" default="msg://"/>
+        <xs:attribute name="caption" type="resourceString"/>
+        <xs:attribute name="description" type="resourceString"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="requiresCaption">
@@ -333,12 +347,12 @@
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasCaptionProp">
-        <xs:attribute name="caption" type="xs:string" default="msg://"/>
+        <xs:attribute name="caption" type="resourceString"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasRequirements">
         <xs:attribute name="required" type="xs:boolean"/>
-        <xs:attribute name="requiredMessage" type="xs:string" default="msg://"/>
+        <xs:attribute name="requiredMessage" type="resourceString"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasDatatype">
@@ -533,7 +547,7 @@
         <xs:attributeGroup ref="hasCaption"/>
 
         <xs:attributeGroup ref="hasDatasource"/>
-        <xs:attribute name="value" type="xs:string" default="msg://"/>
+        <xs:attribute name="value" type="resourceString"/>
 
         <xs:attribute name="htmlEnabled" type="xs:boolean"/>
     </xs:complexType>
@@ -1138,7 +1152,7 @@
             </xs:element>
             <xs:element name="button" minOccurs="0" maxOccurs="1">
                 <xs:complexType>
-                    <xs:attribute name="caption" type="xs:string" default="msg://"/>
+                    <xs:attribute name="caption" type="resourceString"/>
 
                     <xs:attributeGroup ref="hasIcon"/>
                 </xs:complexType>
@@ -1409,8 +1423,8 @@
                 <xs:complexType>
                     <xs:attribute name="name" type="xs:string" use="required"/>
                     <xs:attribute name="screen" type="xs:string"/>
-                    <xs:attribute name="caption" type="xs:string" default="msg://"/>
-                    <xs:attribute name="filterCaption" type="xs:string" default="msg://"/>
+                    <xs:attribute name="caption" type="resourceString"/>
+                    <xs:attribute name="filterCaption" type="resourceString"/>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
@@ -1747,7 +1761,7 @@
 
             <xs:attribute name="datasource" type="xs:string"/>
             <xs:attribute name="dataSupplier" type="xs:string"/>
-            <xs:attribute name="caption" type="xs:string" default="msg://"/>
+            <xs:attribute name="caption" type="resourceString"/>
             <xs:attribute name="focusComponent" type="xs:string"/>
         </xs:complexType>
     </xs:element>
