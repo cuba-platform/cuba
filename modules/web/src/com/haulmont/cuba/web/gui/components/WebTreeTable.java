@@ -122,9 +122,7 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
     @Override
     public boolean isExpanded(Object itemId) {
         if (component.containsId(itemId)) {
-            if (ObjectUtils.equals(id, itemId)) {
-                return !component.isCollapsed(id);
-            }
+            return !component.isCollapsed(itemId);
         }
         return false;
     }
