@@ -13,6 +13,7 @@ import java.util.Set;
  * @version $Id$
  */
 public interface QueryTransformer {
+    String NAME = "cuba_QueryTransformer";
 
     /** Main entity alias placeholder  */
     String ALIAS_PLACEHOLDER = "{E}";

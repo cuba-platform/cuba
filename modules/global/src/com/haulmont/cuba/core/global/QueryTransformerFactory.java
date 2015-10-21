@@ -6,8 +6,6 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.DomainModelBuilder;
-import com.haulmont.cuba.core.sys.jpql.transform.QueryTransformerAstBased;
-import org.antlr.runtime.RecognitionException;
 
 /**
  * Factory to get {@link QueryParser} and {@link QueryTransformer} instances.
@@ -24,17 +22,13 @@ public class QueryTransformerFactory {
 
     public static QueryTransformer createTransformer(String query) {
         if (useAst) {
-            try {
-                if (domainModel == null) {
-                    MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
-                    MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-                    DomainModelBuilder builder = new DomainModelBuilder(metadataTools, messageTools);
-                    domainModel = builder.produce();
-                }
-                return new QueryTransformerAstBased(domainModel, query);
-            } catch (RecognitionException e) {
-                throw new RuntimeException(e);
+            if (domainModel == null) {
+                MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+                MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+                DomainModelBuilder builder = new DomainModelBuilder(metadataTools, messageTools);
+                domainModel = builder.produce();
             }
+            return AppBeans.getPrototype(QueryTransformer.NAME, domainModel, query);
         } else {
             return new QueryTransformerRegex(query);
         }

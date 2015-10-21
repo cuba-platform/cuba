@@ -74,6 +74,8 @@
 
     <bean id="mbeanInterceptor" class="com.haulmont.cuba.core.sys.MBeanInterceptor"/>
 
+    <bean id="performanceLogInterceptor" class="com.haulmont.cuba.core.sys.PerformanceLogInterceptor"/>
+
     <aop:config proxy-target-class="false">
         <aop:aspect id="serviceAspect" ref="serviceInterceptor" order="1">
             <aop:around method="aroundInvoke" pointcut="@within(org.springframework.stereotype.Service)"/>
@@ -87,6 +89,14 @@
         <aop:aspect id="authenticationAspect" ref="authenticationInterceptor" order="2">
             <aop:around method="aroundInvoke"
                         pointcut="execution(@com.haulmont.cuba.security.app.Authenticated * *(..))"/>
+        </aop:aspect>
+
+        <aop:aspect id="performanceLogTypeAspect" ref="performanceLogInterceptor" order="3">
+            <aop:around method="aroundInvoke" pointcut="@within(com.haulmont.cuba.core.sys.PerformanceLog)"/>
+        </aop:aspect>
+
+        <aop:aspect id="performanceLogMethodAspect" ref="performanceLogInterceptor" order="4">
+            <aop:around method="aroundInvoke" pointcut="execution(@com.haulmont.cuba.core.sys.PerformanceLog * *(..))"/>
         </aop:aspect>
     </aop:config>
 

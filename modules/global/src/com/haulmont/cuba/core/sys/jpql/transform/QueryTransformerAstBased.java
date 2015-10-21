@@ -6,6 +6,7 @@
 package com.haulmont.cuba.core.sys.jpql.transform;
 
 import com.haulmont.cuba.core.global.QueryTransformer;
+import com.haulmont.cuba.core.sys.PerformanceLog;
 import com.haulmont.cuba.core.sys.jpql.*;
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
@@ -15,6 +16,9 @@ import org.antlr.runtime.tree.CommonErrorNode;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.TreeVisitor;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -25,6 +29,9 @@ import java.util.Set;
  * @author Chevelev
  * @version $Id$
  */
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+@Component(QueryTransformer.NAME)
+@PerformanceLog
 public class QueryTransformerAstBased implements QueryTransformer {
     private DomainModel model;
     private String query;

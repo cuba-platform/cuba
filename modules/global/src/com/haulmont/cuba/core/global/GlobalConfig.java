@@ -128,7 +128,7 @@ public interface GlobalConfig extends Config {
      * @return true or false
      */
     @Property("cuba.useAstBasedJpqlTransformer")
-    @DefaultBoolean(false)
+    @DefaultBoolean(true)
     boolean getUseAstBasedJpqlTransformer();
 
     /**
