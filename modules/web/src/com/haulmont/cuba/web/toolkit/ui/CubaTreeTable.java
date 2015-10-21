@@ -744,4 +744,18 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
             getState().columnDescriptions = columnDescriptionsByKey;
         }
     }
+
+    @Override
+    public void setHeight(float height, Unit unit) {
+        super.setHeight(height, unit);
+
+        if (height < 0) {
+            if (getCacheRate() != 2) {
+                setCacheRate(2);
+            }
+            if (getPageLength() != 15) {
+                setPageLength(15);
+            }
+        }
+    }
 }

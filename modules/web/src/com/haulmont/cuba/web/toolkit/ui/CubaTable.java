@@ -654,4 +654,18 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
             getState().columnDescriptions = columnDescriptionsByKey;
         }
     }
+
+    @Override
+    public void setHeight(float height, Unit unit) {
+        super.setHeight(height, unit);
+
+        if (height < 0) {
+            if (getCacheRate() != 2) {
+                setCacheRate(2);
+            }
+            if (getPageLength() != 15) {
+                setPageLength(15);
+            }
+        }
+    }
 }

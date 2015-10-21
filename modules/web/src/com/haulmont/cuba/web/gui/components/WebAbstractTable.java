@@ -47,6 +47,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Resource;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
@@ -2416,6 +2417,17 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                     component.setHeight("100%");
                 }
             }
+        }
+    }
+
+    @Override
+    public void setHeight(String height) {
+        super.setHeight(height);
+
+        if (getHeight() < 0) {
+            component.setHeightUndefined();
+        } else {
+            component.setHeight(100, Unit.PERCENTAGE);
         }
     }
 }
