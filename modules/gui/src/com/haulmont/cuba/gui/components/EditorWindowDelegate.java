@@ -154,7 +154,7 @@ public class EditorWindowDelegate extends WindowDelegate {
             item = newItem;
         }
 
-        if (PersistenceHelper.isNew(item) && ds.getLoadDynamicAttributes() && item instanceof BaseGenericIdEntity) {
+        if (ds.getLoadDynamicAttributes() && item instanceof BaseGenericIdEntity) {
             DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.NAME);
             dynamicAttributesGuiTools.initDefaultAttributeValues((BaseGenericIdEntity) item);
         }
