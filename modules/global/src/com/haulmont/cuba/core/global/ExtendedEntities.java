@@ -91,6 +91,15 @@ public class ExtendedEntities {
     }
 
     /**
+     * Searches for an extended entity and returns it if found, otherwise returns the original entity.
+     * @param entityName    original entity
+     * @return              extended or original entity
+     */
+    public MetaClass getEffectiveMetaClass(String entityName) {
+        return getEffectiveMetaClass(metadata.getSession().getClassNN(entityName));
+    }
+
+    /**
      * Searches for an extended entity and returns it if found.
      * @param originalMetaClass original entity
      * @return                  extended entity or null if the provided entity has no extension

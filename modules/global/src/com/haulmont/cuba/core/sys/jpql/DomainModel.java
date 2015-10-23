@@ -5,6 +5,8 @@
 
 package com.haulmont.cuba.core.sys.jpql;
 
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 
 import java.util.ArrayList;
@@ -15,7 +17,13 @@ import java.util.List;
  * @version $Id$
  */
 public class DomainModel {
-    private List<Entity> entities = new ArrayList<>();
+    protected List<Entity> entities = new ArrayList<>();
+    protected ExtendedEntities extendedEntities;
+
+    public DomainModel(ExtendedEntities extendedEntities, Entity... initialEntities) {
+        this(initialEntities);
+        this.extendedEntities = extendedEntities;
+    }
 
     public DomainModel(Entity... initialEntities) {
         for (Entity initialEntity : initialEntities) {
@@ -42,6 +50,11 @@ public class DomainModel {
     }
 
     public Entity getEntityByName(String requiredEntityName) throws UnknownEntityNameException {
+        if (extendedEntities != null) {
+            MetaClass effectiveMetaClass = extendedEntities.getEffectiveMetaClass(requiredEntityName);
+            requiredEntityName = effectiveMetaClass.getName();
+        }
+
         for (Entity entity : entities) {
             String name = entity.getName();
             if (name.equals(requiredEntityName)) {

@@ -8,10 +8,13 @@ package com.haulmont.cuba.core.sys.jpql;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.ExtendedEntities;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 /**
@@ -19,19 +22,20 @@ import java.util.Collection;
  * @version $Id$
  */
 public class DomainModelBuilder {
+    protected MetadataTools metadataTools;
+    protected MessageTools messageTools;
+    protected ExtendedEntities extendedEntities;
 
-
-    private MetadataTools metadataTools;
-    private MessageTools messageTools;
-
-    public DomainModelBuilder(MetadataTools metadataTools, MessageTools messageTools) {
+    public DomainModelBuilder(MetadataTools metadataTools, MessageTools messageTools, @Nullable ExtendedEntities extendedEntities) {
         this.metadataTools = metadataTools;
         this.messageTools = messageTools;
+        this.extendedEntities = extendedEntities;
     }
 
     public DomainModel produce() {
         Collection<MetaClass> classes = metadataTools.getAllPersistentMetaClasses();
-        DomainModel result = new DomainModel();
+        DomainModel result = new DomainModel(extendedEntities);
+
         EntityBuilder builder = new EntityBuilder();
         for (MetaClass aClass : classes) {
             builder.startNewEntity(aClass.getName());

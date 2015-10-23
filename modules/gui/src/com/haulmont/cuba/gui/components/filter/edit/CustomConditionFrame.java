@@ -459,7 +459,9 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
 
         MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
         MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-        DomainModelBuilder builder = new DomainModelBuilder(metadataTools, messageTools);
+        ExtendedEntities extendedEntities = AppBeans.get(ExtendedEntities.NAME);
+
+        DomainModelBuilder builder = new DomainModelBuilder(metadataTools, messageTools, extendedEntities);
         DomainModel domainModel = builder.produce();
 
         return JpqlSuggestionFactory.requestHint(query, queryPosition, sender.getAutoCompleteSupport(), senderCursorPosition, new ExtHintProvider(domainModel));
@@ -467,17 +469,20 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
 
     public void getJoinClauseHelp() {
         getDialogParams().setModal(false).setWidth(600);
-        showMessageDialog(messages.getMainMessage("filter.customConditionFrame.join"), messages.getMainMessage("filter.customConditionFrame.joinClauseHelp"), MessageType.CONFIRMATION_HTML);
+        showMessageDialog(messages.getMainMessage("filter.customConditionFrame.join"),
+                messages.getMainMessage("filter.customConditionFrame.joinClauseHelp"), MessageType.CONFIRMATION_HTML);
     }
 
     public void getWhereClauseHelp() {
         getDialogParams().setModal(false).setWidth(600);
-        showMessageDialog(messages.getMainMessage("filter.customConditionFrame.where"), messages.getMainMessage("filter.customConditionFrame.whereClauseHelp"), MessageType.CONFIRMATION_HTML);
+        showMessageDialog(messages.getMainMessage("filter.customConditionFrame.where"),
+                messages.getMainMessage("filter.customConditionFrame.whereClauseHelp"), MessageType.CONFIRMATION_HTML);
     }
 
     public void getParamWhereClauseHelp() {
         getDialogParams().setModal(false).setWidth(600);
-        showMessageDialog(messages.getMainMessage("filter.customConditionFrame.entityParamWhere"), messages.getMainMessage("filter.customConditionFrame.paramWhereClauseHelp"), MessageType.CONFIRMATION_HTML);
+        showMessageDialog(messages.getMainMessage("filter.customConditionFrame.entityParamWhere"),
+                messages.getMainMessage("filter.customConditionFrame.paramWhereClauseHelp"), MessageType.CONFIRMATION_HTML);
     }
 
 

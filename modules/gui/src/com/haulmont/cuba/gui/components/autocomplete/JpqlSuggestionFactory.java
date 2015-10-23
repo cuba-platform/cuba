@@ -45,7 +45,9 @@ public class JpqlSuggestionFactory {
                                                int senderCursorPosition, @Nullable HintProvider provider) {
         MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
         MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-        DomainModelBuilder builder = new DomainModelBuilder(metadataTools, messageTools);
+        ExtendedEntities extendedEntities = AppBeans.get(ExtendedEntities.NAME);
+
+        DomainModelBuilder builder = new DomainModelBuilder(metadataTools, messageTools, extendedEntities);
         DomainModel domainModel = builder.produce();
         if (provider == null) {
             provider = new HintProvider(domainModel);
