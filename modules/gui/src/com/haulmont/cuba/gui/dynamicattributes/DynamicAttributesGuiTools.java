@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.gui.dynamicattributes;
 
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
@@ -69,7 +68,7 @@ public class DynamicAttributesGuiTools {
         return categoryAttributes;
     }
 
-    public void initDefaultAttributeValues(BaseGenericIdEntity item) {
+    public void initDefaultAttributeValues(BaseGenericIdEntity item, Datasource ds) {
         Collection<CategoryAttribute> attributes =
                 dynamicAttributes.getAttributesForMetaClass(item.getMetaClass());
         if (item.getDynamicAttributes() == null) {
@@ -97,11 +96,11 @@ public class DynamicAttributesGuiTools {
         }
 
         if (item instanceof Categorized) {
-            item.addPropertyChangeListener(new Instance.PropertyChangeListener() {
+            ds.addItemPropertyChangeListener(new Datasource.ItemPropertyChangeListener() {
                 @Override
-                public void propertyChanged(Instance.PropertyChangeEvent e) {
+                public void itemPropertyChanged(Datasource.ItemPropertyChangeEvent e) {
                     if ("category".equals(e.getProperty())) {
-                        initDefaultAttributeValues((BaseGenericIdEntity) e.getItem());
+                        initDefaultAttributeValues((BaseGenericIdEntity) e.getItem(), ds);
                     }
                 }
             });
