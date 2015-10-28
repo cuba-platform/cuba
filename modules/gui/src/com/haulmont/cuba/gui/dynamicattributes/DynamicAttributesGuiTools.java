@@ -97,7 +97,7 @@ public class DynamicAttributesGuiTools {
     }
 
     @SuppressWarnings("unchecked")
-    public void addCategoryChangeListener(Datasource ds) {
+    public void listenCategoryChanges(Datasource ds) {
         ds.addItemPropertyChangeListener(new Datasource.ItemPropertyChangeListener() {
             @Override
             public void itemPropertyChanged(Datasource.ItemPropertyChangeEvent e) {
