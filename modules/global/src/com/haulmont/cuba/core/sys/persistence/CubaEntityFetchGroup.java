@@ -41,6 +41,8 @@ public class CubaEntityFetchGroup extends EntityFetchGroup {
         if (attributeName == null && entity._persistence_getSession() != null) { // occurs on merge
             return super.onUnfetchedAttribute(entity, null);
         }
-        throw new IllegalEntityStateException(ExceptionLocalization.buildMessage("cannot_get_unfetched_attribute", new Object[]{entity, attributeName}));
+
+        String entityDescriptor = entity.getClass().getName() + "-" + ((BaseGenericIdEntity) entity).getId();
+        throw new IllegalEntityStateException(ExceptionLocalization.buildMessage("cannot_get_unfetched_attribute", new Object[]{entityDescriptor, attributeName}));
     }
 }
