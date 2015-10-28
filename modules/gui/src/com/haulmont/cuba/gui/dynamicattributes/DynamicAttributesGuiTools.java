@@ -68,7 +68,7 @@ public class DynamicAttributesGuiTools {
         return categoryAttributes;
     }
 
-    public void initDefaultAttributeValues(BaseGenericIdEntity item, Datasource ds) {
+    public void initDefaultAttributeValues(BaseGenericIdEntity item) {
         Collection<CategoryAttribute> attributes =
                 dynamicAttributes.getAttributesForMetaClass(item.getMetaClass());
         if (item.getDynamicAttributes() == null) {
@@ -94,17 +94,18 @@ public class DynamicAttributesGuiTools {
                 item.setValue(code, currentTimestamp);
             }
         }
+    }
 
-        if (item instanceof Categorized) {
-            ds.addItemPropertyChangeListener(new Datasource.ItemPropertyChangeListener() {
-                @Override
-                public void itemPropertyChanged(Datasource.ItemPropertyChangeEvent e) {
-                    if ("category".equals(e.getProperty())) {
-                        initDefaultAttributeValues((BaseGenericIdEntity) e.getItem(), ds);
-                    }
+    @SuppressWarnings("unchecked")
+    public void addCategoryChangeListener(Datasource ds) {
+        ds.addItemPropertyChangeListener(new Datasource.ItemPropertyChangeListener() {
+            @Override
+            public void itemPropertyChanged(Datasource.ItemPropertyChangeEvent e) {
+                if ("category".equals(e.getProperty())) {
+                    initDefaultAttributeValues((BaseGenericIdEntity) e.getItem());
                 }
-            });
-        }
+            }
+        });
     }
 
     protected boolean attributeShouldBeShownOnTheScreen(String screen, String component, CategoryAttribute attribute) {
