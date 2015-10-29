@@ -295,7 +295,9 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
     public void setNullOption(Object nullOption) {
         this.nullOption = nullOption;
         autoComplete.setFirstItem(new NullOption());
-        setValue(null);
+        if (getValue() == null) {
+            setValue(null);
+        }
         optionsInitialized = false;
     }
 
