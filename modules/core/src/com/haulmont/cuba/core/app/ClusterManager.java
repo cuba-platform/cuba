@@ -10,13 +10,13 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.Deserializer;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.SerializationUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.jgroups.*;
 import org.jgroups.conf.XmlConfigurator;
 import org.jgroups.jmx.JmxConfigurator;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.management.MBeanServer;
@@ -55,6 +55,9 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
 
     @Inject
     protected GlobalConfig globalConfig;
+
+    @Inject
+    protected ClusterConfig clusterConfig;
 
     protected static final String STATE_MAGIC = "CUBA_STATE";
 
@@ -125,7 +128,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
             channel.setDiscardOwnMessages(true); // do not receive a copy of our own messages
             channel.setReceiver(new ClusterReceiver());
             channel.connect(getClusterName());
-            channel.getState(null, 5000);
+            channel.getState(null, clusterConfig.getStateReceiveTimeout());
             registerJmxBeans();
         } catch (Exception e) {
             channel = null;
