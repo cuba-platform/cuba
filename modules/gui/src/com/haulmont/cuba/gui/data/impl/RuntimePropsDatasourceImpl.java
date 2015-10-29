@@ -343,6 +343,15 @@ public class RuntimePropsDatasourceImpl
             if (entity instanceof CategoryAttributeValue) {
                 CategoryAttributeValue attributeValue = (CategoryAttributeValue) entity;
                 item.updateAttributeValue(attributeValue);
+                Entity mainItem = mainDs.getItem();
+                if (mainItem instanceof BaseGenericIdEntity) {
+                    BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) mainItem;
+                    if (baseGenericIdEntity.getDynamicAttributes() == null) {
+                        baseGenericIdEntity.setDynamicAttributes(new HashMap<>());
+                    }
+
+                    baseGenericIdEntity.getDynamicAttributes().put(attributeValue.getCode(), attributeValue);
+                }
             }
         }
         modified = false;
