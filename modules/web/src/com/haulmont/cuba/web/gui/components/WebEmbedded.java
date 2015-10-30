@@ -79,7 +79,7 @@ public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> im
                         if (!root.endsWith(File.separator)) {
                             root += File.separator;
                         }
-                        file = new File(root + file.getName());
+                        file = new File(root + file.getPath());
                     }
                 }
 
