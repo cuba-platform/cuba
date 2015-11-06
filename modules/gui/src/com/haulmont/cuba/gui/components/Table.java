@@ -144,8 +144,13 @@ public interface Table<E extends Entity>
     boolean isContextMenuEnabled();
     void setContextMenuEnabled(boolean contextMenuEnabled);
 
-    int getRowHeaderWidth();
+    /**
+     * Set width of row header column. Row header shows icons if {@link IconProvider} is specified.
+     *
+     * @param width width of row header column in px
+     */
     void setRowHeaderWidth(int width);
+    int getRowHeaderWidth();
 
     /**
      * Repaint UI representation of the table (columns, generated columns) without refreshing the table data
@@ -231,6 +236,8 @@ public interface Table<E extends Entity>
 
     /**
      * Set the row icon provider for the table.
+     *
+     * @see #setRowHeaderWidth(int)
      */
     void setIconProvider(IconProvider iconProvider);
 
