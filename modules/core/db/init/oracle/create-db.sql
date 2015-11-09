@@ -254,7 +254,7 @@ create table SYS_SCHEDULED_TASK (
     START_DATE timestamp,
     TIME_FRAME integer,
     START_DELAY integer,
-    PERMITTED_SERVERS varchar2(4096),
+    PERMITTED_SERVERS varchar2(4000),
     LOG_START char(1),
     LOG_FINISH char(1),
     LAST_START_TIME timestamp,
