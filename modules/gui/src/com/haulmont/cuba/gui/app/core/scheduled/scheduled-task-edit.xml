@@ -113,8 +113,8 @@
                     <row>
                         <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.permittedServers"
                                align="MIDDLE_LEFT"/>
-                        <textField id="permittedServersField" datasource="taskDs" property="permittedServers"
-                                   width="${fieldWidth}"/>
+                        <textArea id="permittedServersField" datasource="taskDs" property="permittedServers"
+                                   width="${fieldWidth}" rows="3"/>
                     </row>
                     <row>
                         <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.logStart"
