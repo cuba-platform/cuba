@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.TimeSource;
+import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;
 import javax.persistence.Column;
@@ -151,48 +152,52 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
     }
 
     @Override
-    public void setValue(String property, Object obj, boolean checkEquals) {
+    public void setValue(String property, Object newValue, boolean checkEquals) {
         if (DynamicAttributesUtils.isDynamicAttribute(property)) {
             Preconditions.checkState(dynamicAttributes != null, "Dynamic attributes should be loaded explicitly");
             String attributeCode = DynamicAttributesUtils.decodeAttributeCode(property);
             CategoryAttributeValue categoryAttributeValue = dynamicAttributes.get(attributeCode);
-            if (categoryAttributeValue != null) {
-                if (obj != null) {
-                    categoryAttributeValue.setValue(obj);
-                    categoryAttributeValue.setDeleteTs(null);
-                } else {
+            Object oldValue = categoryAttributeValue != null ? categoryAttributeValue.getValue() : null;
+
+            if (newValue == null) {
+                if (categoryAttributeValue != null) {
                     categoryAttributeValue.setValue(null);
                     categoryAttributeValue.setDeleteTs(AppBeans.get(TimeSource.class).currentTimestamp());
+                    propertyChanged(property, oldValue, null);
                 }
-            } else if (obj != null) {
-                categoryAttributeValue = new CategoryAttributeValue();
-                categoryAttributeValue.setValue(obj);
-                categoryAttributeValue.setEntityId(getUuid());
-                categoryAttributeValue.setCode(attributeCode);
-                DynamicAttributes dynamicAttributesBean = AppBeans.get(DynamicAttributes.NAME);
-                categoryAttributeValue.setCategoryAttribute(
-                        dynamicAttributesBean.getAttributeForMetaClass(getMetaClass(), attributeCode));
-                dynamicAttributes.put(attributeCode, categoryAttributeValue);
+            } else if (!ObjectUtils.equals(oldValue, newValue)) {
+                if (categoryAttributeValue != null) {
+                    categoryAttributeValue.setValue(newValue);
+                    categoryAttributeValue.setDeleteTs(null);
+                } else {
+                    categoryAttributeValue = new CategoryAttributeValue();
+                    categoryAttributeValue.setValue(newValue);
+                    categoryAttributeValue.setEntityId(getUuid());
+                    categoryAttributeValue.setCode(attributeCode);
+                    DynamicAttributes dynamicAttributesBean = AppBeans.get(DynamicAttributes.NAME);
+                    categoryAttributeValue.setCategoryAttribute(
+                            dynamicAttributesBean.getAttributeForMetaClass(getMetaClass(), attributeCode));
+                    dynamicAttributes.put(attributeCode, categoryAttributeValue);
+                }
+                propertyChanged(property, null, newValue);
             }
-
-            propertyChanged(property, null, obj);
         } else {
-            super.setValue(property, obj, checkEquals);
+            super.setValue(property, newValue, checkEquals);
         }
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <V> V getValue(String property) {
+    public <T> T getValue(String property) {
         if (DynamicAttributesUtils.isDynamicAttribute(property)) {
             if (PersistenceHelper.isNew(this) && dynamicAttributes == null) {
-                    dynamicAttributes = new HashMap<>();
+                dynamicAttributes = new HashMap<>();
             }
 
             Preconditions.checkState(dynamicAttributes != null, "Dynamic attributes should be loaded explicitly");
             CategoryAttributeValue categoryAttributeValue = dynamicAttributes.get(DynamicAttributesUtils.decodeAttributeCode(property));
             if (categoryAttributeValue != null) {
-                return (V) categoryAttributeValue.getValue();
+                return (T) categoryAttributeValue.getValue();
             } else {
                 return null;
             }
@@ -208,21 +213,5 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
     @Nullable
     public Map<String, CategoryAttributeValue> getDynamicAttributes() {
         return dynamicAttributes;
-    }
-
-    @Override
-    public String toString() {
-        String state = "";
-        if (__new)
-            state += "new,";
-        if (__managed)
-            state += "managed,";
-        if (__detached)
-            state += "detached,";
-        if (__removed)
-            state += "removed,";
-        if (state.length() > 0)
-            state = state.substring(0, state.length() - 1);
-        return super.toString() + " [" + state + "]";
     }
 }

@@ -5,49 +5,34 @@
 package com.haulmont.cuba.gui.data;
 
 import com.haulmont.chile.core.common.ValueListener;
-import com.haulmont.chile.core.common.compatibility.InstancePropertyChangeListenerWrapper;
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
-import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.BaseEntity;
-import com.haulmont.cuba.core.entity.CategoryAttribute;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.CategoryAttributeValue;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.UuidProvider;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 
-import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.Date;
+import java.util.Map;
+import java.util.UUID;
 
 /**
- * The entity, that contains a set of dynamic attributes.
+ * Specific entity, delegating all calls to internal BaseGenericIdEntity.
+ *
+ * Obsolete. Will be removed in future releases.
  *
  * @author devyatkin
  * @version $Id$
  */
 public class DynamicAttributesEntity implements BaseEntity {
-
     private static final long serialVersionUID = -8091230910619941201L;
-
-    protected MetaClass metaClass;
+    protected BaseGenericIdEntity mainItem;
     protected UUID id;
-    protected Map<String, Object> changed = new HashMap<>();
 
-    protected Collection<WeakReference<PropertyChangeListener>> __valueListeners;
-
-    protected Map<String, CategoryAttributeValue> categoryValues = new HashMap<>();
-    protected Map<String, Object> values = new HashMap<>();
-
-    public DynamicAttributesEntity(MetaClass metaClass) {
-        this.metaClass = metaClass;
+    public DynamicAttributesEntity(BaseGenericIdEntity mainItem) {
+        this.mainItem = mainItem;
         this.id = UuidProvider.createUuid();
-    }
-
-    public void addAttributeValue(CategoryAttribute attribute, CategoryAttributeValue categoryAttributeValue, Object value) {
-        String attributeCode = DynamicAttributesUtils.encodeAttributeCode(attribute.getCode());
-        categoryValues.put(attributeCode, categoryAttributeValue);
-        values.put(attributeCode, value);
     }
 
     @Override
@@ -80,7 +65,7 @@ public class DynamicAttributesEntity implements BaseEntity {
 
     @Override
     public MetaClass getMetaClass() {
-        return metaClass;
+        return mainItem.getMetaClass();
     }
 
     @Override
@@ -90,142 +75,54 @@ public class DynamicAttributesEntity implements BaseEntity {
 
     @Override
     public void addListener(com.haulmont.chile.core.common.ValueListener listener) {
-        addPropertyChangeListener(new InstancePropertyChangeListenerWrapper(listener));
+        mainItem.addListener(listener);
     }
 
     @Override
     public void removeListener(ValueListener listener) {
-        removePropertyChangeListener(new InstancePropertyChangeListenerWrapper(listener));
+        mainItem.removeListener(listener);
     }
 
     @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
-        if (__valueListeners == null) {
-            __valueListeners = new ArrayList<>();
-        }
-        __valueListeners.add(new WeakReference<>(listener));
+        mainItem.addPropertyChangeListener(listener);
     }
 
     @Override
     public void removePropertyChangeListener(PropertyChangeListener listener) {
-        if (__valueListeners != null) {
-            for (Iterator<WeakReference<PropertyChangeListener>> it = __valueListeners.iterator(); it.hasNext(); ) {
-                PropertyChangeListener iteratorListener = it.next().get();
-                if (iteratorListener == null || iteratorListener.equals(listener)) {
-                    it.remove();
-                }
-            }
-        }
+        mainItem.removePropertyChangeListener(listener);
     }
 
     @Override
     public void removeAllListeners() {
-        if (__valueListeners != null) {
-            __valueListeners.clear();
-        }
-    }
-
-    protected void propertyChanged(String s, Object prev, Object curr) {
-        if (__valueListeners != null) {
-            for (WeakReference<PropertyChangeListener> reference : new ArrayList<>(__valueListeners)) {
-                PropertyChangeListener listener = reference.get();
-                if (listener == null) {
-                    __valueListeners.remove(reference);
-                } else {
-                    listener.propertyChanged(new PropertyChangeEvent(this, s, prev, curr));
-                }
-            }
-        }
+        mainItem.removeAllListeners();
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getValue(String name) {
-        return (T) values.get(name);
+        return (T) mainItem.getValue(name);
     }
 
     @Override
     public void setValue(String name, Object value) {
-        Object oldValue = values.get(name);
-        if (!ObjectUtils.equals(oldValue, value)) {
-            values.put(name, value);
-            changed.put(name, value);
-            CategoryAttributeValue categoryValue = categoryValues.get(name);
-            if (value != null) {
-                if (BaseEntity.class.isAssignableFrom(value.getClass())) {
-                    categoryValue.setEntityValue(((Entity) value).getUuid());
-                } else {
-                    setValue(categoryValue, value);
-                }
-            } else {
-                setValue(categoryValue, null);
-            }
-
-            propertyChanged(name, oldValue, value);
-        }
+        mainItem.setValue(name, value);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getValueEx(String propertyPath) {
-        return (T) values.get(propertyPath);
+        return (T) mainItem.getValueEx(propertyPath);
     }
 
     @Override
     public void setValueEx(String propertyPath, Object value) {
-        Object oldValue = values.get(propertyPath);
-        if (!ObjectUtils.equals(oldValue, value)) {
-            values.put(propertyPath, value);
-            changed.put(propertyPath, value);
-            CategoryAttributeValue attrValue = categoryValues.get(propertyPath);
-            if (value != null) {
-                if (Entity.class.isAssignableFrom(value.getClass())) {
-                    attrValue.setEntityValue(((Entity) value).getUuid());
-                } else {
-                    setValue(attrValue, value);
-                }
-            } else {
-                setValue(attrValue, null);
-            }
-
-            propertyChanged(propertyPath, oldValue, value);
-        }
+        mainItem.setValueEx(propertyPath, value);
     }
 
+    @SuppressWarnings("unchecked")
     public CategoryAttributeValue getCategoryValue(String name) {
-        return categoryValues.get(name);
-    }
-
-    private void setValue(CategoryAttributeValue attrValue, Object value) {
-        if (attrValue.getCategoryAttribute().getIsEntity()) {
-            attrValue.setEntityValue((UUID) value);
-        } else {
-            PropertyType propertyType = attrValue.getCategoryAttribute().getDataType();
-            switch (propertyType) {
-                case INTEGER:
-                    attrValue.setIntValue((Integer) value);
-                    break;
-                case DOUBLE:
-                    attrValue.setDoubleValue((Double) value);
-                    break;
-                case BOOLEAN:
-                    attrValue.setBooleanValue((Boolean) value);
-                    break;
-                case DATE:
-                    attrValue.setDateValue((Date) value);
-                    break;
-                case STRING:
-                case ENUMERATION:
-                    attrValue.setStringValue(StringUtils.trimToNull((String) value));
-                    break;
-                case ENTITY:
-                    attrValue.setEntityValue((UUID) value);
-                    break;
-            }
-        }
-    }
-
-    public void updateAttributeValue(CategoryAttributeValue attributeValue) {
-        CategoryAttribute attribute = attributeValue.getCategoryAttribute();
-        String attributeCode = DynamicAttributesUtils.encodeAttributeCode(attribute.getCode());
-        categoryValues.put(attributeCode, attributeValue);
+        Map<String, CategoryAttributeValue> dynamicAttributes = mainItem.getDynamicAttributes();
+        return dynamicAttributes != null ? dynamicAttributes.get(DynamicAttributesUtils.decodeAttributeCode(name)) : null;
     }
 }

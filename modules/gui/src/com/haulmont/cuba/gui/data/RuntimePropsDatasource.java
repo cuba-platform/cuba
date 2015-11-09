@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.data;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesMetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 
@@ -20,9 +21,7 @@ public interface RuntimePropsDatasource<T extends Entity> extends Datasource<T> 
 
     Datasource getMainDs();
 
-    Collection<MetaProperty> getPropertiesFilteredByCategory();
-
-    View getAttributeValueView();
+    Collection<DynamicAttributesMetaProperty> getPropertiesFilteredByCategory();
 
     MetaClass resolveCategorizedEntityClass();
 }

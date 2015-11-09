@@ -12,10 +12,10 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesMetaProperty;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
-import com.haulmont.cuba.core.entity.CategoryAttributeValue;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.View;
@@ -26,7 +26,10 @@ import com.haulmont.cuba.gui.components.validators.DoubleValidator;
 import com.haulmont.cuba.gui.components.validators.IntegerValidator;
 import com.haulmont.cuba.gui.components.validators.LongValidator;
 import com.haulmont.cuba.gui.config.WindowConfig;
-import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsBuilder;
+import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
 
@@ -158,12 +161,11 @@ public class RuntimePropertiesFrame extends AbstractWindow {
 
     protected java.util.List<FieldGroup.FieldConfig> createFieldsForAttributes() {
         @SuppressWarnings("unchecked")
-        Collection<MetaProperty> metaProperties = rds.getPropertiesFilteredByCategory();
+        Collection<DynamicAttributesMetaProperty> metaProperties = rds.getPropertiesFilteredByCategory();
         java.util.List<FieldGroup.FieldConfig> fields = new ArrayList<>();
-        for (MetaProperty property : metaProperties) {
+        for (DynamicAttributesMetaProperty property : metaProperties) {
             FieldGroup.FieldConfig field = new FieldGroup.FieldConfig(property.getName());
-            CategoryAttribute attribute = dynamicAttributes
-                    .getAttributeForMetaClass(rds.resolveCategorizedEntityClass(), property.getName());
+            CategoryAttribute attribute = property.getAttribute();
             field.setCaption(attribute != null ? attribute.getName() : property.getName());
             field.setWidth(fieldWidth);
             fields.add(field);
@@ -204,16 +206,15 @@ public class RuntimePropertiesFrame extends AbstractWindow {
 
     protected void initCustomFields(FieldGroup component, java.util.List<FieldGroup.FieldConfig> fields, final Datasource ds) {
         @SuppressWarnings("unchecked")
-        Collection<MetaProperty> metaProperties = rds.getPropertiesFilteredByCategory();
-        for (final MetaProperty metaProperty : metaProperties) {
+        Collection<DynamicAttributesMetaProperty> metaProperties = rds.getPropertiesFilteredByCategory();
+        for (final DynamicAttributesMetaProperty metaProperty : metaProperties) {
             Range range = metaProperty.getRange();
             if (!range.isDatatype()) {
                 component.addCustomField(metaProperty.getName(), new FieldGroup.CustomFieldGenerator() {
                     @Override
                     public Component generateField(Datasource datasource, String propertyId) {
                         final PickerField pickerField;
-                        Boolean lookup = ((DynamicAttributesEntity) datasource.getItem())
-                                .getCategoryValue(metaProperty.getName()).getCategoryAttribute().getLookup();
+                        Boolean lookup = metaProperty.getAttribute().getLookup();
                         if (lookup != null && lookup) {
                             pickerField = componentsFactory.createComponent(LookupPickerField.class);
 
@@ -236,16 +237,12 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                         pickerField.setDatasource(ds, propertyId);
                         LookupAction lookupAction = (LookupAction) pickerField.getAction(LookupAction.NAME);
                         if (lookupAction != null) {
-                            DynamicAttributesEntity dynamicAttributesEntity = (DynamicAttributesEntity) ds.getItem();
-                            CategoryAttributeValue categoryAttributeValue = dynamicAttributesEntity.getCategoryValue(metaProperty.getName());
-                            if (categoryAttributeValue != null) {
-                                String screen = categoryAttributeValue.getCategoryAttribute().getScreen();
-                                if (StringUtils.isBlank(screen)) {
-                                    WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
-                                    screen = windowConfig.getBrowseScreenId(pickerField.getMetaClass());
-                                }
-                                lookupAction.setLookupScreen(screen);
+                            String screen = metaProperty.getAttribute().getScreen();
+                            if (StringUtils.isBlank(screen)) {
+                                WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
+                                screen = windowConfig.getBrowseScreenId(pickerField.getMetaClass());
                             }
+                            lookupAction.setLookupScreen(screen);
                         }
                         pickerField.addOpenAction();
                         pickerField.setWidth(fieldWidth);
@@ -312,15 +309,16 @@ public class RuntimePropertiesFrame extends AbstractWindow {
     }
 
     protected void loadRequired(FieldGroup fieldGroup, FieldGroup.FieldConfig field) {
-        DynamicAttributesEntity dynamicAttributesEntity = (DynamicAttributesEntity) rds.getItem();
-        CategoryAttributeValue categoryAttributeValue = dynamicAttributesEntity.getCategoryValue(field.getId());
-        String requiredMessage = messages.formatMessage(
-                AppConfig.getMessagesPack(),
-                "validation.required.defaultMsg",
-                categoryAttributeValue.getCategoryAttribute().getName()
-        );
-        fieldGroup.setRequired(field,
-                Boolean.TRUE.equals(categoryAttributeValue.getCategoryAttribute().getRequired()) && requiredControlEnabled, requiredMessage);
+        CategoryAttribute attribute = dynamicAttributes.getAttributeForMetaClass(rds.getMainDs().getMetaClass(), field.getId());
+        if (attribute != null) {
+            String requiredMessage = messages.formatMessage(
+                    AppConfig.getMessagesPack(),
+                    "validation.required.defaultMsg",
+                    attribute.getName()
+            );
+            fieldGroup.setRequired(field,
+                    Boolean.TRUE.equals(attribute.getRequired()) && requiredControlEnabled, requiredMessage);
+        }
     }
 
     public void setCategoryFieldVisible(boolean visible) {
