@@ -707,12 +707,6 @@ public class WebWindow implements Window, Component.Wrapper,
 
     protected void fireWindowClosed(String actionId) {
         if (listeners != null) {
-            if (this instanceof Window.Editor) {
-                Entity item = ((Window.Editor) this).getItem();
-                MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
-                metadataTools.traverseAttributes(item, (entity, property) -> entity.removeAllListeners());
-            }
-
             for (Object listener : listeners) {
                 if (listener instanceof CloseListener) {
                     ((CloseListener) listener).windowClosed(actionId);

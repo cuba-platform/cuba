@@ -1014,12 +1014,6 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     protected void fireWindowClosed(String actionId) {
-        if (this instanceof Window.Editor) {
-            Entity item = ((Window.Editor) this).getItem();
-            MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
-            metadataTools.traverseAttributes(item, (entity, property) -> entity.removeAllListeners());
-        }
-
         for (Object listener : listeners) {
             if (listener instanceof CloseListener) {
                 ((CloseListener) listener).windowClosed(actionId);
