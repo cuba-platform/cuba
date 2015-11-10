@@ -10,6 +10,7 @@ import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -150,6 +151,22 @@ public class GroupDatasourceImpl<T extends Entity<K>, K>
                 return null;
         } else {
             return super.lastItemId();
+        }
+    }
+
+    @Override
+    public void setSuspended(boolean suspended) {
+        boolean wasSuspended = this.suspended;
+        this.suspended = suspended;
+
+        if (wasSuspended && !suspended && refreshOnResumeRequired) {
+            refresh();
+
+            if (!getGroupProperties().isEmpty()) {
+                groupBy(getGroupProperties().toArray());
+
+                fireCollectionChanged(Operation.REFRESH, Collections.emptyList());
+            }
         }
     }
 }

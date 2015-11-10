@@ -52,15 +52,14 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
                 throw new NullPointerException("Group properties cannot be NULL");
             }
 
-            //check a datasource state and refresh a datasource if it needed
-            if (!Datasource.State.VALID.equals(datasource.getState())) {
-                datasource.refresh();
-            }
+            CollectionDsHelper.autoRefreshInvalid(datasource, true);
 
             groupProperties = properties;
 
             if (!ArrayUtils.isEmpty(groupProperties)) {
-                doGroup();
+                if (datasource.getState() == Datasource.State.VALID) {
+                    doGroup();
+                }
             } else {
                 roots = null;
                 parent = null;
@@ -247,6 +246,10 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
     }
 
     public Collection<?> getGroupProperties() {
+        if (groupProperties == null) {
+            return Collections.emptyList();
+        }
+
         return Arrays.asList(groupProperties);
     }
 
