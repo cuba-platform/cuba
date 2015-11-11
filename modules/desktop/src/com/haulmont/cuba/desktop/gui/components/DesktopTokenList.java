@@ -896,4 +896,9 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
         }
         lookupPickerField.setValue(null);
     }
+
+    @Override
+    protected boolean isEmpty(Object value) {
+        return super.isEmpty(value) || (value instanceof Collection && ((Collection) value).isEmpty());
+    }
 }

@@ -736,4 +736,9 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
         }
         lookupPickerField.setValue(null);
     }
+
+    @Override
+    protected boolean isEmpty(Object value) {
+        return super.isEmpty(value) || (value instanceof Collection && ((Collection) value).isEmpty());
+    }
 }
