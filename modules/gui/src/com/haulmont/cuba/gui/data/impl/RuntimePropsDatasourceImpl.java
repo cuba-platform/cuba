@@ -29,6 +29,7 @@ import java.util.*;
  *
  * @author devyatkin
  * @version $Id$
+ * @version $Id$
  */
 public class RuntimePropsDatasourceImpl
         extends AbstractDatasource<DynamicAttributesEntity>
@@ -264,7 +265,7 @@ public class RuntimePropsDatasourceImpl
             }
         }
 
-        item = new DynamicAttributesEntity(baseGenericIdEntity);
+        item = new DynamicAttributesEntity(baseGenericIdEntity, attributes);
         dynamicAttributesGuiTools.initDefaultAttributeValues(baseGenericIdEntity);
 
         view = new View(DynamicAttributesEntity.class);

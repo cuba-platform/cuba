@@ -10,12 +10,11 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.CategoryAttributeValue;
 import com.haulmont.cuba.core.global.UuidProvider;
 
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Specific entity, delegating all calls to internal BaseGenericIdEntity.
@@ -24,15 +23,20 @@ import java.util.UUID;
  *
  * @author devyatkin
  * @version $Id$
+ * @version $Id$
  */
 public class DynamicAttributesEntity implements BaseEntity {
     private static final long serialVersionUID = -8091230910619941201L;
     protected BaseGenericIdEntity mainItem;
     protected UUID id;
+    protected Map<String, CategoryAttribute> attributesMap = new HashMap<>();
 
-    public DynamicAttributesEntity(BaseGenericIdEntity mainItem) {
+    public DynamicAttributesEntity(BaseGenericIdEntity mainItem, Collection<CategoryAttribute> attributes) {
         this.mainItem = mainItem;
         this.id = UuidProvider.createUuid();
+        for (CategoryAttribute attribute : attributes) {
+            attributesMap.put(attribute.getCode(), attribute);
+        }
     }
 
     @Override
@@ -105,8 +109,20 @@ public class DynamicAttributesEntity implements BaseEntity {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void setValue(String name, Object value) {
         mainItem.setValue(name, value);
+
+        //if we set an attribute from another type of entity, we need to set reference to CategoryAttribute manually
+        //this is workaround to make #PL-5770 logic works with modern RuntimePropertiesDatasource
+        String attributeCode = DynamicAttributesUtils.decodeAttributeCode(name);
+        Map<String, CategoryAttributeValue> dynamicAttributes = mainItem.getDynamicAttributes();
+        if (dynamicAttributes != null) {
+            CategoryAttributeValue categoryAttributeValue = dynamicAttributes.get(attributeCode);
+            if (categoryAttributeValue != null && categoryAttributeValue.getCategoryAttribute() == null) {
+                categoryAttributeValue.setCategoryAttribute(attributesMap.get(attributeCode));
+            }
+        }
     }
 
     @Override
@@ -118,11 +134,5 @@ public class DynamicAttributesEntity implements BaseEntity {
     @Override
     public void setValueEx(String propertyPath, Object value) {
         mainItem.setValueEx(propertyPath, value);
-    }
-
-    @SuppressWarnings("unchecked")
-    public CategoryAttributeValue getCategoryValue(String name) {
-        Map<String, CategoryAttributeValue> dynamicAttributes = mainItem.getDynamicAttributes();
-        return dynamicAttributes != null ? dynamicAttributes.get(DynamicAttributesUtils.decodeAttributeCode(name)) : null;
     }
 }
