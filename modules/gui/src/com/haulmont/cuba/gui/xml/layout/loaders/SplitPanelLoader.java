@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
  * @version $Id$
  */
 public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
+
     @Override
     public void createComponent() {
         resultComponent = (SplitPanel) factory.createComponent(SplitPanel.NAME);
@@ -45,6 +46,11 @@ public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
         String pos = element.attributeValue("pos");
         if (!StringUtils.isEmpty(pos)) {
             resultComponent.setSplitPosition(Integer.parseInt(pos));
+        }
+
+        String locked = element.attributeValue("locked");
+        if (!StringUtils.isEmpty(locked)) {
+            resultComponent.setLocked(Boolean.parseBoolean(locked));
         }
 
         loadHeight(resultComponent, element, Component.AUTO_SIZE);

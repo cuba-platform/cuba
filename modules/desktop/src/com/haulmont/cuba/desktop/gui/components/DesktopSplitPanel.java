@@ -14,6 +14,8 @@ import org.dom4j.Element;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicSplitPaneDivider;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.plaf.synth.SynthSplitPaneUI;
 import java.awt.*;
 import java.util.*;
@@ -33,6 +35,7 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
     protected Map<String, Component> componentByIds = new HashMap<>();
     protected Collection<Component> ownComponents = new LinkedHashSet<>();
     protected boolean settingsEnabled = true;
+    protected boolean locked = false;
 
     public DesktopSplitPanel() {
         impl = new JSplitPane() {
@@ -105,11 +108,22 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
 
     @Override
     public void setLocked(boolean locked) {
+        this.locked = locked;
+
+        BasicSplitPaneDivider divider = ((BasicSplitPaneUI) impl.getUI()).getDivider();
+        if (locked) {
+            divider.setDividerSize(0);
+        } else {
+            divider.setDividerSize(10);
+        }
+
+        impl.revalidate();
+        impl.repaint();
     }
 
     @Override
     public boolean isLocked() {
-        return false;
+        return locked;
     }
 
     @Override

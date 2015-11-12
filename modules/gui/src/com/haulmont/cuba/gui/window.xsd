@@ -1281,6 +1281,7 @@
 
         <xs:attribute name="orientation" type="orientation"/>
         <xs:attribute name="pos" type="xs:int"/>
+        <xs:attribute name="locked" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- Tabsheet -->
