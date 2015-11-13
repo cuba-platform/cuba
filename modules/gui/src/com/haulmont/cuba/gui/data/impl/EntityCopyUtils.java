@@ -80,6 +80,7 @@ public class EntityCopyUtils {
         if (source instanceof BaseGenericIdEntity && dest instanceof BaseGenericIdEntity) {
             ((BaseGenericIdEntity) dest).__detached(((BaseGenericIdEntity) source).__detached());
             ((BaseGenericIdEntity) dest).__new(((BaseGenericIdEntity) source).__new());
+            ((BaseGenericIdEntity) dest).setDynamicAttributes(((BaseGenericIdEntity<?>) source).getDynamicAttributes());
         }
     }
 

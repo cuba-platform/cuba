@@ -9,6 +9,7 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.IllegalEntityStateException;
@@ -220,6 +221,10 @@ public final class InstanceUtils {
                         throw e;
                 }
             }
+        }
+
+        if (source instanceof BaseGenericIdEntity && dest instanceof BaseGenericIdEntity) {
+            ((BaseGenericIdEntity) dest).setDynamicAttributes(((BaseGenericIdEntity<?>) source).getDynamicAttributes());
         }
     }
 
