@@ -14,6 +14,7 @@ import com.haulmont.cuba.web.jmx.entity.ManagedBeanAttribute;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.inject.Inject;
+import java.util.Map;
 
 /**
  * @author budarov
@@ -33,11 +34,17 @@ public class AttributeEditWindow extends AbstractEditor<ManagedBeanAttribute> {
     protected ThemeConstants themeConstants;
 
     @Override
+    public void init(Map<String, Object> params) {
+        super.init(params);
+        getDialogParams().setWidth(themeConstants.getInt("cuba.web.AttributeEditWindow.width"));
+    }
+
+    @Override
     protected void postInit() {
         ManagedBeanAttribute mba = getItem();
         final String type = mba.getType();
 
-        valueHolder = new AttributeEditor(this, type, mba.getValue(), true);
+        valueHolder = new AttributeEditor(this, type, mba.getValue(), true, true);
 
         valueContainer.add(valueHolder.getComponent(), 1, 0);
 

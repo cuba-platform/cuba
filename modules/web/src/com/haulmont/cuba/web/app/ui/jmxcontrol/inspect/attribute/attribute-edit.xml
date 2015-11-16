@@ -22,7 +22,7 @@
             </columns>
             <rows>
                 <row>
-                    <label value="msg://editAttribute.value"/>
+                    <label value="msg://editAttribute.value" align="MIDDLE_LEFT"/>
 
                 </row>
             </rows>

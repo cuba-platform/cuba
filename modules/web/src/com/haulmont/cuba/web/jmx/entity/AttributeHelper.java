@@ -55,8 +55,112 @@ public class AttributeHelper {
         return "boolean".equals(type) || Boolean.class.getName().equals(type);
     }
 
+    public static boolean isArrayOrCollection(String type) {
+        return isCollection(type) || isArray(type);
+    }
+
+    public static boolean isCollection(String type) {
+        return isList(type) || isSet(type);
+    }
+
     public static boolean isArray(String type) {
-        return type != null && (type.startsWith("[L") || type.endsWith("[]"));
+        return type != null
+                && (type.startsWith("[") && type.length() >= 2 && getArrayType(type) != null
+                || type.endsWith("[]"));
+    }
+
+    public static boolean isObjectArrayOrCollection(String type) {
+        return isCollection(type) || isObjectArray(type);
+    }
+
+    public static boolean isObjectArray(String type) {
+        return type != null && isArray(type) && !isPrimitiveTypeOrString(type);
+    }
+
+    public static boolean isSimpleArray(String type) {
+        return type != null && isArray(type) && isPrimitiveTypeOrString(type);
+    }
+
+    public static boolean isPrimitiveTypeOrString(String type) {
+        if (type.endsWith("[]")) {
+            try {
+                type = type.substring(0, type.length() - 2);
+                Class.forName(type);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException("Wrong array type");
+            }
+        } else {
+            type = type.substring(0, 2);
+        }
+        switch (type) {
+            case "java.lang.Boolean":
+            case "java.lang.Byte":
+            case "java.lang.Short":
+            case "java.lang.Integer":
+            case "java.lang.Long":
+            case "java.lang.Float":
+            case "java.lang.Double":
+            case "java.lang.Char":
+            case "java.lang.String":
+            case "[Z":
+            case "[B":
+            case "[S":
+            case "[I":
+            case "[J":
+            case "[F":
+            case "[D":
+            case "[C":
+                return true;
+        }
+        return false;
+    }
+
+    public static boolean isList(String type) {
+        return "java.util.List".equals(type);
+    }
+
+    public static boolean isSet(String type) {
+        return "java.util.Set".equals(type);
+    }
+
+    public static Class getArrayType(String type) {
+        if (type.endsWith("[]")) {
+            try {
+                return Class.forName(type.substring(0, type.length() - 2));
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException("Wrong array type");
+            }
+        }
+        switch (type.substring(0, 2)) {
+            case "[Z":
+                return boolean.class;
+            case "[B":
+                return byte.class;
+            case "[S":
+                return short.class;
+            case "[I":
+                return int.class;
+            case "[J":
+                return long.class;
+            case "[F":
+                return float.class;
+            case "[D":
+                return double.class;
+            case "[C":
+                return char.class;
+            case "[L":
+                return Object.class;     // any non-primitives(Object)
+        }
+        throw new RuntimeException("Wrong array type");
+    }
+
+    public static String convertTypeToReadableName(String type) {
+        if (isArray(type)) {
+            Class clazz = getArrayType(type);
+            return clazz.getName() + "[]";
+        } else {
+            return type;
+        }
     }
 
     public static boolean isDate(String type) {
@@ -69,12 +173,16 @@ public class AttributeHelper {
         }
 
         if (value.getClass().isArray()) {
-            StringBuilder b = new StringBuilder();
-            for (int i = 0; i < Array.getLength(value); i++) {
+            StringBuilder b = new StringBuilder("[");
+            int length = Array.getLength(value);
+            for (int i = 0; i < length; i++) {
                 Object o = Array.get(value, i);
-                b.append(convertToString(o)).append("\n");
+                b.append(convertToString(o));
+                if (i < length - 1) {
+                    b.append(", ");
+                }
             }
-            return b.toString();
+            return b.append("]").toString();
         }
         else if (value instanceof CompositeData) {
             return compositeToString((CompositeData) value);
@@ -132,7 +240,7 @@ public class AttributeHelper {
     private static Object convertToTrueObject(CompositeData compositeData) {
         CompositeType type = compositeData.getCompositeType();
         try {
-            Class _class = Class.forName(type.getTypeName());
+            Class<?> _class = Class.forName(type.getTypeName());
             Method method = _class.getMethod("from", CompositeData.class);
             if (Modifier.isStatic(method.getModifiers()) && method.getReturnType() == _class) {
                 return method.invoke(null, compositeData);
@@ -146,7 +254,7 @@ public class AttributeHelper {
     private static boolean canConvertToTrueObject(CompositeData compositeData) {
         CompositeType type = compositeData.getCompositeType();
         try {
-            Class _class = Class.forName(type.getTypeName());
+            Class<?> _class = Class.forName(type.getTypeName());
             Method method = _class.getMethod("from", CompositeData.class);
             if (Modifier.isStatic(method.getModifiers())
                     && Modifier.isPublic(method.getModifiers())

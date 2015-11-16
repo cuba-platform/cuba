@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.web.app.ui.jmxcontrol.inspect;
 
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -46,6 +45,9 @@ public class MbeanInspectWindow extends AbstractEditor {
     @Inject
     protected CollectionDatasource<ManagedBeanAttribute, UUID> attrDs;
 
+    @Inject
+    protected ComponentsFactory componentsFactory;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
@@ -54,6 +56,11 @@ public class MbeanInspectWindow extends AbstractEditor {
         vaadinAttrTable.setTextSelectionEnabled(true);
 
         attributesTable.setItemClickAction(editAttributeAction);
+        attributesTable.addGeneratedColumn("type", entity -> {
+            Label label = componentsFactory.createComponent(Label.class);
+            label.setValue(AttributeHelper.convertTypeToReadableName(((ManagedBeanAttribute) entity).getType()));
+            return label;
+        });
 
         attrDs.addCollectionChangeListener(e -> {
             if (e.getDs().getItemIds().isEmpty()) {
@@ -71,11 +78,11 @@ public class MbeanInspectWindow extends AbstractEditor {
         }
 
         ManagedBeanAttribute mba = selected.iterator().next();
-        if (!mba.getWriteable() || AttributeHelper.isArray(mba.getType())) {
+        if (!mba.getWriteable()) {
             return;
         }
 
-        Window.Editor w = openEditor("jmxConsoleEditAttribute", mba, OpenType.DIALOG);
+        Editor w = openEditor("jmxConsoleEditAttribute", mba, OpenType.DIALOG);
         w.addCloseListener(actionId -> {
             if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                 Object item = w.getItem();
@@ -105,7 +112,6 @@ public class MbeanInspectWindow extends AbstractEditor {
     }
 
     protected void initOperationsLayout(ManagedBeanInfo mbean) {
-        ComponentsFactory componentsFactory = AppConfig.getFactory();
         BoxLayout container = operations;
         for (final ManagedBeanOperation op : mbean.getOperations()) {
             BoxLayout vl = componentsFactory.createComponent(VBoxLayout.class);
@@ -114,7 +120,7 @@ public class MbeanInspectWindow extends AbstractEditor {
             vl.setStyleName("cuba-mbeans-operation-container");
 
             Label nameLbl = componentsFactory.createComponent(Label.class);
-            nameLbl.setValue(op.getReturnType() + " " + op.getName() + "()");
+            nameLbl.setValue(AttributeHelper.convertTypeToReadableName(op.getReturnType()) + " " + op.getName() + "()");
             nameLbl.setStyleName("h2");
             vl.add(nameLbl);
 
@@ -137,7 +143,7 @@ public class MbeanInspectWindow extends AbstractEditor {
                     pnameLbl.setValue(param.getName());
 
                     Label ptypeLbl = componentsFactory.createComponent(Label.class);
-                    ptypeLbl.setValue(param.getType());
+                    ptypeLbl.setValue(AttributeHelper.convertTypeToReadableName(param.getType()));
 
                     AttributeEditor prov = new AttributeEditor(this, param.getType());
                     attrProviders.add(prov);
@@ -210,9 +216,7 @@ public class MbeanInspectWindow extends AbstractEditor {
         }
 
         Window w = openWindow("jmxConsoleOperationResult", OpenType.DIALOG, params);
-        w.addCloseListener(actionId -> {
-            reloadAttributes();
-        });
+        w.addCloseListener(actionId -> reloadAttributes());
     }
 
     public void close() {
