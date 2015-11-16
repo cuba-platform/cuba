@@ -907,8 +907,8 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected void loadFilterEntities() {
         LoadContext<FilterEntity> ctx = LoadContext.create(FilterEntity.class);
         ctx.setView("app");
-        ctx.setQueryString("select f from sec$Filter f left join f.user u on u.id = :userId " +
-                "where f.componentId = :component order by f.name")
+        ctx.setQueryString("select f from sec$Filter f left join f.user u " +
+                "where f.componentId = :component and (u.id = :userId or u is null) order by f.name")
                 .setParameter("component", ComponentsHelper.getFilterComponentPath(filter))
                 .setParameter("userId", userSessionSource.getUserSession().getCurrentOrSubstitutedUser().getId());
 
