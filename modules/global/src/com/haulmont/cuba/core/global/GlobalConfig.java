@@ -111,7 +111,7 @@ public interface GlobalConfig extends Config {
      */
     @Property("cuba.availableLocales")
     @Factory(factory = AvailableLocalesFactory.class)
-    @Default("English|en;Russian|ru;French|fr")
+    @Default("English|en;Russian|ru")
     Map<String, Locale> getAvailableLocales();
 
     /**
