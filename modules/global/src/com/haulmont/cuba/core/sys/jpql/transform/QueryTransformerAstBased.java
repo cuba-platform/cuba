@@ -53,7 +53,12 @@ public class QueryTransformerAstBased implements QueryTransformer {
 
         IdentificationVariableNode mainEntityIdentification = queryTreeTransformer.getMainEntityIdentification();
         if (mainEntityIdentification != null) {
-            mainEntityName = mainEntityIdentification.getEntityName();
+            try {
+                Entity entityByName = model.getEntityByName(mainEntityIdentification.getEntityName());
+                mainEntityName = entityByName.getName();
+            } catch (UnknownEntityNameException e) {
+                throw new RuntimeException("Could not resolve entity for name " + mainEntityIdentification.getEntityName());
+            }
         }
     }
 

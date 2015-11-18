@@ -510,7 +510,8 @@ public class QueryTransformerAstBasedTest {
         Entity groupHierarchy = builder.produce();
 
         Entity constraintEntity = builder.produceImmediately("sec$Constraint");
-        return new DomainModel(groupHierarchy, constraintEntity);
+        Entity userEntity = builder.produceImmediately("sec$User");
+        return new DomainModel(groupHierarchy, constraintEntity, userEntity);
     }
 
     @Test
