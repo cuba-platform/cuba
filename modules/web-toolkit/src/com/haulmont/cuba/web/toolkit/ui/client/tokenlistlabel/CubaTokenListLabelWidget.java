@@ -5,6 +5,8 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.tokenlistlabel;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Event;
@@ -31,9 +33,15 @@ public class CubaTokenListLabelWidget extends VPanel {
         setStyleName(CLASSNAME);
         add(label);
         label.setStyleName("content");
-        DOM.sinkEvents(label.getElement(), Event.ONCLICK);
+        label.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                if (canOpen) {
+                    handler.click();
+                }
+            }
+        });
 
-        closeDiv = DOM.createDiv();
         closeDiv.setClassName(CLASSNAME + "-close");
         contentNode.appendChild(closeDiv);
         DOM.sinkEvents(closeDiv, Event.ONCLICK);
@@ -65,8 +73,6 @@ public class CubaTokenListLabelWidget extends VPanel {
         if (DOM.eventGetType(event) == Event.ONCLICK && handler != null) {
             if (DOM.eventGetTarget(event) == closeDiv && editable) {
                 handler.remove();
-            } else if (DOM.eventGetTarget(event) == label.getElement() && canOpen) {
-                handler.click();
             }
         }
     }
