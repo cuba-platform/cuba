@@ -1,4 +1,4 @@
-// $ANTLR 3.5.2 JPA2.g 2015-09-10 11:57:29
+// $ANTLR 3.5.2 JPA2.g 2015-11-19 13:02:53
 
 package com.haulmont.cuba.core.sys.jpql.antlr2;
 
@@ -398,7 +398,7 @@ public class JPA2Parser extends Parser {
 			}
 
 			// AST REWRITE
-			// elements: having_clause, from_clause, orderby_clause, select_clause, where_clause, groupby_clause
+			// elements: groupby_clause, having_clause, from_clause, orderby_clause, where_clause, select_clause
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -720,7 +720,7 @@ public class JPA2Parser extends Parser {
 			}
 
 			// AST REWRITE
-			// elements: identification_variable_declaration_or_collection_member_declaration, identification_variable_declaration
+			// elements: identification_variable_declaration, identification_variable_declaration_or_collection_member_declaration
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -945,7 +945,7 @@ public class JPA2Parser extends Parser {
 			}
 
 			// AST REWRITE
-			// elements: range_variable_declaration, joined_clause
+			// elements: joined_clause, range_variable_declaration
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -4383,7 +4383,7 @@ public class JPA2Parser extends Parser {
 					if ( state.backtracking==0 ) stream_RPAREN.add(char_literal129);
 
 					// AST REWRITE
-					// elements: DISTINCT, RPAREN, path_expression, LPAREN, aggregate_expression_function_name
+					// elements: aggregate_expression_function_name, DISTINCT, RPAREN, LPAREN, path_expression
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -4457,7 +4457,7 @@ public class JPA2Parser extends Parser {
 					if ( state.backtracking==0 ) stream_RPAREN.add(char_literal134);
 
 					// AST REWRITE
-					// elements: DISTINCT, count_argument, COUNT, LPAREN, RPAREN
+					// elements: count_argument, LPAREN, DISTINCT, COUNT, RPAREN
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -5264,7 +5264,7 @@ public class JPA2Parser extends Parser {
 					}
 
 					// AST REWRITE
-					// elements: orderby_variable, ASC
+					// elements: ASC, orderby_variable
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -5596,7 +5596,7 @@ public class JPA2Parser extends Parser {
 			if ( state.backtracking==0 ) stream_RPAREN.add(rp);
 
 			// AST REWRITE
-			// elements: having_clause, simple_select_clause, groupby_clause, 117, where_clause, subquery_from_clause
+			// elements: 117, having_clause, simple_select_clause, where_clause, groupby_clause, subquery_from_clause
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -6560,7 +6560,7 @@ public class JPA2Parser extends Parser {
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) stream_simple_select_expression.add(simple_select_expression199.getTree());
 			// AST REWRITE
-			// elements: DISTINCT, simple_select_expression
+			// elements: simple_select_expression, DISTINCT
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -16739,7 +16739,7 @@ public class JPA2Parser extends Parser {
 					if ( state.backtracking==0 ) stream_136.add(char_literal532);
 
 					// AST REWRITE
-					// elements: 53, 136, WORD
+					// elements: 136, WORD, 53
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 

@@ -20,7 +20,7 @@ import org.junit.Test;
 public class Jpa2GrammarTest {
 
     @Test
-    public void testParser() throws Exception {
+    public void testGroupBy() throws Exception {
         CharStream cs = new AntlrNoCaseStringStream(
                 "select u.login " +
                         "from sec$User u " +
@@ -35,9 +35,10 @@ public class Jpa2GrammarTest {
     }
 
     @Test
-    public void testParser2() throws Exception {
+    public void testParserParameters() throws Exception {
         String query = "select sm from sys$SendingMessage sm " +
-                "where sm.status=:statusQueue or (sm.status = :statusSending and sm.updateTs<:time) order by sm.createTs";
+                "where sm.status=:(?i)statusQueue or (sm.status = :statusSending and sm.updateTs<:time) " +
+                "order by sm.createTs";
         CharStream cs = new AntlrNoCaseStringStream(query);
         JPA2Lexer lexer = new JPA2Lexer(cs);
         TokenStream tstream = new CommonTokenStream(lexer);

@@ -1,4 +1,4 @@
-// $ANTLR 3.5.2 JPA2.g 2015-09-10 11:57:30
+// $ANTLR 3.5.2 JPA2.g 2015-11-19 13:02:54
 
 package com.haulmont.cuba.core.sys.jpql.antlr2;
 
@@ -2534,10 +2534,43 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = NAMED_PARAMETER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:522:5: ( ':' ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )* )
-			// JPA2.g:522:7: ':' ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )*
+			// JPA2.g:522:5: ( ':' ( '(?i)' | '(?I)' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )* )
+			// JPA2.g:522:7: ':' ( '(?i)' | '(?I)' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )*
 			{
 			match(':'); 
+			// JPA2.g:522:11: ( '(?i)' | '(?I)' )?
+			int alt3=3;
+			int LA3_0 = input.LA(1);
+			if ( (LA3_0=='(') ) {
+				int LA3_1 = input.LA(2);
+				if ( (LA3_1=='?') ) {
+					int LA3_3 = input.LA(3);
+					if ( (LA3_3=='i') ) {
+						alt3=1;
+					}
+					else if ( (LA3_3=='I') ) {
+						alt3=2;
+					}
+				}
+			}
+			switch (alt3) {
+				case 1 :
+					// JPA2.g:522:12: '(?i)'
+					{
+					match("(?i)"); 
+
+					}
+					break;
+				case 2 :
+					// JPA2.g:522:19: '(?I)'
+					{
+					match("(?I)"); 
+
+					}
+					break;
+
+			}
+
 			if ( (input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
 				input.consume();
 			}
@@ -2546,16 +2579,16 @@ public class JPA2Lexer extends Lexer {
 				recover(mse);
 				throw mse;
 			}
-			// JPA2.g:522:34: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
-			loop3:
+			// JPA2.g:522:52: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
+			loop4:
 			while (true) {
-				int alt3=2;
-				int LA3_0 = input.LA(1);
-				if ( (LA3_0=='$'||(LA3_0 >= '0' && LA3_0 <= '9')||(LA3_0 >= 'A' && LA3_0 <= 'Z')||LA3_0=='_'||(LA3_0 >= 'a' && LA3_0 <= 'z')) ) {
-					alt3=1;
+				int alt4=2;
+				int LA4_0 = input.LA(1);
+				if ( (LA4_0=='$'||(LA4_0 >= '0' && LA4_0 <= '9')||(LA4_0 >= 'A' && LA4_0 <= 'Z')||LA4_0=='_'||(LA4_0 >= 'a' && LA4_0 <= 'z')) ) {
+					alt4=1;
 				}
 
-				switch (alt3) {
+				switch (alt4) {
 				case 1 :
 					// JPA2.g:
 					{
@@ -2571,40 +2604,40 @@ public class JPA2Lexer extends Lexer {
 					break;
 
 				default :
-					break loop3;
+					break loop4;
 				}
 			}
 
-			// JPA2.g:522:72: ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )*
-			loop5:
+			// JPA2.g:522:90: ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )*
+			loop6:
 			while (true) {
-				int alt5=2;
-				int LA5_0 = input.LA(1);
-				if ( (LA5_0=='.') ) {
-					alt5=1;
+				int alt6=2;
+				int LA6_0 = input.LA(1);
+				if ( (LA6_0=='.') ) {
+					alt6=1;
 				}
 
-				switch (alt5) {
+				switch (alt6) {
 				case 1 :
-					// JPA2.g:522:73: ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+
+					// JPA2.g:522:91: ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+
 					{
-					// JPA2.g:522:73: ( '.' )
-					// JPA2.g:522:74: '.'
+					// JPA2.g:522:91: ( '.' )
+					// JPA2.g:522:92: '.'
 					{
 					match('.'); 
 					}
 
-					// JPA2.g:522:79: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+
-					int cnt4=0;
-					loop4:
+					// JPA2.g:522:97: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+
+					int cnt5=0;
+					loop5:
 					while (true) {
-						int alt4=2;
-						int LA4_0 = input.LA(1);
-						if ( (LA4_0=='$'||(LA4_0 >= '0' && LA4_0 <= '9')||(LA4_0 >= 'A' && LA4_0 <= 'Z')||LA4_0=='_'||(LA4_0 >= 'a' && LA4_0 <= 'z')) ) {
-							alt4=1;
+						int alt5=2;
+						int LA5_0 = input.LA(1);
+						if ( (LA5_0=='$'||(LA5_0 >= '0' && LA5_0 <= '9')||(LA5_0 >= 'A' && LA5_0 <= 'Z')||LA5_0=='_'||(LA5_0 >= 'a' && LA5_0 <= 'z')) ) {
+							alt5=1;
 						}
 
-						switch (alt4) {
+						switch (alt5) {
 						case 1 :
 							// JPA2.g:
 							{
@@ -2620,18 +2653,18 @@ public class JPA2Lexer extends Lexer {
 							break;
 
 						default :
-							if ( cnt4 >= 1 ) break loop4;
-							EarlyExitException eee = new EarlyExitException(4, input);
+							if ( cnt5 >= 1 ) break loop5;
+							EarlyExitException eee = new EarlyExitException(5, input);
 							throw eee;
 						}
-						cnt4++;
+						cnt5++;
 					}
 
 					}
 					break;
 
 				default :
-					break loop5;
+					break loop6;
 				}
 			}
 
@@ -2685,25 +2718,25 @@ public class JPA2Lexer extends Lexer {
 			match("/*"); 
 
 			// JPA2.g:528:12: ( . )*
-			loop6:
+			loop7:
 			while (true) {
-				int alt6=2;
-				int LA6_0 = input.LA(1);
-				if ( (LA6_0=='*') ) {
-					int LA6_1 = input.LA(2);
-					if ( (LA6_1=='/') ) {
-						alt6=2;
+				int alt7=2;
+				int LA7_0 = input.LA(1);
+				if ( (LA7_0=='*') ) {
+					int LA7_1 = input.LA(2);
+					if ( (LA7_1=='/') ) {
+						alt7=2;
 					}
-					else if ( ((LA6_1 >= '\u0000' && LA6_1 <= '.')||(LA6_1 >= '0' && LA6_1 <= '\uFFFF')) ) {
-						alt6=1;
+					else if ( ((LA7_1 >= '\u0000' && LA7_1 <= '.')||(LA7_1 >= '0' && LA7_1 <= '\uFFFF')) ) {
+						alt7=1;
 					}
 
 				}
-				else if ( ((LA6_0 >= '\u0000' && LA6_0 <= ')')||(LA6_0 >= '+' && LA6_0 <= '\uFFFF')) ) {
-					alt6=1;
+				else if ( ((LA7_0 >= '\u0000' && LA7_0 <= ')')||(LA7_0 >= '+' && LA7_0 <= '\uFFFF')) ) {
+					alt7=1;
 				}
 
-				switch (alt6) {
+				switch (alt7) {
 				case 1 :
 					// JPA2.g:528:12: .
 					{
@@ -2712,7 +2745,7 @@ public class JPA2Lexer extends Lexer {
 					break;
 
 				default :
-					break loop6;
+					break loop7;
 				}
 			}
 
@@ -2741,15 +2774,15 @@ public class JPA2Lexer extends Lexer {
 			match("//"); 
 
 			// JPA2.g:531:12: (~ ( '\\n' | '\\r' ) )*
-			loop7:
+			loop8:
 			while (true) {
-				int alt7=2;
-				int LA7_0 = input.LA(1);
-				if ( ((LA7_0 >= '\u0000' && LA7_0 <= '\t')||(LA7_0 >= '\u000B' && LA7_0 <= '\f')||(LA7_0 >= '\u000E' && LA7_0 <= '\uFFFF')) ) {
-					alt7=1;
+				int alt8=2;
+				int LA8_0 = input.LA(1);
+				if ( ((LA8_0 >= '\u0000' && LA8_0 <= '\t')||(LA8_0 >= '\u000B' && LA8_0 <= '\f')||(LA8_0 >= '\u000E' && LA8_0 <= '\uFFFF')) ) {
+					alt8=1;
 				}
 
-				switch (alt7) {
+				switch (alt8) {
 				case 1 :
 					// JPA2.g:
 					{
@@ -2765,17 +2798,17 @@ public class JPA2Lexer extends Lexer {
 					break;
 
 				default :
-					break loop7;
+					break loop8;
 				}
 			}
 
 			// JPA2.g:531:26: ( '\\r' )?
-			int alt8=2;
-			int LA8_0 = input.LA(1);
-			if ( (LA8_0=='\r') ) {
-				alt8=1;
+			int alt9=2;
+			int LA9_0 = input.LA(1);
+			if ( (LA9_0=='\r') ) {
+				alt9=1;
 			}
-			switch (alt8) {
+			switch (alt9) {
 				case 1 :
 					// JPA2.g:531:26: '\\r'
 					{
@@ -2836,16 +2869,16 @@ public class JPA2Lexer extends Lexer {
 			// JPA2.g:536:7: ( '0' .. '9' )+
 			{
 			// JPA2.g:536:7: ( '0' .. '9' )+
-			int cnt9=0;
-			loop9:
+			int cnt10=0;
+			loop10:
 			while (true) {
-				int alt9=2;
-				int LA9_0 = input.LA(1);
-				if ( ((LA9_0 >= '0' && LA9_0 <= '9')) ) {
-					alt9=1;
+				int alt10=2;
+				int LA10_0 = input.LA(1);
+				if ( ((LA10_0 >= '0' && LA10_0 <= '9')) ) {
+					alt10=1;
 				}
 
-				switch (alt9) {
+				switch (alt10) {
 				case 1 :
 					// JPA2.g:
 					{
@@ -2861,11 +2894,11 @@ public class JPA2Lexer extends Lexer {
 					break;
 
 				default :
-					if ( cnt9 >= 1 ) break loop9;
-					EarlyExitException eee = new EarlyExitException(9, input);
+					if ( cnt10 >= 1 ) break loop10;
+					EarlyExitException eee = new EarlyExitException(10, input);
 					throw eee;
 				}
-				cnt9++;
+				cnt10++;
 			}
 
 			}
@@ -2882,9 +2915,9 @@ public class JPA2Lexer extends Lexer {
 	@Override
 	public void mTokens() throws RecognitionException {
 		// JPA2.g:1:8: ( AND | ASC | AVG | BY | COUNT | DESC | DISTINCT | FETCH | GROUP | HAVING | INNER | JOIN | LEFT | LOWER | LPAREN | MAX | MIN | OR | ORDER | OUTER | RPAREN | SUM | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | T__102 | T__103 | T__104 | T__105 | T__106 | T__107 | T__108 | T__109 | T__110 | T__111 | T__112 | T__113 | T__114 | T__115 | T__116 | T__117 | T__118 | T__119 | T__120 | T__121 | T__122 | T__123 | T__124 | T__125 | T__126 | T__127 | T__128 | T__129 | T__130 | T__131 | T__132 | T__133 | T__134 | T__135 | T__136 | TRIM_CHARACTER | STRING_LITERAL | WORD | RUSSIAN_SYMBOLS | NAMED_PARAMETER | WS | COMMENT | LINE_COMMENT | ESCAPE_CHARACTER | INT_NUMERAL )
-		int alt10=116;
-		alt10 = dfa10.predict(input);
-		switch (alt10) {
+		int alt11=116;
+		alt11 = dfa11.predict(input);
+		switch (alt11) {
 			case 1 :
 				// JPA2.g:1:10: AND
 				{
@@ -3702,8 +3735,8 @@ public class JPA2Lexer extends Lexer {
 	}
 
 
-	protected DFA10 dfa10 = new DFA10(this);
-	static final String DFA10_eotS =
+	protected DFA11 dfa11 = new DFA11(this);
+	static final String DFA11_eotS =
 		"\1\uffff\12\51\1\uffff\2\51\1\uffff\1\51\6\uffff\1\130\1\55\1\134\1\uffff"+
 		"\1\136\2\uffff\12\51\7\uffff\1\51\1\173\3\51\1\177\16\51\1\u0093\1\u0094"+
 		"\10\51\1\u00a2\2\51\1\u00a5\1\u00a6\5\51\14\uffff\22\51\4\uffff\1\u00c9"+
@@ -3725,9 +3758,9 @@ public class JPA2Lexer extends Lexer {
 		"\51\2\uffff\2\51\1\u0198\1\51\1\uffff\1\51\1\u019b\1\uffff\2\51\2\uffff"+
 		"\1\51\1\uffff\2\51\1\uffff\2\51\1\u01a3\1\u01a5\1\uffff\1\51\1\uffff\3"+
 		"\51\1\u01aa\1\uffff";
-	static final String DFA10_eofS =
+	static final String DFA11_eofS =
 		"\u01ab\uffff";
-	static final String DFA10_minS =
+	static final String DFA11_minS =
 		"\1\11\1\102\1\105\2\101\1\105\1\122\1\101\1\116\1\117\1\105\1\uffff\1"+
 		"\101\1\102\1\uffff\1\105\6\uffff\1\52\1\170\1\75\1\uffff\1\75\1\uffff"+
 		"\1\102\1\114\2\105\1\110\1\120\1\101\1\110\1\105\1\141\1\162\1\uffff\1"+
@@ -3758,7 +3791,7 @@ public class JPA2Lexer extends Lexer {
 		"\1\uffff\1\44\5\uffff\1\116\5\uffff\1\107\2\uffff\1\50\1\104\1\44\1\50"+
 		"\1\uffff\1\107\1\44\1\uffff\1\101\1\111\2\uffff\1\50\1\uffff\1\124\1\115"+
 		"\1\uffff\2\105\2\44\1\uffff\1\124\1\uffff\1\101\1\115\1\120\1\44\1\uffff";
-	static final String DFA10_maxS =
+	static final String DFA11_maxS =
 		"\1\u052f\1\126\1\131\1\125\1\111\1\125\1\122\1\117\1\123\2\117\1\uffff"+
 		"\1\117\1\125\1\uffff\1\125\6\uffff\1\57\1\170\1\76\1\uffff\1\75\1\uffff"+
 		"\1\124\1\130\1\105\1\125\1\131\1\120\1\101\1\110\1\105\1\141\1\162\1\uffff"+
@@ -3790,7 +3823,7 @@ public class JPA2Lexer extends Lexer {
 		"\1\50\1\124\1\172\1\50\1\uffff\1\107\1\172\1\uffff\1\101\1\111\2\uffff"+
 		"\1\50\1\uffff\1\124\1\115\1\uffff\2\105\2\172\1\uffff\1\124\1\uffff\1"+
 		"\101\1\115\1\120\1\172\1\uffff";
-	static final String DFA10_acceptS =
+	static final String DFA11_acceptS =
 		"\13\uffff\1\17\2\uffff\1\25\1\uffff\1\27\1\30\1\31\1\32\1\33\1\34\3\uffff"+
 		"\1\42\1\uffff\1\45\13\uffff\1\152\1\uffff\1\155\1\156\1\157\1\160\1\164"+
 		"\50\uffff\1\161\1\162\1\35\1\36\1\40\1\41\1\37\1\44\1\43\1\46\1\uffff"+
@@ -3808,9 +3841,9 @@ public class JPA2Lexer extends Lexer {
 		"\1\127\1\75\1\76\1\122\1\uffff\1\142\1\57\4\uffff\1\106\2\uffff\1\62\2"+
 		"\uffff\1\7\1\100\1\uffff\1\136\2\uffff\1\134\4\uffff\1\64\1\uffff\1\65"+
 		"\4\uffff\1\66";
-	static final String DFA10_specialS =
+	static final String DFA11_specialS =
 		"\50\uffff\1\2\113\uffff\1\1\1\0\u0135\uffff}>";
-	static final String[] DFA10_transitionS = {
+	static final String[] DFA11_transitionS = {
 			"\2\54\1\uffff\2\54\22\uffff\1\54\3\uffff\1\20\2\uffff\1\50\1\13\1\16"+
 			"\1\21\1\22\1\23\1\24\1\25\1\26\1\27\11\55\1\53\1\uffff\1\30\1\31\1\32"+
 			"\1\33\1\34\1\1\1\2\1\3\1\4\1\35\1\5\1\6\1\7\1\10\1\11\1\36\1\12\1\14"+
@@ -4250,34 +4283,34 @@ public class JPA2Lexer extends Lexer {
 			""
 	};
 
-	static final short[] DFA10_eot = DFA.unpackEncodedString(DFA10_eotS);
-	static final short[] DFA10_eof = DFA.unpackEncodedString(DFA10_eofS);
-	static final char[] DFA10_min = DFA.unpackEncodedStringToUnsignedChars(DFA10_minS);
-	static final char[] DFA10_max = DFA.unpackEncodedStringToUnsignedChars(DFA10_maxS);
-	static final short[] DFA10_accept = DFA.unpackEncodedString(DFA10_acceptS);
-	static final short[] DFA10_special = DFA.unpackEncodedString(DFA10_specialS);
-	static final short[][] DFA10_transition;
+	static final short[] DFA11_eot = DFA.unpackEncodedString(DFA11_eotS);
+	static final short[] DFA11_eof = DFA.unpackEncodedString(DFA11_eofS);
+	static final char[] DFA11_min = DFA.unpackEncodedStringToUnsignedChars(DFA11_minS);
+	static final char[] DFA11_max = DFA.unpackEncodedStringToUnsignedChars(DFA11_maxS);
+	static final short[] DFA11_accept = DFA.unpackEncodedString(DFA11_acceptS);
+	static final short[] DFA11_special = DFA.unpackEncodedString(DFA11_specialS);
+	static final short[][] DFA11_transition;
 
 	static {
-		int numStates = DFA10_transitionS.length;
-		DFA10_transition = new short[numStates][];
+		int numStates = DFA11_transitionS.length;
+		DFA11_transition = new short[numStates][];
 		for (int i=0; i<numStates; i++) {
-			DFA10_transition[i] = DFA.unpackEncodedString(DFA10_transitionS[i]);
+			DFA11_transition[i] = DFA.unpackEncodedString(DFA11_transitionS[i]);
 		}
 	}
 
-	protected class DFA10 extends DFA {
+	protected class DFA11 extends DFA {
 
-		public DFA10(BaseRecognizer recognizer) {
+		public DFA11(BaseRecognizer recognizer) {
 			this.recognizer = recognizer;
-			this.decisionNumber = 10;
-			this.eot = DFA10_eot;
-			this.eof = DFA10_eof;
-			this.min = DFA10_min;
-			this.max = DFA10_max;
-			this.accept = DFA10_accept;
-			this.special = DFA10_special;
-			this.transition = DFA10_transition;
+			this.decisionNumber = 11;
+			this.eot = DFA11_eot;
+			this.eof = DFA11_eof;
+			this.min = DFA11_min;
+			this.max = DFA11_max;
+			this.accept = DFA11_accept;
+			this.special = DFA11_special;
+			this.transition = DFA11_transition;
 		}
 		@Override
 		public String getDescription() {
@@ -4289,33 +4322,33 @@ public class JPA2Lexer extends Lexer {
 			int _s = s;
 			switch ( s ) {
 					case 0 : 
-						int LA10_117 = input.LA(1);
+						int LA11_117 = input.LA(1);
 						s = -1;
-						if ( (LA10_117=='\'') ) {s = 200;}
-						else if ( ((LA10_117 >= '\u0000' && LA10_117 <= '!')||(LA10_117 >= '#' && LA10_117 <= '&')||(LA10_117 >= '(' && LA10_117 <= '\uFFFF')) ) {s = 119;}
+						if ( (LA11_117=='\'') ) {s = 200;}
+						else if ( ((LA11_117 >= '\u0000' && LA11_117 <= '!')||(LA11_117 >= '#' && LA11_117 <= '&')||(LA11_117 >= '(' && LA11_117 <= '\uFFFF')) ) {s = 119;}
 						if ( s>=0 ) return s;
 						break;
 
 					case 1 : 
-						int LA10_116 = input.LA(1);
+						int LA11_116 = input.LA(1);
 						s = -1;
-						if ( (LA10_116=='\'') ) {s = 199;}
-						else if ( ((LA10_116 >= '\u0000' && LA10_116 <= '!')||(LA10_116 >= '#' && LA10_116 <= '&')||(LA10_116 >= '(' && LA10_116 <= '\uFFFF')) ) {s = 119;}
+						if ( (LA11_116=='\'') ) {s = 199;}
+						else if ( ((LA11_116 >= '\u0000' && LA11_116 <= '!')||(LA11_116 >= '#' && LA11_116 <= '&')||(LA11_116 >= '(' && LA11_116 <= '\uFFFF')) ) {s = 119;}
 						if ( s>=0 ) return s;
 						break;
 
 					case 2 : 
-						int LA10_40 = input.LA(1);
+						int LA11_40 = input.LA(1);
 						s = -1;
-						if ( (LA10_40=='.') ) {s = 116;}
-						else if ( ((LA10_40 >= '\u0000' && LA10_40 <= '!')||(LA10_40 >= '#' && LA10_40 <= '&')||(LA10_40 >= '(' && LA10_40 <= '-')||(LA10_40 >= '/' && LA10_40 <= '[')||(LA10_40 >= ']' && LA10_40 <= '\uFFFF')) ) {s = 117;}
-						else if ( (LA10_40=='\"') ) {s = 118;}
-						else if ( (LA10_40=='\''||LA10_40=='\\') ) {s = 119;}
+						if ( (LA11_40=='.') ) {s = 116;}
+						else if ( ((LA11_40 >= '\u0000' && LA11_40 <= '!')||(LA11_40 >= '#' && LA11_40 <= '&')||(LA11_40 >= '(' && LA11_40 <= '-')||(LA11_40 >= '/' && LA11_40 <= '[')||(LA11_40 >= ']' && LA11_40 <= '\uFFFF')) ) {s = 117;}
+						else if ( (LA11_40=='\"') ) {s = 118;}
+						else if ( (LA11_40=='\''||LA11_40=='\\') ) {s = 119;}
 						if ( s>=0 ) return s;
 						break;
 			}
 			NoViableAltException nvae =
-				new NoViableAltException(getDescription(), 10, _s, input);
+				new NoViableAltException(getDescription(), 11, _s, input);
 			error(nvae);
 			throw nvae;
 		}
