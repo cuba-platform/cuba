@@ -202,7 +202,7 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
         handled.add(entity.getUuid());
 
         for (MetaProperty property : metaClass.getProperties()) {
-            if (PersistenceHelper.isLoaded(entity, property.getName())) {
+            if (metadataTools.isPersistent(property) && PersistenceHelper.isLoaded(entity, property.getName())) {
                 Object value = entity.getValue(property.getName());
                 if (value instanceof Collection) {
                     Set<UUID> filtered = internalApplyConstraints((Collection<Entity>) value, handled);
