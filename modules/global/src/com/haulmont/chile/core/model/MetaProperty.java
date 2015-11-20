@@ -55,7 +55,7 @@ public interface MetaProperty extends MetadataObject {
     Range getRange();
 
     /**
-     * @return property type
+     * @return property type (DATATYPE, ENUM, ASSOCIATION, COMPOSITION)
      */
     Type getType();
 
@@ -72,6 +72,7 @@ public interface MetaProperty extends MetadataObject {
     /**
      * @return a MetaProperty from the opposite side of relation, or null if this is not a reference property
      */
+    @Nullable
     MetaProperty getInverse();
 
     /**

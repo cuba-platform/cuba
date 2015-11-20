@@ -12,6 +12,7 @@ import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
 import com.haulmont.cuba.gui.data.*;
@@ -19,6 +20,7 @@ import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -167,14 +169,18 @@ public class PropertyDatasourceImpl<T extends Entity>
                 // after repeated edit of new items the parent datasource can contain items-to-create which are deleted
                 // in this datasource, so we need to delete them
                 for (Iterator it = ((DatasourceImplementation) parentCollectionDs).getItemsToCreate().iterator(); it.hasNext(); ) {
-                    Object item = it.next();
-                    if (!itemsToCreate.contains(item))
-                        it.remove();
+                    Entity item = (Entity) it.next();
+                    if (!itemsToCreate.contains(item)) {
+                        MetaProperty inverseProp = metaProperty.getInverse();
+                        // delete only if they have the same master item
+                        if (inverseProp != null
+                                && PersistenceHelper.isLoaded(item, inverseProp.getName())
+                                && Objects.equals(item.getValue(inverseProp.getName()), masterDs.getItem())) {
+                            it.remove();
+                        }
+                    }
                 }
-
-            } /* else {
-                // ??? No idea what to do here
-            } */
+            }
             clearCommitLists();
             modified = false;
         }
