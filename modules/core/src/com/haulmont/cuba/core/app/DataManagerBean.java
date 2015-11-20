@@ -354,7 +354,9 @@ public class DataManagerBean implements DataManager {
             tx.end();
         }
 
-        security.applyConstraints(res);
+        if (userSessionSource.getUserSession().hasConstraints()) {
+            security.applyConstraints(res);
+        }
 
         for (Entity entity : res) {
             if (!persisted.contains(entity)) {
