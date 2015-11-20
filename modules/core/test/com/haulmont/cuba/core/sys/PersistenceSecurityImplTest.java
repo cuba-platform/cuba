@@ -27,7 +27,7 @@ public class PersistenceSecurityImplTest {
 
     @Test
     public void testSecurityToken() throws Exception {
-        PersistenceSecurity persistenceSecurity = AppBeans.get(PersistenceSecurity.NAME);
+        SecurityTokenManager persistenceSecurity = AppBeans.get(SecurityTokenManager.class);
         User user = new User();
         UUID id1 = UUID.randomUUID();
         UUID id2 = UUID.randomUUID();
