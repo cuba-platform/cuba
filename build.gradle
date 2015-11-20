@@ -195,6 +195,7 @@ configure(sharedLibModule) {
 
 configure(globalModule) {
     dependencies {
+        compile(group: 'org.json', name: 'json', version: '20140107')
         provided(servletApi)
     }
 
