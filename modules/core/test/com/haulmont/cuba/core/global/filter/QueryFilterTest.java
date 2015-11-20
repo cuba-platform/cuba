@@ -24,9 +24,6 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 
 public class QueryFilterTest {
-    @ClassRule
-    public static TestContainer cont = TestContainer.Common.INSTANCE;
-
     @Mocked
     GlobalConfig globalConfig;
 
