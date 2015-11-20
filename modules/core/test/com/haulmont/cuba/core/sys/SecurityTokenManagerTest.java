@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.core.sys;
 
-import com.haulmont.cuba.core.PersistenceSecurity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.testsupport.TestContainer;
@@ -20,7 +19,7 @@ import java.util.UUID;
  * @author degtyarjov
  * @version $Id$
  */
-public class PersistenceSecurityImplTest {
+public class SecurityTokenManagerTest {
 
     @ClassRule
     public static TestContainer testContainer = TestContainer.Common.INSTANCE;
