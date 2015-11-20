@@ -62,7 +62,7 @@ public class QueryFilter extends FilterParser {
 
         if (isActual(root, params)) {
             Condition refined = refine(root, params);
-            String where = new JpqlGenerator().generateJpql(refined);
+            String where = new FilterJpqlGenerator().generateJpql(refined);
 
             if (!StringUtils.isBlank(where)) {
                 Set<String> joins = refined.getJoins();

@@ -5,9 +5,6 @@
 
 package com.haulmont.cuba.core.global.filter;
 
-
-import com.haulmont.cuba.core.entity.Entity;
-
 import java.util.Iterator;
 import java.util.List;
 
@@ -15,7 +12,7 @@ import java.util.List;
  * @author degtyarjov
  * @version $Id$
  */
-public class JpqlGenerator {
+public abstract class AbstractJpqlGenerator {
     public String generateJpql(Condition condition) {
         if (condition instanceof LogicalCondition) {
             LogicalOp operation = ((LogicalCondition) condition).getOperation();
@@ -41,24 +38,10 @@ public class JpqlGenerator {
                 return sb.toString();
             }
         } else if (condition instanceof Clause) {
-            ParameterInfo parameterInfo = condition.getParameters().iterator().next();
-            Class javaClass = parameterInfo.getJavaClass();
-            if (javaClass == null) {
-                throw new UnsupportedOperationException();
-            } else if (Number.class.isAssignableFrom(javaClass) || Boolean.class.isAssignableFrom(javaClass)) {
-                return String.format("{E}.%s %s %s",
-                        condition.getName(), ((Clause) condition).getOperator().forJpql(), parameterInfo.getValue());
-            } else if (Entity.class.isAssignableFrom(javaClass)) {
-                return String.format("{E}.%s.id %s '%s'",
-                        condition.getName(), ((Clause) condition).getOperator().forJpql(), parameterInfo.getValue());
-            } else if (String.class.isAssignableFrom(javaClass)) {
-                return String.format("{E}.%s %s '%s'",
-                        condition.getName(), ((Clause) condition).getOperator().forJpql(), parameterInfo.getValue());
-            } else {
-                return String.format("{E}.%s %s '%s'",
-                        condition.getName(), ((Clause) condition).getOperator().forJpql(), parameterInfo.getValue());
-            }
+            return generateClauseText((Clause) condition);
         }
         throw new UnsupportedOperationException();
     }
+
+    protected abstract String generateClauseText(Clause condition);
 }

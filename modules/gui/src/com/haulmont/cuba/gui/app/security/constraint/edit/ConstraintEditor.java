@@ -10,7 +10,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.filter.GroovyGenerator;
-import com.haulmont.cuba.core.global.filter.JpqlGenerator;
+import com.haulmont.cuba.core.global.filter.SecurityJpqlGenerator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.*;
@@ -242,7 +242,7 @@ public class ConstraintEditor extends AbstractEditor {
 
                 Constraint item = (Constraint) getItem();
                 if (item.getCheckType().database()) {
-                    String jpql = new JpqlGenerator().generateJpql(filterParser.getRoot());
+                    String jpql = new SecurityJpqlGenerator().generateJpql(filterParser.getRoot());
                     constraint.setWhereClause(jpql);
                 }
 

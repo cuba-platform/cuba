@@ -45,8 +45,6 @@ public class QueryFilter2Test {
 
         Condition root = queryFilter.getRoot();
         System.out.println(new GroovyGenerator().generateGroovy(root));
-        System.out.println();
-        System.out.println();
-        System.out.println(new JpqlGenerator().generateJpql(root));
+        System.out.println(new SecurityJpqlGenerator().generateJpql(root));
     }
 }
