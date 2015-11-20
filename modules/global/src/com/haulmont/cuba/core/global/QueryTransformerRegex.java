@@ -23,7 +23,7 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
     private StringBuffer buffer;
     private Set<String> addedParams;
 
-    QueryTransformerRegex(String source) {
+    public QueryTransformerRegex(String source) {
         super(source);
         buffer = new StringBuffer(source);
         addedParams = new HashSet<>();

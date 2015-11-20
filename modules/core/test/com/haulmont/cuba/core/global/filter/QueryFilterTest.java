@@ -6,10 +6,10 @@
 package com.haulmont.cuba.core.global.filter;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.testsupport.TestContainer;
+import mockit.Mock;
+import mockit.MockUp;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 import org.dom4j.Document;
@@ -24,30 +24,21 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-@Ignore
 public class QueryFilterTest {
-    @Mocked
-    GlobalConfig globalConfig;
-
-    @Mocked
-    Configuration configuration;
-
-    @Mocked
-    AppBeans appBeans;
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     @Before
     public void setUp() {
-        new NonStrictExpectations() {
-            {
-                AppBeans.<Configuration>get(Configuration.NAME); result = configuration;
-
-                configuration.getConfig(GlobalConfig.class); result = globalConfig;
-
-                globalConfig.getUseAstBasedJpqlTransformer(); result = false;
+        new MockUp<QueryTransformerFactory>(){
+            // Redefine the method here
+            // But With No static modifier
+            @Mock
+            public QueryTransformer createTransformer(String query) {
+                return new QueryTransformerRegex(query);
             }
         };
     }
-
 
     private QueryFilter createFilter(String name) {
         InputStream stream = QueryFilterTest.class.getResourceAsStream("/com/haulmont/cuba/core/global/filter/" + name);
