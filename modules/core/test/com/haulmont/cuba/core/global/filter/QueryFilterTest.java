@@ -15,6 +15,7 @@ import mockit.NonStrictExpectations;
 import org.dom4j.Document;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -23,6 +24,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
+@Ignore
 public class QueryFilterTest {
     @Mocked
     GlobalConfig globalConfig;
