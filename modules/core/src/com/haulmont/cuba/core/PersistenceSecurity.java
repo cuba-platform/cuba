@@ -5,7 +5,11 @@
 
 package com.haulmont.cuba.core;
 
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Security;
+
+import java.util.Collection;
 
 /**
  * Interface providing methods to apply security on persistence layer.
@@ -25,15 +29,35 @@ public interface PersistenceSecurity extends Security {
     /**
      * Modifies the query depending on current user's security constraints.
      *
-     * @param query         query to modify
-     * @return              true if any constraints have been applied
+     * @param query query to modify
+     * @return true if any constraints have been applied
      */
     boolean applyConstraints(Query query);
 
     /**
      * Sets the query param to a value provided by user session (see constants above).
-     * @param query         Query instance
-     * @param paramName     parameter to set
+     *
+     * @param query     Query instance
+     * @param paramName parameter to set
      */
     void setQueryParam(Query query, String paramName);
+
+    /**
+     * Applies in-memory constraints to the entity
+     * @param entity -
+     * @return true, if entity should be filtered from client output
+     */
+    boolean applyConstraints(Entity entity);
+
+    /**
+     * Applies in-memory constraints to the collection of entities and filter the collection
+     * @param entities -
+     */
+    void applyConstraints(Collection<Entity> entities);
+
+    /**
+     * Reads security token and restores filtered data
+     * @param resultEntity -
+     */
+    void restoreFilteredData(BaseGenericIdEntity<?> resultEntity);
 }

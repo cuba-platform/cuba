@@ -11,7 +11,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.TemplateHelper;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
-import com.haulmont.cuba.gui.xml.ParameterInfo;
+import com.haulmont.cuba.core.global.filter.ParameterInfo;
 import org.apache.log4j.Logger;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;

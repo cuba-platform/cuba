@@ -15,7 +15,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.compatibility.DsContextCommitListenerWrapper;
-import com.haulmont.cuba.gui.xml.ParameterInfo;
+import com.haulmont.cuba.core.global.filter.ParameterInfo;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;

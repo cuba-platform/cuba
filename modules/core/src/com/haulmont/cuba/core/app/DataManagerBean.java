@@ -11,6 +11,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesManagerAPI;
@@ -20,10 +21,10 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.CategoryAttributeValue;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.PermissionType;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -31,6 +32,8 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
+
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  * @author krivopustov
@@ -87,7 +90,6 @@ public class DataManagerBean implements DataManager {
         }
 
         E result = null;
-
         Transaction tx = persistence.createTransaction();
         try {
             final EntityManager em = persistence.getEntityManager();
@@ -113,12 +115,19 @@ public class DataManagerBean implements DataManager {
             tx.end();
         }
 
+        if (userSessionSource.getUserSession().hasConstraints() && viewClassesHaveConstraints(context)) {
+            if (security.applyConstraints(result)) {
+                return null;
+            }
+        }
+
         attributeSecurity.afterLoad(result);
 
         return result;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <E extends Entity> List<E> loadList(LoadContext<E> context) {
         if (log.isDebugEnabled())
             log.debug("loadList: metaClass=" + context.getMetaClass() + ", view=" + context.getView()
@@ -137,7 +146,6 @@ public class DataManagerBean implements DataManager {
         queryResultsManager.savePreviousQueryResults(context);
 
         List<E> resultList;
-
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
@@ -168,6 +176,10 @@ public class DataManagerBean implements DataManager {
             tx.commit();
         } finally {
             tx.end();
+        }
+
+        if (userSessionSource.getUserSession().hasConstraints() && viewClassesHaveConstraints(context)) {
+            security.applyConstraints((Collection<Entity>) resultList);
         }
 
         attributeSecurity.afterLoad(resultList);
@@ -275,6 +287,7 @@ public class DataManagerBean implements DataManager {
                 // persist new
                 for (Entity entity : context.getCommitInstances()) {
                     if (PersistenceHelper.isNew(entity)) {
+                        checkOperationPermitted(entity, ConstraintOperationType.CREATE);
                         attributeSecurity.beforePersist(entity);
                         em.persist(entity);
                         res.add(entity);
@@ -289,6 +302,8 @@ public class DataManagerBean implements DataManager {
                 // merge detached
                 for (Entity entity : context.getCommitInstances()) {
                     if (PersistenceHelper.isDetached(entity)) {
+                        security.restoreFilteredData((BaseGenericIdEntity) entity);
+                        checkOperationPermitted(entity, ConstraintOperationType.UPDATE);
                         attributeSecurity.beforeMerge(entity);
                         View view = context.getViews().get(entity);
                         if (view == null) {
@@ -314,7 +329,9 @@ public class DataManagerBean implements DataManager {
 
             // remove
             for (Entity entity : context.getRemoveInstances()) {
+                security.restoreFilteredData((BaseGenericIdEntity) entity);
                 Entity e = em.merge(entity);
+                checkOperationPermitted(entity, ConstraintOperationType.DELETE);
                 em.remove(e);
                 res.add(e);
 
@@ -337,6 +354,8 @@ public class DataManagerBean implements DataManager {
             tx.end();
         }
 
+        security.applyConstraints(res);
+
         for (Entity entity : res) {
             if (!persisted.contains(entity)) {
                 View view = context.getViews().get(entity);
@@ -350,6 +369,15 @@ public class DataManagerBean implements DataManager {
         updateReferences(persisted, res);
 
         return res;
+    }
+
+    protected void checkOperationPermitted(Entity entity, ConstraintOperationType operationType) {
+        if (userSessionSource.getUserSession().hasConstraints()
+                && security.hasConstraints(entity.getMetaClass())
+                && !security.isPermitted(entity, operationType)) {
+            throw new RowLevelSecurityException(
+                    operationType + " is not permitted for entity " + entity, entity.getMetaClass().getName());
+        }
     }
 
     protected boolean entityHasDynamicAttributes(Entity entity) {
@@ -532,7 +560,7 @@ public class DataManagerBean implements DataManager {
 
     protected Query createQuery(EntityManager em, LoadContext context) {
         LoadContext.Query contextQuery = context.getQuery();
-        if ((contextQuery == null || StringUtils.isBlank(contextQuery.getQueryString()))
+        if ((contextQuery == null || isBlank(contextQuery.getQueryString()))
                 && context.getId() == null)
             throw new IllegalArgumentException("Query string or ID needed");
 
@@ -752,5 +780,36 @@ public class DataManagerBean implements DataManager {
                 return entity;
 
         return null;
+    }
+
+    protected boolean viewClassesHaveConstraints(LoadContext context) {
+        if (context.getView() == null) {
+            return false;
+        }
+
+        Session session = metadata.getSession();
+        for (Class aClass : collectEntityClasses(context.getView(), new HashSet<>())) {
+            if (security.hasConstraints(session.getClassNN(aClass))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected Set<Class> collectEntityClasses(View view, Set<View> visited) {
+        if (visited.contains(view)) {
+            return Collections.emptySet();
+        } else {
+            visited.add(view);
+        }
+
+        HashSet<Class> classes = new HashSet<>();
+        classes.add(view.getEntityClass());
+        for (ViewProperty viewProperty : view.getProperties()) {
+            if (viewProperty.getView() != null) {
+                classes.addAll(collectEntityClasses(viewProperty.getView(), visited));
+            }
+        }
+        return classes;
     }
 }

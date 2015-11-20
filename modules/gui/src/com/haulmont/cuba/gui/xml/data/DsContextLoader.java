@@ -14,7 +14,7 @@ import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.DsContextImpl;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
-import com.haulmont.cuba.gui.filter.QueryFilter;
+import com.haulmont.cuba.core.global.filter.QueryFilter;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 

@@ -20,24 +20,52 @@
             <columns count="3"/>
             <rows>
                 <row id="nameRow">
-                    <label value="msg://entityName" align="MIDDLE_LEFT"/>
+                    <label value="msg://com.haulmont.cuba.security.entity/Constraint.entityName" align="MIDDLE_LEFT" width="120"/>
                     <lookupField id="entityName" datasource="constraint" property="entityName" required="true"
                                  width="${width}"/>
                     <label value=""/>
                 </row>
+                <row id="typeRow">
+                    <label value="msg://com.haulmont.cuba.security.entity/Constraint.checkType" align="MIDDLE_LEFT"/>
+                    <lookupField id="type" datasource="constraint" property="checkType" required="true"
+                                 width="${width}"/>
+                    <label value=""/>
+                </row>
+                <row id="areaRow">
+                    <label value="msg://com.haulmont.cuba.security.entity/Constraint.operationType" align="MIDDLE_LEFT"/>
+                    <lookupField id="area" datasource="constraint" property="operationType" required="true"
+                                 width="${width}"/>
+                </row>
+                <row id="codeRow">
+                    <label id="codeLabel" value="msg://com.haulmont.cuba.security.entity/Constraint.code" align="MIDDLE_LEFT"/>
+                    <textField id="code" datasource="constraint" property="code" required="true"
+                               width="${width}"/>
+                </row>
+                <row>
+                    <label value=""/>
+                    <linkButton colspan="2" id="wizard" caption="msg://wizard" invoke="openWizard"/>
+                </row>
                 <row id="joinRow">
-                    <label value="msg://joinClause" align="TOP_LEFT"/>
+                    <label id="joinClauseLabel" value="msg://com.haulmont.cuba.security.entity/Constraint.joinClause" align="TOP_LEFT"/>
                     <sourceCodeEditor id="joinClause" datasource="constraint" property="joinClause"
                                       width="${width}"
                                       height="theme://cuba.gui.constraint-edit.joinClause.height"/>
-                    <linkButton icon="icons/question-white.png" invoke="getJoinClauseHelp"/>
+                    <linkButton id="joinClauseHelp" icon="icons/question-white.png" invoke="getJoinClauseHelp"/>
                 </row>
                 <row id="whereRow">
-                    <label value="msg://whereClause" align="TOP_LEFT"/>
-                    <sourceCodeEditor id="whereClause" datasource="constraint" property="whereClause"
-                                      width="${width}" required="true"
+                    <label id="whereClauseLabel" value="msg://com.haulmont.cuba.security.entity/Constraint.whereClause" align="TOP_LEFT"/>
+                    <sourceCodeEditor id="whereClause" datasource="constraint" property="whereClause" required="true"
+                                      width="${width}"
                                       height="theme://cuba.gui.constraint-edit.whereClause.height"/>
-                    <linkButton icon="icons/question-white.png" invoke="getWhereClauseHelp"/>
+                    <linkButton id="whereClauseHelp" icon="icons/question-white.png" invoke="getWhereClauseHelp"/>
+                </row>
+                <row id="groovyRow">
+                    <label id="groovyScriptLabel"
+                           value="msg://com.haulmont.cuba.security.entity/Constraint.groovyScript" align="TOP_LEFT"/>
+                    <sourceCodeEditor id="groovyScript" datasource="constraint" property="groovyScript" required="true"
+                                      width="${width}"
+                                      height="theme://cuba.gui.constraint-edit.whereClause.height"/>
+                    <linkButton id="groovyScriptHelp" icon="icons/question-white.png" invoke="getGroovyScriptHelp"/>
                 </row>
             </rows>
         </grid>

@@ -6,6 +6,8 @@
 package com.haulmont.cuba.gui.xml;
 
 import com.google.common.base.Predicate;
+import com.haulmont.cuba.core.global.filter.ParameterInfo;
+import com.haulmont.cuba.core.global.filter.ParametersHelper;
 import com.google.common.collect.Iterables;
 import junit.framework.TestCase;
 import org.junit.Test;

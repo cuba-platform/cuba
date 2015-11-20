@@ -107,7 +107,7 @@ public class FilterEditor extends AbstractWindow {
     protected Boolean useShortConditionForm;
 
     protected final List<String> componentsToHideInShortForm = Arrays.asList("hiddenLabel", "hidden",
-            "requiredLabel", "required", "widthLabel", "width", "defaultValueLayoutLabel", "defaultValueLayout",
+            "requiredLabel", "required", "widthLabel", "width", //"defaultValueLayoutLabel", "defaultValueLayout",
             "captionLabel", "caption");
 
     public interface Companion {

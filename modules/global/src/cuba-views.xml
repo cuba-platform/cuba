@@ -131,8 +131,10 @@
     <view class="com.haulmont.cuba.security.entity.Constraint" name="group.browse">
         <property name="group" view="group.lookup"/>
         <property name="entityName"/>
+        <property name="operationType"/>
         <property name="joinClause"/>
         <property name="whereClause"/>
+        <property name="groovyScript"/>
     </view>
 
     <view class="com.haulmont.cuba.security.entity.SessionAttribute" name="edit" extends="_local">
@@ -217,8 +219,13 @@
 
     <view class="com.haulmont.cuba.security.entity.Constraint" name="edit">
         <property name="entityName"/>
+        <property name="code"/>
+        <property name="checkType"/>
+        <property name="operationType"/>
         <property name="joinClause"/>
         <property name="whereClause"/>
+        <property name="groovyScript"/>
+        <property name="filterXml"/>
     </view>
 
     <view class="com.haulmont.cuba.security.entity.LoggedEntity"

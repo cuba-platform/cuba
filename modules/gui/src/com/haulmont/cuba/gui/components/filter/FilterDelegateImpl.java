@@ -37,8 +37,8 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
-import com.haulmont.cuba.gui.filter.DenyingClause;
-import com.haulmont.cuba.gui.filter.QueryFilter;
+import com.haulmont.cuba.core.global.filter.DenyingClause;
+import com.haulmont.cuba.core.global.filter.QueryFilter;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -1204,7 +1204,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             // set initial denying condition to get empty datasource before explicit filter applying
             QueryFilter queryFilter = new QueryFilter(new DenyingClause(), datasource.getMetaClass().getName());
             if (dsQueryFilter != null) {
-                queryFilter = new QueryFilter(dsQueryFilter, queryFilter);
+                queryFilter = QueryFilter.merge(dsQueryFilter, queryFilter);
             }
             datasource.setQueryFilter(queryFilter);
         }
@@ -1408,7 +1408,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 QueryFilter queryFilter = new QueryFilter(element, datasource.getMetaClass().getName());
 
                 if (dsQueryFilter != null) {
-                    queryFilter = new QueryFilter(dsQueryFilter, queryFilter);
+                    queryFilter = QueryFilter.merge(dsQueryFilter, queryFilter);
                 }
 
                 datasource.setQueryFilter(queryFilter);

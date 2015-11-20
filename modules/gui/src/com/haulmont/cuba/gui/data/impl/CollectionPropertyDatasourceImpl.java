@@ -18,7 +18,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleDatasourceListenerWrapper;
-import com.haulmont.cuba.gui.filter.QueryFilter;
+import com.haulmont.cuba.core.global.filter.QueryFilter;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.PermissionType;

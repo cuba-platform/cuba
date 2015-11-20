@@ -12,7 +12,7 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.components.filter.Op;
+import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.gui.components.filter.OpManager;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.FilterConditionUtils;

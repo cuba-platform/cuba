@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentFinder;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -24,12 +25,10 @@ import com.haulmont.cuba.gui.components.filter.*;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
 import com.haulmont.cuba.gui.components.filter.descriptor.PropertyConditionDescriptor;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 /**

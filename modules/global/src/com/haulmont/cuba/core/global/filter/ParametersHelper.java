@@ -1,17 +1,16 @@
 /*
- * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Copyright (c) 2008-2015 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
-package com.haulmont.cuba.gui.xml;
-
-import com.haulmont.cuba.gui.filter.QueryFilter;
-
-import javax.annotation.Nullable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.*;
+package com.haulmont.cuba.core.global.filter;
 
 import org.apache.commons.lang.StringUtils;
+
+import javax.annotation.Nullable;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author abramov

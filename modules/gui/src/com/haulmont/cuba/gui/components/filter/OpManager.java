@@ -5,6 +5,8 @@
 
 package com.haulmont.cuba.gui.components.filter;
 
+import com.haulmont.cuba.core.global.filter.Op;
+
 import java.util.EnumSet;
 
 /**

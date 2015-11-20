@@ -6,6 +6,7 @@
 package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
+import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
@@ -14,7 +15,7 @@ import com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondit
 import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
-import com.haulmont.cuba.gui.xml.ParametersHelper;
+import com.haulmont.cuba.core.global.filter.ParametersHelper;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;

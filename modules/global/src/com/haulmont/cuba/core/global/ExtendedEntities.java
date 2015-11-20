@@ -8,8 +8,8 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.annotation.ExtendedBy;
 import com.haulmont.cuba.core.entity.annotation.Extends;
-
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.HashMap;
@@ -46,8 +46,9 @@ public class ExtendedEntities {
 
     /**
      * Searches for an extended entity and returns it if found, otherwise returns the original entity.
+     *
      * @param originalMetaClass original entity
-     * @return                  extended or original entity
+     * @return extended or original entity
      */
     public Class getEffectiveClass(MetaClass originalMetaClass) {
         Class extClass = getExtendedClass(originalMetaClass);
@@ -56,8 +57,9 @@ public class ExtendedEntities {
 
     /**
      * Searches for an extended entity and returns it if found, otherwise returns the original entity.
+     *
      * @param originalClass original entity
-     * @return              extended or original entity
+     * @return extended or original entity
      */
     public Class getEffectiveClass(Class originalClass) {
         return getEffectiveClass(metadata.getSession().getClassNN(originalClass));
@@ -65,8 +67,9 @@ public class ExtendedEntities {
 
     /**
      * Searches for an extended entity and returns it if found, otherwise returns the original entity.
-     * @param entityName    original entity
-     * @return              extended or original entity
+     *
+     * @param entityName original entity
+     * @return extended or original entity
      */
     public Class getEffectiveClass(String entityName) {
         return getEffectiveClass(metadata.getSession().getClassNN(entityName));
@@ -74,8 +77,9 @@ public class ExtendedEntities {
 
     /**
      * Searches for an extended entity and returns it if found, otherwise returns the original entity.
+     *
      * @param originalMetaClass original entity
-     * @return                  extended or original entity
+     * @return extended or original entity
      */
     public MetaClass getEffectiveMetaClass(MetaClass originalMetaClass) {
         return metadata.getSession().getClassNN(getEffectiveClass(originalMetaClass));
@@ -83,8 +87,9 @@ public class ExtendedEntities {
 
     /**
      * Searches for an extended entity and returns it if found, otherwise returns the original entity.
+     *
      * @param originalClass original entity
-     * @return              extended or original entity
+     * @return extended or original entity
      */
     public MetaClass getEffectiveMetaClass(Class originalClass) {
         return metadata.getSession().getClassNN(getEffectiveClass(originalClass));
@@ -92,8 +97,9 @@ public class ExtendedEntities {
 
     /**
      * Searches for an extended entity and returns it if found, otherwise returns the original entity.
-     * @param entityName    original entity
-     * @return              extended or original entity
+     *
+     * @param entityName original entity
+     * @return extended or original entity
      */
     public MetaClass getEffectiveMetaClass(String entityName) {
         return getEffectiveMetaClass(metadata.getSession().getClassNN(entityName));
@@ -101,8 +107,9 @@ public class ExtendedEntities {
 
     /**
      * Searches for an extended entity and returns it if found.
+     *
      * @param originalMetaClass original entity
-     * @return                  extended entity or null if the provided entity has no extension
+     * @return extended entity or null if the provided entity has no extension
      */
     @Nullable
     public Class getExtendedClass(MetaClass originalMetaClass) {
@@ -111,8 +118,9 @@ public class ExtendedEntities {
 
     /**
      * Searches for an original entity for the provided extended entity.
+     *
      * @param extendedMetaClass extended entity
-     * @return                  original entity or null if the provided entity is not an extension
+     * @return original entity or null if the provided entity is not an extension
      */
     @Nullable
     public Class getOriginalClass(MetaClass extendedMetaClass) {
@@ -121,8 +129,9 @@ public class ExtendedEntities {
 
     /**
      * Searches for an original entity for the provided extended entity.
+     *
      * @param extendedMetaClass extended entity
-     * @return                  original entity or null if the provided entity is not an extension
+     * @return original entity or null if the provided entity is not an extension
      */
     @Nullable
     public MetaClass getOriginalMetaClass(MetaClass extendedMetaClass) {
@@ -136,17 +145,26 @@ public class ExtendedEntities {
             return metaClass;
         }
 
-        return  metadata.getSession().getClassNN(originalClass);
+        return metadata.getSession().getClassNN(originalClass);
     }
 
     /**
      * Searches for an original entity for the provided extended entity.
+     *
      * @param extendedEntityName extended entity
-     * @return                   original entity or null if the provided entity is not an extension
+     * @return original entity or null if the provided entity is not an extension
      */
     @Nullable
     public MetaClass getOriginalMetaClass(String extendedEntityName) {
         return getOriginalMetaClass(metadata.getSession().getClassNN(extendedEntityName));
+    }
+
+    /**
+     * @return original meta class or received meta class if it's not extended
+     */
+    public MetaClass getOriginalOrThisMetaClass(MetaClass metaClass) {
+        MetaClass originalMetaClass = getOriginalMetaClass(metaClass);
+        return originalMetaClass != null ? originalMetaClass : metaClass;
     }
 
     /**

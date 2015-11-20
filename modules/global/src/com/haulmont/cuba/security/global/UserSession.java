@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.security.global;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.security.entity.*;
 
@@ -11,13 +12,15 @@ import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Class that encapsulates an active user session.
- *
+ * <p>
  * <p>It contains user attributes, credentials, set of permissions, and methods to check permissions for certain
  * objects.</p>
- *
+ * <p>
  * <p>On the client side a descendant of this class is maintained:
  * <code>com.haulmont.cuba.client.ClientUserSession</code></p>
  *
@@ -40,7 +43,7 @@ public class UserSession implements Serializable {
     protected boolean system;
 
     protected Map<String, Integer>[] permissions;
-    protected Map<String, List<String[]>> constraints;
+    protected ArrayListMultimap<String, ConstraintData> constraints;
 
     protected Map<String, Serializable> attributes;
 
@@ -68,7 +71,7 @@ public class UserSession implements Serializable {
             permissions[i] = new HashMap<>();
         }
 
-        constraints = new HashMap<>();
+        constraints = ArrayListMultimap.create();
         attributes = new ConcurrentHashMap<>();
     }
 
@@ -230,30 +233,40 @@ public class UserSession implements Serializable {
         return permissions[type.ordinal()].get(target);
     }
 
-    /** Get permissions by type */
+    /**
+     * Get permissions by type
+     */
     public Map<String, Integer> getPermissionsByType(PermissionType type) {
         return Collections.unmodifiableMap(permissions[type.ordinal()]);
     }
 
-    /** Check user permission for the screen */
+    /**
+     * Check user permission for the screen
+     */
     public boolean isScreenPermitted(String windowAlias) {
         return isPermitted(PermissionType.SCREEN, windowAlias);
     }
 
-    /** Check user permission for the entity operation */
+    /**
+     * Check user permission for the entity operation
+     */
     public boolean isEntityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
         return isPermitted(PermissionType.ENTITY_OP,
                 metaClass.getName() + Permission.TARGET_PATH_DELIMETER + entityOp.getId());
     }
 
-    /** Check user permission for the entity attribute */
+    /**
+     * Check user permission for the entity attribute
+     */
     public boolean isEntityAttrPermitted(MetaClass metaClass, String property, EntityAttrAccess access) {
         return isPermitted(PermissionType.ENTITY_ATTR,
                 metaClass.getName() + Permission.TARGET_PATH_DELIMETER + property,
                 access.getId());
     }
 
-    /** Check specific user permission */
+    /**
+     * Check specific user permission
+     */
     public boolean isSpecificPermitted(String name) {
         return isPermitted(PermissionType.SPECIFIC, name);
     }
@@ -263,13 +276,14 @@ public class UserSession implements Serializable {
      * <br>Same as {@link #isPermitted(com.haulmont.cuba.security.entity.PermissionType, String, int)}
      * with value=1
      * <br>This method makes sense for permission types with two possible values 0,1
-     * @param type permission type
+     *
+     * @param type   permission type
      * @param target permission target:<ul>
-     * <li>screen
-     * <li>entity operation (view, create, update, delete)
-     * <li>entity attribute name
-     * <li>specific permission name
-     * </ul>
+     *               <li>screen
+     *               <li>entity operation (view, create, update, delete)
+     *               <li>entity attribute name
+     *               <li>specific permission name
+     *               </ul>
      * @return true if permitted, false otherwise
      */
     public boolean isPermitted(PermissionType type, String target) {
@@ -278,15 +292,16 @@ public class UserSession implements Serializable {
 
     /**
      * Check user permission for the specified value.
-     * @param type permission type
+     *
+     * @param type   permission type
      * @param target permission target:<ul>
-     * <li>screen
-     * <li>entity operation (view, create, update, delete)
-     * <li>entity attribute name
-     * <li>specific permission name
-     * </ul>
-     * @param value method returns true if the corresponding {@link com.haulmont.cuba.security.entity.Permission}
-     * record contains value equal or greater than specified
+     *               <li>screen
+     *               <li>entity operation (view, create, update, delete)
+     *               <li>entity attribute name
+     *               <li>specific permission name
+     *               </ul>
+     * @param value  method returns true if the corresponding {@link com.haulmont.cuba.security.entity.Permission}
+     *               record contains value equal or greater than specified
      * @return true if permitted, false otherwise
      */
     public boolean isPermitted(PermissionType type, String target, int value) {
@@ -309,25 +324,43 @@ public class UserSession implements Serializable {
     /**
      * INTERNAL
      */
-    public void addConstraint(String entityName, String joinClause, String whereClause) {
-        List<String[]> list = constraints.get(entityName);
-        if (list == null) {
-            list = new ArrayList<>();
-            constraints.put(entityName, list);
-        }
-        list.add(new String[] {joinClause, whereClause});
+    public void addConstraint(Constraint constraint) {
+        String entityName = constraint.getEntityName();
+        constraints.put(entityName, new ConstraintData(constraint));
     }
 
     /**
      * INTERNAL
      */
-    public List<String[]> getConstraints(String entityName) {
-        List<String[]> list = constraints.get(entityName);
-        return list != null ? list : Collections.<String[]>emptyList();
+    public List<ConstraintData> getConstraints(String entityName) {
+        return Collections.unmodifiableList(constraints.get(entityName));
+    }
+
+    /**
+     * INTERNAL
+     */
+    public boolean hasConstraints(String entityName) {
+        return constraints.containsKey(entityName);
+    }
+
+    /**
+     * INTERNAL
+     */
+    public boolean hasConstraints() {
+        return !constraints.isEmpty();
+    }
+
+    /**
+     * INTERNAL
+     */
+    public List<ConstraintData> getConstraints(String entityName, Predicate<ConstraintData> predicate) {
+        List<ConstraintData> list = constraints.get(entityName);
+        return Collections.unmodifiableList(list.stream().filter(predicate).collect(Collectors.toList()));
     }
 
     /**
      * Get user session attribute. Attribute is a named serializable object bound to session.
+     *
      * @param name attribute name. The following names have predefined values:
      *             <ul>
      *             <li>userId - current or substituted user ID</li>
@@ -346,17 +379,19 @@ public class UserSession implements Serializable {
             return (T) attributes.get(name);
     }
 
-     /**
+    /**
      * Remove user session attribute. Attribute is a named serializable object bound to session.
+     *
      * @param name attribute name
      */
     public void removeAttribute(String name) {
-         attributes.remove(name);
+        attributes.remove(name);
     }
 
     /**
      * Set user session attribute. Attribute is a named serializable object bound to session.
-     * @param name attribute name
+     *
+     * @param name  attribute name
      * @param value attribute value
      */
     public void setAttribute(String name, Serializable value) {
@@ -373,7 +408,7 @@ public class UserSession implements Serializable {
 
     /**
      * System session is created by <code>LoginWorker.loginSystem()</code> for system users like schedulers and JMX.
-     * <p/>
+     * <p>
      * It is not replicated in cluster.
      */
     public boolean isSystem() {

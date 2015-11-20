@@ -102,9 +102,11 @@
                                 <action id="refresh"/>
                             </actions>
                             <columns>
-                                <column id="entityName" caption="msg://entity"/>
-                                <column id="joinClause" caption="msg://join"/>
-                                <column id="whereClause" caption="msg://where"/>
+                                <column id="entityName" caption="msg://com.haulmont.cuba.security.entity/Constraint.entityName"/>
+                                <column id="operationType" caption="msg://com.haulmont.cuba.security.entity/Constraint.operationType"/>
+                                <column id="joinClause" caption="msg://com.haulmont.cuba.security.entity/Constraint.joinClause"/>
+                                <column id="whereClause" caption="msg://com.haulmont.cuba.security.entity/Constraint.whereClause"/>
+                                <column id="groovyScript" caption="msg://com.haulmont.cuba.security.entity/Constraint.groovyScript"/>
                             </columns>
                             <rows datasource="constraintsDs"/>
                         </table>

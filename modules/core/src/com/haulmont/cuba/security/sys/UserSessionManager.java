@@ -159,7 +159,7 @@ public class UserSessionManager implements UserSessionFinder {
         List<Constraint> list = new ArrayList<>(constraints);
         list.addAll(group.getConstraints());
         for (Constraint constraint : list) {
-            session.addConstraint(constraint.getEntityName(), constraint.getJoinClause(), constraint.getWhereClause());
+            session.addConstraint(constraint);
         }
     }
 

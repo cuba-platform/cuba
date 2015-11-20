@@ -140,4 +140,11 @@ public interface ServerConfig extends Config {
     @Property("cuba.entityAttributePermissionChecking")
     @DefaultBoolean(true)
     boolean getEntityAttributePermissionChecking();
+
+    /**
+     * <= 16 symbols string, used as key for AES encryption of security token
+     */
+    @Property("cuba.keyForSecurityTokenEncryption")
+    @DefaultString("CUBA.Platform")
+    String getKeyForSecurityTokenEncryption();
 }

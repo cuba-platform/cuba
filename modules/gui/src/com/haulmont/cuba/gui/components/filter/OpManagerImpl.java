@@ -7,12 +7,13 @@ package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.cuba.core.entity.Entity;
 
+import com.haulmont.cuba.core.global.filter.Op;
 import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static com.haulmont.cuba.gui.components.filter.Op.*;
+import static com.haulmont.cuba.core.global.filter.Op.*;
 
 /**
  * @author gorbunkov

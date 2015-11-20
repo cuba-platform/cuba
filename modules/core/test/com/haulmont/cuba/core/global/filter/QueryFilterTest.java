@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Copyright (c) 2008-2015 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
-package com.haulmont.cuba.gui.filter;
+
+package com.haulmont.cuba.core.global.filter;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.testsupport.TestContainer;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 import org.dom4j.Document;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -19,18 +23,25 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-public class QueryFilterTest extends CubaClientTestCase {
+public class QueryFilterTest {
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     @Mocked
     GlobalConfig globalConfig;
 
+    @Mocked
+    Configuration configuration;
+
+    @Mocked
+    AppBeans appBeans;
+
     @Before
     public void setUp() {
-        addEntityPackage("com.haulmont.cuba");
-        setupInfrastructure();
-
         new NonStrictExpectations() {
             {
+                AppBeans.<Configuration>get(Configuration.NAME); result = configuration;
+
                 configuration.getConfig(GlobalConfig.class); result = globalConfig;
 
                 globalConfig.getUseAstBasedJpqlTransformer(); result = false;
@@ -38,8 +49,9 @@ public class QueryFilterTest extends CubaClientTestCase {
         };
     }
 
+
     private QueryFilter createFilter(String name) {
-        InputStream stream = QueryFilterTest.class.getResourceAsStream("/com/haulmont/cuba/gui/filter/" + name);
+        InputStream stream = QueryFilterTest.class.getResourceAsStream("/com/haulmont/cuba/core/global/filter/" + name);
         Document doc = Dom4j.readDocument(stream);
         return new QueryFilter(doc.getRootElement(), "saneco$GenDoc");
     }

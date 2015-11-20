@@ -9,7 +9,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PopupButton;
-import com.haulmont.cuba.gui.components.filter.Op;
+import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.gui.components.filter.OpManager;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;

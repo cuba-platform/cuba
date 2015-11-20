@@ -6,6 +6,8 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 
@@ -110,4 +112,24 @@ public interface Security {
      * @throws AccessDeniedException if the user has no specified permission
      */
     void checkSpecificPermission(String name);
+
+    /**
+     * Check if the operation type is permitted for the entity
+     * @param entity -
+     * @param operationType -
+     */
+    boolean isPermitted(Entity entity, ConstraintOperationType operationType);
+
+    /**
+     * Check the special constraint permission for the entity
+     * @param entity -
+     * @param customCode -
+     */
+    boolean isPermitted(Entity entity, String customCode);
+
+    /**
+     * Check if there are registered constraints for the metaClass or it's original metaClass
+     * @param metaClass -
+     */
+    boolean hasConstraints(MetaClass metaClass);
 }

@@ -21,7 +21,7 @@ import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
-import com.haulmont.cuba.gui.components.filter.Op;
+import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.gui.components.filter.OpManager;
 import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondition;
@@ -121,7 +121,7 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
         condition.setJoin(", sys$CategoryAttributeValue " + cavAlias + " ");
 
         String paramName;
-        String operation = operationLookup.<Op>getValue().getText();
+        String operation = operationLookup.<Op>getValue().forJpql();
         Op op = operationLookup.getValue();
 
         Class javaClass = DynamicAttributesUtils.getAttributeClass(attribute);

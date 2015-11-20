@@ -7,7 +7,7 @@ package com.haulmont.cuba.gui.data;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.gui.components.AggregationInfo;
-import com.haulmont.cuba.gui.filter.QueryFilter;
+import com.haulmont.cuba.core.global.filter.QueryFilter;
 
 import javax.annotation.Nullable;
 import java.util.Collection;

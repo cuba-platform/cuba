@@ -10,6 +10,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.FilterConditionUtils;
 import com.haulmont.cuba.gui.components.filter.condition.GroupCondition;

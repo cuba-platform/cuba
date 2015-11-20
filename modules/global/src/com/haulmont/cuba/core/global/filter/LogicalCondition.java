@@ -1,10 +1,8 @@
 /*
- * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Copyright (c) 2008-2015 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
-package com.haulmont.cuba.gui.filter;
-
-import com.haulmont.cuba.gui.xml.ParameterInfo;
+package com.haulmont.cuba.core.global.filter;
 
 import java.util.*;
 
@@ -13,12 +11,12 @@ import java.util.*;
  * @version $Id$
  */
 public class LogicalCondition extends Condition {
-
     private final LogicalOp operation;
 
     private List<Condition> conditions = new ArrayList<>();
 
-    public LogicalCondition(LogicalOp operation) {
+    public LogicalCondition(String name, LogicalOp operation) {
+        super(name);
         this.operation = operation;
     }
 
@@ -34,30 +32,6 @@ public class LogicalCondition extends Condition {
     @Override
     public void setConditions(List<Condition> conditions) {
         this.conditions = conditions;
-    }
-
-    @Override
-    public String getContent() {
-        if (conditions.isEmpty())
-            return "";
-        else {
-            StringBuilder sb = new StringBuilder();
-
-            if (conditions.size() > 1)
-                sb.append("(");
-
-            for (Iterator<Condition> it = conditions.iterator(); it.hasNext();) {
-                Condition condition = it.next();
-                sb.append(condition.getContent());
-                if (it.hasNext())
-                    sb.append(" ").append(operation.getText()).append(" ");
-            }
-
-            if (conditions.size() > 1)
-                sb.append(")");
-
-            return sb.toString();
-        }
     }
 
     @Override

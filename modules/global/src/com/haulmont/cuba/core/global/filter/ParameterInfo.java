@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Copyright (c) 2008-2015 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
-package com.haulmont.cuba.gui.xml;
+package com.haulmont.cuba.core.global.filter;
 
 import javax.annotation.Nullable;
 
@@ -30,11 +30,12 @@ public class ParameterInfo {
         }
     }
 
-    private Type type;
-    private String path;
-    private Class javaClass;
-    private String conditionName;
-    private boolean caseInsensitive;
+    protected Type type;
+    protected String path;
+    protected Class javaClass;
+    protected String conditionName;
+    protected boolean caseInsensitive;
+    protected String value;
 
     ParameterInfo(String name, Type type, boolean caseInsensitive) {
         this.path = name;
@@ -78,6 +79,14 @@ public class ParameterInfo {
 
     public void setConditionName(String conditionName) {
         this.conditionName = conditionName;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
     @Override

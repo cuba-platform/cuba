@@ -5,6 +5,8 @@
 package com.haulmont.cuba.core.entity;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
@@ -20,9 +22,7 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Base class for persistent entities.
@@ -59,6 +59,15 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
     protected String[] __inaccessibleAttributes;
 
     @Transient
+    protected transient Multimap<String, UUID> __filteredData = null;
+
+    @Transient
+    protected String[] __filteredAttributes;
+
+    @Transient
+    protected byte[] __securityToken;
+
+    @Transient
     protected Map<String, CategoryAttributeValue> dynamicAttributes = null;
 
     @Column(name = "CREATE_TS")
@@ -75,52 +84,72 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
         out.defaultWriteObject();
     }
 
-    /** INTERNAL. */
+    /**
+     * INTERNAL.
+     */
     public boolean __new() {
         return __new;
     }
 
-    /** INTERNAL. */
+    /**
+     * INTERNAL.
+     */
     public void __new(boolean cubaNew) {
         this.__new = cubaNew;
     }
 
-    /** INTERNAL. */
+    /**
+     * INTERNAL.
+     */
     public boolean __managed() {
         return __managed;
     }
 
-    /** INTERNAL. */
+    /**
+     * INTERNAL.
+     */
     public void __managed(boolean cubaManaged) {
         this.__managed = cubaManaged;
     }
 
-    /** INTERNAL. */
+    /**
+     * INTERNAL.
+     */
     public boolean __detached() {
         return __detached;
     }
 
-    /** INTERNAL. */
+    /**
+     * INTERNAL.
+     */
     public void __detached(boolean detached) {
         this.__detached = detached;
     }
 
-    /** INTERNAL. */
+    /**
+     * INTERNAL.
+     */
     public boolean __removed() {
         return __removed;
     }
 
-    /** INTERNAL. */
+    /**
+     * INTERNAL.
+     */
     public void __removed(boolean removed) {
         this.__removed = removed;
     }
 
-    /** INTERNAL */
+    /**
+     * INTERNAL
+     */
     public String[] __inaccessibleAttributes() {
         return __inaccessibleAttributes;
     }
 
-    /** INTERNAL */
+    /**
+     * INTERNAL
+     */
     public void __inaccessibleAttributes(String[] __inaccessibleAttributes) {
         this.__inaccessibleAttributes = __inaccessibleAttributes;
     }
@@ -213,5 +242,72 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
     @Nullable
     public Map<String, CategoryAttributeValue> getDynamicAttributes() {
         return dynamicAttributes;
+    }
+
+    /**
+     * INTERNAL.
+     */
+    public void __addFiltered(String property, UUID uuid) {
+        __initFiltered();
+        __filteredData.put(property, uuid);
+    }
+
+    /**
+     * INTERNAL.
+     */
+    public void __addFiltered(String property, Collection<UUID> uuids) {
+        __initFiltered();
+        __filteredData.putAll(property, uuids);
+    }
+
+    /**
+     * INTERNAL.
+     */
+    protected void __initFiltered() {
+        if (__filteredData == null) {
+            __filteredData = ArrayListMultimap.create();
+        }
+    }
+
+    /**
+     * INTERNAL.
+     */
+    public Multimap<String, UUID> __getFilteredData() {
+        return __filteredData;
+    }
+
+    /**
+     * INTERNAL.
+     */
+    public void __setFilteredData(Multimap<String, UUID> filtered) {
+        this.__filteredData = filtered;
+    }
+
+    /**
+     * INTERNAL.
+     */
+    public byte[] __getSecurityToken() {
+        return __securityToken;
+    }
+
+    /**
+     * INTERNAL.
+     */
+    public void __setSecurityToken(byte[] securityToken) {
+        this.__securityToken = securityToken;
+    }
+
+    /**
+     * INTERNAL.
+     */
+    public String[] __getFilteredAttributes() {
+        return __filteredAttributes;
+    }
+
+    /**
+     * INTERNAL.
+     */
+    public void __setFilteredAttributes(String[] __filteredAttributes) {
+        this.__filteredAttributes = __filteredAttributes;
     }
 }

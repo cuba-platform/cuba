@@ -7,13 +7,28 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.PermissionType;
-
+import com.haulmont.cuba.security.global.ConstraintData;
+import com.haulmont.cuba.security.global.UserSession;
+import org.apache.commons.lang.StringUtils;
+import org.codehaus.groovy.runtime.MethodClosure;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
+
+import static java.lang.String.format;
 
 /**
  * @author krivopustov
@@ -21,6 +36,7 @@ import javax.inject.Inject;
  */
 @Component(Security.NAME)
 public class SecurityImpl implements Security {
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
     protected UserSessionSource userSessionSource;
@@ -33,6 +49,9 @@ public class SecurityImpl implements Security {
 
     @Inject
     protected ExtendedEntities extendedEntities;
+
+    @Inject
+    protected Scripting scripting;
 
     @Override
     public boolean isScreenPermitted(String windowAlias) {
@@ -117,5 +136,64 @@ public class SecurityImpl implements Security {
         return (isEntityOpPermitted(propertyMetaClass, EntityOp.CREATE)
                 || isEntityOpPermitted(propertyMetaClass, EntityOp.UPDATE))
                 && isEntityAttrPermitted(propertyMetaClass, mpp, EntityAttrAccess.MODIFY);
+    }
+
+    @Override
+    public boolean isPermitted(Entity entity, ConstraintOperationType operationType) {
+        return isPermitted(entity,
+                constraint -> constraint.getOperationType() == operationType && constraint.getCheckType().memory());
+    }
+
+    @Override
+    public boolean isPermitted(Entity entity, String customCode) {
+        return isPermitted(entity,
+                constraint -> customCode.equals(constraint.getCode()) && constraint.getCheckType().memory());
+    }
+
+    @Override
+    public boolean hasConstraints(MetaClass metaClass) {
+        UserSession userSession = userSessionSource.getUserSession();
+        String mainMetaClassName = extendedEntities.getOriginalOrThisMetaClass(metaClass).getName();
+        return userSession.hasConstraints(mainMetaClassName);
+    }
+
+    protected List<ConstraintData> getConstraints(MetaClass  metaClass, Predicate<ConstraintData> predicate) {
+        UserSession userSession = userSessionSource.getUserSession();
+        String mainMetaClassName = extendedEntities.getOriginalOrThisMetaClass(metaClass).getName();
+        return userSession.getConstraints(mainMetaClassName, predicate);
+    }
+
+    protected boolean isPermitted(Entity entity, Predicate<ConstraintData> predicate) {
+        List<ConstraintData> constraints = getConstraints(entity.getMetaClass(), predicate);
+        for (ConstraintData constraint : constraints) {
+            if (!isPermitted(entity, constraint)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    protected boolean isPermitted(Entity entity, ConstraintData constraint) {
+        String metaClassName = entity.getMetaClass().getName();
+        String groovyScript = constraint.getGroovyScript();
+        if (constraint.getCheckType().memory() && StringUtils.isNotBlank(groovyScript)) {
+            Map<String, Object> params = new HashMap<>();
+            params.put("theEntity", InstanceUtils.copy(entity));//copy to avoid implicit modification
+            params.put("value", new MethodClosure(this, "getParameterValue"));
+            try {
+                Object o = scripting.evaluateGroovy(groovyScript.replace("{E}", "theEntity"), params);
+                if (Boolean.FALSE.equals(o)) {
+                    log.trace(format("Entity does not match security constraint. " +
+                            "Entity class [%s]. Entity [%s]. Constraint [%s].", metaClassName, entity, constraint.getCheckType()));
+                    return false;
+                }
+            } catch (Exception e) {
+                log.error(format("An error occurred while applying constraint's groovy script. " +
+                        "The entity has been filtered." +
+                        "Entity class [%s]. Entity [%s].", metaClassName, entity), e);
+                return false;
+            }
+        }
+        return true;
     }
 }

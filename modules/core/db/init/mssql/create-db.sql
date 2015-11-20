@@ -305,10 +305,15 @@ create table SEC_CONSTRAINT (
     DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
-    ENTITY_NAME varchar(50),
+    CODE varchar(255),
+    CHECK_TYPE varchar(50),
+    OPERATION_TYPE varchar(50),
+    ENTITY_NAME varchar(255),
     JOIN_CLAUSE varchar(500),
     WHERE_CLAUSE varchar(1000),
-    GROUP_ID uniqueidentifier,
+    GROOVY_SCRIPT varchar(1000),
+    FILTER_XML varchar(1000),
+    GROUP_ID varchar(36),
     --
     primary key nonclustered (ID),
     constraint SEC_CONSTRAINT_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID)

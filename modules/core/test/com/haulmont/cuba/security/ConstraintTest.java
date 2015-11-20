@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.app.LoginWorker;
 import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.security.global.ConstraintData;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.testsupport.TestUserSessionSource;
@@ -134,10 +135,10 @@ public class ConstraintTest extends CubaTestCase {
         UserSession userSession = lw.login(USER_LOGIN, passwordEncryption.getPlainHash(USER_PASSW), Locale.getDefault());
         assertNotNull(userSession);
 
-        List<String[]> constraints = userSession.getConstraints("sys$Server");
+        List<ConstraintData> constraints = userSession.getConstraints("sys$Server");
         assertEquals(2, constraints.size());
 
-        List<String[]> roleConstraints = userSession.getConstraints("sec$UserRole");
+        List<ConstraintData> roleConstraints = userSession.getConstraints("sec$UserRole");
         assertEquals(1, roleConstraints.size());
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);

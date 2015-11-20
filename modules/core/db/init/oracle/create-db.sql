@@ -336,10 +336,17 @@ create table SEC_CONSTRAINT (
     UPDATED_BY varchar2(50),
     DELETE_TS timestamp,
     DELETED_BY varchar2(50),
-    ENTITY_NAME varchar2(50),
+    --
+    CODE varchar2(255),
+    CHECK_TYPE varchar2(50),
+    OPERATION_TYPE varchar2(50),
+    ENTITY_NAME varchar2(255),
     JOIN_CLAUSE varchar2(500),
     WHERE_CLAUSE varchar2(1000),
-    GROUP_ID varchar2(32),
+    GROOVY_SCRIPT varchar2(1000),
+    FILTER_XML varchar2(1000),
+    GROUP_ID varchar2(36),
+    --
     primary key(ID)
 )^
 create index IDX_SEC_CONSTRAINT_GROUP on SEC_CONSTRAINT(GROUP_ID)^
