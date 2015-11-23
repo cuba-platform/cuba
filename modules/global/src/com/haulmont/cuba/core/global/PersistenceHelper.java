@@ -5,15 +5,11 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.persistence.queries.FetchGroup;
-import org.eclipse.persistence.queries.FetchGroupTracker;
 
 import java.lang.annotation.Annotation;
-import java.util.Collection;
 
 /**
  * Utility class providing some information about persistent entities.
@@ -118,30 +114,7 @@ public class PersistenceHelper {
      * @return true if loaded
      */
     public static boolean isLoaded(Object entity, String property) {
-        if (entity instanceof BaseGenericIdEntity
-                && ((BaseGenericIdEntity) entity).__inaccessibleAttributes() != null) {
-            for (String inaccessibleAttr : ((BaseGenericIdEntity) entity).__inaccessibleAttributes()) {
-                if (inaccessibleAttr.equals(property))
-                    return false;
-            }
-        }
-        if (entity instanceof FetchGroupTracker) {
-            FetchGroup fetchGroup = ((FetchGroupTracker) entity)._persistence_getFetchGroup();
-            if (fetchGroup != null)
-                return fetchGroup.getAttributeNames().contains(property);
-        }
-        if (entity instanceof Instance) {
-            try {
-                Object value = ((Instance) entity).getValue(property);
-                if (value instanceof Collection) {//check for IndirectCollection behaviour
-                    ((Collection) value).size();
-                }
-                return true;
-            } catch (Exception ignored) {
-                return false;
-            }
-        } else {
-            throw new IllegalArgumentException("Unable to check if the attribute is loaded: the entity is of unknown type");
-        }
+        PersistentAttributesLoadChecker checker = AppBeans.get(PersistentAttributesLoadChecker.NAME);
+        return checker.isLoaded(entity, property);
     }
 }

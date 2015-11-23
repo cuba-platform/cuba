@@ -83,6 +83,14 @@ public class DataManagerCommitTest extends CubaTestCase {
         user.setName("testUser-changed");
         user = dataManager.commit(user, view);
         assertNotNull(user);
+
+        //do check loaded before serialization
+        assertTrue(PersistenceHelper.isLoaded(user, "group"));
+        assertTrue(PersistenceHelper.isLoaded(user, "userRoles"));
+        assertTrue(!PersistenceHelper.isLoaded(user, "substitutions"));
+        //do second check to make sure isLoaded did not affect attribute fetch status
+        assertTrue(!PersistenceHelper.isLoaded(user, "substitutions"));
+
         user = TestSupport.reserialize(user);
 
         assertTrue(PersistenceHelper.isDetached(user));
@@ -95,8 +103,11 @@ public class DataManagerCommitTest extends CubaTestCase {
         assertEquals(1, user.getUserRoles().size());
         assertEquals(userRoleId, user.getUserRoles().get(0).getId());
 
+        //do check loaded after serialization
         assertTrue(PersistenceHelper.isLoaded(user, "group"));
         assertTrue(PersistenceHelper.isLoaded(user, "userRoles"));
+        assertTrue(!PersistenceHelper.isLoaded(user, "substitutions"));
+        //do second check to make sure isLoaded did not affect attribute fetch status
         assertTrue(!PersistenceHelper.isLoaded(user, "substitutions"));
     }
 }

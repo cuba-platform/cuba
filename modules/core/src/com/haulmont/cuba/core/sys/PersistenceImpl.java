@@ -193,6 +193,10 @@ public class PersistenceImpl implements Persistence {
         }
     }
 
+    protected EntityManagerFactory getJpaEmf() {
+        return jpaEmf;
+    }
+
     private class EntityManagerInvocationHandler implements InvocationHandler {
 
         private EntityManagerImpl impl;

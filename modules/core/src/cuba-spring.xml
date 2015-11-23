@@ -60,6 +60,9 @@
         <property name="encryptionModule" ref="${cuba.passwordEncryptionModule}"/>
     </bean>
 
+    <bean id="cuba_PersistentAttributesLoadChecker" class="com.haulmont.cuba.core.sys.CorePersistentAttributesLoadChecker">
+    </bean>
+
     <!-- AOP setup -->
 
     <bean id="serviceInterceptor" class="com.haulmont.cuba.core.sys.ServiceInterceptor">
