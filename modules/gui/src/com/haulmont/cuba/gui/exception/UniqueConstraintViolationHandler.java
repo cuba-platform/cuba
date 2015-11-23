@@ -38,8 +38,7 @@ public class UniqueConstraintViolationHandler implements GenericExceptionHandler
         Throwable t = exception;
         try {
             while (t != null) {
-                if (t.toString().contains("org.springframework.dao.DataIntegrityViolationException")
-                        || t.toString().contains("org.springframework.orm.jpa.JpaSystemException")) {
+                if (t.toString().contains("org.eclipse.persistence.exceptions.DatabaseException")) {
                     return doHandle(t, windowManager);
                 }
                 t = t.getCause();
