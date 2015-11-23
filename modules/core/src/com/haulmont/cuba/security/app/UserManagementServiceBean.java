@@ -269,7 +269,7 @@ public class UserManagementServiceBean implements UserManagementService {
         try {
             EntityManager em = persistence.getEntityManager();
 
-            RememberMeToken rememberMeToken = new RememberMeToken();
+            RememberMeToken rememberMeToken = metadata.create(RememberMeToken.class);
             rememberMeToken.setToken(token);
             rememberMeToken.setUser(em.getReference(User.class, userId));
 
@@ -353,9 +353,9 @@ public class UserManagementServiceBean implements UserManagementService {
                 messageTools.getDefaultLocale().getLanguage() : user.getLanguage();
 
         Template bodyTemplate;
-        if (userLocaleIsUnknown)
+        if (userLocaleIsUnknown) {
             bodyTemplate = bodyDefaultTemplate;
-        else {
+        } else {
             if (localizedBodyTemplates.containsKey(locale))
                 bodyTemplate = localizedBodyTemplates.get(locale);
             else {
@@ -366,20 +366,16 @@ public class UserManagementServiceBean implements UserManagementService {
                     log.warn("Reset passwords: Not found email body template for locale: '" + locale + "'");
                     bodyTemplate = bodyDefaultTemplate;
                 } else {
-                    try {
-                        bodyTemplate = templateEngine.createTemplate(templateString);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
+                    bodyTemplate = getTemplate(templateEngine, templateString);
                 }
                 localizedBodyTemplates.put(locale, bodyTemplate);
             }
         }
 
         Template subjectTemplate;
-        if (userLocaleIsUnknown)
+        if (userLocaleIsUnknown) {
             subjectTemplate = subjectDefaultTemplate;
-        else {
+        } else {
             if (localizedSubjectTemplates.containsKey(locale))
                 subjectTemplate = localizedSubjectTemplates.get(locale);
             else {
@@ -391,11 +387,7 @@ public class UserManagementServiceBean implements UserManagementService {
                     subjectTemplate = subjectDefaultTemplate;
                     localizedSubjectTemplates.put(locale, subjectDefaultTemplate);
                 } else {
-                    try {
-                        subjectTemplate = templateEngine.createTemplate(templateString);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
+                    subjectTemplate = getTemplate(templateEngine, templateString);
                     localizedSubjectTemplates.put(locale, subjectTemplate);
                 }
             }
@@ -404,17 +396,24 @@ public class UserManagementServiceBean implements UserManagementService {
         return new EmailTemplate(subjectTemplate, bodyTemplate);
     }
 
-    protected Template loadDefaultTemplate(String templatePath, SimpleTemplateEngine templateEngine) {
-        Template template;
-        String defaultTemplateContent = resources.getResourceAsString(templatePath);
-        if (defaultTemplateContent == null)
-            throw new IllegalStateException("Not found default email template for reset passwords operation");
-
+    protected Template getTemplate(SimpleTemplateEngine templateEngine, String templateString) {
+        Template bodyTemplate;
         try {
-            template = templateEngine.createTemplate(defaultTemplateContent);
+            bodyTemplate = templateEngine.createTemplate(templateString);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to compile Groovy template", e);
         }
+        return bodyTemplate;
+    }
+
+    protected Template loadDefaultTemplate(String templatePath, SimpleTemplateEngine templateEngine) {
+        String defaultTemplateContent = resources.getResourceAsString(templatePath);
+        if (defaultTemplateContent == null) {
+            throw new IllegalStateException("Not found default email template for reset passwords operation");
+        }
+
+        //noinspection UnnecessaryLocalVariable
+        Template template = getTemplate(templateEngine, defaultTemplateContent);
         return template;
     }
 
@@ -433,7 +432,7 @@ public class UserManagementServiceBean implements UserManagementService {
 
             tx.commit();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to write Groovy template content", e);
         } finally {
             tx.end();
         }
@@ -482,7 +481,7 @@ public class UserManagementServiceBean implements UserManagementService {
     }
 
     protected Group cloneGroup(Group group, Group parent, EntityManager em) {
-        Group groupClone = new Group();
+        Group groupClone = metadata.create(Group.class);
 
         groupClone.setName(group.getName());
         groupClone.setParent(parent);
@@ -520,7 +519,7 @@ public class UserManagementServiceBean implements UserManagementService {
     }
 
     protected SessionAttribute cloneSessionAttribute(SessionAttribute attribute, Group group) {
-        SessionAttribute resultAttribute = new SessionAttribute();
+        SessionAttribute resultAttribute = metadata.create(SessionAttribute.class);
         resultAttribute.setName(attribute.getName());
         resultAttribute.setDatatype(attribute.getDatatype());
         resultAttribute.setStringValue(attribute.getStringValue());
@@ -529,7 +528,7 @@ public class UserManagementServiceBean implements UserManagementService {
     }
 
     protected Constraint cloneConstraint(Constraint constraint, Group group) {
-        Constraint resultConstraint = new Constraint();
+        Constraint resultConstraint = metadata.create(Constraint.class);
         resultConstraint.setEntityName(constraint.getEntityName());
         resultConstraint.setJoinClause(constraint.getJoinClause());
         resultConstraint.setWhereClause(constraint.getWhereClause());

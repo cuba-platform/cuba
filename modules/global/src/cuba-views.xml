@@ -53,6 +53,7 @@
     <view class="com.haulmont.cuba.security.entity.User" name="user.resetPassword">
         <property name="password"/>
         <property name="changePasswordAtNextLogon"/>
+        <property name="email"/>
     </view>
 
     <view class="com.haulmont.cuba.security.entity.User" name="user.check">
