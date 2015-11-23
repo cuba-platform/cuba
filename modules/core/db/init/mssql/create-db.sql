@@ -313,7 +313,7 @@ create table SEC_CONSTRAINT (
     WHERE_CLAUSE varchar(1000),
     GROOVY_SCRIPT varchar(1000),
     FILTER_XML varchar(1000),
-    GROUP_ID varchar(36),
+    GROUP_ID uniqueidentifier,
     --
     primary key nonclustered (ID),
     constraint SEC_CONSTRAINT_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID)
