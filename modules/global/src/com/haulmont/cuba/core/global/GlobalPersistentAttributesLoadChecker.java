@@ -9,7 +9,6 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.entity.Entity;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.springframework.stereotype.Component;
@@ -31,35 +30,22 @@ public class GlobalPersistentAttributesLoadChecker implements PersistentAttribut
 
     @Override
     public boolean isLoaded(Object entity, String property) {
-        Boolean baseIsLoaded = isLoadedCommon(entity, property);
-        if (baseIsLoaded != null) {
-            return baseIsLoaded;
+        MetaClass metaClass = metadata.getClassNN(entity.getClass());
+        MetaProperty metaProperty = metaClass.getPropertyNN(property);
+
+        if (!metadataTools.isPersistent(metaProperty)) {
+            return true;
         }
 
-        if (entity instanceof Instance) {
-            try {
-                Object value = ((Instance) entity).getValue(property);
-                if (value instanceof Collection) {//check for IndirectCollection behaviour, should fail if property is not loaded
-                    ((Collection) value).size();
-                }
-                return true;
-            } catch (Exception ignored) {
-                return false;
-            }
-        } else {
-            throw new IllegalArgumentException("Unable to check if the attribute is loaded: the entity is of unknown type");
+        Boolean isLoaded = isLoadedCommonCheck(entity, property);
+        if (isLoaded != null) {
+            return isLoaded;
         }
+
+        return isLoadedSpecificCheck(entity, property, metaClass, metaProperty);
     }
 
-    protected Boolean isLoadedCommon(Object entity, String property) {
-        if (entity instanceof Entity) {
-            MetaClass  metaClass = metadata.getClassNN(entity.getClass());
-            MetaProperty metaProperty = metaClass.getPropertyNN(property);
-            if (!metadataTools.isPersistent(metaProperty)) {
-                return true;
-            }
-        }
-
+    protected Boolean isLoadedCommonCheck(Object entity, String property) {
         if (entity instanceof BaseGenericIdEntity
                 && ((BaseGenericIdEntity) entity).__inaccessibleAttributes() != null) {
             for (String inaccessibleAttr : ((BaseGenericIdEntity) entity).__inaccessibleAttributes()) {
@@ -75,5 +61,25 @@ public class GlobalPersistentAttributesLoadChecker implements PersistentAttribut
         }
 
         return null;
+    }
+
+    protected boolean isLoadedSpecificCheck(Object entity, String property, MetaClass metaClass, MetaProperty metaProperty) {
+        return checkIsLoadedWithGetter(entity, property);
+    }
+
+    protected boolean checkIsLoadedWithGetter(Object entity, String property) {
+        if (entity instanceof Instance) {
+            try {
+                Object value = ((Instance) entity).getValue(property);
+                if (value instanceof Collection) {//check for IndirectCollection behaviour, should fail if property is not loaded
+                    ((Collection) value).size();
+                }
+                return true;
+            } catch (Exception ignored) {
+                return false;
+            }
+        } else {
+            throw new IllegalArgumentException("Unable to check if the attribute is loaded: the entity is of unknown type");
+        }
     }
 }
