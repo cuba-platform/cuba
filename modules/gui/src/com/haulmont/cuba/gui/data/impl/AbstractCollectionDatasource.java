@@ -580,24 +580,26 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
         String[] sortProperties = null;
 
-        if (metadata.getTools().isPersistent(propertyPath) && !propertyPath.getMetaProperty().getRange().isClass()) {
-            // a scalar persistent attribute
-            sortProperties = new String[1];
-            sortProperties[0] = propertyPath.toString();
-        } else if (propertyPath.getMetaProperty().getRange().isClass()) {
-            // a reference attribute
-            MetaClass metaClass = propertyPath.getMetaProperty().getRange().asClass();
-            InstanceUtils.NamePatternRec rec = InstanceUtils.parseNamePattern(metaClass);
-            if (rec != null) {
-                sortProperties = new String[rec.fields.length];
-                for (int i = 0; i < rec.fields.length; i++) {
-                    sortProperties[i] = propertyPath.toString() + "." + rec.fields[i];
-                }
-            } else {
+        if (metadata.getTools().isPersistent(propertyPath)) {
+            if (!propertyPath.getMetaProperty().getRange().isClass()) {
+                // a scalar persistent attribute
                 sortProperties = new String[1];
                 sortProperties[0] = propertyPath.toString();
+            } else {
+                // a reference attribute
+                MetaClass metaClass = propertyPath.getMetaProperty().getRange().asClass();
+                InstanceUtils.NamePatternRec rec = InstanceUtils.parseNamePattern(metaClass);
+                if (rec != null) {
+                    sortProperties = new String[rec.fields.length];
+                    for (int i = 0; i < rec.fields.length; i++) {
+                        sortProperties[i] = propertyPath.toString() + "." + rec.fields[i];
+                    }
+                } else {
+                    sortProperties = new String[1];
+                    sortProperties[0] = propertyPath.toString();
+                }
             }
-        } else if (!metadata.getTools().isPersistent(propertyPath)) {
+        } else {
             // a non-persistent attribute
             List<String> list = metadata.getTools().getRelatedProperties(propertyPath.getMetaProperty());
             if (!list.isEmpty()) {
