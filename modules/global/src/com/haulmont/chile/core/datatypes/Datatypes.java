@@ -42,6 +42,9 @@ public final class Datatypes {
 
     private boolean useLocaleLanguageOnly = true;
 
+    private final List<String> systemDatatypeNames = Arrays.asList(
+            "boolean", "byteArray", "date", "dateTime", "decimal", "double", "int", "long", "string", "time", "uuid");
+
     private Datatypes() {
         SAXReader reader = new SAXReader();
         URL resource = Datatypes.class.getResource("/datatypes.xml");
@@ -78,7 +81,14 @@ public final class Datatypes {
     }
 
     private void __register(Datatype datatype) {
-        datatypeByClass.put(datatype.getJavaClass(), datatype);
+        if (systemDatatypeNames.contains(datatype.getName())) {
+            if (datatypeByClass.containsKey(datatype.getJavaClass())) {
+                log.error("Cannot register multiple system datatypes with the same target class: '{}' and '{}'",
+                        datatypeByClass.get(datatype.getJavaClass()), datatype);
+            } else {
+                datatypeByClass.put(datatype.getJavaClass(), datatype);
+            }
+        }
         datatypeByName.put(datatype.getName(), datatype);
     }
 
