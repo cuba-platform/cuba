@@ -111,7 +111,12 @@ public class DataServiceQueryBuilder {
                     value = list;
                 }
 
-                query.setParameter(name, value);
+                if (value instanceof LoadContext.Query.TemporalValue) {
+                    LoadContext.Query.TemporalValue temporalValue = (LoadContext.Query.TemporalValue) value;
+                    query.setParameter(name, temporalValue.date, temporalValue.type);
+                } else {
+                    query.setParameter(name, value);
+                }
             } else
                 throw new DevelopmentException("Parameter '" + name + "' is not used in the query");
         }

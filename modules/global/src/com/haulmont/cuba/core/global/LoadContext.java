@@ -8,11 +8,9 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 
+import javax.persistence.TemporalType;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -261,6 +259,18 @@ public class LoadContext<E extends Entity> implements Serializable {
         private int firstResult;
         private int maxResults;
 
+        public static class TemporalValue implements Serializable {
+
+            private static final long serialVersionUID = 4972088045550018312L;
+
+            public final Date date;
+            public final TemporalType type;
+
+            public TemporalValue(Date date, TemporalType type) {
+                this.date = date;
+                this.type = type;
+            }
+        }
         /**
          * @param queryString JPQL query string. Only named parameters are supported.
          */
@@ -290,6 +300,18 @@ public class LoadContext<E extends Entity> implements Serializable {
          */
         public Query setParameter(String name, Object value) {
             parameters.put(name, value);
+            return this;
+        }
+
+        /**
+         * Set value for a parameter of java.util.Date type.
+         * @param name          parameter name
+         * @param value         date value
+         * @param temporalType  temporal type
+         * @return  this query instance for chaining
+         */
+        public Query setParameter(String name, Date value, TemporalType temporalType) {
+            parameters.put(name, new TemporalValue(value, temporalType));
             return this;
         }
 

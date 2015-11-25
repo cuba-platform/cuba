@@ -9,8 +9,11 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.User;
+import org.apache.commons.lang.time.DateUtils;
 
+import javax.persistence.TemporalType;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -161,6 +164,16 @@ public class DataManagerTest extends CubaTestCase {
         loadContext.getQuery().setParameter("login", "cc1aa09f-c5d5-4bd1-896c-cb774d2e2898");
         count = dataManager.getCount(loadContext);
         assertEquals(0, count);
+    }
+
+    public void testTemporalType() throws Exception {
+        Date nextYear = DateUtils.addYears(AppBeans.get(TimeSource.class).currentTimestamp(), 1);
+        LoadContext<User> loadContext = LoadContext.create(User.class).setQuery(
+                LoadContext.createQuery("select u from sec$User u where u.createTs = :ts")
+                        .setParameter("ts", nextYear, TemporalType.DATE));
+
+        List<User> users = dataManager.loadList(loadContext);
+        assertTrue(users.isEmpty());
     }
 
     public void testExtendedLoadContext() throws Exception {
