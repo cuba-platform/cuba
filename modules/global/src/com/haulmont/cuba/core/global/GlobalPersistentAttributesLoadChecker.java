@@ -46,11 +46,18 @@ public class GlobalPersistentAttributesLoadChecker implements PersistentAttribut
     }
 
     protected Boolean isLoadedCommonCheck(Object entity, String property) {
-        if (entity instanceof BaseGenericIdEntity
-                && ((BaseGenericIdEntity) entity).__inaccessibleAttributes() != null) {
-            for (String inaccessibleAttr : ((BaseGenericIdEntity) entity).__inaccessibleAttributes()) {
-                if (inaccessibleAttr.equals(property))
-                    return false;
+        if (entity instanceof BaseGenericIdEntity) {
+            BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) entity;
+
+            if (baseGenericIdEntity.__new()) {
+                return true;
+            }
+
+            if (baseGenericIdEntity.__inaccessibleAttributes() != null) {
+                for (String inaccessibleAttr : baseGenericIdEntity.__inaccessibleAttributes()) {
+                    if (inaccessibleAttr.equals(property))
+                        return false;
+                }
             }
         }
 

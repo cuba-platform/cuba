@@ -10,28 +10,35 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestSupport;
-import org.junit.Assert;
+import org.junit.*;
 
 import java.util.UUID;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author degtyarjov
  * @version $Id$
  */
-public class PersistenceAttributeLoadedCheckTest extends CubaTestCase {
+public class PersistenceAttributeLoadedCheckTest {
+    @ClassRule
+    public static final TestContainer container = TestContainer.Common.INSTANCE;
 
     private DataManager dataManager;
+    private Persistence persistence;
     private UUID taskId;
     private UUID userId;
     private UUID groupId = UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93");
     private View taskView;
     private View userView;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         dataManager = AppBeans.get(DataManager.class);
+        persistence = AppBeans.get(Persistence.class);
 
         try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
@@ -66,13 +73,13 @@ public class PersistenceAttributeLoadedCheckTest extends CubaTestCase {
                 .addProperty("userRoles", new View(UserRole.class));
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        deleteRecord("SEC_USER", userId);
-        deleteRecord("SYS_SCHEDULED_TASK", taskId);
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
+        container.deleteRecord("SEC_USER", userId);
+        container.deleteRecord("SYS_SCHEDULED_TASK", taskId);
     }
 
+    @Test
     public void testIsLoadedLogic() throws Exception {
         LoadContext<User> userContext = LoadContext.create(User.class).setId(userId).setView(userView);
         LoadContext<ScheduledTask> taskContext = LoadContext.create(ScheduledTask.class).setId(taskId).setView(taskView);
