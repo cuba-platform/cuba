@@ -180,7 +180,20 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
         <item name="JUnit" web="http://www.junit.org/" license="cpl-1.0"/>
 
-        <item name="Apache Log4j" web="http://logging.apache.org/log4j/1.2/" license="apache-2.0"/>
+        <item name="Logback" web="http://logback.qos.ch">
+            <license><![CDATA[
+Logback: the reliable, generic, fast and flexible logging framework.
+Copyright (C) 1999-2012, QOS.ch. All rights reserved.
+
+This program and the accompanying materials are dual-licensed under
+either the terms of the Eclipse Public License v1.0 as published by
+the Eclipse Foundation
+
+or (per the licensee's choosing)
+
+under the terms of the GNU Lesser General Public License version 2.1
+as published by the Free Software Foundation.]]></license>
+        </item>
 
         <item name="MyBatis" web="http://www.mybatis.org/" license="apache-2.0"/>
 
@@ -198,36 +211,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
         <item name="AppletIntegration Vaadin Addon" web="https://vaadin.com/addon/appletintegration" license="apache-2.0"
               fork="true"/>
-
-        <item name="Serp" web="http://serp.sourceforge.net/">
-            <license><![CDATA[
-Copyright (c) 2002-2007, A. Abram White
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-* Redistributions of source code must retain the above copyright notice, this
-  list of conditions and the following disclaimer.
-* Redistributions in binary form must reproduce the above copyright notice,
-  this list of conditions and the following disclaimer in the documentation
-  and/or other materials provided with the distribution.
-* Neither the name of 'serp' nor the names of its contributors may
-  be used to endorse or promote products derived from this software without
-  specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-]]></license>
-        </item>
 
         <item name="Spring Framework" web="http://www.springsource.org/" license="apache-2.0"/>
 
@@ -526,6 +509,8 @@ OF SUCH DAMAGE.
         <item name="SwingLabs SwingX" web="https://swingx.java.net" license="lgpl-3" fork="true">
             <jar>swingx-.*</jar>
         </item>
+
+        <item name="EclipseLink" web="http://www.eclipse.org/eclipselink" license="epl-1.0" fork="true"/>
     </items>
 
     <licenses>
