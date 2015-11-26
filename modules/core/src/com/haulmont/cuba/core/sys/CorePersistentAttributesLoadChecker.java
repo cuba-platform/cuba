@@ -8,6 +8,7 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.global.GlobalPersistentAttributesLoadChecker;
 import com.haulmont.cuba.core.global.MetadataTools;
 
@@ -26,7 +27,8 @@ public class CorePersistentAttributesLoadChecker extends GlobalPersistentAttribu
 
     @Override
     protected boolean isLoadedSpecificCheck(Object entity, String property, MetaClass metaClass, MetaProperty metaProperty) {
-        if (metadataTools.isEmbeddable(metaClass)) {
+        if (metadataTools.isEmbeddable(metaClass)
+                || (entity instanceof BaseGenericIdEntity && ((BaseGenericIdEntity) entity).__new())) {
             //TODO eude:
             // this is workaround for unexpected EclipseLink behaviour when PersistenceUnitUtil.isLoaded
             // throws exception if embedded entity refers to persistent entity

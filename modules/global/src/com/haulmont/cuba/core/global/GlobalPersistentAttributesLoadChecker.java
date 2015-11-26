@@ -49,10 +49,6 @@ public class GlobalPersistentAttributesLoadChecker implements PersistentAttribut
         if (entity instanceof BaseGenericIdEntity) {
             BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) entity;
 
-            if (baseGenericIdEntity.__new()) {
-                return true;
-            }
-
             if (baseGenericIdEntity.__inaccessibleAttributes() != null) {
                 for (String inaccessibleAttr : baseGenericIdEntity.__inaccessibleAttributes()) {
                     if (inaccessibleAttr.equals(property))
