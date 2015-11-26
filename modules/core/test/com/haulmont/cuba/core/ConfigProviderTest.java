@@ -178,6 +178,17 @@ public class ConfigProviderTest extends CubaTestCase
         assertTrue(config.getBooleanPropDef());
     }
 
+    public void testSystemPropOverridesAppProp() throws Exception {
+        TestConfig config = AppBeans.get(Configuration.class).getConfig(TestConfig.class);
+
+        String value = config.getStringPropDef();
+        assertEquals("def_value", value);
+
+        System.setProperty("cuba.test.stringPropDef", "new_value");
+        value = config.getStringPropDef();
+        assertEquals("new_value", value);
+    }
+
     private void cleanup() {
         Transaction tx = persistence.createTransaction();
         try {

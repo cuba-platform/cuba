@@ -42,10 +42,14 @@ public class ConfigPersisterClientImpl implements ConfigPersister {
                 value = System.getProperty(name);
                 break;
             case APP:
-                value = AppContext.getProperty(name);
+                value = System.getProperty(name);
+                if (StringUtils.isEmpty(value))
+                    value = AppContext.getProperty(name);
                 break;
             case DATABASE:
-                value = AppContext.getProperty(name);
+                value = System.getProperty(name);
+                if (StringUtils.isEmpty(value))
+                    value = AppContext.getProperty(name);
                 if (StringUtils.isEmpty(value)) {
                     if (caching) {
                         loadCache();
