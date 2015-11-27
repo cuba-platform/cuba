@@ -30,6 +30,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
 
 /**
  * @author abramov
@@ -191,6 +192,9 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
         if (metaProperty.isReadOnly()) {
             setEditable(false);
         }
+
+        handleFilteredAttributes(this.datasource, metaProperty, this);
+        this.datasource.addItemChangeListener(e -> handleFilteredAttributes(this.datasource, metaProperty, this));
     }
 
     @Override

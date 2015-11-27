@@ -30,6 +30,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
+
 /**
  * @author krivopustov
  * @version $Id$
@@ -183,6 +185,9 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
         if (metaProperty.isReadOnly()) {
             setEditable(false);
         }
+
+        handleFilteredAttributes(this.datasource, metaProperty, this);
+        this.datasource.addItemChangeListener(e -> handleFilteredAttributes(this.datasource, metaProperty, this));
     }
 
     protected void fireChangeListeners(Object newValue) {

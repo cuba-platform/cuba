@@ -5,9 +5,13 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.bali.util.Preconditions;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.*;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
+import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -480,5 +484,26 @@ public abstract class ComponentsHelper {
             }
         }
         return -1;
+    }
+
+    /**
+     *  Set field's "required" flag to false if the value has been filtered by Row Level Security
+     *  This is necessary to allow user to submit form with filtered attribute even if attribute is required
+     */
+    public static void handleFilteredAttributes(Datasource datasource, MetaProperty metaProperty, Field component) {
+        if (datasource.getState() == Datasource.State.VALID
+                && datasource.getItem() != null
+                && metaProperty.getRange().isClass()) {
+            Entity item = datasource.getItem();
+            if (item instanceof BaseGenericIdEntity) {
+                Object value = item.getValue(metaProperty.getName());
+                BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) item;
+                String[] filteredAttributes = baseGenericIdEntity.__filteredAttributes();
+                if (value == null && filteredAttributes != null
+                        && Arrays.stream(filteredAttributes).anyMatch(attr -> metaProperty.getName().equals(attr))) {
+                    component.setRequired(false);
+                }
+            }
+        }
     }
 }

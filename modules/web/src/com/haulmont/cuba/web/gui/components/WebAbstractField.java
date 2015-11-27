@@ -24,10 +24,9 @@ import com.vaadin.ui.AbstractField;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+
+import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
 
 /**
  * @param <T>
@@ -85,6 +84,9 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends We
         if (metaProperty.isReadOnly()) {
             setEditable(false);
         }
+
+        handleFilteredAttributes(this.datasource, metaProperty, this);
+        this.datasource.addItemChangeListener(e -> handleFilteredAttributes(this.datasource, metaProperty, this));
     }
 
     protected void resolveMetaPropertyPath(MetaClass metaClass, String property) {

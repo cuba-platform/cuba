@@ -30,6 +30,7 @@ import java.awt.event.*;
 import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
 
 /**
  * @author krivopustov
@@ -297,6 +298,9 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
         if (metaProperty.isReadOnly()) {
             setEditable(false);
         }
+
+        handleFilteredAttributes(this.datasource, metaProperty, this);
+        this.datasource.addItemChangeListener(e -> handleFilteredAttributes(this.datasource, metaProperty, this));
     }
 
     protected void fireChangeListeners(Object newValue) {

@@ -25,6 +25,8 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
+import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
+
 /**
  * @author abramov
  * @version $Id$
@@ -88,6 +90,9 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
         if (metaProperty.isReadOnly()) {
             setEditable(false);
         }
+
+        handleFilteredAttributes(this.datasource, metaProperty, this);
+        this.datasource.addItemChangeListener(e -> handleFilteredAttributes(this.datasource, metaProperty, this));
     }
 
     protected EnumerationContainer createEnumContainer(List options) {
