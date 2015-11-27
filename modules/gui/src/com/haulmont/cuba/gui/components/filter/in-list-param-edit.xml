@@ -6,9 +6,11 @@
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
         class="com.haulmont.cuba.gui.components.filter.InListParamEditor"
         caption="mainMsg://filter.inListParamEditor.caption">
-    <layout spacing="true">
-        <vbox id="valuesLayout" spacing="true"/>
+    <layout spacing="true" expand="scrollbox">
         <hbox id="componentLayout" spacing="true"/>
+        <scrollBox id="scrollbox" scrollBars="both">
+            <vbox id="valuesLayout" spacing="true"/>
+        </scrollBox>
         <hbox id="buttonsPanel" spacing="true">
             <button id="commit" invoke="commit" caption="mainMsg://actions.Ok" icon="icons/ok.png"/>
             <button id="close" invoke="cancel" caption="mainMsg://actions.Cancel" icon="icons/cancel.png"/>
