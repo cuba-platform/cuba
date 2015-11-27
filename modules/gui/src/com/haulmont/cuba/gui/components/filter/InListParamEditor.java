@@ -199,7 +199,7 @@ public class InListParamEditor extends AbstractWindow {
     }
 
     protected boolean containsValue(Instance value) {
-        return this.values.containsValue(value.getInstanceName());
+        return this.values.containsKey(value);
     }
 
     protected boolean containsValue(Enum value) {
