@@ -8,16 +8,15 @@ import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.components.AggregationInfo;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.core.global.filter.Condition;
 import com.haulmont.cuba.core.global.filter.DenyingClause;
 import com.haulmont.cuba.core.global.filter.LogicalCondition;
 import com.haulmont.cuba.core.global.filter.LogicalOp;
+import com.haulmont.cuba.gui.components.AggregationInfo;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.collections.map.LinkedMap;
@@ -396,7 +395,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         if (data.containsKey(item.getId())) {
             if (PersistenceHelper.isNew(item)) {
                 Object existingItem = data.get(item.getId());
-                InstanceUtils.copy(item, (Instance) existingItem);
+                metadata.getTools().copy(item, (Instance) existingItem);
                 modified((T) existingItem);
             } else {
                 updateItem(item);

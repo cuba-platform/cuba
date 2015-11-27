@@ -60,9 +60,14 @@ import java.text.ParseException;
 import java.util.*;
 
 /**
+ * This class is deprecated and probably will be removed in next releases
+ * It does not support new platform's major features as : dynamic attributes, in memory row level security
+ * Please use XML API v.2
+ *
  * @author krivopustov
  * @version $Id$
  */
+@Deprecated
 public class XMLConvertor implements Convertor {
     public static final MimeType MIME_TYPE_XML;
     public static final String MIME_STR = "text/xml;charset=UTF-8";

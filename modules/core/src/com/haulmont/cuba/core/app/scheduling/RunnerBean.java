@@ -5,16 +5,16 @@
 
 package com.haulmont.cuba.core.app.scheduling;
 
-import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.app.ServerInfoAPI;
 import com.haulmont.cuba.core.app.MiddlewareStatisticsAccumulator;
+import com.haulmont.cuba.core.app.ServerInfoAPI;
 import com.haulmont.cuba.core.app.scheduled.MethodParameterInfo;
 import com.haulmont.cuba.core.entity.ScheduledExecution;
 import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -26,8 +26,8 @@ import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -73,6 +73,9 @@ public class RunnerBean implements Runner {
     @Inject
     protected MiddlewareStatisticsAccumulator statisticsCounter;
 
+    @Inject
+    protected Metadata metadata;
+
     protected Map<String, UUID> userSessionIds = new ConcurrentHashMap<>();
 
     public RunnerBean() {
@@ -89,7 +92,7 @@ public class RunnerBean implements Runner {
     @Override
     public void runTask(ScheduledTask task, final long now, final UserSession userSession) {
         // It's better not to pass an entity instance in managed state to another thread
-        final ScheduledTask taskCopy = (ScheduledTask) InstanceUtils.copy(task);
+        final ScheduledTask taskCopy = (ScheduledTask) metadata.getTools().copy(task);
 
         executorService.submit(new Runnable() {
             @Override

@@ -7,7 +7,6 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
@@ -35,6 +34,7 @@ import static java.lang.String.format;
  * @version $Id$
  */
 @Component(Security.NAME)
+@PerformanceLog
 public class SecurityImpl implements Security {
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -178,7 +178,7 @@ public class SecurityImpl implements Security {
         String groovyScript = constraint.getGroovyScript();
         if (constraint.getCheckType().memory() && StringUtils.isNotBlank(groovyScript)) {
             Map<String, Object> params = new HashMap<>();
-            params.put("theEntity", InstanceUtils.copy(entity));//copy to avoid implicit modification
+            params.put("theEntity", metadataTools.deepCopy(entity));//copy to avoid implicit modification
             params.put("value", new MethodClosure(this, "getParameterValue"));
             try {
                 Object o = scripting.evaluateGroovy(groovyScript.replace("{E}", "theEntity"), params);
@@ -190,7 +190,7 @@ public class SecurityImpl implements Security {
             } catch (Exception e) {
                 log.error(format("An error occurred while applying constraint's groovy script. " +
                         "The entity has been filtered." +
-                        "Entity class [%s]. Entity [%s].", metaClassName, entity), e);
+                        "Entity class [%s]. Entity [%s].", metaClassName, entity.getId()), e);
                 return false;
             }
         }

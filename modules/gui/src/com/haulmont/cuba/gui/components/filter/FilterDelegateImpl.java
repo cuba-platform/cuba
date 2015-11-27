@@ -20,6 +20,8 @@ import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.filter.DenyingClause;
+import com.haulmont.cuba.core.global.filter.QueryFilter;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
@@ -37,8 +39,6 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
-import com.haulmont.cuba.core.global.filter.DenyingClause;
-import com.haulmont.cuba.core.global.filter.QueryFilter;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -1961,7 +1961,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                     String filterName = window.getFilterName();
                     FilterEntity newFilterEntity = metadata.create(FilterEntity.class);
-                    InstanceUtils.copy(filterEntity, newFilterEntity);
+                    metadata.getTools().copy(filterEntity, newFilterEntity);
                     newFilterEntity.setCode(null);
                     newFilterEntity.setId(UuidProvider.createUuid());
                     //if filter was global but current user cannot create global filter then new filter

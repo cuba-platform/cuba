@@ -19,8 +19,9 @@ import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -57,6 +58,9 @@ public class MetadataTools {
     @Inject
     protected DatatypeFormatter datatypeFormatter;
 
+    @Inject
+    protected PersistentAttributesLoadChecker persistentAttributesLoadChecker;
+
     protected volatile Collection<Class> enums;
 
     /**
@@ -67,6 +71,7 @@ public class MetadataTools {
 
     /**
      * Formats a value according to the property type.
+     *
      * @param value    object to format
      * @param property metadata
      * @return formatted value as string
@@ -97,7 +102,8 @@ public class MetadataTools {
 
     /**
      * Formats a value according to the value type.
-     * @param value    object to format
+     *
+     * @param value object to format
      * @return formatted value as string
      */
     public String format(@Nullable Object value) {
@@ -188,6 +194,7 @@ public class MetadataTools {
 
     /**
      * Determine whether all the properties defined by the given property path are persistent.
+     *
      * @see #isPersistent(com.haulmont.chile.core.model.MetaProperty)
      */
     public boolean isPersistent(MetaPropertyPath metaPropertyPath) {
@@ -211,6 +218,7 @@ public class MetadataTools {
      * Determine whether the given property is transient, that is not stored in the database.
      * <p/>Unlike {@link #isTransient(com.haulmont.chile.core.model.MetaProperty)} for objects and properties not
      * registered in metadata this method returns <code>true</code>.
+     *
      * @param object   entity instance
      * @param property property name
      */
@@ -232,6 +240,7 @@ public class MetadataTools {
 
     /**
      * Determine whether the given property denotes an embedded object.
+     *
      * @see Embedded
      */
     public boolean isEmbedded(MetaProperty metaProperty) {
@@ -299,6 +308,7 @@ public class MetadataTools {
 
     /**
      * Determine whether the given annotation is present in the object's class or in any of its superclasses.
+     *
      * @param object          entity instance
      * @param property        property name
      * @param annotationClass annotation class
@@ -310,6 +320,7 @@ public class MetadataTools {
 
     /**
      * Determine whether the given annotation is present in the object's class or in any of its superclasses.
+     *
      * @param javaClass       entity class
      * @param property        property name
      * @param annotationClass annotation class
@@ -384,6 +395,7 @@ public class MetadataTools {
 
     /**
      * Return a collection of properties included into entity's name pattern (see {@link NamePattern}).
+     *
      * @param metaClass entity metaclass
      * @return collection of the name pattern properties
      */
@@ -394,6 +406,7 @@ public class MetadataTools {
 
     /**
      * Return a collection of properties included into entity's name pattern (see {@link NamePattern}).
+     *
      * @param metaClass   entity metaclass
      * @param useOriginal if true, and if the given metaclass doesn't define a {@link NamePattern} and if it is an
      *                    extended entity, this method tries to find a name pattern in an original entity
@@ -453,6 +466,7 @@ public class MetadataTools {
 
     /**
      * Collects {@link MetaPropertyPath}s defined by the given view, traversing the whole view graph.
+     *
      * @param view      starting view
      * @param metaClass metaclass for which the view was defined
      * @return collection of paths
@@ -470,6 +484,7 @@ public class MetadataTools {
 
     /**
      * Determine whether the view contains a property, traversing the view graph according to the given property path.
+     *
      * @param view         view instance. If null, return false immediately.
      * @param propertyPath property path defining the property
      */
@@ -578,9 +593,9 @@ public class MetadataTools {
     /**
      * Returns a {@link MetaPropertyPath} which can include the special MetaProperty for a dynamic attribute.
      *
-     * @param metaClass     originating meta-class
-     * @param propertyPath  path to the attribute
-     * @return  MetaPropertyPath instance
+     * @param metaClass    originating meta-class
+     * @param propertyPath path to the attribute
+     * @return MetaPropertyPath instance
      */
     @Nullable
     public MetaPropertyPath resolveMetaPropertyPath(MetaClass metaClass, String propertyPath) {
@@ -595,8 +610,8 @@ public class MetadataTools {
      * Depth-first traversal of the object graph starting from the specified entity instance.
      * Visits all attributes.
      *
-     * @param entity    entity graph entry point
-     * @param visitor   the attribute visitor implementation
+     * @param entity  entity graph entry point
+     * @param visitor the attribute visitor implementation
      */
     public void traverseAttributes(Entity entity, EntityAttributeVisitor visitor) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
@@ -609,9 +624,9 @@ public class MetadataTools {
      * Depth-first traversal of the object graph by the view starting from the specified entity instance.
      * Visits attributes defined in the view.
      *
-     * @param view      view instance
-     * @param entity    entity graph entry point
-     * @param visitor   the attribute visitor implementation
+     * @param view    view instance
+     * @param entity  entity graph entry point
+     * @param visitor the attribute visitor implementation
      */
     public void traverseAttributesByView(View view, Entity entity, EntityAttributeVisitor visitor) {
         Preconditions.checkNotNullArgument(view, "view is null");
@@ -619,6 +634,162 @@ public class MetadataTools {
         Preconditions.checkNotNullArgument(visitor, "visitor is null");
 
         internalTraverseAttributesByView(view, entity, visitor, new HashMap<>());
+    }
+
+    /**
+     * Create a new instance and make it a shallow copy of the instance given.
+     * <p/> This method copies attributes according to the metadata and relies on {@link com.haulmont.chile.core.model.Instance#getMetaClass()}
+     * method which should not return null.
+     *
+     * @param source source instance
+     * @return new instance of the same Java class as source
+     */
+    public Instance copy(Instance source) {
+        checkNotNullArgument(source, "source is null");
+
+        Instance dest = createInstance(source.getClass());
+
+        copy(source, dest);
+        return dest;
+    }
+
+    /**
+     * Make a shallow copy of an instance.
+     * <p/> This method copies attributes according to the metadata and relies on {@link com.haulmont.chile.core.model.Instance#getMetaClass()}
+     * method which should not return null for both objects.
+     * <p/> The source and destination instances don't have to be of the same Java class or metaclass. Copying is
+     * performed in the following scenario: get each source property and copy the value to the destination if it
+     * contains a property with the same name and it is not read-only.
+     *
+     * @param source source instance
+     * @param dest   destination instance
+     */
+    public void copy(Instance source, Instance dest) {
+        checkNotNullArgument(source, "source is null");
+        checkNotNullArgument(dest, "dest is null");
+
+        MetaClass sourceMetaClass = metadata.getClassNN(source.getClass());
+        MetaClass destMetaClass = metadata.getClassNN(dest.getClass());
+        for (MetaProperty srcProperty : sourceMetaClass.getProperties()) {
+            String name = srcProperty.getName();
+            MetaProperty dstProperty = destMetaClass.getProperty(name);
+            if (dstProperty != null && !dstProperty.isReadOnly() && persistentAttributesLoadChecker.isLoaded(source, name)) {
+                try {
+                    dest.setValue(name, source.getValue(name));
+                } catch (RuntimeException e) {
+                    Throwable cause = ExceptionUtils.getRootCause(e);
+                    if (cause == null)
+                        cause = e;
+                    // ignore exception on copy for not loaded fields
+                    if (!(cause instanceof IllegalEntityStateException))
+                        throw e;
+                }
+            }
+        }
+
+        if (source instanceof BaseGenericIdEntity && dest instanceof BaseGenericIdEntity) {
+            ((BaseGenericIdEntity) dest).setDynamicAttributes(((BaseGenericIdEntity<?>) source).getDynamicAttributes());
+        }
+    }
+
+
+    public static interface EntitiesHolder {
+        <T extends Entity> T create(Class<? extends Entity> entityClass, Object id);
+
+        <T extends Entity> T find(Object id);
+
+        void put(Entity entity);
+    }
+
+    public static class CachingEntitiesHolder implements EntitiesHolder {
+        protected Map<Object, Entity> cache = new HashMap<>();
+
+        @Override
+        public <T extends Entity> T create(Class<? extends Entity> entityClass, Object id) {
+            Entity entity = cache.get(id);
+            if (entity == null) {
+                entity = createInstanceWithId(entityClass, id);
+                cache.put(id, entity);
+            }
+
+            return (T) entity;
+        }
+
+        @Override
+        public <T extends Entity> T find(Object id) {
+            return (T) cache.get(id);
+        }
+
+        @Override
+        public void put(Entity entity) {
+            cache.put(entity.getId(), entity);
+        }
+    }
+
+    /**
+     * Make deep copy of the source entity: all referred entities ant collections will be copied as well
+     */
+    public <T extends Entity> T deepCopy(T source) {
+        CachingEntitiesHolder entityFinder = new CachingEntitiesHolder();
+        Entity destination = entityFinder.create(source.getClass(), source.getId());
+        deepCopy(source, destination, entityFinder);
+
+        return (T) destination;
+    }
+
+    /**
+     * Copies all property values from source to destination excluding null values.
+     */
+    public void deepCopy(Entity source, Entity destination, EntitiesHolder entitiesHolder) {
+        for (MetaProperty srcProperty : source.getMetaClass().getProperties()) {
+            String name = srcProperty.getName();
+
+            if (srcProperty.isReadOnly() || !persistentAttributesLoadChecker.isLoaded(source, name)) {
+                continue;
+            }
+
+            Object value = source.getValue(name);
+            if (value == null) {
+                continue;
+            }
+
+            if (srcProperty.getRange().isClass()) {
+                Class refClass = srcProperty.getRange().asClass().getJavaClass();
+                if (!isPersistent(refClass)) {
+                    continue;
+                }
+
+                if (srcProperty.getRange().getCardinality().isMany()) {
+                    //noinspection unchecked
+                    Collection<Entity> srcCollection = (Collection) value;
+                    Collection<Entity> dstCollection = value instanceof List ? new ArrayList<>() : new LinkedHashSet<>();
+
+                    for (Entity srcRef : srcCollection) {
+                        Entity reloadedRef = entitiesHolder.find(srcRef.getId());
+                        if (reloadedRef == null) {
+                            reloadedRef = entitiesHolder.create(srcRef.getClass(), srcRef.getId());
+                            deepCopy(srcRef, reloadedRef, entitiesHolder);
+                        }
+                        dstCollection.add(reloadedRef);
+                    }
+                    destination.setValue(name, dstCollection);
+                } else {
+                    Entity srcRef = (Entity) value;
+                    Entity reloadedRef = entitiesHolder.find(srcRef.getId());
+                    if (reloadedRef == null) {
+                        reloadedRef = entitiesHolder.create(srcRef.getClass(), srcRef.getId());
+                        deepCopy(srcRef, reloadedRef, entitiesHolder);
+                    }
+                    destination.setValue(name, reloadedRef);
+                }
+            } else {
+                destination.setValue(name, value);
+            }
+        }
+
+        if (source instanceof BaseGenericIdEntity && destination instanceof BaseGenericIdEntity) {
+            ((BaseGenericIdEntity) destination).setDynamicAttributes(((BaseGenericIdEntity<?>) source).getDynamicAttributes());
+        }
     }
 
     protected void internalTraverseAttributes(Entity entity, EntityAttributeVisitor visitor, HashSet<Object> visited) {
@@ -629,7 +800,7 @@ public class MetadataTools {
         for (MetaProperty property : entity.getMetaClass().getProperties()) {
             visitor.visit(entity, property);
             if (property.getRange().isClass()) {
-                if (PersistenceHelper.isLoaded(entity, property.getName())) {
+                if (persistentAttributesLoadChecker.isLoaded(entity, property.getName())) {
                     Object value = entity.getValue(property.getName());
                     if (value != null) {
                         if (value instanceof Collection) {
@@ -676,5 +847,21 @@ public class MetadataTools {
                 }
             }
         }
+    }
+
+    protected static <T> T createInstance(Class<T> aClass) {
+        try {
+            return aClass.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected static Entity createInstanceWithId(Class<? extends Entity> entityClass, Object id) {
+        Entity entity = createInstance(entityClass);
+        if (entity instanceof BaseGenericIdEntity) {
+            ((BaseGenericIdEntity) entity).setId(id);
+        }
+        return entity;
     }
 }

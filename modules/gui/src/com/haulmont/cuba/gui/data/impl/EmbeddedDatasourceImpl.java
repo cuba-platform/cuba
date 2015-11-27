@@ -7,16 +7,21 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.EmbeddableEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
-import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.DataSupplier;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.EmbeddedDatasource;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * @author artamonov
@@ -110,7 +115,7 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
     @Override
     public void setItem(T item) {
         if (getItem() != null) {
-            InstanceUtils.copy(item, getItem());
+            metadata.getTools().copy(item, getItem());
             itemsToUpdate.add(item);
         } else {
             final Instance parentItem = masterDs.getItem();

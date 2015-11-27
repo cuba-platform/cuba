@@ -9,7 +9,6 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.PersistenceHelper;
@@ -193,7 +192,7 @@ public class PropertyDatasourceImpl<T extends Entity>
     @Override
     public void setItem(T item) {
         if (getItem() != null) {
-            InstanceUtils.copy(item, getItem());
+            metadata.getTools().copy(item, getItem());
             itemsToUpdate.add(item);
         } else {
             final Instance parentItem = masterDs.getItem();

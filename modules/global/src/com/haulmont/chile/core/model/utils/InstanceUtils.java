@@ -8,15 +8,12 @@ import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DevelopmentException;
-import com.haulmont.cuba.core.global.IllegalEntityStateException;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.MetadataTools;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.InvocationTargetException;
@@ -173,59 +170,19 @@ public final class InstanceUtils {
     }
 
     /**
-     * Create a new instance and make it a shallow copy of the instance given.
-     * <p/> This method copies attributes according to the metadata and relies on {@link com.haulmont.chile.core.model.Instance#getMetaClass()}
-     * method which should not return null.
-     * @param source    source instance
-     * @return          new instance of the same Java class as source
+     * Use com.haulmont.cuba.core.global.MetadataTools#copy instead
      */
+    @Deprecated
     public static Instance copy(Instance source) {
-        checkNotNullArgument(source, "source is null");
-
-        Instance dest;
-        try {
-            dest = source.getClass().newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-        copy(source, dest);
-        return dest;
+        return AppBeans.get(MetadataTools.NAME, MetadataTools.class).copy(source);
     }
 
     /**
-     * Make a shallow copy of an instance.
-     * <p/> This method copies attributes according to the metadata and relies on {@link com.haulmont.chile.core.model.Instance#getMetaClass()}
-     * method which should not return null for both objects.
-     * <p/> The source and destination instances don't have to be of the same Java class or metaclass. Copying is
-     * performed in the following scenario: get each source property and copy the value to the destination if it
-     * contains a property with the same name and it is not read-only.
-     * @param source    source instance
-     * @param dest      destination instance
+     * Use com.haulmont.cuba.core.global.MetadataTools#copy instead
      */
+    @Deprecated
     public static void copy(Instance source, Instance dest) {
-        checkNotNullArgument(source, "source is null");
-        checkNotNullArgument(dest, "dest is null");
-
-        for (MetaProperty srcProperty : source.getMetaClass().getProperties()) {
-            String name = srcProperty.getName();
-            MetaProperty dstProperty = dest.getMetaClass().getProperty(name);
-            if (dstProperty != null && !dstProperty.isReadOnly()) {
-                try {
-                    dest.setValue(name, source.getValue(name));
-                } catch (RuntimeException e) {
-                    Throwable cause = ExceptionUtils.getRootCause(e);
-                    if (cause == null)
-                        cause = e;
-                    // ignore exception on copy for not loaded fields
-                    if (!(cause instanceof IllegalEntityStateException))
-                        throw e;
-                }
-            }
-        }
-
-        if (source instanceof BaseGenericIdEntity && dest instanceof BaseGenericIdEntity) {
-            ((BaseGenericIdEntity) dest).setDynamicAttributes(((BaseGenericIdEntity<?>) source).getDynamicAttributes());
-        }
+        AppBeans.get(MetadataTools.NAME, MetadataTools.class).copy(source, dest);
     }
 
     /**

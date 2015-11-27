@@ -37,6 +37,7 @@ import static java.lang.String.format;
  * @author krivopustov
  * @version $Id$
  */
+@PerformanceLog
 public class PersistenceSecurityImpl extends SecurityImpl implements PersistenceSecurity {
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -121,17 +122,17 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
 
         securityTokenManager.readSecurityToken(resultEntity);
 
-        if (resultEntity.__getSecurityToken() == null) {
+        if (resultEntity.__securityToken() == null) {
             List<ConstraintData> existingConstraints = getConstraints(resultEntity.getMetaClass(),
                     constraint -> constraint.getCheckType().memory());
             if (CollectionUtils.isNotEmpty(existingConstraints)) {
                 throw new RowLevelSecurityException(format("Could not read security token from entity %s, " +
-                                "even though there are active constraints for the entity.", resultEntity),
+                        "even though there are active constraints for the entity.", resultEntity),
                         resultEntity.getMetaClass().getName());
             }
         }
 
-        Multimap<String, UUID> filtered = resultEntity.__getFilteredData();
+        Multimap<String, UUID> filtered = resultEntity.__filteredData();
         if (filtered == null) {
             return;
         }
@@ -207,7 +208,7 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
                 if (value instanceof Collection) {
                     Set<UUID> filtered = internalApplyConstraints((Collection<Entity>) value, handled);
                     if (entity instanceof BaseGenericIdEntity) {
-                        ((BaseGenericIdEntity) entity).__addFiltered(property.getName(), filtered);
+                        securityTokenManager.addFiltered((BaseGenericIdEntity) entity, property.getName(), filtered);
                     }
                 } else if (value instanceof Entity) {
                     Entity valueEntity = (Entity) value;
@@ -215,7 +216,7 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
                         //we ignore the situation when the field is read-only
                         entity.setValue(property.getName(), null);
                         if (entity instanceof BaseGenericIdEntity) {
-                            ((BaseGenericIdEntity) entity).__addFiltered(property.getName(), valueEntity.getUuid());
+                            securityTokenManager.addFiltered((BaseGenericIdEntity) entity, property.getName(), valueEntity.getUuid());
                         }
                     }
                 }

@@ -9,16 +9,15 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.*;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.filter.QueryFilter;
 import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleDatasourceListenerWrapper;
-import com.haulmont.cuba.core.global.filter.QueryFilter;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.PermissionType;
@@ -500,7 +499,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             boolean saveModified = modified;
             for (T t : collection) {
                 if (t.equals(item)) {
-                    InstanceUtils.copy(item, t);
+                    metadata.getTools().copy(item, t);
                 }
             }
             modified = saveModified;

@@ -5,17 +5,17 @@
 
 package com.haulmont.cuba.web.jmx;
 
-import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.NodeIdentifier;
 import com.haulmont.cuba.core.sys.jmx.JmxNodeIdentifierMBean;
 import com.haulmont.cuba.web.jmx.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.management.*;
@@ -35,13 +35,16 @@ import static com.haulmont.cuba.web.jmx.JmxConnectionHelper.withConnection;
 @Component(JmxControlAPI.NAME)
 public class JmxControlBean implements JmxControlAPI {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
-    private DataService dataService;
+    protected DataService dataService;
 
     @Inject
-    private NodeIdentifier nodeIdentifier;
+    protected NodeIdentifier nodeIdentifier;
+
+    @Inject
+    protected Metadata metadata;
 
     /**
      * Constant identifier for the role field in a JMX {@link Descriptor}.
@@ -76,7 +79,7 @@ public class JmxControlBean implements JmxControlAPI {
     @Override
     public JmxInstance getLocalInstance() {
         JmxInstance localJmxInstance = new JmxInstance();
-        InstanceUtils.copy(JmxConnectionHelper.LOCAL_JMX_INSTANCE, localJmxInstance);
+        metadata.getTools().copy(JmxConnectionHelper.LOCAL_JMX_INSTANCE, localJmxInstance);
         localJmxInstance.setNodeName(getLocalNodeName());
         return localJmxInstance;
     }

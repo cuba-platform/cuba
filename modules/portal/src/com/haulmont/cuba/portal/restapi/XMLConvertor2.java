@@ -356,6 +356,12 @@ public class XMLConvertor2 implements Convertor {
             List propertyEls = instanceEl.elements();
             for (Object el : propertyEls) {
                 Element propertyEl = (Element) el;
+
+                if (entity instanceof BaseGenericIdEntity && "__securityToken".equals(propertyEl.getName())) {
+                    ((BaseGenericIdEntity) entity).__securityToken(Base64.getDecoder().decode(propertyEl.getText()));
+                    continue;
+                }
+
                 String propertyName = propertyEl.attributeValue("name");
 
                 MetaPropertyPath metaPropertyPath = metadata.getTools().resolveMetaPropertyPath(metaClass, propertyName);
@@ -480,6 +486,16 @@ public class XMLConvertor2 implements Convertor {
         boolean entityAlreadyVisited = !visited.add(entity);
         if (entityAlreadyVisited) {
             return;
+        }
+
+        if (entity instanceof BaseGenericIdEntity && ((BaseGenericIdEntity) entity).__securityToken() != null) {
+            BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) entity;
+            instanceEl.addElement("__securityToken").setText(Base64.getEncoder().encodeToString(baseGenericIdEntity.__securityToken()));
+            if (baseGenericIdEntity.__filteredAttributes() != null) {
+                Element filteredAttributes = instanceEl.addElement("__filteredAttributes");
+                Arrays.stream(baseGenericIdEntity.__filteredAttributes())
+                        .forEach(obj -> filteredAttributes.addElement("a").setText(obj));
+            }
         }
 
         MetaClass metaClass = entity.getMetaClass();

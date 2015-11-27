@@ -4,7 +4,6 @@
  */
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
@@ -23,8 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.mail.MailSendException;
-
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.inject.Inject;
@@ -229,10 +228,10 @@ public class Emailer implements EmailerAPI {
     }
 
     protected SendingMessage createClone(SendingMessage srcMessage) {
-        SendingMessage clonedMessage = (SendingMessage) InstanceUtils.copy(srcMessage);
+        SendingMessage clonedMessage = (SendingMessage) metadata.getTools().copy(srcMessage);
         List<SendingAttachment> clonedList = new ArrayList<>();
         for (SendingAttachment srcAttach : srcMessage.getAttachments()) {
-            SendingAttachment clonedAttach = (SendingAttachment) InstanceUtils.copy(srcAttach);
+            SendingAttachment clonedAttach = (SendingAttachment) metadata.getTools().copy(srcAttach);
             clonedAttach.setMessage(null);
             clonedAttach.setMessage(clonedMessage);
             clonedList.add(clonedAttach);

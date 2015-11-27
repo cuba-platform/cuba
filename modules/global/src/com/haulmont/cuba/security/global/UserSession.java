@@ -17,10 +17,8 @@ import java.util.stream.Collectors;
 
 /**
  * Class that encapsulates an active user session.
- * <p>
  * <p>It contains user attributes, credentials, set of permissions, and methods to check permissions for certain
  * objects.</p>
- * <p>
  * <p>On the client side a descendant of this class is maintained:
  * <code>com.haulmont.cuba.client.ClientUserSession</code></p>
  *

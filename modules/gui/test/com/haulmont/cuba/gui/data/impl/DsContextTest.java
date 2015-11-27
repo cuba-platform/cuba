@@ -6,7 +6,6 @@
 package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.Session;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
 import com.haulmont.cuba.core.entity.Entity;
@@ -501,7 +500,7 @@ public class DsContextTest extends CubaClientTestCase {
     private void setupParentDs(CollectionDatasource parent, Datasource child, Entity<UUID> item) {
         ((DatasourceImplementation) child).setParent(parent);
 
-        Entity itemCopy = (Entity) InstanceUtils.copy(item);
+        Entity itemCopy = (Entity) metadata.getTools().copy(item);
         child.setItem(itemCopy);
         ((DatasourceImplementation) child).setModified(false);
     }
@@ -526,7 +525,7 @@ public class DsContextTest extends CubaClientTestCase {
 //            }
 //        }
 
-        Entity item = (Entity) InstanceUtils.copy(parent.getItem(itemId));
+        Entity item = (Entity) metadata.getTools().copy(parent.getItem(itemId));
         child.setItem(item);
         ((DatasourceImplementation) child).setModified(false);
     }

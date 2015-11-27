@@ -115,10 +115,8 @@ public class DataManagerBean implements DataManager {
             tx.end();
         }
 
-        if (userSessionSource.getUserSession().hasConstraints() && viewClassesHaveConstraints(context)) {
-            if (security.applyConstraints(result)) {
-                return null;
-            }
+        if (result != null && needToApplyConstraints(context) && security.applyConstraints(result)) {
+            return null;
         }
 
         attributeSecurity.afterLoad(result);
@@ -178,7 +176,7 @@ public class DataManagerBean implements DataManager {
             tx.end();
         }
 
-        if (userSessionSource.getUserSession().hasConstraints() && viewClassesHaveConstraints(context)) {
+        if (needToApplyConstraints(context)) {
             security.applyConstraints((Collection<Entity>) resultList);
         }
 
@@ -512,10 +510,13 @@ public class DataManagerBean implements DataManager {
             }
 
             if (entityLoadInfoBuilder.contains(newInstances, entity)) {
+                checkOperationPermitted(entity, ConstraintOperationType.CREATE);
                 attributeSecurity.beforePersist(entity);
                 em.persist(entity);
                 result.add(entity);
             } else {
+                security.restoreFilteredData((BaseGenericIdEntity) entity);
+                checkOperationPermitted(entity, ConstraintOperationType.UPDATE);
                 attributeSecurity.beforeMerge(entity);
                 View view = context.getViews().get(entity);
                 Entity e = em.merge(entity, view);
@@ -784,7 +785,11 @@ public class DataManagerBean implements DataManager {
         return null;
     }
 
-    protected boolean viewClassesHaveConstraints(LoadContext context) {
+    protected boolean needToApplyConstraints(LoadContext context) {
+        if (!userSessionSource.getUserSession().hasConstraints()) {
+            return false;
+        }
+
         if (context.getView() == null) {
             return false;
         }

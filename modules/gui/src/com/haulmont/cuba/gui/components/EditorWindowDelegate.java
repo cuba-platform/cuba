@@ -8,7 +8,6 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.LockService;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
@@ -150,7 +149,7 @@ public class EditorWindowDelegate extends WindowDelegate {
         if (PersistenceHelper.isNew(item)
                 && !ds.getMetaClass().equals(item.getMetaClass())) {
             Entity newItem = ds.getDataSupplier().newInstance(ds.getMetaClass());
-            InstanceUtils.copy(item, newItem);
+            metadata.getTools().copy(item, newItem);
             item = newItem;
         }
 

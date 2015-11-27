@@ -5,7 +5,6 @@
 package com.haulmont.cuba.core.entity;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
@@ -22,7 +21,10 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 import java.io.IOException;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Base class for persistent entities.
@@ -247,67 +249,42 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
     /**
      * INTERNAL.
      */
-    public void __addFiltered(String property, UUID uuid) {
-        __initFiltered();
-        __filteredData.put(property, uuid);
-    }
-
-    /**
-     * INTERNAL.
-     */
-    public void __addFiltered(String property, Collection<UUID> uuids) {
-        __initFiltered();
-        __filteredData.putAll(property, uuids);
-    }
-
-    /**
-     * INTERNAL.
-     */
-    protected void __initFiltered() {
-        if (__filteredData == null) {
-            __filteredData = ArrayListMultimap.create();
-        }
-    }
-
-    /**
-     * INTERNAL.
-     */
-    public Multimap<String, UUID> __getFilteredData() {
+    public Multimap<String, UUID> __filteredData() {
         return __filteredData;
     }
 
     /**
      * INTERNAL.
      */
-    public void __setFilteredData(Multimap<String, UUID> filtered) {
+    public void __filteredData(Multimap<String, UUID> filtered) {
         this.__filteredData = filtered;
     }
 
     /**
      * INTERNAL.
      */
-    public byte[] __getSecurityToken() {
+    public byte[] __securityToken() {
         return __securityToken;
     }
 
     /**
      * INTERNAL.
      */
-    public void __setSecurityToken(byte[] securityToken) {
+    public void __securityToken(byte[] securityToken) {
         this.__securityToken = securityToken;
     }
 
     /**
      * INTERNAL.
      */
-    public String[] __getFilteredAttributes() {
+    public String[] __filteredAttributes() {
         return __filteredAttributes;
     }
 
     /**
      * INTERNAL.
      */
-    public void __setFilteredAttributes(String[] __filteredAttributes) {
+    public void __filteredAttributes(String[] __filteredAttributes) {
         this.__filteredAttributes = __filteredAttributes;
     }
 }

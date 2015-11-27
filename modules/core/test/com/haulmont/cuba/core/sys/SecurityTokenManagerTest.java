@@ -26,21 +26,21 @@ public class SecurityTokenManagerTest {
 
     @Test
     public void testSecurityToken() throws Exception {
-        SecurityTokenManager persistenceSecurity = AppBeans.get(SecurityTokenManager.class);
+        SecurityTokenManager securityTokenManager = AppBeans.get(SecurityTokenManager.class);
         User user = new User();
         UUID id1 = UUID.randomUUID();
         UUID id2 = UUID.randomUUID();
         UUID id3 = UUID.randomUUID();
         UUID id4 = UUID.randomUUID();
-        user.__addFiltered("userRoles", id1);
-        user.__addFiltered("userRoles", id2);
-        user.__addFiltered("userRoles", id3);
-        user.__addFiltered("userRoles", id4);
+        securityTokenManager.addFiltered(user, "userRoles", id1);
+        securityTokenManager.addFiltered(user, "userRoles", id2);
+        securityTokenManager.addFiltered(user, "userRoles", id3);
+        securityTokenManager.addFiltered(user, "userRoles", id4);
 
-        persistenceSecurity.writeSecurityToken(user);
-        persistenceSecurity.readSecurityToken(user);
+        securityTokenManager.writeSecurityToken(user);
+        securityTokenManager.readSecurityToken(user);
 
-        List<UUID> userRoles = (List<UUID>) user.__getFilteredData().get("userRoles");
+        List<UUID> userRoles = (List<UUID>) user.__filteredData().get("userRoles");
         Assert.assertEquals(4, userRoles.size());
         Assert.assertEquals(id1, userRoles.get(0));
         Assert.assertEquals(id2, userRoles.get(1));

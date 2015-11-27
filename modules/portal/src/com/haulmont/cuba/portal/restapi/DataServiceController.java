@@ -246,6 +246,8 @@ public class DataServiceController {
 
             String converted = convertor.process(result);
             writeResponse(response, converted, convertor.getMimeType());
+        } catch (RowLevelSecurityException e) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "The operation with entity " + e.getEntity() + " is denied");
         } catch (Throwable e) {
             sendError(request, response, e);
         } finally {
@@ -354,7 +356,7 @@ public class DataServiceController {
                     paramTypes.add(idx, ClassUtils.forName(_types[0], null));
                 } else if (!paramTypes.isEmpty()) {
                     //types should be defined for all parameters or for none of them
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter type for param" + idx +" is not defined");
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter type for param" + idx + " is not defined");
                     return;
                 }
                 idx++;
@@ -378,10 +380,10 @@ public class DataServiceController {
 
     @RequestMapping(value = "/api/service", method = RequestMethod.POST)
     public void serviceByPost(@RequestParam(value = "s") String sessionId,
-                             @RequestHeader(value = "Content-Type") MimeType contentType,
-                             @RequestBody String requestContent,
-                             HttpServletRequest request,
-                             HttpServletResponse response) throws IOException, JSONException {
+                              @RequestHeader(value = "Content-Type") MimeType contentType,
+                              @RequestBody String requestContent,
+                              HttpServletRequest request,
+                              HttpServletResponse response) throws IOException, JSONException {
 
         if (!authentication.begin(sessionId)) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
@@ -412,7 +414,7 @@ public class DataServiceController {
         }
     }
 
-    private void  writeResponse(HttpServletResponse response, String result, MimeType mimeType) throws IOException {
+    private void writeResponse(HttpServletResponse response, String result, MimeType mimeType) throws IOException {
         response.setContentType(mimeType.toString());
         PrintWriter writer = response.getWriter();
         writer.write(result);
@@ -468,7 +470,7 @@ public class DataServiceController {
         } catch (ParseException ignored) {
         }
         try {
-            return parseByDatatypeName(value,  TimeDatatype.NAME);
+            return parseByDatatypeName(value, TimeDatatype.NAME);
         } catch (ParseException ignored) {
         }
         try {
@@ -500,7 +502,8 @@ public class DataServiceController {
 
     /**
      * Parses string value into specific type
-     * @param value value to parse
+     *
+     * @param value    value to parse
      * @param typeName Datatype name
      * @return parsed object
      */
@@ -520,7 +523,7 @@ public class DataServiceController {
      * @param commitInstances entities to commit
      * @param newInstanceIds  ids of the new entities
      * @return true - if the user can commit all of the requested entities, false -
-     *         if he don't have permissions to commit at least one of the entities.
+     * if he don't have permissions to commit at least one of the entities.
      */
     private boolean commitPermitted(Collection commitInstances, Collection newInstanceIds) {
         for (Object commitInstance : commitInstances) {
@@ -541,7 +544,7 @@ public class DataServiceController {
      *
      * @param removeInstances entities to remove
      * @return true - if the user can remove all of the requested entities, false -
-     *         if he don't have permissions to remove at least one of the entities.
+     * if he don't have permissions to remove at least one of the entities.
      */
     private boolean removePermitted(Collection removeInstances) {
         for (Object removeInstance : removeInstances) {

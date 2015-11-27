@@ -115,21 +115,16 @@ public interface Security {
 
     /**
      * Check if the operation type is permitted for the entity
-     * @param entity -
-     * @param operationType -
      */
     boolean isPermitted(Entity entity, ConstraintOperationType operationType);
 
     /**
      * Check the special constraint permission for the entity
-     * @param entity -
-     * @param customCode -
      */
     boolean isPermitted(Entity entity, String customCode);
 
     /**
      * Check if there are registered constraints for the metaClass or it's original metaClass
-     * @param metaClass -
      */
     boolean hasConstraints(MetaClass metaClass);
 }

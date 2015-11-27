@@ -6,6 +6,7 @@
 
 	<xs:complexType name="instanceType">
 		<xs:sequence>
+            <xs:element name="__securityToken" type="xs:string" minOccurs="0" maxOccurs="1"/>
             <xs:element name="field" type="fieldType" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element name="reference" type="referenceType" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element name="collection" type="collectionType" minOccurs="0" maxOccurs="unbounded"/>

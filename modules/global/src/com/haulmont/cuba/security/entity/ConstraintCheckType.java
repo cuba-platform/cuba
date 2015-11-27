@@ -10,7 +10,7 @@ import org.apache.commons.lang.ObjectUtils;
 /**
  * Type of constraint.
  *
- * @author krivopustov
+ * @author degtyarjov
  * @version $Id$
  */
 public enum ConstraintCheckType implements EnumClass<String> {
