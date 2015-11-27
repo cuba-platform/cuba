@@ -587,7 +587,7 @@ configure(webToolkitModule) {
         // Compiler JVM
         xmx = '-Xmx512m'
         xss = '-Xss8m'
-        String xxMPS = '-XX:MaxPermSize=256m'
+        xxMPS = '-XX:MaxPermSize=256m'
     }
 
     task buildDebugWidgetSet(type: CubaWidgetSetBuilding) {
@@ -611,7 +611,7 @@ configure(webToolkitModule) {
     }
 
     task webDebugArchive(dependsOn: buildDebugWidgetSet, type: Zip) {
-        from file("$buildDir/web")
+        from file("$buildDir/web-debug")
         classifier = 'debug'
     }
 
