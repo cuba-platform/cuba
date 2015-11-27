@@ -299,7 +299,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 } else {
                     setEditableColumns(Collections.<MetaPropertyPath>emptyList());
 
-                    Window window = ComponentsHelper.getWindow(this);
+                    Window window = ComponentsHelper.getWindowImplementation(this);
                     boolean isLookup = window instanceof Window.Lookup;
 
                     // restore generators for some type of attributes
@@ -625,10 +625,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 }
             }
         }
+
         if (action != null && action.isEnabled()) {
-            Window window = ComponentsHelper.getWindow(WebAbstractTable.this);
-            if (window instanceof Window.Wrapper)
+            Window window = ComponentsHelper.getWindowImplementation(WebAbstractTable.this);
+            if (window instanceof Window.Wrapper) {
                 window = ((Window.Wrapper) window).getWrappedWindow();
+            }
 
             if (!(window instanceof Window.Lookup)) {
                 action.actionPerform(WebAbstractTable.this);
@@ -662,7 +664,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         @SuppressWarnings({"unchecked"})
         final Collection<MetaPropertyPath> properties = (Collection<MetaPropertyPath>) ds.getContainerPropertyIds();
 
-        Window window = ComponentsHelper.getWindow(this);
+        Window window = ComponentsHelper.getWindowImplementation(this);
         boolean isLookup = window instanceof Window.Lookup;
 
         for (MetaPropertyPath propertyPath : properties) {
@@ -2253,13 +2255,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public void setClickListener(String columnId, final CellClickListener clickListener) {
-        component.setClickListener(getColumn(columnId).getId(), new CubaEnhancedTable.CellClickListener() {
-            @Override
-            public void onClick(Object itemId, Object columnId) {
-                ItemWrapper wrapper = (ItemWrapper) component.getItem(itemId);
-                Entity entity = wrapper.getItem();
-                clickListener.onClick(entity, columnId.toString());
-            }
+        component.setClickListener(getColumn(columnId).getId(), (itemId, columnId1) -> {
+            ItemWrapper wrapper = (ItemWrapper) component.getItem(itemId);
+            Entity entity = wrapper.getItem();
+            clickListener.onClick(entity, columnId1.toString());
         });
     }
 
