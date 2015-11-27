@@ -200,7 +200,6 @@ public class ConditionDescriptorsTreeBuilder {
 
     private void addMultiplePropertyDescriptors(String includeRe, String excludeRe, List<AbstractConditionDescriptor> descriptors, Filter filter) {
         Metadata metadata = AppBeans.get(Metadata.class);
-        Messages messages = AppBeans.get(Messages.class);
 
         List<String> includedProps = new ArrayList<>();
 
@@ -209,11 +208,11 @@ public class ConditionDescriptorsTreeBuilder {
         for (MetaProperty property : filter.getDatasource().getMetaClass().getProperties()) {
             if (metadata.getTools().isTransient(property))
                 continue;
+            if (metadata.getTools().isSystemLevel(property))
+                continue;
             if (property.getRange().getCardinality().isMany())
                 continue;
             if (defaultExcludedProps.contains(property.getName()))
-                continue;
-            if (!messages.getTools().hasPropertyCaption(property))
                 continue;
 
             if (inclPattern.matcher(property.getName()).matches()) {
@@ -239,7 +238,6 @@ public class ConditionDescriptorsTreeBuilder {
         return security.isEntityAttrPermitted(property.getDomain(), property.getName(), EntityAttrAccess.VIEW)
                 && !metadataTools.isSystemLevel(property)           // exclude system level attributes
                 && metadataTools.isPersistent(property)             // exclude transient properties
-                && messageTools.hasPropertyCaption(property)        // exclude not localized properties (they are usually not for end user)
                 && !property.getRange().getCardinality().isMany();  // exclude ToMany
     }
 
