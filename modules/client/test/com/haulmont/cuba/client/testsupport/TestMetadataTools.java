@@ -5,10 +5,7 @@
 
 package com.haulmont.cuba.client.testsupport;
 
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 
 /**
  * @author artamonov
@@ -20,6 +17,7 @@ public class TestMetadataTools extends MetadataTools {
      */
     public TestMetadataTools(Metadata metadata) {
         this.metadata = metadata;
+        this.persistentAttributesLoadChecker = (entity, property) -> true;
     }
 
     public void setMessages(Messages messages) {
