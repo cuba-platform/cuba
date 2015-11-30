@@ -692,11 +692,10 @@ public class MetadataTools {
         }
     }
 
+    public interface EntitiesHolder {
+        Entity create(Class<? extends Entity> entityClass, Object id);
 
-    public static interface EntitiesHolder {
-        <T extends Entity> T create(Class<? extends Entity> entityClass, Object id);
-
-        <T extends Entity> T find(Object id);
+        Entity find(Object id);
 
         void put(Entity entity);
     }
@@ -705,19 +704,19 @@ public class MetadataTools {
         protected Map<Object, Entity> cache = new HashMap<>();
 
         @Override
-        public <T extends Entity> T create(Class<? extends Entity> entityClass, Object id) {
+        public Entity create(Class<? extends Entity> entityClass, Object id) {
             Entity entity = cache.get(id);
             if (entity == null) {
                 entity = createInstanceWithId(entityClass, id);
                 cache.put(id, entity);
             }
 
-            return (T) entity;
+            return entity;
         }
 
         @Override
-        public <T extends Entity> T find(Object id) {
-            return (T) cache.get(id);
+        public Entity find(Object id) {
+            return cache.get(id);
         }
 
         @Override
