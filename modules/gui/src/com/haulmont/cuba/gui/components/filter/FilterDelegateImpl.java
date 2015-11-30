@@ -364,6 +364,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             initMaxResults();
             if (filterMode == FilterMode.GENERIC_MODE) {
                 fillConditionsLayout(ConditionsFocusType.FIRST);
+                addConditionBtn.setVisible(editable && userCanEditFilers());
                 setFilterActionsEnabled();
                 initFilterSelectComponents();
             }
