@@ -44,6 +44,8 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
 
     protected long contentLength = -1;
 
+    protected Map<String, String> mimeTypes = new HashMap<>();
+
     protected boolean interrupted = false;
 
     /*
@@ -56,6 +58,11 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
     public CubaFileUpload() {
         registerRpc(new CubaFileUploadServerRpc() {
             @Override
+            public void fileUploaded(String fileName) {
+                fireUploadSuccess(fileName, mimeTypes.get(fileName), contentLength);
+            }
+
+            @Override
             public void fileSizeLimitExceeded(String fileName) {
                 fireFileSizeLimitExceeded(fileName);
             }
@@ -64,6 +71,8 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
             public void queueUploadFinished() {
                 // trigger UI update after uploading
                 markAsDirty();
+
+                mimeTypes.clear();
 
                 fireQueueUploadFinished();
             }
@@ -76,7 +85,7 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
             if (StringUtils.contains(ExceptionUtils.getRootCauseMessage(ex), "The multipart stream ended unexpectedly")) {
                 log.warn("Unable to upload file, it seems upload canceled or network error occurred");
             } else {
-                log.warn("Unexpected error in CubaFileUpload", ex);
+                log.error("Unexpected error in CubaFileUpload", ex);
             }
         });
     }
@@ -288,6 +297,9 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
                 @Override
                 public void streamingStarted(StreamingStartEvent event) {
                     startUpload();
+
+                    mimeTypes.put(event.getFileName(), event.getMimeType());
+
                     contentLength = event.getContentLength();
                     lastStartedEvent = event;
 
@@ -306,8 +318,6 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
 
                 @Override
                 public void streamingFinished(StreamingEndEvent event) {
-                    fireUploadSuccess(event.getFileName(), event.getMimeType(), event.getContentLength());
-
                     endUpload();
                 }
 

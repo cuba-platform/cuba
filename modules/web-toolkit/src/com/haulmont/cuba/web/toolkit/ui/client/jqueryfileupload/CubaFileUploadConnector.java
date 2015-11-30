@@ -39,6 +39,13 @@ public class CubaFileUploadConnector extends AbstractComponentConnector implemen
     }
 
     @Override
+    public void onUnregister() {
+        super.onUnregister();
+
+        getWidget().cancelAllUploads();
+    }
+
+    @Override
     protected void init() {
         super.init();
 
@@ -52,7 +59,20 @@ public class CubaFileUploadConnector extends AbstractComponentConnector implemen
         getWidget().queueUploadListener = new CubaFileUploadWidget.QueueUploadListener() {
             @Override
             public void uploadFinished() {
-                getRpcProxy(CubaFileUploadServerRpc.class).queueUploadFinished();
+                // send events to server only if widget is still attached to UI
+                if (getWidget().isAttached()) {
+                    getRpcProxy(CubaFileUploadServerRpc.class).queueUploadFinished();
+                }
+            }
+        };
+
+        getWidget().fileUploadedListener = new CubaFileUploadWidget.FileUploadedListener() {
+            @Override
+            public void fileUploaded(String fileName) {
+                // send events to server only if widget is still attached to UI
+                if (getWidget().isAttached()) {
+                    getRpcProxy(CubaFileUploadServerRpc.class).fileUploaded(fileName);
+                }
             }
         };
     }

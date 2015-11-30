@@ -13,6 +13,8 @@ import com.vaadin.shared.communication.ServerRpc;
  */
 public interface CubaFileUploadServerRpc extends ServerRpc {
 
+    void fileUploaded(String fileName);
+
     void fileSizeLimitExceeded(String fileName);
 
     void queueUploadFinished();
