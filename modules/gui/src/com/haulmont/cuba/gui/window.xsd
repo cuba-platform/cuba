@@ -1058,6 +1058,15 @@
         <xs:attribute name="columnsQty" type="xs:int"/>
         <xs:attribute name="collapsable" type="xs:boolean"/>
         <xs:attribute name="collapsed" type="xs:boolean"/>
+        <xs:attribute name="defaultMode">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="generic"/>
+                    <xs:enumeration value="fts"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="modeSwitchVisible" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- FieldGroup.FieldConfig -->

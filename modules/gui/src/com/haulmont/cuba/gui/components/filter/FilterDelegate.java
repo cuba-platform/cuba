@@ -24,6 +24,11 @@ import java.util.List;
 public interface FilterDelegate {
     String NAME = "cuba_FilterDelegate";
 
+    enum FilterMode {
+        GENERIC_MODE,
+        FTS_MODE
+    }
+
     void setFilter(Filter filter);
 
     void loadFiltersAndApplyDefault();
@@ -97,6 +102,10 @@ public interface FilterDelegate {
 
     boolean isCollapsable();
     void setCollapsable(boolean collapsable);
+
+    void setModeSwitchVisible(boolean modeSwitchVisible);
+
+    void switchFilterMode(FilterMode filterMode);
 
     void requestFocus();
 

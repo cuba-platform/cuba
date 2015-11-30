@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.FilterEntity;
 
@@ -46,6 +47,13 @@ public interface Filter extends Component.Margin, Component.BelongToFrame, Compo
      */
     void setMaxResults(int maxResults);
     int getMaxResults();
+
+    /**
+     * Sets filter mode switch visibility
+     */
+    void setModeSwitchVisible(boolean modeSwitchVisible);
+
+    void switchFilterMode(FilterDelegate.FilterMode filterMode);
 
     /**
      * Whether to show field for rows count restriction.

@@ -163,6 +163,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected String conditionsLocation;
     protected boolean filterActionsCreated = false;
     protected boolean delayedFocus;
+    protected boolean modeSwitchVisible = true;
 
     protected SaveAsAction saveAsAction;
     protected EditAction editAction;
@@ -353,30 +354,38 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         ftsSwitch.addValueChangeListener(e -> {
             filterMode = Boolean.TRUE.equals(e.getValue()) ? FilterMode.FTS_MODE : FilterMode.GENERIC_MODE;
-            if (filterMode == FilterMode.FTS_MODE) {
-                prevConditions = conditions;
-                ((CollectionDatasource.SupportsApplyToSelected) datasource).unpinAllQuery();
-                appliedFilters.clear();
-                lastAppliedFilter = null;
-            }
-            conditions = (filterMode == FilterMode.GENERIC_MODE) ? prevConditions : new ConditionsTree();
-            createLayout();
-            initMaxResults();
-            if (filterMode == FilterMode.GENERIC_MODE) {
-                fillConditionsLayout(ConditionsFocusType.FIRST);
-                addConditionBtn.setVisible(editable && userCanEditFilers());
-                setFilterActionsEnabled();
-                initFilterSelectComponents();
-            }
-            if (paramEditComponentToFocus != null)
-                requestFocusToParamEditComponent();
-            else if (filtersPopupDisplayed)
-                filtersPopupButton.requestFocus();
-            else if (filtersLookupDisplayed) {
-                filtersLookup.requestFocus();
-            }
-            updateWindowCaption();
+            switchFilterMode(filterMode);
         });
+
+        ftsSwitch.setVisible(modeSwitchVisible);
+    }
+
+    @Override
+    public void switchFilterMode(FilterMode filterMode) {
+        this.filterMode = filterMode;
+        if (filterMode == FilterMode.FTS_MODE) {
+            prevConditions = conditions;
+            ((CollectionDatasource.SupportsApplyToSelected) datasource).unpinAllQuery();
+            appliedFilters.clear();
+            lastAppliedFilter = null;
+        }
+        conditions = (filterMode == FilterMode.GENERIC_MODE) ? prevConditions : new ConditionsTree();
+        createLayout();
+        initMaxResults();
+        if (filterMode == FilterMode.GENERIC_MODE) {
+            fillConditionsLayout(ConditionsFocusType.FIRST);
+            addConditionBtn.setVisible(editable && userCanEditFilers());
+            setFilterActionsEnabled();
+            initFilterSelectComponents();
+        }
+        if (paramEditComponentToFocus != null)
+            requestFocusToParamEditComponent();
+        else if (filtersPopupDisplayed)
+            filtersPopupButton.requestFocus();
+        else if (filtersLookupDisplayed) {
+            filtersLookup.requestFocus();
+        }
+        updateWindowCaption();
     }
 
     protected void createMaxResultsLayout() {
@@ -1758,6 +1767,12 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     @Override
+    public void setModeSwitchVisible(boolean modeSwitchVisible) {
+        this.modeSwitchVisible = modeSwitchVisible;
+        ftsSwitch.setVisible(modeSwitchVisible);
+    }
+
+    @Override
     public void requestFocus() {
         if (filterEntity == null) {
             delayedFocus = true;
@@ -2273,11 +2288,6 @@ public class FilterDelegateImpl implements FilterDelegate {
             this.layout = layout;
             this.button = button;
         }
-    }
-
-    protected enum FilterMode {
-        GENERIC_MODE,
-        FTS_MODE
     }
 
     /**

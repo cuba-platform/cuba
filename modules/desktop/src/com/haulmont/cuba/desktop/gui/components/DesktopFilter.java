@@ -283,6 +283,16 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     }
 
     @Override
+    public void switchFilterMode(FilterDelegate.FilterMode filterMode) {
+        delegate.switchFilterMode(filterMode);
+    }
+
+    @Override
+    public void setModeSwitchVisible(boolean modeSwitchVisible) {
+        delegate.setModeSwitchVisible(modeSwitchVisible);
+    }
+
+    @Override
     public void addListener(ExpandListener listener) {
         addExpandedStateChangeListener(new ComponentExpandCollapseListenerWrapper(listener));
     }

@@ -299,4 +299,15 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     public void requestFocus() {
         delegate.requestFocus();
     }
+
+    @Override
+    public void setModeSwitchVisible(boolean modeSwitchVisible) {
+        delegate.setModeSwitchVisible(modeSwitchVisible);
+    }
+
+    @Override
+    public void switchFilterMode(FilterDelegate.FilterMode filterMode) {
+        delegate.switchFilterMode(filterMode);
+    }
+
 }
