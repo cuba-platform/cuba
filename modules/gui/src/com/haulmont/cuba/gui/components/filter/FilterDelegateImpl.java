@@ -112,8 +112,8 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected Filter filter;
     protected FilterEntity adHocFilter;
-    protected ConditionsTree conditions;
-    protected ConditionsTree prevConditions;
+    protected ConditionsTree conditions = new ConditionsTree();
+    protected ConditionsTree prevConditions = new ConditionsTree();
     protected List<AbstractCondition> initialConditions = new ArrayList<>();
     protected FilterEntity filterEntity;
     protected FilterEntity initialFilterEntity;
@@ -362,6 +362,10 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     @Override
     public void switchFilterMode(FilterMode filterMode) {
+        if (filterMode == FilterMode.FTS_MODE && !isFtsModeEnabled()) {
+            log.warn("Unable to switch to the FTS filter mode. FTS mode is not supported for the " + datasource.getMetaClass().getName() + " entity");
+            return;
+        }
         this.filterMode = filterMode;
         if (filterMode == FilterMode.FTS_MODE) {
             prevConditions = conditions;
@@ -1769,7 +1773,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     @Override
     public void setModeSwitchVisible(boolean modeSwitchVisible) {
         this.modeSwitchVisible = modeSwitchVisible;
-        ftsSwitch.setVisible(modeSwitchVisible);
+        ftsSwitch.setVisible(modeSwitchVisible && isFtsModeEnabled());
     }
 
     @Override
