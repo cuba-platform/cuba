@@ -6,7 +6,8 @@
 package com.haulmont.cuba.gui.xml;
 
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import org.apache.commons.lang.StringUtils;
 
@@ -28,16 +29,12 @@ public class DeclarativeAction extends BaseAction {
         this.caption = caption;
         this.description = description;
         this.icon = icon;
-        this.enabled = enable == null ? true : Boolean.valueOf(enable);
-        this.visible = visible == null ? true : Boolean.valueOf(visible);
+
+        setEnabled(enable == null ? true : Boolean.valueOf(enable));
+        setVisible(visible == null ? true : Boolean.valueOf(visible));
+
         this.methodName = methodName;
-        if (holder instanceof Frame) {
-            frame = (Frame) holder;
-        } else if (holder instanceof Component.BelongToFrame) {
-            frame = ((Component.BelongToFrame) holder).getFrame();
-        } else {
-            throw new IllegalStateException("Component " + holder + " can't contain DeclarativeAction");
-        }
+        checkActionsHolder(holder);
     }
 
     public DeclarativeAction(String id, String caption, String description, String icon, boolean enabled, boolean visible,
@@ -47,15 +44,21 @@ public class DeclarativeAction extends BaseAction {
         this.caption = caption;
         this.description = description;
         this.icon = icon;
-        this.enabled = enabled;
-        this.visible = visible;
+
+        setEnabled(enabled);
+        setVisible(visible);
+
         this.methodName = methodName;
+        checkActionsHolder(holder);
+    }
+
+    protected void checkActionsHolder(Component.ActionsHolder holder) {
         if (holder instanceof Frame) {
             frame = (Frame) holder;
         } else if (holder instanceof Component.BelongToFrame) {
             frame = ((Component.BelongToFrame) holder).getFrame();
         } else {
-            throw new IllegalStateException("Component " + holder + " can't contain DeclarativeAction");
+            throw new IllegalStateException(String.format("Component %s can't contain DeclarativeAction", holder));
         }
     }
 
@@ -83,7 +86,7 @@ public class DeclarativeAction extends BaseAction {
                     throw new RuntimeException(e1);
                 }
             } catch (NoSuchMethodException e1) {
-                throw new IllegalStateException("No suitable methods named " + methodName + " for action " + id);
+                throw new IllegalStateException(String.format("No suitable methods named %s for action %s", methodName, id));
             }
         }
     }
