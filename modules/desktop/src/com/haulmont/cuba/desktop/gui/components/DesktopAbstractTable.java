@@ -2235,6 +2235,24 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     public void showCustomPopupActions(List<Action> actions) {
     }
 
+    @Override
+    public void setColumnSortAllowed(String columnId, boolean allowed) {
+    }
+
+    @Override
+    public boolean getColumnSortAllowed(String columnId) {
+        return true;
+    }
+
+    @Override
+    public void setColumnSortAllowed(Column column, boolean allowed) {
+    }
+
+    @Override
+    public boolean getColumnSortAllowed(Column column) {
+        return true;
+    }
+
     /**
      * Uses delegate renderer to create cell component.
      * Then applies desktop styles to cell component.

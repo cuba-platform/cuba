@@ -140,6 +140,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             component.setColumnDescription(column.getId(), column.getDescription());
         }
 
+        if (!column.isSortAllowed()) {
+            component.setColumnSortAllowed(column.getId(), column.isSortAllowed());
+        }
+
         columns.put(column.getId(), column);
         columnsOrder.add(column);
         if (column.getWidth() != null) {
@@ -1499,6 +1503,33 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             column.setDescription(description);
         }
         component.setColumnDescription(column.getId(), description);
+    }
+
+    @Override
+    public void setColumnSortAllowed(String columnId, boolean allowed) {
+        Column column = getColumn(columnId);
+        setColumnSortAllowed(column, allowed);
+    }
+
+    @Override
+    public boolean getColumnSortAllowed(String columnId) {
+        Column column = getColumn(columnId);
+        return getColumnSortAllowed(column);
+    }
+
+    @Override
+    public void setColumnSortAllowed(Column column, boolean allowed) {
+        checkNotNullArgument(column, "column must be non null");
+        if (column.isSortAllowed() != allowed) {
+            column.setSortAllowed(allowed);
+        }
+        component.setColumnSortAllowed(column.getId(), allowed);
+    }
+
+    @Override
+    public boolean getColumnSortAllowed(Column column) {
+        checkNotNullArgument(column, "column must be non null");
+        return component.getColumnSortAllowed(column.getId());
     }
 
     @Override

@@ -15,9 +15,7 @@ import com.haulmont.cuba.web.toolkit.data.TableContainer;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableClientRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableState;
-import com.vaadin.data.Container;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.ContainerOrderedWrapper;
 import com.vaadin.event.Action;
 import com.vaadin.event.ActionManager;
 import com.vaadin.event.ShortcutListener;
@@ -52,7 +50,9 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
 
     protected boolean aggregatable = false;
 
-    protected List<ColumnCollapseListener> columnCollapseListeners; // lazily intialized List
+    protected List<ColumnCollapseListener> columnCollapseListeners; // lazily initialized List
+    
+    protected Set<Object> sortDisallowedProperties; // lazily initialized Set
 
     protected Map<Object, CellClickListener> cellClickListeners; // lazily initialized map
 
@@ -563,14 +563,45 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
     }
 
     @Override
+    public boolean getColumnSortAllowed(Object columnId) {
+        return sortDisallowedProperties == null || !sortDisallowedProperties.contains(columnId);
+    }
+
+    @Override
+    public void setColumnSortAllowed(Object columnId, boolean allowed) {
+        if (sortDisallowedProperties == null) {
+            sortDisallowedProperties = new HashSet<>();
+        }
+        if (allowed) {
+            sortDisallowedProperties.remove(columnId);
+        } else {
+            sortDisallowedProperties.add(columnId);
+        }
+        markAsDirty();
+    }
+
+    @Override
     public void beforeClientResponse(boolean initial) {
         super.beforeClientResponse(initial);
 
         updateClickableColumnKeys();
         updateColumnDescriptions();
+        updateSortableColumnKeys();
 
         if (Table.AggregationStyle.BOTTOM.equals(getAggregationStyle())) {
             updateFooterAggregation();
+        }
+    }
+
+    protected void updateSortableColumnKeys() {
+        if (sortDisallowedProperties != null) {
+            String[] sortDisallowedColumnKeys = new String[sortDisallowedProperties.size()];
+            int i = 0;
+            for (Object columnId : sortDisallowedProperties) {
+                sortDisallowedColumnKeys[i] = columnIdMap.key(columnId);
+                i++;
+            }
+            getState().sortDisallowedColumnKeys = sortDisallowedColumnKeys;
         }
     }
 
@@ -633,8 +664,14 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
             if (columnDescriptions == null) {
                 columnDescriptions = new HashMap<>();
             }
+            if (!Objects.equals(columnDescriptions.get(columnId), description)) {
+                markAsDirty();
+            }
             columnDescriptions.put(columnId, description);
         } else if (columnDescriptions != null) {
+            if (columnDescriptions.containsKey(columnId)) {
+                markAsDirty();
+            }
             columnDescriptions.remove(columnId);
         }
     }
@@ -669,12 +706,5 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
                 setPageLength(15);
             }
         }
-    }
-
-    @Override
-    protected Container createOrderedWrapper(Container newDataSource) {
-        ContainerOrderedWrapper wrapper = new ContainerOrderedWrapper(newDataSource);
-        wrapper.setResetOnItemSetChange(true);
-        return wrapper;
     }
 }

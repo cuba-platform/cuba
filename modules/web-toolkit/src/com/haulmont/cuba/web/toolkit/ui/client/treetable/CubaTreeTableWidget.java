@@ -54,6 +54,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
     protected TableAggregationRow aggregationRow;
 
     protected Set<String> clickableColumns;
+    protected Set<String> sortDisallowedColumns;
     protected TableCellClickListener cellClickListener;
 
     protected VOverlay customPopupOverlay;
@@ -364,6 +365,11 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
         protected void sortColumn() {
             // CAUTION copied from superclass
             // Added ability to reset sort order
+            // Added ability to prevent sorting
+            if (sortDisallowedColumns != null && sortDisallowedColumns.contains(cid)) {
+                return;
+            }
+
             boolean reloadDataFromServer = true;
 
             if (cid.equals(sortColumn)) {

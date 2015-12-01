@@ -103,6 +103,13 @@ public class CubaScrollTableConnector extends TableConnector {
                 getWidget().clickableColumns = null;
             }
         }
+        if (stateChangeEvent.hasPropertyChanged("sortDisallowedColumnKeys")) {
+            if (getState().sortDisallowedColumnKeys != null) {
+                getWidget().sortDisallowedColumns = new HashSet<String>(Arrays.asList(getState().sortDisallowedColumnKeys));
+            } else {
+                getWidget().sortDisallowedColumns = null;
+            }
+        }
         if (stateChangeEvent.hasPropertyChanged("customPopup")) {
             if (getState().customPopup != null) {
                 ComponentConnector customPopup = (ComponentConnector) getState().customPopup;
