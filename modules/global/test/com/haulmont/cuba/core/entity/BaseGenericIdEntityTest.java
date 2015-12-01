@@ -14,7 +14,7 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.security.entity.User;
-import junit.framework.Assert;
+import org.junit.Assert;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
@@ -30,14 +30,10 @@ import java.util.HashMap;
  */
 public class BaseGenericIdEntityTest {
     @Mocked
-    protected AppBeans appBeans;
-
-    @Mocked
     protected DynamicAttributes dynamicAttributes;
 
     @Mocked
     protected Metadata metadata;
-
 
     @Before
     public void setUp() throws Exception {
@@ -50,6 +46,7 @@ public class BaseGenericIdEntityTest {
                 return categoryAttribute;
             }
         }.getMockInstance();
+
         metadata = new MockUp<Metadata>() {
             @SuppressWarnings("UnusedDeclaration")
             @Mock
@@ -66,9 +63,16 @@ public class BaseGenericIdEntityTest {
                     }
                 };
             }
+
+            @SuppressWarnings({"UnusedDeclaration", "unchecked"})
+            @Mock
+            <T> T create(Class<T> entityClass) {
+                if (User.class.equals(entityClass)) {
+                    return (T) new User();
+                }
+                throw new IllegalArgumentException("Add support for " + entityClass.getSimpleName() + " to Mock");
+            }
         }.getMockInstance();
-
-
 
         new NonStrictExpectations() {
             {
@@ -89,7 +93,7 @@ public class BaseGenericIdEntityTest {
             //do nothing
         }
 
-        user.setDynamicAttributes(new HashMap<String, CategoryAttributeValue>());
+        user.setDynamicAttributes(new HashMap<>());
 
         user.setValue("+extend", "some dynamic value");
         Assert.assertEquals("some dynamic value", user.getValue("+extend"));
