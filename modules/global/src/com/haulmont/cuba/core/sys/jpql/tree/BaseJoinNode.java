@@ -8,6 +8,7 @@ package com.haulmont.cuba.core.sys.jpql.tree;
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.ErrorRec;
 import com.haulmont.cuba.core.sys.jpql.QueryVariableContext;
+import com.haulmont.cuba.core.sys.jpql.UnknownEntityNameException;
 import com.haulmont.cuba.core.sys.jpql.pointer.*;
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.Token;
@@ -65,20 +66,31 @@ public class BaseJoinNode extends BaseCustomNode {
         }
 
         QueryVariableContext queryVC = stack.peekLast();
-        PathNode pathNode = (PathNode) child0;
-        Pointer pointer = pathNode.walk(model, queryVC);
-        if (pointer instanceof NoPointer) {
-            invalidNodes.add(new ErrorRec(this, "Cannot resolve joined entity"));
-        } else if (pointer instanceof SimpleAttributePointer) {
-            invalidNodes.add(new ErrorRec(this, "Joined entity resolved to a non-entity attribute"));
-        } else if (pointer instanceof EntityPointer) {
-            queryVC.addEntityVariable(variableName, ((EntityPointer) pointer).getEntity());
-        } else if (pointer instanceof CollectionPointer) {
-            queryVC.addEntityVariable(variableName, ((CollectionPointer) pointer).getEntity());
-        } else {
-            invalidNodes.add(new ErrorRec(this,
-                    "Unexpected pointer variable type: " + pointer.getClass())
-            );
+
+        if (child0 instanceof PathNode) {
+            PathNode pathNode = (PathNode) child0;
+            Pointer pointer = pathNode.walk(model, queryVC);
+            if (pointer instanceof NoPointer) {
+                invalidNodes.add(new ErrorRec(this, "Cannot resolve joined entity"));
+            } else if (pointer instanceof SimpleAttributePointer) {
+                invalidNodes.add(new ErrorRec(this, "Joined entity resolved to a non-entity attribute"));
+            } else if (pointer instanceof EntityPointer) {
+                queryVC.addEntityVariable(variableName, ((EntityPointer) pointer).getEntity());
+            } else if (pointer instanceof CollectionPointer) {
+                queryVC.addEntityVariable(variableName, ((CollectionPointer) pointer).getEntity());
+            } else {
+                invalidNodes.add(new ErrorRec(this,
+                                "Unexpected pointer variable type: " + pointer.getClass())
+                );
+            }
+        } else {//this special case is for "join X on X.a = Y.b" query. Entity name would be just text in the child node
+            try {
+                queryVC.addEntityVariable(variableName, model.getEntityByName(child0.getText()));
+            } catch (UnknownEntityNameException e) {
+                invalidNodes.add(new ErrorRec(this,
+                                "Could not find entity for name " + child0.getText())
+                );
+            }
         }
     }
 

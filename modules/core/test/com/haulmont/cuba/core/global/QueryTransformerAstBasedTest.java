@@ -475,6 +475,21 @@ public class QueryTransformerAstBasedTest {
     }
 
     @Test
+    public void addJoinOn() throws RecognitionException {
+        DomainModel model = prepareDomainModel();
+
+        QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
+                "select h from sec$Constraint u, sec$GroupHierarchy h where h.userGroup = :par"
+        );
+
+        transformer.addJoinAsIs("join sec$Constraint c on c.group.id = h.parent.id");
+        String res = transformer.getResult();
+        assertEquals(
+                "select h from sec$Constraint u, sec$GroupHierarchy h join sec$Constraint c on c.group.id = h.parent.id where h.userGroup = :par",
+                res);
+    }
+
+    @Test
     public void addWhere_with_child_select() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
         builder.startNewEntity("Car");
@@ -509,7 +524,11 @@ public class QueryTransformerAstBasedTest {
         builder.addCollectionReferenceAttribute("constraints", "sec$Constraint");
         Entity groupHierarchy = builder.produce();
 
-        Entity constraintEntity = builder.produceImmediately("sec$Constraint");
+        builder = new EntityBuilder();
+        builder.startNewEntity("sec$Constraint");
+        builder.addReferenceAttribute("group", "sec$GroupHierarchy");
+        Entity constraintEntity = builder.produce();
+
         Entity userEntity = builder.produceImmediately("sec$User");
         return new DomainModel(groupHierarchy, constraintEntity, userEntity);
     }

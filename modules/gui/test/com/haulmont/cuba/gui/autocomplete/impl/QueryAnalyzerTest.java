@@ -70,6 +70,35 @@ public class QueryAnalyzerTest {
     }
 
     @Test
+    public void mixinJoinOnIntoTree() throws RecognitionException {
+        DomainModel model = prepareDomainModel();
+
+        QueryTreeTransformer qa = new QueryTreeTransformer();
+        qa.prepare(model, "select c from Car c");
+
+        CommonTree tree = qa.getTree();
+        CommonTree sources = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
+        assertEquals(1, sources.getChildCount());
+        assertTrue(sources.getChild(0) instanceof SelectionSourceNode);
+        CommonTree source = (CommonTree) sources.getFirstChildWithType(JPA2Lexer.T_SOURCE);
+        assertTrue(source.getChild(0) instanceof IdentificationVariableNode);
+
+        JoinVariableNode join = (JoinVariableNode) Parser.parseJoinClause("join Driver d on d.car.id = c.id");
+        qa.mixinJoinIntoTree(join, new VariableEntityReference("Car", "c"), true);
+
+        tree = qa.getTree();
+        sources = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
+        assertEquals(1, sources.getChildCount());
+        SelectionSourceNode sourceNode = (SelectionSourceNode) sources.getChild(0);
+        assertEquals(2, sourceNode.getChildCount());
+        assertTrue(sourceNode.getChild(0) instanceof IdentificationVariableNode);
+        assertTrue(sourceNode.getChild(1) instanceof JoinVariableNode);
+        JoinVariableNode joinNode = (JoinVariableNode) sourceNode.getChild(1);
+        assertEquals("d", joinNode.getVariableName());
+        assertEquals("d.car.id = c.id", joinNode.getJoinCondition());
+    }
+
+    @Test
     public void mixinJoinIntoTree_with_in_collections() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
 
@@ -230,7 +259,11 @@ public class QueryAnalyzerTest {
 
     private DomainModel prepareDomainModel() {
         EntityBuilder builder = new EntityBuilder();
-        Entity driver = builder.produceImmediately("Driver", "name", "signal");
+        builder.startNewEntity("Driver");
+        builder.addStringAttribute("name");
+        builder.addStringAttribute("signal");
+        builder.addReferenceAttribute("car", "Driver");
+        Entity driver = builder.produce();
 
         builder.startNewEntity("Car");
         builder.addStringAttribute("model");

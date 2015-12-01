@@ -100,21 +100,20 @@ range_variable_declaration
      : entity_name ('AS')? identification_variable
      -> ^(T_ID_VAR<IdentificationVariableNode>[$identification_variable.text] entity_name);
 join
-     : join_spec join_association_path_expression ('AS')? identification_variable (join_condition)?
-     -> ^(T_JOIN_VAR<JoinVariableNode>[$join_spec.text, $identification_variable.text] join_association_path_expression);
+     : join_spec join_association_path_expression ('AS')? identification_variable ('ON' conditional_expression)?
+     -> ^(T_JOIN_VAR<JoinVariableNode>[$join_spec.text, $identification_variable.text, $conditional_expression.text] join_association_path_expression);
 fetch_join
      : join_spec 'FETCH' join_association_path_expression;
 join_spec
      : (('LEFT') ('OUTER')? | 'INNER' )? 'JOIN';
-join_condition
-     : 'ON' conditional_expression;
 
 //Start : here we have simplified joins
 join_association_path_expression
      : identification_variable '.' (field'.')* field?
          -> ^(T_SELECTED_FIELD<PathNode>[$identification_variable.text] (field)*)
      |  'TREAT(' identification_variable '.' (field'.')* field? 'AS' subtype ')'
-         -> ^(T_SELECTED_FIELD<PathNode>[$identification_variable.text] (field)*);
+         -> ^(T_SELECTED_FIELD<PathNode>[$identification_variable.text] (field)*)
+     | entity_name;
 //End : here we have simplified joins
 
 collection_member_declaration

@@ -7,10 +7,10 @@ package com.haulmont.cuba.core.sys.jpql;
 
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Parser;
-import junit.framework.Assert;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.TokenStream;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -39,6 +39,19 @@ public class Jpa2GrammarTest {
         String query = "select sm from sys$SendingMessage sm " +
                 "where sm.status=:(?i)statusQueue or (sm.status = :statusSending and sm.updateTs<:time) " +
                 "order by sm.createTs";
+        CharStream cs = new AntlrNoCaseStringStream(query);
+        JPA2Lexer lexer = new JPA2Lexer(cs);
+        TokenStream tstream = new CommonTokenStream(lexer);
+        JPA2Parser jpa2Parser = new JPA2Parser(tstream);
+        JPA2Parser.ql_statement_return aReturn = jpa2Parser.ql_statement();
+        Assert.assertNotNull(aReturn);
+    }
+
+    @Test
+    public void testJoinOn() throws Exception {
+        String query = "select h " +
+                "from sec$Constraint u, sec$GroupHierarchy h join sec$Constraint c on c.group.id = h.parent.id " +
+                "where h.userGroup = :par";
         CharStream cs = new AntlrNoCaseStringStream(query);
         JPA2Lexer lexer = new JPA2Lexer(cs);
         TokenStream tstream = new CommonTokenStream(lexer);

@@ -11,7 +11,9 @@ import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
+import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -20,14 +22,16 @@ import java.util.List;
  */
 public class JoinVariableNode extends BaseJoinNode {
     private String joinSpec;
+    private String joinCondition;
 
-    public JoinVariableNode(Token token, String joinSpec, String variableName) {
+    public JoinVariableNode(Token token, String joinSpec, String variableName, String joinCondition) {
         super(token, variableName);
         this.joinSpec = joinSpec;
+        this.joinCondition = joinCondition;
     }
 
-    public JoinVariableNode(int type, String joinSpec, String variableName) {
-        this(new CommonToken(type, ""), joinSpec, variableName);
+    public JoinVariableNode(int type, String joinSpec, String variableName, String joinCondition) {
+        this(new CommonToken(type, ""), joinSpec, variableName, joinCondition);
     }
 
     @Override
@@ -37,7 +41,7 @@ public class JoinVariableNode extends BaseJoinNode {
 
     @Override
     public Tree dupNode() {
-        JoinVariableNode result = new JoinVariableNode(token, joinSpec, variableName);
+        JoinVariableNode result = new JoinVariableNode(token, joinSpec, variableName, joinCondition);
         dupChildren(result);
         return result;
     }
@@ -55,10 +59,32 @@ public class JoinVariableNode extends BaseJoinNode {
         // должно появится после определения сущности, из которой выбирают, поэтому в post
         sb.appendSpace();
         sb.appendString(variableName);
+        if (StringUtils.isNotBlank(joinCondition)) {
+            sb.appendSpace();
+            sb.appendString("on");
+            sb.appendSpace();
+            sb.appendString(joinCondition);
+        }
+
         return this;
     }
 
-    public PathNode getPathNode() {
-        return (PathNode) getChild(0);
+    @Nullable
+    public PathNode findPathNode() {
+        for (Object child : getChildren()) {
+            if (child instanceof PathNode) {
+                return (PathNode) child;
+            }
+        }
+
+        return null;
+    }
+
+    public String getJoinSpec() {
+        return joinSpec;
+    }
+
+    public String getJoinCondition() {
+        return joinCondition;
     }
 }

@@ -565,6 +565,13 @@ public class HintProviderTest {
         options = response.getOptions();
         assertEquals(1, options.size());
         assertEquals("manager", options.get(0));
+
+        hintProvider = createTestHintProvider(model);
+        response = hintProvider.requestHint(
+                "select t from Player p join Team t on t.~ = p.agent.id");
+        options = response.getOptions();
+        assertEquals(3, options.size());
+        assertEquals("manager", options.get(0));
     }
 
     @Test

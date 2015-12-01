@@ -71,8 +71,10 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
                     String variableName = entityVariableNode.getVariableName();
                     JoinVariableNode joinVariableNode = (JoinVariableNode) joinClause;
                     if (renameVariable) {
-                        PathNode path = joinVariableNode.getPathNode();
-                        path.renameVariableTo(variableName);
+                        PathNode path = joinVariableNode.findPathNode();
+                        if (path != null) {
+                            path.renameVariableTo(variableName);
+                        }
                     }
                     sourceNode.addChild(joinClause);
                     from.freshenParentAndChildIndexes();
@@ -224,7 +226,7 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
             orderingNode.addDefaultChild(lastNode.getText());
             orderByField.addChild(orderingNode);
 
-            JoinVariableNode joinNode = new JoinVariableNode(JPA2Lexer.T_JOIN_VAR, "left join", variableName);
+            JoinVariableNode joinNode = new JoinVariableNode(JPA2Lexer.T_JOIN_VAR, "left join", variableName, null);
             joinNode.addChild(pathNode);
 
             CommonTree from = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
