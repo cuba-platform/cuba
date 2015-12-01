@@ -78,8 +78,8 @@ public class JmxControlBean implements JmxControlAPI {
 
     @Override
     public JmxInstance getLocalInstance() {
-        JmxInstance localJmxInstance = new JmxInstance();
-        metadata.getTools().copy(JmxConnectionHelper.LOCAL_JMX_INSTANCE, localJmxInstance);
+        JmxInstance localJmxInstance = metadata.create(JmxInstance.class);
+        localJmxInstance.setId(JmxConnectionHelper.LOCAL_JMX_INSTANCE_ID);
         localJmxInstance.setNodeName(getLocalNodeName());
         return localJmxInstance;
     }

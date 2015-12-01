@@ -10,7 +10,6 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -81,7 +80,8 @@ public class StatisticsWindow extends AbstractWindow {
                 setNode(jmxConnectionField.<JmxInstance>getValue());
             } catch (JmxControlException ex) {
                 JmxInstance jmxInstance = jmxConnectionField.getValue();
-                showNotification(messages.getMessage("com.haulmont.cuba.web.app.ui.jmxcontrol", "unableToConnectToInterface"), NotificationType.WARNING);
+                showNotification(messages.getMessage("com.haulmont.cuba.web.app.ui.jmxcontrol",
+                        "unableToConnectToInterface"), NotificationType.WARNING);
                 if (jmxInstance != localJmxInstance) {
                     jmxConnectionField.setValue(localJmxInstance);
                 }
@@ -101,7 +101,7 @@ public class StatisticsWindow extends AbstractWindow {
             @Override
             public void actionPerform(Component component) {
                 JmxInstanceEditor instanceEditor = (JmxInstanceEditor) openEditor("sys$JmxInstance.edit",
-                        new JmxInstance(), OpenType.DIALOG);
+                        metadata.create(JmxInstance.class), OpenType.DIALOG);
                 instanceEditor.addCloseListener(actionId -> {
                     if (COMMIT_ACTION_ID.equals(actionId)) {
                         jmxInstancesDs.refresh();
@@ -118,7 +118,6 @@ public class StatisticsWindow extends AbstractWindow {
 
         localNodeLab.setValue(jmxControlAPI.getLocalNodeName());
         localNodeLab.setEditable(false);
-
     }
 
     @SuppressWarnings("unused")

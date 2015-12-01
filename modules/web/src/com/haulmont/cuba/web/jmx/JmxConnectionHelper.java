@@ -22,6 +22,7 @@ import java.lang.management.ManagementFactory;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * @author artamonov
@@ -29,7 +30,7 @@ import java.util.Set;
  */
 public final class JmxConnectionHelper {
 
-    protected final static JmxInstance LOCAL_JMX_INSTANCE = new JmxInstance("Local");
+    protected final static UUID LOCAL_JMX_INSTANCE_ID = UUID.randomUUID();
 
     private JmxConnectionHelper() {
     }
@@ -110,7 +111,7 @@ public final class JmxConnectionHelper {
 
     protected static <T> T withConnection(JmxInstance instance, JmxAction<T> action) {
         try {
-            if (ObjectUtils.equals(instance, LOCAL_JMX_INSTANCE)) {
+            if (ObjectUtils.equals(instance.getId(), LOCAL_JMX_INSTANCE_ID)) {
                 return action.perform(instance, getLocalConnection());
             } else {
                 MBeanServerConnectionFactoryBean factoryBean = new MBeanServerConnectionFactoryBean();

@@ -7,6 +7,7 @@ package com.haulmont.cuba.web.app.ui.jmxcontrol.browse;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.JmxInstance;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
@@ -53,6 +54,9 @@ public class MbeansDisplayWindow extends AbstractWindow {
 
     @Inject
     protected JmxControlAPI jmxControlAPI;
+
+    @Inject
+    private Metadata metadata;
 
     protected JmxInstance localJmxInstance;
 
@@ -127,7 +131,7 @@ public class MbeansDisplayWindow extends AbstractWindow {
             @Override
             public void actionPerform(Component component) {
                 final JmxInstanceEditor instanceEditor = (JmxInstanceEditor) openEditor("sys$JmxInstance.edit",
-                        new JmxInstance(), OpenType.DIALOG);
+                        metadata.create(JmxInstance.class), OpenType.DIALOG);
                 instanceEditor.addCloseListener(actionId -> {
                     if (COMMIT_ACTION_ID.equals(actionId)) {
                         jmxInstancesDs.refresh();
@@ -160,7 +164,7 @@ public class MbeansDisplayWindow extends AbstractWindow {
         });
     }
 
-    private class ObjectNameFieldListener implements Component.ValueChangeListener {
+    private class ObjectNameFieldListener implements ValueChangeListener {
         @Override
         public void valueChanged(ValueChangeEvent e) {
             Map<String, Object> params = new HashMap<>();

@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
@@ -58,6 +59,9 @@ public class FileUploadController {
 
     @Inject
     protected DataService dataService;
+
+    @Inject
+    protected Metadata metadata;
 
     @Resource(name = ClusterInvocationSupport.NAME)
     protected ClusterInvocationSupport clusterInvocationSupport;
@@ -179,7 +183,7 @@ public class FileUploadController {
             return null;
         }
 
-        FileDescriptor fd = new FileDescriptor();
+        FileDescriptor fd = metadata.create(FileDescriptor.class);
         fd.setName(name);
         fd.setExtension(ext);
         fd.setCreateDate(timeSource.currentTimestamp());

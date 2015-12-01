@@ -196,8 +196,9 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
         if (file == null) {
             return null;
         }
+        Metadata metadata = AppBeans.get(Metadata.NAME);
 
-        FileDescriptor fDesc = new FileDescriptor();
+        FileDescriptor fDesc = metadata.create(FileDescriptor.class);
 
         fDesc.setSize(file.length());
         fDesc.setExtension(FilenameUtils.getExtension(name));

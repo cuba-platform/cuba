@@ -213,7 +213,7 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
             throw new IllegalStateException("View could not be used with this propertyValue");
         }
 
-        EntitySnapshot snapshot = new EntitySnapshot();
+        EntitySnapshot snapshot = metadata.create(EntitySnapshot.class);
         snapshot.setEntityId(entity.getUuid());
 
         MetaClass metaClass = getOriginalOrCurrentMetaClass(entity.getClass());

@@ -178,7 +178,7 @@ public class UserBrowser extends AbstractLookup {
                     if (BooleanUtils.isTrue(oldRole.getDefaultRole())) {
                         continue;
                     }
-                    UserRole role = new UserRole();
+                    UserRole role = metadata.create(UserRole.class);
                     role.setUser(newUser);
                     role.setRole(oldRole);
                     userRoles.add(role);

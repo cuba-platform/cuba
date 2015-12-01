@@ -7,6 +7,7 @@ package com.haulmont.cuba.web.app.ui.frame;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.gui.app.core.file.FileDownloadHelper;
 import com.haulmont.cuba.gui.components.*;
@@ -16,6 +17,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import org.apache.commons.io.FilenameUtils;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.util.Map;
 
@@ -33,6 +35,9 @@ public class FileFrameController extends AbstractWindow {
 
     private Table filesTable;
 
+    @Inject
+    private Metadata metadata;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
@@ -49,7 +54,7 @@ public class FileFrameController extends AbstractWindow {
         uploadField.addFileUploadFinishListener(e -> uploadField.setEnabled(true));
 
         uploadField.addFileUploadSucceedListener(e -> {
-            fd = new FileDescriptor();
+            fd = metadata.create(FileDescriptor.class);
             fd.setName(uploadField.getFileName());
             fd.setExtension(FilenameUtils.getExtension(uploadField.getFileName()));
 

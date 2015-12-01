@@ -112,7 +112,7 @@ public final class UserSessions implements UserSessionsAPI, AppContext.Listener 
     private Resources resources;
 
     public UserSessions() {
-        User noUser = new User();
+        User noUser = metadata.create(User.class);
         noUser.setLogin("server");
         NO_USER_SESSION = new UserSession(
                 UUID.fromString("a66abe96-3b9d-11e2-9db2-3860770d7eaf"), noUser,

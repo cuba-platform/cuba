@@ -67,7 +67,7 @@ public class RoleBrowser extends AbstractLookup {
                         List<Entity> toCommit = new ArrayList<>();
                         for (Object item : items) {
                             User user = (User) item;
-                            LoadContext ctx = new LoadContext(UserRole.class).setView("user.edit");
+                            LoadContext<UserRole> ctx = new LoadContext<>(UserRole.class).setView("user.edit");
                             LoadContext.Query query = ctx.setQueryString("select ur from sec$UserRole ur where ur.user.id = :user");
                             query.setParameter("user", user);
                             List<UserRole> userRoles = dataManager.loadList(ctx);
@@ -80,7 +80,7 @@ public class RoleBrowser extends AbstractLookup {
                                 }
                             }
                             if (!roleExist) {
-                                UserRole ur = new UserRole();
+                                UserRole ur = metadata.create(UserRole.class);
                                 ur.setUser(user);
                                 ur.setRole(role);
                                 toCommit.add(ur);

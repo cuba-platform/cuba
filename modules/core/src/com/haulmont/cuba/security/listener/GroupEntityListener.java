@@ -6,14 +6,15 @@ package com.haulmont.cuba.security.listener;
 
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.TypedQuery;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
 import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.GroupHierarchy;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,9 @@ public class GroupEntityListener implements
     @Inject
     protected Persistence persistence;
 
+    @Inject
+    protected Metadata metadata;
+
     @Override
     public void onBeforeInsert(Group entity) {
         createNewHierarchy(entity, entity.getParent());
@@ -37,7 +41,8 @@ public class GroupEntityListener implements
 
     protected void createNewHierarchy(Group entity, Group parent) {
         if (parent == null) {
-            entity.setHierarchyList(new ArrayList<GroupHierarchy>());
+            entity.setHierarchyList(new ArrayList<>());
+
             return;
         }
 
@@ -47,7 +52,7 @@ public class GroupEntityListener implements
         EntityManager em = persistence.getEntityManager();
 
         if (entity.getHierarchyList() == null) {
-            entity.setHierarchyList(new ArrayList<GroupHierarchy>());
+            entity.setHierarchyList(new ArrayList<>());
         } else {
             entity.getHierarchyList().clear();
         }
@@ -57,14 +62,14 @@ public class GroupEntityListener implements
 
         int level = 0;
         for (GroupHierarchy hierarchy : parent.getHierarchyList()) {
-            GroupHierarchy h = new GroupHierarchy();
+            GroupHierarchy h = metadata.create(GroupHierarchy.class);
             h.setGroup(entity);
             h.setParent(hierarchy.getParent());
             h.setLevel(level++);
             em.persist(h);
             entity.getHierarchyList().add(h);
         }
-        GroupHierarchy h = new GroupHierarchy();
+        GroupHierarchy h = metadata.create(GroupHierarchy.class);
         h.setGroup(entity);
         h.setParent(parent);
         h.setLevel(level);
@@ -84,9 +89,9 @@ public class GroupEntityListener implements
         }
         createNewHierarchy(entity, entity.getParent());
 
-        Query q = em.createQuery(
+        TypedQuery<GroupHierarchy> q = em.createQuery(
                 "select h from sec$GroupHierarchy h join fetch h.group " +
-                        "where h.parent.id = ?1");
+                        "where h.parent.id = ?1", GroupHierarchy.class);
         q.setParameter(1, entity);
         List<GroupHierarchy> list = q.getResultList();
         for (GroupHierarchy hierarchy : list) {

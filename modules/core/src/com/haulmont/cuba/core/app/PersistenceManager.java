@@ -316,7 +316,7 @@ public class PersistenceManager implements PersistenceManagerAPI {
 
         EntityStatistics es;
         if (list.isEmpty()) {
-            es = new EntityStatistics();
+            es = metadata.create(EntityStatistics.class);
             es.setName(name);
             em.persist(es);
         } else {

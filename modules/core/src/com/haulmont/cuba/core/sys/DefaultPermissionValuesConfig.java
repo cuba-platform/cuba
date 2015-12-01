@@ -7,10 +7,11 @@ package com.haulmont.cuba.core.sys;
 
 import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
-import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.dom4j.Document;
@@ -83,11 +84,13 @@ public class DefaultPermissionValuesConfig {
         if (!Strings.isNullOrEmpty(fileContent)) {
             Document document = Dom4j.readDocument(fileContent);
             List<Element> permissionElements = Dom4j.elements(document.getRootElement(), "permission");
+
+            Metadata metadata = AppBeans.get(Metadata.NAME);
             permissionElements.stream().forEach(element -> {
                 String target = element.attributeValue("target");
                 Integer value = Integer.valueOf(element.attributeValue("value"));
                 Integer type = Integer.valueOf(element.attributeValue("type"));
-                Permission permission = new Permission();
+                Permission permission = metadata.create(Permission.class);
                 permission.setTarget(target);
                 permission.setType(PermissionType.fromId(type));
                 permission.setValue(value);

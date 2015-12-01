@@ -7,11 +7,10 @@ package com.haulmont.cuba.core.app;
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.bali.db.ResultSetHandler;
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.Config;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -142,7 +141,9 @@ public class ConfigStorage implements ConfigStorageAPI {
             Config instance = getConfigInstance(name);
             if (value != null) {
                 if (instance == null) {
-                    instance = new Config();
+                    Metadata metadata = AppBeans.get(Metadata.NAME);
+
+                    instance = metadata.create(Config.class);
                     instance.setName(name.trim());
                     instance.setValue(value.trim());
                     em.persist(instance);
@@ -162,7 +163,7 @@ public class ConfigStorage implements ConfigStorageAPI {
 
     private Config getConfigInstance(String name) {
         EntityManager em = persistence.getEntityManager();
-        Query query = em.createQuery("select c from sys$Config c where c.name = ?1");
+        TypedQuery<Config> query = em.createQuery("select c from sys$Config c where c.name = ?1", Config.class);
         query.setParameter(1, name);
         query.setView(null);
         List<Config> list = query.getResultList();

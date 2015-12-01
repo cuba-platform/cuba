@@ -408,7 +408,7 @@ public class EntityLogBrowser extends AbstractWindow {
     }
 
     public void create() {
-        LoggedEntity entity = new LoggedEntity();
+        LoggedEntity entity = metadata.create(LoggedEntity.class);
         entity.setAuto(false);
         entity.setManual(false);
         setSelectAllCheckBox(false);
@@ -449,7 +449,7 @@ public class EntityLogBrowser extends AbstractWindow {
                     continue;
                 Boolean currentCheckBoxValue = currentCheckBox.getValue();
                 if (currentCheckBoxValue && !isEntityHaveAtrribute(currentCheckBox.getId(), enabledAttributes)) {   //add attribute if checked and not exist in table
-                    LoggedAttribute newLoggedAttribute = new LoggedAttribute();
+                    LoggedAttribute newLoggedAttribute = metadata.create(LoggedAttribute.class);
                     newLoggedAttribute.setName(currentCheckBox.getId());
                     newLoggedAttribute.setEntity(selectedEntity);
                     loggedAttrDs.addItem(newLoggedAttribute);

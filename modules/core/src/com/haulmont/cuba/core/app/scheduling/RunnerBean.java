@@ -142,7 +142,7 @@ public class RunnerBean implements Runner {
         try {
             EntityManager em = persistence.getEntityManager();
 
-            ScheduledExecution execution = new ScheduledExecution();
+            ScheduledExecution execution = metadata.create(ScheduledExecution.class);
             execution.setTask(em.getReference(ScheduledTask.class, task.getId()));
             execution.setStartTime(new Date(now));
             execution.setServer(serverInfo.getServerId());

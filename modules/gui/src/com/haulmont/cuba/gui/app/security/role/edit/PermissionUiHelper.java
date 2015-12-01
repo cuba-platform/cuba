@@ -5,19 +5,19 @@
 
 package com.haulmont.cuba.gui.app.security.role.edit;
 
-import com.google.common.base.Predicate;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.app.security.ds.RestorablePermissionDatasource;
 import com.haulmont.cuba.gui.app.security.entity.AttributePermissionVariant;
 import com.haulmont.cuba.gui.app.security.entity.PermissionVariant;
 import com.haulmont.cuba.gui.app.security.entity.UiPermissionVariant;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
 import org.apache.commons.lang.ObjectUtils;
 
-import javax.annotation.Nullable;
 import java.util.UUID;
 
 /**
@@ -88,7 +88,7 @@ public final class PermissionUiHelper {
     /**
      * Add or edit permission item in datasource
      * @param ds Datasource
-     * @param roleDs Role darasource
+     * @param roleDs Role datasource
      * @param permissionTarget Permission identifier
      * @param type Permission type
      * @param value Permission value
@@ -109,21 +109,19 @@ public final class PermissionUiHelper {
             if (ds instanceof RestorablePermissionDatasource) {
                 RestorablePermissionDatasource datasource = (RestorablePermissionDatasource) ds;
 
-                permission = datasource.findRemovedEntity(new Predicate<Permission>() {
-                    @Override
-                    public boolean apply(@Nullable Permission p) {
-                        if (p != null)
-                            return ObjectUtils.equals(p.getTarget(), permissionTarget);
-                        return false;
-                    }
-                });
-                if (permission != null)
+                permission = datasource.findRemovedEntity(p ->
+                    p != null && ObjectUtils.equals(p.getTarget(), permissionTarget)
+                );
+                if (permission != null) {
                     datasource.restoreEntity(permission);
+                }
             }
         }
 
         if (permission == null) {
-            final Permission newPermission = new Permission();
+            Metadata metadata = AppBeans.get(Metadata.NAME);
+
+            Permission newPermission = metadata.create(Permission.class);
             newPermission.setRole(roleDs.getItem());
             newPermission.setTarget(permissionTarget);
             newPermission.setType(type);

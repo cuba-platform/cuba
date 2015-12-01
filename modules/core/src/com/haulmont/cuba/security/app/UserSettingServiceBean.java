@@ -71,7 +71,7 @@ public class UserSettingServiceBean implements UserSettingService {
 
             UserSetting us = findUserSettings(clientType, name);
             if (us == null) {
-                us = new UserSetting();
+                us = metadata.create(UserSetting.class);
                 us.setUser(em.getReference(User.class, userSessionSource.getUserSession().getUser().getId()));
                 us.setName(name);
                 us.setClientType(clientType);
@@ -126,9 +126,11 @@ public class UserSettingServiceBean implements UserSettingService {
             deleteSettingsQuery.executeUpdate();
             tx.commitRetaining();
             em = persistence.getEntityManager();
-            Query q = em.createQuery("select s from sec$UserSetting s where s.user.id = ?1");
+
+            TypedQuery<UserSetting> q = em.createQuery("select s from sec$UserSetting s where s.user.id = ?1", UserSetting.class);
             q.setParameter(1, fromUser);
             List<UserSetting> fromUserSettings = q.getResultList();
+
             for (UserSetting currSetting : fromUserSettings) {
                 UserSetting newSetting = metadata.create(UserSetting.class);
                 newSetting.setUser(toUser);

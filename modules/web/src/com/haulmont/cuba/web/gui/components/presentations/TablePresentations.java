@@ -6,6 +6,7 @@ package com.haulmont.cuba.web.gui.components.presentations;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.AbstractAction;
@@ -258,7 +259,9 @@ public class TablePresentations extends VerticalLayout {
             public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                 tableImpl.hidePresentationsPopup();
 
-                Presentation presentation = new Presentation();
+                Metadata metadata = AppBeans.get(Metadata.NAME);
+
+                Presentation presentation = metadata.create(Presentation.class);
                 presentation.setComponentId(ComponentsHelper.getComponentPath(table));
 
                 openEditor(presentation);

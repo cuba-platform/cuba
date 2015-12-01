@@ -8,6 +8,7 @@ package com.haulmont.cuba.gui.components.filter;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.FrameContextImpl;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.Frame;
@@ -64,7 +65,8 @@ public class FakeFilterSupport {
     public FilterEntity createFakeFilterEntity(String xml) {
         if (filterEntity != null) return filterEntity;
 
-        FilterEntity fakeFilterEntity = new FilterEntity();
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        FilterEntity fakeFilterEntity = metadata.create(FilterEntity.class);
         fakeFilterEntity.setXml(xml);
         return fakeFilterEntity;
     }

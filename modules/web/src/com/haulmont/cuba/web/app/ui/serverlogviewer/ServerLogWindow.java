@@ -9,6 +9,7 @@ import ch.qos.logback.classic.Level;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.logging.LogArchiver;
 import com.haulmont.cuba.core.sys.logging.LogControlException;
@@ -16,6 +17,10 @@ import com.haulmont.cuba.core.sys.logging.LoggingHelper;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.components.CheckBox;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.export.ExportDisplay;
@@ -29,8 +34,7 @@ import com.haulmont.cuba.web.jmx.JmxRemoteLoggingAPI;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Panel;
+import com.vaadin.ui.*;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -67,9 +71,6 @@ public class ServerLogWindow extends AbstractWindow {
     protected JmxControlAPI jmxControlAPI;
 
     @Inject
-    protected GroupBoxLayout logFieldBox;
-
-    @Inject
     protected LookupField logFileNameField;
 
     @Inject
@@ -101,6 +102,9 @@ public class ServerLogWindow extends AbstractWindow {
 
     @Inject
     protected Timer updateLogTailTimer;
+
+    @Inject
+    private Metadata metadata;
 
     protected JmxInstance localJmxInstance;
 
@@ -147,7 +151,7 @@ public class ServerLogWindow extends AbstractWindow {
             @Override
             public void actionPerform(Component component) {
                 JmxInstanceEditor instanceEditor = (JmxInstanceEditor) openEditor("sys$JmxInstance.edit",
-                        new JmxInstance(), OpenType.DIALOG);
+                        metadata.create(JmxInstance.class), OpenType.DIALOG);
                 instanceEditor.addCloseListener(actionId -> {
                     if (COMMIT_ACTION_ID.equals(actionId)) {
                         jmxInstancesDs.refresh();

@@ -4,12 +4,14 @@
  */
 package com.haulmont.cuba.security.app;
 
-import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -18,8 +20,8 @@ import com.haulmont.cuba.security.entity.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -189,7 +191,7 @@ public class EntityLog implements EntityLogAPI {
             Date ts = timeSource.currentTimestamp();
             EntityManager em = persistence.getEntityManager();
 
-            EntityLogItem item = new EntityLogItem();
+            EntityLogItem item = metadata.create(EntityLogItem.class);
             item.setEventTs(ts);
             item.setUser(findUser(em));
             item.setType(EntityLogItem.Type.CREATE);
@@ -254,7 +256,7 @@ public class EntityLog implements EntityLogAPI {
                 }
             }
             if (!properties.isEmpty()) {
-                EntityLogItem item = new EntityLogItem();
+                EntityLogItem item = metadata.create(EntityLogItem.class);
                 item.setEventTs(ts);
                 item.setUser(findUser(em));
                 item.setType(EntityLogItem.Type.MODIFY);
@@ -315,7 +317,7 @@ public class EntityLog implements EntityLogAPI {
             Date ts = timeSource.currentTimestamp();
             EntityManager em = persistence.getEntityManager();
 
-            EntityLogItem item = new EntityLogItem();
+            EntityLogItem item = metadata.create(EntityLogItem.class);
             item.setEventTs(ts);
             item.setUser(findUser(em));
             item.setType(EntityLogItem.Type.DELETE);

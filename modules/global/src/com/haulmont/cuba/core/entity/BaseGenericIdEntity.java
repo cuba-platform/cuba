@@ -201,7 +201,9 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
                     categoryAttributeValue.setValue(newValue);
                     categoryAttributeValue.setDeleteTs(null);
                 } else {
-                    categoryAttributeValue = new CategoryAttributeValue();
+                    Metadata metadata = AppBeans.get(Metadata.NAME);
+
+                    categoryAttributeValue = metadata.create(CategoryAttributeValue.class);
                     categoryAttributeValue.setValue(newValue);
                     categoryAttributeValue.setEntityId(getUuid());
                     categoryAttributeValue.setCode(attributeCode);
@@ -219,7 +221,7 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getValue(String property) {
+    public <V> V getValue(String property) {
         if (DynamicAttributesUtils.isDynamicAttribute(property)) {
             if (PersistenceHelper.isNew(this) && dynamicAttributes == null) {
                 dynamicAttributes = new HashMap<>();
@@ -228,7 +230,7 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
             Preconditions.checkState(dynamicAttributes != null, "Dynamic attributes should be loaded explicitly");
             CategoryAttributeValue categoryAttributeValue = dynamicAttributes.get(DynamicAttributesUtils.decodeAttributeCode(property));
             if (categoryAttributeValue != null) {
-                return (T) categoryAttributeValue.getValue();
+                return (V) categoryAttributeValue.getValue();
             } else {
                 return null;
             }

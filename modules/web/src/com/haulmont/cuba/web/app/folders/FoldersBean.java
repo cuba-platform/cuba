@@ -8,14 +8,14 @@ package com.haulmont.cuba.web.app.folders;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.ValuePathHelper;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
-import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.web.App;
@@ -23,8 +23,8 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -41,6 +41,9 @@ public class FoldersBean implements Folders {
 
     @Inject
     protected Messages messages;
+
+    @Inject
+    protected Metadata metadata;
 
     @Override
     public void openFolder(AbstractSearchFolder folder) {
@@ -69,16 +72,16 @@ public class FoldersBean implements Folders {
         WindowParams.FOLDER_ID.set(params, folder.getId());
 
         com.haulmont.cuba.gui.components.Window window = App.getInstance().getWindowManager().openWindow(windowInfo,
-                WindowManager.OpenType.NEW_TAB, params);
+                OpenType.NEW_TAB, params);
 
         Filter filterComponent = null;
 
         if (strings.length > 1) {
             String filterComponentId = StringUtils.join(Arrays.copyOfRange(strings, 1, strings.length), '.');
 
-            filterComponent = (Filter) window.getComponent(filterComponentId);
+            filterComponent = (Filter) window.getComponentNN(filterComponentId);
 
-            FilterEntity filterEntity = new FilterEntity();
+            FilterEntity filterEntity = metadata.create(FilterEntity.class);
             filterEntity.setFolder(folder);
             filterEntity.setComponentId(folder.getFilterComponentId());
             filterEntity.setName(folder.getLocName());
