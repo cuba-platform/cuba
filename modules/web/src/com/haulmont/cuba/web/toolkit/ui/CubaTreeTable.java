@@ -20,6 +20,7 @@ import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.treetable.CubaTreeTableState;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.ContainerOrderedWrapper;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
 import com.vaadin.event.ActionManager;
@@ -757,5 +758,12 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
                 setPageLength(15);
             }
         }
+    }
+
+    @Override
+    protected Container createOrderedWrapper(Container newDataSource) {
+        ContainerOrderedWrapper wrapper = new ContainerOrderedWrapper(newDataSource);
+        wrapper.setResetOnItemSetChange(true);
+        return wrapper;
     }
 }
