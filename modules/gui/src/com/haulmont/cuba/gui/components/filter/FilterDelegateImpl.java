@@ -1379,6 +1379,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             params.put("queryKey", queryKey);
 
             CustomCondition ftsCondition = ftsFilterHelper.createFtsCondition(queryKey);
+            conditions = new ConditionsTree();
             conditions.getRootNodes().add(new Node<>(ftsCondition));
 
             if ((applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
