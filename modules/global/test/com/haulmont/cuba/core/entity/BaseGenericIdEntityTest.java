@@ -29,6 +29,11 @@ import java.util.HashMap;
  * @version $Id$
  */
 public class BaseGenericIdEntityTest {
+
+    @SuppressWarnings("unused")
+    @Mocked
+    protected AppBeans appBeans;
+
     @Mocked
     protected DynamicAttributes dynamicAttributes;
 
@@ -69,6 +74,9 @@ public class BaseGenericIdEntityTest {
             <T> T create(Class<T> entityClass) {
                 if (User.class.equals(entityClass)) {
                     return (T) new User();
+                }
+                if (CategoryAttributeValue.class.equals(entityClass)) {
+                    return (T) new CategoryAttributeValue();
                 }
                 throw new IllegalArgumentException("Add support for " + entityClass.getSimpleName() + " to Mock");
             }
