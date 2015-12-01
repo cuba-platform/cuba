@@ -81,6 +81,8 @@ public final class UserSessions implements UserSessionsAPI, AppContext.Listener 
 
     private volatile int expirationTimeout = 1800;
 
+    private Metadata metadata;
+
     private ClusterManagerAPI clusterManager;
 
     private UserSession NO_USER_SESSION;
@@ -100,9 +102,6 @@ public final class UserSessions implements UserSessionsAPI, AppContext.Listener 
     private UuidSource uuidSource;
 
     @Inject
-    private Metadata metadata;
-
-    @Inject
     private ServerInfoAPI serverInfo;
 
     @Inject
@@ -112,6 +111,12 @@ public final class UserSessions implements UserSessionsAPI, AppContext.Listener 
     private Resources resources;
 
     public UserSessions() {
+    }
+
+    @Inject
+    public void setMetadata(Metadata metadata) {
+        this.metadata = metadata;
+
         User noUser = metadata.create(User.class);
         noUser.setLogin("server");
         NO_USER_SESSION = new UserSession(
