@@ -112,6 +112,16 @@ public final class UserSessions implements UserSessionsAPI, AppContext.Listener 
     private Metadata metadata;
 
     public UserSessions() {
+        User noUser = new User();
+        noUser.setLogin("server");
+        NO_USER_SESSION = new UserSession(
+                UUID.fromString("a66abe96-3b9d-11e2-9db2-3860770d7eaf"), noUser,
+                Collections.<Role>emptyList(), Locale.getDefault(), true) {
+            @Override
+            public UUID getId() {
+                return AppContext.NO_USER_CONTEXT.getSessionId();
+            }
+        };
         AppContext.addListener(this);
     }
 
@@ -183,16 +193,6 @@ public final class UserSessions implements UserSessionsAPI, AppContext.Listener 
 
     @Override
     public void applicationStarted() {
-        User noUser = metadata.create(User.class);
-        noUser.setLogin("server");
-        NO_USER_SESSION = new UserSession(
-                UUID.fromString("a66abe96-3b9d-11e2-9db2-3860770d7eaf"), noUser,
-                Collections.<Role>emptyList(), Locale.getDefault(), true) {
-            @Override
-            public UUID getId() {
-                return AppContext.NO_USER_CONTEXT.getSessionId();
-            }
-        };
 
         String encodedStr = resources.getResourceAsString(serverConfig.getLicensePath());
         if (encodedStr == null) {
