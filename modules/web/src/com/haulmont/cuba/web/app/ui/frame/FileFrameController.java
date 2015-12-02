@@ -49,10 +49,6 @@ public class FileFrameController extends AbstractWindow {
         Button remove = (Button) getComponentNN("remove");
         remove.setAction(new RemoveAction(filesTable, false));
 
-        uploadField.addFileUploadStartListener(e -> uploadField.setEnabled(false));
-
-        uploadField.addFileUploadFinishListener(e -> uploadField.setEnabled(true));
-
         uploadField.addFileUploadSucceedListener(e -> {
             fd = metadata.create(FileDescriptor.class);
             fd.setName(uploadField.getFileName());
