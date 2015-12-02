@@ -13,6 +13,7 @@
   $link-padding: 2px;
 
   .#{$primary-stylename}-link {
+    text-align: left;
     padding-left: $link-padding;
     padding-right: $link-padding;
     border: 1px dashed transparent;
