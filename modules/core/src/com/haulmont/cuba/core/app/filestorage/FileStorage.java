@@ -154,7 +154,7 @@ public class FileStorage implements FileStorageAPI {
         saveStream(fileDescr, new ByteArrayInputStream(data));
     }
 
-    private synchronized void writeLog(File file, boolean remove) {
+    protected synchronized void writeLog(File file, boolean remove) {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
         StringBuilder sb = new StringBuilder();
@@ -194,17 +194,18 @@ public class FileStorage implements FileStorageAPI {
             File dir = getStorageDir(root, fileDescr.getCreateDate());
             File file = new File(dir, getFileName(fileDescr));
             if (file.exists()) {
-                if (!file.delete())
+                if (!file.delete()) {
                     throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, "Unable to delete file " + file.getAbsolutePath());
-                else
+                } else {
                     writeLog(file, true);
+                }
             }
         }
     }
 
-    private void checkFileDescriptor(FileDescriptor fileDescr) {
-        if (fileDescr == null || StringUtils.isBlank(fileDescr.getExtension()) || fileDescr.getCreateDate() == null) {
-            throw new IllegalArgumentException("A FileDescriptor instance with populated 'extension' and 'createDate' " +
+    protected void checkFileDescriptor(FileDescriptor fileDescr) {
+        if (fileDescr == null || StringUtils.isBlank(fileDescr.getName()) || fileDescr.getCreateDate() == null) {
+            throw new IllegalArgumentException("A FileDescriptor instance with populated 'name' and 'createDate' " +
                     "attributes must be provided");
         }
     }
