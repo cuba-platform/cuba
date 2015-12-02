@@ -425,24 +425,30 @@ public class LoginWindow extends UIView {
             }
         } catch (LoginException e) {
             log.info("Login failed: " + e.toString());
-
-            String title = messages.getMainMessage("loginWindow.loginFailed", resolvedLocale);
-            String message = StringUtils.abbreviate(e.getMessage(), 1000);
-            new Notification(title, message, Type.ERROR_MESSAGE, true).show(ui.getPage());
-
-            if (loginByRememberMe) {
-                loginByRememberMe = false;
-                loginField.removeValueChangeListener(loginChangeListener);
-                passwordField.removeValueChangeListener(loginChangeListener);
-                loginChangeListener = null;
-            }
+            showLoginException(e);
         } catch (Exception e) {
             log.warn("Unable to login", e);
-
-            String title = messages.getMainMessage("loginWindow.loginFailed", resolvedLocale);
-            String message = messages.getMainMessage("loginWindow.pleaseContactAdministrator", resolvedLocale);
-            new Notification(title, message, Type.ERROR_MESSAGE, true).show(ui.getPage());
+            showException(e);
         }
+    }
+
+    protected void showLoginException(LoginException e){
+        String title = messages.getMainMessage("loginWindow.loginFailed", resolvedLocale);
+        String message = StringUtils.abbreviate(e.getMessage(), 1000);
+        new Notification(title, message, Type.ERROR_MESSAGE, true).show(ui.getPage());
+
+        if (loginByRememberMe) {
+            loginByRememberMe = false;
+            loginField.removeValueChangeListener(loginChangeListener);
+            passwordField.removeValueChangeListener(loginChangeListener);
+            loginChangeListener = null;
+        }
+    }
+
+    protected void showException(Exception e){
+        String title = messages.getMainMessage("loginWindow.loginFailed", resolvedLocale);
+        String message = messages.getMainMessage("loginWindow.pleaseContactAdministrator", resolvedLocale);
+        new Notification(title, message, Type.ERROR_MESSAGE, true).show(ui.getPage());
     }
 
     protected boolean authenticateExternally(String login, String passwordValue, Locale locale) {
