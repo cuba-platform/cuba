@@ -185,6 +185,24 @@ public class DataManagerTest extends CubaTestCase {
 
     }
 
+    public void testReloadWithDynamicAttributes() {
+        Server server = new Server();
+        UUID id = server.getId();
+        server.setName("localhost");
+        server.setRunning(true);
+
+        dataManager.commit(new CommitContext(Collections.<Entity>singleton(server)));
+
+        LoadContext<Server> loadContext = LoadContext.create(Server.class).setId(id).setLoadDynamicAttributes(true);
+        server = dataManager.load(loadContext);
+        server = dataManager.reload(server, View.LOCAL);
+        assertNotNull(server.getDynamicAttributes());
+
+        loadContext = LoadContext.create(Server.class).setId(id).setLoadDynamicAttributes(false);
+        server = dataManager.load(loadContext);
+        assertNull(server.getDynamicAttributes());
+    }
+
     public static class MyLoadContext<E extends Entity> extends LoadContext<E> {
 
         private String info;

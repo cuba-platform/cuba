@@ -237,7 +237,7 @@ public class DataManagerBean implements DataManager {
 
     @Override
     public <E extends Entity> E reload(E entity, View view, @Nullable MetaClass metaClass) {
-        return reload(entity, view, metaClass, true);
+        return reload(entity, view, metaClass, entityHasDynamicAttributes(entity));
     }
 
     @Override

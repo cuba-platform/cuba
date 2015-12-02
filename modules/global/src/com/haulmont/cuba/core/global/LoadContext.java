@@ -164,7 +164,7 @@ public class LoadContext<E extends Entity> implements Serializable {
     /**
      * @param softDeletion whether to use soft deletion when loading entities
      */
-    public LoadContext setSoftDeletion(boolean softDeletion) {
+    public LoadContext<E> setSoftDeletion(boolean softDeletion) {
         this.softDeletion = softDeletion;
         return this;
     }
@@ -187,7 +187,7 @@ public class LoadContext<E extends Entity> implements Serializable {
     /**
      * @param queryKey key of the current stack of sequential queries, which is unique for the current user session
      */
-    public LoadContext setQueryKey(int queryKey) {
+    public LoadContext<E> setQueryKey(int queryKey) {
         this.queryKey = queryKey;
         return this;
     }
@@ -209,7 +209,7 @@ public class LoadContext<E extends Entity> implements Serializable {
     /**
      * @param loadDynamicAttributes whether to load dynamic attributes
      */
-    public LoadContext setLoadDynamicAttributes(boolean loadDynamicAttributes) {
+    public LoadContext<E> setLoadDynamicAttributes(boolean loadDynamicAttributes) {
         this.loadDynamicAttributes = loadDynamicAttributes;
         return this;
     }
