@@ -53,7 +53,9 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
         String entityName = parser.getEntityName();
 
         List<ConstraintData> constraints = getConstraints(metadata.getClassNN(entityName), constraint ->
-                constraint.getOperationType() == ConstraintOperationType.READ && constraint.getCheckType().database());
+                constraint.getCheckType().database()
+                        && (constraint.getOperationType() == ConstraintOperationType.READ
+                        || constraint.getOperationType() == ConstraintOperationType.ALL));
 
         if (constraints.isEmpty())
             return false;
@@ -195,7 +197,9 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
         MetaClass metaClass = entity.getMetaClass();
 
         if (!isPermitted(entity, constraint ->
-                constraint.getOperationType() == ConstraintOperationType.READ && constraint.getCheckType().memory())) {
+                constraint.getCheckType().memory()
+                        && (constraint.getOperationType() == ConstraintOperationType.READ
+                        || constraint.getOperationType() == ConstraintOperationType.ALL))) {
             return true;
         }
 

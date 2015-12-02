@@ -246,6 +246,17 @@
         </xs:union>
     </xs:simpleType>
 
+    <xs:simpleType name="constraintOperationType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="create"/>
+            <xs:enumeration value="read"/>
+            <xs:enumeration value="update"/>
+            <xs:enumeration value="delete"/>
+            <xs:enumeration value="all"/>
+            <xs:enumeration value="custom"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <!-- Interfaces -->
 
     <xs:attributeGroup name="hasId">
@@ -521,6 +532,8 @@
         <xs:attribute name="trackSelection" type="xs:boolean"/>
         <xs:attribute name="invoke" type="xs:string"/>
         <xs:attribute name="shortcut" type="xs:string"/>
+        <xs:attribute name="constraintOperationType" type="constraintOperationType"/>
+        <xs:attribute name="constraintCode" type="xs:string"/>
     </xs:complexType>
 
     <xs:complexType name="popupButtonAction">

@@ -5,13 +5,20 @@
 
 package com.haulmont.cuba.gui.components.actions;
 
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.components.ListComponent;
+import com.haulmont.cuba.security.entity.ConstraintOperationType;
 
 /**
  * @author artamonov
  * @version $Id$
  */
 public abstract class ItemTrackingAction extends BaseAction {
+    protected ConstraintOperationType constraintOperationType;
+    protected String constraintCode;
+    protected Security security = AppBeans.get(Security.NAME);
 
     public ItemTrackingAction(String id) {
         this(null, id);
@@ -26,5 +33,29 @@ public abstract class ItemTrackingAction extends BaseAction {
     @Override
     protected boolean isApplicable() {
         return target != null && !target.getSelected().isEmpty();
+    }
+
+    @Override
+    protected boolean isPermitted() {
+        Entity singleSelected = target.getSingleSelected();
+        if (singleSelected != null && constraintOperationType != null) {
+            boolean isPermitted;
+            if (constraintCode != null) {
+                isPermitted = security.isPermitted(singleSelected, constraintCode);
+            } else {
+                isPermitted = security.isPermitted(singleSelected,constraintOperationType);
+            }
+
+            return isPermitted;
+        }
+        return super.isPermitted();
+    }
+
+    public void setConstraintOperationType(ConstraintOperationType constraintOperationType) {
+        this.constraintOperationType = constraintOperationType;
+    }
+
+    public void setConstraintCode(String constraintCode) {
+        this.constraintCode = constraintCode;
     }
 }

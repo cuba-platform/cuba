@@ -10,12 +10,14 @@ import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.entity.ConstraintCheckType;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * @author degtyarjov
  * @version $Id$
  */
 public class ConstraintData implements Serializable {
+    protected final UUID id;
     protected final String code;
     protected final ConstraintOperationType operationType;
     protected final ConstraintCheckType checkType;
@@ -24,6 +26,7 @@ public class ConstraintData implements Serializable {
     protected final String groovyScript;
 
     public ConstraintData(Constraint constraint) {
+        this.id = constraint.getId();
         this.code = constraint.getCode();
         this.join = constraint.getJoinClause();
         this.whereClause = constraint.getWhereClause();
@@ -54,5 +57,9 @@ public class ConstraintData implements Serializable {
 
     public ConstraintCheckType getCheckType() {
         return checkType;
+    }
+
+    public UUID getId() {
+        return id;
     }
 }

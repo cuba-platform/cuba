@@ -330,6 +330,18 @@ public class UserSession implements Serializable {
     /**
      * INTERNAL
      */
+    public void removeConstraint(Constraint constraintToRemove) {
+        String entityName = constraintToRemove.getEntityName();
+        List<ConstraintData> constraintData = this.constraints.get(entityName);
+        constraintData.stream()
+                .filter(constraint -> constraintToRemove.getId().equals(constraint.getId()))
+                .collect(Collectors.toList())//to avoid ConcurrentModificationException
+                .forEach(constraint -> this.constraints.remove(entityName, constraint));
+    }
+
+    /**
+     * INTERNAL
+     */
     public List<ConstraintData> getConstraints(String entityName) {
         return Collections.unmodifiableList(constraints.get(entityName));
     }

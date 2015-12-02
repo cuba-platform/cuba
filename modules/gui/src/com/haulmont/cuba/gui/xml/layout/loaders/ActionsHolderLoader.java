@@ -10,7 +10,9 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
+import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.ListActionType;
+import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -34,9 +36,11 @@ public abstract class ActionsHolderLoader<T extends Component.ActionsHolder> ext
                 if (type.getId().equals(id)) {
                     Action instance = type.createAction((ListComponent) actionsHolder);
 
-                    loadStandardActionProperties(element, instance);
+                    loadStandardActionProperties(instance, element);
 
                     loadActionOpenType(instance, element);
+
+                    loadConstraint(instance, element);
 
                     return instance;
                 }
@@ -46,7 +50,7 @@ public abstract class ActionsHolderLoader<T extends Component.ActionsHolder> ext
         return super.loadDeclarativeAction(actionsHolder, element);
     }
 
-    protected void loadStandardActionProperties(Element element, Action instance) {
+    protected void loadStandardActionProperties(Action instance, Element element) {
         String enable = element.attributeValue("enable");
         if (StringUtils.isNotEmpty(enable)) {
             instance.setEnabled(Boolean.valueOf(enable));
@@ -88,6 +92,17 @@ public abstract class ActionsHolderLoader<T extends Component.ActionsHolder> ext
 
                 ((Action.HasOpenType) action).setOpenType(openType);
             }
+        }
+    }
+
+    protected void loadConstraint(Action action, Element element) {
+        if (action instanceof ItemTrackingAction) {
+            ItemTrackingAction itemTrackingAction = (ItemTrackingAction) action;
+            ConstraintOperationType operationType
+                    = ConstraintOperationType.fromId(element.attributeValue("constraintOperationType"));
+            String constraintCode = element.attributeValue("constraintCode");
+            itemTrackingAction.setConstraintOperationType(operationType);
+            itemTrackingAction.setConstraintCode(constraintCode);
         }
     }
 }

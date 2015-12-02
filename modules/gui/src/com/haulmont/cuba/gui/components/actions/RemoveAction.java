@@ -112,9 +112,9 @@ public class RemoveAction extends ItemTrackingAction {
             if (metaProperty.getRange().getCardinality() != Range.Cardinality.MANY_TO_MANY) {
                 removePermitted = removePermitted && security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.DELETE);
             }
-            return removePermitted;
+            return removePermitted && super.isPermitted();
         } else {
-            return security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.DELETE);
+            return security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.DELETE) && super.isPermitted();
         }
     }
 

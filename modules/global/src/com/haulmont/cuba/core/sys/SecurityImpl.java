@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import static com.haulmont.cuba.security.entity.ConstraintOperationType.ALL;
+import static com.haulmont.cuba.security.entity.ConstraintOperationType.CUSTOM;
 import static java.lang.String.format;
 
 /**
@@ -139,9 +141,17 @@ public class SecurityImpl implements Security {
     }
 
     @Override
-    public boolean isPermitted(Entity entity, ConstraintOperationType operationType) {
+    public boolean isPermitted(Entity entity, ConstraintOperationType targetOperationType) {
         return isPermitted(entity,
-                constraint -> constraint.getOperationType() == operationType && constraint.getCheckType().memory());
+                constraint -> {
+                    ConstraintOperationType operationType = constraint.getOperationType();
+                    return constraint.getCheckType().memory()
+                            && (
+                            (targetOperationType == ALL && operationType != CUSTOM)
+                                    || operationType == targetOperationType
+                                    || operationType == ALL
+                    );
+                });
     }
 
     @Override
@@ -157,7 +167,7 @@ public class SecurityImpl implements Security {
         return userSession.hasConstraints(mainMetaClassName);
     }
 
-    protected List<ConstraintData> getConstraints(MetaClass  metaClass, Predicate<ConstraintData> predicate) {
+    protected List<ConstraintData> getConstraints(MetaClass metaClass, Predicate<ConstraintData> predicate) {
         UserSession userSession = userSessionSource.getUserSession();
         String mainMetaClassName = extendedEntities.getOriginalOrThisMetaClass(metaClass).getName();
         return userSession.getConstraints(mainMetaClassName, predicate);

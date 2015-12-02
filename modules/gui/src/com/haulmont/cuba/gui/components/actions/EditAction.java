@@ -37,7 +37,7 @@ import java.util.Set;
  * @author krivopustov
  * @version $Id$
  */
-public class EditAction extends BaseAction implements Action.HasOpenType {
+public class EditAction extends ItemTrackingAction implements Action.HasOpenType {
 
     public static final String ACTION_ID = ListActionType.EDIT.getId();
 
@@ -141,12 +141,7 @@ public class EditAction extends BaseAction implements Action.HasOpenType {
 
         CollectionDatasource ownerDatasource = target.getDatasource();
         Security security = AppBeans.get(Security.NAME);
-        return security.isEntityOpPermitted(ownerDatasource.getMetaClass(), EntityOp.READ);
-    }
-
-    @Override
-    public boolean isApplicable() {
-        return target != null && target.getSelected().size() == 1;
+        return security.isEntityOpPermitted(ownerDatasource.getMetaClass(), EntityOp.READ) && super.isPermitted();
     }
 
     /**

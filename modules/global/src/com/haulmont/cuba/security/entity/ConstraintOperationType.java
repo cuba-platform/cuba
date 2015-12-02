@@ -14,12 +14,13 @@ import org.apache.commons.lang.ObjectUtils;
  * @author degtyarjov
  * @version $Id$
  */
-//todo eude rename to ConstraintOperationType and probably join with EntityOp
+//todo eude probably need to join with EntityOp
 public enum ConstraintOperationType implements EnumClass<String> {
     CREATE("create"),
     READ("read"),
     UPDATE("update"),
     DELETE("delete"),
+    ALL("all"),
     CUSTOM("custom");
 
     private String id;
