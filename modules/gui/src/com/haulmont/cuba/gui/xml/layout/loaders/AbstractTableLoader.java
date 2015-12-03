@@ -294,9 +294,9 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
             column.setGroupAllowed(Boolean.valueOf(groupAllowed));
         }
 
-        String sortAllowed = element.attributeValue("sortAllowed");
-        if (StringUtils.isNotEmpty(sortAllowed)) {
-            column.setSortAllowed(Boolean.valueOf(sortAllowed));
+        String sortable = element.attributeValue("sortable");
+        if (StringUtils.isNotEmpty(sortable)) {
+            column.setSortable(Boolean.valueOf(sortable));
         }
 
         loadCaption(column, element);

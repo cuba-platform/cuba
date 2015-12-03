@@ -52,7 +52,7 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
 
     protected List<ColumnCollapseListener> columnCollapseListeners; // lazily initialized List
     
-    protected Set<Object> sortDisallowedProperties; // lazily initialized Set
+    protected Set<Object> nonSortableProperties; // lazily initialized Set
 
     protected Map<Object, CellClickListener> cellClickListeners; // lazily initialized map
 
@@ -563,19 +563,19 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
     }
 
     @Override
-    public boolean getColumnSortAllowed(Object columnId) {
-        return sortDisallowedProperties == null || !sortDisallowedProperties.contains(columnId);
+    public boolean getColumnSortable(Object columnId) {
+        return nonSortableProperties == null || !nonSortableProperties.contains(columnId);
     }
 
     @Override
-    public void setColumnSortAllowed(Object columnId, boolean allowed) {
-        if (sortDisallowedProperties == null) {
-            sortDisallowedProperties = new HashSet<>();
+    public void setColumnSortable(Object columnId, boolean sortable) {
+        if (nonSortableProperties == null) {
+            nonSortableProperties = new HashSet<>();
         }
-        if (allowed) {
-            sortDisallowedProperties.remove(columnId);
+        if (sortable) {
+            nonSortableProperties.remove(columnId);
         } else {
-            sortDisallowedProperties.add(columnId);
+            nonSortableProperties.add(columnId);
         }
         markAsDirty();
     }
@@ -594,14 +594,14 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
     }
 
     protected void updateSortableColumnKeys() {
-        if (sortDisallowedProperties != null) {
-            String[] sortDisallowedColumnKeys = new String[sortDisallowedProperties.size()];
+        if (nonSortableProperties != null) {
+            String[] sortDisallowedColumnKeys = new String[nonSortableProperties.size()];
             int i = 0;
-            for (Object columnId : sortDisallowedProperties) {
+            for (Object columnId : nonSortableProperties) {
                 sortDisallowedColumnKeys[i] = columnIdMap.key(columnId);
                 i++;
             }
-            getState().sortDisallowedColumnKeys = sortDisallowedColumnKeys;
+            getState().nonSortableColumnKeys = sortDisallowedColumnKeys;
         }
     }
 

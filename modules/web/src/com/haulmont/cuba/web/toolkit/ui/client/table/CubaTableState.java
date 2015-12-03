@@ -40,7 +40,7 @@ public class CubaTableState extends TableState {
 
     public String[] clickableColumnKeys;
 
-    public String[] sortDisallowedColumnKeys;
+    public String[] nonSortableColumnKeys;
 
     @NoLayout
     public Map<String, String> columnDescriptions;

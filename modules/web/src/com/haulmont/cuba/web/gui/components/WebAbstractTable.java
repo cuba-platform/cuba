@@ -140,8 +140,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             component.setColumnDescription(column.getId(), column.getDescription());
         }
 
-        if (!column.isSortAllowed()) {
-            component.setColumnSortAllowed(column.getId(), column.isSortAllowed());
+        if (!column.isSortable()) {
+            component.setColumnSortable(column.getId(), column.isSortable());
         }
 
         columns.put(column.getId(), column);
@@ -1506,30 +1506,30 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
-    public void setColumnSortAllowed(String columnId, boolean allowed) {
+    public void setColumnSortable(String columnId, boolean sortable) {
         Column column = getColumn(columnId);
-        setColumnSortAllowed(column, allowed);
+        setColumnSortable(column, sortable);
     }
 
     @Override
-    public boolean getColumnSortAllowed(String columnId) {
+    public boolean getColumnSortable(String columnId) {
         Column column = getColumn(columnId);
-        return getColumnSortAllowed(column);
+        return getColumnSortable(column);
     }
 
     @Override
-    public void setColumnSortAllowed(Column column, boolean allowed) {
+    public void setColumnSortable(Column column, boolean sortable) {
         checkNotNullArgument(column, "column must be non null");
-        if (column.isSortAllowed() != allowed) {
-            column.setSortAllowed(allowed);
+        if (column.isSortable() != sortable) {
+            column.setSortable(sortable);
         }
-        component.setColumnSortAllowed(column.getId(), allowed);
+        component.setColumnSortable(column.getId(), sortable);
     }
 
     @Override
-    public boolean getColumnSortAllowed(Column column) {
+    public boolean getColumnSortable(Column column) {
         checkNotNullArgument(column, "column must be non null");
-        return component.getColumnSortAllowed(column.getId());
+        return component.getColumnSortable(column.getId());
     }
 
     @Override

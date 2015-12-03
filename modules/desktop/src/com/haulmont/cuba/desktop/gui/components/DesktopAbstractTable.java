@@ -2236,20 +2236,20 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     }
 
     @Override
-    public void setColumnSortAllowed(String columnId, boolean allowed) {
+    public void setColumnSortable(String columnId, boolean sortable) {
     }
 
     @Override
-    public boolean getColumnSortAllowed(String columnId) {
+    public boolean getColumnSortable(String columnId) {
         return true;
     }
 
     @Override
-    public void setColumnSortAllowed(Column column, boolean allowed) {
+    public void setColumnSortable(Column column, boolean sortable) {
     }
 
     @Override
-    public boolean getColumnSortAllowed(Column column) {
+    public boolean getColumnSortable(Column column) {
         return true;
     }
 

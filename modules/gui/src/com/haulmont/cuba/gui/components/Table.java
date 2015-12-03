@@ -123,11 +123,11 @@ public interface Table<E extends Entity>
     void setColumnControlVisible(boolean columnCollapsingAllowed);
     boolean getColumnControlVisible();
 
-    void setColumnSortAllowed(String columnId, boolean allowed);
-    boolean getColumnSortAllowed(String columnId);
+    void setColumnSortable(String columnId, boolean sortable);
+    boolean getColumnSortable(String columnId);
 
-    void setColumnSortAllowed(Column column, boolean allowed);
-    boolean getColumnSortAllowed(Column column);
+    void setColumnSortable(Column column, boolean sortable);
+    boolean getColumnSortable(Column column);
 
     /**
      * Sort the table by a column.
@@ -423,7 +423,7 @@ public interface Table<E extends Entity>
         protected Integer width;
         protected boolean collapsed;
         protected boolean groupAllowed = true;
-        protected boolean sortAllowed = true;
+        protected boolean sortable = true;
         protected AggregationInfo aggregation;
         protected boolean calculatable;
         protected Integer maxTextLength;
@@ -546,14 +546,14 @@ public interface Table<E extends Entity>
             }
         }
 
-        public boolean isSortAllowed() {
-            return sortAllowed;
+        public boolean isSortable() {
+            return sortable;
         }
 
-        public void setSortAllowed(boolean allowed) {
-            this.sortAllowed = allowed;
+        public void setSortable(boolean sortable) {
+            this.sortable = sortable;
             if (owner != null) {
-                owner.setColumnSortAllowed(this, allowed);
+                owner.setColumnSortable(this, sortable);
             }
         }
 

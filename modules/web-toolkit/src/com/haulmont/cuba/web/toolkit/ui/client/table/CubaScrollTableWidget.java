@@ -55,7 +55,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     protected TableAggregationRow aggregationRow;
 
     protected Set<String> clickableColumns;
-    protected Set<String> sortDisallowedColumns;
+    protected Set<String> nonSortableColumns;
     protected TableCellClickListener cellClickListener;
 
     protected VOverlay customPopupOverlay;
@@ -375,7 +375,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
             // CAUTION copied from superclass
             // Added ability to reset sort order
             // Added ability to prevent sorting
-            if (sortDisallowedColumns != null && sortDisallowedColumns.contains(cid)) {
+            if (nonSortableColumns != null && nonSortableColumns.contains(cid)) {
                 return;
             }
 

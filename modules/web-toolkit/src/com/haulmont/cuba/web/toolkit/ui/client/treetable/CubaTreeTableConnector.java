@@ -19,7 +19,6 @@ import com.haulmont.cuba.web.toolkit.ui.client.table.TableCellClickListener;
 import com.vaadin.client.*;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.FocusableScrollPanel;
-import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.treetable.TreeTableConnector;
 import com.vaadin.shared.ui.Connect;
 
@@ -110,11 +109,11 @@ public class CubaTreeTableConnector extends TreeTableConnector {
                 getWidget().clickableColumns = null;
             }
         }
-        if (stateChangeEvent.hasPropertyChanged("sortDisallowedColumnKeys")) {
-            if (getState().sortDisallowedColumnKeys != null) {
-                getWidget().sortDisallowedColumns = new HashSet<String>(Arrays.asList(getState().sortDisallowedColumnKeys));
+        if (stateChangeEvent.hasPropertyChanged("nonSortableColumnKeys")) {
+            if (getState().nonSortableColumnKeys != null) {
+                getWidget().nonSortableColumns = new HashSet<String>(Arrays.asList(getState().nonSortableColumnKeys));
             } else {
-                getWidget().sortDisallowedColumns = null;
+                getWidget().nonSortableColumns = null;
             }
         }
         if (stateChangeEvent.hasPropertyChanged("customPopup")) {
