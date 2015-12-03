@@ -44,7 +44,14 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
     protected boolean showItemsCountForGroup = true;
 
     public WebGroupTable() {
-        component = new CubaGroupTable() {
+        component = createGroupTableComponent();
+        initComponent(component);
+
+        component.setGroupPropertyValueFormatter(new AggregatableGroupPropertyValueFormatter());
+    }
+
+    protected CubaGroupTable createGroupTableComponent() {
+        return new CubaGroupTable() {
             @Override
             @SuppressWarnings({"unchecked"})
             public Resource getItemIcon(Object itemId) {
@@ -63,9 +70,6 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
                 groupBy(properties, rerender);
             }
         };
-        initComponent(component);
-
-        component.setGroupPropertyValueFormatter(new AggregatableGroupPropertyValueFormatter());
     }
 
     @Override
