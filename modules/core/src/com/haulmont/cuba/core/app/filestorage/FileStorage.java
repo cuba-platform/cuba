@@ -203,10 +203,9 @@ public class FileStorage implements FileStorageAPI {
         }
     }
 
-    protected void checkFileDescriptor(FileDescriptor fileDescr) {
-        if (fileDescr == null || StringUtils.isBlank(fileDescr.getName()) || fileDescr.getCreateDate() == null) {
-            throw new IllegalArgumentException("A FileDescriptor instance with populated 'name' and 'createDate' " +
-                    "attributes must be provided");
+    protected void checkFileDescriptor(FileDescriptor fd) {
+        if (fd == null || fd.getCreateDate() == null) {
+            throw new IllegalArgumentException("A FileDescriptor instance with populated 'createDate' attribute must be provided");
         }
     }
 
