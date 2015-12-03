@@ -18,8 +18,8 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.stereotype.Component;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -29,7 +29,7 @@ import java.util.*;
  * @author gorbunkov
  * @version $Id$
  */
-@ManagedBean("cuba_ConfigStorageCommon")
+@Component("cuba_ConfigStorageCommon")
 public class ConfigStorageCommon {
 
     @Inject
@@ -139,5 +139,4 @@ public class ConfigStorageCommon {
             return "Class " + classFQN + " is not an implementation of Config interface";
         }
     }
-
 }

@@ -18,8 +18,8 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +36,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @author gorbunkov
  * @version $Id$
  */
-@ManagedBean("cuba_DefaultPermissionValuesConfig")
+@Component("cuba_DefaultPermissionValuesConfig")
 public class DefaultPermissionValuesConfig {
 
     protected final Logger log = LoggerFactory.getLogger(getClass());
@@ -111,4 +111,3 @@ public class DefaultPermissionValuesConfig {
         }
     }
 }
-
