@@ -42,6 +42,7 @@ public class PresentationEditor extends CubaWindow {
     protected CheckBox globalField;
 
     protected boolean isNew;
+    protected boolean allowGlobalPresentations;
 
     protected Logger log = LoggerFactory.getLogger(getClass());
 
@@ -56,6 +57,8 @@ public class PresentationEditor extends CubaWindow {
         sessionSource = AppBeans.get(UserSessionSource.NAME);
 
         isNew = PersistenceHelper.isNew(presentation);
+        allowGlobalPresentations = sessionSource.getUserSession()
+                .isSpecificPermitted("cuba.gui.presentations.global");
 
         initLayout();
 
@@ -90,8 +93,6 @@ public class PresentationEditor extends CubaWindow {
         defaultField.setValue(BooleanUtils.isTrue(presentation.getDefault()));
         root.addComponent(defaultField);
 
-        final boolean allowGlobalPresentations = sessionSource.getUserSession()
-                .isSpecificPermitted("cuba.gui.presentations.global");
         if (allowGlobalPresentations) {
             globalField = new CheckBox();
             globalField.setCaption(getMessage("PresentationsEditor.global"));
@@ -110,63 +111,10 @@ public class PresentationEditor extends CubaWindow {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                final Presentations presentations = component.getPresentations();
-
-                //check that name is empty
-                if (StringUtils.isEmpty(nameField.getValue())) {
-                    App.getInstance().getWindowManager().showNotification(
-                            getMessage("PresentationsEditor.error"),
-                            getMessage("PresentationsEditor.error.nameRequired"),
-                            Frame.NotificationType.HUMANIZED);
-                    return;
+                if (validate()) {
+                    commit();
+                    close();
                 }
-
-                //check that name is unique
-                final Presentation pres = presentations.getPresentationByName(nameField.getValue());
-                if (pres != null && !pres.equals(presentation)) {
-                    App.getInstance().getWindowManager().showNotification(
-                            getMessage("PresentationsEditor.error"),
-                            getMessage("PresentationsEditor.error.nameAlreadyExists"),
-                            Frame.NotificationType.HUMANIZED);
-                    return;
-                }
-
-                Document doc = DocumentHelper.createDocument();
-                doc.setRootElement(doc.addElement("presentation"));
-
-                component.saveSettings(doc.getRootElement());
-
-                String xml = Dom4j.writeDocument(doc, false);
-                presentation.setXml(xml);
-
-                presentation.setName(nameField.getValue());
-                presentation.setAutoSave(autoSaveField.getValue());
-                presentation.setDefault(defaultField.getValue());
-
-                User user = sessionSource.getUserSession().getCurrentOrSubstitutedUser();
-
-                boolean userOnly = !allowGlobalPresentations || !BooleanUtils.isTrue(globalField.getValue());
-                presentation.setUser(userOnly ? user : null);
-
-                log.trace(String.format("XML: %s", Dom4j.writeDocument(doc, true)));
-
-                if (isNew) {
-                    presentations.add(presentation);
-                } else {
-                    presentations.modify(presentation);
-                }
-                presentations.commit();
-
-                addCloseListener(new CloseListener() {
-                    @Override
-                    public void windowClose(CloseEvent e) {
-                        if (isNew) {
-                            component.applyPresentation(presentation.getId());
-                        }
-                    }
-                });
-
-                close();
             }
         });
         buttons.addComponent(commitButton);
@@ -181,6 +129,69 @@ public class PresentationEditor extends CubaWindow {
         buttons.addComponent(closeButton);
 
         nameField.focus();
+    }
+
+    protected boolean validate() {
+        Presentations presentations = component.getPresentations();
+
+        //check that name is empty
+        if (StringUtils.isEmpty(nameField.getValue())) {
+            App.getInstance().getWindowManager().showNotification(
+                    getMessage("PresentationsEditor.error"),
+                    getMessage("PresentationsEditor.error.nameRequired"),
+                    Frame.NotificationType.HUMANIZED);
+            return false;
+        }
+
+        //check that name is unique
+        final Presentation pres = presentations.getPresentationByName(nameField.getValue());
+        if (pres != null && !pres.equals(presentation)) {
+            App.getInstance().getWindowManager().showNotification(
+                    getMessage("PresentationsEditor.error"),
+                    getMessage("PresentationsEditor.error.nameAlreadyExists"),
+                    Frame.NotificationType.HUMANIZED);
+            return false;
+        }
+        return true;
+    }
+
+    protected void commit() {
+        final Presentations presentations = component.getPresentations();
+
+        Document doc = DocumentHelper.createDocument();
+        doc.setRootElement(doc.addElement("presentation"));
+
+        component.saveSettings(doc.getRootElement());
+
+        String xml = Dom4j.writeDocument(doc, false);
+        presentation.setXml(xml);
+
+        presentation.setName(nameField.getValue());
+        presentation.setAutoSave(autoSaveField.getValue());
+        presentation.setDefault(defaultField.getValue());
+
+        User user = sessionSource.getUserSession().getCurrentOrSubstitutedUser();
+
+        boolean userOnly = !allowGlobalPresentations || !BooleanUtils.isTrue(globalField.getValue());
+        presentation.setUser(userOnly ? user : null);
+
+        log.trace(String.format("XML: %s", Dom4j.writeDocument(doc, true)));
+
+        if (isNew) {
+            presentations.add(presentation);
+        } else {
+            presentations.modify(presentation);
+        }
+        presentations.commit();
+
+        addCloseListener(new CloseListener() {
+            @Override
+            public void windowClose(CloseEvent e) {
+                if (isNew) {
+                    component.applyPresentation(presentation.getId());
+                }
+            }
+        });
     }
 
     protected String getPresentationCaption() {

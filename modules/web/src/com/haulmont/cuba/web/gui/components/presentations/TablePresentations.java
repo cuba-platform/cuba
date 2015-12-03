@@ -6,26 +6,26 @@ package com.haulmont.cuba.web.gui.components.presentations;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.Security;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsChangeListener;
 import com.haulmont.cuba.security.entity.Presentation;
-import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebPopupButton;
+import com.haulmont.cuba.web.gui.components.presentations.actions.PresentationActionsBuilder;
 import com.haulmont.cuba.web.toolkit.ui.CubaEnhancedTable;
 import com.haulmont.cuba.web.toolkit.ui.CubaMenuBar;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.AbstractProperty;
 import com.vaadin.ui.*;
 import org.apache.commons.collections.CollectionUtils;
-import org.dom4j.Element;
+import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author gorodnov
@@ -47,6 +47,8 @@ public class TablePresentations extends VerticalLayout {
     protected Map<Object, com.vaadin.ui.MenuBar.MenuItem> presentationsMenuMap;
 
     protected Messages messages;
+
+    protected PresentationActionsBuilder presentationActionsBuilder;
 
     public TablePresentations(Table component) {
         this.table = component;
@@ -228,7 +230,7 @@ public class TablePresentations extends VerticalLayout {
 
         for (final Object presId : p.getPresentationIds()) {
             final MenuBar.MenuItem item = menuBar.addItem(
-                    buildItemCaption(p.getCaption(presId)),
+                    StringUtils.defaultString(p.getCaption(presId)),
                     new com.vaadin.ui.MenuBar.Command() {
                         @Override
                         public void menuSelected(com.vaadin.ui.MenuBar.MenuItem selectedItem) {
@@ -251,72 +253,20 @@ public class TablePresentations extends VerticalLayout {
     protected void buildActions() {
         button.removeAllActions();
 
-        final Presentations p = table.getPresentations();
-        final Presentation current = p.getCurrent();
-
-        button.addAction(new AbstractAction(getMessage("PresentationsPopup.saveAs")) {
-            @Override
-            public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                tableImpl.hidePresentationsPopup();
-
-                Metadata metadata = AppBeans.get(Metadata.NAME);
-
-                Presentation presentation = metadata.create(Presentation.class);
-                presentation.setComponentId(ComponentsHelper.getComponentPath(table));
-
-                openEditor(presentation);
-            }
-        });
-        button.addAction(new AbstractAction(getMessage("PresentationsPopup.reset")) {
-            @Override
-            public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                table.resetPresentation();
-            }
-        });
-
-        Security security = AppBeans.get(Security.NAME);
-        final boolean allowGlobalPresentations = security.isSpecificPermitted("cuba.gui.presentations.global");
-        if (current != null && (!p.isGlobal(current) || allowGlobalPresentations)) {
-            button.addAction(new AbstractAction(getMessage("PresentationsPopup.save")) {
-                @Override
-                public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                    tableImpl.hidePresentationsPopup();
-
-                    Element e = p.getSettings(current);
-                    table.saveSettings(e);
-                    p.setSettings(current, e);
-                    p.commit();
-                }
-            });
-            button.addAction(new AbstractAction(getMessage("PresentationsPopup.edit")) {
-                @Override
-                public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                    tableImpl.hidePresentationsPopup();
-
-                    openEditor(current);
-                }
-            });
-            button.addAction(new AbstractAction(getMessage("PresentationsPopup.delete")) {
-                @Override
-                public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                    tableImpl.hidePresentationsPopup();
-
-                    p.remove(current);
-                    p.commit();
-                }
-            });
-        }
+        PresentationActionsBuilder presentationActionsBuilder = getPresentationActionsBuilder();
+        if (presentationActionsBuilder != null)
+            for (AbstractAction action : presentationActionsBuilder.build())
+                button.addAction(action);
     }
 
-    protected void openEditor(Presentation presentation) {
-        PresentationEditor window = new PresentationEditor(presentation, table);
-        AppUI.getCurrent().addWindow(window);
-        window.center();
+    protected PresentationActionsBuilder getPresentationActionsBuilder() {
+        if (presentationActionsBuilder == null)
+            presentationActionsBuilder = new PresentationActionsBuilder(table);
+        return presentationActionsBuilder;
     }
 
-    protected static String buildItemCaption(String caption) {
-        if (caption == null) return "";
-        return caption;
+    public void setPresentationActionsBuilder(PresentationActionsBuilder presentationActionsBuilder) {
+        this.presentationActionsBuilder = presentationActionsBuilder;
     }
 
     protected String getMessage(String key) {
