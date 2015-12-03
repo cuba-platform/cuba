@@ -194,7 +194,7 @@ public class SecurityImpl implements Security {
                 Object o = scripting.evaluateGroovy(groovyScript.replace("{E}", "theEntity"), params);
                 if (Boolean.FALSE.equals(o)) {
                     log.trace(format("Entity does not match security constraint. " +
-                            "Entity class [%s]. Entity [%s]. Constraint [%s].", metaClassName, entity, constraint.getCheckType()));
+                            "Entity class [%s]. Entity [%s]. Constraint [%s].", metaClassName, entity.getId(), constraint.getCheckType()));
                     return false;
                 }
             } catch (Exception e) {
