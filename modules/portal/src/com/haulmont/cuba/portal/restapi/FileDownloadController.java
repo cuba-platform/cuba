@@ -17,6 +17,7 @@ import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.http.HttpEntity;
@@ -198,6 +199,10 @@ public class FileDownloadController {
     }
 
     protected String getContentType(FileDescriptor fd) {
+        if (StringUtils.isEmpty(fd.getExtension())) {
+            return FileTypesHelper.DEFAULT_MIME_TYPE;
+        }
+
         return FileTypesHelper.getMIMEType("." + fd.getExtension().toLowerCase());
     }
 
