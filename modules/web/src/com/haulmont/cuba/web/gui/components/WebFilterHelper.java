@@ -8,6 +8,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Folder;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.*;
@@ -23,6 +24,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.AppWindow;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.folders.AppFolderEditWindow;
 import com.haulmont.cuba.web.app.folders.CubaFoldersPane;
 import com.haulmont.cuba.web.app.folders.FolderEditWindow;
@@ -56,6 +58,9 @@ public class WebFilterHelper implements FilterHelper {
 
     @Inject
     protected Messages messages;
+
+    @Inject
+    protected Configuration configuration;
 
     @Override
     public void setLookupNullSelectionAllowed(LookupField lookupField, boolean value) {
@@ -91,7 +96,7 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public boolean isFolderActionsEnabled() {
-        return true;
+        return configuration.getConfig(WebConfig.class).getFoldersPaneEnabled();
     }
 
     @Override
