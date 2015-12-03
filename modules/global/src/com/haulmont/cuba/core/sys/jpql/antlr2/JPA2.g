@@ -66,6 +66,7 @@ import com.haulmont.cuba.core.sys.jpql.tree.GroupByNode;
 import com.haulmont.cuba.core.sys.jpql.tree.OrderByNode;
 import com.haulmont.cuba.core.sys.jpql.tree.OrderByFieldNode;
 import com.haulmont.cuba.core.sys.jpql.tree.AggregateExpressionNode;
+import com.haulmont.cuba.core.sys.jpql.tree.SelectedItemsNode;
 }
 
 @lexer::header {
@@ -148,7 +149,7 @@ delete_clause
     : entity_name (('AS')? identification_variable)?;
 select_clause
     : ('DISTINCT')? select_item (',' select_item)*
-    -> ^(T_SELECTED_ITEMS ('DISTINCT')? ^(T_SELECTED_ITEM<SelectedItemNode>[] select_item)*);
+    -> ^(T_SELECTED_ITEMS<SelectedItemsNode>[] ('DISTINCT')? ^(T_SELECTED_ITEM<SelectedItemNode>[] select_item)*);
 select_item
     : select_expression (('AS')? result_variable)?;
 select_expression
@@ -223,7 +224,7 @@ derived_collection_member_declaration
 
 simple_select_clause
     : ('DISTINCT')? simple_select_expression
-    -> ^(T_SELECTED_ITEMS ^(T_SELECTED_ITEM<SelectedItemNode>[] ('DISTINCT')? simple_select_expression));
+    -> ^(T_SELECTED_ITEMS<SelectedItemsNode>[] ^(T_SELECTED_ITEM<SelectedItemNode>[] ('DISTINCT')? simple_select_expression));
 simple_select_expression
     : path_expression
     | scalar_expression

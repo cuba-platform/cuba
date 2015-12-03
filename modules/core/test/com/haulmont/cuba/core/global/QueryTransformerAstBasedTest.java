@@ -529,7 +529,7 @@ public class QueryTransformerAstBasedTest {
         builder.addReferenceAttribute("group", "sec$GroupHierarchy");
         Entity constraintEntity = builder.produce();
 
-        Entity userEntity = builder.produceImmediately("sec$User");
+        Entity userEntity = builder.produceImmediately("sec$User", "login");
         return new DomainModel(groupHierarchy, constraintEntity, userEntity);
     }
 
@@ -785,6 +785,21 @@ public class QueryTransformerAstBasedTest {
         assertEquals(
                 "select u from sec$User u where lower ( u.name) = :name",
                 res);
+    }
+
+    @Test
+    public void testAddWhereWithSubquery() throws Exception {
+        DomainModel model = prepareDomainModel();
+        QueryTransformerAstBased transformer = new QueryTransformerAstBased(model, "select u from sec$User u");
+        transformer.addWhere("{E}.login not like '[hide]'");
+        transformer.addWhere("{E}.group.id in (select h.group.id from sec$GroupHierarchy h " +
+                "where h.group.id = :session$userGroupId or h.parent.id = :session$userGroupId)");
+        String res = transformer.getResult();
+        assertEquals("select u from sec$User u " +
+                "where (u.login not like '[hide]') " +
+                "and (u.group.id in (" +
+                "select h.group.id from sec$GroupHierarchy h " +
+                "where h.group.id = :session$userGroupId or h.parent.id = :session$userGroupId))", res);
     }
 
 
