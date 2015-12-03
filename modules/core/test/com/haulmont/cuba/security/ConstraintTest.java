@@ -27,11 +27,12 @@ import java.util.UUID;
  * @author krivopustov
  * @version $Id$
  */
+@SuppressWarnings("IncorrectCreateEntity")
 public class ConstraintTest extends CubaTestCase {
     private static final String USER_LOGIN = "testUser";
     private static final String USER_PASSW = "testUser";
 
-    private UUID serverConstraintId, userRoleConstraintId,  parentConstraintId, groupId, parentGroupId,
+    private UUID serverConstraintId, userRoleConstraintId,  parentConstraintId, groupId, otherGroupId, parentGroupId,
             userId, user2Id, userRoleId, roleId;
     private UUID serverId;
 
@@ -94,7 +95,14 @@ public class ConstraintTest extends CubaTestCase {
             user.setGroup(group);
             em.persist(user);
 
+            Group otherGroup = new Group();
+            otherGroupId = otherGroup.getId();
+            otherGroup.setName("otherGroup");
+            otherGroup.setParent(parentGroup);
+            em.persist(otherGroup);
+
             User user2 = new User();
+            user2.setGroup(otherGroup);
             user2Id = user2.getId();
             user2.setLogin("someOtherUser");
             em.persist(user2);
@@ -103,6 +111,7 @@ public class ConstraintTest extends CubaTestCase {
             userRoleId = userRole.getId();
             userRole.setUser(user2);
             Role role = new Role();
+            role.setName("TestRole");
             roleId = role.getId();
             em.persist(role);
             userRole.setRole(role);
@@ -122,8 +131,9 @@ public class ConstraintTest extends CubaTestCase {
         deleteRecord("SEC_ROLE", roleId);
         deleteRecord("SEC_USER", userId, user2Id);
         deleteRecord("SEC_CONSTRAINT", "ID", parentConstraintId, serverConstraintId, userRoleConstraintId);
-        deleteRecord("SEC_GROUP_HIERARCHY", "GROUP_ID", groupId);
-        deleteRecord("SEC_GROUP", groupId);
+        deleteRecord("SEC_GROUP_HIERARCHY", "GROUP_ID", groupId, otherGroupId);
+        deleteRecord("SEC_GROUP_HIERARCHY", "GROUP_ID", otherGroupId);
+        deleteRecord("SEC_GROUP", groupId, otherGroupId);
         deleteRecord("SEC_GROUP", parentGroupId);
 
         super.tearDown();

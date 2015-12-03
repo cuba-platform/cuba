@@ -24,6 +24,7 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
+@SuppressWarnings("IncorrectCreateEntity")
 public class QueryResultTest extends CubaTestCase {
 
     private List<UUID> userIds = new ArrayList<>();
@@ -56,12 +57,16 @@ public class QueryResultTest extends CubaTestCase {
             EntityManager em = persistence.getEntityManager();
             User user;
 
+            Group group = em.find(Group.class, UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93"));
+
             int k = 0;
             for (String domain : Arrays.asList("@aaa.com", "@bbb.com")) {
                 for (String name : Arrays.asList("A-", "B-")) {
                     for (String firstName : Arrays.asList("C-", "D-")) {
                         for (int i = 0; i < 5; i++) {
                             user = new User();
+                            user.setGroup(group);
+
                             userIds.add(user.getId());
                             user.setLogin("user" + StringUtils.leftPad(String.valueOf(k++), 2, '0'));
                             user.setName(name + "User" + i);
