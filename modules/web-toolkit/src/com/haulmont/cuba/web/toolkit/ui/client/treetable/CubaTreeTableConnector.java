@@ -109,13 +109,6 @@ public class CubaTreeTableConnector extends TreeTableConnector {
                 getWidget().clickableColumns = null;
             }
         }
-        if (stateChangeEvent.hasPropertyChanged("nonSortableColumnKeys")) {
-            if (getState().nonSortableColumnKeys != null) {
-                getWidget().nonSortableColumns = new HashSet<String>(Arrays.asList(getState().nonSortableColumnKeys));
-            } else {
-                getWidget().nonSortableColumns = null;
-            }
-        }
         if (stateChangeEvent.hasPropertyChanged("customPopup")) {
             if (getState().customPopup != null) {
                 ComponentConnector customPopup = (ComponentConnector) getState().customPopup;
