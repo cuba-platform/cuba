@@ -23,8 +23,8 @@ public class RememberMeToken extends BaseUuidEntity {
 
     public static final int TOKEN_LENGTH = 32;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "USER_ID")
     protected User user;
 
     @Column(name = "TOKEN", nullable = false, length = TOKEN_LENGTH)

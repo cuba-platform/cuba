@@ -31,7 +31,7 @@ public class Group extends StandardEntity {
 
     private static final long serialVersionUID = -4581386806900761785L;
 
-    @Column(name = "NAME")
+    @Column(name = "NAME", nullable = false, unique = true)
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -92,6 +92,7 @@ public class Group extends StandardEntity {
         this.sessionAttributes = sessionAttributes;
     }
 
+    @Override
     public String toString() {
         return "Group{" +
                 "name='" + name + '\'' +

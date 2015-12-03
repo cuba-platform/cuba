@@ -76,7 +76,7 @@ public class User extends StandardEntity {
     @Column(name = "CHANGE_PASSWORD_AT_LOGON")
     protected Boolean changePasswordAtNextLogon = false;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "GROUP_ID")
     @OnDeleteInverse(DeletePolicy.DENY)
     protected Group group;

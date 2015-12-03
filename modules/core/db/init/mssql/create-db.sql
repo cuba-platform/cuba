@@ -159,7 +159,7 @@ create table SEC_ROLE (
     DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
-    NAME varchar(255),
+    NAME varchar(255) not null,
     LOC_NAME varchar(255),
     DESCRIPTION varchar(1000),
     IS_DEFAULT_ROLE tinyint, 
@@ -182,12 +182,14 @@ create table SEC_GROUP (
     DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
-    NAME varchar(255),
+    NAME varchar(255) not null,
     PARENT_ID uniqueidentifier,
     --
     primary key (ID),
     constraint SEC_GROUP_PARENT foreign key (PARENT_ID) references SEC_GROUP(ID)
 )^
+
+create unique index IDX_SEC_GROUP_UNIQ_NAME on SEC_GROUP (NAME, DELETE_TS)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -232,7 +234,7 @@ create table SEC_USER (
     TIME_ZONE varchar(50),
     TIME_ZONE_AUTO tinyint,
     ACTIVE tinyint,
-    GROUP_ID uniqueidentifier,
+    GROUP_ID uniqueidentifier not null,
     IP_MASK varchar(200),
     CHANGE_PASSWORD_AT_LOGON tinyint,
     --
@@ -733,7 +735,7 @@ create table SYS_CATEGORY_ATTR (
     CATEGORY_ENTITY_TYPE varchar(4000),
     NAME varchar(255),
     CODE varchar(100) not null,
-    CATEGORY_ID uniqueidentifier,
+    CATEGORY_ID uniqueidentifier not null,
     ENTITY_CLASS varchar(500),
     DATA_TYPE varchar(200),
     DEFAULT_STRING varchar(max),
@@ -768,7 +770,7 @@ create table SYS_ATTR_VALUE (
     DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
-    CATEGORY_ATTR_ID uniqueidentifier,
+    CATEGORY_ATTR_ID uniqueidentifier not null,
     ENTITY_ID uniqueidentifier,
     STRING_VALUE varchar(max),
     INTEGER_VALUE integer,

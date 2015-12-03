@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.UUID;
 
 /**
- * Snapshot for system entity
+ * Snapshot for entity.
  *
  * @author artamonov
  * @version $Id$
@@ -45,8 +45,8 @@ public class EntitySnapshot extends BaseUuidEntity {
     @Column(name = "SNAPSHOT_DATE")
     private Date snapshotDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "AUTHOR_ID", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "AUTHOR_ID")
     private User author;
 
     @Column(name = "ENTITY_ID")

@@ -30,7 +30,7 @@ public class CategoryAttributeValue extends StandardEntity {
 
     private static final long serialVersionUID = -2861790889151226985L;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "CATEGORY_ATTR_ID")
     private CategoryAttribute categoryAttribute;
 

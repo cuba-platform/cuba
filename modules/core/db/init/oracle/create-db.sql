@@ -17,7 +17,7 @@ create table SYS_ATTR_VALUE (
     UPDATED_BY varchar2(50),
     DELETE_TS timestamp,
     DELETED_BY varchar2(50),
-    CATEGORY_ATTR_ID varchar2(32),
+    CATEGORY_ATTR_ID varchar2(32) not null,
     ENTITY_ID varchar2(32),
     STRING_VALUE varchar2(4000),
     INTEGER_VALUE integer,
@@ -59,7 +59,7 @@ create table SYS_CATEGORY_ATTR (
     CATEGORY_ENTITY_TYPE varchar(4000),
     NAME varchar2(255),
     CODE varchar2(100) not null,
-    CATEGORY_ID varchar2(32),
+    CATEGORY_ID varchar2(32) not null,
     ENTITY_CLASS varchar2(500),
     DATA_TYPE varchar2(200),
     DEFAULT_STRING varchar2(4000),
@@ -405,10 +405,11 @@ create table SEC_GROUP (
     UPDATED_BY varchar2(50),
     DELETE_TS timestamp,
     DELETED_BY varchar2(50),
-    NAME varchar2(255),
+    NAME varchar2(255) not null,
     PARENT_ID varchar2(32),
     primary key(ID)
 )^
+create unique index IDX_SEC_GROUP_UNIQ_NAME on SEC_GROUP(NAME, DELETE_TS)^
 
 create table SEC_GROUP_HIERARCHY (
     ID varchar2(32) not null,
@@ -483,7 +484,7 @@ create table SEC_ROLE (
     UPDATED_BY varchar2(50),
     DELETE_TS timestamp,
     DELETED_BY varchar2(50),
-    NAME varchar2(255),
+    NAME varchar2(255) not null,
     LOC_NAME varchar2(255),
     DESCRIPTION varchar2(1000),
     IS_DEFAULT_ROLE char(1),
@@ -558,7 +559,7 @@ create table SEC_USER (
     TIME_ZONE varchar2(50),
     TIME_ZONE_AUTO char(1),
     ACTIVE char(1),
-    GROUP_ID varchar2(32),
+    GROUP_ID varchar2(32) not null,
     IP_MASK varchar2(200),
     CHANGE_PASSWORD_AT_LOGON char(1),
     primary key(ID)

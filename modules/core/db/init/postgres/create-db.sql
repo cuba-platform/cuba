@@ -156,7 +156,7 @@ create table SEC_ROLE (
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
     --
-    NAME varchar(255),
+    NAME varchar(255) not null,
     LOC_NAME varchar(255),
     DESCRIPTION varchar(1000),
     IS_DEFAULT_ROLE boolean, 
@@ -179,12 +179,13 @@ create table SEC_GROUP (
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
     --
-    NAME varchar(255),
+    NAME varchar(255) not null,
     PARENT_ID uuid,
     --
     primary key (ID),
     constraint SEC_GROUP_PARENT foreign key (PARENT_ID) references SEC_GROUP(ID)
 )^
+create unique index IDX_SEC_GROUP_UNIQ_NAME on SEC_GROUP (NAME) where DELETE_TS is null^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -227,7 +228,7 @@ create table SEC_USER (
     TIME_ZONE varchar(50),
     TIME_ZONE_AUTO boolean,
     ACTIVE boolean,
-    GROUP_ID uuid,
+    GROUP_ID uuid not null,
     IP_MASK varchar(200),
     CHANGE_PASSWORD_AT_LOGON boolean,
     --
@@ -703,7 +704,7 @@ create table SYS_CATEGORY_ATTR (
     CATEGORY_ENTITY_TYPE varchar(4000),
     NAME varchar(255),
     CODE varchar(100) not null,
-    CATEGORY_ID uuid,
+    CATEGORY_ID uuid not null,
     ENTITY_CLASS varchar(500),
     DATA_TYPE varchar(200),
     DEFAULT_STRING varchar,
@@ -738,7 +739,7 @@ create table SYS_ATTR_VALUE (
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
     --
-    CATEGORY_ATTR_ID uuid,
+    CATEGORY_ATTR_ID uuid not null,
     CODE varchar(100),
     ENTITY_ID uuid,
     STRING_VALUE varchar,

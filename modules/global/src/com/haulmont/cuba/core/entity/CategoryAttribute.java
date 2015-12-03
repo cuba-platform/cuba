@@ -18,6 +18,10 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 import java.util.*;
 
+/**
+ * @author devyatkin
+ * @version $Id$
+ */
 @Entity(name = "sys$CategoryAttribute")
 @Table(name = "SYS_CATEGORY_ATTR")
 @NamePattern("%s|name")
@@ -30,7 +34,7 @@ public class CategoryAttribute extends StandardEntity {
     public static final int NAME_FIELD_LENGTH = 255;
     public static final int CODE_FIELD_LENGTH = 50;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "CATEGORY_ID")
     private Category category;
 

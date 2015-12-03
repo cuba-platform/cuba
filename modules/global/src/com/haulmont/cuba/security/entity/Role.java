@@ -32,7 +32,7 @@ public class Role extends StandardEntity {
 
     private static final long serialVersionUID = -4889116218059626402L;
 
-    @Column(name = "NAME")
+    @Column(name = "NAME", nullable = false, unique = true)
     private String name;
 
     @Column(name = "LOC_NAME")
