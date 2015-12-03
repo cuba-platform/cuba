@@ -289,4 +289,20 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
     public void __filteredAttributes(String[] __filteredAttributes) {
         this.__filteredAttributes = __filteredAttributes;
     }
+
+    @Override
+    public String toString() {
+        String state = "";
+        if (__new)
+            state += "new,";
+        if (__managed)
+            state += "managed,";
+        if (__detached)
+            state += "detached,";
+        if (__removed)
+            state += "removed,";
+        if (state.length() > 0)
+            state = state.substring(0, state.length() - 1);
+        return super.toString() + " [" + state + "]";
+    }
 }
