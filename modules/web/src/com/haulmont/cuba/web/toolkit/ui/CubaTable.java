@@ -15,7 +15,9 @@ import com.haulmont.cuba.web.toolkit.data.TableContainer;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableClientRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableState;
+import com.vaadin.data.Container;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.ContainerOrderedWrapper;
 import com.vaadin.event.Action;
 import com.vaadin.event.ActionManager;
 import com.vaadin.event.ShortcutListener;
@@ -705,5 +707,12 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
                 setPageLength(15);
             }
         }
+    }
+
+    @Override
+    protected Container createOrderedWrapper(Container newDataSource) {
+        ContainerOrderedWrapper wrapper = new ContainerOrderedWrapper(newDataSource);
+        wrapper.setResetOnItemSetChange(true);
+        return wrapper;
     }
 }
