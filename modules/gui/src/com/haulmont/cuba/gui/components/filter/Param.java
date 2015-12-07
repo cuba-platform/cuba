@@ -192,7 +192,7 @@ public class Param {
                         list.add(value);
                     }
                 }
-                value = list;
+                value = list.isEmpty() ? null : list;
             }
         } else {
             value = parseSingleValue(text);
