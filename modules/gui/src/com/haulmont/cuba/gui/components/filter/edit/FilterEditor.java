@@ -137,7 +137,9 @@ public class FilterEditor extends AbstractWindow {
         refreshConditionsDs();
         conditionsTree.expandTree();
 
-        filterName.setValue(filterEntity.getName());
+        if (!messages.getMainMessage("filter.adHocFilter").equals(filterEntity.getName())) {
+            filterName.setValue(filterEntity.getName());
+        }
         availableForAllCb.setValue(filterEntity.getUser() == null);
         defaultCb.setValue(filterEntity.getIsDefault());
         applyDefaultCb.setValue(filterEntity.getApplyDefault());
