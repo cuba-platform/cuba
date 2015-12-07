@@ -21,10 +21,10 @@ import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author gorodnov
@@ -100,31 +100,24 @@ public class PresentationEditor extends CubaWindow {
             root.addComponent(globalField);
         }
 
-        final HorizontalLayout buttons = new HorizontalLayout();
+        HorizontalLayout buttons = new HorizontalLayout();
         buttons.setSpacing(true);
         buttons.setWidth("-1px");
         root.addComponent(buttons);
         root.setComponentAlignment(buttons, Alignment.MIDDLE_LEFT);
 
         Button commitButton = new CubaButton(getMessage("PresentationsEditor.save"));
-        commitButton.addClickListener(new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                if (validate()) {
-                    commit();
-                    close();
-                }
+        commitButton.addClickListener(event -> {
+            if (validate()) {
+                commit();
+                close();
             }
         });
         buttons.addComponent(commitButton);
 
         Button closeButton = new CubaButton(getMessage("PresentationsEditor.close"));
-        closeButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                close();
-            }
+        closeButton.addClickListener(event -> {
+            close();
         });
         buttons.addComponent(closeButton);
 
@@ -156,7 +149,7 @@ public class PresentationEditor extends CubaWindow {
     }
 
     protected void commit() {
-        final Presentations presentations = component.getPresentations();
+        Presentations presentations = component.getPresentations();
 
         Document doc = DocumentHelper.createDocument();
         doc.setRootElement(doc.addElement("presentation"));
@@ -175,7 +168,9 @@ public class PresentationEditor extends CubaWindow {
         boolean userOnly = !allowGlobalPresentations || !BooleanUtils.isTrue(globalField.getValue());
         presentation.setUser(userOnly ? user : null);
 
-        log.trace(String.format("XML: %s", Dom4j.writeDocument(doc, true)));
+        if (log.isTraceEnabled()) {
+            log.trace(String.format("XML: %s", Dom4j.writeDocument(doc, true)));
+        }
 
         if (isNew) {
             presentations.add(presentation);
@@ -184,12 +179,9 @@ public class PresentationEditor extends CubaWindow {
         }
         presentations.commit();
 
-        addCloseListener(new CloseListener() {
-            @Override
-            public void windowClose(CloseEvent e) {
-                if (isNew) {
-                    component.applyPresentation(presentation.getId());
-                }
+        addCloseListener(e -> {
+            if (isNew) {
+                component.applyPresentation(presentation.getId());
             }
         });
     }
@@ -197,7 +189,7 @@ public class PresentationEditor extends CubaWindow {
     protected String getPresentationCaption() {
         return presentation.getName() == null ? "" : presentation.getName();
     }
-    
+
     protected String getMessage(String key) {
         return messages.getMessage(getClass(), key);
     }
