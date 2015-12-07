@@ -308,7 +308,7 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
 
     @Override
     public void setInputPrompt(String inputPrompt) {
-        if (inputPrompt != null) {
+        if (StringUtils.isNotBlank(inputPrompt)) {
             setNullOption(null);
         }
         component.setInputPrompt(inputPrompt);
