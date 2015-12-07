@@ -50,10 +50,7 @@
         <property name="changePasswordAtNextLogon"/>
     </view>
 
-    <view class="com.haulmont.cuba.security.entity.User" name="user.resetPassword">
-        <property name="password"/>
-        <property name="changePasswordAtNextLogon"/>
-        <property name="email"/>
+    <view class="com.haulmont.cuba.security.entity.User" name="user.resetPassword" extends="_local">
     </view>
 
     <view class="com.haulmont.cuba.security.entity.User" name="user.check">
