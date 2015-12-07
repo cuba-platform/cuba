@@ -359,11 +359,9 @@ public class UserManagementServiceBean implements UserManagementService {
             if (localizedBodyTemplates.containsKey(locale))
                 bodyTemplate = localizedBodyTemplates.get(locale);
             else {
-                String baseName = FilenameUtils.getBaseName(resetPasswordBodyTemplate);
-                String localizedTemplate = baseName + "_" + locale;
-                String templateString = resources.getResourceAsString(localizedTemplate);
+                String templateString = getLocalizedTemplateContent(resetPasswordBodyTemplate, locale);
                 if (templateString == null) {
-                    log.warn("Reset passwords: Not found email body template for locale: '" + locale + "'");
+                    log.warn("Reset passwords: Not found email body template for locale: '{}'", locale);
                     bodyTemplate = bodyDefaultTemplate;
                 } else {
                     bodyTemplate = getTemplate(templateEngine, templateString);
@@ -379,11 +377,9 @@ public class UserManagementServiceBean implements UserManagementService {
             if (localizedSubjectTemplates.containsKey(locale))
                 subjectTemplate = localizedSubjectTemplates.get(locale);
             else {
-                String baseName = FilenameUtils.getBaseName(resetPasswordSubjectTemplate);
-                String localizedTemplate = baseName + "_" + locale;
-                String templateString = resources.getResourceAsString(localizedTemplate);
+                String templateString = getLocalizedTemplateContent(resetPasswordSubjectTemplate, locale);
                 if (templateString == null) {
-                    log.warn("Reset passwords: Not found email subject template for locale '" + locale + "'");
+                    log.warn("Reset passwords: Not found email subject template for locale '{}'", locale);
                     subjectTemplate = subjectDefaultTemplate;
                     localizedSubjectTemplates.put(locale, subjectDefaultTemplate);
                 } else {
@@ -394,6 +390,15 @@ public class UserManagementServiceBean implements UserManagementService {
         }
 
         return new EmailTemplate(subjectTemplate, bodyTemplate);
+    }
+
+    private String getLocalizedTemplateContent(String defaultTemplateName, String locale) {
+        String localizedTemplate = FilenameUtils.getFullPath(defaultTemplateName)
+                + FilenameUtils.getBaseName(defaultTemplateName) +
+                "_" + locale +
+                "." + FilenameUtils.getExtension(defaultTemplateName);
+
+        return resources.getResourceAsString(localizedTemplate);
     }
 
     protected Template getTemplate(SimpleTemplateEngine templateEngine, String templateString) {
