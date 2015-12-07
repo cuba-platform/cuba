@@ -58,7 +58,7 @@ public class PropertyCondition extends AbstractCondition {
         }
 
         if (operator == null) {
-            operator = Op.fromString(matcher.group(2));
+            operator = Op.fromJpqlString(matcher.group(2));
         }
 
         String prop = matcher.group(1);

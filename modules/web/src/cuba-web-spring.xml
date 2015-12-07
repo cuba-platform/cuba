@@ -95,6 +95,7 @@
             <list>
                 <value>com.haulmont.cuba.web.exception.NoUserSessionHandler</value>
                 <value>com.haulmont.cuba.web.exception.InvalidValueExceptionHandler</value>
+                <value>com.haulmont.cuba.web.exception.RowLevelSecurityExceptionHandler</value>
             </list>
         </property>
     </bean>

@@ -376,7 +376,7 @@ public class DataManagerBean implements DataManager {
                 && security.hasConstraints(entity.getMetaClass())
                 && !security.isPermitted(entity, operationType)) {
             throw new RowLevelSecurityException(
-                    operationType + " is not permitted for entity " + entity, entity.getMetaClass().getName());
+                    operationType + " is not permitted for entity " + entity, entity.getMetaClass().getName(), operationType);
         }
     }
 

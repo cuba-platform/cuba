@@ -5,8 +5,12 @@
 
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
@@ -22,9 +26,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 import static com.haulmont.cuba.security.entity.ConstraintOperationType.ALL;
@@ -205,5 +211,30 @@ public class SecurityImpl implements Security {
             }
         }
         return true;
+    }
+
+    @SuppressWarnings("unused")
+    protected Object getParameterValue(Class clazz, String parameterValue) {
+        try {
+            if (String.class.isAssignableFrom(clazz)) {
+                return parameterValue;
+            } else if (Entity.class.isAssignableFrom(clazz)) {
+                UUID uuid = UUID.fromString(parameterValue);
+                Object entity = metadata.create(clazz);
+                if (entity instanceof BaseUuidEntity) {
+                    ((BaseUuidEntity) entity).setId(uuid);
+                } else {
+                    ((BaseGenericIdEntity) entity).setValue("uuid", uuid);
+                }
+
+                return entity;
+            }
+
+            Datatype datatype = Datatypes.get(clazz);
+            return datatype != null ? datatype.parse(parameterValue) : parameterValue;
+        } catch (ParseException e) {
+            throw new RowLevelSecurityException(e, format("Could not parse a value from constraint. Class [%s], value [%s].",
+                    clazz, parameterValue), null);
+        }
     }
 }

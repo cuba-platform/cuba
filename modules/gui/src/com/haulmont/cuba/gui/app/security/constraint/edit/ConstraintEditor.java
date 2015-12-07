@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.Constraint;
+import com.haulmont.cuba.security.entity.ConstraintCheckType;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import org.apache.commons.lang.StringUtils;
@@ -79,6 +80,9 @@ public class ConstraintEditor extends AbstractEditor {
 
     @Inject
     private Label codeLabel;
+
+    @Inject
+    private LookupField operationType;
 
     @Inject
     private Datasource<Constraint> constraint;
@@ -141,6 +145,13 @@ public class ConstraintEditor extends AbstractEditor {
                 .forEach(component -> component.setVisible(item.getCheckType().database()));
         asList(code, codeLabel)
                 .forEach(component -> component.setVisible(item.getOperationType() == ConstraintOperationType.CUSTOM));
+
+        if (item.getCheckType() == ConstraintCheckType.DATABASE) {
+            item.setOperationType(ConstraintOperationType.READ);
+            operationType.setEnabled(false);
+        } else {
+            operationType.setEnabled(true);
+        }
     }
 
     protected List<Suggestion> requestHint(SourceCodeEditor sender, String text, int cursorPosition) {

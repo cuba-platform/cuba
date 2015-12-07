@@ -31,9 +31,9 @@
                                  width="${width}"/>
                     <label value=""/>
                 </row>
-                <row id="areaRow">
+                <row id="operationTypeRow">
                     <label value="msg://com.haulmont.cuba.security.entity/Constraint.operationType" align="MIDDLE_LEFT"/>
-                    <lookupField id="area" datasource="constraint" property="operationType" required="true"
+                    <lookupField id="operationType" datasource="constraint" property="operationType" required="true"
                                  width="${width}"/>
                 </row>
                 <row id="codeRow">
