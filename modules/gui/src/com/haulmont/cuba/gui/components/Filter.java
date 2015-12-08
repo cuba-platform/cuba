@@ -82,7 +82,28 @@ public interface Filter extends Component.Margin, Component.BelongToFrame, Compo
     void setFolderActionsEnabled(boolean enabled);
     boolean isFolderActionsEnabled();
 
+    /**
+     * Sets the value to the filter parameter component. Do not use this method in init() method of screen controller,
+     * because filter is not initialized by that time. The proper place to use the method is ready() method of
+     * the controller.
+     * @param paramName parameter name. It can be found at runtime in the filter editor window. Right click
+     *                  at the necessary condition and select 'Show component name' item in the popup menu.
+     *                  Component name there will be like 'component$genericFilter.email12482'. {@code paramName} parameter in
+     *                  this method requires only the last part of this string, i.e. you should pass 'email12482'
+     * @param value parameter value
+     */
     void setParamValue(String paramName, Object value);
+
+    /**
+     * Gets the value of the filter parameter component. Do not use this method in init() method of screen controller,
+     * because filter is not initialized by that time. The proper place to use the method is ready() method of
+     * the controller.
+     * @param paramName parameter name. It can be found at runtime in the filter editor window. Right click
+     *                  at the necessary condition and select 'Show component name' item in the popup menu.
+     *                  Component name there will be like 'component$genericFilter.email12482'. {@code paramName} parameter in
+     *                  this method requires only the last part of this string, i.e. you should pass 'email12482'
+     * @return parameter value
+     */
     Object getParamValue(String paramName);
 
     void addFilterEntityChangeListener(FilterEntityChangeListener listener);
