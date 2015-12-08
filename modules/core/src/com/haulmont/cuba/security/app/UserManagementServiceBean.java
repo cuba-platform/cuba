@@ -381,11 +381,10 @@ public class UserManagementServiceBean implements UserManagementService {
                 if (templateString == null) {
                     log.warn("Reset passwords: Not found email subject template for locale '{}'", locale);
                     subjectTemplate = subjectDefaultTemplate;
-                    localizedSubjectTemplates.put(locale, subjectDefaultTemplate);
                 } else {
                     subjectTemplate = getTemplate(templateEngine, templateString);
-                    localizedSubjectTemplates.put(locale, subjectTemplate);
                 }
+                localizedSubjectTemplates.put(locale, subjectTemplate);
             }
         }
 
