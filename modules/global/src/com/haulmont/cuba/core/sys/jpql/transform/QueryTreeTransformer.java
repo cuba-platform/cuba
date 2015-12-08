@@ -194,51 +194,40 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
         return identificationVariableNodes;
     }
 
-    public void replaceOrderBy(PathEntityReference orderingFieldRef, boolean desc) {
-        CommonTree orderBy = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_ORDER_BY);
-        OrderByFieldNode orderByField;
-        if (orderBy == null) {
-            orderByField = new OrderByFieldNode(JPA2Lexer.T_ORDER_BY_FIELD);
+    public void replaceOrderBy(boolean desc, PathEntityReference... orderingFieldRefs) {
+        removeOrderBy();
+        CommonTree orderBy = new OrderByNode(JPA2Lexer.T_ORDER_BY);
+        tree.addChild(orderBy);
+        orderBy.addChild(new CommonTree(new CommonToken(JPA2Lexer.ORDER, "order")));
+        orderBy.addChild(new CommonTree(new CommonToken(JPA2Lexer.BY, "by")));
 
-            orderBy = new OrderByNode(JPA2Lexer.T_ORDER_BY);
-            orderBy.addChild(new CommonTree(new CommonToken(JPA2Lexer.ORDER, "order")));
-            orderBy.addChild(new CommonTree(new CommonToken(JPA2Lexer.BY, "by")));
+        for (PathEntityReference orderingFieldRef : orderingFieldRefs) {
+            OrderByFieldNode orderByField = new OrderByFieldNode(JPA2Lexer.T_ORDER_BY_FIELD);
             orderBy.addChild(orderByField);
-            tree.addChild(orderBy);
-        } else {
-            orderByField = (OrderByFieldNode) orderBy.getFirstChildWithType(JPA2Lexer.T_ORDER_BY_FIELD);
-            if (orderByField == null)
-                throw new IllegalStateException("No ordering field found");
 
-            if (!(orderByField.getChildCount() == 1 || orderByField.getChildCount() == 2)) {
-                throw new IllegalStateException("Invalid order by field node children count: " + orderByField.getChildCount());
+            PathNode pathNode = orderingFieldRef.getPathNode();
+            if (pathNode.getChildCount() > 1) {
+                CommonTree lastNode = (CommonTree) pathNode.deleteChild(pathNode.getChildCount() - 1);
+                String variableName = pathNode.asPathString('_');
+
+                PathNode orderingNode = new PathNode(JPA2Lexer.T_SELECTED_FIELD, variableName);
+                orderingNode.addDefaultChild(lastNode.getText());
+                orderByField.addChild(orderingNode);
+
+                JoinVariableNode joinNode = new JoinVariableNode(JPA2Lexer.T_JOIN_VAR, "left join", variableName, null);
+                joinNode.addChild(pathNode);
+
+                CommonTree from = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
+                from.getChild(0).addChild(joinNode); // assumption
+            } else {
+                orderByField.addChild(orderingFieldRef.createNode());
             }
 
-            orderByField.deleteChild(0);
+            if (desc) {
+                orderByField.addChild(new CommonTree(new CommonToken(JPA2Lexer.DESC, "desc")));
+            }
+            orderByField.freshenParentAndChildIndexes();
         }
-
-        PathNode pathNode = orderingFieldRef.getPathNode();
-        if (pathNode.getChildCount() > 1) {
-            CommonTree lastNode = (CommonTree) pathNode.deleteChild(pathNode.getChildCount() - 1);
-            String variableName = pathNode.asPathString('_');
-
-            PathNode orderingNode = new PathNode(JPA2Lexer.T_SELECTED_FIELD, variableName);
-            orderingNode.addDefaultChild(lastNode.getText());
-            orderByField.addChild(orderingNode);
-
-            JoinVariableNode joinNode = new JoinVariableNode(JPA2Lexer.T_JOIN_VAR, "left join", variableName, null);
-            joinNode.addChild(pathNode);
-
-            CommonTree from = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
-            from.getChild(0).addChild(joinNode); // assumption
-        } else {
-            orderByField.addChild(orderingFieldRef.createNode());
-        }
-
-        if (desc) {
-            orderByField.addChild(new CommonTree(new CommonToken(JPA2Lexer.DESC, "desc")));
-        }
-        orderByField.freshenParentAndChildIndexes();
     }
 
     public void handleCaseInsensitiveParam(String paramName) {

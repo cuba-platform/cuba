@@ -20,10 +20,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Chevelev
@@ -220,7 +217,9 @@ public class QueryTransformerAstBased implements QueryTransformer {
     public void replaceOrderBy(boolean desc, String... properties) {
         EntityReferenceInferer inferer = new EntityReferenceInferer(returnedEntityName);
         EntityReference ref = inferer.infer(queryTreeTransformer);
-        queryTreeTransformer.replaceOrderBy(ref.addFieldPath(properties[0]), desc);
+        PathEntityReference[] paths = Arrays.stream(properties)
+                .map(ref::addFieldPath).toArray(PathEntityReference[]::new);
+        queryTreeTransformer.replaceOrderBy(desc, paths);
     }
 
     @Override

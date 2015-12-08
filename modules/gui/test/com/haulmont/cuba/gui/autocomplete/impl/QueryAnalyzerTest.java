@@ -19,7 +19,7 @@ import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 import org.junit.Test;
 
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 
 /**
  * Author: Alexander Chevelev
@@ -188,7 +188,7 @@ public class QueryAnalyzerTest {
 
         pathNode = new PathNode(JPA2Lexer.T_SELECTED_FIELD, "c");
         pathNode.addDefaultChild("regNumber");
-        qa.replaceOrderBy(new PathEntityReference(pathNode, "Car"), true);
+        qa.replaceOrderBy(true, new PathEntityReference(pathNode, "Car"));
 
         assertEquals(2, orderByField.getChildCount());
         pathNode = (PathNode) orderByField.getChild(0);

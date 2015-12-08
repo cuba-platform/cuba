@@ -823,10 +823,16 @@ public class QueryTransformerAstBasedTest {
         DomainModel model = prepareDomainModel();
 
         QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
-                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
-                        "group by h.level having h.level > 0 order by h.level");
+                "select h from sec$GroupHierarchy h order by h.level desc");
         transformer.replaceOrderBy(false, "group");
         String res = transformer.getResult();
+        assertEquals("select h from sec$GroupHierarchy h order by h.group", res);
+
+        transformer = new QueryTransformerAstBased(model,
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by h.level having h.level > 0 order by h.level desc");
+        transformer.replaceOrderBy(false, "group");
+        res = transformer.getResult();
         assertEquals(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
                         "group by h.level having h.level > 0 order by c.group",
@@ -836,6 +842,27 @@ public class QueryTransformerAstBasedTest {
         assertEquals(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
                         "group by h.level having h.level > 0 order by c.group desc",
+                res);
+
+
+        transformer = new QueryTransformerAstBased(model,
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by h.level having h.level > 0 order by h.level desc, h.createdBy");
+        transformer.replaceOrderBy(false, "group");
+        res = transformer.getResult();
+        assertEquals(
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by h.level having h.level > 0 order by c.group",
+                res);
+
+        transformer = new QueryTransformerAstBased(model,
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by h.level having h.level > 0 order by h.level desc, h.createdBy");
+        transformer.replaceOrderBy(true, "group", "createdBy");
+        res = transformer.getResult();
+        assertEquals(
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by h.level having h.level > 0 order by c.group desc, c.createdBy desc",
                 res);
     }
 
