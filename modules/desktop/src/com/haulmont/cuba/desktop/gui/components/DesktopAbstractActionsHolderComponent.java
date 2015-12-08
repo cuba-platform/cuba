@@ -69,14 +69,18 @@ public class DesktopAbstractActionsHolderComponent<C extends JComponent> extends
 
         Action oldAction = getAction(action.getId());
 
+        boolean added = false;
         for (int i = 0; i < actionList.size(); i++) {
             Action a = actionList.get(i);
             if (ObjectUtils.equals(a.getId(), action.getId())) {
                 actionList.set(i, action);
-                return;
+                added = true;
+                break;
             }
         }
-        actionList.add(action);
+        if (!added) {
+            actionList.add(action);
+        }
 
         shortcutsDelegate.addAction(oldAction, action);
 
