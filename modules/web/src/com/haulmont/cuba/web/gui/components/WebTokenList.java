@@ -5,6 +5,8 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
@@ -16,6 +18,7 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
@@ -23,6 +26,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaTokenListLabel;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.*;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -191,6 +195,21 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
     }
 
     @Override
+    public void setDatasource(Datasource datasource, String property) {
+        throw new UnsupportedOperationException("TokenList does not support datasource with property");
+    }
+
+    @Override
+    public MetaProperty getMetaProperty() {
+        return null;
+    }
+
+    @Override
+    public MetaPropertyPath getMetaPropertyPath() {
+        return null;
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T getValue() {
         if (datasource != null) {
@@ -217,12 +236,12 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
 
     @Override
     public void addValueChangeListener(ValueChangeListener listener) {
-        // todo
+        LoggerFactory.getLogger(WebTokenList.class).warn("addValueChangeListener not implemented for TokenList");
     }
 
     @Override
     public void removeValueChangeListener(ValueChangeListener listener) {
-        // todo
+        LoggerFactory.getLogger(WebTokenList.class).warn("removeValueChangeListener not implemented for TokenList");
     }
 
     @Override
@@ -384,16 +403,6 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
         this.inline = inline;
 
         component.refreshComponent();
-    }
-
-    @Override
-    public String getCaption() {
-        return component.getCaption();
-    }
-
-    @Override
-    public void setCaption(String caption) {
-        component.setCaption(caption);
     }
 
     @Override
