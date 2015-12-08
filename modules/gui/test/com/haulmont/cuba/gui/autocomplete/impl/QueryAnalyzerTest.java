@@ -190,6 +190,8 @@ public class QueryAnalyzerTest {
         pathNode.addDefaultChild("regNumber");
         qa.replaceOrderBy(true, new PathEntityReference(pathNode, "Car"));
 
+        orderByNode = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_ORDER_BY);
+        orderByField = orderByNode.getFirstChildWithType(JPA2Lexer.T_ORDER_BY_FIELD);
         assertEquals(2, orderByField.getChildCount());
         pathNode = (PathNode) orderByField.getChild(0);
         assertEquals("c", pathNode.getEntityVariableName());
