@@ -154,7 +154,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected boolean filtersLookupListenerEnabled = true;
     protected boolean filtersPopupDisplayed = false;
     protected boolean filtersLookupDisplayed = false;
-    protected boolean maxResultsDisplayed = false;
+    protected boolean maxResultsAddedToLayout = false;
     protected boolean editable = true;
     protected FilterMode filterMode;
     protected boolean filterSavingPossible = true;
@@ -288,16 +288,14 @@ public class FilterDelegateImpl implements FilterDelegate {
         createFilterActions();
 
         createMaxResultsLayout();
-        if (maxResultsDisplayed) {
-            controlsLayout.add(maxResultsLayout);
-        }
-
         createFtsSwitch();
         ftsSwitch.setAlignment(Component.Alignment.MIDDLE_RIGHT);
 
         String layoutDescription = clientConfig.getGenericFilterControlsLayout();
         ControlsLayoutBuilder controlsLayoutBuilder = createControlsLayoutBuilder(layoutDescription);
         controlsLayoutBuilder.build();
+
+        maxResultsLayout.setVisible(isMaxResultsLayoutVisible());
     }
 
     protected void createControlsLayoutForFts() {
@@ -329,8 +327,9 @@ public class FilterDelegateImpl implements FilterDelegate {
         controlsLayout.expand(controlsLayoutGap);
 
         createMaxResultsLayout();
-        if (maxResultsDisplayed) {
+        if (isMaxResultsLayoutVisible()) {
             controlsLayout.add(maxResultsLayout);
+            initMaxResults();
         }
 
         createFtsSwitch();
@@ -375,7 +374,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
         conditions = (filterMode == FilterMode.GENERIC_MODE) ? prevConditions : new ConditionsTree();
         createLayout();
-        initMaxResults();
+//        initMaxResults();
         if (filterMode == FilterMode.GENERIC_MODE) {
             fillConditionsLayout(ConditionsFocusType.FIRST);
             addConditionBtn.setVisible(editable && userCanEditFilers());
@@ -1251,7 +1250,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             maxResults = persistenceManager.getFetchUI(datasource.getMetaClass().getName());
         }
 
-        if (maxResultsDisplayed) {
+        if (maxResultsAddedToLayout) {
             if (!textMaxResults) {
                 List<Integer> optionsList = ((LookupField) maxResultsField).getOptionsList();
                 if (!optionsList.contains(maxResults)) {
@@ -1288,11 +1287,11 @@ public class FilterDelegateImpl implements FilterDelegate {
     @Override
     public void setUseMaxResults(boolean useMaxResults) {
         this.useMaxResults = useMaxResults;
+        maxResultsLayout.setVisible(isMaxResultsLayoutVisible());
+    }
 
-        if (maxResultsDisplayed) {
-            Security security = AppBeans.get(Security.NAME);
-            maxResultsLayout.setVisible(useMaxResults && security.isSpecificPermitted("cuba.gui.filter.maxResults"));
-        }
+    protected boolean isMaxResultsLayoutVisible() {
+        return useMaxResults && security.isSpecificPermitted("cuba.gui.filter.maxResults") && maxResultsAddedToLayout;
     }
 
     @Override
@@ -1304,7 +1303,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     public void setTextMaxResults(boolean textMaxResults) {
         boolean valueChanged = this.textMaxResults != textMaxResults;
         this.textMaxResults = textMaxResults;
-        if (maxResultsDisplayed && valueChanged) {
+        if (maxResultsAddedToLayout && valueChanged) {
             maxResultsLayout.remove(maxResultsField);
             maxResultsField = textMaxResults ? maxResultsTextField : maxResultsLookupField;
             maxResultsLayout.add(maxResultsField);
@@ -1394,13 +1393,18 @@ public class FilterDelegateImpl implements FilterDelegate {
         datasource.refresh(params);
     }
 
+    /**
+     * The method is invoked before search. It sets datasource {@code maxResults} value based on the maxResults
+     * field (if visible) or on maxFetchUI value.
+     * Method also resets the datasource {@code firstResult} value
+     */
     protected void initDatasourceMaxResults() {
         if (datasource == null) {
             throw new DevelopmentException("Filter datasource is not set");
         }
         if (this.maxResults != -1) {
             datasource.setMaxResults(maxResults);
-        } else if (maxResultsDisplayed && useMaxResults) {
+        } else if (maxResultsAddedToLayout && useMaxResults) {
             Integer maxResults = maxResultsField.getValue();
             if (maxResults != null && maxResults > 0) {
                 datasource.setMaxResults(maxResults);
@@ -2371,7 +2375,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                     fillSettingsBtn(options);
                     return settingsBtn;
                 case "max_results":
-                    maxResultsDisplayed = true;
+                    maxResultsAddedToLayout = true;
                     return maxResultsLayout;
                 case "fts_switch":
                     return ftsSwitch;
