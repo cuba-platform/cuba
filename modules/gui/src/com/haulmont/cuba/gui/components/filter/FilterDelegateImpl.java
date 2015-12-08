@@ -1919,6 +1919,19 @@ public class FilterDelegateImpl implements FilterDelegate {
         return new ControlsLayoutBuilder(layoutDescription);
     }
 
+    /**
+     * Method sets default = false to all filters except the current one
+     */
+    protected void resetDefaultFilters() {
+        for (FilterEntity filter : filterEntities) {
+            if (!ObjectUtils.equals(filter, filterEntity)) {
+                if (BooleanUtils.isTrue(filter.getIsDefault())) {
+                    filter.setIsDefault(false);
+                }
+            }
+        }
+    }
+
     protected class FiltersLookupChangeListener implements Component.ValueChangeListener {
         public FiltersLookupChangeListener() {
         }
@@ -2044,6 +2057,9 @@ public class FilterDelegateImpl implements FilterDelegate {
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                     conditions = window.getConditions();
                     filterEntity.setXml(FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE));
+                    if (filterEntity.getIsDefault()) {
+                        resetDefaultFilters();
+                    }
                     saveFilterEntity();
                     initAdHocFilter();
                     initFilterSelectComponents();
@@ -2083,13 +2099,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             if (filterEntity != null) {
                 filterEntity.setIsDefault(true);
             }
-            for (FilterEntity filter : filterEntities) {
-                if (!ObjectUtils.equals(filter, filterEntity)) {
-                    if (BooleanUtils.isTrue(filter.getIsDefault())) {
-                        filter.setIsDefault(false);
-                    }
-                }
-            }
+            resetDefaultFilters();
             initFilterSelectComponents();
             setFilterActionsEnabled();
         }
