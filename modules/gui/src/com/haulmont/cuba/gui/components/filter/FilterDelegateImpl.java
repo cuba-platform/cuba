@@ -14,8 +14,8 @@ import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.app.DataService;
-import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Entity;
@@ -102,7 +102,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected FtsFilterHelper ftsFilterHelper;
     protected DataService dataService;
-    protected PersistenceManagerService persistenceManager;
+    protected PersistenceManagerClient persistenceManager;
     protected ClientConfig clientConfig;
     protected GlobalConfig globalConfig;
     protected FtsConfig ftsConfig;
@@ -187,7 +187,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         theme = themeConstantsManager.getConstants();
         windowManager = windowManagerProvider.get();
         dataService = AppBeans.get(DataService.class);
-        persistenceManager = AppBeans.get(PersistenceManagerService.class);
+        persistenceManager = AppBeans.get(PersistenceManagerClient.class);
         globalConfig = configuration.getConfig(GlobalConfig.class);
         clientConfig = configuration.getConfig(ClientConfig.class);
         ftsConfig = configuration.getConfig(FtsConfig.class);
