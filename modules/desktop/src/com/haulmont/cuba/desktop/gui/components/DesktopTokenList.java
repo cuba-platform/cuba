@@ -863,7 +863,12 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
 
                 scrollContainer.setWidth("100%");
                 scrollContainer.setHeight("100%");
-                scrollContainer.setScrollBarPolicy(ScrollBoxLayout.ScrollBarPolicy.VERTICAL);
+
+                if (inline) {
+                    scrollContainer.setScrollBarPolicy(ScrollBoxLayout.ScrollBarPolicy.VERTICAL);
+                } else {
+                    scrollContainer.setScrollBarPolicy(ScrollBoxLayout.ScrollBarPolicy.BOTH);
+                }
 
                 scrollContainer.remove(scrollWrap);
                 scrollContainer.add(scrollWrap);
