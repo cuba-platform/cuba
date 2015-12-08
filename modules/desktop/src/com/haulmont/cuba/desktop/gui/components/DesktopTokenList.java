@@ -839,11 +839,10 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
             }
 
             CC tokensContainerCC = new CC();
-
-            if (getWidth() >= 0) {
-                MigLayoutHelper.applyWidth(tokensContainerCC, 100, UNITS_PERCENTAGE, false);
-            } else {
+            if ((getHeight() < 0 || getWidth() < 0) && !inline) {
                 MigLayoutHelper.applyWidth(tokensContainerCC, -1, UNITS_PIXELS, false);
+            } else {
+                MigLayoutHelper.applyWidth(tokensContainerCC, 100, UNITS_PERCENTAGE, false);
             }
 
             MigLayoutHelper.applyHeight(tokensContainerCC, -1, UNITS_PIXELS, false);
