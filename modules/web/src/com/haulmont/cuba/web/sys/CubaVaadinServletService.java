@@ -304,8 +304,10 @@ public class CubaVaadinServletService extends VaadinServletService {
                 public String createConnectorId(ClientConnector connector) {
                     if (connector instanceof Component) {
                         Component component = (Component) connector;
-                        return component.getId() == null ? super
-                                .createConnectorId(connector) : component.getId();
+                        String id = component.getId() == null ? super.createConnectorId(connector) : component.getId();
+                        UserSession session = getAttribute(UserSession.class);
+                        String login = session != null ? session.getCurrentOrSubstitutedUser().getLogin() : null;
+                        return login != null ? login + "-" + id : id;
                     }
                     return super.createConnectorId(connector);
                 }
