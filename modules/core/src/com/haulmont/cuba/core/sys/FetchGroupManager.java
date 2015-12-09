@@ -201,7 +201,7 @@ public class FetchGroupManager {
             query.setHint(entry.getValue(), entry.getKey());
         }
 
-        //query.setHint(QueryHints.BATCH_TYPE, "IN");
+        query.setHint(QueryHints.BATCH_TYPE, "IN");
     }
 
     private List<String> getMasterEntityAttributes(FetchGroup fetchGroup, Set<FetchGroupField> fetchGroupFields,
