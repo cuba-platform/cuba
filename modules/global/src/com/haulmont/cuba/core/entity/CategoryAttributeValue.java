@@ -12,10 +12,7 @@ import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
 import org.apache.commons.lang.StringUtils;
 
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.UUID;
 
@@ -30,7 +27,7 @@ public class CategoryAttributeValue extends StandardEntity {
 
     private static final long serialVersionUID = -2861790889151226985L;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "CATEGORY_ATTR_ID")
     private CategoryAttribute categoryAttribute;
 

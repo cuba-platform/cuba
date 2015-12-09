@@ -34,7 +34,7 @@ public class CategoryAttribute extends StandardEntity {
     public static final int NAME_FIELD_LENGTH = 255;
     public static final int CODE_FIELD_LENGTH = 50;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "CATEGORY_ID")
     private Category category;
 
