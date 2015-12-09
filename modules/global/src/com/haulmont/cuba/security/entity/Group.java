@@ -91,11 +91,4 @@ public class Group extends StandardEntity {
     public void setSessionAttributes(Set<SessionAttribute> sessionAttributes) {
         this.sessionAttributes = sessionAttributes;
     }
-
-    @Override
-    public String toString() {
-        return "Group{" +
-                "name='" + name + '\'' +
-                '}';
-    }
 }
