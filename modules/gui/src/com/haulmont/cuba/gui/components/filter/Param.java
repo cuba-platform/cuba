@@ -34,6 +34,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrBuilder;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
@@ -158,7 +159,14 @@ public class Param {
                 listener.valueChanged(prevValue, value);
             }
             if (updateEditComponent && this.editComponent instanceof Component.HasValue) {
-                ((Component.HasValue) editComponent).setValue(value);
+                if (value instanceof Collection && editComponent instanceof TextField) {
+                    //if the value type is an array and the editComponent is a textField ('IN' condition for String attribute)
+                    //then we should set the string value (not the array) to the text field
+                    String caption = new StrBuilder().appendWithSeparators((Collection) value, ",").toString();
+                    ((TextField) editComponent).setValue(caption);
+                } else {
+                    ((Component.HasValue) editComponent).setValue(value);
+                }
             }
         }
     }
