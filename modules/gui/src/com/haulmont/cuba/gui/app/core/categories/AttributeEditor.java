@@ -12,10 +12,7 @@ import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ScreensHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
@@ -33,7 +30,7 @@ import java.util.*;
 
 /**
  * Class that encapsulates editing of {@link com.haulmont.cuba.core.entity.CategoryAttribute} entities.
- * <p/>
+ * <p>
  *
  * @author devyatkin
  * @version $Id$
@@ -41,6 +38,7 @@ import java.util.*;
 public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected static final Multimap<PropertyType, String> FIELDS_VISIBLE_FOR_DATATYPES = ArrayListMultimap.create();
     protected static final Set<String> ALWAYS_VISIBLE_FIELDS = new HashSet<>(Arrays.asList("name", "code", "required", "dataType"));
+
     static {
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.BOOLEAN, "defaultBoolean");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.STRING, "defaultString");
@@ -86,6 +84,9 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected MessageTools messageTools;
 
     @Inject
+    protected DatatypeFormatter datatypeFormatter;
+
+    @Inject
     protected ThemeConstants themeConstants;
 
     @Inject
@@ -122,6 +123,19 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     }
 
     protected void initFieldGroup() {
+        attributeFieldGroup.addCustomField("defaultBoolean", new FieldGroup.CustomFieldGenerator() {
+            @Override
+            public Component generateField(Datasource datasource, String propertyId) {
+                LookupField lookupField = factory.createComponent(LookupField.class);
+                Map<String, Object> options = new TreeMap<>();
+                options.put(datatypeFormatter.formatBoolean(true), true);
+                options.put(datatypeFormatter.formatBoolean(false), false);
+                lookupField.setOptionsMap(options);
+                lookupField.setDatasource(attributeDs, "defaultBoolean");
+                return lookupField;
+            }
+        });
+
         attributeFieldGroup.addCustomField("dataType", new FieldGroup.CustomFieldGenerator() {
             @Override
             public Component generateField(Datasource datasource, String propertyId) {

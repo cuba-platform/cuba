@@ -37,7 +37,7 @@
                         <field id="defaultString"/>
                         <field id="defaultInt"/>
                         <field id="defaultDouble"/>
-                        <field id="defaultBoolean"/>
+                        <field id="defaultBoolean" custom="true"/>
                         <field id="defaultDate"/>
                         <field id="defaultDateIsCurrent"/>
                     </column>
