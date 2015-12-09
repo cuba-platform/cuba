@@ -21,8 +21,10 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
+import org.springframework.context.annotation.Scope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -34,7 +36,9 @@ import java.util.regex.Pattern;
  * @author gorbunkov
  * @version $Id$
  */
-public class ConditionDescriptorsTreeBuilder {
+@Component(ConditionDescriptorsTreeBuilderAPI.NAME)
+@Scope("prototype")
+public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTreeBuilderAPI {
 
     protected static final List<String> defaultExcludedProps = Collections.unmodifiableList(Collections.singletonList("version"));
     protected static final String CUSTOM_CONDITIONS_PERMISSION = "cuba.gui.filter.customConditions";
@@ -150,7 +154,7 @@ public class ConditionDescriptorsTreeBuilder {
         return tree;
     }
 
-    private void recursivelyFillPropertyDescriptors(Node<AbstractConditionDescriptor> parentNode, int currentDepth) {
+    protected void recursivelyFillPropertyDescriptors(Node<AbstractConditionDescriptor> parentNode, int currentDepth) {
         currentDepth++;
         List<AbstractConditionDescriptor> descriptors = new ArrayList<>();
         MetaClass filterMetaClass = filter.getDatasource().getMetaClass();
@@ -192,13 +196,13 @@ public class ConditionDescriptorsTreeBuilder {
         }
     }
 
-    private void addMultiplePropertyDescriptors(Element element, List<AbstractConditionDescriptor> descriptors, Filter filter) {
+    protected void addMultiplePropertyDescriptors(Element element, List<AbstractConditionDescriptor> descriptors, Filter filter) {
         String includeRe = element.attributeValue("include");
         String excludeRe = element.attributeValue("exclude");
         addMultiplePropertyDescriptors(includeRe, excludeRe, descriptors, filter);
     }
 
-    private void addMultiplePropertyDescriptors(String includeRe, String excludeRe, List<AbstractConditionDescriptor> descriptors, Filter filter) {
+    protected void addMultiplePropertyDescriptors(String includeRe, String excludeRe, List<AbstractConditionDescriptor> descriptors, Filter filter) {
         List<String> includedProps = new ArrayList<>();
         Pattern inclPattern = Pattern.compile(includeRe.replace(" ", ""));
 
@@ -224,7 +228,7 @@ public class ConditionDescriptorsTreeBuilder {
         }
     }
 
-    private boolean isPropertyAllowed(MetaProperty property) {
+    protected boolean isPropertyAllowed(MetaProperty property) {
         return security.isEntityAttrPermitted(property.getDomain(), property.getName(), EntityAttrAccess.VIEW)
                 && !metadataTools.isSystemLevel(property)           // exclude system level attributes
                 && metadataTools.isPersistent(property)             // exclude transient properties
@@ -242,7 +246,7 @@ public class ConditionDescriptorsTreeBuilder {
         return filterComponentName;
     }
 
-    private static class ConditionDescriptorComparator implements Comparator<AbstractConditionDescriptor> {
+    protected class ConditionDescriptorComparator implements Comparator<AbstractConditionDescriptor> {
         @Override
         public int compare(AbstractConditionDescriptor cd1, AbstractConditionDescriptor cd2) {
             return cd1.getLocCaption().compareTo(cd2.getLocCaption());

@@ -12,7 +12,7 @@ import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.filter.addcondition.AddConditionWindow;
-import com.haulmont.cuba.gui.components.filter.addcondition.ConditionDescriptorsTreeBuilder;
+import com.haulmont.cuba.gui.components.filter.addcondition.ConditionDescriptorsTreeBuilderAPI;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.descriptor.CustomConditionCreator;
@@ -66,7 +66,9 @@ public class AddConditionHelper {
     public void addCondition(final ConditionsTree conditionsTree) {
         Map<String, Object> params = new HashMap<>();
         if (descriptorsTree == null) {
-            descriptorsTree = new ConditionDescriptorsTreeBuilder(filter, PROPERTIES_HIERARCHY_DEPTH).build();
+            ConditionDescriptorsTreeBuilderAPI descriptorsTreeBuilder = AppBeans.getPrototype(ConditionDescriptorsTreeBuilderAPI.NAME,
+                    filter, PROPERTIES_HIERARCHY_DEPTH);
+            descriptorsTree = descriptorsTreeBuilder.build();
         }
         params.put("descriptorsTree", descriptorsTree);
         WindowInfo windowInfo = windowConfig.getWindowInfo("addCondition");
