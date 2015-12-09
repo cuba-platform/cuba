@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.core.global.filter;
 
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
@@ -52,17 +51,16 @@ public class GroovyGenerator {
             }
 
             Op operator = ((Clause) condition).getOperator();
-            String resultingClause = null;
             String groovyOperator = operator.forGroovy();
+            String valueToString = valueToString(javaClass, parameterInfo.getValue(), operator);
 
+            String resultingClause;
             if (operator.isUnary()) {
                 resultingClause = format("{E}.%s %s", condition.getName(), groovyOperator);
-            } else if (!METHOD_OPS.contains(operator)) {
-                resultingClause = format("{E}.%s %s %s",
-                        condition.getName(), groovyOperator, valueToString(javaClass, parameterInfo.getValue()));
             } else if (METHOD_OPS.contains(operator)) {
-                resultingClause = format("{E}.%s.%s(%s)",
-                        condition.getName(), groovyOperator, valueToString(javaClass, parameterInfo.getValue()));
+                resultingClause = format("{E}.%s.%s(%s)", condition.getName(), groovyOperator, valueToString);
+            } else {
+                resultingClause = format("{E}.%s %s %s", condition.getName(), groovyOperator, valueToString);
             }
 
             if (NEGATIVE_OPS.contains(operator)) {
@@ -75,12 +73,12 @@ public class GroovyGenerator {
         throw new UnsupportedOperationException();
     }
 
-    protected String valueToString(Class javaClass, String value) {
+    protected String valueToString(Class javaClass, String value, Op operator) {
         if (value == null) {
             return "null";
         } else if (Number.class.isAssignableFrom(javaClass)
                 || Boolean.class.isAssignableFrom(javaClass)
-                || Collection.class.isAssignableFrom(javaClass)) {
+                || operator == Op.IN || operator == Op.NOT_IN) {
             return value;
         } else if (String.class.isAssignableFrom(javaClass)) {
             return "'" + value + "'";
