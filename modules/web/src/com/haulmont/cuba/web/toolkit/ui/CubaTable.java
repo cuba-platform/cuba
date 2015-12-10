@@ -53,7 +53,7 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
     protected boolean aggregatable = false;
 
     protected List<ColumnCollapseListener> columnCollapseListeners; // lazily initialized List
-    
+
     protected Set<Object> nonSortableProperties; // lazily initialized Set
 
     protected Map<Object, CellClickListener> cellClickListeners; // lazily initialized map
@@ -587,7 +587,7 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
 
     @Override
     public Collection<?> getSortableContainerPropertyIds() {
-        Collection<?> ids = super.getSortableContainerPropertyIds();
+        Collection<?> ids = new ArrayList<>(super.getSortableContainerPropertyIds());
         if (nonSortableProperties != null) {
             ids.removeAll(nonSortableProperties);
         }
