@@ -6,7 +6,6 @@ package com.haulmont.cuba.core;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaModel;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.core.model.utils.PrintUtils;
 import com.haulmont.cuba.core.entity.Folder;
@@ -17,15 +16,24 @@ import com.haulmont.cuba.security.entity.EntityLogItem;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.util.Collection;
+
+import static org.junit.Assert.*;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class MetadataTest extends CubaTestCase {
+public class MetadataTest {
 
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
+
+    @Test
     public void test() {
         Session session = AppBeans.get(Metadata.class).getSession();
         assertNotNull(session);
@@ -37,37 +45,39 @@ public class MetadataTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testPersistentAndTransientProperties() throws Exception {
-        MetadataTools tools = metadata.getTools();
+        MetadataTools tools = cont.metadata().getTools();
 
         // User
-        MetaClass metaClass = metadata.getSession().getClassNN(User.class);
+        MetaClass metaClass = cont.metadata().getSession().getClassNN(User.class);
         assertTrue(tools.isPersistent(metaClass.getPropertyNN("login")));
         assertTrue(tools.isPersistent(metaClass.getPropertyNN("group")));
         assertTrue(tools.isPersistent(metaClass.getPropertyNN("userRoles")));
 
         // EntityLogItem
-        metaClass = metadata.getSession().getClassNN(EntityLogItem.class);
+        metaClass = cont.metadata().getSession().getClassNN(EntityLogItem.class);
         assertTrue(tools.isPersistent(metaClass.getPropertyNN("user")));
         assertFalse(tools.isPersistent(metaClass.getPropertyNN("attributes")));
         assertTrue(tools.isTransient(metaClass.getPropertyNN("attributes")));
 
         // Folder
-        metaClass = metadata.getSession().getClassNN(Folder.class);
+        metaClass = cont.metadata().getSession().getClassNN(Folder.class);
         assertTrue(tools.isPersistent(metaClass.getPropertyNN("name")));
         assertTrue(tools.isTransient(new Folder(), "itemStyle"));
 
         // UserSessionEntity
-        metaClass = metadata.getSession().getClassNN(UserSessionEntity.class);
+        metaClass = cont.metadata().getSession().getClassNN(UserSessionEntity.class);
         assertTrue(tools.isTransient(metaClass.getPropertyNN("login")));
     }
 
+    @Test
     public void testSystemLevel() throws Exception {
-        MetadataTools tools = metadata.getTools();
+        MetadataTools tools = cont.metadata().getTools();
 
-        assertTrue(tools.isSystemLevel(metadata.getSession().getClassNN(UserRole.class)));
+        assertTrue(tools.isSystemLevel(cont.metadata().getSession().getClassNN(UserRole.class)));
 
-        MetaClass metaClass = metadata.getSession().getClassNN(User.class);
+        MetaClass metaClass = cont.metadata().getSession().getClassNN(User.class);
         assertTrue(tools.isSystemLevel(metaClass.getPropertyNN("password")));
     }
 }

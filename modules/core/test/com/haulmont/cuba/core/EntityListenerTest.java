@@ -12,23 +12,32 @@ import com.haulmont.cuba.core.listener.TestDetachAttachListener;
 import com.haulmont.cuba.core.listener.TestListener;
 import com.haulmont.cuba.core.listener.TestListenerBean;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
+import com.haulmont.cuba.testsupport.TestContainer;
 import org.apache.commons.collections.CollectionUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.UUID;
 
-public class EntityListenerTest extends CubaTestCase {
+import static org.junit.Assert.*;
+
+public class EntityListenerTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private TestListenerBean listenerBean;
     private TestDetachAttachListener detachAttachListener;
 
     private EntityListenerManager entityListenerManager;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
-        QueryRunner runner = new QueryRunner(persistence.getDataSource());
+        QueryRunner runner = new QueryRunner(cont.persistence().getDataSource());
         runner.update("delete from SYS_SERVER");
 
         listenerBean = AppBeans.get("cuba_TestListenerBean");
@@ -46,20 +55,20 @@ public class EntityListenerTest extends CubaTestCase {
         entityListenerManager.addListener(Server.class, "cuba_TestListenerUsingEntityManager");
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         entityListenerManager.removeListener(Server.class, "cuba_TestListenerUsingEntityManager");
         entityListenerManager.removeListener(Server.class, "cuba_TestDetachAttachListener");
         entityListenerManager.removeListener(Server.class, "cuba_TestListenerBean");
         entityListenerManager.removeListener(Server.class, TestListener.class);
-        super.tearDown();
     }
 
+    @Test
     public void test() {
         UUID id, id1;
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             assertNotNull(em);
             Server server = new Server();
             id = server.getId();
@@ -89,7 +98,7 @@ public class EntityListenerTest extends CubaTestCase {
             ));
             listenerBean.events.clear();
 
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             server = em.find(Server.class, id);
             server.setName(server.getName() + " - " + new Date());
 
@@ -103,7 +112,7 @@ public class EntityListenerTest extends CubaTestCase {
             assertEquals("onAfterUpdate: " + id, listenerBean.events.get(0));
             listenerBean.events.clear();
 
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             server = em.find(Server.class, id1);
             em.remove(server);
 
@@ -120,11 +129,12 @@ public class EntityListenerTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testDetachAttch() throws Exception {
         UUID id;
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             Server server = new Server();
             id = server.getId();
             server.setName("localhost");
@@ -138,7 +148,7 @@ public class EntityListenerTest extends CubaTestCase {
             detachAttachListener.events.clear();
 
             server.setName("somehost");
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             em.merge(server);
 
             assertEquals(1, detachAttachListener.events.size());
@@ -155,23 +165,24 @@ public class EntityListenerTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testEntityManager() throws Exception {
         Server server;
         UUID serverId;
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
             // create
 
             server = new Server();
             server.setName("server1");
             serverId = server.getId();
-            persistence.getEntityManager().persist(server);
+            cont.persistence().getEntityManager().persist(server);
 
             tx.commitRetaining();
 
             assertNotNull(server.getData());
             UUID relatedId = UUID.fromString(server.getData());
-            FileDescriptor related = persistence.getEntityManager().find(FileDescriptor.class, relatedId);
+            FileDescriptor related = cont.persistence().getEntityManager().find(FileDescriptor.class, relatedId);
             assertNotNull(related);
             assertEquals("Related", related.getName());
 
@@ -179,13 +190,13 @@ public class EntityListenerTest extends CubaTestCase {
 
             // update
 
-            server = persistence.getEntityManager().find(Server.class, serverId);
+            server = cont.persistence().getEntityManager().find(Server.class, serverId);
             assertNotNull(server);
             server.setName("server1 updated");
 
             tx.commitRetaining();
 
-            related = persistence.getEntityManager().find(FileDescriptor.class, relatedId);
+            related = cont.persistence().getEntityManager().find(FileDescriptor.class, relatedId);
             assertNotNull(related);
             assertEquals("Related updated", related.getName());
 
@@ -193,13 +204,13 @@ public class EntityListenerTest extends CubaTestCase {
 
             // remove
 
-            server = persistence.getEntityManager().find(Server.class, serverId);
+            server = cont.persistence().getEntityManager().find(Server.class, serverId);
             assertNotNull(server);
-            persistence.getEntityManager().remove(server);
+            cont.persistence().getEntityManager().remove(server);
 
             tx.commitRetaining();
 
-            related = persistence.getEntityManager().find(FileDescriptor.class, relatedId);
+            related = cont.persistence().getEntityManager().find(FileDescriptor.class, relatedId);
             assertNull(related);
 
             tx.commit();

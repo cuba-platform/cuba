@@ -5,30 +5,39 @@
 
 package com.haulmont.cuba.core.sys;
 
-import com.haulmont.cuba.core.CubaTestCase;
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class DeprecatedConnectionUrlPropertyTest extends CubaTestCase {
+public class DeprecatedConnectionUrlPropertyTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private static final String VALUE = "http://localhost:8080/cuba-core";
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         AppContext.setProperty("cuba.connectionUrl", null);
         AppContext.setProperty("cuba.connectionUrlList", null);
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         AppContext.setProperty("cuba.connectionUrl", null);
         AppContext.setProperty("cuba.connectionUrlList", null);
-        super.tearDown();
     }
 
+    @Test
     public void test() throws Exception {
         String property;
         property = AppContext.getProperty("cuba.connectionUrl");

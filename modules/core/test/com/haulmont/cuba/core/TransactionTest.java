@@ -6,39 +6,49 @@ package com.haulmont.cuba.core;
 
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.entity.Server;
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.util.List;
 import java.util.UUID;
+
+import static org.junit.Assert.*;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class TransactionTest extends CubaTestCase {
+public class TransactionTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private static final String TEST_EXCEPTION_MSG = "test exception";
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
-        QueryRunner runner = new QueryRunner(persistence.getDataSource());
+        QueryRunner runner = new QueryRunner(cont.persistence().getDataSource());
         runner.update("delete from SYS_SERVER");
     }
 
+    @Test
     public void testNoTransaction() {
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             fail();
         } catch (Exception e) {
             assertTrue(e instanceof IllegalStateException);
         }
     }
 
+    @Test
     public void testCommit() {
         UUID id;
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             assertNotNull(em);
             Server server = new Server();
             id = server.getId();
@@ -51,9 +61,9 @@ public class TransactionTest extends CubaTestCase {
             tx.end();
         }
 
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             Server server = em.find(Server.class, id);
             assertEquals(id, server.getId());
             server.setRunning(false);
@@ -64,11 +74,12 @@ public class TransactionTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testCommitRetaining() {
         UUID id;
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             assertNotNull(em);
             Server server = new Server();
             id = server.getId();
@@ -78,7 +89,7 @@ public class TransactionTest extends CubaTestCase {
 
             tx.commitRetaining();
 
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             server = em.find(Server.class, id);
             assertEquals(id, server.getId());
             server.setRunning(false);
@@ -89,6 +100,7 @@ public class TransactionTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testRollback() {
         try {
             __testRollback();
@@ -99,9 +111,9 @@ public class TransactionTest extends CubaTestCase {
     }
 
     private void __testRollback() {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             assertNotNull(em);
             Server server = new Server();
             server.setName("localhost");
@@ -114,6 +126,7 @@ public class TransactionTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testRollbackAndCatch() {
         try {
             __testRollbackAndCatch();
@@ -124,9 +137,9 @@ public class TransactionTest extends CubaTestCase {
     }
 
     private void __testRollbackAndCatch() {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             assertNotNull(em);
             Server server = new Server();
             server.setName("localhost");
@@ -142,6 +155,7 @@ public class TransactionTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testCommitRetainingAndRollback() {
         try {
             __testCommitRetainingAndRollback();
@@ -153,9 +167,9 @@ public class TransactionTest extends CubaTestCase {
 
     private void __testCommitRetainingAndRollback() {
         UUID id;
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             assertNotNull(em);
             Server server = new Server();
             id = server.getId();
@@ -165,7 +179,7 @@ public class TransactionTest extends CubaTestCase {
 
             tx.commitRetaining();
 
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             server = em.find(Server.class, id);
             assertEquals(id, server.getId());
             server.setRunning(false);
@@ -178,12 +192,13 @@ public class TransactionTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testNestedRollback() {
         try {
-            Transaction tx = persistence.createTransaction();
+            Transaction tx = cont.persistence().createTransaction();
             try {
 
-                Transaction tx1 = persistence.getTransaction();
+                Transaction tx1 = cont.persistence().getTransaction();
                 try {
                     throwException();
                     fail();
@@ -204,18 +219,19 @@ public class TransactionTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testSuspend() {
-        Transaction tx = persistence.getTransaction();
+        Transaction tx = cont.persistence().getTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             Server server = new Server();
             server.setName("localhost");
             server.setRunning(true);
             em.persist(server);
 
-            Transaction tx1 = persistence.createTransaction();
+            Transaction tx1 = cont.persistence().createTransaction();
             try {
-                EntityManager em1 = persistence.getEntityManager();
+                EntityManager em1 = cont.persistence().getEntityManager();
                 assertTrue(em != em1);
 
                 Query query = em1.createQuery("select s from sys$Server s");
@@ -233,18 +249,19 @@ public class TransactionTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testSuspendRollback() {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             Server server = new Server();
             server.setName("localhost");
             server.setRunning(true);
             em.persist(server);
 
-            Transaction tx1 = persistence.createTransaction();
+            Transaction tx1 = cont.persistence().createTransaction();
             try {
-                EntityManager em1 = persistence.getEntityManager();
+                EntityManager em1 = cont.persistence().getEntityManager();
                 assertTrue(em != em1);
                 Server server1 = em1.find(Server.class, server.getId());
                 assertNull(server1);

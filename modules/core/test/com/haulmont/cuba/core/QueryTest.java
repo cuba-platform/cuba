@@ -6,29 +6,34 @@ package com.haulmont.cuba.core;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
-import org.apache.commons.lang.time.DateUtils;
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
-import javax.persistence.TemporalType;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-public class QueryTest extends CubaTestCase {
+import static org.junit.Assert.*;
+
+public class QueryTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private UUID userId;
     private UUID user2Id;
     private UUID groupId;
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
 
-        try (Transaction tx = persistence.createTransaction()) {
-            EntityManager em = persistence.getEntityManager();
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            EntityManager em = cont.persistence().getEntityManager();
 
             User user = new User();
             userId = user.getId();
@@ -53,16 +58,17 @@ public class QueryTest extends CubaTestCase {
         }
     }
 
-    protected void tearDown() throws Exception {
-        deleteRecord("SEC_USER", userId, user2Id);
-        deleteRecord("SEC_GROUP", groupId);
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
+        cont.deleteRecord("SEC_USER", userId, user2Id);
+        cont.deleteRecord("SEC_GROUP", groupId);
     }
 
+    @Test
     public void test() {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             User user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
 
@@ -78,10 +84,11 @@ public class QueryTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testNullParam() {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Query query = em.createQuery("select r from sec$UserRole r where r.deleteTs = :dts");
             query.setParameter("dts", null);
@@ -95,10 +102,11 @@ public class QueryTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testUpdate() {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Group group = em.find(Group.class, groupId);
 
@@ -116,9 +124,9 @@ public class QueryTest extends CubaTestCase {
 // This test doesn't pass for some unclarified reason.
 //
 //    public void testFlushBeforeUpdate() {
-//        Transaction tx = persistence.createTransaction();
+//        Transaction tx = cont.persistence().createTransaction();
 //        try {
-//            EntityManager em = persistence.getEntityManager();
+//            EntityManager em = cont.persistence().getEntityManager();
 //
 //            Group group = em.find(Group.class, groupId);
 //            User user = em.find(User.class, userId);
@@ -135,9 +143,9 @@ public class QueryTest extends CubaTestCase {
 //            tx.end();
 //        }
 //
-//        tx = persistence.createTransaction();
+//        tx = cont.persistence().createTransaction();
 //        try {
-//            EntityManager em = persistence.getEntityManager();
+//            EntityManager em = cont.persistence().getEntityManager();
 //            User user = em.find(User.class, userId);
 //            assertNotNull(user);
 //            assertEquals(groupId, user.getGroup().getId());
@@ -149,10 +157,11 @@ public class QueryTest extends CubaTestCase {
 //        }
 //    }
 
+    @Test
     public void testAssociatedResult() throws Exception {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Query query = em.createQuery("select u.group from sec$User u where u.id = :userId");
             query.setParameter("userId", userId);
@@ -166,10 +175,11 @@ public class QueryTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testIgnoreChanges() throws Exception {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             TypedQuery<User> query;
             List<User> list;
@@ -196,10 +206,11 @@ public class QueryTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testNativeQueryIgnoreChanges() throws Exception {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             TypedQuery<User> query;
             List<User> list;
@@ -226,10 +237,11 @@ public class QueryTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testNativeQuerySelect() throws Exception {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Query query = em.createNativeQuery("select ID, LOGIN from SEC_USER where NAME = ?1");
             query.setParameter(1, "testUser");
@@ -246,10 +258,11 @@ public class QueryTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testNativeQueryFlushBeforeUpdate() {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Group group = em.find(Group.class, groupId);
             User user = em.find(User.class, userId);
@@ -266,9 +279,9 @@ public class QueryTest extends CubaTestCase {
             tx.end();
         }
 
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             User user = em.find(User.class, userId);
             assertNotNull(user);
             assertEquals(groupId, user.getGroup().getId());
@@ -280,10 +293,11 @@ public class QueryTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testCaseInsensitiveSearch() throws Exception {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            TypedQuery<User> query = persistence.getEntityManager().createQuery(
+            TypedQuery<User> query = cont.persistence().getEntityManager().createQuery(
                     "select u from sec$User u where u.name like :name", User.class);
             query.setParameter("name", "(?i)%user%");
             List<User> list = query.getResultList();
@@ -301,9 +315,10 @@ public class QueryTest extends CubaTestCase {
 
     }
 
+    @Test
     public void testListParameter() throws Exception {
-        try (Transaction tx = persistence.createTransaction()) {
-            TypedQuery<User> query = persistence.getEntityManager().createQuery(
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            TypedQuery<User> query = cont.persistence().getEntityManager().createQuery(
                     "select u from sec$User u where u.id in :ids order by u.createTs", User.class);
             query.setParameter("ids", Arrays.asList(UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"), userId, user2Id));
             List<User> list = query.getResultList();
@@ -315,8 +330,8 @@ public class QueryTest extends CubaTestCase {
         // Implicit conversion
 
         User user1, user2, user3;
-        try (Transaction tx = persistence.createTransaction()) {
-            EntityManager em = persistence.getEntityManager();
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            EntityManager em = cont.persistence().getEntityManager();
             user1 = em.find(User.class, userId);
             user2 = em.find(User.class, user2Id);
             user3 = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
@@ -324,8 +339,8 @@ public class QueryTest extends CubaTestCase {
             tx.commit();
         }
 
-        try (Transaction tx = persistence.createTransaction()) {
-            TypedQuery<User> query = persistence.getEntityManager().createQuery(
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            TypedQuery<User> query = cont.persistence().getEntityManager().createQuery(
                     "select u from sec$User u where u.id in :ids order by u.createTs", User.class);
             query.setParameter("ids", Arrays.asList(user1, user2, user3));
             List<User> list = query.getResultList();
@@ -336,8 +351,8 @@ public class QueryTest extends CubaTestCase {
 
         // Positional parameters
 
-        try (Transaction tx = persistence.createTransaction()) {
-            TypedQuery<User> query = persistence.getEntityManager().createQuery(
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            TypedQuery<User> query = cont.persistence().getEntityManager().createQuery(
                     "select u from sec$User u where u.id in ?1 order by u.createTs", User.class);
             query.setParameter(1, Arrays.asList(user1.getId(), user2.getId(), user3.getId()));
             List<User> list = query.getResultList();
@@ -348,8 +363,8 @@ public class QueryTest extends CubaTestCase {
 
         // Positional parameters with implicit conversion
 
-        try (Transaction tx = persistence.createTransaction()) {
-            TypedQuery<User> query = persistence.getEntityManager().createQuery(
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            TypedQuery<User> query = cont.persistence().getEntityManager().createQuery(
                     "select u from sec$User u where u.id in ?1 order by u.createTs", User.class);
             query.setParameter(1, Arrays.asList(user1, user2, user3));
             List<User> list = query.getResultList();

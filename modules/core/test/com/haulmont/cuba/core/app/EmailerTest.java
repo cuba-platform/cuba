@@ -6,15 +6,18 @@
 package com.haulmont.cuba.core.app;
 
 import com.google.common.collect.Lists;
-import com.haulmont.cuba.core.CubaTestCase;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.CubaMailSender;
+import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestMailSender;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.time.DateUtils;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import javax.mail.Address;
 import javax.mail.MessagingException;
@@ -28,11 +31,16 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static org.junit.Assert.*;
+
 /**
  * @author Alexander Budarov
  * @version $Id$
  */
-public class EmailerTest extends CubaTestCase {
+public class EmailerTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private EmailerAPI emailer;
     private TestMailSender testMailSender;
@@ -40,9 +48,8 @@ public class EmailerTest extends CubaTestCase {
 
     private EmailerConfig emailerConfig;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         emailer = AppBeans.get(EmailerAPI.NAME);
         testMailSender = AppBeans.get(CubaMailSender.NAME);
         timeSource = AppBeans.get(TimeSource.NAME);
@@ -55,10 +62,12 @@ public class EmailerTest extends CubaTestCase {
         testMailSender.clearBuffer();
     }
 
+    @Test
     public void testSynchronous() throws Exception {
         doTestSynchronous(false);
     }
 
+    @Test
     public void testSynchronousFS() throws Exception {
         doTestSynchronous(true);
     }
@@ -87,6 +96,7 @@ public class EmailerTest extends CubaTestCase {
     /*
      * Test sendEmail() with parameter list.
      */
+    @Test
     public void testSimpleParamList() throws Exception {
         testMailSender.clearBuffer();
 
@@ -103,10 +113,12 @@ public class EmailerTest extends CubaTestCase {
         assertTrue(getBodyContentType(msg).startsWith("text/plain;"));
     }
 
+    @Test
     public void testAsynchronous() throws Exception {
         doTestAsynchronous(false);
     }
 
+    @Test
     public void testAsynchronousFS() throws Exception {
         doTestAsynchronous(true);
     }
@@ -143,6 +155,7 @@ public class EmailerTest extends CubaTestCase {
         assertEquals(SendingStatus.SENT, sendingMsg.getStatus());
     }
 
+    @Test
     public void testHtmlContent() throws Exception {
         testMailSender.clearBuffer();
 
@@ -156,6 +169,7 @@ public class EmailerTest extends CubaTestCase {
         assertTrue(getBodyContentType(msg).startsWith("text/html;"));
     }
 
+    @Test
     public void testImplicitFromAddress() throws Exception {
         EmailInfo myInfo;
 
@@ -174,6 +188,7 @@ public class EmailerTest extends CubaTestCase {
         assertEquals("implicit2@example.com", testMailSender.fetchSentEmail().getFrom()[0].toString());
     }
 
+    @Test
     public void testExplicitFromAddress() throws Exception {
         EmailInfo myInfo;
         MimeMessage msg;
@@ -195,6 +210,7 @@ public class EmailerTest extends CubaTestCase {
         assertEquals("explicit2@example.com", msg.getFrom()[0].toString());
     }
 
+    @Test
     public void testSynchronousFail() throws Exception {
         testMailSender.clearBuffer();
 
@@ -211,6 +227,7 @@ public class EmailerTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testAsynchronousAttemptLimit() throws Exception {
         testMailSender.clearBuffer();
 
@@ -248,10 +265,12 @@ public class EmailerTest extends CubaTestCase {
         assertEquals(2, sendingMsg.getAttemptsCount().intValue());
     }
 
+    @Test
     public void testSentFromSecondAttempt() throws Exception {
         doTestSentFromSecondAttempt(false);
     }
 
+    @Test
     public void testSentFromSecondAttemptFS() throws Exception {
         doTestSentFromSecondAttempt(true);
     }
@@ -289,10 +308,12 @@ public class EmailerTest extends CubaTestCase {
         assertEquals(2, sendingMsg.getAttemptsCount().intValue());
     }
 
+    @Test
     public void testSeveralRecipients() throws Exception {
         doTestSeveralRecipients(false);
     }
 
+    @Test
     public void testSeveralRecipientsFS() throws Exception {
         doTestSeveralRecipients(true);
     }
@@ -325,6 +346,7 @@ public class EmailerTest extends CubaTestCase {
         assertTrue(recipientSet.contains("tanya@example.com"));
     }
 
+    @Test
     public void testSendAllToAdmin() throws Exception {
         emailerConfig.setSendAllToAdmin(true);
         emailerConfig.setAdminAddress("admin@example.com");
@@ -345,6 +367,7 @@ public class EmailerTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testEmailTemplate() throws Exception {
         testMailSender.clearBuffer();
 
@@ -362,10 +385,12 @@ public class EmailerTest extends CubaTestCase {
         assertEquals("Greetings, Bob! 01-05-2013", body.trim());
     }
 
+    @Test
     public void testTextAttachment() throws Exception {
         doTestTextAttachment(false);
     }
 
+    @Test
     public void testTextAttachmentFS() throws Exception {
         doTestTextAttachment(true);
     }
@@ -399,10 +424,12 @@ public class EmailerTest extends CubaTestCase {
         assertTrue(contentType.toLowerCase().contains("charset=iso-8859-1"));
     }
 
+    @Test
     public void testInlineImage() throws Exception {
         doTestInlineImage(false);
     }
 
+    @Test
     public void testInlineImageFS() throws Exception {
         doTestInlineImage(true);
     }
@@ -436,10 +463,12 @@ public class EmailerTest extends CubaTestCase {
         assertTrue(contentType.contains("image/png"));
     }
 
+    @Test
     public void testPdfAttachment() throws Exception {
         doTestPdfAttachment(false);
     }
 
+    @Test
     public void testPdfAttachmentFS() throws Exception {
         doTestPdfAttachment(true);
     }
@@ -473,10 +502,12 @@ public class EmailerTest extends CubaTestCase {
         assertTrue(contentType.contains("application/pdf"));
     }
 
+    @Test
     public void testLoadBody() throws Exception {
         doTestLoadBody(false);
     }
 
+    @Test
     public void testLoadBodyFS() throws Exception {
         doTestLoadBody(true);
     }
@@ -494,6 +525,7 @@ public class EmailerTest extends CubaTestCase {
         assertEquals(body, actualBody);
     }
 
+    @Test
     public void testMigration() throws Exception {
         emailerConfig.setFileStorageUsed(false);
 
@@ -579,9 +611,9 @@ public class EmailerTest extends CubaTestCase {
     }
 
     private SendingMessage reload(SendingMessage sendingMessage, String... viewNames) {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            sendingMessage = persistence.getEntityManager().reload(sendingMessage, viewNames);
+            sendingMessage = cont.persistence().getEntityManager().reload(sendingMessage, viewNames);
             tx.commit();
         } finally {
             tx.end();
@@ -595,5 +627,4 @@ public class EmailerTest extends CubaTestCase {
             assertEquals(expected[i], actual[i]);
         }
     }
-
 }

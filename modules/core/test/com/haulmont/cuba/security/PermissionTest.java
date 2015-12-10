@@ -4,24 +4,34 @@
  */
 package com.haulmont.cuba.security;
 
-import com.haulmont.cuba.core.CubaTestCase;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.security.app.LoginWorker;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.util.Locale;
 import java.util.UUID;
+
+import static org.junit.Assert.*;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class PermissionTest extends CubaTestCase {
+public class PermissionTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private static final String USER_NAME = "testUser";
     private static final String USER_PASSW = "testUser";
@@ -31,13 +41,15 @@ public class PermissionTest extends CubaTestCase {
     private UUID role1Id, permission1Id, role2Id, permission2Id, userId, groupId,
             userRole1Id, userRole2Id;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    private PasswordEncryption passwordEncryption;
 
-        Transaction tx = persistence.createTransaction();
+    @Before
+    public void setUp() throws Exception {
+        passwordEncryption = AppBeans.get(PasswordEncryption.class);
+
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Role role1 = new Role();
             role1Id = role1.getId();
@@ -99,11 +111,11 @@ public class PermissionTest extends CubaTestCase {
         }
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        Transaction tx = persistence.createTransaction();
+    @After
+    public void tearDown() throws Exception {
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Query q;
 
@@ -134,9 +146,9 @@ public class PermissionTest extends CubaTestCase {
         } finally {
             tx.end();
         }
-        super.tearDown();
     }
 
+    @Test
     public void test() throws LoginException {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
 

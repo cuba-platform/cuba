@@ -5,28 +5,37 @@
 
 package com.haulmont.cuba.core.sys;
 
-import com.haulmont.cuba.core.CubaTestCase;
 import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.ClassRule;
+import org.junit.Test;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Konstantin Krivopustov
  * @version $Id$
  */
-public class EntityManagerContextTest extends CubaTestCase {
+public class EntityManagerContextTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     public static final String ATTR = "testAttr";
     private Object obj1 = new Object();
     private Object obj2 = new Object();
 
+    @Test
     public void test() throws Exception {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            persistence.getEntityManager();
-            EntityManagerContext ctx = persistence.getEntityManagerContext();
+            cont.persistence().getEntityManager();
+            EntityManagerContext ctx = cont.persistence().getEntityManagerContext();
             ctx.setAttribute(ATTR, obj1);
 
-            persistence.getEntityManager();
-            ctx = persistence.getEntityManagerContext();
+            cont.persistence().getEntityManager();
+            ctx = cont.persistence().getEntityManagerContext();
             assertTrue(ctx.getAttribute(ATTR) == obj1);
 
             tx.commit();
@@ -34,10 +43,10 @@ public class EntityManagerContextTest extends CubaTestCase {
             tx.end();
         }
 
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            persistence.getEntityManager();
-            EntityManagerContext ctx = persistence.getEntityManagerContext();
+            cont.persistence().getEntityManager();
+            EntityManagerContext ctx = cont.persistence().getEntityManagerContext();
             Object obj = ctx.getAttribute(ATTR);
             assertNull(obj);
 
@@ -47,20 +56,21 @@ public class EntityManagerContextTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testCommitRetaining() throws Exception {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            persistence.getEntityManager();
-            EntityManagerContext ctx = persistence.getEntityManagerContext();
+            cont.persistence().getEntityManager();
+            EntityManagerContext ctx = cont.persistence().getEntityManagerContext();
             ctx.setAttribute(ATTR, obj1);
 
-            ctx = persistence.getEntityManagerContext();
+            ctx = cont.persistence().getEntityManagerContext();
             assertTrue(ctx.getAttribute(ATTR) == obj1);
 
             tx.commitRetaining();
 
-            persistence.getEntityManager();
-            ctx = persistence.getEntityManagerContext();
+            cont.persistence().getEntityManager();
+            ctx = cont.persistence().getEntityManagerContext();
             assertNull(ctx.getAttribute(ATTR));
             ctx.setAttribute(ATTR, obj2);
 
@@ -69,10 +79,10 @@ public class EntityManagerContextTest extends CubaTestCase {
             tx.end();
         }
 
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            persistence.getEntityManager();
-            EntityManagerContext ctx = persistence.getEntityManagerContext();
+            cont.persistence().getEntityManager();
+            EntityManagerContext ctx = cont.persistence().getEntityManagerContext();
             Object obj = ctx.getAttribute(ATTR);
             assertNull(obj);
 

@@ -7,39 +7,49 @@ package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.After;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Alexander Budarov
  * @version $Id$
  */
-public class TypedNativeQueryTest extends CubaTestCase {
+public class TypedNativeQueryTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private UUID groupId, userId;
 
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         if (userId != null) {
-            deleteRecord("SEC_USER", userId);
+            cont.deleteRecord("SEC_USER", userId);
         }
         if (groupId != null) {
-            deleteRecord("SEC_GROUP", groupId);
+            cont.deleteRecord("SEC_GROUP", groupId);
         }
-
-        super.tearDown();
     }
 
     /*
      * Test that entity which is loaded by native typed query, is MANAGED,
      * by changing loaded entity attribute.
      */
+    @Test
     public void testTypedNativeQueryByChangingAttribute() {
         Group group = new Group();
         groupId = group.getId();
         group.setName("Old Name");
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            persistence.getEntityManager().persist(group);
+            cont.persistence().getEntityManager().persist(group);
             tx.commit();
         } finally {
             tx.end();
@@ -47,9 +57,9 @@ public class TypedNativeQueryTest extends CubaTestCase {
 
         // load with native query, change attribute
         String nativeQuery = "select ID, VERSION, CREATE_TS, CREATED_BY, UPDATE_TS, UPDATED_BY, NAME from SEC_GROUP where ID = ?";
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             TypedQuery<Group> q = em.createNativeQuery(nativeQuery, Group.class);
             q.setParameter(1, group.getId().toString());
@@ -64,9 +74,9 @@ public class TypedNativeQueryTest extends CubaTestCase {
 
         // load again, check
         Group g2;
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             g2 = em.find(Group.class, group.getId());
 
             assertNotNull(g2);
@@ -82,23 +92,24 @@ public class TypedNativeQueryTest extends CubaTestCase {
      * Test that entity which is loaded by native typed query,
      * is MANAGED, by persisting another entity linked to it.
      */
+    @Test
     public void testTypedNativeQueryByPersistingAnotherEntity() {
         Group group = new Group();
         groupId = group.getId();
         group.setName("Old Name");
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            persistence.getEntityManager().persist(group);
+            cont.persistence().getEntityManager().persist(group);
             tx.commit();
         } finally {
             tx.end();
         }
 
         String nativeQuery = "select ID, CREATE_TS, CREATED_BY, UPDATE_TS, UPDATED_BY, VERSION, NAME from SEC_GROUP where ID = ?";
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         Group g;
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             TypedQuery<Group> q = em.createNativeQuery(nativeQuery, Group.class);
             q.setParameter(1, group.getId().toString());
@@ -114,9 +125,9 @@ public class TypedNativeQueryTest extends CubaTestCase {
         user.setGroup(g);
         user.setName("Test");
 
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             em.persist(user);
             tx.commit();
         } finally {
@@ -124,5 +135,4 @@ public class TypedNativeQueryTest extends CubaTestCase {
         }
         // gets persisted without error
     }
-
 }

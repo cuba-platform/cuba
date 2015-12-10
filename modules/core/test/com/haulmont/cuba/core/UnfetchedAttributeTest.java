@@ -10,40 +10,49 @@ import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.util.List;
 import java.util.UUID;
 
 import static com.haulmont.cuba.testsupport.TestSupport.reserialize;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class UnfetchedAttributeTest extends CubaTestCase {
+public class UnfetchedAttributeTest {
 
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
+    
     private Group group;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         group = new Group();
         group.setName("Some group");
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            persistence.getEntityManager().persist(group);
+            cont.persistence().getEntityManager().persist(group);
             tx.commit();
         } finally {
             tx.end();
         }
     }
 
+    @Test
     public void testGet() throws Exception {
         User user = null;
 
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Query q = em.createQuery("select u from sec$User u where u.id = ?1");
             q.setView(
@@ -75,12 +84,13 @@ public class UnfetchedAttributeTest extends CubaTestCase {
         user.getUserRoles().size();
     }
 
+    @Test
     public void testSet() throws Exception {
         User user = null;
 
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Query q = em.createQuery("select u from sec$User u where u.id = ?1");
             q.setView(

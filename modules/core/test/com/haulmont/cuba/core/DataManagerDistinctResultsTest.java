@@ -16,19 +16,29 @@ import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.testsupport.TestContainer;
 import org.apache.commons.lang.StringUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class DataManagerDistinctResultsTest extends CubaTestCase {
+public class DataManagerDistinctResultsTest {
 
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
+    
     public static final int QTY = 17;
 
     public static final String QUERY =
@@ -41,13 +51,11 @@ public class DataManagerDistinctResultsTest extends CubaTestCase {
     private UUID role1Id;
     private UUID role2Id;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        Transaction tx = persistence.createTransaction();
+    @Before
+    public void setUp() throws Exception {
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Group group = new Group();
             groupId = group.getId();
@@ -88,11 +96,11 @@ public class DataManagerDistinctResultsTest extends CubaTestCase {
         }
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        Transaction tx = persistence.createTransaction();
+    @After
+    public void tearDown() throws Exception {
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            QueryRunner runner = new QueryRunner(persistence.getDataSource());
+            QueryRunner runner = new QueryRunner(cont.persistence().getDataSource());
             try {
                 String sql = "delete from SEC_USER_ROLE where ROLE_ID = '" + role1Id.toString() + "'";
                 runner.update(sql);
@@ -119,9 +127,9 @@ public class DataManagerDistinctResultsTest extends CubaTestCase {
         } finally {
             tx.end();
         }
-        super.tearDown();
     }
 
+    @Test
     public void testDistinctResults() {
         checkSetup();
 
@@ -190,9 +198,9 @@ public class DataManagerDistinctResultsTest extends CubaTestCase {
     }
 
     private void checkSetup() {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             Query query = em.createQuery("select u from sec$User u left join u.userRoles r where u.group.id = ?1");
             query.setParameter(1, groupId);
             List list = query.getResultList();

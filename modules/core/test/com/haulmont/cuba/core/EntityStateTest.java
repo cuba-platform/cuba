@@ -7,38 +7,43 @@ package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.After;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.util.UUID;
 
 import static com.haulmont.cuba.testsupport.TestSupport.reserialize;
+import static org.junit.Assert.*;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class EntityStateTest extends CubaTestCase {
+public class EntityStateTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private UUID userId;
 
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         if (userId != null)
-            deleteRecord("SEC_USER", userId);
-        super.tearDown();
+            cont.deleteRecord("SEC_USER", userId);
     }
 
+    @Test
     public void testTransactions() throws Exception {
         User user;
         Group group;
 
         // create and persist
 
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             user = new User();
             assertTrue(user.__new());
@@ -66,9 +71,9 @@ public class EntityStateTest extends CubaTestCase {
 
         // load from DB
 
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             // find
             user = em.find(User.class, userId);
             assertNotNull(user);
@@ -89,9 +94,9 @@ public class EntityStateTest extends CubaTestCase {
             tx.end();
         }
 
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             // query
             Query query = em.createQuery("select u from sec$User u where u.id = ?1").setParameter(1, userId);
             user = (User) query.getFirstResult();
@@ -125,9 +130,9 @@ public class EntityStateTest extends CubaTestCase {
 
         // merge changed
 
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             user = em.merge(user);
 
             assertFalse(user.__new());
@@ -144,6 +149,7 @@ public class EntityStateTest extends CubaTestCase {
         assertTrue(user.__detached());
     }
 
+    @Test
     public void testSerialization() throws Exception {
         User user;
         Group group;
@@ -163,9 +169,9 @@ public class EntityStateTest extends CubaTestCase {
 
         // serialize managed
 
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             user = new User();
             userId = user.getId();
@@ -179,9 +185,9 @@ public class EntityStateTest extends CubaTestCase {
             tx.end();
         }
 
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             user = em.find(User.class, userId);
             assertNotNull(user);
 
@@ -211,9 +217,9 @@ public class EntityStateTest extends CubaTestCase {
 
         // merge changed and serialize
 
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             user = em.merge(user);
 
             assertFalse(user.__new());

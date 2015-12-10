@@ -10,26 +10,36 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
 import static com.haulmont.cuba.testsupport.TestSupport.reserialize;
+import static org.junit.Assert.*;
+
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class UpdateDetachedTest extends CubaTestCase {
+public class UpdateDetachedTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private UUID roleId, role2Id, permissionId;
 
-    protected void setUp() throws Exception {
-        super.setUp();
-        Transaction tx = persistence.createTransaction();
+    @Before
+    public void setUp() throws Exception {
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Role role = new Role();
             roleId = role.getId();
@@ -54,10 +64,11 @@ public class UpdateDetachedTest extends CubaTestCase {
         }
     }
 
-    protected void tearDown() throws Exception {
-        Transaction tx = persistence.createTransaction();
+    @After
+    public void tearDown() throws Exception {
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Query q;
             q = em.createNativeQuery("delete from SEC_PERMISSION where ID = ?");
@@ -73,14 +84,14 @@ public class UpdateDetachedTest extends CubaTestCase {
         } finally {
             tx.end();
         }
-        super.tearDown();
     }
 
+    @Test
     public void test() throws Exception {
         Permission p;
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             View view = new View(Permission.class)
                     .addProperty("target")
@@ -95,7 +106,7 @@ public class UpdateDetachedTest extends CubaTestCase {
             assertNotNull(p);
             p.setTarget("newTarget");
 
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             p = em.merge(p);
 
             tx.commit();
@@ -109,11 +120,12 @@ public class UpdateDetachedTest extends CubaTestCase {
         assertTrue(PersistenceHelper.isLoaded(p, "role"));
     }
 
+    @Test
     public void testRollback() {
         Permission p = null;
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             View view = new View(Permission.class)
                     .addProperty("target")
@@ -127,7 +139,7 @@ public class UpdateDetachedTest extends CubaTestCase {
 
             p.setTarget("newTarget");
 
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             p = em.merge(p);
 
             throwException();
@@ -145,6 +157,7 @@ public class UpdateDetachedTest extends CubaTestCase {
         throw new RuntimeException();
     }
 
+    @Test
     public void testDataService() throws Exception {
         Permission p;
         DataService ds = AppBeans.get(DataService.NAME);
@@ -178,17 +191,18 @@ public class UpdateDetachedTest extends CubaTestCase {
         assertTrue(PersistenceHelper.isLoaded(result, "role"));
     }
 
+    @Test
     public void testUpdateNotLoaded() throws Exception {
         Permission p;
         Role role;
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             p = em.find(Permission.class, permissionId, new View(Permission.class).addProperty("target"));
             tx.commitRetaining();
 
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             role = em.find(Role.class, role2Id);
             tx.commit();
         } finally {

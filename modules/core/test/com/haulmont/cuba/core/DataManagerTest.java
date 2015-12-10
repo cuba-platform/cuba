@@ -9,7 +9,11 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.testsupport.TestContainer;
 import org.apache.commons.lang.time.DateUtils;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import javax.persistence.TemporalType;
 import java.util.Collections;
@@ -17,23 +21,28 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import static org.junit.Assert.*;
+
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class DataManagerTest extends CubaTestCase {
+public class DataManagerTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
     
     protected DataManager dataManager;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         dataManager = AppBeans.get(DataManager.class);
 
-        QueryRunner runner = new QueryRunner(persistence.getDataSource());
+        QueryRunner runner = new QueryRunner(cont.persistence().getDataSource());
         runner.update("delete from SYS_SERVER");
     }
 
+    @Test
     public void test() {
         Server server = new Server();
         UUID id = server.getId();
@@ -51,6 +60,7 @@ public class DataManagerTest extends CubaTestCase {
         dataManager.commit(new CommitContext(Collections.<Entity>singleton(server)));
     }
 
+    @Test
     public void testLoad() {
         Server server = new Server();
         UUID id = server.getId();
@@ -65,6 +75,7 @@ public class DataManagerTest extends CubaTestCase {
         assertEquals("localhost", server.getName());
     }
 
+    @Test
     public void testLoadList() {
         Server server = new Server();
         server.setName("localhost");
@@ -79,6 +90,7 @@ public class DataManagerTest extends CubaTestCase {
         assertTrue(list.size() > 0);
     }
 
+    @Test
     public void testLoadListById() {
         Server server = new Server();
         UUID id = server.getId();
@@ -93,6 +105,7 @@ public class DataManagerTest extends CubaTestCase {
         assertTrue(list.size() == 1);
     }
 
+    @Test
     public void testAssociatedResult() throws Exception {
         LoadContext<User> loadContext = LoadContext.create(User.class);
         loadContext.setQueryString("select u.group from sec$User u where u.id = :userId")
@@ -106,6 +119,7 @@ public class DataManagerTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testLoadListCaseInsensitive() {
         Server server = new Server();
         server.setName("LocalHost");
@@ -121,6 +135,7 @@ public class DataManagerTest extends CubaTestCase {
         assertTrue(list.size() > 0);
     }
 
+    @Test
     public void testLoadListCaseInsensitiveLower() {
         Server server = new Server();
         server.setName("LocalHost");
@@ -137,6 +152,7 @@ public class DataManagerTest extends CubaTestCase {
         assertTrue(list.size() > 0);
     }
 
+    @Test
     public void testUnexistingQueryParameters() throws Exception {
         LoadContext<User> loadContext = LoadContext.create(User.class).setQuery(
                 LoadContext.createQuery("select u from sec$User u where u.login = :login").setParameter("name", "admin"));
@@ -154,6 +170,7 @@ public class DataManagerTest extends CubaTestCase {
         assertEquals(1, list.size());
     }
 
+    @Test
     public void testGetCount() throws Exception {
         LoadContext<User> loadContext = LoadContext.create(User.class).setQuery(
                 LoadContext.createQuery("select u from sec$User u where u.login = :login").setParameter("login", "admin"));
@@ -166,6 +183,7 @@ public class DataManagerTest extends CubaTestCase {
         assertEquals(0, count);
     }
 
+    @Test
     public void testTemporalType() throws Exception {
         Date nextYear = DateUtils.addYears(AppBeans.get(TimeSource.class).currentTimestamp(), 1);
         LoadContext<User> loadContext = LoadContext.create(User.class).setQuery(
@@ -176,6 +194,7 @@ public class DataManagerTest extends CubaTestCase {
         assertTrue(users.isEmpty());
     }
 
+    @Test
     public void testExtendedLoadContext() throws Exception {
         LoadContext<User> loadContext = new MyLoadContext<>(User.class, "test").setQuery(
                 LoadContext.createQuery("select u from sec$User u where u.login = :login").setParameter("login", "admin"));
@@ -185,6 +204,7 @@ public class DataManagerTest extends CubaTestCase {
 
     }
 
+    @Test
     public void testReloadWithDynamicAttributes() {
         Server server = new Server();
         UUID id = server.getId();

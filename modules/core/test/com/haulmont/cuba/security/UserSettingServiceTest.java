@@ -4,28 +4,39 @@
  */
 package com.haulmont.cuba.security;
 
-import com.haulmont.cuba.core.CubaTestCase;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.security.app.UserSettingService;
+import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestUserSessionSource;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
-public class UserSettingServiceTest extends CubaTestCase
-{
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+public class UserSettingServiceTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
+
     private UserSettingService uss;
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         uss = AppBeans.get(UserSettingService.NAME);
     }
 
-    protected void tearDown() throws Exception {
-        Transaction tx = persistence.createTransaction();
+    @After
+    public void tearDown() throws Exception {
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             Query q = em.createNativeQuery("delete from SEC_USER_SETTING where USER_ID = ?");
             q.setParameter(1, TestUserSessionSource.USER_ID);
             q.executeUpdate();
@@ -33,9 +44,9 @@ public class UserSettingServiceTest extends CubaTestCase
         } finally {
             tx.end();
         }
-        super.tearDown();
     }
 
+    @Test
     public void test() {
         String val = uss.loadSetting(ClientType.WEB, "test-setting");
         assertNull(val);

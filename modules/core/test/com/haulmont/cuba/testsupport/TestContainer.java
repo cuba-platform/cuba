@@ -251,6 +251,7 @@ public class TestContainer extends ExternalResource {
     protected void after() {
         log.info("Stopping test container " + this);
         try {
+            AppBeans.get(Persistence.class).dispose();
             ((ConfigurableApplicationContext) AppContext.getApplicationContext()).close();
             TestContext.getInstance().unbind(AppContext.getProperty("cuba.dataSourceJndiName"));
             AppContext.setApplicationContext(null);

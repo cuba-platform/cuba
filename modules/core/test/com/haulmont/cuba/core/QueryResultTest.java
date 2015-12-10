@@ -15,25 +15,33 @@ import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.testsupport.TestContainer;
 import org.apache.commons.lang.StringUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.*;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
 @SuppressWarnings("IncorrectCreateEntity")
-public class QueryResultTest extends CubaTestCase {
+public class QueryResultTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private List<UUID> userIds = new ArrayList<>();
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        QueryRunner runner = new QueryRunner(persistence.getDataSource());
+    @Before
+    public void setUp() throws Exception {
+        QueryRunner runner = new QueryRunner(cont.persistence().getDataSource());
         try {
             runner.update("delete from SYS_QUERY_RESULT");
         } catch (SQLException e) {
@@ -43,18 +51,17 @@ public class QueryResultTest extends CubaTestCase {
         createEntities();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         for (UUID userId : userIds) {
-            deleteRecord("SEC_USER", userId);
+            cont.deleteRecord("SEC_USER", userId);
         }
-        super.tearDown();
     }
 
     private void createEntities() {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             User user;
 
             Group group = em.find(Group.class, UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93"));
@@ -85,6 +92,7 @@ public class QueryResultTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void test() {
         Transaction tx;
         javax.persistence.EntityManager emDelegate;
@@ -94,9 +102,9 @@ public class QueryResultTest extends CubaTestCase {
         UUID sessionId = UUID.randomUUID();
         int queryKey = 1;
 
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            emDelegate = persistence.getEntityManager().getDelegate();
+            emDelegate = cont.persistence().getEntityManager().getDelegate();
 
             QueryResult queryResult = new QueryResult();
             queryResult.setSessionId(sessionId);
@@ -107,7 +115,7 @@ public class QueryResultTest extends CubaTestCase {
 
             tx.commitRetaining();
 
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             query = em.createQuery(
                     "select u from sec$User u, sys$QueryResult qr " +
                             "where qr.entityId = u.id and qr.sessionId = ?1 and qr.queryKey = ?2"
@@ -141,6 +149,7 @@ public class QueryResultTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testFirstQuery() throws SQLException {
         DataService dataService = AppBeans.get(DataService.class);
         LoadContext context = new LoadContext(User.class).setView(View.LOCAL);
@@ -152,6 +161,7 @@ public class QueryResultTest extends CubaTestCase {
         assertEquals(0, queryResults.size());
     }
 
+    @Test
     public void testSecondQuery() throws SQLException {
         DataService dataService = AppBeans.get(DataService.class);
         LoadContext context = new LoadContext(User.class).setView(View.LOCAL);
@@ -168,6 +178,7 @@ public class QueryResultTest extends CubaTestCase {
         assertEquals(20, queryResults.size());
     }
 
+    @Test
     public void testThirdQuery() throws SQLException {
         DataService dataService = AppBeans.get(DataService.class);
         LoadContext context;
@@ -200,7 +211,7 @@ public class QueryResultTest extends CubaTestCase {
     }
 
     private List<Map<String, Object>> getQueryResults() throws SQLException {
-        QueryRunner queryRunner = new QueryRunner(persistence.getDataSource());
+        QueryRunner queryRunner = new QueryRunner(cont.persistence().getDataSource());
         return queryRunner.query("select * from SYS_QUERY_RESULT", new MapListHandler());
     }
 }

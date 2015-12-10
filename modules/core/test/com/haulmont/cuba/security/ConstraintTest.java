@@ -4,31 +4,38 @@
  */
 package com.haulmont.cuba.security;
 
-import com.haulmont.cuba.core.CubaTestCase;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.Server;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.DataManager;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.app.LoginWorker;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.ConstraintData;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestUserSessionSource;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+
+import static org.junit.Assert.*;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
 @SuppressWarnings("IncorrectCreateEntity")
-public class ConstraintTest extends CubaTestCase {
+public class ConstraintTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
+
     private static final String USER_LOGIN = "testUser";
     private static final String USER_PASSW = "testUser";
 
@@ -36,13 +43,15 @@ public class ConstraintTest extends CubaTestCase {
             userId, user2Id, userRoleId, roleId;
     private UUID serverId;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    private PasswordEncryption passwordEncryption;
 
-        Transaction tx = persistence.createTransaction();
+    @Before
+    public void setUp() throws Exception {
+        passwordEncryption = AppBeans.get(PasswordEncryption.class);
+
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Server server = new Server();
             server.setName("someServer");
@@ -56,7 +65,7 @@ public class ConstraintTest extends CubaTestCase {
             em.persist(parentGroup);
 
             tx.commitRetaining();
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
 
             Constraint parentConstraint = new Constraint();
             parentConstraintId = parentConstraint.getId();
@@ -124,21 +133,20 @@ public class ConstraintTest extends CubaTestCase {
         }
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        deleteRecord("SYS_SERVER", serverId);
-        deleteRecord("SEC_USER_ROLE", userRoleId);
-        deleteRecord("SEC_ROLE", roleId);
-        deleteRecord("SEC_USER", userId, user2Id);
-        deleteRecord("SEC_CONSTRAINT", "ID", parentConstraintId, serverConstraintId, userRoleConstraintId);
-        deleteRecord("SEC_GROUP_HIERARCHY", "GROUP_ID", groupId, otherGroupId);
-        deleteRecord("SEC_GROUP_HIERARCHY", "GROUP_ID", otherGroupId);
-        deleteRecord("SEC_GROUP", groupId, otherGroupId);
-        deleteRecord("SEC_GROUP", parentGroupId);
-
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
+        cont.deleteRecord("SYS_SERVER", serverId);
+        cont.deleteRecord("SEC_USER_ROLE", userRoleId);
+        cont.deleteRecord("SEC_ROLE", roleId);
+        cont.deleteRecord("SEC_USER", userId, user2Id);
+        cont.deleteRecord("SEC_CONSTRAINT", "ID", parentConstraintId, serverConstraintId, userRoleConstraintId);
+        cont.deleteRecord("SEC_GROUP_HIERARCHY", "GROUP_ID", groupId, otherGroupId);
+        cont.deleteRecord("SEC_GROUP_HIERARCHY", "GROUP_ID", otherGroupId);
+        cont.deleteRecord("SEC_GROUP", groupId, otherGroupId);
+        cont.deleteRecord("SEC_GROUP", parentGroupId);
     }
 
+    @Test
     public void test() throws LoginException {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
 

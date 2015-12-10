@@ -16,12 +16,21 @@ import com.haulmont.cuba.core.mp_test.MpTestObj;
 import com.haulmont.cuba.core.mp_test.nested.MpTestNestedEnum;
 import com.haulmont.cuba.core.mp_test.nested.MpTestNestedObj;
 import com.haulmont.cuba.testsupport.TestAppender;
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.ClassRule;
+import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
 
-public class MessagesTest extends CubaTestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+public class MessagesTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private final TestAppender appender;
 
@@ -35,6 +44,7 @@ public class MessagesTest extends CubaTestCase {
         logger.setLevel(Level.TRACE);
     }
 
+    @Test
     public void test() {
         Messages messages = AppBeans.get(Messages.class);
 
@@ -65,6 +75,7 @@ public class MessagesTest extends CubaTestCase {
 
     }
 
+    @Test
     public void testInclude() {
         Messages messages = AppBeans.get(Messages.class);
 
@@ -75,6 +86,7 @@ public class MessagesTest extends CubaTestCase {
         assertEquals("Overridden Included Message", msg);
     }
 
+    @Test
     public void testMultiInclude() {
         Messages messages = AppBeans.get(Messages.class);
 
@@ -88,6 +100,7 @@ public class MessagesTest extends CubaTestCase {
         assertEquals(msg3, "overridden");
     }
 
+    @Test
     public void testCachingDefaultLoc() {
         Messages messages = prepareCachingTest();
 
@@ -123,6 +136,7 @@ public class MessagesTest extends CubaTestCase {
         );
     }
 
+    @Test
     public void testCachingFrenchLoc() {
         Messages messages = prepareCachingTest();
 
@@ -145,6 +159,7 @@ public class MessagesTest extends CubaTestCase {
         return messages;
     }
 
+    @Test
     public void testCachingDefaultLocSeveralPacks() {
         Messages messages = prepareCachingTest();
 
@@ -161,6 +176,7 @@ public class MessagesTest extends CubaTestCase {
         assertEquals(0, getSearchMessagesCount());
     }
 
+    @Test
     public void testCachingFrenchLocSeveralPacks() {
         Messages messages = prepareCachingTest();
 
@@ -179,6 +195,7 @@ public class MessagesTest extends CubaTestCase {
         assertEquals(0, getSearchMessagesCount());
     }
 
+    @Test
     public void testFind() throws Exception {
         Messages messages = AppBeans.get(Messages.class);
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -199,6 +216,7 @@ public class MessagesTest extends CubaTestCase {
         assertEquals("non-existing-message", msg);
     }
 
+    @Test
     public void testMainMessagePack() throws Exception {
         Messages messages = AppBeans.get(Messages.class);
 

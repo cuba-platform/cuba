@@ -4,14 +4,22 @@
  */
 package com.haulmont.cuba.core;
 
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.ClassRule;
+import org.junit.Test;
+
 import java.util.List;
 
-public class FolderTest extends CubaTestCase {
+public class FolderTest {
 
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
+
+    @Test
     public void test() {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             Query q = em.createQuery("select f from sys$Folder f");
             List list = q.getResultList();
 

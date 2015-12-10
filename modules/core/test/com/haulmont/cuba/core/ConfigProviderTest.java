@@ -12,6 +12,10 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.RoleType;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.After;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.lang.reflect.Method;
 import java.text.ParseException;
@@ -21,13 +25,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-public class ConfigProviderTest extends CubaTestCase
-{
-    protected void tearDown() throws Exception {
+import static org.junit.Assert.*;
+
+public class ConfigProviderTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
+
+    @After
+    public void tearDown() throws Exception {
         cleanup();
-        super.tearDown();
     }
 
+    @Test
     public void testAppProperties() {
         TestConfig config = AppBeans.get(Configuration.class).getConfig(TestConfig.class);
 
@@ -131,6 +141,7 @@ public class ConfigProviderTest extends CubaTestCase
         assertEquals(Arrays.asList("aaa", "bbb", "ccc"), stringList);
     }
 
+    @Test
     public void testDatabaseProperties() throws Exception {
         TestConfig config = AppBeans.get(Configuration.class).getConfig(TestConfig.class);
 
@@ -154,6 +165,7 @@ public class ConfigProviderTest extends CubaTestCase
         assertEquals("test_value_1", dbProp);
     }
 
+    @Test
     public void testBooleanType() throws Exception {
         Method booleanMethod = TestConfig.class.getMethod("getBooleanProp");
         Class<?> booleanMethodReturnType = booleanMethod.getReturnType();
@@ -164,6 +176,7 @@ public class ConfigProviderTest extends CubaTestCase
         assertEquals(Boolean.TYPE, boolMethodReturnType);
     }
 
+    @Test
     public void testInjectedConfig() throws Exception {
         TestBeanToInjectConfig bean = AppBeans.get(TestBeanToInjectConfig.class);
         TestConfig config = bean.getConfig();
@@ -171,6 +184,7 @@ public class ConfigProviderTest extends CubaTestCase
         assertTrue(config.getBooleanPropDef());
     }
 
+    @Test
     public void testInjectedConfigBySetter() throws Exception {
         TestBeanToInjectConfig bean = AppBeans.get(TestBeanToInjectConfig.class);
         TestConfig config = bean.getConfig2();
@@ -190,9 +204,9 @@ public class ConfigProviderTest extends CubaTestCase
     }
 
     private void cleanup() {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             Query query = em.createQuery("select c from sys$Config c where c.name like ?1");
             query.setParameter(1, "cuba.test.%");
             List<Config> list = query.getResultList();

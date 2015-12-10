@@ -4,19 +4,29 @@
  */
 package com.haulmont.cuba.security;
 
-import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.security.entity.Role;
+import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.util.UUID;
 
-public class RelationsTest extends CubaTestCase
-{
+public class RelationsTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
+
+    @Test
     public void testRole() {
         UUID roleId = createRole();
 
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Role role = em.find(Role.class, roleId);
             em.remove(role);
@@ -28,9 +38,9 @@ public class RelationsTest extends CubaTestCase
     }
 
     public UUID createRole() {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             User user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
 

@@ -108,4 +108,9 @@ public interface Persistence {
      * @return context
      */
     EntityManagerContext getEntityManagerContext();
+
+    /**
+     * Destroys the persistence configuration. Further use of this bean instance is impossible.
+     */
+    void dispose();
 }

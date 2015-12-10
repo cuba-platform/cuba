@@ -4,25 +4,34 @@
  */
 package com.haulmont.cuba.core.global;
 
-import com.haulmont.cuba.core.CubaTestCase;
 import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.io.InputStream;
 
-public class ViewRepositoryTest extends CubaTestCase {
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
+public class ViewRepositoryTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private ViewRepository repository;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        repository = metadata.getViewRepository();
+    @Before
+    public void setUp() throws Exception {
+        repository = cont.metadata().getViewRepository();
 
         InputStream stream = ViewRepositoryTest.class.getResourceAsStream("test.view.xml");
         ((AbstractViewRepository) repository).deployViews(stream);
     }
 
+    @Test
     public void testGetView() {
         View view = repository.getView(User.class, "test");
         assertNotNull(view);
@@ -39,6 +48,7 @@ public class ViewRepositoryTest extends CubaTestCase {
         assertNotNull(roleView.getProperty("name"));
     }
 
+    @Test
     public void testDefaultViews() {
         View localView = repository.getView(User.class, View.LOCAL);
         assertNotNull(localView);
@@ -55,6 +65,7 @@ public class ViewRepositoryTest extends CubaTestCase {
         assertNull(minView.getProperty("userRoles"));
     }
 
+    @Test
     public void testInheritance() {
         View view = repository.getView(User.class, "testInheritance");
         assertNotNull(view);
@@ -64,6 +75,7 @@ public class ViewRepositoryTest extends CubaTestCase {
         assertNull(view.getProperty("substitutions"));
     }
 
+    @Test
     public void testAnonymous() {
         View view = repository.getView(User.class, "anonymousTest");
         assertNotNull(view);

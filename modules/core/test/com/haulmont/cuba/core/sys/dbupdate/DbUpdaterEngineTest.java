@@ -5,20 +5,26 @@
 
 package com.haulmont.cuba.core.sys.dbupdate;
 
-import com.haulmont.cuba.core.CubaTestCase;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.sys.dbupdate.DbUpdaterEngine;
-import com.haulmont.cuba.core.sys.dbupdate.ScriptResource;
+import com.haulmont.cuba.testsupport.TestContainer;
 import org.apache.commons.io.FileUtils;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DbUpdaterEngineTest extends CubaTestCase {
+import static org.junit.Assert.assertEquals;
+
+public class DbUpdaterEngineTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private File dbmsDir;
     private File dbmsWebInfDir;
@@ -29,8 +35,8 @@ public class DbUpdaterEngineTest extends CubaTestCase {
     private List<File> mssql2012UpdateFiles = new ArrayList<>();
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         GlobalConfig config = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
         dbmsDir = new File(config.getTempDir(), "db");
         if (dbmsDir.exists()) {
@@ -126,6 +132,7 @@ public class DbUpdaterEngineTest extends CubaTestCase {
         mssql2012UpdateFiles.add(file);
     }
 
+    @Test
     public void testGetInitScripts() throws Exception {
         DbUpdaterEngine engine = new DbUpdaterEngine();
         engine.dbScriptsDirectory = dbmsDir.getAbsolutePath();
@@ -142,7 +149,7 @@ public class DbUpdaterEngineTest extends CubaTestCase {
         assertEquals(mssql2012InitFiles, files);
     }
 
-    //
+    @Test
     public void testGetUpdateScripts() throws Exception {
         DbUpdaterEngine engine = new DbUpdaterEngine();
         engine.dbScriptsDirectory = dbmsDir.getAbsolutePath();
@@ -160,6 +167,7 @@ public class DbUpdaterEngineTest extends CubaTestCase {
         assertEquals(mssql2012UpdateFiles, files);
     }
 
+    @Test
     public void testGetModules() throws Exception {
         DbUpdaterEngine engine = new DbUpdaterEngine();
         engine.dbScriptsDirectory = dbmsDir.getAbsolutePath();
@@ -168,6 +176,7 @@ public class DbUpdaterEngineTest extends CubaTestCase {
         System.out.println(moduleDirs);
     }
 
+    @Test
     public void testGetScriptName() throws Exception {
         File script = new File(dbmsDir, "50-app/update/mssql-2012/14/app-update-0.sql");
         DbUpdaterEngine engine = new DbUpdaterEngine();

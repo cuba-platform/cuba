@@ -8,7 +8,10 @@ package com.haulmont.cuba.core;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.haulmont.cuba.core.app.UniqueNumbersAPI;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.testsupport.TestContainer;
 import org.apache.commons.lang.StringUtils;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -16,22 +19,30 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class UniqueNumbersTest extends CubaTestCase {
+public class UniqueNumbersTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     String[] seqNames = {"t1", "t2", "t3", "t4"};
     AtomicInteger finishedThreads = new AtomicInteger();
     AtomicInteger exceptionCnt = new AtomicInteger();
 
+    @Test
     public void test() {
         UniqueNumbersAPI mBean = AppBeans.get(UniqueNumbersAPI.NAME);
         long n = mBean.getNextNumber("test1");
         assertTrue(n >= 0);
     }
 
+    @Test
     public void testSequenceDeletion() throws Exception {
         UniqueNumbersAPI uniqueNumbersAPI = AppBeans.get(UniqueNumbersAPI.NAME);
 
@@ -40,6 +51,7 @@ public class UniqueNumbersTest extends CubaTestCase {
         uniqueNumbersAPI.getCurrentNumber("s1");
     }
 
+    @Test
     public void testConcurrentModification() throws Exception {
         int threadCnt = 8;
         ExecutorService executorService = Executors.newFixedThreadPool(threadCnt,

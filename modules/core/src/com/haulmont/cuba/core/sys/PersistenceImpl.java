@@ -152,6 +152,11 @@ public class PersistenceImpl implements Persistence {
         return emCtx;
     }
 
+    @Override
+    public void dispose() {
+        jpaEmf.close();
+    }
+
     public TransactionSynchronization createSynchronization() {
         return new EntityManagerContextSynchronization();
     }

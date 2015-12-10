@@ -8,22 +8,31 @@ package com.haulmont.cuba.core;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.testsupport.TestContainer;
 import groovy.lang.Binding;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class ScriptingTest extends CubaTestCase {
+public class ScriptingTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     protected Scripting scripting;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         scripting = AppBeans.get(Scripting.class);
     }
 
+    @Test
     public void testSimpleEvaluate() throws Exception {
         Integer intResult = scripting.evaluateGroovy("2 + 2", new Binding());
         assertEquals((Integer)4, intResult);
@@ -34,19 +43,22 @@ public class ScriptingTest extends CubaTestCase {
         assertTrue(boolResult);
     }
 
+    @Test
     public void testImportsEvaluate() {
         String result = scripting.evaluateGroovy("import com.haulmont.bali.util.StringHelper\n" +
                                                  "return StringHelper.removeExtraSpaces(' Hello! ')", (Binding) null);
         assertNotNull(result);
     }
 
+    @Test
     public void testPackageAndImportsEvaluate() {
         String result = scripting.evaluateGroovy("package com.haulmont.cuba.core\n" +
                 "import com.haulmont.bali.util.StringHelper\n" +
                 "return StringHelper.removeExtraSpaces(' Hello! ')", (Binding) null);
         assertNotNull(result);
     }
-    
+
+    @Test
     public void testPackageOnlyEvaluate() {
         Binding binding = new Binding();
         binding.setVariable("instance", new User());

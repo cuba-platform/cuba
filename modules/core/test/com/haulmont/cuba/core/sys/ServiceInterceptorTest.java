@@ -9,20 +9,27 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-import com.haulmont.cuba.core.CubaTestCase;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.TestingService;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.testsupport.TestAppender;
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.ClassRule;
+import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class ServiceInterceptorTest extends CubaTestCase {
+public class ServiceInterceptorTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private final TestAppender appender;
 
@@ -36,6 +43,7 @@ public class ServiceInterceptorTest extends CubaTestCase {
 //        Logger.getRootLogger().addAppender(appender);
     }
 
+    @Test
     public void testOpenTransaction() throws Exception {
         TestingService service = AppBeans.get(TestingService.class);
         int size;

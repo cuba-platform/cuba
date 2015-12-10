@@ -4,23 +4,32 @@
  */
 package com.haulmont.cuba.security;
 
-import com.haulmont.cuba.core.CubaTestCase;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.util.List;
 import java.util.UUID;
 
-public class UserRoleTest extends CubaTestCase
-{
+import static org.junit.Assert.assertEquals;
+
+
+public class UserRoleTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
+
+    @Test
     public void test() {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Role role = new Role();
             role.setName("testRole1");
@@ -44,7 +53,7 @@ public class UserRoleTest extends CubaTestCase
 
             tx.commitRetaining();
 
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             user = em.find(User.class, userId);
             List<UserRole> userRoles = user.getUserRoles();
             assertEquals(1, userRoles.size());

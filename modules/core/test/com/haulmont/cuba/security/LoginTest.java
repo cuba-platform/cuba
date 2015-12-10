@@ -4,23 +4,32 @@
  */
 package com.haulmont.cuba.security;
 
-import com.haulmont.cuba.core.CubaTestCase;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.testsupport.TestUserSessionSource;
 import com.haulmont.cuba.security.app.LoginWorker;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSubstitution;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.testsupport.TestContainer;
+import com.haulmont.cuba.testsupport.TestUserSessionSource;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.util.Locale;
 import java.util.UUID;
 
-public class LoginTest extends CubaTestCase {
+import static org.junit.Assert.*;
+
+public class LoginTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private PasswordEncryption passwordEncryption;
 
@@ -32,17 +41,16 @@ public class LoginTest extends CubaTestCase {
     private TestUserSessionSource userSessionSource;
     private UserSession standardTestUserSession;
 
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    @Before
+    public void setUp() throws Exception {
         passwordEncryption = AppBeans.get(PasswordEncryption.NAME);
         loginWorker = AppBeans.get(LoginWorker.NAME);
         userSessionSource = AppBeans.get(UserSessionSource.NAME);
         standardTestUserSession = userSessionSource.getUserSession();
 
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Group group = em.getReference(Group.class, UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93"));
 
@@ -66,19 +74,17 @@ public class LoginTest extends CubaTestCase {
         }
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        deleteRecord("SEC_USER_SUBSTITUTION", substitutionId);
-        deleteRecord("SEC_USER", user1Id);
-        deleteRecord("SEC_USER", user2Id);
+    @After
+    public void tearDown() throws Exception {
+        cont.deleteRecord("SEC_USER_SUBSTITUTION", substitutionId);
+        cont.deleteRecord("SEC_USER", user1Id);
+        cont.deleteRecord("SEC_USER", user2Id);
 
         userSessionSource.setUserSession(standardTestUserSession);
-
-        super.tearDown();
     }
 
     private User loadUser(final UUID userId) {
-        return persistence.createTransaction().execute(new Transaction.Callable<User>() {
+        return cont.persistence().createTransaction().execute(new Transaction.Callable<User>() {
             @Override
             public User call(EntityManager em) {
                 return em.find(User.class, userId);
@@ -86,6 +92,7 @@ public class LoginTest extends CubaTestCase {
         });
     }
 
+    @Test
     public void testUserSubstitution() throws Exception {
         // Log in
         UserSession session1 = loginWorker.login("user1", passwordEncryption.getPlainHash("1"), Locale.forLanguageTag("en"));
@@ -101,7 +108,7 @@ public class LoginTest extends CubaTestCase {
         }
 
         // Create a substitution
-        persistence.createTransaction().execute(new Transaction.Runnable() {
+        cont.persistence().createTransaction().execute(new Transaction.Runnable() {
             @Override
             public void run(EntityManager em) {
                 UserSubstitution substitution = new UserSubstitution();
@@ -127,9 +134,10 @@ public class LoginTest extends CubaTestCase {
         assertNull(session3.getSubstitutedUser());
     }
 
+    @Test
     public void testUserSubstitutionSoftDelete() throws Exception {
         // Create a substitution
-        persistence.createTransaction().execute(new Transaction.Runnable() {
+        cont.persistence().createTransaction().execute(new Transaction.Runnable() {
             @Override
             public void run(EntityManager em) {
                 UserSubstitution substitution = new UserSubstitution();
@@ -141,7 +149,7 @@ public class LoginTest extends CubaTestCase {
         });
 
         // Soft delete it
-        persistence.createTransaction().execute(new Transaction.Runnable() {
+        cont.persistence().createTransaction().execute(new Transaction.Runnable() {
             @Override
             public void run(EntityManager em) {
                 UserSubstitution substitution = em.getReference(UserSubstitution.class, substitutionId);

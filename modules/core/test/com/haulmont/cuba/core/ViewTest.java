@@ -12,34 +12,40 @@ import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
-import org.eclipse.persistence.jpa.jpql.parser.ExpressionVisitorWrapper;
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
 import static com.haulmont.cuba.testsupport.TestSupport.reserialize;
+import static org.junit.Assert.*;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class ViewTest extends CubaTestCase {
+public class ViewTest {
 
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
+    
     private TimeSource timeSource;
 
     private UUID userId;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         timeSource = AppBeans.get(TimeSource.NAME);
 
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Group group = em.find(Group.class, UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93"));
 
@@ -57,16 +63,16 @@ public class ViewTest extends CubaTestCase {
         }
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        deleteRecord("SEC_USER", userId);
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
+        cont.deleteRecord("SEC_USER", userId);
     }
 
+    @Test
     public void testQuery() throws Exception {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             Query q = em.createQuery("select u from sec$User u where u.id = ?1");
             q.setParameter(1, userId);
 
@@ -95,10 +101,11 @@ public class ViewTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testEntityManager() throws Exception {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             View view = new View(User.class)
                     .addProperty("name")
@@ -126,10 +133,11 @@ public class ViewTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testViewWithoutSystemProperties() throws Exception {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             View view = new View(User.class, false)
                     .addProperty("name")
@@ -165,6 +173,7 @@ public class ViewTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testViewWithoutSystemProperties_update() throws Exception {
 
         View view = new View(User.class, false)
@@ -176,14 +185,14 @@ public class ViewTest extends CubaTestCase {
                                 .addProperty("name")
                 );
 
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
             // First stage: change managed
 
             long ts = timeSource.currentTimeMillis();
             Thread.sleep(200);
 
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             User user = em.find(User.class, userId, view);
             user.setName(new Date().toString());
 
@@ -193,7 +202,7 @@ public class ViewTest extends CubaTestCase {
                 assertTrue(getCurrentUpdateTs() > ts);
             } catch (Exception e) {
                 // todo el: commit is failed because updateTs & updatedBy can not be changed (https://bugs.eclipse.org/bugs/show_bug.cgi?id=466841)
-                tx = persistence.createTransaction();
+                tx = cont.persistence().createTransaction();
             }
 
             // Second stage: change detached
@@ -201,13 +210,13 @@ public class ViewTest extends CubaTestCase {
             ts = timeSource.currentTimeMillis();
             Thread.sleep(200);
 
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             user = em.find(User.class, userId, view);
 
             tx.commitRetaining();
 
             user.setName(new Date().toString());
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             em.merge(user);
 
             tx.commit();
@@ -224,13 +233,14 @@ public class ViewTest extends CubaTestCase {
      *
      * 6.0: Not loaded (unfetched) attributes cannot be loaded lazily.
      */
+    @Test
     public void testLazyLoadAfterLoadWithView() throws Exception {
         View view = new View(User.class, false).addProperty("name");
 
         User user;
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             user = em.find(User.class, userId, view);
             tx.commit();
         } finally {
@@ -246,9 +256,9 @@ public class ViewTest extends CubaTestCase {
         } catch (Exception ignored) {
         }
 
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             user = em.find(User.class, userId, view);
             assertNotNull(user);
 
@@ -266,10 +276,11 @@ public class ViewTest extends CubaTestCase {
     }
 
 
+    @Test
     public void testLazyProperty() throws Exception {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             Query q = em.createQuery("select u from sec$User u where u.id = ?1");
             q.setParameter(1, userId);
 
@@ -304,7 +315,7 @@ public class ViewTest extends CubaTestCase {
 
     private long getCurrentUpdateTs() {
         String sql = "select UPDATE_TS from SEC_USER where ID = '" + userId.toString() + "'";
-        QueryRunner runner = new QueryRunner(persistence.getDataSource());
+        QueryRunner runner = new QueryRunner(cont.persistence().getDataSource());
         try {
             return runner.query(sql, new ResultSetHandler<Long>() {
                 @Override
@@ -318,14 +329,16 @@ public class ViewTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testNoTransientPropertiesInLocalView() throws Exception {
-        View view = metadata.getViewRepository().getView(EntitySnapshot.class, View.LOCAL);
+        View view = cont.metadata().getViewRepository().getView(EntitySnapshot.class, View.LOCAL);
         ViewProperty prop = view.getProperty("label");
         assertNull(prop);
     }
 
+    @Test
     public void testViewCopy() throws Exception {
-        ViewRepository viewRepository = metadata.getViewRepository();
+        ViewRepository viewRepository = cont.metadata().getViewRepository();
         View view = viewRepository.getView(User.class, View.LOCAL);
         view.addProperty("group", viewRepository.getView(Group.class, View.MINIMAL));
 

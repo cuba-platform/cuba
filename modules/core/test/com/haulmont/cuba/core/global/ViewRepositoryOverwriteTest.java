@@ -5,29 +5,38 @@
 
 package com.haulmont.cuba.core.global;
 
-import com.haulmont.cuba.core.CubaTestCase;
 import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.io.InputStream;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-public class ViewRepositoryOverwriteTest extends CubaTestCase {
+public class ViewRepositoryOverwriteTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private ViewRepository repository;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        repository = metadata.getViewRepository();
+    @Before
+    public void setUp() throws Exception {
+        repository = cont.metadata().getViewRepository();
 
         InputStream stream = ViewRepositoryTest.class.getResourceAsStream("test-overwrite.view.xml");
         ((AbstractViewRepository) repository).deployViews(stream);
     }
 
+    @Test
     public void testDependentUpdated() {
         View dependentView = repository.getView(UserRole.class, "dependent");
         View userView = dependentView.getProperty("user").getView();

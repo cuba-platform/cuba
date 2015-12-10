@@ -8,28 +8,38 @@ package com.haulmont.cuba.core;
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.util.UUID;
+
+import static org.junit.Assert.*;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class PersistenceHelperTest extends CubaTestCase {
+public class PersistenceHelperTest {
 
-    @Override
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
+
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
-        QueryRunner runner = new QueryRunner(persistence.getDataSource());
+        QueryRunner runner = new QueryRunner(cont.persistence().getDataSource());
         runner.update("delete from SYS_SERVER");
     }
 
-    protected void tearDown() throws Exception {
-        QueryRunner runner = new QueryRunner(persistence.getDataSource());
+    @After
+    public void tearDown() throws Exception {
+        QueryRunner runner = new QueryRunner(cont.persistence().getDataSource());
         runner.update("delete from SYS_SERVER");
-        super.tearDown();
     }
 
+    @Test
     public void testEntityStates() {
         try {
             PersistenceHelper.isNew(null);
@@ -52,9 +62,9 @@ public class PersistenceHelperTest extends CubaTestCase {
 
         UUID id;
         Server server;
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             assertNotNull(em);
             server = new Server();
 
@@ -79,9 +89,9 @@ public class PersistenceHelperTest extends CubaTestCase {
         assertTrue(PersistenceHelper.isDetached(server));
 
 
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             server = em.find(Server.class, id);
             assertNotNull(server);
             assertEquals(id, server.getId());
@@ -100,9 +110,9 @@ public class PersistenceHelperTest extends CubaTestCase {
         assertFalse(PersistenceHelper.isManaged(server));
         assertTrue(PersistenceHelper.isDetached(server));
 
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             server = em.merge(server);
 
             assertFalse(PersistenceHelper.isNew(server));
@@ -115,9 +125,9 @@ public class PersistenceHelperTest extends CubaTestCase {
         }
 
 
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             server = em.find(Server.class, id);
             assertNotNull(server);
             assertEquals(id, server.getId());

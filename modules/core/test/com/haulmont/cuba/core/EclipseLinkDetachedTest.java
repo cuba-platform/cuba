@@ -10,30 +10,37 @@ import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.testsupport.TestContainer;
 import org.eclipse.persistence.internal.queries.EntityFetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.util.Set;
 import java.util.UUID;
 
 import static com.haulmont.cuba.testsupport.TestSupport.reserialize;
+import static org.junit.Assert.*;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class EclipseLinkDetachedTest extends CubaTestCase {
+public class EclipseLinkDetachedTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private UUID userId;
     private UUID userRoleId;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
-
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             User user = new User();
             userId = user.getId();
@@ -55,21 +62,20 @@ public class EclipseLinkDetachedTest extends CubaTestCase {
         }
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
-        deleteRecord("SEC_USER_ROLE", userRoleId);
-        deleteRecord("SEC_USER", userId);
-
-        super.tearDown();
+        cont.deleteRecord("SEC_USER_ROLE", userRoleId);
+        cont.deleteRecord("SEC_USER", userId);
     }
 
+    @Test
     public void testNotSerialized() throws Exception {
         Transaction tx;
         EntityManager em;
         User user;
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             user = em.find(User.class, userId);
             assertNotNull(user);
             tx.commit();
@@ -82,13 +88,14 @@ public class EclipseLinkDetachedTest extends CubaTestCase {
         assertEquals(1, user.getUserRoles().size());
     }
 
+    @Test
     public void testSerialized() throws Exception {
         Transaction tx;
         EntityManager em;
         User user;
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             user = em.find(User.class, userId);
             assertNotNull(user);
             tx.commit();
@@ -110,13 +117,14 @@ public class EclipseLinkDetachedTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testNotSerializedFetchGroup() throws Exception {
         Transaction tx;
         EntityManager em;
         User user;
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             View view = new View(User.class)
                     .addProperty("login");
             user = em.find(User.class, userId, view);
@@ -141,13 +149,14 @@ public class EclipseLinkDetachedTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testSerializedFetchGroup() throws Exception {
         Transaction tx;
         EntityManager em;
         User user;
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             View view = new View(User.class)
                     .addProperty("login");
             user = em.find(User.class, userId, view);
@@ -178,13 +187,14 @@ public class EclipseLinkDetachedTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testSerializedFetchGroupMerge() throws Exception {
         Transaction tx;
         EntityManager em;
         User user;
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             View view = new View(User.class)
                     .addProperty("login");
             user = em.find(User.class, userId, view);
@@ -217,9 +227,9 @@ public class EclipseLinkDetachedTest extends CubaTestCase {
         user.setLogin("testLogin-1");
 
         // merge
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             user = em.merge(user);
 
             tx.commit();
@@ -244,9 +254,9 @@ public class EclipseLinkDetachedTest extends CubaTestCase {
         }
 
         // find without view
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             user = em.find(User.class, userId);
             assertNotNull(user);
             tx.commit();
@@ -259,13 +269,14 @@ public class EclipseLinkDetachedTest extends CubaTestCase {
         assertEquals("testUser", user.getName());
     }
 
+    @Test
     public void testModifiedFetchGroup() throws Exception {
         Transaction tx;
         EntityManager em;
         User user;
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             View view = new View(User.class)
                     .addProperty("login")
                     .addProperty("position");
@@ -286,9 +297,9 @@ public class EclipseLinkDetachedTest extends CubaTestCase {
         user.setLogin("testLogin-1");
 
         // merge
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             user = em.merge(user);
 
             tx.commit();

@@ -7,36 +7,48 @@ package com.haulmont.cuba.security;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.haulmont.bali.db.QueryRunner;
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.security.app.EntityLogAPI;
 import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class EntityLogTest extends CubaTestCase {
+public class EntityLogTest {
 
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
+    
     private UUID userId;
     private UUID roleId;
 
     private EntityLogAPI entityLog;
 
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    @Before
+    public void setUp() throws Exception {
         cleanup();
 
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Query q = em.createNativeQuery("delete from SEC_ENTITY_LOG_ATTR");
             q.executeUpdate();
@@ -73,28 +85,28 @@ public class EntityLogTest extends CubaTestCase {
         entityLog.invalidateCache();
     }
 
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         cleanup();
 
         if (userId != null)
-            deleteRecord("SEC_USER", userId);
+            cont.deleteRecord("SEC_USER", userId);
 
         if (roleId != null)
-            deleteRecord("SEC_ROLE", roleId);
-
-        super.tearDown();
+            cont.deleteRecord("SEC_ROLE", roleId);
     }
 
     private void cleanup() throws SQLException {
-        QueryRunner runner = new QueryRunner(persistence.getDataSource());
+        QueryRunner runner = new QueryRunner(cont.persistence().getDataSource());
         runner.update("delete from SEC_LOGGED_ATTR");
         runner.update("delete from SEC_LOGGED_ENTITY");
     }
 
+    @Test
     public void test() throws Exception {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Group group = em.find(Group.class, UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93"));
 
@@ -110,9 +122,9 @@ public class EntityLogTest extends CubaTestCase {
             tx.end();
         }
 
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             User user = em.find(User.class, userId);
             user.setEmail("test-email");
@@ -122,9 +134,9 @@ public class EntityLogTest extends CubaTestCase {
             tx.end();
         }
 
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             User user = em.find(User.class, userId);
             user.setName("test-name-1");
@@ -134,9 +146,9 @@ public class EntityLogTest extends CubaTestCase {
             tx.end();
         }
 
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             User user = em.find(User.class, userId);
             user.setEmail("test-email-1");
@@ -146,9 +158,9 @@ public class EntityLogTest extends CubaTestCase {
             tx.end();
         }
 
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             User user = em.find(User.class, userId);
             em.remove(user);
@@ -159,9 +171,9 @@ public class EntityLogTest extends CubaTestCase {
         }
 
         List<EntityLogItem> items;
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             TypedQuery<EntityLogItem> query = em.createQuery(
                     "select i from sec$EntityLog i where i.entity = ?1 and i.entityId = ?2", EntityLogItem.class);
             query.setParameter(1, "sec$User");
@@ -178,10 +190,11 @@ public class EntityLogTest extends CubaTestCase {
         assertEquals(1, items.get(0).getAttributes().size());
     }
 
+    @Test
     public void testEnumDisplayValue() throws Exception {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Role role = new Role();
             roleId = role.getId();
@@ -195,9 +208,9 @@ public class EntityLogTest extends CubaTestCase {
         }
 
         List<EntityLogItem> items;
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             TypedQuery<EntityLogItem> query = em.createQuery(
                     "select i from sec$EntityLog i where i.entity = ?1 and i.entityId = ?2", EntityLogItem.class);
             query.setParameter(1, "sec$Role");
@@ -219,10 +232,11 @@ public class EntityLogTest extends CubaTestCase {
         assertEquals(messages.getMessage(RoleType.READONLY), attr.getDisplayValue());
     }
 
+    @Test
     public void testMultipleFlush() throws Exception {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Group group = em.find(Group.class, UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93"));
 
@@ -260,9 +274,9 @@ public class EntityLogTest extends CubaTestCase {
 
         ////////
 
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             User user = em.find(User.class, userId);
             user.setEmail("changed-2@test.com");
@@ -295,9 +309,9 @@ public class EntityLogTest extends CubaTestCase {
     private List<EntityLogItem> getEntityLogItems() {
         Transaction tx;
         List<EntityLogItem> items;
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             TypedQuery<EntityLogItem> query = em.createQuery(
                     "select i from sec$EntityLog i where i.entity = ?1 and i.entityId = ?2 order by i.eventTs desc", EntityLogItem.class);
             query.setParameter(1, "sec$User");

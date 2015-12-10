@@ -10,29 +10,38 @@ import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestSupport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.util.UUID;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Konstantin Krivopustov
  * @version $Id$
  */
-public class DataManagerCommitTest extends CubaTestCase {
+public class DataManagerCommitTest {
 
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
+    
     private DataManager dataManager;
     private UUID userId;
     private UUID groupId = UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93");
     private UUID userRoleId;
     private View view;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         dataManager = AppBeans.get(DataManager.class);
 
-        try (Transaction tx = persistence.createTransaction()) {
-            EntityManager em = persistence.getEntityManager();
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            EntityManager em = cont.persistence().getEntityManager();
 
             Group group = em.find(Group.class, groupId);
             Role role = em.find(Role.class, UUID.fromString("0c018061-b26f-4de2-a5be-dff348347f93"));
@@ -63,13 +72,13 @@ public class DataManagerCommitTest extends CubaTestCase {
                 .addProperty("userRoles", new View(UserRole.class));
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        deleteRecord("SEC_USER_ROLE", userRoleId);
-        deleteRecord("SEC_USER", userId);
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
+        cont.deleteRecord("SEC_USER_ROLE", userRoleId);
+        cont.deleteRecord("SEC_USER", userId);
     }
 
+    @Test
     public void testViewAfterCommit() throws Exception {
         LoadContext<User> loadContext = LoadContext.create(User.class).setId(userId).setView(view);
         User user = dataManager.load(loadContext);

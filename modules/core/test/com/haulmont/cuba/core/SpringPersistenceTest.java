@@ -4,19 +4,30 @@
  */
 package com.haulmont.cuba.core;
 
-public class SpringPersistenceTest extends CubaTestCase {
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.ClassRule;
+import org.junit.Test;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public class SpringPersistenceTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
+
+    @Test
     public void test() {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             em.setSoftDeletion(false);
             assertFalse(em.isSoftDeletion());
 
             nestedMethod();
             nestedTxMethod();
 
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             assertFalse(em.isSoftDeletion());
 
             tx.commit();
@@ -26,14 +37,14 @@ public class SpringPersistenceTest extends CubaTestCase {
     }
 
     private void nestedMethod() {
-        EntityManager em = persistence.getEntityManager();
+        EntityManager em = cont.persistence().getEntityManager();
         assertFalse(em.isSoftDeletion());
     }
 
     private void nestedTxMethod() {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             assertTrue(em.isSoftDeletion());
             nestedTxMethod2();
 
@@ -44,9 +55,9 @@ public class SpringPersistenceTest extends CubaTestCase {
     }
 
     private void nestedTxMethod2() {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             assertTrue(em.isSoftDeletion());
 
             tx.commit();

@@ -9,24 +9,32 @@ import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-public class PersistenceTest extends CubaTestCase {
+import static org.junit.Assert.*;
+
+public class PersistenceTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private UUID userId;
 
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        QueryRunner runner = new QueryRunner(persistence.getDataSource());
+    @Before
+    public void setUp() throws Exception {
+        QueryRunner runner = new QueryRunner(cont.persistence().getDataSource());
         runner.update("delete from SYS_SERVER");
 
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             User user = new User();
             userId = user.getId();
@@ -41,58 +49,59 @@ public class PersistenceTest extends CubaTestCase {
         }
     }
 
-    protected void tearDown() throws Exception {
-        deleteRecord("SEC_USER", userId);
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
+        cont.deleteRecord("SEC_USER", userId);
     }
 
     private void raiseException() {
         throw new RuntimeException("test_ex");
     }
 
+    @Test
     public void testLoadByCombinedView() throws Exception {
         User user;
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
             // load by single view
 
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"),
                     new View(User.class, false).addProperty("login"));
 
-            assertTrue(persistence.getTools().isLoaded(user, "login"));
-            assertFalse(persistence.getTools().isLoaded(user, "name"));
+            assertTrue(cont.persistence().getTools().isLoaded(user, "login"));
+            assertFalse(cont.persistence().getTools().isLoaded(user, "name"));
 
             tx.commitRetaining();
 
             // load by combined view
 
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
 
             user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"),
                     new View(User.class, false).addProperty("login"),
                     new View(User.class, false).addProperty("name")
             );
 
-            assertTrue(persistence.getTools().isLoaded(user, "login"));
-            assertTrue(persistence.getTools().isLoaded(user, "name"));
+            assertTrue(cont.persistence().getTools().isLoaded(user, "login"));
+            assertTrue(cont.persistence().getTools().isLoaded(user, "name"));
 
             tx.commitRetaining();
 
             // load by complex combined view
 
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
 
             user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"),
                     new View(User.class, false).addProperty("login"),
                     new View(User.class, false).addProperty("group", new View(Group.class).addProperty("name"))
             );
 
-            assertTrue(persistence.getTools().isLoaded(user, "login"));
-            assertFalse(persistence.getTools().isLoaded(user, "name"));
-            assertTrue(persistence.getTools().isLoaded(user, "group"));
-            assertTrue(persistence.getTools().isLoaded(user.getGroup(), "name"));
+            assertTrue(cont.persistence().getTools().isLoaded(user, "login"));
+            assertFalse(cont.persistence().getTools().isLoaded(user, "name"));
+            assertTrue(cont.persistence().getTools().isLoaded(user, "group"));
+            assertTrue(cont.persistence().getTools().isLoaded(user.getGroup(), "name"));
 
             tx.commit();
         } finally {
@@ -100,22 +109,23 @@ public class PersistenceTest extends CubaTestCase {
         }
     }
 
+    @Test
     public void testMergeNotLoaded() throws Exception {
         User user;
         Group group;
 
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
             User transientUser = new User();
             transientUser.setId(userId);
             transientUser.setName("testUser1");
 
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             em.merge(transientUser);
 
             tx.commitRetaining();
 
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             user = em.find(User.class, userId);
             assertNotNull(user);
             group = user.getGroup();
@@ -129,10 +139,11 @@ public class PersistenceTest extends CubaTestCase {
         assertNotNull(group);
     }
 
+    @Test
     public void testDirtyFields() throws Exception {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             assertNotNull(em);
             Server server = new Server();
             UUID id = server.getId();
@@ -142,12 +153,12 @@ public class PersistenceTest extends CubaTestCase {
 
             tx.commitRetaining();
 
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             server = em.find(Server.class, id);
             assertNotNull(server);
             server.setData("testData");
 
-            Set<String> dirtyFields = persistence.getTools().getDirtyFields(server);
+            Set<String> dirtyFields = cont.persistence().getTools().getDirtyFields(server);
             assertTrue(dirtyFields.contains("data"));
 
             tx.commit();
@@ -159,10 +170,11 @@ public class PersistenceTest extends CubaTestCase {
     /**
      * OpenJPA silently ignores setting null in nullable=false attribute.
      */
+    @Test
     public void testNonNullAttribute() throws Exception {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             User user = em.find(User.class, userId);
             assertNotNull(user);
             user.setLogin(null);
@@ -171,7 +183,7 @@ public class PersistenceTest extends CubaTestCase {
             fail();
 
 // Old OpenJPA behaviour
-//            em = persistence.getEntityManager();
+//            em = cont.persistence().getEntityManager();
 //            user = em.find(User.class, userId);
 //            assertNotNull(user);
 //            assertNotNull(user.getLogin()); // null was not saved

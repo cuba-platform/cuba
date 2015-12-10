@@ -4,12 +4,21 @@
  */
 package com.haulmont.cuba.core;
 
-import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.entity.Server;
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.ClassRule;
+import org.junit.Test;
 
-public class NamePatternTest extends CubaTestCase {
+import static org.junit.Assert.assertEquals;
 
+public class NamePatternTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
+
+    @Test
     public void test() {
         Server server = new Server();
         server.setName("orion");

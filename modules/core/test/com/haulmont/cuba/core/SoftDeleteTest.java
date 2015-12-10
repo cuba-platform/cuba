@@ -9,24 +9,33 @@ import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.util.List;
 import java.util.UUID;
 
-public class SoftDeleteTest extends CubaTestCase
-{
+import static org.junit.Assert.*;
+
+public class SoftDeleteTest {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
+    
     private UUID groupId;
     private UUID userId;
     private UUID role2Id;
     private UUID userRole1Id;
     private UUID userRole2Id;
 
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        Transaction tx = persistence.createTransaction();
+    @Before
+    public void setUp() throws Exception {
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Group group = new Group();
             groupId = group.getId();
@@ -61,7 +70,7 @@ public class SoftDeleteTest extends CubaTestCase
             
             tx.commitRetaining();
 
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
 
             UserRole ur = em.find(UserRole.class, userRole2Id);
             em.remove(ur);
@@ -75,10 +84,11 @@ public class SoftDeleteTest extends CubaTestCase
         }
     }
 
-    protected void tearDown() throws Exception {
-        Transaction tx = persistence.createTransaction();
+    @After
+    public void tearDown() throws Exception {
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Query q;
 
@@ -103,15 +113,15 @@ public class SoftDeleteTest extends CubaTestCase
         } finally {
             tx.end();
         }
-        super.tearDown();
     }
 
+    @Test
     public void testNormalMode() {
         System.out.println("===================== BEGIN testNormalMode =====================");
 
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Role role = em.find(Role.class, role2Id);
             assertNull(role);
@@ -123,12 +133,13 @@ public class SoftDeleteTest extends CubaTestCase
         System.out.println("===================== END testNormalMode =====================");
     }
 
+    @Test
     public void testCleanupMode() {
         System.out.println("===================== BEGIN testCleanupMode =====================");
 
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             em.setSoftDeletion(false);
 
             Role role = em.find(Role.class, role2Id);
@@ -142,12 +153,13 @@ public class SoftDeleteTest extends CubaTestCase
         System.out.println("===================== END testCleanupMode =====================");
     }
 
+    @Test
     public void testOneToMany() {
         System.out.println("===================== BEGIN testOneToMany =====================");
 
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             View view = new View(User.class, "testView")
                             .addProperty("name")
@@ -172,11 +184,12 @@ public class SoftDeleteTest extends CubaTestCase
         System.out.println("===================== END testOneToMany =====================");
     }
 
+    @Test
     public void testOneToManyLazy() {
         System.out.println("===================== BEGIN testOneToManyLazy =====================");
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             User user = em.find(User.class, userId);
 
@@ -193,12 +206,13 @@ public class SoftDeleteTest extends CubaTestCase
         System.out.println("===================== END testOneToManyLazy =====================");
     }
 
+    @Test
     public void testOneToMany_CleanupMode() {
         System.out.println("===================== BEGIN testOneToMany_CleanupMode =====================");
 
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             em.setSoftDeletion(false);
 
             View view =  new View(User.class, "testView")
@@ -224,12 +238,13 @@ public class SoftDeleteTest extends CubaTestCase
         System.out.println("===================== END testOneToMany_CleanupMode =====================");
     }
 
+    @Test
     public void testOneToMany_Query() {
         System.out.println("===================== BEGIN testOneToMany_Query =====================");
 
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Query q = em.createQuery("select u from sec$User u where u.id = ?1");
             q.setParameter(1, userId);
@@ -248,12 +263,13 @@ public class SoftDeleteTest extends CubaTestCase
         System.out.println("===================== END testOneToMany_Query =====================");
     }
 
+    @Test
     public void testOneToMany_JoinFetchQuery() {
         System.out.println("===================== BEGIN testOneToMany_JoinFetchQuery =====================");
 
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
 
             Query q = em.createQuery("select u from sec$User u join fetch u.userRoles where u.id = ?1");
             q.setParameter(1, userId);
@@ -272,12 +288,13 @@ public class SoftDeleteTest extends CubaTestCase
         System.out.println("===================== END testOneToMany_JoinFetchQuery =====================");
     }
 
+    @Test
     public void testQuery() {
         System.out.println("===================== BEGIN testQuery =====================");
 
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             Query query = em.createQuery("select r from sec$Role r where r.name = ?1");
             query.setParameter(1, "roleToBeDeleted");
 
@@ -291,12 +308,13 @@ public class SoftDeleteTest extends CubaTestCase
         System.out.println("===================== END testQuery =====================");
     }
 
+    @Test
     public void testQuery_CleanupMode() {
         System.out.println("===================== BEGIN testQuery_CleanupMode =====================");
 
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             em.setSoftDeletion(false);
             Query query = em.createQuery("select r from sec$Role r where r.name = ?1");
             query.setParameter(1, "roleToBeDeleted");
@@ -311,12 +329,13 @@ public class SoftDeleteTest extends CubaTestCase
         System.out.println("===================== END testQuery_CleanupMode =====================");
     }
 
+    @Test
     public void testQueryWithoutConditions() {
         System.out.println("===================== BEGIN testQueryWithoutConditions =====================");
 
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             Query query = em.createQuery("select r from sec$Role r");
 
             List<Role> list = query.getResultList();
@@ -333,22 +352,23 @@ public class SoftDeleteTest extends CubaTestCase
         System.out.println("===================== END testQueryWithoutConditions =====================");
     }
 
+    @Test
     public void testRemoveNotManaged() {
         System.out.println("===================== BEGIN testRemoveNotManaged =====================");
 
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = cont.persistence().createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = cont.persistence().getEntityManager();
             UserRole userRole = em.find(UserRole.class, userRole1Id);
 
             tx.commitRetaining();
 
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             em.remove(userRole);
 
             tx.commitRetaining();
 
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             UserRole deletedUserRole = em.find(UserRole.class, userRole1Id);
             assertNull(deletedUserRole);
 
@@ -359,40 +379,41 @@ public class SoftDeleteTest extends CubaTestCase
         System.out.println("===================== END testRemoveNotManaged =====================");
     }
 
+    @Test
     public void testGlobalSoftDeleteSwitch() throws Exception {
         EntityManager em;
         Transaction tx;
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             assertTrue(em.isSoftDeletion());
             tx.commit();
         } finally {
             tx.end();
         }
 
-        persistence.setSoftDeletion(false);
+        cont.persistence().setSoftDeletion(false);
         try {
-            tx = persistence.createTransaction();
+            tx = cont.persistence().createTransaction();
             try {
-                em = persistence.getEntityManager();
+                em = cont.persistence().getEntityManager();
                 assertFalse(em.isSoftDeletion());
 
-                persistence.setSoftDeletion(true);
-                em = persistence.getEntityManager();
-                assertFalse(em.isSoftDeletion()); // persistence.setSoftDeletion affects only EMs created in a new tx
+                cont.persistence().setSoftDeletion(true);
+                em = cont.persistence().getEntityManager();
+                assertFalse(em.isSoftDeletion()); // cont.persistence().setSoftDeletion affects only EMs created in a new tx
 
                 tx.commit();
             } finally {
                 tx.end();
             }
         } finally {
-            persistence.setSoftDeletion(true);
+            cont.persistence().setSoftDeletion(true);
         }
 
-        tx = persistence.createTransaction();
+        tx = cont.persistence().createTransaction();
         try {
-            em = persistence.getEntityManager();
+            em = cont.persistence().getEntityManager();
             assertTrue(em.isSoftDeletion());
             tx.commit();
         } finally {
