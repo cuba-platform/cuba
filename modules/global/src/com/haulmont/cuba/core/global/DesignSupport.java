@@ -11,18 +11,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotates generated entities from legacy database.
- * Annotation contains additional information about generated entities from legacy database
+ * Annotates code containing additional information for external tools
  *
  * @author zlatoverov
  * @version $Id$
  */
-@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.CONSTRUCTOR,
+        ElementType.LOCAL_VARIABLE, ElementType.PARAMETER, ElementType.TYPE_PARAMETER})
 @Retention(RetentionPolicy.SOURCE)
-public @interface Design {
+public @interface DesignSupport {
 
     /**
-     * @return additional information in JSON format
+     * @return additional information
      */
     String value() default "";
 }
