@@ -24,8 +24,8 @@ public enum Op {
     CONTAINS("like", "contains", false),
     DOES_NOT_CONTAIN("not like", "contains", false),
     NOT_EMPTY("is not null", "!= null", true),
-    STARTS_WITH("like", "startWith", false),
-    ENDS_WITH("like", "endWith", false);
+    STARTS_WITH("like", "startsWith", false),
+    ENDS_WITH("like", "endsWith", false);
 
     private String forJpql;
     private String forGroovy;

@@ -37,7 +37,7 @@ public class GroovyGeneratorTest {
         Assert.assertEquals("{E}.name != null", groovyGenerator.generateGroovy(clause));
 
         clause = clause("name", Op.STARTS_WITH, String.class, "testName");
-        Assert.assertEquals("{E}.name.startWith('testName')", groovyGenerator.generateGroovy(clause));
+        Assert.assertEquals("{E}.name.startsWith('testName')", groovyGenerator.generateGroovy(clause));
 
 //        clause = clause("name", Op.IN, Integer.class, Arrays.<String>asList("1", "2", "3").toString());
 //        Assert.assertEquals("{E}.name in ['1', '2', '3']", groovyGenerator.generateGroovy(clause));
