@@ -83,4 +83,8 @@ public interface DesktopConfig extends Config {
     @Property("cuba.desktop.sessionMessagesIntervalSec")
     @DefaultInt(60)
     int getSessionMessagesIntervalSec();
+
+    @Property("cuba.desktop.searchField.asyncTimeoutMs")
+    @DefaultInt(200)
+    int getSearchFieldAsyncTimeoutMs();
 }
