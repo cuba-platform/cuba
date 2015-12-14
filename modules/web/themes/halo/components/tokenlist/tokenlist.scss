@@ -12,7 +12,7 @@
 
   .#{$primary-stylename} .cuba-tokenlist-label.v-widget {
     clear: both;
-    margin: 0 round($v-layout-margin-right/2) round($v-layout-margin-bottom) 0;
+    margin: 0 round($v-layout-margin-right/2) round($v-layout-margin-bottom/2) 0;
     height: $v-unit-size;
     cursor: pointer;
     display: block;
