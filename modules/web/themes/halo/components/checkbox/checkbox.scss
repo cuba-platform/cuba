@@ -12,7 +12,15 @@
     top: 0;
   }
 
-  .#{$primary-stylename} > label {
-    @include user-select(text);
+  .#{$primary-stylename} {
+    line-height: round($v-unit-size / 1.75);
+
+    label {
+      @include user-select(text);
+    }
+  }
+
+  :root & .#{$primary-stylename} > input ~ label:before {
+    margin-top: 1px;
   }
 }
