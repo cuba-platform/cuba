@@ -308,8 +308,8 @@ create table SEC_CONSTRAINT (
     DELETED_BY varchar(50),
     --
     CODE varchar(255),
-    CHECK_TYPE varchar(50) not null default 'db',
-    OPERATION_TYPE varchar(50) not null default 'read',
+    CHECK_TYPE varchar(50) default 'db',
+    OPERATION_TYPE varchar(50) default 'read',
     ENTITY_NAME varchar(255) not null,
     JOIN_CLAUSE varchar(500),
     WHERE_CLAUSE varchar(1000),
