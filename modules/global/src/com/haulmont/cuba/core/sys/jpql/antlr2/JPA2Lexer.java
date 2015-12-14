@@ -1,4 +1,4 @@
-// $ANTLR 3.5.2 JPA2.g 2015-12-14 16:07:39
+// $ANTLR 3.5.2 JPA2.g 2015-12-14 16:16:55
 
 package com.haulmont.cuba.core.sys.jpql.antlr2;
 

@@ -69,5 +69,13 @@ public class Jpa2GrammarTest {
         JPA2Parser jpa2Parser = new JPA2Parser(tstream);
         JPA2Parser.like_expression_return aReturn = jpa2Parser.like_expression();
         Assert.assertNotNull(aReturn);
+
+        query = "c.name like :pattern escape '.'";
+        cs = new AntlrNoCaseStringStream(query);
+        lexer = new JPA2Lexer(cs);
+        tstream = new CommonTokenStream(lexer);
+        jpa2Parser = new JPA2Parser(tstream);
+        aReturn = jpa2Parser.like_expression();
+        Assert.assertNotNull(aReturn);
     }
 }
