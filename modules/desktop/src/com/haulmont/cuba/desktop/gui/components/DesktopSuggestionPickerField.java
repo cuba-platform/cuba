@@ -8,6 +8,7 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SearchPickerField;
+import com.haulmont.cuba.gui.components.SuggestionPickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 
@@ -20,7 +21,7 @@ import java.util.Collection;
  * @author artamonov
  * @version $Id$
  */
-public class DesktopSuggestionPickerField extends DesktopSuggestionField implements SearchPickerField {
+public class DesktopSuggestionPickerField extends DesktopSuggestionField implements SuggestionPickerField {
 
     protected DesktopPickerField pickerField;
 

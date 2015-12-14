@@ -18,6 +18,7 @@ import com.haulmont.cuba.desktop.sys.vcl.SearchAutoCompleteSupport;
 import com.haulmont.cuba.desktop.sys.vcl.SearchComboBox;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SearchField;
+import com.haulmont.cuba.gui.components.SuggestionField;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -38,7 +39,7 @@ import java.util.concurrent.ExecutionException;
  * @author artamonov
  * @version $Id$
  */
-public class DesktopSuggestionField extends DesktopAbstractOptionsField<JComponent> implements SearchField {
+public class DesktopSuggestionField extends DesktopAbstractOptionsField<JComponent> implements SuggestionField {
 
     protected static final FilterMode DEFAULT_FILTER_MODE = FilterMode.CONTAINS;
 
@@ -211,7 +212,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
             });
         }
 
-        JTextField searchEditorComponent = (JTextField) comboBox.getEditor().getEditorComponent();
+        final JTextField searchEditorComponent = getComboBoxEditorField();
         searchEditorComponent.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -232,7 +233,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
                         if (!autoComplete.isEditableState()) {
                             popupItemSelectionHandling = comboBox.getSelectedIndex() >= 0;
 
-                            // Only if realy item changed
+                            // Only if really item changed
                             if (!enterHandling) {
                                 Object selectedItem = comboBox.getSelectedItem();
                                 if (selectedItem instanceof ValueWrapper) {
@@ -284,7 +285,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
     }
 
     protected void handleSearchInput() {
-        JTextField searchEditor = (JTextField) comboBox.getEditor().getEditorComponent();
+        JTextField searchEditor = getComboBoxEditorField();
         String currentSearchString = StringUtils.trimToEmpty(searchEditor.getText());
         if (!ObjectUtils.equals(currentSearchString, lastSearchString)) {
             lastSearchString = currentSearchString;
@@ -608,7 +609,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
             Object value = comboBox.getSelectedItem();
             comboBox.getEditor().setItem(value);
 
-            JTextField searchEditor = (JTextField) comboBox.getEditor().getEditorComponent();
+            JTextField searchEditor = getComboBoxEditorField();
             if (value instanceof ValueWrapper) {
                 searchEditor.setText(value.toString());
             }
@@ -655,6 +656,12 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
         super.updateComponent(value);
 
         updateTextRepresentation();
+
+        lastSearchString = getComboBoxEditorField().getText();
+    }
+
+    protected JTextField getComboBoxEditorField() {
+        return (JTextField) comboBox.getEditor().getEditorComponent();
     }
 
     @Override
@@ -712,6 +719,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
         this.mode = mode;
     }
 
+    @Override
     public int getAsyncSearchTimeoutMs() {
         return asyncSearchTimeoutMs;
     }
@@ -720,64 +728,40 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
      * @param asyncSearchTimeoutMs timeout between the last key press action and async search
      * @see DesktopConfig#getSearchFieldAsyncTimeoutMs()
      */
+    @Override
     public void setAsyncSearchTimeoutMs(int asyncSearchTimeoutMs) {
         this.asyncSearchTimeoutMs = asyncSearchTimeoutMs;
     }
 
+    @Override
     public SearchExecutor getSearchExecutor() {
         return searchExecutor;
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public void setSearchExecutor(SearchExecutor searchExecutor) {
         this.searchExecutor = searchExecutor;
     }
 
+    @Override
     public EnterActionHandler getEnterActionHandler() {
         return enterActionHandler;
     }
 
+    @Override
     public void setEnterActionHandler(EnterActionHandler enterActionHandler) {
         this.enterActionHandler = enterActionHandler;
     }
 
-    public void showExplicitSuggestions(List<? extends Entity> suggestions) {
+    @Override
+    public void showSuggestions(List<? extends Entity> suggestions) {
         if (asyncSearchWorker != null) {
             asyncSearchWorker.cancel(true);
             asyncSearchWorker = null;
         }
 
         handleSearchResults(suggestions);
-    }
-
-    public interface SearchExecutor<E extends Entity> {
-
-        /**
-         * Executed on backgroud thread.
-         *
-         * @param searchString search string as is.
-         * @param searchParams additional parameters, empty of SearchExecutor is not instance of {@link ParametrizedSearchExecutor}
-         * @return list with found entities
-         */
-        List<E> search(String searchString, Map<String, Object> searchParams);
-    }
-
-    public interface ParametrizedSearchExecutor<E extends Entity> extends SearchExecutor<E> {
-        /**
-         * Called by the execution environment in UI thread to prepare execution parameters for {@link SearchExecutor#search(String, Map)}.
-         *
-         * @return map with parameters.
-         */
-        Map<String, Object> getParams();
-    }
-
-    public interface EnterActionHandler {
-        /**
-         * Called by component if user entered a search string and pressed ENTER key without selection of a suggestion.
-         *
-         * @param currentSearchString search string as is.
-         */
-        void onEnterKeyPressed(String currentSearchString);
     }
 
     // we don't need to select current item in suggestion list automatically
