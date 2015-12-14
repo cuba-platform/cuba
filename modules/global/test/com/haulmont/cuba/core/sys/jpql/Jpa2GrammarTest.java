@@ -59,4 +59,15 @@ public class Jpa2GrammarTest {
         JPA2Parser.ql_statement_return aReturn = jpa2Parser.ql_statement();
         Assert.assertNotNull(aReturn);
     }
+
+    @Test
+    public void testEscape() throws Exception {
+        String query = "c.name like :pattern escape '/'";
+        CharStream cs = new AntlrNoCaseStringStream(query);
+        JPA2Lexer lexer = new JPA2Lexer(cs);
+        TokenStream tstream = new CommonTokenStream(lexer);
+        JPA2Parser jpa2Parser = new JPA2Parser(tstream);
+        JPA2Parser.like_expression_return aReturn = jpa2Parser.like_expression();
+        Assert.assertNotNull(aReturn);
+    }
 }

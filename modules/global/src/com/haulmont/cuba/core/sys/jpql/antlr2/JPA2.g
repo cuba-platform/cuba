@@ -467,8 +467,9 @@ identification_variable
 parameter_name
     : WORD ('.'  WORD)*;
 
+//todo eude ESCAPE_CHARACTER should be here instead of STRING_LITERAL, but it does not work for some reason, so workarounded with STRING_LITERAL
 escape_character
-    : ESCAPE_CHARACTER;
+    : STRING_LITERAL;
 trim_character
     : TRIM_CHARACTER;
 string_literal
