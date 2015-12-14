@@ -338,9 +338,9 @@ create table SEC_CONSTRAINT (
     DELETED_BY varchar2(50),
     --
     CODE varchar2(255),
-    CHECK_TYPE varchar2(50),
-    OPERATION_TYPE varchar2(50),
-    ENTITY_NAME varchar2(255),
+    CHECK_TYPE varchar2(50) not null default 'db',
+    OPERATION_TYPE varchar2(50) not null default 'read',
+    ENTITY_NAME varchar2(255) not null,
     JOIN_CLAUSE varchar2(500),
     WHERE_CLAUSE varchar2(1000),
     GROOVY_SCRIPT varchar2(1000),
