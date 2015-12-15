@@ -16,6 +16,7 @@ import org.junit.*;
 
 import java.util.UUID;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -25,7 +26,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class PersistenceAttributeLoadedCheckTest {
     @ClassRule
-    public static final TestContainer container = TestContainer.Common.INSTANCE;
+    public static final TestContainer cont = TestContainer.Common.INSTANCE;
 
     private DataManager dataManager;
     private Persistence persistence;
@@ -75,8 +76,8 @@ public class PersistenceAttributeLoadedCheckTest {
 
     @After
     public void tearDown() throws Exception {
-        container.deleteRecord("SEC_USER", userId);
-        container.deleteRecord("SYS_SCHEDULED_TASK", taskId);
+        cont.deleteRecord("SEC_USER", userId);
+        cont.deleteRecord("SYS_SCHEDULED_TASK", taskId);
     }
 
     @Test
@@ -117,5 +118,17 @@ public class PersistenceAttributeLoadedCheckTest {
         assertTrue(PersistenceHelper.isLoaded(task, "beanName"));//if attribute is in the view - it should be loaded
         assertTrue(!PersistenceHelper.isLoaded(task, "methodName"));//if attribute is not in the view - it should not be loaded
         assertTrue(PersistenceHelper.isLoaded(task, "methodParametersString"));//meta properties should be marked as loaded
+    }
+
+    @Test
+    public void testManagedInstance() throws Exception {
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            User user = cont.entityManager().find(User.class, userId);
+
+            assertTrue(PersistenceHelper.isLoaded(user, "name"));
+            assertFalse(PersistenceHelper.isLoaded(user, "group"));
+
+            tx.commit();
+        }
     }
 }

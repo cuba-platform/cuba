@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.security.entity.Constraint;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.testsupport.TestContainer;
@@ -35,6 +36,7 @@ public class EntityManagerTest {
     private UUID userId;
     private UUID user2Id;
     private UUID groupId;
+    private Constraint constraint_1_1;
 
     @Before
     public void setUp() throws Exception {
@@ -59,6 +61,12 @@ public class EntityManagerTest {
             group.setName("testGroup1");
             em.persist(group);
 
+            constraint_1_1 = cont.metadata().create(Constraint.class);
+            constraint_1_1.setGroup(group);
+            constraint_1_1.setEntityName("sec$User");
+            constraint_1_1.setWhereClause("{E}.name = 'admin'");
+            em.persist(constraint_1_1);
+
             user = new User();
             user2Id = user.getId();
             user.setName("testUser2");
@@ -77,6 +85,7 @@ public class EntityManagerTest {
 
     @After
     public void tearDown() throws Exception {
+        cont.deleteRecord(constraint_1_1);
         cont.deleteRecord("SEC_USER", userId);
         cont.deleteRecord("SEC_USER", user2Id);
         cont.deleteRecord("SEC_GROUP", groupId);
@@ -340,5 +349,24 @@ public class EntityManagerTest {
         assertNotNull(reloadedUser);
         assertNotNull(reloadedUser.getLogin());
         assertTrue(PersistenceHelper.isLoaded(reloadedUser, "userRoles"));
+    }
+
+    @Test
+    public void testSerializationWithView() {
+        View constraintView1 = new View(Constraint.class)
+                .addProperty("entityName")
+                .addProperty("whereClause");
+
+        View groupView1 = new View(Group.class)
+                .addProperty("name")
+                .addProperty("parent")
+                .addProperty("constraints", constraintView1);
+
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            EntityManager em = cont.entityManager();
+            Group group = em.find(Group.class, groupId, groupView1);
+
+            tx.commit();
+        }
     }
 }
