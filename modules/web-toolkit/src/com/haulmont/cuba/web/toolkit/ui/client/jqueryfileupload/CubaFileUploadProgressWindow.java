@@ -919,6 +919,10 @@ public class CubaFileUploadProgressWindow extends VOverlay implements KeyDownHan
         }
     }
 
+    public void setCloseListener(CloseListener closeListener) {
+        this.closeListener = closeListener;
+    }
+
     public interface CloseListener {
         void onClose();
     }
