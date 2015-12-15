@@ -943,6 +943,8 @@
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEnableProp"/>
 
+        <xs:attributeGroup ref="hasGridConstraints"/>
+
         <xs:attribute name="providerClass" type="xs:string"/>
         <xs:attribute name="alwaysVisible" type="xs:boolean"/>
     </xs:complexType>
