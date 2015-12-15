@@ -1,0 +1,75 @@
+/*
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+// Version: $Id$
+
+$v-progressbar-define-indeterminate: false;
+$v-progressbar-indeterminate-indicator-width: 120px !default;
+
+@mixin cuba-progressbar($primary-stylename: v-progressbar) {
+
+  .#{$primary-stylename}-indeterminate {
+    .#{$primary-stylename}-wrapper {
+      position: relative;
+      overflow: hidden;
+
+      &:after {
+        @include valo-progressbar-indicator-style;
+
+        content: " ";
+        display: block;
+        width: $v-progressbar-indeterminate-indicator-width;
+
+        position: absolute;
+        @include animation(move-indicator 3s infinite linear);
+      }
+
+      .#{$primary-stylename}-indicator {
+        display: none;
+      }
+    }
+  }
+
+  .#{$primary-stylename}-indeterminate-circle {
+    @include valo-spinner;
+
+    .#{$primary-stylename}-wrapper {
+      display: none;
+    }
+  }
+}
+
+@-webkit-keyframes move-indicator {
+  from {
+    left:-$v-progressbar-indeterminate-indicator-width;
+  }
+  to {
+    left:100%;
+  }
+}
+@-moz-keyframes move-indicator {
+  from {
+    left:-$v-progressbar-indeterminate-indicator-width;
+  }
+  to {
+    left:100%;
+  }
+}
+@-o-keyframes move-indicator {
+  from {
+    left:-$v-progressbar-indeterminate-indicator-width;
+  }
+  to {
+    left:100%;
+  }
+}
+@keyframes move-indicator {
+  from {
+    left:-$v-progressbar-indeterminate-indicator-width;
+  }
+  to {
+    left:100%;
+  }
+}

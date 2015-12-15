@@ -41,6 +41,7 @@
 @import "components/optiongroup/optiongroup";
 @import "components/widgetstree/widgetstree";
 @import "components/popupbutton/popupbutton";
+@import "components/progressbar/progressbar";
 @import "components/richtextarea/richtextarea";
 @import "components/notification/notification";
 @import "components/searchselect/searchselect";
@@ -122,4 +123,5 @@
     @include cuba-scrollbar;
   }
   @include cuba-folders-pane;
+  @include cuba-progressbar;
 }
