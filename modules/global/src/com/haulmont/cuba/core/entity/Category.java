@@ -14,9 +14,8 @@ import javax.persistence.*;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 @javax.persistence.Entity(name = "sys$Category")
 @Table(name = "SYS_CATEGORY")
@@ -29,10 +28,10 @@ public class Category extends StandardEntity {
 
     private static final long serialVersionUID = 7160259865207148541L;
 
-    @Column(name = "NAME")
+    @Column(name = "NAME", nullable = false)
     protected String name;
 
-    @Column(name = "ENTITY_TYPE")
+    @Column(name = "ENTITY_TYPE", nullable = false)
     protected String entityType;
 
     @Column(name = "IS_DEFAULT")

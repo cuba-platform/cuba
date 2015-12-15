@@ -680,9 +680,9 @@ create table SYS_CATEGORY (
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
     --
-    NAME varchar(255),
+    NAME varchar(255) not null,
     SPECIAL varchar(50),
-    ENTITY_TYPE varchar(30),
+    ENTITY_TYPE varchar(30) not null,
     IS_DEFAULT boolean,
     DISCRIMINATOR integer,
     --

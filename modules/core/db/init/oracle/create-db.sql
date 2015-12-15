@@ -39,9 +39,9 @@ create table SYS_CATEGORY (
     UPDATED_BY varchar2(50),
     DELETE_TS timestamp,
     DELETED_BY varchar2(50),
-    NAME varchar2(255),
+    NAME varchar2(255) not null,
     SPECIAL varchar2(50),
-    ENTITY_TYPE varchar2(30),
+    ENTITY_TYPE varchar2(30) not null,
     IS_DEFAULT char(1),
     DISCRIMINATOR integer,
     primary key(ID)
