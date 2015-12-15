@@ -41,9 +41,6 @@ public class GroupBrowser extends AbstractWindow {
     @Named("groupsTree.copy")
     protected Action groupCopyAction;
 
-    @Named("groupsTree.edit")
-    protected EditAction groupEditAction;
-
     @Inject
     protected PopupButton groupCreateButton;
 
@@ -71,7 +68,8 @@ public class GroupBrowser extends AbstractWindow {
     @Inject
     protected ThemeConstants themeConstants;
 
-    protected boolean constraintsTabInitialized, attributesTabInitialized;
+    protected boolean constraintsTabInitialized = false;
+    protected boolean attributesTabInitialized = false;
 
     protected GroupPropertyCreateAction attributeCreateAction;
     protected GroupPropertyCreateAction constraintCreateAction;
@@ -90,7 +88,7 @@ public class GroupBrowser extends AbstractWindow {
 
         createAction.setOpenType(WindowManager.OpenType.DIALOG);
 
-        groupEditAction = new EditAction(groupsTree) {
+        EditAction groupEditAction = new EditAction(groupsTree) {
             @Override
             protected void afterCommit(Entity entity) {
                 groupsTree.expandTree();
@@ -213,10 +211,11 @@ public class GroupBrowser extends AbstractWindow {
     }
 
     protected void initConstraintsTab() {
-        if (constraintsTabInitialized)
+        if (constraintsTabInitialized) {
             return;
+        }
 
-        final Table constraintsTable = (Table) getComponentNN("constraintsTable");
+        Table constraintsTable = (Table) getComponentNN("constraintsTable");
         constraintCreateAction = new GroupPropertyCreateAction(constraintsTable);
         constraintsTable.addAction(constraintCreateAction);
 
@@ -243,10 +242,11 @@ public class GroupBrowser extends AbstractWindow {
     }
 
     protected void initAttributesTab() {
-        if (attributesTabInitialized)
+        if (attributesTabInitialized) {
             return;
+        }
 
-        final Table attributesTable = (Table) getComponentNN("attributesTable");
+        Table attributesTable = (Table) getComponentNN("attributesTable");
         attributeCreateAction = new GroupPropertyCreateAction(attributesTable);
         attributesTable.addAction(attributeCreateAction);
 

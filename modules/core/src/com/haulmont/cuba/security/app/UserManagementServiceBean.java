@@ -94,11 +94,15 @@ public class UserManagementServiceBean implements UserManagementService {
         try {
             EntityManager em = persistence.getEntityManager();
 
+            Query groupNamesQuery = em.createQuery("select g.name from sec$Group g");
+            @SuppressWarnings("unchecked")
+            Set<String> groupNames = new HashSet<>(groupNamesQuery.getResultList());
+
             Group accessGroup = em.find(Group.class, accessGroupId, GROUP_COPY_VIEW);
             if (accessGroup == null)
                 throw new IllegalStateException("Unable to find specified access group with id: " + accessGroupId);
 
-            clone = cloneGroup(accessGroup, accessGroup.getParent(), em);
+            clone = cloneGroup(accessGroup, accessGroup.getParent(), groupNames, em);
 
             tx.commit();
         } finally {
@@ -484,10 +488,13 @@ public class UserManagementServiceBean implements UserManagementService {
         return modifiedUsers;
     }
 
-    protected Group cloneGroup(Group group, Group parent, EntityManager em) {
+    protected Group cloneGroup(Group group, Group parent, Set<String> groupNames, EntityManager em) {
         Group groupClone = metadata.create(Group.class);
 
-        groupClone.setName(group.getName());
+        String newGroupName = generateName(group.getName(), groupNames);
+        groupClone.setName(newGroupName);
+        groupNames.add(newGroupName);
+
         groupClone.setParent(parent);
 
         em.persist(groupClone);
@@ -508,18 +515,29 @@ public class UserManagementServiceBean implements UserManagementService {
             }
         }
 
-        Query query = em.createQuery("select g from sec$Group g where g.parent.id = :group");
+        TypedQuery<Group> query = em.createQuery("select g from sec$Group g where g.parent.id = :group", Group.class);
         query.setParameter("group", group);
 
-        List subGroups = query.getResultList();
+        List<Group> subGroups = query.getResultList();
         if (subGroups != null && subGroups.size() > 0) {
-            for (Object subGroupObject : subGroups) {
-                Group subGroup = (Group) subGroupObject;
-                cloneGroup(subGroup, groupClone, em);
+            for (Group subGroup : subGroups) {
+                cloneGroup(subGroup, groupClone, groupNames, em);
             }
         }
 
         return groupClone;
+    }
+
+    protected String generateName(String originalGroupName, Set<String> groupNames) {
+        String newGroupName;
+
+        int i = 1;
+        do {
+            newGroupName = originalGroupName + " (" + i + ")";
+            i++;
+        } while (groupNames.contains(newGroupName));
+
+        return newGroupName;
     }
 
     protected SessionAttribute cloneSessionAttribute(SessionAttribute attribute, Group group) {
