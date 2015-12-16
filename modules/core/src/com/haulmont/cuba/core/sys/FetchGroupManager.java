@@ -9,6 +9,7 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import org.apache.commons.lang.StringUtils;
@@ -262,6 +263,15 @@ public class FetchGroupManager {
                     && metaProperty.getRange().isClass()
                     && metaProperty.getRange().asClass().equals(parentField.metaProperty.getDomain())) {
                 // do not add immediate back references
+                if (metaProperty.getRange().getCardinality().equals(Range.Cardinality.ONE_TO_ONE)) {
+                    // For ONE_TO_ONE, add the back reference. This leads to additional useless SELECTs but
+                    // saves from "Cannot get unfetched attribute" exception.
+                    FetchGroupField field = createFetchGroupField(entityClass, parentField, propertyName, property.getFetchMode());
+                    fetchGroupFields.add(field);
+                    //noinspection unchecked
+                    Class<Entity> javaClass = metaProperty.getRange().asClass().getJavaClass();
+                    fetchGroupFields.add(createFetchGroupField(javaClass, field, "id"));
+                }
                 continue;
             }
 
