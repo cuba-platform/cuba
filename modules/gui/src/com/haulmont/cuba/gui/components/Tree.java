@@ -61,4 +61,9 @@ public interface Tree<E extends Entity> extends ListComponent<E>, Component.Edit
         @Nullable
         String getStyleName(E entity);
     }
+
+    /**
+     * Repaint UI representation of the tree including style providers and icon providers without refreshing the tree data.
+     */
+    void repaint();
 }

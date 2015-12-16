@@ -177,4 +177,9 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
             return style == null ? null : (CUSTOM_STYLE_NAME_PREFIX + style);
         }
     }
+
+    @Override
+    public void repaint() {
+        component.markAsDirty();
+    }
 }

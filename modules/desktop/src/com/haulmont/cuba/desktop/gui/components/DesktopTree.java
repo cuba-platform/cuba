@@ -490,4 +490,9 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
     public void removeStyleProvider(StyleProvider styleProvider) {
         // do nothing
     }
+
+    @Override
+    public void repaint() {
+        // do nothing
+    }
 }
