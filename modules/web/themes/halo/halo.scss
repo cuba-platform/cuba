@@ -46,6 +46,7 @@
 @import "components/notification/notification";
 @import "components/searchselect/searchselect";
 @import "components/orderedlayout/orderedlayout";
+@import "components/entitylinkfield/entitylinkfield";
 @import "components/fieldgrouplayout/fieldgrouplayout";
 @import "components/sourcecodeeditor/sourcecodeeditor";
 @import "components/resizabletextarea/resizabletextarea";
@@ -105,6 +106,7 @@
   @include halo-cuba-widgetstree;
   @include halo-cuba-searchselect;
   @include halo-cuba-multiupload;
+  @include halo-cuba-entitylinkfield;
   @include halo-cuba-fieldgrouplayout;
   @include halo-cuba-resizabletextarea;
 
