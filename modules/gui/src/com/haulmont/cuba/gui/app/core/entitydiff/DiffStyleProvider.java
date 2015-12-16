@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.gui.app.core.entitydiff;
 
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.diff.EntityBasicPropertyDiff;
 import com.haulmont.cuba.core.entity.diff.EntityClassPropertyDiff;
 import com.haulmont.cuba.core.entity.diff.EntityCollectionPropertyDiff;
@@ -18,14 +17,14 @@ import com.haulmont.cuba.gui.components.Table;
  *
  * @author artamonov
  */
-public class DiffStyleProvider implements Table.StyleProvider {
+public class DiffStyleProvider implements Table.StyleProvider<EntityPropertyDiff> {
 
     @Override
-    public String getStyleName(Entity entity, String property) {
+    public String getStyleName(EntityPropertyDiff entity, String property) {
         if (property != null) {
             if ("name".equals(property)) {
                 if (entity instanceof EntityClassPropertyDiff) {
-                    switch (((EntityPropertyDiff) entity).getItemState()) {
+                    switch (entity.getItemState()) {
                         case Added:
                             return "addedItem";
 

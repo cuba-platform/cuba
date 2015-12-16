@@ -1,0 +1,24 @@
+/*
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+// Version: $Id$
+
+@mixin cuba-diff-viewer {
+  .addedItem {
+    color: green !important;
+  }
+
+  .removedItem {
+    color: red !important;
+  }
+
+  .modifiedItem {
+    color: blue !important;
+  }
+
+  .chainItem {
+    color: blue !important;
+  }
+}

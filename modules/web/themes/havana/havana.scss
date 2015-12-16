@@ -75,6 +75,7 @@
 @import "app/jmx-console";
 @import "app/role-editor";
 @import "app/report-wizard";
+@import "app/diff-viewer";
 
 @mixin havana {
   @include base;
@@ -141,4 +142,5 @@
   @include cuba-jmx-console;
   @include cuba-role-editor;
   @include cuba-report-wizard;
+  @include cuba-diff-viewer;
 }

@@ -35,7 +35,7 @@ public class EntityDiffViewer extends AbstractFrame {
     private Table snapshotsTable;
 
     @Inject
-    private TreeTable diffTable;
+    private TreeTable<EntityPropertyDiff> diffTable;
 
     @Inject
     private Label itemStateLabel;
@@ -54,6 +54,7 @@ public class EntityDiffViewer extends AbstractFrame {
         super.init(params);
 
         diffTable.setStyleProvider(new DiffStyleProvider());
+        diffTable.setIconProvider(new DiffIconProvider());
 
         diffDs.addItemChangeListener(e -> {
             boolean valuesVisible = (e.getItem() != null) && (e.getItem().hasStateValues());
