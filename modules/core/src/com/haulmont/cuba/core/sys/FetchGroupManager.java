@@ -259,10 +259,10 @@ public class FetchGroupManager {
             MetaClass metaClass = metadata.getClassNN(entityClass);
             MetaProperty metaProperty = metaClass.getPropertyNN(propertyName);
 
-            if (parentField != null
+            if (parentField != null && property.getView() == null
                     && metaProperty.getRange().isClass()
                     && metaProperty.getRange().asClass().equals(parentField.metaProperty.getDomain())) {
-                // do not add immediate back references
+                // do not add immediate back references without a view
                 if (metaProperty.getRange().getCardinality().equals(Range.Cardinality.ONE_TO_ONE)) {
                     // For ONE_TO_ONE, add the back reference. This leads to additional useless SELECTs but
                     // saves from "Cannot get unfetched attribute" exception.
