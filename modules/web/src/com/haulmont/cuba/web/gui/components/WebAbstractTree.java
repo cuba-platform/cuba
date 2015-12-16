@@ -25,6 +25,8 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
     protected List<Tree.StyleProvider> styleProviders; // lazily initialized List
     protected StyleGeneratorAdapter styleGenerator;    // lazily initialized field
 
+    protected IconProvider iconProvider;
+
     @Override
     public HierarchicalDatasource getDatasource() {
         return (HierarchicalDatasource) super.getDatasource();
@@ -181,5 +183,33 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
     @Override
     public void repaint() {
         component.markAsDirty();
+    }
+
+    @Override
+    public void setIconProvider(IconProvider iconProvider) {
+        if (this.iconProvider != iconProvider) {
+            this.iconProvider = iconProvider;
+
+            if (iconProvider == null) {
+                component.setItemIconProvider(null);
+            } else {
+                component.setItemIconProvider(itemId -> {
+                    Entity item = datasource.getItem(itemId);
+                    if (item == null) {
+                        return null;
+                    }
+
+                    String resourceUrl = WebAbstractTree.this.iconProvider.getItemIcon(item);
+                    if (StringUtils.isBlank(resourceUrl)) {
+                        return null;
+                    }
+                    // noinspection ConstantConditions
+                    if (!resourceUrl.contains(":")) {
+                        resourceUrl = "theme:" + resourceUrl;
+                    }
+                    return WebComponentsHelper.getResource(resourceUrl);
+                });
+            }
+        }
     }
 }

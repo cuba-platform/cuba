@@ -209,22 +209,6 @@ public interface Table<E extends Entity>
     }
 
     /**
-     * Allows to set icons for particular rows in the table.
-     *
-     * @param <E> entity class
-     */
-    interface IconProvider<E extends Entity> {
-        /**
-         * Called by {@link Table} to get an icon to be shown for a row.
-         *
-         * @param entity an entity instance represented by the current row
-         * @return icon name or null to show no icon
-         */
-        @Nullable
-        String getItemIcon(E entity);
-    }
-
-    /**
      * Set the cell style provider for the table. <br/>
      * All style providers added before this call will be removed.
      */

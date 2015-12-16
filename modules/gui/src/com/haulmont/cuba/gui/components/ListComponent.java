@@ -30,5 +30,21 @@ public interface ListComponent<E extends Entity> extends Component, Component.Be
 
     CollectionDatasource getDatasource();
 
+    /**
+     * Allows to set icons for particular rows in the table.
+     *
+     * @param <E> entity class
+     */
+    interface IconProvider<E extends Entity> {
+        /**
+         * Called by {@link Table} to get an icon to be shown for a row.
+         *
+         * @param entity an entity instance represented by the current row
+         * @return icon name or null to show no icon
+         */
+        @Nullable
+        String getItemIcon(E entity);
+    }
+
     void refresh();
 }

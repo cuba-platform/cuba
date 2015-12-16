@@ -14,6 +14,7 @@ import com.vaadin.event.ActionManager;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
+import com.vaadin.server.Resource;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HasComponents;
 import com.vaadin.ui.Layout;
@@ -36,6 +37,7 @@ public class CubaTree extends Tree implements HasComponents {
      * Keeps track of the ShortcutListeners added to this component, and manages the painting and handling as well.
      */
     protected ActionManager shortcutActionManager;
+    protected ItemIconProvider itemIconProvider;
 
     @Override
     protected CubaTreeState getState() {
@@ -178,5 +180,32 @@ public class CubaTree extends Tree implements HasComponents {
             }
             i++;
         }
+    }
+
+    @Override
+    public Resource getItemIcon(Object itemId) {
+        if (itemIconProvider != null) {
+            Resource itemIcon = itemIconProvider.getItemIcon(itemId);
+            if (itemIcon != null) {
+                return itemIcon;
+            }
+        }
+
+        return super.getItemIcon(itemId);
+    }
+
+    public ItemIconProvider getItemIconProvider() {
+        return itemIconProvider;
+    }
+
+    public void setItemIconProvider(ItemIconProvider itemIconProvider) {
+        if (this.itemIconProvider != itemIconProvider) {
+            this.itemIconProvider = itemIconProvider;
+            markAsDirty();
+        }
+    }
+
+    public interface ItemIconProvider {
+        Resource getItemIcon(Object itemId);
     }
 }

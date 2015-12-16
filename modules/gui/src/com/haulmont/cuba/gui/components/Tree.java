@@ -63,6 +63,11 @@ public interface Tree<E extends Entity> extends ListComponent<E>, Component.Edit
     }
 
     /**
+     * Set the icon provider for the tree.
+     */
+    void setIconProvider(IconProvider iconProvider);
+
+    /**
      * Repaint UI representation of the tree including style providers and icon providers without refreshing the tree data.
      */
     void repaint();

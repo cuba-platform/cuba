@@ -10,10 +10,8 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.TreeModelAdapter;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.components.ShowInfoAction;
-import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
@@ -488,6 +486,11 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
 
     @Override
     public void removeStyleProvider(StyleProvider styleProvider) {
+        // do nothing
+    }
+
+    @Override
+    public void setIconProvider(IconProvider iconProvider) {
         // do nothing
     }
 
