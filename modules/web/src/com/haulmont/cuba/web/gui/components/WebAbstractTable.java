@@ -1358,7 +1358,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
-    public void addGeneratedColumn(String columnId, ColumnGenerator generator) {
+    public void addGeneratedColumn(String columnId, ColumnGenerator<E> generator) {
         checkNotNullArgument(columnId, "columnId is null");
         checkNotNullArgument(generator, "generator is null for column id '%s'", columnId);
 
@@ -1438,7 +1438,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
-    public void addGeneratedColumn(String columnId, ColumnGenerator generator,
+    public void addGeneratedColumn(String columnId, ColumnGenerator<E> generator,
                                    Class<? extends com.haulmont.cuba.gui.components.Component> componentClass) {
         // web ui doesn't make any improvements with componentClass known
         addGeneratedColumn(columnId, generator);

@@ -1339,12 +1339,12 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     }
 
     @Override
-    public void addGeneratedColumn(String columnId, ColumnGenerator generator) {
+    public void addGeneratedColumn(String columnId, ColumnGenerator<E> generator) {
         addGeneratedColumn(columnId, generator, null);
     }
 
     @Override
-    public void addGeneratedColumn(String columnId, ColumnGenerator generator,
+    public void addGeneratedColumn(String columnId, ColumnGenerator<E> generator,
                                    Class<? extends com.haulmont.cuba.gui.components.Component> componentClass) {
         checkArgument(columnId != null, "columnId is null");
         checkArgument(generator != null, "generator is null for column id '%s'", columnId);

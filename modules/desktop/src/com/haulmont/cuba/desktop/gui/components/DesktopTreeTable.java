@@ -402,7 +402,7 @@ public class DesktopTreeTable<E extends Entity>
     }
 
     @Override
-    public void addGeneratedColumn(String columnId, ColumnGenerator generator,
+    public void addGeneratedColumn(String columnId, ColumnGenerator<E> generator,
                                    Class<? extends com.haulmont.cuba.gui.components.Component> componentClass) {
         if (columnId == null)
             throw new IllegalArgumentException("columnId is null");

@@ -298,7 +298,7 @@ public interface Table<E extends Entity>
      * @param columnId  column identifier as defined in XML descriptor. May or may not correspond to an entity property.
      * @param generator column generator instance
      */
-    void addGeneratedColumn(String columnId, ColumnGenerator generator);
+    void addGeneratedColumn(String columnId, ColumnGenerator<E> generator);
 
     /**
      * Add a generated column to the table.
@@ -309,7 +309,7 @@ public interface Table<E extends Entity>
      * @param generator      column generator instance
      * @param componentClass class of components that generator will provide
      */
-    void addGeneratedColumn(String columnId, ColumnGenerator generator, Class<? extends Component> componentClass);
+    void addGeneratedColumn(String columnId, ColumnGenerator<E> generator, Class<? extends Component> componentClass);
 
     void removeGeneratedColumn(String columnId);
 
