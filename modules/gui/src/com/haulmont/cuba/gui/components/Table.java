@@ -212,24 +212,24 @@ public interface Table<E extends Entity>
      * Set the cell style provider for the table. <br/>
      * All style providers added before this call will be removed.
      */
-    void setStyleProvider(@Nullable StyleProvider styleProvider);
+    void setStyleProvider(@Nullable StyleProvider<E> styleProvider);
 
     /**
      * Add style provider for the table. <br/>
      * Table can use several providers to obtain many style names for cells and rows.
      */
-    void addStyleProvider(StyleProvider styleProvider);
+    void addStyleProvider(StyleProvider<E> styleProvider);
     /**
      * Remove style provider for the table.
      */
-    void removeStyleProvider(StyleProvider styleProvider);
+    void removeStyleProvider(StyleProvider<E> styleProvider);
 
     /**
      * Set the row icon provider for the table.
      *
      * @see #setRowHeaderWidth(int)
      */
-    void setIconProvider(IconProvider iconProvider);
+    void setIconProvider(IconProvider<E> iconProvider);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
