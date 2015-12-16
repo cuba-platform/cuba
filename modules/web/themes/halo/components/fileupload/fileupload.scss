@@ -38,12 +38,23 @@
     margin: 0;
     top: 0;
     right: 0;
-    font-size: 200px;
+
+    width: 100%;
+    height: 100%;
 
     @include box-defaults;
+  }
+
+  .#{$primary-stylename} input[type="file"]::-webkit-file-upload-button {
+    display: block;
+
+    width: 100%;
+    height: 100%;
 
     max-width: 100%;
     max-height: 100%;
+
+    @include box-defaults;
   }
 
   .#{$primary-stylename}.v-has-width .v-button {
