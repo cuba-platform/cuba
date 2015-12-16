@@ -292,6 +292,16 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
     }
 
     @Override
+    public boolean isTextInputAllowed() {
+        return component.isTextInputAllowed();
+    }
+
+    @Override
+    public void setTextInputAllowed(boolean textInputAllowed) {
+        component.setTextInputAllowed(textInputAllowed);
+    }
+
+    @Override
     public NewOptionHandler getNewOptionHandler() {
         return newOptionHandler;
     }

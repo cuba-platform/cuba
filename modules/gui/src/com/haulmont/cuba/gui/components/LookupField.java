@@ -31,6 +31,16 @@ public interface LookupField extends OptionsField {
     void setNewOptionAllowed(boolean newOptionAllowed);
 
     /**
+     * @return true if text input allowed
+     */
+    boolean isTextInputAllowed();
+    /**
+     * Sets whether it is possible to input text into the field or whether the field area of the component is just used
+     * to show what is selected.
+     */
+    void setTextInputAllowed(boolean textInputAllowed);
+
+    /**
      * @return current handler
      */
     NewOptionHandler getNewOptionHandler();

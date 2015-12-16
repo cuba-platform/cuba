@@ -43,4 +43,9 @@ public class SearchFieldLoader extends LookupFieldLoader {
             searchField.setMode(mode);
         }
     }
+
+    @Override
+    protected void loadTextInputAllowed() {
+        // do nothing
+    }
 }

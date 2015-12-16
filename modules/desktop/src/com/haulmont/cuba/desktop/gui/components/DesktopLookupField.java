@@ -62,6 +62,7 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
 
     protected DefaultValueFormatter valueFormatter;
     protected String inputPrompt;
+    protected boolean textInputAllowed = true;
 
     public DesktopLookupField() {
         composition = new JPanel();
@@ -321,6 +322,16 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
     @Override
     public void setNewOptionAllowed(boolean newOptionAllowed) {
         this.newOptionAllowed = newOptionAllowed;
+    }
+
+    @Override
+    public boolean isTextInputAllowed() {
+        return textInputAllowed;
+    }
+
+    @Override
+    public void setTextInputAllowed(boolean textInputAllowed) {
+        this.textInputAllowed = textInputAllowed;
     }
 
     @Override

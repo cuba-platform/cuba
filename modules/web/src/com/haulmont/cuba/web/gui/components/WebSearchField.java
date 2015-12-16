@@ -154,6 +154,11 @@ public class WebSearchField extends WebLookupField implements SearchField {
     }
 
     @Override
+    public void setTextInputAllowed(boolean textInputAllowed) {
+        throw new UnsupportedOperationException("Option textInputAllowed is unsupported for Search field");
+    }
+
+    @Override
     public void setOptionsDatasource(CollectionDatasource datasource) {
         super.setOptionsDatasource(datasource);
 

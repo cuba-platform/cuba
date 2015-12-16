@@ -738,6 +738,7 @@
                 <xs:attribute name="nullName" type="xs:string"/>
 
                 <xs:attribute name="newOptionAllowed" type="xs:boolean"/>
+                <xs:attribute name="textInputAllowed" type="xs:boolean"/>
                 <xs:attribute name="newOptionHandler" type="xs:string"/>
                 <xs:attribute name="inputPrompt" type="xs:string"/>
             </xs:extension>

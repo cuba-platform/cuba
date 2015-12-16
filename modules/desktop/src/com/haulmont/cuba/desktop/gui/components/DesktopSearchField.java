@@ -407,6 +407,16 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     }
 
     @Override
+    public boolean isTextInputAllowed() {
+        return true;
+    }
+
+    @Override
+    public void setTextInputAllowed(boolean textInputAllowed) {
+        throw new UnsupportedOperationException("Option textInputAllowed is unsupported for Search field");
+    }
+
+    @Override
     public NewOptionHandler getNewOptionHandler() {
         return null;
     }
