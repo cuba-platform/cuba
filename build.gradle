@@ -476,6 +476,9 @@ configure(webModule) {
 //        cleanup = true
     }
 
+    task deployThemes(type: CubaDeployThemeTask, dependsOn: buildScssThemes) {
+    }
+
     task buildHalo(type: CubaWebScssThemeCreation) {
         themes = ['halo']
 //        compress = true
