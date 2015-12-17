@@ -192,6 +192,7 @@ public class ConfigProviderTest {
         assertTrue(config.getBooleanPropDef());
     }
 
+    @Test
     public void testSystemPropOverridesAppProp() throws Exception {
         TestConfig config = AppBeans.get(Configuration.class).getConfig(TestConfig.class);
 

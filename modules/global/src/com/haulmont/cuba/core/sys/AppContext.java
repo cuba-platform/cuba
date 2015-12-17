@@ -6,6 +6,7 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.cuba.core.sys.logging.LogMdc;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -103,15 +104,23 @@ public class AppContext {
                 return getDeprecatedProperty(pair);
             }
         }
-        return properties.get(key);
+        return getSystemOrAppProperty(key);
     }
 
     private static String getDeprecatedProperty(Pair<String, String> pair) {
-        String value = properties.get(pair.getSecond());
+        String value = getSystemOrAppProperty(pair.getSecond());
         if (value != null)
             return value;
         else
-            return properties.get(pair.getFirst());
+            return getSystemOrAppProperty(pair.getFirst());
+    }
+
+    private static String getSystemOrAppProperty(String key) {
+        String value = System.getProperty(key);
+        if (StringUtils.isNotEmpty(value))
+            return value;
+        else
+            return properties.get(key);
     }
 
     /**
