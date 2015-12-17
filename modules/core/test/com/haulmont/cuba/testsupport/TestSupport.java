@@ -7,7 +7,10 @@ package com.haulmont.cuba.testsupport;
 
 import org.junit.Assert;
 
-import java.io.*;
+import java.io.Serializable;
+
+import static com.haulmont.cuba.core.sys.serialization.SerializationSupport.deserialize;
+import static com.haulmont.cuba.core.sys.serialization.SerializationSupport.serialize;
 import java.util.UUID;
 
 /**
@@ -26,19 +29,7 @@ public class TestSupport {
         if (object == null)
             return null;
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(bos);
-        oos.writeObject(object);
-        oos.close();
-        bos.close();
-
-        ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
-        ObjectInputStream ois = new ObjectInputStream(bis);
-        T result = (T) ois.readObject();
-        ois.close();
-        bis.close();
-
-        return result;
+        return (T) deserialize(serialize(object));
     }
 
     public static void assertFail(Runnable runnable) {

@@ -6,10 +6,9 @@
 package com.haulmont.cuba.core.sys.remoting;
 
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.Deserializer;
 import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.core.sys.serialization.SerializationSupport;
 import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.lang.SerializationUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -63,7 +62,7 @@ public class LocalServiceInvokerImpl implements LocalServiceInvoker {
                             arguments[i] = notSerializableArguments[i];
                         }
                     } else {
-                        arguments[i] = Deserializer.deserialize(argumentsData[i]);
+                        arguments[i] = SerializationSupport.deserialize(argumentsData[i]);
                     }
                 }
             }
@@ -77,7 +76,7 @@ public class LocalServiceInvokerImpl implements LocalServiceInvoker {
             Object data = method.invoke(target, arguments);
 
             if (data instanceof Serializable) {
-                result.setData(SerializationUtils.serialize((Serializable) data));
+                result.setData(SerializationSupport.serialize(data));
             } else {
                 result.setNotSerializableData(data);
             }
@@ -85,7 +84,7 @@ public class LocalServiceInvokerImpl implements LocalServiceInvoker {
         } catch (Throwable t) {
             if (t instanceof InvocationTargetException)
                 t = ((InvocationTargetException) t).getTargetException();
-            result.setException(SerializationUtils.serialize(t));
+            result.setException(SerializationSupport.serialize(t));
             return result;
         } finally {
             Thread.currentThread().setContextClassLoader(clientClassLoader);

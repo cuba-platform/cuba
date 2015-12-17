@@ -7,9 +7,8 @@ package com.haulmont.cuba.core.app;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.Deserializer;
+import com.haulmont.cuba.core.sys.serialization.SerializationSupport;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.SerializationUtils;
 import org.jgroups.*;
 import org.jgroups.conf.XmlConfigurator;
 import org.jgroups.jmx.JmxConfigurator;
@@ -79,7 +78,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                byte[] bytes = SerializationUtils.serialize(message);
+                byte[] bytes = SerializationSupport.serialize(message);
                 Message msg = new Message(null, null, bytes);
                 try {
                     channel.send(msg);
@@ -213,7 +212,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
                 return;
             }
 
-            Serializable data = (Serializable) Deserializer.deserialize(bytes);
+            Serializable data = (Serializable) SerializationSupport.deserialize(bytes);
             log.debug("Received message " + data.getClass() + ": " + data);
             ClusterListener listener = listeners.get(data.getClass().getName());
             if (listener != null)

@@ -84,8 +84,18 @@ public class EclipseLinkDetachedTest {
         }
 
         assertEquals("testUser", user.getName());
-        assertNotNull(user.getGroup());
-        assertEquals(1, user.getUserRoles().size());
+
+        try {
+            user.getGroup();
+            fail();
+        } catch (Exception ignored) {
+        }
+
+        try {
+            user.getUserRoles().size();
+            fail();
+        } catch (Exception ignored) {
+        }
     }
 
     @Test

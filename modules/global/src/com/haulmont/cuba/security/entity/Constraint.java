@@ -22,16 +22,16 @@ public class Constraint extends StandardEntity {
 
     private static final long serialVersionUID = -8598548105315052474L;
 
-    @Column(name = "CHECK_TYPE", length = 50)
+    @Column(name = "CHECK_TYPE", length = 50, nullable = false)
     protected String checkType = ConstraintCheckType.DATABASE.getId();
 
-    @Column(name = "OPERATION_TYPE", length = 50)
+    @Column(name = "OPERATION_TYPE", length = 50, nullable = false)
     protected String operationType = ConstraintOperationType.READ.getId();
 
     @Column(name = "CODE", length = 255)
     protected String code;
 
-    @Column(name = "ENTITY_NAME", length = 255)
+    @Column(name = "ENTITY_NAME", length = 255, nullable = false)
     protected String entityName;
 
     @Column(name = "JOIN_CLAUSE", length = 500)

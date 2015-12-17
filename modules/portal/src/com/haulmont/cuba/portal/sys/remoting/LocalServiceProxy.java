@@ -7,12 +7,11 @@ package com.haulmont.cuba.portal.sys.remoting;
 
 import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.Deserializer;
+import com.haulmont.cuba.core.sys.serialization.SerializationSupport;
 import com.haulmont.cuba.core.sys.remoting.LocalServiceDirectory;
 import com.haulmont.cuba.core.sys.remoting.LocalServiceInvocation;
 import com.haulmont.cuba.core.sys.remoting.LocalServiceInvocationResult;
 import com.haulmont.cuba.core.sys.remoting.LocalServiceInvoker;
-import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.remoting.support.RemoteAccessor;
@@ -108,7 +107,7 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
                 for (int i = 0; i < args.length; i++) {
                     if (args[i] instanceof Serializable) {
                         Serializable arg = (Serializable) args[i];
-                        argumentsData[i] = SerializationUtils.serialize(arg);
+                        argumentsData[i] = SerializationSupport.serialize(arg);
                     } else {
                         argumentsData[i] = null;
                         notSerializableArguments[i] = args[i];
@@ -125,7 +124,7 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
 
             // don't use SerializationUtils.deserialize() here to avoid ClassNotFoundException
             if (result.getException() != null) {
-                Throwable t = (Throwable) Deserializer.deserialize(result.getException());
+                Throwable t = (Throwable) SerializationSupport.deserialize(result.getException());
                 if (t instanceof RemoteException) {
                     Exception exception = ((RemoteException) t).getFirstCauseException();
                     if (exception != null) // This is a checked exception declared in a service method
@@ -135,7 +134,7 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
             } else {
                 Object data;
                 if (result.getNotSerializableData() == null) {
-                    data = Deserializer.deserialize(result.getData());
+                    data = SerializationSupport.deserialize(result.getData());
                 } else {
                     data = result.getNotSerializableData();
                 }
