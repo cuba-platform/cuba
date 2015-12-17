@@ -14,19 +14,19 @@ import com.haulmont.cuba.core.config.defaults.DefaultInt;
  * @version $Id$
  */
 public interface AmazonConfiguration extends Config {
-    @Property("amazon.s3.accessKey")
+    @Property("cuba.amazon.s3.accessKey")
     String getAccessKey();
 
-    @Property("amazon.s3.secretAccessKey")
+    @Property("cuba.amazon.s3.secretAccessKey")
     String getSecretAccessKey();
 
-    @Property("amazon.s3.region")
+    @Property("cuba.amazon.s3.region")
     String getRegionName();
 
-    @Property("amazon.s3.bucket")
+    @Property("cuba.amazon.s3.bucket")
     String getBucket();
 
-    @Property("amazon.s3.chunkSize")
+    @Property("cuba.amazon.s3.chunkSize")
     @DefaultInt(4096)
     int getChunkSize();
 }
