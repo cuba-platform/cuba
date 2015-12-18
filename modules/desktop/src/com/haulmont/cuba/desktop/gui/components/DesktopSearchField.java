@@ -7,6 +7,7 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.matchers.TextMatcherEditor;
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -462,6 +463,11 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     @Override
     public void setOptionsMap(Map<String, Object> map) {
         super.setOptionsMap(map);
+    }
+
+    @Override
+    public void setOptionsEnum(Class<? extends EnumClass> optionsEnum) {
+        super.setOptionsEnum(optionsEnum);
     }
 
     @Override

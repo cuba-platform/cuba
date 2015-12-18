@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import java.util.List;
@@ -28,10 +29,13 @@ public interface OptionsField extends Field {
 
     CollectionDatasource getOptionsDatasource();
     void setOptionsDatasource(CollectionDatasource datasource);
-    
+
     List getOptionsList();
     void setOptionsList(List optionsList);
 
     Map<String, Object> getOptionsMap();
     void setOptionsMap(Map<String, Object> map);
+
+    Class<? extends EnumClass> getOptionsEnum();
+    void setOptionsEnum(Class<? extends EnumClass> optionsEnum);
 }

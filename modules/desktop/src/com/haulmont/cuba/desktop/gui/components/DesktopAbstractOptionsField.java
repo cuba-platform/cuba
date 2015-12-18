@@ -6,6 +6,7 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.datatypes.Enumeration;
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -49,6 +50,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
     protected CollectionDatasource<Entity<Object>, Object> optionsDatasource;
     protected List optionsList;
     protected Map<String, Object> optionsMap;
+    protected Class<? extends EnumClass> optionsEnum;
 
     protected Datasource datasource;
     protected boolean updatingInstance;
@@ -94,6 +96,17 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
     @Override
     public void setOptionsMap(Map<String, Object> map) {
         optionsMap = map;
+    }
+
+    @Override
+    public Class<? extends EnumClass> getOptionsEnum() {
+        return optionsEnum;
+    }
+
+    @Override
+    public void setOptionsEnum(Class<? extends EnumClass> optionsEnum) {
+        this.optionsEnum = optionsEnum;
+        this.captionMode = CaptionMode.ITEM; // works as web version
     }
 
     @Override

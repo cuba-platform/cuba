@@ -9,6 +9,7 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.matchers.TextMatcherEditor;
 import ca.odell.glazedlists.swing.AutoCompleteSupport;
 import com.haulmont.chile.core.datatypes.Enumeration;
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
@@ -28,6 +29,7 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -271,6 +273,11 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
             for (Object obj : optionsList) {
                 items.add(new ObjectWrapper(obj));
             }
+        } else if (optionsEnum != null) {
+            List options = Arrays.asList(optionsEnum.getEnumConstants());
+            for (Object obj : options) {
+                items.add(new ObjectWrapper(obj));
+            }
         } else if (datasource != null && metaProperty != null && metaProperty.getRange().isEnum()) {
             @SuppressWarnings("unchecked")
             Enumeration<Enum> enumeration = metaProperty.getRange().asEnumeration();
@@ -382,6 +389,12 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
     @Override
     public void setOptionsMap(Map<String, Object> map) {
         super.setOptionsMap(map);
+        optionsInitialized = false;
+    }
+
+    @Override
+    public void setOptionsEnum(Class<? extends EnumClass> optionsEnum) {
+        super.setOptionsEnum(optionsEnum);
         optionsInitialized = false;
     }
 

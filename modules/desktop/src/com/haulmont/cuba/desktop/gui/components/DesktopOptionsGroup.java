@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.OptionsGroup;
@@ -153,6 +154,27 @@ public class DesktopOptionsGroup extends DesktopAbstractOptionsField<JPanel> imp
         if (optionsMap != null) {
             for (String key : optionsMap.keySet()) {
                 addItem(new MapKeyWrapper(key));
+            }
+
+            if ((datasource!= null) && (datasource.getState() == Datasource.State.VALID)) {
+                Entity newValue = datasource.getItem();
+                updateComponent(newValue);
+                fireChangeListeners(newValue);
+            }
+            optionsInitialized = true;
+        }
+    }
+
+    @Override
+    public void setOptionsEnum(Class<? extends EnumClass> optionsEnum) {
+        if (optionsInitialized)
+            return;
+
+        super.setOptionsEnum(optionsEnum);
+        if (optionsEnum != null) {
+            List options = Arrays.asList(optionsEnum.getEnumConstants());
+            for (Object obj : options) {
+                addItem(new ObjectWrapper(obj));
             }
 
             if ((datasource!= null) && (datasource.getState() == Datasource.State.VALID)) {

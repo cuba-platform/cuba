@@ -5,6 +5,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Enumeration;
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
@@ -39,6 +40,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
 
     protected List optionsList;
     protected Map<String, Object> optionsMap;
+    protected Class<? extends EnumClass> optionsEnum;
     protected CollectionDatasource optionsDatasource;
 
     protected CaptionMode captionMode = CaptionMode.ITEM;
@@ -172,6 +174,28 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
             setCaptionMode(CaptionMode.ITEM);
             this.optionsList = optionsList;
         }
+    }
+
+    @Override
+    public Class<? extends EnumClass> getOptionsEnum() {
+        return optionsEnum;
+    }
+
+    @Override
+    public void setOptionsEnum(Class<? extends EnumClass> optionsEnum) {
+        Object currentValue = null;
+        if (metaProperty != null) {
+            currentValue = component.getValue();
+        }
+        List options = Arrays.asList(optionsEnum.getEnumConstants());
+        setComponentContainerDs(createEnumContainer(options));
+        setCaptionMode(CaptionMode.ITEM);
+
+        if (metaProperty != null) {
+            component.setValue(currentValue);
+        }
+
+        this.optionsEnum = optionsEnum;
     }
 
     @Override

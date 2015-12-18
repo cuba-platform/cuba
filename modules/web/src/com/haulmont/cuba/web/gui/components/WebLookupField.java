@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
@@ -252,6 +253,13 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
     @Override
     public void setOptionsMap(Map<String, Object> options) {
         super.setOptionsMap(options);
+
+        checkMissingValue();
+    }
+
+    @Override
+    public void setOptionsEnum(Class<? extends EnumClass> optionsEnum) {
+        super.setOptionsEnum(optionsEnum);
 
         checkMissingValue();
     }
