@@ -199,6 +199,7 @@ configure(sharedLibModule) {
 configure(globalModule) {
     dependencies {
         compile(group: 'org.json', name: 'json', version: '20140107')
+        compile('com.google.code.gson:gson:2.5')
         provided(servletApi)
     }
 
