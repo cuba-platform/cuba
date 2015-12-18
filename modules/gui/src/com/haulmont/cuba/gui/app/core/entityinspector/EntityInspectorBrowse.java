@@ -9,24 +9,36 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.app.importexport.EntityImportExportService;
+import com.haulmont.cuba.core.app.importexport.EntityImportView;
+import com.haulmont.cuba.core.app.importexport.ReferenceImportBehaviour;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.actions.ExcelAction;
-import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
-import com.haulmont.cuba.gui.components.actions.RefreshAction;
-import com.haulmont.cuba.gui.components.actions.RemoveAction;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.actions.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
+import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
+import com.haulmont.cuba.gui.export.ExportDisplay;
+import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityOp;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -42,6 +54,8 @@ public class EntityInspectorBrowse extends AbstractLookup {
     public static final String SCREEN_NAME = "entityInspector.browse";
     public static final WindowManager.OpenType WINDOW_OPEN_TYPE = WindowManager.OpenType.THIS_TAB;
     public static final int MAX_TEXT_LENGTH = 50;
+
+    protected static final Logger log = LoggerFactory.getLogger(EntityInspectorBrowse.class);
 
     @Inject
     protected Metadata metadata;
@@ -76,6 +90,15 @@ public class EntityInspectorBrowse extends AbstractLookup {
     @Inject
     protected BoxLayout filterBox;
 
+    @Inject
+    protected ExportDisplay exportDisplay;
+
+    @Inject
+    protected EntityImportExportService entityImportExportService;
+
+    @Inject
+    protected FileUploadingAPI fileUploadingAPI;
+
     protected Filter filter;
     protected Table entitiesTable;
 
@@ -87,6 +110,8 @@ public class EntityInspectorBrowse extends AbstractLookup {
     protected Button removeButton;
     protected Button excelButton;
     protected Button refreshButton;
+    protected Button exportButton;
+    protected FileUploadField importUpload;
 
     protected CollectionDatasource entitiesDs;
     protected MetaClass selectedMeta;
@@ -269,11 +294,46 @@ public class EntityInspectorBrowse extends AbstractLookup {
         refreshButton.setIcon("icons/refresh.png");
         refreshButton.setFrame(frame);
 
+        exportButton = componentsFactory.createComponent(Button.class);
+        exportButton.setAction(new ExportAction());
+        exportButton.setCaption(getMessage("export"));
+
+        importUpload = componentsFactory.createComponent(FileUploadField.class);
+        importUpload.setCaption(getMessage("import"));
+        importUpload.addFileUploadSucceedListener(event -> {
+            File file = fileUploadingAPI.getFile(importUpload.getFileId());
+            if (file == null) {
+                String errorMsg = String.format("Entities import upload error. File with id %s not found", importUpload.getFileId());
+                throw new RuntimeException(errorMsg);
+            }
+            byte[] zipBytes;
+            try (InputStream is = new FileInputStream(file)) {
+                zipBytes = IOUtils.toByteArray(is);
+            } catch (IOException e) {
+                throw new RuntimeException("Unable to upload file", e);
+            }
+            try {
+                fileUploadingAPI.deleteFile(importUpload.getFileId());
+            } catch (FileStorageException e) {
+                log.error("Unable to delete temp file", e);
+            }
+            try {
+                Collection<Entity> importedEntities = entityImportExportService.importEntities(zipBytes, createEntityImportView(selectedMeta));
+                showNotification(importedEntities.size() + " entities imported", NotificationType.HUMANIZED);
+            } catch (Exception e) {
+                showNotification(getMessage("importFailed"), e.getMessage(), NotificationType.ERROR);
+                log.error("Entities import error", e);
+            }
+            entitiesDs.refresh();
+        });
+
         buttonsPanel.add(createButton);
         buttonsPanel.add(editButton);
         buttonsPanel.add(removeButton);
         buttonsPanel.add(excelButton);
         buttonsPanel.add(refreshButton);
+        buttonsPanel.add(exportButton);
+        buttonsPanel.add(importUpload);
 
         table.setButtonsPanel(buttonsPanel);
     }
@@ -301,6 +361,27 @@ public class EntityInspectorBrowse extends AbstractLookup {
             }
         }
         return view;
+    }
+
+    protected EntityImportView createEntityImportView(MetaClass metaClass) {
+        EntityImportView entityImportView = new EntityImportView(metaClass.getJavaClass());
+        for (MetaProperty metaProperty : metaClass.getProperties()) {
+            switch (metaProperty.getType()) {
+                case DATATYPE:
+                case ENUM:
+                    entityImportView.addProperty(metaProperty.getName());
+                    break;
+                case ASSOCIATION:
+                case COMPOSITION:
+                    if (!metaProperty.getRange().getCardinality().isMany()) {
+                        entityImportView.addProperty(metaProperty.getName(), ReferenceImportBehaviour.IGNORE_MISSING);
+                    }
+                    break;
+                default:
+                    throw new IllegalStateException("unknown property type");
+            }
+        }
+        return entityImportView;
     }
 
     protected class CreateAction extends AbstractAction {
@@ -356,5 +437,26 @@ public class EntityInspectorBrowse extends AbstractLookup {
     protected boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
         Security security = AppBeans.get(Security.NAME);
         return security.isEntityOpPermitted(metaClass, entityOp);
+    }
+
+    protected class ExportAction extends ItemTrackingAction {
+
+        public ExportAction() {
+            super("export");
+        }
+
+        @Override
+        public void actionPerform(Component component) {
+            Set<Entity> selected = entitiesTable.getSelected();
+            if (!selected.isEmpty()) {
+                try {
+                    exportDisplay.show(new ByteArrayDataProvider(entityImportExportService.exportEntities(selected)),
+                            selectedMeta.getJavaClass().getSimpleName() + ".zip", ExportFormat.ZIP);
+                } catch (Exception e) {
+                    showNotification(getMessage("exportFailed"), e.getMessage(), NotificationType.ERROR);
+                    log.error("Entities export failed", e);
+                }
+            }
+        }
     }
 }
