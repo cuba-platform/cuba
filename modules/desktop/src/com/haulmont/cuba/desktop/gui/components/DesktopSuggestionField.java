@@ -529,17 +529,17 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
 
     @Override
     public void setOptionsList(java.util.List optionsList) {
-        super.setOptionsList(optionsList);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setOptionsMap(Map<String, Object> map) {
-        super.setOptionsMap(map);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setOptionsEnum(Class<? extends EnumClass> optionsEnum) {
-        super.setOptionsEnum(optionsEnum);
+        throw new UnsupportedOperationException();
     }
 
     @Override

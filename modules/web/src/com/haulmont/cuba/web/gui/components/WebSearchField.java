@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SearchField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -15,6 +16,8 @@ import com.vaadin.server.ErrorMessage;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author artamonov
@@ -163,5 +166,20 @@ public class WebSearchField extends WebLookupField implements SearchField {
         super.setOptionsDatasource(datasource);
 
         ((LookupOptionsDsWrapper) component.getContainerDataSource()).setAutoRefresh(false);
+    }
+
+    @Override
+    public void setOptionsList(List optionsList) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setOptionsMap(Map<String, Object> options) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setOptionsEnum(Class<? extends EnumClass> optionsEnum) {
+        throw new UnsupportedOperationException();
     }
 }
