@@ -89,6 +89,10 @@
         <property name="type"/>
     </view>
 
+    <view  entity="sec$Role" name="role.export" extends="_local">
+        <property name="permissions" view="_local"/>
+    </view>
+
     <view entity="sec$Permission" name="role.edit">
         <property name="type"/>
         <property name="target"/>

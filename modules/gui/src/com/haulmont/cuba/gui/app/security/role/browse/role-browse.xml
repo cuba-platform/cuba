@@ -19,7 +19,7 @@
     </dsContext>
 
     <layout>
-        <table id="rolesTable" height="100%" width="100%" editable="true">
+        <table id="rolesTable" height="100%" width="100%" editable="true" multiselect="true">
             <actions>
                 <action id="create"/>
                 <action id="edit"/>
@@ -34,6 +34,8 @@
                 <button action="rolesTable.refresh"/>
                 <button action="rolesTable.excel"/>
                 <button action="rolesTable.assignToUsers" icon="icons/user-group-ok.png"/>
+                <button action="rolesTable.export"/>
+                <upload id="importRolesUpload" caption="msg://import"/>
             </buttonsPanel>
             <columns>
                 <column id="name" caption="msg://role.name"/>
