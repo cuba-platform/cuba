@@ -6,16 +6,17 @@
 package com.haulmont.cuba.core.sys.serialization;
 
 import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.Serializer;
+import com.esotericsoftware.kryo.KryoException;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.CollectionSerializer;
-import com.haulmont.chile.core.model.MetaClass;
+import com.esotericsoftware.kryo.serializers.JavaSerializer;
+import com.esotericsoftware.kryo.util.ObjectMap;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
 import com.haulmont.chile.core.model.impl.MetaClassImpl;
 import com.haulmont.chile.core.model.impl.MetaPropertyImpl;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Metadata;
 import de.javakaffee.kryoserializers.*;
 import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
 import de.javakaffee.kryoserializers.guava.ImmutableListSerializer;
@@ -25,6 +26,7 @@ import de.javakaffee.kryoserializers.guava.ImmutableSetSerializer;
 import de.javakaffee.kryoserializers.jodatime.JodaDateTimeSerializer;
 import de.javakaffee.kryoserializers.jodatime.JodaLocalDateSerializer;
 import de.javakaffee.kryoserializers.jodatime.JodaLocalDateTimeSerializer;
+import org.apache.commons.lang.ClassUtils;
 import org.eclipse.persistence.indirection.IndirectCollection;
 import org.eclipse.persistence.indirection.IndirectContainer;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
@@ -35,10 +37,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.objenesis.strategy.StdInstantiatorStrategy;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.lang.reflect.InvocationHandler;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -65,34 +64,6 @@ public class KryoSerialization implements Serialization {
         //To work properly must itself be loaded by the application classloader (i.e. by classloader capable of loading
         //all the other application classes). For web application it means placing this class inside webapp folder.
         kryo.setClassLoader(KryoSerialization.class.getClassLoader());
-
-        kryo.register(MetaClassImpl.class, new Serializer<MetaClassImpl>() {
-            @Override
-            public void write(Kryo kryo, Output output, MetaClassImpl object) {
-                output.writeString(object.getName());
-            }
-
-            @Override
-            public MetaClassImpl read(Kryo kryo, Input input, Class type) {
-                Metadata metadata = AppBeans.get(Metadata.NAME);
-                return (MetaClassImpl) metadata.getSession().getClassNN(input.readString());
-            }
-        });
-
-        kryo.register(MetaPropertyImpl.class, new Serializer<MetaPropertyImpl>() {
-            @Override
-            public void write(Kryo kryo, Output output, MetaPropertyImpl object) {
-                output.writeString(object.getDomain().getName());
-                output.writeString(object.getName());
-            }
-
-            @Override
-            public MetaPropertyImpl read(Kryo kryo, Input input, Class type) {
-                Metadata metadata = AppBeans.get(Metadata.NAME);
-                MetaClass metaClass = metadata.getSession().getClassNN(input.readString());
-                return (MetaPropertyImpl) metaClass.getPropertyNN(input.readString());
-            }
-        });
 
         kryo.register(Arrays.asList("").getClass(), new ArraysAsListSerializer());
         kryo.register(Collections.EMPTY_LIST.getClass(), new CollectionsEmptyListSerializer());
@@ -121,6 +92,12 @@ public class KryoSerialization implements Serialization {
         kryo.register(org.eclipse.persistence.indirection.IndirectList.class, new IndirectContainerSerializer());
         kryo.register(org.eclipse.persistence.indirection.IndirectMap.class, new IndirectContainerSerializer());
         kryo.register(org.eclipse.persistence.indirection.IndirectSet.class, new IndirectContainerSerializer());
+
+        //classes with custom serialization methods
+        kryo.register(HashMultimap.class, new CubaJavaSerializer());
+        kryo.register(ArrayListMultimap.class, new CubaJavaSerializer());
+        kryo.register(MetaClassImpl.class, new CubaJavaSerializer());
+        kryo.register(MetaPropertyImpl.class, new CubaJavaSerializer());
 
         return kryo;
     }
@@ -199,6 +176,28 @@ public class KryoSerialization implements Serialization {
                     }
                 });
                 return (Collection) indirectCollection;
+            }
+        }
+    }
+
+    public static class CubaJavaSerializer extends JavaSerializer {
+        @Override
+        public Object read(Kryo kryo, Input input, Class type) {
+            try {
+                ObjectMap graphContext = kryo.getGraphContext();
+                ObjectInputStream objectStream = (ObjectInputStream) graphContext.get(this);
+                if (objectStream == null) {
+                    objectStream = new ObjectInputStream(input) {
+                        @Override
+                        protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+                            return ClassUtils.getClass(KryoSerialization.class.getClassLoader(), desc.getName());
+                        }
+                    };
+                    graphContext.put(this, objectStream);
+                }
+                return objectStream.readObject();
+            } catch (Exception ex) {
+                throw new KryoException("Error during Java deserialization.", ex);
             }
         }
     }
