@@ -1199,6 +1199,7 @@
         <xs:attribute name="position" type="tokenListPosition"/>
         <xs:attribute name="inline" type="xs:boolean"/>
         <xs:attribute name="simple" type="xs:boolean"/>
+        <xs:attribute name="clearEnabled" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- WidgetsTree -->

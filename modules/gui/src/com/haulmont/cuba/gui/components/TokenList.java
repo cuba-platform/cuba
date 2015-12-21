@@ -61,6 +61,9 @@ public interface TokenList extends Field, Component.BelongToFrame,
     @Nullable
     DialogParams getLookupScreenDialogParams();
 
+    boolean isClearEnabled();
+    void setClearEnabled(boolean clearEnabled);
+
     boolean isMultiSelect();
     void setMultiSelect(boolean multiselect);
 
@@ -81,6 +84,12 @@ public interface TokenList extends Field, Component.BelongToFrame,
 
     String getAddButtonIcon();
     void setAddButtonIcon(String icon);
+
+    String getClearButtonCaption();
+    void setClearButtonCaption(String caption);
+
+    String getClearButtonIcon();
+    void setClearButtonIcon(String icon);
 
     ItemChangeHandler getItemChangeHandler();
     void setItemChangeHandler(ItemChangeHandler handler);
