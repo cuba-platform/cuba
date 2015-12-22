@@ -633,10 +633,19 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
             wrappedClearButton.addClickListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
-                    datasource.clear();
+                    for (CubaTokenListLabel item : new ArrayList<>(itemComponents.values())) {
+                        doRemove(item);
+                    }
                 }
             });
-            layout.addComponent(wrappedClearButton);
+            if (isSimple()) {
+                final HorizontalLayout clearLayout = new HorizontalLayout();
+                clearLayout.addComponent(wrappedClearButton);
+                layout.addComponent(clearLayout);
+                layout.setExpandRatio(clearLayout, 1);
+            } else {
+                layout.addComponent(wrappedClearButton);
+            }
 
             editor = layout;
         }

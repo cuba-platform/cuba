@@ -748,22 +748,6 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
         }
     }
 
-    public class ClearAction extends AbstractAction {
-        public ClearAction() {
-            super("actions.Clear");
-        }
-
-        @Override
-        public String getCaption() {
-            return clearButton.getCaption();
-        }
-
-        @Override
-        public void actionPerform(Component component) {
-            datasource.clear();
-        }
-    }
-
     @Override
     public void setHeight(String height) {
         float oldHeight = getHeight();
@@ -849,13 +833,32 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
             }
             hBox.add(addButton);
 
-            clearButton.setAction(new ClearAction());
+            clearButton.setAction(new AbstractAction("actions.Clear") {
+                @Override
+                public String getCaption() {
+                    return clearButton.getCaption();
+                }
+
+                @Override
+                public void actionPerform(Component component) {
+                    for (TokenListLabel item : new ArrayList<>(itemComponents.values())) {
+                        doRemove(item);
+                    }
+                }
+            });
             clearButton.setVisible(clearEnabled);
             clearButton.setStyleName("clear-btn");
             if (clearButton.getParent() instanceof Container) {
                 ((Container) clearButton.getParent()).remove(clearButton);
             }
-            hBox.add(clearButton);
+            if (isSimple()) {
+                DesktopHBox clearBox = new DesktopHBox();
+                clearBox.add(clearButton);
+                hBox.add(clearBox);
+                hBox.expand(clearBox);
+            } else {
+                hBox.add(clearButton);
+            }
 
             editor = hBox;
         }
