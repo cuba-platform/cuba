@@ -19,15 +19,14 @@ public class MysqlSequenceSupport implements SequenceSupport {
 
     @Override
     public String createSequenceSql(String sequenceName, long startValue, long increment) {
-        return "insert into SYS_SEQUENCE (NAME, MIN_VALUE, INCREMENT) values ('" + sequenceName + "', " + startValue
+        return "insert into SYS_SEQUENCE (NAME, CURR_VALUE, INCREMENT) values ('" + sequenceName + "', " + startValue
                 + ", " + increment + ")";
     }
 
     @Override
     public String modifySequenceSql(String sequenceName, long startWith) {
-        return "update SYS_SEQUENCE set NAME = '" + sequenceName + "', " +
-                "MIN_VALUE = " + startWith + ", " +
-                "CUR_VALUE = " + startWith;
+        return "update SYS_SEQUENCE set CURR_VALUE = " + startWith + " where " +
+                "NAME = '" + sequenceName + "'";
     }
 
     @Override
@@ -38,12 +37,12 @@ public class MysqlSequenceSupport implements SequenceSupport {
     @Override
     public String getNextValueSql(String sequenceName) {
         Preconditions.checkNotNullArgument(sequenceName, "sequenceName is null");
-        return "select nextval('" + sequenceName.toLowerCase() + "')";
+        return "update SYS_SEQUENCE set CURR_VALUE = last_insert_id(CURR_VALUE + INCREMENT) where NAME = '" + sequenceName + "' ^ select last_insert_id()";
     }
 
     @Override
     public String getCurrentValueSql(String sequenceName) {
         Preconditions.checkNotNullArgument(sequenceName, "sequenceName is null");
-        return "select CUR_VALUE from SYS_SEQUENCE where NAME = '" + sequenceName.toLowerCase() + "'";
+        return "select CURR_VALUE from SYS_SEQUENCE where NAME = '" + sequenceName.toLowerCase() + "'";
     }
 }

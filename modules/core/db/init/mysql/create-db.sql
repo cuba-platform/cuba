@@ -844,36 +844,8 @@ values ('b61d18cb-e79a-46f3-b16d-eaf4aebb10dd',{ts '2010-03-01 11:14:06.830'},'a
 create table SYS_SEQUENCE (
     NAME varchar(100) not null,
     INCREMENT int unsigned not null default 1,
-    MIN_VALUE int unsigned not null default 1,
-    MAX_VALUE bigint unsigned not null default 18446744073709551615,
-    CUR_VALUE bigint unsigned default 1,
-    CYCLE boolean not null default false,
+    CURR_VALUE bigint unsigned default 0,
     primary key (NAME)
 )^
 
 create unique index IDX_SYS_SEQUENCE_UNIQUE_NAME on SYS_SEQUENCE (NAME)^
-
-create function nextval (SEQ_NAME varchar(100))
-returns bigint(20) not deterministic
-begin
-    declare CUR_VAL bigint(20);
-
-    select CUR_VALUE into CUR_VAL from SYS_SEQUENCE where NAME = SEQ_NAME;
-
-    if CUR_VAL is not null then
-        update SYS_SEQUENCE set CUR_VALUE = IF (
-                (CUR_VALUE + INCREMENT) > MAX_VALUE,
-                IF (
-                    CYCLE = TRUE,
-                    MIN_VALUE,
-                    NULL
-                ),
-                CUR_VALUE + INCREMENT
-            )
-        where
-            NAME = SEQ_NAME
-        ;
-    end if;
-
-    return CUR_VAL;
-end^

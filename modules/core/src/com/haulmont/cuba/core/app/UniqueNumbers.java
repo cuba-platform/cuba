@@ -18,6 +18,7 @@ import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -129,6 +130,8 @@ public class UniqueNumbers implements UniqueNumbersAPI {
                 return (Long) value;
             else if (value instanceof BigDecimal)
                 return ((BigDecimal) value).longValue();
+            else if (value instanceof BigInteger)
+                return ((BigInteger) value).longValue();
             else if (value instanceof String)
                 return Long.parseLong((String) value);
             else if (value == null)
