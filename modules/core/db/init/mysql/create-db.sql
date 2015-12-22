@@ -1,8 +1,8 @@
 create table SYS_SERVER (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
-    UPDATE_TS datetime null,
+    UPDATE_TS datetime,
     UPDATED_BY varchar(50),
     NAME varchar(255),
     IS_RUNNING boolean,
@@ -16,10 +16,10 @@ create unique index IDX_SYS_SERVER_UNIQ_NAME on SYS_SERVER (NAME)^
 
 create table SYS_CONFIG (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime null,
+    UPDATE_TS datetime,
     UPDATED_BY varchar(50),
     --
     NAME varchar(255),
@@ -34,18 +34,18 @@ create unique index IDX_SYS_CONFIG_UNIQ_NAME on SYS_CONFIG (NAME)^
 
 create table SYS_FILE (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime null,
+    UPDATE_TS datetime,
     UPDATED_BY varchar(50),
-    DELETE_TS datetime null,
+    DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
     NAME varchar(500) not null,
     EXT varchar(20),
     FILE_SIZE bigint,
-    CREATE_DATE datetime null,
+    CREATE_DATE datetime,
     --
     primary key (ID)
 )^
@@ -54,7 +54,7 @@ create table SYS_FILE (
 
 create table SYS_LOCK_CONFIG (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     --
     NAME varchar(100),
@@ -67,9 +67,9 @@ create table SYS_LOCK_CONFIG (
 
 create table SYS_ENTITY_STATISTICS (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
-    UPDATE_TS datetime null,
+    UPDATE_TS datetime,
     UPDATED_BY varchar(50),
     --
     NAME varchar(50),
@@ -88,11 +88,11 @@ create unique index IDX_SYS_ENTITY_STATISTICS_UNIQ_NAME on SYS_ENTITY_STATISTICS
 
 create table SYS_SCHEDULED_TASK (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
-    UPDATE_TS datetime null,
+    UPDATE_TS datetime,
     UPDATED_BY varchar(50),
-    DELETE_TS datetime null,
+    DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
     DEFINED_BY varchar(1) default 'B',
@@ -106,13 +106,13 @@ create table SYS_SCHEDULED_TASK (
     IS_ACTIVE boolean,
     PERIOD integer,
     TIMEOUT integer,
-    START_DATE datetime null,
+    START_DATE datetime,
     TIME_FRAME integer,
     START_DELAY integer,
     PERMITTED_SERVERS varchar(4096),
     LOG_START boolean,
     LOG_FINISH boolean,
-    LAST_START_TIME datetime null,
+    LAST_START_TIME datetime,
     LAST_START_SERVER varchar(512),
     DESCRIPTION varchar(1000),
     CRON varchar(100),
@@ -127,13 +127,13 @@ create table SYS_SCHEDULED_TASK (
 
 create table SYS_SCHEDULED_EXECUTION (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     --
     TASK_ID varchar(36),
     SERVER varchar(512),
-    START_TIME datetime null,
-    FINISH_TIME datetime null,
+    START_TIME datetime,
+    FINISH_TIME datetime,
     RESULT text,
     --
     primary key (ID),
@@ -146,12 +146,12 @@ create index IDX_SYS_SCHEDULED_EXECUTION_TASK_START_TIME  on SYS_SCHEDULED_EXECU
 
 create table SEC_ROLE (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime null,
+    UPDATE_TS datetime,
     UPDATED_BY varchar(50),
-    DELETE_TS datetime null,
+    DELETE_TS datetime,
     DELETED_BY varchar(50),
     IS_DELETED boolean not null default 0,
     --
@@ -173,12 +173,12 @@ create trigger SEC_ROLE_IS_DELETED_TRIGGER before update on SEC_ROLE
 
 create table SEC_GROUP (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime null,
+    UPDATE_TS datetime,
     UPDATED_BY varchar(50),
-    DELETE_TS datetime null,
+    DELETE_TS datetime,
     DELETED_BY varchar(50),
     IS_DELETED boolean not null default 0,
     --
@@ -199,7 +199,7 @@ create trigger SEC_GROUP_IS_DELETED_TRIGGER before update on SEC_GROUP
 
 create table SEC_GROUP_HIERARCHY (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     --
     GROUP_ID varchar(36),
@@ -215,12 +215,12 @@ create table SEC_GROUP_HIERARCHY (
 
 create table SEC_USER (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime null,
+    UPDATE_TS datetime,
     UPDATED_BY varchar(50),
-    DELETE_TS datetime null,
+    DELETE_TS datetime,
     DELETED_BY varchar(50),
     IS_DELETED boolean not null default 0,
     --
@@ -254,12 +254,12 @@ create trigger SEC_USER_IS_DELETED_TRIGGER before update on SEC_USER
 
 create table SEC_USER_ROLE (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime null,
+    UPDATE_TS datetime,
     UPDATED_BY varchar(50),
-    DELETE_TS datetime null,
+    DELETE_TS datetime,
     DELETED_BY varchar(50),
     IS_DELETED boolean not null default 0,
     --
@@ -281,12 +281,12 @@ create trigger SEC_USER_ROLE_IS_DELETED_TRIGGER before update on SEC_USER_ROLE
 
 create table SEC_PERMISSION (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime null,
+    UPDATE_TS datetime,
     UPDATED_BY varchar(50),
-    DELETE_TS datetime null,
+    DELETE_TS datetime,
     DELETED_BY varchar(50),
     IS_DELETED boolean not null default 0,
     --
@@ -308,12 +308,12 @@ create trigger SEC_PERMISSION_IS_DELETED_TRIGGER before update on SEC_PERMISSION
 
 create table SEC_CONSTRAINT (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime null,
+    UPDATE_TS datetime,
     UPDATED_BY varchar(50),
-    DELETE_TS datetime null,
+    DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
     CODE varchar(255),
@@ -334,12 +334,12 @@ create table SEC_CONSTRAINT (
 
 create table SEC_SESSION_ATTR (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime null,
+    UPDATE_TS datetime,
     UPDATED_BY varchar(50),
-    DELETE_TS datetime null,
+    DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
     NAME varchar(50),
@@ -355,7 +355,7 @@ create table SEC_SESSION_ATTR (
 
 create table SEC_USER_SETTING (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     --
     USER_ID varchar(36),
@@ -372,18 +372,18 @@ create table SEC_USER_SETTING (
 
 create table SEC_USER_SUBSTITUTION (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime null,
+    UPDATE_TS datetime,
     UPDATED_BY varchar(50),
-    DELETE_TS datetime null,
+    DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
     USER_ID varchar(36),
     SUBSTITUTED_USER_ID varchar(36),
-    START_DATE datetime null,
-    END_DATE datetime null,
+    START_DATE datetime,
+    END_DATE datetime,
     --
     primary key (ID),
     constraint FK_SEC_USER_SUBSTITUTION_USER foreign key (USER_ID) references SEC_USER(ID),
@@ -394,7 +394,7 @@ create table SEC_USER_SUBSTITUTION (
 
 create table SEC_LOGGED_ENTITY (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     --
     NAME varchar(100),
@@ -409,7 +409,7 @@ create table SEC_LOGGED_ENTITY (
 
 create table SEC_LOGGED_ATTR (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     --
     ENTITY_ID varchar(36),
@@ -424,10 +424,10 @@ create table SEC_LOGGED_ATTR (
 
 create table SEC_ENTITY_LOG (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     --
-    EVENT_TS datetime null,
+    EVENT_TS datetime,
     USER_ID varchar(36),
     CHANGE_TYPE char(1),
     ENTITY varchar(100),
@@ -444,7 +444,7 @@ create index IDX_SEC_ENTITY_LOG_ENTITY_ID on SEC_ENTITY_LOG (ENTITY_ID)^
 
 create table SEC_ENTITY_LOG_ATTR (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     --
     ITEM_ID varchar(36),
@@ -463,12 +463,12 @@ create index IDX_SEC_ENTITY_LOG_ATTR_ITEM on SEC_ENTITY_LOG_ATTR (ITEM_ID)^
 
 create table SEC_FILTER (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime null,
+    UPDATE_TS datetime,
     UPDATED_BY varchar(50),
-    DELETE_TS datetime null,
+    DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
     COMPONENT varchar(200),
@@ -485,12 +485,12 @@ create table SEC_FILTER (
 
 create table SYS_FOLDER (
     ID varchar(36),
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime null,
+    UPDATE_TS datetime,
     UPDATED_BY varchar(50),
-    DELETE_TS datetime null,
+    DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
     FOLDER_TYPE char(1),
@@ -521,9 +521,9 @@ create table SYS_APP_FOLDER (
 
 create table SEC_PRESENTATION (
     ID varchar(36),
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
-    UPDATE_TS datetime null,
+    UPDATE_TS datetime,
     UPDATED_BY varchar(50),
     --
     COMPONENT varchar(200),
@@ -562,7 +562,7 @@ create index IDX_SEC_SEARCH_FOLDER_USER on SEC_SEARCH_FOLDER (USER_ID)^
 
 create table SYS_FTS_QUEUE (
     ID varchar(36),
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     --
     ENTITY_ID varchar(36),
@@ -581,7 +581,7 @@ create index IDX_SYS_FTS_QUEUE_IDXHOST_CRTS on SYS_FTS_QUEUE (INDEXING_HOST, CRE
 
 create table SEC_SCREEN_HISTORY (
     ID varchar(36),
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     --
     USER_ID varchar(36),
@@ -602,12 +602,12 @@ create index IDX_SEC_SCREEN_HIST_SUB_USER on SEC_SCREEN_HISTORY (SUBSTITUTED_USE
 
 create table SYS_SENDING_MESSAGE (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime null,
+    UPDATE_TS datetime,
     UPDATED_BY varchar(50),
-    DELETE_TS datetime null,
+    DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
     ADDRESS_TO varchar(500),
@@ -616,9 +616,9 @@ create table SYS_SENDING_MESSAGE (
     EMAIL_HEADERS varchar(500),
     CONTENT_TEXT text,
     CONTENT_TEXT_FILE_ID varchar(36),
-    DEADLINE datetime null,
+    DEADLINE datetime,
     STATUS int,
-    DATE_SENT datetime null,
+    DATE_SENT datetime,
     ATTEMPTS_COUNT int,
     ATTEMPTS_MADE int,
     ATTACHMENTS_NAME varchar(500),
@@ -635,12 +635,12 @@ create index IDX_SYS_SENDING_MESSAGE_DATE_SENT on SYS_SENDING_MESSAGE (DATE_SENT
 
 create table SYS_SENDING_ATTACHMENT (
     ID varchar(36),
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime null,
+    UPDATE_TS datetime,
     UPDATED_BY varchar(50),
-    DELETE_TS datetime null,
+    DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
     MESSAGE_ID varchar(36),
@@ -663,7 +663,7 @@ create index SYS_SENDING_ATTACHMENT_MESSAGE_IDX on SYS_SENDING_ATTACHMENT (MESSA
 
 create table SYS_ENTITY_SNAPSHOT (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     --
     ENTITY_META_CLASS varchar(50) not null,
@@ -683,12 +683,12 @@ create index IDX_SYS_ENTITY_SNAPSHOT_ENTITY_ID on SYS_ENTITY_SNAPSHOT (ENTITY_ID
 
 create table SYS_CATEGORY(
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime null,
+    UPDATE_TS datetime,
     UPDATED_BY varchar(50),
-    DELETE_TS datetime null,
+    DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
     NAME varchar(255) not null,
@@ -704,12 +704,12 @@ create table SYS_CATEGORY(
 
 create table SYS_CATEGORY_ATTR (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime null,
+    UPDATE_TS datetime,
     UPDATED_BY varchar(50),
-    DELETE_TS datetime null,
+    DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
     CATEGORY_ENTITY_TYPE varchar(4000),
@@ -721,7 +721,7 @@ create table SYS_CATEGORY_ATTR (
     DEFAULT_STRING text,
     DEFAULT_INT integer,
     DEFAULT_DOUBLE numeric,
-    DEFAULT_DATE datetime null,
+    DEFAULT_DATE datetime,
     DEFAULT_DATE_IS_CURRENT boolean,
     DEFAULT_BOOLEAN boolean,
     DEFAULT_ENTITY_VALUE varchar(36),
@@ -740,12 +740,12 @@ create table SYS_CATEGORY_ATTR (
 
 create table SYS_ATTR_VALUE (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime null,
+    UPDATE_TS datetime,
     UPDATED_BY varchar(50),
-    DELETE_TS datetime null,
+    DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
     CATEGORY_ATTR_ID varchar(36) not null,
@@ -753,7 +753,7 @@ create table SYS_ATTR_VALUE (
     STRING_VALUE text,
     INTEGER_VALUE integer,
     DOUBLE_VALUE numeric,
-    DATE_VALUE datetime null,
+    DATE_VALUE datetime,
     BOOLEAN_VALUE boolean,
     ENTITY_VALUE varchar(36),
     CODE varchar(100),
@@ -766,12 +766,12 @@ create table SYS_ATTR_VALUE (
 
 create table SYS_JMX_INSTANCE (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime null,
+    UPDATE_TS datetime,
     UPDATED_BY varchar(50),
-    DELETE_TS datetime null,
+    DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
     NODE_NAME varchar(255),
@@ -801,7 +801,7 @@ create index IDX_SYS_QUERY_RESULT_SESSION_KEY on SYS_QUERY_RESULT (SESSION_ID, Q
 
 create table SEC_REMEMBER_ME (
     ID varchar(36) not null,
-    CREATE_TS datetime null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
     --
