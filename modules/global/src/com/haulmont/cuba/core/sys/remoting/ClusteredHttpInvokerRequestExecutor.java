@@ -5,13 +5,13 @@
 
 package com.haulmont.cuba.core.sys.remoting;
 
+import com.haulmont.cuba.core.sys.serialization.SerializationSupport;
 import org.springframework.remoting.httpinvoker.HttpInvokerClientConfiguration;
 import org.springframework.remoting.httpinvoker.SimpleHttpInvokerRequestExecutor;
+import org.springframework.remoting.support.RemoteInvocation;
 import org.springframework.remoting.support.RemoteInvocationResult;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -73,5 +73,15 @@ public class ClusteredHttpInvokerRequestExecutor extends SimpleHttpInvokerReques
             throw new IOException("Service URL [" + serviceUrl + "] is not an HTTP URL");
         }
         return (HttpURLConnection) con;
+    }
+
+    @Override
+    protected void doWriteRemoteInvocation(RemoteInvocation invocation, ObjectOutputStream oos) throws IOException {
+        SerializationSupport.serialize(invocation, oos);
+    }
+
+    @Override
+    protected RemoteInvocationResult doReadRemoteInvocationResult(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        return (RemoteInvocationResult) SerializationSupport.deserialize(ois);
     }
 }

@@ -6,6 +6,7 @@
 package com.haulmont.cuba.core.sys.remoting;
 
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.serialization.SerializationSupport;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter;
 import org.springframework.remoting.support.RemoteInvocation;
@@ -16,6 +17,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
 
 /**
@@ -71,5 +74,15 @@ public class HttpServiceExporter extends HttpInvokerServiceExporter implements B
         } catch (ClassNotFoundException ex) {
             throw new NestedServletException("Class not found during deserialization", ex);
         }
+    }
+
+    @Override
+    protected void doWriteRemoteInvocationResult(RemoteInvocationResult result, ObjectOutputStream oos) throws IOException {
+        SerializationSupport.serialize(result, oos);
+    }
+
+    @Override
+    protected RemoteInvocation doReadRemoteInvocation(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        return (RemoteInvocation) SerializationSupport.deserialize(ois);
     }
 }
