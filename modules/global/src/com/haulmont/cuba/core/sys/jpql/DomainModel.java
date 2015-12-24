@@ -9,6 +9,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import java.util.List;
  * @author chevelev
  * @version $Id$
  */
+@NotThreadSafe
 public class DomainModel {
     protected List<Entity> entities = new ArrayList<>();
     protected ExtendedEntities extendedEntities;

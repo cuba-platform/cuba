@@ -34,7 +34,6 @@ public class QueryVariableContext {
 
         this.node = node;
         this.entity = new VirtualEntity();
-        model.add(entity);
     }
 
     public boolean isPropagateVariablesUpstairs() {
