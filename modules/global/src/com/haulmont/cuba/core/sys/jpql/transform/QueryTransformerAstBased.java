@@ -242,6 +242,10 @@ public class QueryTransformerAstBased implements QueryTransformer {
         addedParams.clear();
     }
 
+    public void replaceInCondition(String paramName) {
+        queryTreeTransformer.replaceInCondition(paramName);
+    }
+
     private void addWhere(CommonTree whereTree, EntityReference ref, boolean replaceVariableName) {
         TreeVisitor visitor = new TreeVisitor();
         VariableManipulator variableManip = new VariableManipulator();

@@ -922,6 +922,22 @@ public class QueryTransformerAstBasedTest {
     }
 
     @Test
+    public void testReplaceInCondition() throws RecognitionException {
+        DomainModel model = prepareDomainModel();
+        QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
+                "select u from sec$User u where u.login in (:param)");
+        transformer.replaceInCondition("param");
+        String res = transformer.getResult();
+        assertEquals("select u from sec$User u where 1=0", res);
+
+        transformer = new QueryTransformerAstBased(model,
+                "select u from sec$User u where u.login not in (:param)");
+        transformer.replaceInCondition("param");
+        res = transformer.getResult();
+        assertEquals("select u from sec$User u where 1=1", res);
+    }
+
+    @Test
     public void transformationsUsingSelectedEntity() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
         builder.startNewEntity("sec$Car");

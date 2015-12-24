@@ -288,10 +288,15 @@ between_expression
     | string_expression ('NOT')? 'BETWEEN' string_expression 'AND' string_expression
     | datetime_expression ('NOT')? 'BETWEEN' datetime_expression 'AND' datetime_expression;
 in_expression
-    : (path_expression | type_discriminator) ('NOT')? 'IN'
+    : (path_expression | type_discriminator) (NOT)? IN
             ( '(' in_item (',' in_item)* ')'
             | subquery
             | collection_valued_input_parameter );
+
+NOT: 'NOT';
+
+IN: 'IN';
+
 in_item
     : literal | single_valued_input_parameter;
 like_expression
@@ -533,6 +538,7 @@ LINE_COMMENT
 
 ESCAPE_CHARACTER
     : '\'' (~('\''|'\\') ) '\'';
+
 INT_NUMERAL
     : ('0'..'9')+;
 //End : Here we insert tail from old grammar

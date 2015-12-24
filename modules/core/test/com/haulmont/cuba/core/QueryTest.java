@@ -15,6 +15,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -371,6 +372,38 @@ public class QueryTest {
             assertEquals(3, list.size());
 
             tx.commit();
+        }
+    }
+
+    @Test
+    public void testEmptyCollectionParameter() throws Exception {
+        Transaction tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+
+            Query query = em.createQuery("select u from sec$User u where u.id in :ids");
+            query.setParameter("ids", Collections.emptyList());
+            List list = query.getResultList();
+            assertTrue(list.isEmpty());
+
+            query = em.createQuery("select u from sec$User u where u.id in (:ids)");
+            query.setParameter("ids", Collections.emptyList());
+            list = query.getResultList();
+            assertTrue(list.isEmpty());
+
+            query = em.createQuery("select u from sec$User u where u.id not in :ids");
+            query.setParameter("ids", Collections.emptyList());
+            list = query.getResultList();
+            assertFalse(list.isEmpty());
+
+            query = em.createQuery("select u from sec$User u where u.id not in (:ids)");
+            query.setParameter("ids", Collections.emptyList());
+            list = query.getResultList();
+            assertFalse(list.isEmpty());
+
+            tx.commit();
+        } finally {
+            tx.end();
         }
     }
 }

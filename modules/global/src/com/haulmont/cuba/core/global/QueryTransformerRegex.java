@@ -215,7 +215,7 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         Matcher distinctMatcher = DISTINCT_PATTERN.matcher(buffer);
 
         buffer.replace(0, entityMatcher.start(),
-                "select count("+ (distinctMatcher.find() ? "distinct " : "") + alias + ") ");
+                "select count(" + (distinctMatcher.find() ? "distinct " : "") + alias + ") ");
 
         Matcher orderMatcher = ORDER_BY_PATTERN.matcher(buffer);
         if (orderMatcher.find()) {
@@ -324,6 +324,11 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
             String field = matcher.group(1);
             buffer.replace(matcher.start(1), matcher.end(1), "lower(" + field + ")");
         }
+    }
+
+    @Override
+    public void replaceInCondition(String paramName) {
+        //not supported
     }
 
     private String findAlias(Matcher entityMatcher) {

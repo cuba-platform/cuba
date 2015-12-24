@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.persistence.DbmsFeatures;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
+import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.jpa.JpaQuery;
@@ -131,9 +132,16 @@ public class QueryImpl<T> implements TypedQuery<T> {
             result = transformer.getResult();
         }
 
-        for (Param param : params) {
-            if (param.value instanceof String && ((String) param.value).startsWith("(?i)"))
+        for (Iterator<Param> iterator = params.iterator(); iterator.hasNext(); ) {
+            Param param = iterator.next();
+            if (param.value instanceof String && ((String) param.value).startsWith("(?i)")) {
                 result = replaceCaseInsensitiveParam(result, param);
+            } else if ((param.value instanceof Collection && CollectionUtils.isEmpty((Collection) param.value))) {
+                QueryTransformer transformer = QueryTransformerFactory.createTransformer(result);
+                transformer.replaceInCondition((String) param.name);
+                result = transformer.getResult();
+                iterator.remove();
+            }
         }
 
         return result;

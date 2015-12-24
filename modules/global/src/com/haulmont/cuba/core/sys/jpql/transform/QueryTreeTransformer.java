@@ -231,13 +231,7 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
     }
 
     public void handleCaseInsensitiveParam(String paramName) {
-        CommonTree whereTree = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_CONDITION);
-        List<SimpleConditionNode> conditionNodes = getChildrenByClass(whereTree, SimpleConditionNode.class);
-        List<SimpleConditionNode> conditionNodesWithParameter = conditionNodes.stream()
-                .filter((SimpleConditionNode n) -> {
-                    ParameterNode parameter = (ParameterNode) n.getFirstChildWithType(JPA2Lexer.T_PARAMETER);
-                    return parameter != null && parameter.getChild(0).getText().contains(paramName);
-                }).collect(Collectors.toList());
+        List<SimpleConditionNode> conditionNodesWithParameter = findConditionsForParameter(paramName);
 
         for (SimpleConditionNode simpleConditionNode : conditionNodesWithParameter) {
             PathNode pathNode = (PathNode) simpleConditionNode.getFirstChildWithType(JPA2Lexer.T_SELECTED_FIELD);
@@ -252,6 +246,20 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
         tree.freshenParentAndChildIndexes();
     }
 
+    public void replaceInCondition(String paramName) {
+        List<SimpleConditionNode> conditionNodesWithParameter = findConditionsForParameter(paramName);
+        for (SimpleConditionNode simpleConditionNode : conditionNodesWithParameter) {
+            Tree inToken = simpleConditionNode.getFirstChildWithType(JPA2Lexer.IN);
+            if (inToken != null) {
+                Tree notToken = simpleConditionNode.getFirstChildWithType(JPA2Lexer.NOT);
+                simpleConditionNode.getChildren().clear();
+                simpleConditionNode.addChild(
+                        new CommonTree(new CommonToken(JPA2Lexer.WORD, notToken == null ? "1=0" : "1=1")));
+            }
+        }
+        tree.freshenParentAndChildIndexes();
+    }
+
     public void replaceWithSelectId() {
         PathNode returnedPathNode = getReturnedPathNode();
         if (returnedPathNode != null && (returnedPathNode.getChildCount() == 0 || getReturnedPathNode().getChildCount() > 1)) {
@@ -259,6 +267,15 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
         }
     }
 
+    public List<SimpleConditionNode> findConditionsForParameter(String paramName) {
+        CommonTree whereTree = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_CONDITION);
+        List<SimpleConditionNode> conditionNodes = getChildrenByClass(whereTree, SimpleConditionNode.class);
+        return conditionNodes.stream()
+                .filter((SimpleConditionNode n) -> {
+                    ParameterNode parameter = (ParameterNode) n.getFirstChildWithType(JPA2Lexer.T_PARAMETER);
+                    return parameter != null && parameter.getChild(0).getText().contains(paramName);
+                }).collect(Collectors.toList());
+    }
 
     private AggregateExpressionNode createCountNode(EntityReference ref, boolean distinct) {
         AggregateExpressionNode result = new AggregateExpressionNode(JPA2Lexer.T_AGGREGATE_EXPR);
