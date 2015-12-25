@@ -1,5 +1,5 @@
 create table SYS_SERVER (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     UPDATE_TS datetime,
@@ -15,7 +15,7 @@ create unique index IDX_SYS_SERVER_UNIQ_NAME on SYS_SERVER (NAME)^
 /***************************************************************************************************/
 
 create table SYS_CONFIG (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
@@ -33,7 +33,7 @@ create unique index IDX_SYS_CONFIG_UNIQ_NAME on SYS_CONFIG (NAME)^
 /**********************************************************************************************/
 
 create table SYS_FILE (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
@@ -53,7 +53,7 @@ create table SYS_FILE (
 /**********************************************************************************************/
 
 create table SYS_LOCK_CONFIG (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     --
@@ -66,7 +66,7 @@ create table SYS_LOCK_CONFIG (
 /**********************************************************************************************/
 
 create table SYS_ENTITY_STATISTICS (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     UPDATE_TS datetime,
@@ -87,7 +87,7 @@ create unique index IDX_SYS_ENTITY_STATISTICS_UNIQ_NAME on SYS_ENTITY_STATISTICS
 /**********************************************************************************************/
 
 create table SYS_SCHEDULED_TASK (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     UPDATE_TS datetime,
@@ -126,11 +126,11 @@ create table SYS_SCHEDULED_TASK (
 /**********************************************************************************************/
 
 create table SYS_SCHEDULED_EXECUTION (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     --
-    TASK_ID varchar(36),
+    TASK_ID varchar(32),
     SERVER varchar(512),
     START_TIME datetime,
     FINISH_TIME datetime,
@@ -145,7 +145,7 @@ create index IDX_SYS_SCHEDULED_EXECUTION_TASK_START_TIME  on SYS_SCHEDULED_EXECU
 /**********************************************************************************************/
 
 create table SEC_ROLE (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
@@ -172,7 +172,7 @@ create trigger SEC_ROLE_IS_DELETED_TRIGGER before update on SEC_ROLE
 /**********************************************************************************************/
 
 create table SEC_GROUP (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
@@ -183,7 +183,7 @@ create table SEC_GROUP (
     IS_DELETED boolean not null default 0,
     --
     NAME varchar(255) not null,
-    PARENT_ID varchar(36),
+    PARENT_ID varchar(32),
     --
     primary key (ID),
     constraint SEC_GROUP_PARENT foreign key (PARENT_ID) references SEC_GROUP(ID)
@@ -198,12 +198,12 @@ create trigger SEC_GROUP_IS_DELETED_TRIGGER before update on SEC_GROUP
 /**********************************************************************************************/
 
 create table SEC_GROUP_HIERARCHY (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     --
-    GROUP_ID varchar(36),
-    PARENT_ID varchar(36),
+    GROUP_ID varchar(32),
+    PARENT_ID varchar(32),
     HIERARCHY_LEVEL integer,
     --
     primary key (ID),
@@ -214,7 +214,7 @@ create table SEC_GROUP_HIERARCHY (
 /**********************************************************************************************/
 
 create table SEC_USER (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
@@ -237,7 +237,7 @@ create table SEC_USER (
     TIME_ZONE varchar(50),
     TIME_ZONE_AUTO boolean,
     ACTIVE boolean,
-    GROUP_ID varchar(36) not null,
+    GROUP_ID varchar(32) not null,
     IP_MASK varchar(200),
     CHANGE_PASSWORD_AT_LOGON boolean,
     --
@@ -253,7 +253,7 @@ create trigger SEC_USER_IS_DELETED_TRIGGER before update on SEC_USER
 /**********************************************************************************************/
 
 create table SEC_USER_ROLE (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
@@ -263,8 +263,8 @@ create table SEC_USER_ROLE (
     DELETED_BY varchar(50),
     IS_DELETED boolean not null default 0,
     --
-    USER_ID varchar(36),
-    ROLE_ID varchar(36),
+    USER_ID varchar(32),
+    ROLE_ID varchar(32),
     --
     primary key (ID),
     constraint SEC_USER_ROLE_PROFILE foreign key (USER_ID) references SEC_USER(ID),
@@ -280,7 +280,7 @@ create trigger SEC_USER_ROLE_IS_DELETED_TRIGGER before update on SEC_USER_ROLE
 /**********************************************************************************************/
 
 create table SEC_PERMISSION (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
@@ -293,7 +293,7 @@ create table SEC_PERMISSION (
     PERMISSION_TYPE integer,
     TARGET varchar(100),
     VALUE integer,
-    ROLE_ID varchar(36),
+    ROLE_ID varchar(32),
     --
     primary key (ID),
     constraint SEC_PERMISSION_ROLE foreign key (ROLE_ID) references SEC_ROLE(ID)
@@ -307,7 +307,7 @@ create trigger SEC_PERMISSION_IS_DELETED_TRIGGER before update on SEC_PERMISSION
 /**********************************************************************************************/
 
 create table SEC_CONSTRAINT (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
@@ -324,7 +324,7 @@ create table SEC_CONSTRAINT (
     WHERE_CLAUSE varchar(1000),
     GROOVY_SCRIPT varchar(1000),
     FILTER_XML varchar(1000),
-    GROUP_ID varchar(36),
+    GROUP_ID varchar(32),
     --
     primary key (ID),
     constraint SEC_CONSTRAINT_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID)
@@ -333,7 +333,7 @@ create table SEC_CONSTRAINT (
 /**********************************************************************************************/
 
 create table SEC_SESSION_ATTR (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
@@ -345,7 +345,7 @@ create table SEC_SESSION_ATTR (
     NAME varchar(50),
     STR_VALUE varchar(1000),
     DATATYPE varchar(20),
-    GROUP_ID varchar(36),
+    GROUP_ID varchar(32),
     --
     primary key (ID),
     constraint SEC_SESSION_ATTR_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID)
@@ -354,11 +354,11 @@ create table SEC_SESSION_ATTR (
 /**********************************************************************************************/
 
 create table SEC_USER_SETTING (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     --
-    USER_ID varchar(36),
+    USER_ID varchar(32),
     CLIENT_TYPE char(1),
     NAME varchar(255),
     VALUE text,
@@ -371,7 +371,7 @@ create table SEC_USER_SETTING (
 /**********************************************************************************************/
 
 create table SEC_USER_SUBSTITUTION (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
@@ -380,8 +380,8 @@ create table SEC_USER_SUBSTITUTION (
     DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
-    USER_ID varchar(36),
-    SUBSTITUTED_USER_ID varchar(36),
+    USER_ID varchar(32),
+    SUBSTITUTED_USER_ID varchar(32),
     START_DATE datetime,
     END_DATE datetime,
     --
@@ -393,7 +393,7 @@ create table SEC_USER_SUBSTITUTION (
 /**********************************************************************************************/
 
 create table SEC_LOGGED_ENTITY (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     --
@@ -408,11 +408,11 @@ create table SEC_LOGGED_ENTITY (
 /**********************************************************************************************/
 
 create table SEC_LOGGED_ATTR (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     --
-    ENTITY_ID varchar(36),
+    ENTITY_ID varchar(32),
     NAME varchar(50),
     --
     primary key (ID),
@@ -423,15 +423,15 @@ create table SEC_LOGGED_ATTR (
 /**********************************************************************************************/
 
 create table SEC_ENTITY_LOG (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     --
     EVENT_TS datetime,
-    USER_ID varchar(36),
+    USER_ID varchar(32),
     CHANGE_TYPE char(1),
     ENTITY varchar(100),
-    ENTITY_ID varchar(36),
+    ENTITY_ID varchar(32),
     CHANGES text,
     --
     primary key (ID),
@@ -443,14 +443,14 @@ create index IDX_SEC_ENTITY_LOG_ENTITY_ID on SEC_ENTITY_LOG (ENTITY_ID)^
 /**********************************************************************************************/
 
 create table SEC_ENTITY_LOG_ATTR (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     --
-    ITEM_ID varchar(36),
+    ITEM_ID varchar(32),
     NAME varchar(50),
     VALUE varchar(1500),
-    VALUE_ID varchar(36),    
+    VALUE_ID varchar(32),    
     MESSAGES_PACK varchar(200),
     --
     primary key (ID),
@@ -462,7 +462,7 @@ create index IDX_SEC_ENTITY_LOG_ATTR_ITEM on SEC_ENTITY_LOG_ATTR (ITEM_ID)^
 /**********************************************************************************************/
 
 create table SEC_FILTER (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
@@ -475,7 +475,7 @@ create table SEC_FILTER (
     NAME varchar(255),
     CODE varchar(200),
     XML text,
-    USER_ID varchar(36),
+    USER_ID varchar(32),
     --
     primary key (ID),
     constraint FK_SEC_FILTER_USER foreign key (USER_ID) references SEC_USER(ID)
@@ -484,7 +484,7 @@ create table SEC_FILTER (
 /**********************************************************************************************/
 
 create table SYS_FOLDER (
-    ID varchar(36),
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
@@ -494,7 +494,7 @@ create table SYS_FOLDER (
     DELETED_BY varchar(50),
     --
     FOLDER_TYPE char(1),
-    PARENT_ID varchar(36),
+    PARENT_ID varchar(32),
     NAME varchar(100),
     TAB_NAME varchar(100),
     SORT_ORDER integer,
@@ -506,7 +506,7 @@ create table SYS_FOLDER (
 /**********************************************************************************************/
 
 create table SYS_APP_FOLDER (
-    FOLDER_ID varchar(36),
+    FOLDER_ID varchar(32),
     FILTER_COMPONENT varchar(200),
     FILTER_XML varchar(7000),
     VISIBILITY_SCRIPT text,
@@ -520,7 +520,7 @@ create table SYS_APP_FOLDER (
 /**********************************************************************************************/
 
 create table SEC_PRESENTATION (
-    ID varchar(36),
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     UPDATE_TS datetime,
@@ -529,7 +529,7 @@ create table SEC_PRESENTATION (
     COMPONENT varchar(200),
     NAME varchar(255),
     XML varchar(7000),
-    USER_ID varchar(36),
+    USER_ID varchar(32),
     IS_AUTO_SAVE boolean,
     --
     primary key (ID),
@@ -539,11 +539,11 @@ create table SEC_PRESENTATION (
 /**********************************************************************************************/
 
 create table SEC_SEARCH_FOLDER (
-    FOLDER_ID varchar(36),
+    FOLDER_ID varchar(32),
     FILTER_COMPONENT varchar(200),
     FILTER_XML varchar(7000),
-    USER_ID varchar(36),
-    PRESENTATION_ID varchar(36),
+    USER_ID varchar(32),
+    PRESENTATION_ID varchar(32),
     APPLY_DEFAULT boolean,
     IS_SET boolean,
     ENTITY_TYPE varchar(50),
@@ -561,11 +561,11 @@ create index IDX_SEC_SEARCH_FOLDER_USER on SEC_SEARCH_FOLDER (USER_ID)^
 /**********************************************************************************************/
 
 create table SYS_FTS_QUEUE (
-    ID varchar(36),
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     --
-    ENTITY_ID varchar(36),
+    ENTITY_ID varchar(32),
     ENTITY_NAME varchar(200),
     CHANGE_TYPE char(1),
     SOURCE_HOST varchar(255),
@@ -580,15 +580,15 @@ create index IDX_SYS_FTS_QUEUE_IDXHOST_CRTS on SYS_FTS_QUEUE (INDEXING_HOST, CRE
 /**********************************************************************************************/
 
 create table SEC_SCREEN_HISTORY (
-    ID varchar(36),
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     --
-    USER_ID varchar(36),
+    USER_ID varchar(32),
     CAPTION varchar(255),
     URL text,
-    ENTITY_ID varchar(36),
-    SUBSTITUTED_USER_ID varchar(36),
+    ENTITY_ID varchar(32),
+    SUBSTITUTED_USER_ID varchar(32),
       --
     primary key (ID),
     constraint FK_SEC_HISTORY_USER foreign key (USER_ID) references SEC_USER (ID),
@@ -601,7 +601,7 @@ create index IDX_SEC_SCREEN_HIST_SUB_USER on SEC_SCREEN_HISTORY (SUBSTITUTED_USE
 /**********************************************************************************************/
 
 create table SYS_SENDING_MESSAGE (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
@@ -615,7 +615,7 @@ create table SYS_SENDING_MESSAGE (
     CAPTION varchar(500),
     EMAIL_HEADERS varchar(500),
     CONTENT_TEXT text,
-    CONTENT_TEXT_FILE_ID varchar(36),
+    CONTENT_TEXT_FILE_ID varchar(32),
     DEADLINE datetime,
     STATUS int,
     DATE_SENT datetime,
@@ -634,7 +634,7 @@ create index IDX_SYS_SENDING_MESSAGE_DATE_SENT on SYS_SENDING_MESSAGE (DATE_SENT
  #------------------------------------------------------------------------------------------------------------
 
 create table SYS_SENDING_ATTACHMENT (
-    ID varchar(36),
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
@@ -643,9 +643,9 @@ create table SYS_SENDING_ATTACHMENT (
     DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
-    MESSAGE_ID varchar(36),
+    MESSAGE_ID varchar(32),
     CONTENT blob,
-    CONTENT_FILE_ID varchar(36),
+    CONTENT_FILE_ID varchar(32),
     CONTENT_ID varchar(50),
     NAME varchar(500),
     DISPOSITION varchar(50),
@@ -662,13 +662,13 @@ create index SYS_SENDING_ATTACHMENT_MESSAGE_IDX on SYS_SENDING_ATTACHMENT (MESSA
 /**********************************************************************************************/
 
 create table SYS_ENTITY_SNAPSHOT (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     --
     ENTITY_META_CLASS varchar(50) not null,
-    ENTITY_ID varchar(36) not null,
-    AUTHOR_ID varchar(36) not null,
+    ENTITY_ID varchar(32) not null,
+    AUTHOR_ID varchar(32) not null,
     VIEW_XML text not null,
     SNAPSHOT_XML text not null,
     SNAPSHOT_DATE datetime not null,
@@ -682,7 +682,7 @@ create index IDX_SYS_ENTITY_SNAPSHOT_ENTITY_ID on SYS_ENTITY_SNAPSHOT (ENTITY_ID
 /**********************************************************************************************/
 
 create table SYS_CATEGORY(
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
@@ -703,7 +703,7 @@ create table SYS_CATEGORY(
 /**********************************************************************************************/
 
 create table SYS_CATEGORY_ATTR (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
@@ -715,7 +715,7 @@ create table SYS_CATEGORY_ATTR (
     CATEGORY_ENTITY_TYPE varchar(4000),
     NAME varchar(255),
     CODE varchar(100) not null,
-    CATEGORY_ID varchar(36) not null,
+    CATEGORY_ID varchar(32) not null,
     ENTITY_CLASS varchar(500),
     DATA_TYPE varchar(200),
     DEFAULT_STRING text,
@@ -739,7 +739,7 @@ create table SYS_CATEGORY_ATTR (
 /**********************************************************************************************/
 
 create table SYS_ATTR_VALUE (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
@@ -748,8 +748,8 @@ create table SYS_ATTR_VALUE (
     DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
-    CATEGORY_ATTR_ID varchar(36) not null,
-    ENTITY_ID varchar(36),
+    CATEGORY_ATTR_ID varchar(32) not null,
+    ENTITY_ID varchar(32),
     STRING_VALUE text,
     INTEGER_VALUE integer,
     DOUBLE_VALUE numeric,
@@ -765,7 +765,7 @@ create table SYS_ATTR_VALUE (
 /**********************************************************************************************/
 
 create table SYS_JMX_INSTANCE (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
@@ -786,9 +786,9 @@ create table SYS_JMX_INSTANCE (
 
 create table SYS_QUERY_RESULT (
     ID bigint auto_increment not null,
-    SESSION_ID varchar(36) not null,
+    SESSION_ID varchar(32) not null,
     QUERY_KEY integer not null,
-    ENTITY_ID varchar(36),
+    ENTITY_ID varchar(32),
     --
     primary key (ID)
 )^
@@ -800,12 +800,12 @@ create index IDX_SYS_QUERY_RESULT_SESSION_KEY on SYS_QUERY_RESULT (SESSION_ID, Q
 /**********************************************************************************************/
 
 create table SEC_REMEMBER_ME (
-    ID varchar(36) not null,
+    ID varchar(32),
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
     --
-    USER_ID varchar(36) not null,
+    USER_ID varchar(32) not null,
     TOKEN varchar(32) not null,
     --
     primary key (ID),
@@ -816,19 +816,24 @@ create index IDX_SEC_REMEMBER_ME_TOKEN on SEC_REMEMBER_ME(TOKEN)^
 
 /**********************************************************************************************/
 
+create function newid() returns varchar(32) not deterministic
+return replace(uuid(), '-', '');
+
+/**********************************************************************************************/
+
 insert into SEC_GROUP (ID, CREATE_TS, VERSION, NAME, PARENT_ID)
-values ('0fa2b1a5-1d68-4d69-9fbd-dff348347f93', current_timestamp, 0, 'Company', null)^
+values ('0fa2b1a51d684d699fbddff348347f93', current_timestamp, 0, 'Company', null)^
 
 insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE)
-values ('60885987-1b61-4247-94c7-dff348347f93', current_timestamp, 0, 'admin', 'admin',
+values ('608859871b61424794c7dff348347f93', current_timestamp, 0, 'admin', 'admin',
 'cc2229d1b8a052423d9e1c9ef0113b850086586a',
-'Administrator', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', 1)^
+'Administrator', '0fa2b1a51d684d699fbddff348347f93', 1)^
 
 insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, ROLE_TYPE)
-values ('0c018061-b26f-4de2-a5be-dff348347f93', current_timestamp, 0, 'Administrators', 10)^
+values ('0c018061b26f4de2a5bedff348347f93', current_timestamp, 0, 'Administrators', 10)^
 
 insert into SEC_FILTER (ID,CREATE_TS,CREATED_BY,VERSION,UPDATE_TS,UPDATED_BY,DELETE_TS,DELETED_BY,COMPONENT,NAME,XML,USER_ID)
-values ('b61d18cb-e79a-46f3-b16d-eaf4aebb10dd',{ts '2010-03-01 11:14:06.830'},'admin',2,{ts '2010-03-01 11:52:53.170'},'admin',null,null,'[sec$User.browse].genericFilter','Search by role',
+values ('b61d18cbe79a46f3b16deaf4aebb10dd',{ts '2010-03-01 11:14:06.830'},'admin',2,{ts '2010-03-01 11:52:53.170'},'admin',null,null,'[sec$User.browse].genericFilter','Search by role',
 '<?xml version="1.0" encoding="UTF-8"?>
 <filter>
   <and>
@@ -837,7 +842,7 @@ values ('b61d18cb-e79a-46f3-b16d-eaf4aebb10dd',{ts '2010-03-01 11:14:06.830'},'a
     </c>
   </and>
 </filter>',
-'60885987-1b61-4247-94c7-dff348347f93')^
+'608859871b61424794c7dff348347f93')^
 
 /**********************************************************************************************/
 

@@ -8,6 +8,7 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.cuba.core.global.UuidProvider;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.platform.database.MySQLPlatform;
 import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
 import org.eclipse.persistence.platform.database.SQLServerPlatform;
@@ -31,7 +32,8 @@ public class UuidConverter implements Converter {
             return objectValue;
         } else if (session.getPlatform() instanceof SQLServerPlatform) {
             return objectValue != null ? objectValue.toString().toUpperCase() : null; // for correct binding of batch query results
-        } else if (session.getPlatform() instanceof OraclePlatform) {
+        } else if (session.getPlatform() instanceof OraclePlatform
+                || session.getPlatform() instanceof MySQLPlatform) {
             return objectValue != null ? objectValue.toString().replace("-", "") : null;
         } else {
             return objectValue != null ? objectValue.toString() : null;
@@ -42,7 +44,8 @@ public class UuidConverter implements Converter {
     public Object convertDataValueToObjectValue(Object dataValue, Session session) {
         if (session.getPlatform() instanceof PostgreSQLPlatform) {
             return dataValue;
-        } else if (session.getPlatform() instanceof OraclePlatform) {
+        } else if (session.getPlatform() instanceof OraclePlatform
+                || session.getPlatform() instanceof MySQLPlatform) {
             if (dataValue instanceof String) {
                 StringBuilder sb = new StringBuilder((String) dataValue);
                 sb.insert(8, '-');
