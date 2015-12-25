@@ -79,10 +79,13 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
     protected Label nameLab;
 
     @Inject
-    protected MetadataTools metadataTools;
+    protected Metadata metadata;
 
     @Inject
     protected MessageTools messageTools;
+
+    @Inject
+    protected ExtendedEntities extendedEntities;
 
     protected boolean initializing;
 
@@ -457,11 +460,7 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
         String query = queryBuilder.toString();
         query = query.replace("{E}", entityAlias);
 
-        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
-        MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-        ExtendedEntities extendedEntities = AppBeans.get(ExtendedEntities.NAME);
-
-        DomainModelBuilder builder = new DomainModelBuilder(metadataTools, messageTools, extendedEntities);
+        DomainModelBuilder builder = new DomainModelBuilder(metadata, messageTools, extendedEntities);
         DomainModel domainModel = builder.produce();
 
         return JpqlSuggestionFactory.requestHint(query, queryPosition, sender.getAutoCompleteSupport(), senderCursorPosition, new ExtHintProvider(domainModel));

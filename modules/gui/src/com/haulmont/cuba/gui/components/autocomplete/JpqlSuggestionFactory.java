@@ -43,11 +43,7 @@ public class JpqlSuggestionFactory {
 
     public static List<Suggestion> requestHint(String query, int queryPosition, AutoCompleteSupport sender,
                                                int senderCursorPosition, @Nullable HintProvider provider) {
-        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
-        MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-        ExtendedEntities extendedEntities = AppBeans.get(ExtendedEntities.NAME);
-
-        DomainModelBuilder builder = new DomainModelBuilder(metadataTools, messageTools, extendedEntities);
+        DomainModelBuilder builder = new DomainModelBuilder();
         DomainModel domainModel = builder.produce();
         if (provider == null) {
             provider = new HintProvider(domainModel);

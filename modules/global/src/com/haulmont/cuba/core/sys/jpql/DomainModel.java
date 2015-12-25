@@ -11,7 +11,10 @@ import com.haulmont.cuba.core.sys.jpql.model.Entity;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author chevelev
@@ -19,7 +22,7 @@ import java.util.List;
  */
 @NotThreadSafe
 public class DomainModel {
-    protected List<Entity> entities = new ArrayList<>();
+    protected Map<String, Entity> entities = new HashMap<>();
     protected ExtendedEntities extendedEntities;
 
     public DomainModel(ExtendedEntities extendedEntities, Entity... initialEntities) {
@@ -37,17 +40,13 @@ public class DomainModel {
         if (entity == null)
             throw new NullPointerException("No entity passed");
 
-        entities.add(entity);
+        entities.put(entity.getName(), entity);
     }
 
     public List<Entity> findEntitiesStartingWith(String lastWord) {
-        List<Entity> result = new ArrayList<>();
-        for (Entity entity : entities) {
-            String name = entity.getName();
-            if (name.startsWith(lastWord)) {
-                result.add(entity);
-            }
-        }
+        List<Entity> result = entities.values().stream()
+                .filter(entity -> entity.getName().startsWith(lastWord))
+                .collect(Collectors.toList());
         return result;
     }
 
@@ -57,12 +56,11 @@ public class DomainModel {
             requiredEntityName = effectiveMetaClass.getName();
         }
 
-        for (Entity entity : entities) {
-            String name = entity.getName();
-            if (name.equals(requiredEntityName)) {
-                return entity;
-            }
+        Entity entity = entities.get(requiredEntityName);
+        if (entity == null) {
+            throw new UnknownEntityNameException(requiredEntityName);
+        } else {
+            return entity;
         }
-        throw new UnknownEntityNameException(requiredEntityName);
     }
 }

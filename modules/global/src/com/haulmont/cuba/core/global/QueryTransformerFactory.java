@@ -23,11 +23,7 @@ public class QueryTransformerFactory {
     public static QueryTransformer createTransformer(String query) {
         if (useAst) {
             if (domainModel == null) {
-                MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
-                MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-                ExtendedEntities extendedEntities = AppBeans.get(ExtendedEntities.NAME);
-
-                DomainModelBuilder builder = new DomainModelBuilder(metadataTools, messageTools, extendedEntities);
+                DomainModelBuilder builder = new DomainModelBuilder();
                 domainModel = builder.produce();
             }
             return AppBeans.getPrototype(QueryTransformer.NAME, domainModel, query);
