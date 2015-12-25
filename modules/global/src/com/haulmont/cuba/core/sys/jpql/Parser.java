@@ -17,11 +17,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Parser {
-    public static CommonTree parse(String input) throws RecognitionException {
+    public static CommonTree parse(String input, boolean failOnErrors) throws RecognitionException {
         JPA2Parser parser = createParser(input);
         JPA2Parser.ql_statement_return aReturn = parser.ql_statement();
         CommonTree tree = (CommonTree) aReturn.getTree();
-        checkTreeForExceptions(tree);
+        if (failOnErrors) {
+            checkTreeForExceptions(tree);
+        }
         return tree;
     }
 

@@ -12,7 +12,6 @@ import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 import com.haulmont.cuba.core.sys.jpql.tree.IdentificationVariableNode;
 import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.tree.CommonErrorNode;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.TreeVisitor;
 import org.apache.commons.lang.StringUtils;
@@ -131,7 +130,7 @@ public class QueryTransformerAstBased implements QueryTransformer {
         EntityReferenceInferer inferer = new EntityReferenceInferer(mainEntityName);
         EntityReference ref = inferer.infer(queryTreeTransformer);
         try {
-            CommonTree statementTree = Parser.parse(statement);
+            CommonTree statementTree = Parser.parse(statement, true);
             CommonTree whereClause = (CommonTree) statementTree.getFirstChildWithType(JPA2Lexer.T_CONDITION);
             addWhere(whereClause, ref, true);
         } catch (RecognitionException e) {

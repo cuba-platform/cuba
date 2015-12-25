@@ -12,7 +12,6 @@ import com.haulmont.cuba.core.sys.jpql.pointer.Pointer;
 import com.haulmont.cuba.core.sys.jpql.tree.PathNode;
 import com.haulmont.cuba.core.sys.jpql.tree.SelectedItemNode;
 import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.tree.CommonErrorNode;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 import org.antlr.runtime.tree.TreeVisitor;
@@ -30,12 +29,16 @@ public class QueryTreeAnalyzer {
     protected CommonTree tree;
 
     public void prepare(DomainModel model, String query) throws RecognitionException {
+        prepare(model, query, true);
+    }
+
+    public void prepare(DomainModel model, String query, boolean failOnErrors) throws RecognitionException {
         this.model = model;
 
         query = query.replace("\n", " ");
         query = query.replace("\r", " ");
         query = query.replace("\t", " ");
-        tree = Parser.parse(query);
+        tree = Parser.parse(query, failOnErrors);
         TreeVisitor visitor = new TreeVisitor();
         idVarSelector = new IdVarSelector(model);
         visitor.visit(tree, idVarSelector);

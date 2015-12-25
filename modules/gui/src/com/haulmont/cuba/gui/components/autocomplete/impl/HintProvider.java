@@ -102,7 +102,7 @@ public class HintProvider {
 
     private HintResponse hintFieldName(String lastWord, String input, int caretPosition, Set<InferredType> expectedTypes) throws RecognitionException {
         QueryTreeAnalyzer queryAnalyzer = new QueryTreeAnalyzer();
-        queryAnalyzer.prepare(model, input);
+        queryAnalyzer.prepare(model, input, false);
         List<ErrorRec> errorRecs = queryAnalyzer.getInvalidIdVarNodes();
         QueryVariableContext root = queryAnalyzer.getRootQueryVariableContext();
         QueryVariableContext queryVC = root.getContextByCaretPosition(caretPosition);
