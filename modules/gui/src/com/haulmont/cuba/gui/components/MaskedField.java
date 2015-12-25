@@ -68,4 +68,7 @@ public interface MaskedField extends TextField {
     void setValueMode(ValueMode mode);
 
     ValueMode getValueMode();
+
+    boolean isSendNullRepresentation();
+    void setSendNullRepresentation(boolean sendNullRepresentation);
 }

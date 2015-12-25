@@ -41,6 +41,8 @@ public class CubaMaskedFieldWidget extends VTextField {
 
     protected boolean maskedMode = false;
 
+    protected boolean sendNullRepresentation = true;
+
     protected MaskedKeyHandler keyHandler;
 
     protected int tabIndex = 0;
@@ -106,6 +108,14 @@ public class CubaMaskedFieldWidget extends VTextField {
 
     public void setMaskedMode(boolean maskedMode) {
         this.maskedMode = maskedMode;
+    }
+
+    public boolean isSendNullRepresentation() {
+        return sendNullRepresentation;
+    }
+
+    public void setSendNullRepresentation(boolean sendNullRepresentation) {
+        this.sendNullRepresentation = sendNullRepresentation;
     }
 
     protected void initMaskMap() {
@@ -294,7 +304,13 @@ public class CubaMaskedFieldWidget extends VTextField {
                     && !newText.equals(valueBeforeEdit)) {
                 if (validateText(newText)) {
                     sendValueChange = immediate;
-                    client.updateVariable(paintableId, "text", maskedMode ? getText() : getRawText(), false);
+                    String value;
+                    if (newText.equals(nullRepresentation)) {
+                        value = isSendNullRepresentation() ? getText() : getRawText();
+                    } else {
+                        value = maskedMode ? getText() : getRawText();
+                    }
+                    client.updateVariable(paintableId, "text", value, false);
                     valueBeforeEdit = newText;
                 } else {
                     setText(valueBeforeEdit);

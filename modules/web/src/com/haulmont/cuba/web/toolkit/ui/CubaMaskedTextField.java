@@ -26,6 +26,14 @@ public class CubaMaskedTextField extends CubaTextField {
         getState(true).maskedMode = maskedMode;
     }
 
+    public boolean isSendNullRepresentation() {
+        return getState(false).sendNullRepresentation;
+    }
+
+    public void setSendNullRepresentation(boolean sendNullRepresentation) {
+        getState(true).sendNullRepresentation = sendNullRepresentation;
+    }
+
     @Override
     protected CubaMaskedTextFieldState getState() {
         return (CubaMaskedTextFieldState) super.getState();

@@ -83,7 +83,15 @@ public abstract class AbstractFieldFactory implements FieldFactory {
                 } else if (typeName.equals(TimeDatatype.NAME)) {
                     return createTimeField(datasource, property, xmlDescriptor);
                 } else if (datatype instanceof NumberDatatype) {
-                    return createNumberField(datasource, property);
+                    if (xmlDescriptor != null
+                            && xmlDescriptor.attribute("mask") != null) {
+                        MaskedField maskedField = (MaskedField) createMaskedField(datasource, property, xmlDescriptor);
+                        maskedField.setValueMode(MaskedField.ValueMode.MASKED);
+                        maskedField.setSendNullRepresentation(false);
+                        return maskedField;
+                    } else {
+                        return createNumberField(datasource, property);
+                    }
                 }
             } else if (mpp.getRange().isClass()) {
                 return createEntityField(datasource, property,mpp, xmlDescriptor);

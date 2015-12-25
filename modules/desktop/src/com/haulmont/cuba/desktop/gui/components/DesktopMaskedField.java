@@ -15,6 +15,7 @@ public class DesktopMaskedField extends DesktopTextField implements MaskedField 
 
     protected String mask;
     protected ValueMode mode = ValueMode.CLEAR;
+    protected boolean sendNullRepresentation = true;
 
     @Override
     public void setMask(String mask) {
@@ -34,5 +35,15 @@ public class DesktopMaskedField extends DesktopTextField implements MaskedField 
     @Override
     public ValueMode getValueMode() {
         return mode;
+    }
+
+    @Override
+    public boolean isSendNullRepresentation() {
+        return sendNullRepresentation;
+    }
+
+    @Override
+    public void setSendNullRepresentation(boolean sendNullRepresentation) {
+        this.sendNullRepresentation = sendNullRepresentation;
     }
 }

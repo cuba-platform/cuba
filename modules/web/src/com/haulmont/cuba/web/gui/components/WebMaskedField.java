@@ -39,6 +39,16 @@ public class WebMaskedField extends WebAbstractTextField<CubaMaskedTextField> im
     }
 
     @Override
+    public boolean isSendNullRepresentation() {
+        return component.isSendNullRepresentation();
+    }
+
+    @Override
+    public void setSendNullRepresentation(boolean sendNullRepresentation) {
+        component.setSendNullRepresentation(sendNullRepresentation);
+    }
+
+    @Override
     public Datatype getDatatype() {
         return null;
     }

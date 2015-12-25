@@ -33,5 +33,6 @@ public class CubaMaskedFieldConnector extends TextFieldConnector {
 
         getWidget().setMask(getState().mask);
         getWidget().setMaskedMode(getState().maskedMode);
+        getWidget().setSendNullRepresentation(getState().sendNullRepresentation);
     }
 }

@@ -21,4 +21,7 @@ public class CubaMaskedTextFieldState extends CubaTextFieldState {
 
     @NoLayout
     public boolean maskedMode = false;
+
+    @NoLayout
+    public boolean sendNullRepresentation = true;
 }
