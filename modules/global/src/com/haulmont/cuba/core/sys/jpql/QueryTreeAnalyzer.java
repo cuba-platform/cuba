@@ -49,10 +49,6 @@ public class QueryTreeAnalyzer {
         return idVarSelector.getInvalidIdVarNodes();
     }
 
-    public List<CommonErrorNode> getErrorNodes() {
-        return idVarSelector.getErrorNodes();
-    }
-
     public CommonTree getTree() {
         return tree;
     }

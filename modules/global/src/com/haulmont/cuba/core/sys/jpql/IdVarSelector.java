@@ -23,7 +23,6 @@ public class IdVarSelector implements TreeVisitorAction {
     private QueryVariableContext root;
 
     private List<ErrorRec> invalidIdVarNodes = new ArrayList<>();
-    private List<CommonErrorNode> errorNodes = new ArrayList<>();
     private DomainModel model;
     private Deque<QueryVariableContext> stack = new ArrayDeque<>();
 
@@ -39,11 +38,6 @@ public class IdVarSelector implements TreeVisitorAction {
     public Object pre(Object t) {
         if (!(t instanceof CommonTree))
             return t;
-
-        if (t instanceof CommonErrorNode) {
-            errorNodes.add((CommonErrorNode) t);
-            return t;
-        }
 
         CommonTree node = (CommonTree) t;
 
@@ -102,9 +96,5 @@ public class IdVarSelector implements TreeVisitorAction {
 
     public List<ErrorRec> getInvalidIdVarNodes() {
         return Collections.unmodifiableList(invalidIdVarNodes);
-    }
-
-    public List<CommonErrorNode> getErrorNodes() {
-        return Collections.unmodifiableList(errorNodes);
     }
 }

@@ -62,24 +62,11 @@ public class QueryTransformerAstBased implements QueryTransformer {
     private void initQueryAnalyzer(DomainModel model, String query) throws RecognitionException {
         queryTreeTransformer = new QueryTreeTransformer();
         queryTreeTransformer.prepare(model, query);
-
-        List<CommonErrorNode> errorNodes = new ArrayList<>(queryTreeTransformer.getErrorNodes());
-        List<ErrorRec> invalidIdVarNodes = queryTreeTransformer.getInvalidIdVarNodes();
-        for (ErrorRec invalidIdVarNode : invalidIdVarNodes) {
-            if (errorNodes.contains(invalidIdVarNode.node)) {
-                errorNodes.remove(invalidIdVarNode.node);
-            }
-        }
-
         List<ErrorRec> errors = new ArrayList<>(queryTreeTransformer.getInvalidIdVarNodes());
-        for (CommonErrorNode errorNode : errorNodes) {
-            ErrorRec rec = new ErrorRec(errorNode, "CommonErrorNode");
-            errors.add(rec);
-        }
-
         if (!errors.isEmpty()) {
             throw new QueryErrorsFoundException("Errors found", errors);
         }
+
     }
 
     @Override

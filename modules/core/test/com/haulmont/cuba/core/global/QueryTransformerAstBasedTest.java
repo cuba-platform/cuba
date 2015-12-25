@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
 import com.haulmont.cuba.core.sys.jpql.model.EntityImpl;
 import com.haulmont.cuba.core.sys.jpql.transform.QueryTransformerAstBased;
 import org.antlr.runtime.RecognitionException;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -623,6 +624,7 @@ public class QueryTransformerAstBasedTest {
                     "select h from sec$GroupHierarchy h join h.parent.constraints c group by c.level order by c.level having c.level > 0");
             fail("Incorrectly placed 'having' passed");
         } catch (QueryErrorsFoundException e) {
+            //expected
         }
     }
 
@@ -635,6 +637,7 @@ public class QueryTransformerAstBasedTest {
                     "select h from sec$GroupHierarchy h join h.parent.constraints");
             fail("Not named join variable passed");
         } catch (QueryErrorsFoundException e) {
+            //expected
         }
     }
 
@@ -1004,5 +1007,36 @@ public class QueryTransformerAstBasedTest {
 //        assertEquals(
 //                "select count(c.colour) from sec$Car c where c.colour.createdBy = :p",
 //                res);
+    }
+
+    @Test
+    public void testAddWhereWithInExpression() throws RecognitionException {
+        DomainModel model = prepareDomainModel();
+
+        QueryTransformerAstBased transformer = new QueryTransformerAstBased(model, "select c from sec$Constraint c");
+        transformer.addWhere("{E}.group in (select g.id from sec$GroupHierarchy g where {E} in (g.constraints))");
+
+        assertEquals("select c from sec$Constraint c " +
+                "where c.group in (select g.id from sec$GroupHierarchy g where c in ( g.constraints))", transformer.getResult());
+
+        transformer = new QueryTransformerAstBased(model, "select c from sec$Constraint c");
+        transformer.addWhere("{E}.group in (select g.id from sec$GroupHierarchy g where {E}.id in (g.constraints.id))");
+
+        assertEquals("select c from sec$Constraint c " +
+                "where c.group in (select g.id from sec$GroupHierarchy g where c.id in ( g.constraints.id))", transformer.getResult());
+
+    }
+
+    @Test
+    public void testAddWrongWhere() throws RecognitionException {
+        try {
+            DomainModel model = prepareDomainModel();
+
+            QueryTransformerAstBased transformer = new QueryTransformerAstBased(model, "select c from sec$Constraint c");
+            transformer.addWhere("{E}.group.id == :group");
+            fail();
+        } catch (QueryErrorsFoundException e) {
+            //expected
+        }
     }
 }

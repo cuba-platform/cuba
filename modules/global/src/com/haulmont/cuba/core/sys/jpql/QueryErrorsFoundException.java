@@ -12,7 +12,7 @@ import java.util.List;
  * @author chevelev
  * @version $Id$
  */
-public class QueryErrorsFoundException extends RuntimeException{
+public class QueryErrorsFoundException extends RuntimeException {
 
     private List<ErrorRec> errorRecs;
 

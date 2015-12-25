@@ -11,24 +11,43 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.TokenStream;
 import org.antlr.runtime.tree.CommonTree;
+import org.antlr.runtime.tree.TreeVisitor;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Parser {
     public static CommonTree parse(String input) throws RecognitionException {
         JPA2Parser parser = createParser(input);
         JPA2Parser.ql_statement_return aReturn = parser.ql_statement();
-        return (CommonTree) aReturn.getTree();
+        CommonTree tree = (CommonTree) aReturn.getTree();
+        checkTreeForExceptions(tree);
+        return tree;
     }
 
     public static CommonTree parseWhereClause(String input) throws RecognitionException {
         JPA2Parser parser = createParser(input);
         JPA2Parser.where_clause_return aReturn = parser.where_clause();
-        return (CommonTree) aReturn.getTree();
+        CommonTree tree = (CommonTree) aReturn.getTree();
+        checkTreeForExceptions(tree);
+        return tree;
     }
 
     public static CommonTree parseJoinClause(String join) throws RecognitionException {
         JPA2Parser parser = createParser(join);
         JPA2Parser.join_return aReturn = parser.join();
-        return (CommonTree) aReturn.getTree();
+        CommonTree tree = (CommonTree) aReturn.getTree();
+        checkTreeForExceptions(tree);
+        return tree;
+    }
+
+    public static CommonTree parseSelectionSource(String input) throws RecognitionException {
+        JPA2Parser parser = createParser(input);
+        JPA2Parser.identification_variable_declaration_or_collection_member_declaration_return aReturn =
+                parser.identification_variable_declaration_or_collection_member_declaration();
+        CommonTree tree = (CommonTree) aReturn.getTree();
+        checkTreeForExceptions(tree);
+        return tree;
     }
 
     private static JPA2Parser createParser(String input) {
@@ -41,10 +60,17 @@ public class Parser {
         return new JPA2Parser(tstream);
     }
 
-    public static CommonTree parseSelectionSource(String input) throws RecognitionException {
-        JPA2Parser parser = createParser(input);
-        JPA2Parser.identification_variable_declaration_or_collection_member_declaration_return aReturn =
-                parser.identification_variable_declaration_or_collection_member_declaration();
-        return (CommonTree) aReturn.getTree();
+    private static void checkTreeForExceptions(CommonTree tree) {
+        TreeVisitor visitor = new TreeVisitor();
+        ErrorNodesFinder errorNodesFinder = new ErrorNodesFinder();
+        visitor.visit(tree, errorNodesFinder);
+
+        List<ErrorRec> errors = errorNodesFinder.getErrorNodes().stream()
+                .map(node -> new ErrorRec(node, "CommonErrorNode"))
+                .collect(Collectors.toList());
+
+        if (!errors.isEmpty()) {
+            throw new QueryErrorsFoundException("Errors found", errors);
+        }
     }
 }
