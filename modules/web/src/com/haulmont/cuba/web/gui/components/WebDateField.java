@@ -283,16 +283,6 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     }
 
     @Override
-    public boolean isEnabled() {
-        return getComponent().isEnabled();
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        getComponent().setEnabled(enabled);
-    }
-
-    @Override
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
