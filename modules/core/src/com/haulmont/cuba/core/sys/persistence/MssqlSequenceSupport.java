@@ -32,8 +32,8 @@ public class MssqlSequenceSupport implements SequenceSupport {
     public String modifySequenceSql(String sequenceName, long startWith) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         return String.format("drop table %1$s ^ " +
-                "create table %1$s (ID bigint identity(%2$d,1), CREATE_TS datetime) ^ " +
-                "insert into %1$s (CREATE_TS) values ({ts '%3$s'})",
+                        "create table %1$s (ID bigint identity(%2$d,1), CREATE_TS datetime) ^ " +
+                        "insert into %1$s (CREATE_TS) values ({ts '%3$s'})",
                 sequenceName.toUpperCase(), startWith, dateFormat.format(AppBeans.get(TimeSource.class).currentTimestamp()));
     }
 
@@ -44,12 +44,11 @@ public class MssqlSequenceSupport implements SequenceSupport {
 
     @Override
     public String getNextValueSql(String sequenceName) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        return String.format("insert into %s (CREATE_TS) values ({ts '%s'}) ^ select ident_current('%s') as NEXT_VALUE",
-                sequenceName.toUpperCase(), dateFormat.format(AppBeans.get(TimeSource.class).currentTimestamp()), sequenceName.toUpperCase());
+        return String.format("insert into %s(CREATE_TS) output inserted.id values(CURRENT_TIMESTAMP);", sequenceName.toUpperCase());
     }
 
     @Override
     public String getCurrentValueSql(String sequenceName) {
         return String.format("select ident_current('%s') as CURR_VALUE", sequenceName.toUpperCase());
-    }}
+    }
+}

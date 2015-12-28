@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.bali.db.DbUtils;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
@@ -19,6 +20,10 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -147,15 +152,30 @@ public class UniqueNumbers implements UniqueNumbersAPI {
         EntityManager em = persistence.getEntityManager();
         StrTokenizer tokenizer = new StrTokenizer(sqlScript, SequenceSupport.SQL_DELIMITER);
         Object value = null;
+        Connection connection = em.getConnection();
         while (tokenizer.hasNext()) {
             String sql = tokenizer.nextToken();
-            Query query = em.createNativeQuery(sql);
-            if (isSelectSql(sql))
-                value = query.getSingleResult();
-            else
-                query.executeUpdate();
+            try {
+                PreparedStatement statement = connection.prepareStatement(sql);
+                try {
+                    statement.execute();
+                    if (isSelectSql(sql) || isInsertSql(sql)) {
+                        ResultSet rs = statement.getResultSet();
+                        if (rs != null && rs.next())
+                            value = rs.getLong(1);
+                    }
+                } finally {
+                    DbUtils.closeQuietly(statement);
+                }
+            } catch (SQLException e) {
+                throw new IllegalStateException(String.format("Error in sql while getting next number"), e);
+            }
         }
         return value;
+    }
+
+    protected boolean isInsertSql(String sql) {
+        return sql.trim().toLowerCase().startsWith("insert");
     }
 
     protected boolean isSelectSql(String sql) {
