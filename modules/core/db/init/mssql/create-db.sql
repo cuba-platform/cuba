@@ -624,7 +624,7 @@ create table SYS_SENDING_MESSAGE (
     DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
-    ADDRESS_TO varchar(500),
+    ADDRESS_TO varchar(max),
     ADDRESS_FROM varchar(100),
     CAPTION varchar(500),
     EMAIL_HEADERS varchar(500),
@@ -635,7 +635,7 @@ create table SYS_SENDING_MESSAGE (
     DATE_SENT datetime,
     ATTEMPTS_COUNT int,
     ATTEMPTS_MADE int,
-    ATTACHMENTS_NAME varchar(500),
+    ATTACHMENTS_NAME varchar(max),
     --
     primary key nonclustered (ID),
     constraint FK_SYS_SENDING_MESSAGE_CONTENT_FILE foreign key (CONTENT_TEXT_FILE_ID) references SYS_FILE(ID)

@@ -582,7 +582,7 @@ create table SYS_SENDING_MESSAGE (
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
     --
-    ADDRESS_TO varchar(500),
+    ADDRESS_TO longvarchar,
     ADDRESS_FROM varchar(100),
     CAPTION varchar(500),
     EMAIL_HEADERS varchar(500),
@@ -593,7 +593,7 @@ create table SYS_SENDING_MESSAGE (
     DATE_SENT timestamp,
     ATTEMPTS_COUNT integer,
     ATTEMPTS_MADE integer,
-    ATTACHMENTS_NAME varchar(500),
+    ATTACHMENTS_NAME longvarchar,
     --
     primary key (ID)
 )^

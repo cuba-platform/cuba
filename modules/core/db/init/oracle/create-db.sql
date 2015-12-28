@@ -297,7 +297,7 @@ create table SYS_SENDING_MESSAGE (
     UPDATED_BY varchar2(50),
     DELETE_TS timestamp,
     DELETED_BY varchar2(50),
-    ADDRESS_TO varchar2(500),
+    ADDRESS_TO clob,
     ADDRESS_FROM varchar2(100),
     CAPTION varchar2(500),
     EMAIL_HEADERS varchar2(500),
@@ -308,7 +308,7 @@ create table SYS_SENDING_MESSAGE (
     DATE_SENT timestamp,
     ATTEMPTS_COUNT integer,
     ATTEMPTS_MADE integer,
-    ATTACHMENTS_NAME varchar2(500),
+    ATTACHMENTS_NAME clob,
     primary key(ID)
 )^
 create index IDX_SYS_SENDING_MES_DAT_SEN on SYS_SENDING_MESSAGE(DATE_SENT)^
