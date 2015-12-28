@@ -25,11 +25,11 @@ public class UserSubstitution extends StandardEntity {
 
     private static final long serialVersionUID = -1260499554824220311L;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "USER_ID")
     protected User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "SUBSTITUTED_USER_ID")
     @OnDeleteInverse(DeletePolicy.CASCADE)
     protected User substitutedUser;

@@ -380,8 +380,8 @@ create table SEC_USER_SUBSTITUTION (
     DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
-    USER_ID varchar(32),
-    SUBSTITUTED_USER_ID varchar(32),
+    USER_ID varchar(32) not null,
+    SUBSTITUTED_USER_ID varchar(32) not null,
     START_DATE datetime,
     END_DATE datetime,
     --

@@ -359,8 +359,8 @@ create table SEC_USER_SUBSTITUTION (
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
     --
-    USER_ID varchar(36),
-    SUBSTITUTED_USER_ID varchar(36),
+    USER_ID varchar(36) not null,
+    SUBSTITUTED_USER_ID varchar(36) not null,
     START_DATE timestamp,
     END_DATE timestamp,
     --

@@ -602,8 +602,8 @@ create table SEC_USER_SUBSTITUTION (
     UPDATED_BY varchar2(50),
     DELETE_TS timestamp,
     DELETED_BY varchar2(50),
-    USER_ID varchar2(32),
-    SUBSTITUTED_USER_ID varchar2(32),
+    USER_ID varchar2(32) not null,
+    SUBSTITUTED_USER_ID varchar2(32) not null,
     START_DATE timestamp,
     END_DATE timestamp,
     primary key(ID)

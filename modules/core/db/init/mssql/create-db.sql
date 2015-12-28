@@ -377,8 +377,8 @@ create table SEC_USER_SUBSTITUTION (
     DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
-    USER_ID uniqueidentifier,
-    SUBSTITUTED_USER_ID uniqueidentifier,
+    USER_ID uniqueidentifier not null,
+    SUBSTITUTED_USER_ID uniqueidentifier not null,
     START_DATE datetime,
     END_DATE datetime,
     --
