@@ -57,11 +57,6 @@ public class UniqueNumbers implements UniqueNumbersAPI {
     @Override
     public long getNextNumber(String domain) {
         String seqName = getSequenceName(domain);
-        return getNextNumberBySequenceName(seqName);
-    }
-
-    @Override
-    public long getNextNumberBySequenceName(String seqName) {
         String sqlScript = sequenceSupport.getNextValueSql(seqName);
 
         try {
