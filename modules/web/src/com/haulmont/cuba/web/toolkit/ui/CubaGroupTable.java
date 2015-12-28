@@ -189,6 +189,15 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
 
         boolean needsResetPageBuffer = false;
 
+        if (variables.containsKey("expandAllInGroup")) {
+            focus();
+
+            Object groupId = groupIdMap.get((String) variables.get("expandAllInGroup"));
+            expandAllInGroup(groupId, false);
+            clientNeedsContentRefresh = true;
+            needsResetPageBuffer = true;
+        }
+
         if (variables.containsKey("expand")) {
             focus();
 
@@ -338,6 +347,35 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
         return groupPropertyValueFormatter != null
                 ? groupPropertyValueFormatter.format(groupId, groupValue)
                 : (groupValue == null ? "" : groupValue.toString());
+    }
+
+    protected void expandAllInGroup(Object id, boolean rerender) {
+        final int pageIndex = getCurrentPageFirstItemIndex();
+        expandAllInGroup(id);
+        if (isMultiSelect()) {
+            selectAllInGroup(id);
+        }
+        setCurrentPageFirstItemIndex(pageIndex, false);
+        if (rerender) {
+            resetPageBuffer();
+            refreshRenderedCells();
+            markAsDirty();
+        }
+    }
+
+    protected void expandAllInGroup(Object id) {
+        ((GroupTableContainer) items).expand(id);
+        if (hasChildren(id)) {
+            for (Object childId : getChildren(id)) {
+                expandAllInGroup(childId);
+            }
+        }
+    }
+
+    protected void selectAllInGroup(Object id) {
+        for (Object itemId : getGroupItemIds(id)) {
+            select(itemId);
+        }
     }
 
     protected void expand(Object id, boolean rerender) {
