@@ -36,7 +36,7 @@ public class Connection {
     protected Logger log = LoggerFactory.getLogger(getClass());
 
     public void login(String login, String password, Locale locale) throws LoginException {
-        UserSession userSession = doLogin(login, password, locale);
+        UserSession userSession = doLogin(login, password, locale, getLoginParams());
         session = new ClientUserSession(userSession);
         AppContext.setSecurityContext(new SecurityContext(session));
         log.info("Logged in: " + session);
@@ -54,12 +54,14 @@ public class Connection {
      * @param login     login name
      * @param password  encrypted password
      * @param locale    client locale
+     * @param loginParams   login parameters
      * @return created user session
      * @throws LoginException in case of unsuccessful login
      */
-    protected UserSession doLogin(String login, String password, Locale locale) throws LoginException {
+    protected UserSession doLogin(String login, String password, Locale locale, Map<String, Object> loginParams)
+            throws LoginException {
         LoginService loginService = AppBeans.get(LoginService.NAME);
-        return loginService.login(login, password, locale);
+        return loginService.login(login, password, locale, loginParams);
     }
 
     protected Map<String, Object> getLoginParams() {
