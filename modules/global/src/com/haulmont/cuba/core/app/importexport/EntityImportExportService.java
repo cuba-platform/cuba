@@ -11,7 +11,7 @@ import com.haulmont.cuba.core.global.View;
 import java.util.Collection;
 
 /**
- * Service is used for exporting a collection of entities and importing them.
+ * Service that is used for exporting a collection of entities and importing them.
  *
  * @author gorbunkov
  * @version $Id$

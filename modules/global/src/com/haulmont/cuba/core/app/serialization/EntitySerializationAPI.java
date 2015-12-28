@@ -11,7 +11,7 @@ import com.haulmont.cuba.core.global.View;
 import java.util.Collection;
 
 /**
- * Class is used for serialization and deserialization of entities to JSON.
+ * Class that is used for serialization and deserialization of entities to JSON.
  *
  * @author gorbunkov
  * @version $Id$

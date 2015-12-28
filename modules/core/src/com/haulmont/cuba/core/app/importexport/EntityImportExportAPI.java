@@ -11,7 +11,7 @@ import com.haulmont.cuba.core.global.View;
 import java.util.Collection;
 
 /**
- * Class is used for exporting a collection of entities and importing them. See full javadocs in {@link EntityImportExportService}
+ * Class that is used for exporting a collection of entities and importing them. See full javadocs in {@link EntityImportExportService}
  *
  * @author gorbunkov
  * @version $Id$

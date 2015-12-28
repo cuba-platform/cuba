@@ -17,12 +17,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * <p>Class describes how entity fields should be saved during the import performed by
+ * <p>Class describing how entity fields should be saved during the import performed by
  * {@link EntityImportExportService EntityImportExportService}</p>
  *
  * <p>Only fields that are added as properties to the {@code EntityImportView} will be saved.</p>
  *
- * <p>For simple entity property the rule is simple: if property name was added to the view, then the property will be saved.</p>
+ * <p>For simple entity property the rule is simple: if property name is added to the view, then the property will be saved.</p>
  *
  * <p>For references to other entities there are three options:</p>
  * <ul>
