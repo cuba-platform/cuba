@@ -103,14 +103,22 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
     }
 
     protected class Tab implements TabSheet.Tab {
-
         private String name;
-        private Component component;
+        private Component tabComponent;
         private TabCloseHandler closeHandler;
 
-        public Tab(String name, Component component) {
+        public Tab(String name, Component tabComponent) {
             this.name = name;
-            this.component = component;
+            this.tabComponent = tabComponent;
+        }
+
+        protected com.vaadin.ui.TabSheet.Tab getVaadinTab() {
+            com.vaadin.ui.Component composition = WebComponentsHelper.getComposition(tabComponent);
+            return WebTabSheet.this.component.getTab(composition);
+        }
+
+        public Component getComponent() {
+            return tabComponent;
         }
 
         @Override
@@ -125,44 +133,42 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
 
         @Override
         public String getCaption() {
-            return WebTabSheet.this.component.getTab(WebComponentsHelper.unwrap(component)).getCaption();
+            return getVaadinTab().getCaption();
         }
 
         @Override
         public void setCaption(String caption) {
-            WebTabSheet.this.component.getTab(WebComponentsHelper.unwrap(component)).setCaption(caption);
+            getVaadinTab().setCaption(caption);
         }
 
         @Override
         public boolean isEnabled() {
-            return WebTabSheet.this.component.getTab(WebComponentsHelper.unwrap(component)).isEnabled();
+            return getVaadinTab().isEnabled();
         }
 
         @Override
         public void setEnabled(boolean enabled) {
-            WebTabSheet.this.component.getTab(WebComponentsHelper.unwrap(component)).setEnabled(enabled);
+            getVaadinTab().setEnabled(enabled);
         }
 
         @Override
         public boolean isVisible() {
-            return WebTabSheet.this.component.getTab(WebComponentsHelper.unwrap(component)).isVisible();
+            return getVaadinTab().isVisible();
         }
 
         @Override
         public void setVisible(boolean visible) {
-            WebTabSheet.this.component.getTab(WebComponentsHelper.unwrap(component)).setVisible(visible);
+            getVaadinTab().setVisible(visible);
         }
 
         @Override
         public boolean isClosable() {
-            com.vaadin.ui.TabSheet.Tab tab = WebTabSheet.this.component.getTab(WebComponentsHelper.unwrap(component));
-            return tab.isClosable();
+            return getVaadinTab().isClosable();
         }
 
         @Override
         public void setClosable(boolean closable) {
-            com.vaadin.ui.TabSheet.Tab tab = WebTabSheet.this.component.getTab(WebComponentsHelper.unwrap(component));
-            tab.setClosable(closable);
+            getVaadinTab().setClosable(closable);
         }
 
         @Override
@@ -184,20 +190,14 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
             this.closeHandler = tabCloseHandler;
         }
 
-        public Component getComponent() {
-            return component;
-        }
-
         @Override
         public void setStyleName(String styleName) {
-            com.vaadin.ui.TabSheet.Tab vaadinTab = WebTabSheet.this.component.getTab(WebComponentsHelper.unwrap(component));
-            vaadinTab.setStyleName(styleName);
+            getVaadinTab().setStyleName(styleName);
         }
 
         @Override
         public String getStyleName() {
-            com.vaadin.ui.TabSheet.Tab vaadinTab = WebTabSheet.this.component.getTab(WebComponentsHelper.unwrap(component));
-            return vaadinTab.getStyleName();
+            return getVaadinTab().getStyleName();
         }
     }
 
@@ -211,7 +211,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
 
         this.tabs.put(name, tab);
 
-        final com.vaadin.ui.Component tabComponent = WebComponentsHelper.unwrap(childComponent);
+        final com.vaadin.ui.Component tabComponent = WebComponentsHelper.getComposition(childComponent);
         tabComponent.setSizeFull();
 
         tabMapping.put(tabComponent, new ComponentDescriptor(name, childComponent));
@@ -274,7 +274,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         Tab tab = new Tab(name, tabContent);
         tabs.put(name, tab);
 
-        com.vaadin.ui.Component tabComponent = WebComponentsHelper.unwrap(tabContent);
+        com.vaadin.ui.Component tabComponent = WebComponentsHelper.getComposition(tabContent);
         tabComponent.setSizeFull();
 
         tabMapping.put(tabComponent, new ComponentDescriptor(name, tabContent));

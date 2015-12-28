@@ -561,6 +561,10 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
             throw new GuiDevelopmentException("Unknown component: " + name, context.getFullFrameId());
         }
 
+        return getLoader(element, loaderClass);
+    }
+
+    protected ComponentLoader getLoader(Element element, Class<? extends ComponentLoader> loaderClass) {
         ComponentLoader loader;
         try {
             Constructor<? extends ComponentLoader> constructor = loaderClass.getConstructor();
