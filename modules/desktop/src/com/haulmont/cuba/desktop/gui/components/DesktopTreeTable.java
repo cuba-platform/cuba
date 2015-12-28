@@ -31,9 +31,7 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-public class DesktopTreeTable<E extends Entity>
-        extends DesktopAbstractTable<JXTreeTableExt, E>
-        implements TreeTable<E> {
+public class DesktopTreeTable<E extends Entity> extends DesktopAbstractTable<JXTreeTableExt, E> implements TreeTable<E> {
 
     protected String hierarchyProperty;
 
@@ -124,15 +122,15 @@ public class DesktopTreeTable<E extends Entity>
                 }
             }
 
-//            @Override
-//            protected void beforeDelayedStructureChange() {
-//                ((com.haulmont.cuba.desktop.gui.data.TreeTableModelAdapter) tableModel).beforeDelayedStructureChange();
-//            }
-//
-//            @Override
-//            protected void afterDelayedStructureChange() {
-//                ((com.haulmont.cuba.desktop.gui.data.TreeTableModelAdapter) tableModel).afterDelayedStructureChange();
-//            }
+            @Override
+            protected void beforeDelayedStructureChange() {
+                ((com.haulmont.cuba.desktop.gui.data.TreeTableModelAdapter) tableModel).beforeDelayedStructureChange();
+            }
+
+            @Override
+            protected void afterDelayedStructureChange() {
+                ((com.haulmont.cuba.desktop.gui.data.TreeTableModelAdapter) tableModel).afterDelayedStructureChange();
+            }
         };
 
         impl.addTreeExpansionListener(new TreeExpansionListener() {
