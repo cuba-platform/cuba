@@ -167,7 +167,7 @@ public class UniqueNumbers implements UniqueNumbersAPI {
                     DbUtils.closeQuietly(statement);
                 }
             } catch (SQLException e) {
-                throw new IllegalStateException(String.format("Error in sql while getting next number"), e);
+                throw new IllegalStateException(String.format("Error executing SQL for getting next number"), e);
             }
         }
         return value;
