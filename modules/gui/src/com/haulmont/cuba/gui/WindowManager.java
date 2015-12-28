@@ -680,18 +680,17 @@ public abstract class WindowManager {
 
     protected Window wrapByCustomClass(Frame window, Element element) {
         String screenClass = element.attributeValue("class");
-        if (!StringUtils.isBlank(screenClass)) {
-            Class<?> aClass = scripting.loadClass(screenClass);
-            if (aClass == null) {
-                String msg = messages.getMainMessage("unableToLoadControllerClass");
-                throw new GuiDevelopmentException(msg, window.getId());
-            }
-            //noinspection UnnecessaryLocalVariable
-            Window wrappingWindow = ((WrappedWindow) window).wrapBy(aClass);
-            return wrappingWindow;
+        if (StringUtils.isBlank(screenClass)) {
+            throw new GuiDevelopmentException("'class' attribute is not defined in XML descriptor", window.getId());
         }
 
-        throw new GuiDevelopmentException("'class' attribute is not defined in XML descriptor", window.getId());
+        Class<?> aClass = scripting.loadClass(screenClass);
+        if (aClass == null) {
+            throw new GuiDevelopmentException("Unable to load controller class", window.getId());
+        }
+        //noinspection UnnecessaryLocalVariable
+        Window wrappingWindow = ((WrappedWindow) window).wrapBy(aClass);
+        return wrappingWindow;
     }
 
     protected void initWrapperFrame(Window wrappingWindow, ComponentLoaderContext context, Element element,

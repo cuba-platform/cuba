@@ -37,19 +37,18 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
 
     protected Frame wrapByCustomClass(Frame frame) {
         String screenClass = element.attributeValue("class");
-        if (!StringUtils.isBlank(screenClass)) {
-            Class<?> aClass = scripting.loadClass(screenClass);
-            if (aClass == null) {
-                aClass = ReflectionHelper.getClass(screenClass);
-            }
-            if (aClass == null) {
-                String msg = messages.getMainMessage("unableToLoadControllerClass");
-
-                throw new GuiDevelopmentException(msg, frame.getId());
-            }
-            return ((WrappedFrame) frame).wrapBy(aClass);
+        if (StringUtils.isBlank(screenClass)) {
+            screenClass = AbstractFrame.class.getName();
         }
-        return frame;
+
+        Class<?> aClass = scripting.loadClass(screenClass);
+        if (aClass == null) {
+            aClass = ReflectionHelper.getClass(screenClass);
+        }
+        if (aClass == null) {
+            throw new GuiDevelopmentException("Unable to load controller class", frame.getId());
+        }
+        return ((WrappedFrame) frame).wrapBy(aClass);
     }
 
     protected void initWrapperFrame(Frame wrappingFrame, Element rootFrameElement, Map<String, Object> params,
