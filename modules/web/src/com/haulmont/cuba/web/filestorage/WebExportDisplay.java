@@ -78,7 +78,7 @@ public class WebExportDisplay implements ExportDisplay {
 
             Configuration configuration = AppBeans.get(Configuration.NAME);
             WebConfig webConfig = configuration.getConfig(WebConfig.class);
-            newWindow = webConfig.getViewFileExtensions().contains(fileExt);
+            newWindow = webConfig.getViewFileExtensions().contains(StringUtils.lowerCase(fileExt));
         }
 
         // Try to get stream

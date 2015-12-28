@@ -18,7 +18,6 @@ import java.util.List;
  * @version $Id$
  */
 public final class ExportFormat implements Serializable {
-
     private static final long serialVersionUID = -8448531804422711852L;
 
     public static final ExportFormat HTML = new ExportFormat("text/html", "html");
@@ -55,9 +54,11 @@ public final class ExportFormat implements Serializable {
             return OCTET_STREAM;
         }
 
+        String extLowerCase = StringUtils.lowerCase(extension);
+
         List<ExportFormat> formats = DEFAULT_FORMATS;
         for (ExportFormat f : formats) {
-            if (f.getFileExt().equals(extension))
+            if (f.getFileExt().equals(extLowerCase))
                 return f;
         }
         return OCTET_STREAM;
