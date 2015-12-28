@@ -8,6 +8,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -615,6 +616,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void addCollectionChangeListener(CollectionChangeListener<T, K> listener) {
+        Preconditions.checkNotNullArgument(listener, "listener cannot be null");
+
         if (collectionChangeListeners == null) {
             collectionChangeListeners = new ArrayList<>();
         }

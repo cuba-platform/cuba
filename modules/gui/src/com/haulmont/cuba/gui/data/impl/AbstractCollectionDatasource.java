@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.gui.data.impl;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -634,6 +635,8 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
     @Override
     public void addCollectionChangeListener(CollectionChangeListener<T, K> listener) {
+        Preconditions.checkNotNullArgument(listener, "listener cannot be null");
+
         if (collectionChangeListeners == null) {
             collectionChangeListeners = new ArrayList<>();
         }

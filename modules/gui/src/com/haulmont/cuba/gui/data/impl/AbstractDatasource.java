@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
@@ -170,6 +171,8 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
 
     @Override
     public void addListener(DatasourceListener<T> listener) {
+        Preconditions.checkNotNullArgument(listener, "listener cannot be null");
+
         CompatibleDatasourceListenerWrapper wrapper = new CompatibleDatasourceListenerWrapper(listener);
 
         addItemChangeListener(wrapper);
@@ -188,6 +191,8 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
 
     @Override
     public void addItemChangeListener(ItemChangeListener<T> listener) {
+        Preconditions.checkNotNullArgument(listener, "listener cannot be null");
+
         if (itemChangeListeners == null) {
             itemChangeListeners = new ArrayList<>();
         }
@@ -205,6 +210,8 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
 
     @Override
     public void addItemPropertyChangeListener(ItemPropertyChangeListener<T> listener) {
+        Preconditions.checkNotNullArgument(listener, "listener cannot be null");
+
         if (itemPropertyChangeListeners == null) {
             itemPropertyChangeListeners = new ArrayList<>();
         }
@@ -222,6 +229,8 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
 
     @Override
     public void addStateChangeListener(StateChangeListener<T> listener) {
+        Preconditions.checkNotNullArgument(listener, "listener cannot be null");
+
         if (stateChangeListeners == null) {
             stateChangeListeners = new ArrayList<>();
         }
