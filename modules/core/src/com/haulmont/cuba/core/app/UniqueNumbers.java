@@ -158,10 +158,9 @@ public class UniqueNumbers implements UniqueNumbersAPI {
             try {
                 PreparedStatement statement = connection.prepareStatement(sql);
                 try {
-                    statement.execute();
-                    if (isSelectSql(sql) || isInsertSql(sql)) {
+                    if (statement.execute()) {
                         ResultSet rs = statement.getResultSet();
-                        if (rs != null && rs.next())
+                        if (rs.next())
                             value = rs.getLong(1);
                     }
                 } finally {
@@ -172,14 +171,6 @@ public class UniqueNumbers implements UniqueNumbersAPI {
             }
         }
         return value;
-    }
-
-    protected boolean isInsertSql(String sql) {
-        return sql.trim().toLowerCase().startsWith("insert");
-    }
-
-    protected boolean isSelectSql(String sql) {
-        return sql.trim().toLowerCase().startsWith("select");
     }
 
     protected void checkSequenceExists(String seqName) {

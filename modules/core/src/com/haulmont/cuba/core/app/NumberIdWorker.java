@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.bali.db.DbUtils;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
@@ -20,6 +21,10 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -114,18 +119,25 @@ public class NumberIdWorker implements NumberIdSequence {
         EntityManager em = persistence.getEntityManager();
         StrTokenizer tokenizer = new StrTokenizer(sqlScript, SequenceSupport.SQL_DELIMITER);
         Object value = null;
+        Connection connection = em.getConnection();
         while (tokenizer.hasNext()) {
             String sql = tokenizer.nextToken();
-            Query query = em.createNativeQuery(sql);
-            if (isSelectSql(sql))
-                value = query.getSingleResult();
-            else
-                query.executeUpdate();
+            try {
+                PreparedStatement statement = connection.prepareStatement(sql);
+                try {
+                    if (statement.execute()) {
+                        ResultSet rs = statement.getResultSet();
+                        if (rs.next())
+                            value = rs.getLong(1);
+                    }
+                } finally {
+                    DbUtils.closeQuietly(statement);
+                }
+            } catch (SQLException e) {
+                throw new IllegalStateException("Error executing SQL for getting next number", e);
+            }
         }
         return value;
     }
 
-    protected boolean isSelectSql(String sql) {
-        return sql.trim().toLowerCase().startsWith("select");
-    }
 }
