@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author degtyarjov
@@ -34,7 +35,16 @@ public class GlobalPersistentAttributesLoadChecker implements PersistentAttribut
         MetaProperty metaProperty = metaClass.getPropertyNN(property);
 
         if (!metadataTools.isPersistent(metaProperty)) {
-            return true;
+            List<String> relatedProperties = metadataTools.getRelatedProperties(metaProperty);
+            if (relatedProperties.isEmpty())
+                return true;
+            else {
+                for (String relatedProperty : relatedProperties) {
+                    if (!isLoaded(entity, relatedProperty))
+                        return false;
+                }
+                return true;
+            }
         }
 
         Boolean isLoaded = isLoadedCommonCheck(entity, property);

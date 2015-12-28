@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.entity.Entity;
  * @version $Id$
  */
 public interface EntityAttributeVisitor {
+
     /**
      * Visits an entity attribute.
      *
@@ -22,4 +23,13 @@ public interface EntityAttributeVisitor {
      * @param property  meta-property pointing to the visited attribute
      */
     void visit(Entity entity, MetaProperty property);
+
+    /**
+     * Optionally indicates, whether the property has to be visited
+     * @param property  meta-property that is about to be visited
+     * @return          false if the property has to be visited
+     */
+    default boolean skip(MetaProperty property) {
+        return false;
+    }
 }

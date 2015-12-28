@@ -797,6 +797,9 @@ public class MetadataTools {
         visited.add(entity);
 
         for (MetaProperty property : entity.getMetaClass().getProperties()) {
+            if (visitor.skip(property))
+                continue;
+
             visitor.visit(entity, property);
             if (property.getRange().isClass()) {
                 if (persistentAttributesLoadChecker.isLoaded(entity, property.getName())) {

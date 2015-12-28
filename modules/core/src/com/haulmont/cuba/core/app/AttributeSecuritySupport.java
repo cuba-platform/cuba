@@ -192,6 +192,12 @@ public class AttributeSecuritySupport {
     }
 
     private class FillingInaccessibleAttributesVisitor implements EntityAttributeVisitor {
+
+        @Override
+        public boolean skip(MetaProperty property) {
+            return metadataTools.isTransient(property);
+        }
+
         @Override
         public void visit(Entity entity, MetaProperty property) {
             MetaClass metaClass = metadata.getClassNN(entity.getClass());
