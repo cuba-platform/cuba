@@ -29,7 +29,16 @@ public class GridLayoutLoader extends ContainerLoader<GridLayout> {
         loadId(resultComponent, element);
 
         Element columnsElement = element.element("columns");
+        if (columnsElement == null) {
+            throw new GuiDevelopmentException("'grid' element must contain 'columns' element",
+                    context.getFullFrameId(), "Grid ID", resultComponent.getId());
+        }
+
         Element rowsElement = element.element("rows");
+        if (rowsElement == null) {
+            throw new GuiDevelopmentException("'grid' element must contain 'rows' element",
+                    context.getFullFrameId(), "Grid ID", resultComponent.getId());
+        }
 
         int columnCount;
         @SuppressWarnings("unchecked")
