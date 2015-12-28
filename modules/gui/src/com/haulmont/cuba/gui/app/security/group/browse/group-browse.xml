@@ -103,6 +103,7 @@
                             </actions>
                             <columns>
                                 <column id="entityName" caption="msg://com.haulmont.cuba.security.entity/Constraint.entityName"/>
+                                <column id="isActive" caption="msg://com.haulmont.cuba.security.entity/Constraint.isActive"/>
                                 <column id="operationType" caption="msg://com.haulmont.cuba.security.entity/Constraint.operationType"/>
                                 <column id="joinClause" caption="msg://com.haulmont.cuba.security.entity/Constraint.joinClause"/>
                                 <column id="whereClause" caption="msg://com.haulmont.cuba.security.entity/Constraint.whereClause"/>

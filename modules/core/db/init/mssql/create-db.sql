@@ -315,6 +315,7 @@ create table SEC_CONSTRAINT (
     WHERE_CLAUSE varchar(1000),
     GROOVY_SCRIPT varchar(1000),
     FILTER_XML varchar(1000),
+    IS_ACTIVE tinyint default 1,
     GROUP_ID uniqueidentifier,
     --
     primary key nonclustered (ID),

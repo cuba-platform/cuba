@@ -7,10 +7,7 @@ package com.haulmont.cuba.security.sys;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.global.UuidSource;
@@ -152,14 +149,16 @@ public class UserSessionManager implements UserSessionFinder {
 
     protected void compileConstraints(UserSession session, Group group) {
         EntityManager em = persistence.getEntityManager();
-        Query q = em.createQuery("select c from sec$GroupHierarchy h join h.parent.constraints c " +
-                "where h.group.id = ?1");
+        TypedQuery<Constraint> q = em.createQuery("select c from sec$GroupHierarchy h join h.parent.constraints c " +
+                "where h.group.id = ?1", Constraint.class);
         q.setParameter(1, group);
         List<Constraint> constraints = q.getResultList();
         List<Constraint> list = new ArrayList<>(constraints);
         list.addAll(group.getConstraints());
         for (Constraint constraint : list) {
-            session.addConstraint(constraint);
+            if (Boolean.TRUE.equals(constraint.getIsActive())) {
+                session.addConstraint(constraint);
+            }
         }
     }
 

@@ -19,6 +19,11 @@
         <grid id="grid" spacing="true">
             <columns count="3"/>
             <rows>
+                <row id="activeRow">
+                    <label value="msg://com.haulmont.cuba.security.entity/Constraint.isActive" align="MIDDLE_LEFT" width="120"/>
+                    <checkBox id="isActive" datasource="constraint" property="isActive"/>
+                    <label value=""/>
+                </row>
                 <row id="nameRow">
                     <label value="msg://com.haulmont.cuba.security.entity/Constraint.entityName" align="MIDDLE_LEFT" width="120"/>
                     <lookupField id="entityName" datasource="constraint" property="entityName" required="true"

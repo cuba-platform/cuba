@@ -552,8 +552,14 @@ public class UserManagementServiceBean implements UserManagementService {
     protected Constraint cloneConstraint(Constraint constraint, Group group) {
         Constraint resultConstraint = metadata.create(Constraint.class);
         resultConstraint.setEntityName(constraint.getEntityName());
+        resultConstraint.setCode(constraint.getCode());
+        resultConstraint.setCheckType(constraint.getCheckType());
+        resultConstraint.setOperationType(constraint.getOperationType());
         resultConstraint.setJoinClause(constraint.getJoinClause());
         resultConstraint.setWhereClause(constraint.getWhereClause());
+        resultConstraint.setGroovyScript(constraint.getWhereClause());
+        resultConstraint.setFilterXml(constraint.getWhereClause());
+        resultConstraint.setIsActive(constraint.getIsActive());
         resultConstraint.setGroup(group);
         return resultConstraint;
     }

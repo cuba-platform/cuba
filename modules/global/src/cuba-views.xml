@@ -133,6 +133,7 @@
     <view class="com.haulmont.cuba.security.entity.Constraint" name="group.browse">
         <property name="group" view="group.lookup"/>
         <property name="entityName"/>
+        <property name="isActive"/>
         <property name="operationType"/>
         <property name="joinClause"/>
         <property name="whereClause"/>
@@ -221,6 +222,7 @@
 
     <view class="com.haulmont.cuba.security.entity.Constraint" name="edit">
         <property name="entityName"/>
+        <property name="isActive"/>
         <property name="code"/>
         <property name="checkType"/>
         <property name="operationType"/>

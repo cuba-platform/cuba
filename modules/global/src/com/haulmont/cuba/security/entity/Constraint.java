@@ -46,6 +46,9 @@ public class Constraint extends StandardEntity {
     @Column(name = "FILTER_XML", length = 1000)
     protected String filterXml;
 
+    @Column(name = "IS_ACTIVE")
+    protected Boolean isActive = true;
+
     @ManyToOne
     @JoinColumn(name = "GROUP_ID")
     protected Group group;
@@ -120,5 +123,13 @@ public class Constraint extends StandardEntity {
 
     public void setOperationType(ConstraintOperationType operationType) {
         this.operationType = operationType != null ? operationType.getId() : null;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
     }
 }
