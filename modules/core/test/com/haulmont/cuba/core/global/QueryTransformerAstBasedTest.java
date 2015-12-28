@@ -886,6 +886,16 @@ public class QueryTransformerAstBasedTest {
         assertEquals(
                 "select h from sec$GroupHierarchy h left join h.parent.other h_parent_other order by h_parent_other.group desc",
                 res);
+        transformer.reset();
+
+        transformer = new QueryTransformerAstBased(model,
+                "select h from sec$GroupHierarchy h");
+        transformer.replaceOrderBy(false, "parent.group", "parent.name");
+        res = transformer.getResult();
+        assertEquals(
+                "select h from sec$GroupHierarchy h left join h.parent h_parent order by h_parent.group, h_parent.name",
+                res);
+
     }
 
     @Test

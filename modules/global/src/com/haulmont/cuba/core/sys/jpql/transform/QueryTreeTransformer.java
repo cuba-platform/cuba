@@ -15,7 +15,9 @@ import org.apache.commons.collections.CollectionUtils;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -201,6 +203,7 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
         orderBy.addChild(new CommonTree(new CommonToken(JPA2Lexer.ORDER, "order")));
         orderBy.addChild(new CommonTree(new CommonToken(JPA2Lexer.BY, "by")));
 
+        Set<String> addedJoinVariables = new HashSet<>();
         for (PathEntityReference orderingFieldRef : orderingFieldRefs) {
             OrderByFieldNode orderByField = new OrderByFieldNode(JPA2Lexer.T_ORDER_BY_FIELD);
             orderBy.addChild(orderByField);
@@ -214,11 +217,14 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
                 orderingNode.addDefaultChild(lastNode.getText());
                 orderByField.addChild(orderingNode);
 
-                JoinVariableNode joinNode = new JoinVariableNode(JPA2Lexer.T_JOIN_VAR, "left join", variableName, null);
-                joinNode.addChild(pathNode);
+                if (!addedJoinVariables.contains(variableName)) {
+                    JoinVariableNode joinNode = new JoinVariableNode(JPA2Lexer.T_JOIN_VAR, "left join", variableName, null);
+                    joinNode.addChild(pathNode);
 
-                CommonTree from = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
-                from.getChild(0).addChild(joinNode); // assumption
+                    CommonTree from = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
+                    from.getChild(0).addChild(joinNode); // assumption
+                    addedJoinVariables.add(variableName);
+                }
             } else {
                 orderByField.addChild(orderingFieldRef.createNode());
             }
