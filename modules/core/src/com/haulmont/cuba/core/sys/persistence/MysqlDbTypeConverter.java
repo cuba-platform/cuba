@@ -38,7 +38,7 @@ public class MysqlDbTypeConverter implements DbTypeConverter {
         if (value instanceof Date)
             return new Timestamp(((Date) value).getTime());
         if (value instanceof UUID)
-            return value.toString();
+            return value.toString().replace("-", "");
         return value;
     }
 
