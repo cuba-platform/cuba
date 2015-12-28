@@ -116,7 +116,7 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
         innerContext.setParent(parentContext);
         setContext(innerContext);
 
-        layoutElement = element.element("layout");
+        layoutElement = rootFrameElement.element("layout");
         if (layoutElement == null) {
             throw new GuiDevelopmentException("Required element 'layout' is not found", this.context.getFullFrameId());
         }
