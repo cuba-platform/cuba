@@ -124,7 +124,7 @@ public class UniqueNumbers implements UniqueNumbersAPI {
         }
     }
 
-    protected long getResult(String seqName, String sqlScript) {
+    public long getResult(String seqName, String sqlScript) {
         Transaction tx = persistence.getTransaction();
         try {
             checkSequenceExists(seqName);
