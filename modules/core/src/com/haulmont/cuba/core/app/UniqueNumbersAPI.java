@@ -23,6 +23,14 @@ public interface UniqueNumbersAPI {
     long getNextNumber(String domain);
 
     /**
+     * Returns the next sequence value.
+     *
+     * @param seqName   full sequence identifier
+     * @return          next value
+     */
+    long getNextNumberBySequenceName(String seqName);
+
+    /**
      * Returns the current value of the sequence. For some implementations
      * {@link #getNextNumber(String)} must be called at least once beforehand.
      *
