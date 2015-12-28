@@ -43,6 +43,7 @@ public class Config extends BaseUuidEntity implements Versioned, Updatable {
         return version;
     }
 
+    @Override
     public void setVersion(Integer version) {
         this.version = version;
     }
