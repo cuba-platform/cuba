@@ -340,7 +340,7 @@ create table SEC_CONSTRAINT (
     WHERE_CLAUSE varchar(1000),
     GROOVY_SCRIPT varchar(1000),
     FILTER_XML varchar(1000),
-    FILTER_XML boolean default true,
+    IS_ACTIVE boolean default true,
     GROUP_ID varchar(32),
     --
     primary key (ID),
