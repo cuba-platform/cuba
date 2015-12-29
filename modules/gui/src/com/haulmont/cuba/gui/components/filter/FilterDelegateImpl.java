@@ -511,11 +511,6 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         setConditionsLayoutVisible(true);
 
-        if (!filterEntity.equals(adHocFilter) && (BooleanUtils.isTrue(filterEntity.getApplyDefault()) ||
-                BooleanUtils.isTrue(filterEntity.getIsSet()) ||
-                !getResultingManualApplyRequired()))
-            apply(true);
-
         for (Filter.FilterEntityChangeListener listener : filterEntityChangeListeners) {
             listener.filterEntityChanged(filterEntity);
         }
