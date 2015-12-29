@@ -278,9 +278,11 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
 
     @Override
     public void setClearEnabled(boolean clearEnabled) {
-        clearButton.setVisible(clearEnabled);
-        this.clearEnabled = clearEnabled;
-        component.refreshComponent();
+        if (this.clearEnabled != clearEnabled) {
+            clearButton.setVisible(clearEnabled);
+            this.clearEnabled = clearEnabled;
+            component.refreshComponent();
+        }
     }
 
     @Override

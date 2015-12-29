@@ -245,9 +245,11 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
 
     @Override
     public void setClearEnabled(boolean clearEnabled) {
-        clearButton.setVisible(clearEnabled);
-        this.clearEnabled = clearEnabled;
-        rootPanel.refreshComponent();
+        if (this.clearEnabled != clearEnabled) {
+            clearButton.setVisible(clearEnabled);
+            this.clearEnabled = clearEnabled;
+            rootPanel.refreshComponent();
+        }
     }
 
     @Override

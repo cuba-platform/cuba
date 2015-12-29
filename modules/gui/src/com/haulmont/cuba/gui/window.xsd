@@ -1183,6 +1183,13 @@
                     <xs:attributeGroup ref="hasIcon"/>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="clearButton" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:attribute name="caption" type="resourceString"/>
+
+                    <xs:attributeGroup ref="hasIcon"/>
+                </xs:complexType>
+            </xs:element>
         </xs:all>
 
         <xs:attributeGroup ref="hasId"/>

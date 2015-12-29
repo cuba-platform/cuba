@@ -56,12 +56,31 @@ public class TokenListLoader extends AbstractFieldLoader<TokenList> {
         loadSimple(resultComponent, element);
 
         loadClearEnabled(resultComponent, element);
+        loadClearButton(resultComponent, element);
     }
 
     protected void loadClearEnabled(TokenList component, Element element) {
         String clearEnabled = element.attributeValue("clearEnabled");
         if (StringUtils.isNotEmpty(clearEnabled)) {
             component.setClearEnabled(BooleanUtils.toBoolean(clearEnabled));
+        }
+    }
+
+    protected void loadClearButton(TokenList component, Element element) {
+        Element buttonElement = element.element("clearButton");
+        if (buttonElement != null) {
+            String caption = buttonElement.attributeValue("caption");
+            if (caption != null) {
+                if (!StringUtils.isEmpty(caption)) {
+                    caption = loadResourceString(caption);
+                }
+                component.setClearButtonCaption(caption);
+            }
+
+            String icon = buttonElement.attributeValue("icon");
+            if (!StringUtils.isEmpty(icon)) {
+                component.setClearButtonIcon(loadResourceString(icon));
+            }
         }
     }
 
