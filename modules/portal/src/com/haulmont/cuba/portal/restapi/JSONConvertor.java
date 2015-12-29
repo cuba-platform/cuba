@@ -567,8 +567,6 @@ public class JSONConvertor implements Convertor {
             if (!attrViewPermitted(metaClass, property.getName()))
                 continue;
 
-            Object value = entity.getValue(property.getName());
-
             if (property.equals(metadataTools.getPrimaryKeyProperty(metaClass))
                     && !property.getJavaType().equals(String.class)) {
                 // skipping id for non-String-key entities
@@ -579,6 +577,8 @@ public class JSONConvertor implements Convertor {
                     && !DynamicAttributesUtils.isDynamicAttribute(property.getName())) {
                 continue;
             }
+
+            Object value = entity.getValue(property.getName());
 
             switch (property.getType()) {
                 case DATATYPE:
