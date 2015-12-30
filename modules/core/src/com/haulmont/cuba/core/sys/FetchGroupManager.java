@@ -104,7 +104,8 @@ public class FetchGroupManager {
 
                 boolean selfRef = false;
                 for (MetaProperty mp : refField.metaPropertyPath.getMetaProperties()) {
-                    if (metadataTools.isAssignableFrom(mp.getRange().asClass(), metaClass)) {
+                    if (!mp.getRange().getCardinality().isMany()
+                            && metadataTools.isAssignableFrom(mp.getRange().asClass(), metaClass)) {
                         batchFields.add(refField);
                         selfRef = true;
                         break;
