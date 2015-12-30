@@ -156,7 +156,9 @@ public class PersistenceHelperTest {
         });
 
         View view = new View(Server.class).addProperty("name").addProperty("data");
-        Server reloadedServer = cont.persistence().createTransaction().execute((em) -> em.find(Server.class, server.getId(), view));
+        Server reloadedServer = cont.persistence().createTransaction().execute((em) -> {
+            return em.find(Server.class, server.getId(), view);
+        });
 
         PersistenceHelper.checkLoaded(reloadedServer, "name"); // fine
 
