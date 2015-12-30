@@ -38,7 +38,8 @@ public class CubaEntityFetchGroup extends EntityFetchGroup {
             }
         }
 
-        if (attributeName == null && entity._persistence_getSession() != null) { // occurs on merge
+        if ((attributeName == null && entity._persistence_getSession() != null) // occurs on merge
+                || ((BaseGenericIdEntity) entity).__removed() /* EclipseLink can access reference fields to reorder deletes */) {
             return super.onUnfetchedAttribute(entity, null);
         }
 
