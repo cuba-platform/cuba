@@ -133,11 +133,22 @@ public class EntityImportExport implements EntityImportExportAPI {
     protected Collection<Entity> importEntities(Collection<? extends Entity> entities, EntityImportView view) {
         Collection<Entity> result = new ArrayList<>();
         Map<Object, Entity> entitiesToCreate = new HashMap<>();
-        Map<Object, Entity> loadedReferences = new HashMap<>();
+        List<ReferenceInfo> referenceInfoList = new ArrayList<>();
+        Map<Object, Entity> loadedEntities = new HashMap<>();
 
         try (Transaction tx = persistence.getTransaction()) {
+
+            //import is performed in two steps. We have to do so, because imported entity may have a reference to
+            //some next imported entity.
+            //1. entities that should be created processed first, fields that should be references to existing entities
+            //are stored in the referenceInfoList variable
             for (Entity entity : entities) {
-                importEntity(entity, view, entitiesToCreate, loadedReferences);
+                importEntity(entity, view, entitiesToCreate, referenceInfoList);
+            }
+
+            //2. references to existing entities are processed
+            for (ReferenceInfo referenceInfo : referenceInfoList) {
+                processReferenceInfo(referenceInfo, entitiesToCreate, loadedEntities);
             }
 
             EntityManager em = persistence.getEntityManager();
@@ -161,7 +172,7 @@ public class EntityImportExport implements EntityImportExportAPI {
     protected Entity importEntity(Entity srcEntity,
                                   EntityImportView view,
                                   Map<Object, Entity> entitiesToCreate,
-                                  Map<Object, Entity> loadedReferences) {
+                                  Collection<ReferenceInfo> referenceInfoList) {
         EntityManager em = persistence.getEntityManager();
         //set softDeletion to false because we can import deleted entity, so we'll restore them and update
         em.setSoftDeletion(false);
@@ -181,9 +192,9 @@ public class EntityImportExport implements EntityImportExportAPI {
                 dstEntity.setValue(viewProperty.getName(), srcEntity.getValue(viewProperty.getName()));
             } else if (metaProperty.getRange().isClass()) {
                 if (metaProperty.getRange().getCardinality().isMany()) {
-                    importCollectionAttribute(srcEntity, dstEntity, viewProperty, entitiesToCreate, loadedReferences);
+                    importCollectionAttribute(srcEntity, dstEntity, viewProperty, entitiesToCreate, referenceInfoList);
                 } else {
-                    importReference(srcEntity, dstEntity, viewProperty, entitiesToCreate, loadedReferences);
+                    importReference(srcEntity, dstEntity, viewProperty, entitiesToCreate, referenceInfoList);
                 }
             }
         }
@@ -195,31 +206,13 @@ public class EntityImportExport implements EntityImportExportAPI {
                                    Entity dstEntity,
                                    EntityImportViewProperty viewProperty,
                                    Map<Object, Entity> entitiesToCreate,
-                                   Map<Object, Entity> loadedReferences) {
+                                   Collection<ReferenceInfo> referenceInfoList) {
         Entity srcPropertyValue = srcEntity.<Entity>getValue(viewProperty.getName());
         if (viewProperty.getView() == null) {
-            //if no view defined for the property then try to find the reference
-            if (srcPropertyValue == null) {
-                dstEntity.setValue(viewProperty.getName(), null);
-            } else if (loadedReferences.get(srcPropertyValue.getId()) != null) {
-                dstEntity.setValue(viewProperty.getName(), loadedReferences.get(srcPropertyValue.getId()));
-            } else if (entitiesToCreate.get(srcPropertyValue.getId()) != null) {
-                dstEntity.setValue(viewProperty.getName(), entitiesToCreate.get(srcPropertyValue.getId()));
-            } else {
-                EntityManager em = persistence.getEntityManager();
-                Entity loadedReference = em.find(srcPropertyValue.getClass(), srcPropertyValue.getId());
-                if (loadedReference == null) {
-                    if (viewProperty.getReferenceImportBehaviour() == ReferenceImportBehaviour.ERROR_ON_MISSING) {
-                        throw new RuntimeException("Referenced entity " + viewProperty.getName() + " with id = " + srcPropertyValue.getId() + " is missing");
-                    }
-                } else {
-                    dstEntity.setValue(viewProperty.getName(), loadedReference);
-                }
-                loadedReferences.put(srcPropertyValue.getId(), loadedReference);
-            }
+            ReferenceInfo referenceInfo = new ReferenceInfo(dstEntity, viewProperty.getName(), srcPropertyValue, viewProperty.getReferenceImportBehaviour());
+            referenceInfoList.add(referenceInfo);
         } else {
-            //if import view was defined then create new referenced entity
-            importEntity(srcPropertyValue, viewProperty.getView(), entitiesToCreate, loadedReferences);
+            importEntity(srcPropertyValue, viewProperty.getView(), entitiesToCreate, referenceInfoList);
         }
     }
 
@@ -227,7 +220,7 @@ public class EntityImportExport implements EntityImportExportAPI {
                                              Entity dstEntity,
                                              EntityImportViewProperty viewProperty,
                                              Map<Object, Entity> entitiesToCreate,
-                                             Map<Object, Entity> loadedReferences) {
+                                             Collection<ReferenceInfo> referenceInfoList) {
         Collection<Entity> srcPropertyValue = srcEntity.getValue(viewProperty.getName());
         if (srcPropertyValue == null) {
             dstEntity.setValue(viewProperty.getName(), null);
@@ -245,26 +238,11 @@ public class EntityImportExport implements EntityImportExportAPI {
 
         for (Entity srcChildEntity : srcPropertyValue) {
             if (viewProperty.getView() == null) {
-                //if no view defined for the property then try to find the reference
-                if (loadedReferences.get(srcChildEntity.getId()) != null) {
-                    collection.add(loadedReferences.get(srcChildEntity.getId()));
-                } else if (entitiesToCreate.get(srcChildEntity.getId()) != null) {
-                    collection.add(entitiesToCreate.get(srcChildEntity.getId()));
-                } else {
-                    EntityManager em = persistence.getEntityManager();
-                    Entity loadedReference = em.reload(srcChildEntity);
-                    if (loadedReference == null) {
-                        if (viewProperty.getReferenceImportBehaviour() == ReferenceImportBehaviour.ERROR_ON_MISSING) {
-                            throw new RuntimeException("Referenced entity " + viewProperty.getName() + " with id = " + srcChildEntity.getId() + " is missing");
-                        }
-                    } else {
-                        collection.add(loadedReference);
-                    }
-                    loadedReferences.put(srcChildEntity.getId(), loadedReference);
-                }
+                ReferenceInfo referenceInfo = new ReferenceInfo(dstEntity, viewProperty.getName(), srcPropertyValue, viewProperty.getReferenceImportBehaviour());
+                referenceInfoList.add(referenceInfo);
             } else {
                 //create new referenced entity
-                Entity dstChildEntity = importEntity(srcChildEntity, viewProperty.getView(), entitiesToCreate, loadedReferences);
+                Entity dstChildEntity = importEntity(srcChildEntity, viewProperty.getView(), entitiesToCreate, referenceInfoList);
                 if (inverseMetaProperty != null) {
                     dstChildEntity.setValue(inverseMetaProperty.getName(), dstEntity);
                 }
@@ -273,5 +251,97 @@ public class EntityImportExport implements EntityImportExportAPI {
         }
 
         dstEntity.setValue(viewProperty.getName(), collection);
+    }
+
+    protected void processReferenceInfo(ReferenceInfo referenceInfo, Map<Object, Entity> entitiesToCreate, Map<Object, Entity> loadedEntities) {
+        Entity entity = referenceInfo.getEntity();
+        String propertyName = referenceInfo.getPropertyName();
+
+        MetaProperty metaProperty = entity.getMetaClass().getPropertyNN(propertyName);
+        if (metaProperty.getRange().getCardinality().isMany()) {
+            Collection<Entity> propertyValue = (Collection<Entity>) referenceInfo.getPropertyValue();
+
+            if (propertyValue == null) {
+                entity.setValue(propertyName, null);
+                return;
+            }
+
+            Collection<Entity> collection;
+            try {
+                collection = propertyValue.getClass().newInstance();
+            } catch (Exception e) {
+                throw new RuntimeException("Error on import entities", e);
+            }
+
+            for (Entity childEntity : propertyValue) {
+                if (loadedEntities.get(childEntity.getId()) != null) {
+                    collection.add(loadedEntities.get(childEntity.getId()));
+                } else if (entitiesToCreate.get(childEntity.getId()) != null) {
+                    collection.add(entitiesToCreate.get(childEntity.getId()));
+                } else {
+                    EntityManager em = persistence.getEntityManager();
+                    Entity loadedReference = em.reload(childEntity);
+                    if (loadedReference == null) {
+                        if (referenceInfo.getImportBehaviour() == ReferenceImportBehaviour.ERROR_ON_MISSING) {
+                            throw new RuntimeException("Referenced entity " + propertyName + " with id = " + entity.getId() + " is missing");
+                        }
+                    } else {
+                        collection.add(loadedReference);
+                    }
+                    loadedEntities.put(entity.getId(), loadedReference);
+                }
+            }
+            entity.setValue(propertyName, collection);
+        } else {
+            Entity propertyValue = (Entity) referenceInfo.getPropertyValue();
+            if (propertyValue == null) {
+                entity.setValue(propertyName, null);
+            } else if (loadedEntities.get(propertyValue.getId()) != null) {
+                entity.setValue(propertyName, loadedEntities.get(propertyValue.getId()));
+            } else if (entitiesToCreate.get(propertyValue.getId()) != null) {
+                entity.setValue(propertyName, entitiesToCreate.get(propertyValue.getId()));
+            } else {
+                EntityManager em = persistence.getEntityManager();
+                Entity loadedReference = em.find(propertyValue.getClass(), propertyValue.getId());
+                if (loadedReference == null) {
+                    if (referenceInfo.getImportBehaviour() == ReferenceImportBehaviour.ERROR_ON_MISSING) {
+                        throw new RuntimeException("Referenced entity " + propertyName + " with id = " + propertyValue.getId() + " is missing");
+                    }
+                } else {
+                    entity.setValue(propertyName, loadedReference);
+                }
+                loadedEntities.put(propertyValue.getId(), loadedReference);
+            }
+        }
+    }
+
+    protected class ReferenceInfo {
+        protected Entity entity;
+        protected String propertyName;
+        protected Object propertyValue;
+        protected ReferenceImportBehaviour importBehaviour;
+
+        public ReferenceInfo(Entity entity, String propertyName, Object propertyValue, ReferenceImportBehaviour importBehaviour) {
+            this.entity = entity;
+            this.propertyName = propertyName;
+            this.propertyValue = propertyValue;
+            this.importBehaviour = importBehaviour;
+        }
+
+        public Entity getEntity() {
+            return entity;
+        }
+
+        public String getPropertyName() {
+            return propertyName;
+        }
+
+        public Object getPropertyValue() {
+            return propertyValue;
+        }
+
+        public ReferenceImportBehaviour getImportBehaviour() {
+            return importBehaviour;
+        }
     }
 }
