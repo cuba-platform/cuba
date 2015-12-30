@@ -52,8 +52,10 @@
                     <button action="groupsTree.edit"/>
                     <button id="removeButton" action="groupsTree.remove"/>
                     <button action="groupsTree.refresh"/>
+                    <button action="groupsTree.export"/>
+                    <upload id="importUpload" caption="msg://import"/>
                 </buttonsPanel>
-                <tree id="groupsTree" width="100%">
+                <tree id="groupsTree" width="100%" multiselect="true">
                     <actions>
                         <action id="create"/>
                         <action id="copy" caption="msg://action.copy" icon="icons/copy.png" invoke="copyGroup"/>

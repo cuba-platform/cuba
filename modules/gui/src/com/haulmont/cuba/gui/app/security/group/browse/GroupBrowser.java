@@ -6,9 +6,11 @@ package com.haulmont.cuba.gui.app.security.group.browse;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.app.importexport.EntityImportExportService;
+import com.haulmont.cuba.core.app.importexport.EntityImportView;
+import com.haulmont.cuba.core.app.importexport.ReferenceImportBehaviour;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.Security;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
@@ -16,17 +18,25 @@ import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
+import com.haulmont.cuba.gui.export.ExportDisplay;
+import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.app.UserManagementService;
-import com.haulmont.cuba.security.entity.Constraint;
-import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.cuba.security.entity.Group;
-import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.*;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -34,6 +44,8 @@ import java.util.*;
  * @version $Id$
  */
 public class GroupBrowser extends AbstractWindow {
+
+    protected static final Logger log = LoggerFactory.getLogger(GroupBrowser.class);
 
     @Inject
     protected UserManagementService userManagementService;
@@ -67,6 +79,21 @@ public class GroupBrowser extends AbstractWindow {
 
     @Inject
     protected ThemeConstants themeConstants;
+
+    @Inject
+    protected FileUploadField importUpload;
+
+    @Inject
+    protected FileUploadingAPI fileUploadingAPI;
+
+    @Inject
+    protected EntityImportExportService entityImportExportService;
+
+    @Inject
+    protected ExportDisplay exportDisplay;
+
+    @Inject
+    protected ViewRepository viewRepository;
 
     protected boolean constraintsTabInitialized = false;
     protected boolean attributesTabInitialized = false;
@@ -200,6 +227,48 @@ public class GroupBrowser extends AbstractWindow {
 
         groupCreateButton.setEnabled(hasPermissionsToCreateGroup);
         groupCopyAction.setEnabled(hasPermissionsToCreateGroup);
+
+        groupsTree.addAction(new ExportAction());
+
+        importUpload.addFileUploadSucceedListener(event -> {
+            File file = fileUploadingAPI.getFile(importUpload.getFileId());
+            if (file == null) {
+                String errorMsg = String.format("Entities import upload error. File with id %s not found", importUpload.getFileId());
+                throw new RuntimeException(errorMsg);
+            }
+            byte[] zipBytes;
+            try (InputStream is = new FileInputStream(file)) {
+                zipBytes = IOUtils.toByteArray(is);
+            } catch (IOException e) {
+                throw new RuntimeException("Unable to import file", e);
+            }
+
+            try {
+                fileUploadingAPI.deleteFile(importUpload.getFileId());
+            } catch (FileStorageException e) {
+                log.error("Unable to delete temp file", e);
+            }
+
+            try {
+                Collection<Entity> importedEntities = entityImportExportService.importEntities(zipBytes, createGroupsImportView());
+                long importedGroupsCount = importedEntities.stream().filter(entity -> entity instanceof Group).count();
+                showNotification(importedGroupsCount + " groups imported", NotificationType.HUMANIZED);
+                groupsDs.refresh();
+            } catch (Exception e) {
+                showNotification(formatMessage("importError", e.getMessage()), NotificationType.ERROR);
+            }
+        });
+    }
+
+    protected EntityImportView createGroupsImportView() {
+        return new EntityImportView(Group.class)
+                .addLocalProperties()
+                .addProperty("parent", ReferenceImportBehaviour.ERROR_ON_MISSING)
+                .addProperty("hierarchyList", new EntityImportView(GroupHierarchy.class)
+                        .addLocalProperties()
+                        .addProperty("parent", ReferenceImportBehaviour.ERROR_ON_MISSING))
+                .addProperty("sessionAttributes", new EntityImportView(SessionAttribute.class).addLocalProperties())
+                .addProperty("constraints", new EntityImportView(Constraint.class).addLocalProperties());
     }
 
     public void copyGroup() {
@@ -278,6 +347,34 @@ public class GroupBrowser extends AbstractWindow {
             }
 
             super.actionPerform(component);
+        }
+    }
+
+    protected class ExportAction extends ItemTrackingAction {
+        public ExportAction() {
+            super("export");
+        }
+
+        @Override
+        public void actionPerform(Component component) {
+            Set<Group> selected = groupsTree.getSelected();
+            View view = viewRepository.getView(Group.class, "group.export");
+            if (view == null) {
+                throw new DevelopmentException("View 'group.export' for sec$Group was not found");
+            }
+            if (!selected.isEmpty()) {
+                try {
+                    exportDisplay.show(new ByteArrayDataProvider(entityImportExportService.exportEntities(selected, view)), "Groups", ExportFormat.ZIP);
+                } catch (Exception e) {
+                    showNotification(getMessage("exportFailed"), e.getMessage(), NotificationType.ERROR);
+                    log.error("Groups export failed", e);
+                }
+            }
+        }
+
+        @Override
+        public String getCaption() {
+            return getMessage("export");
         }
     }
 }
