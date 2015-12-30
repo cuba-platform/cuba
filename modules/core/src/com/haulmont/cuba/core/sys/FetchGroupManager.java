@@ -211,9 +211,7 @@ public class FetchGroupManager {
 
         MetaClass propMetaClass = toManyField.metaProperty.getRange().asClass();
         propMetaClass.getProperties().stream()
-                .filter(mp -> mp.getRange().isClass()
-                        && metadataTools.isPersistent(mp)
-                        && metadataTools.isAssignableFrom(mp.getRange().asClass(), toManyField.metaClass))
+                .filter(mp -> mp.getRange().isClass() && toManyField.metaProperty.getInverse() == mp)
                 .findFirst()
                 .ifPresent(inverseProp -> {
                     for (FetchGroupField fetchGroupField : fetchGroupFields) {

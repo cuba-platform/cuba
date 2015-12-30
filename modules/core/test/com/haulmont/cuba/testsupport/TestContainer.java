@@ -5,6 +5,8 @@
 
 package com.haulmont.cuba.testsupport;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.EntityManager;
@@ -150,6 +152,8 @@ public class TestContainer extends ExternalResource {
     }
 
     public void deleteRecord(Entity... entities) {
+        if (entities == null)
+            return;
         for (Entity entity : entities) {
             MetadataTools metadataTools = metadata().getTools();
             MetaClass metaClass = metadata().getClassNN(entity.getClass());
@@ -161,6 +165,11 @@ public class TestContainer extends ExternalResource {
 
             deleteRecord(table, primaryKey, entity.getId());
         }
+    }
+
+    public void setupLogging(String logger, Level level) {
+        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+        context.getLogger(logger).setLevel(level);
     }
 
     public List<String> getAppPropertiesFiles() {

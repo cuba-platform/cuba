@@ -3,9 +3,12 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.core;
+package com.haulmont.cuba.security;
 
+import ch.qos.logback.classic.Level;
 import com.google.common.collect.ImmutableList;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewRepository;
@@ -13,18 +16,17 @@ import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSubstitution;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.Assert;
-import org.junit.ClassRule;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 /**
  * @author artamonov
  */
-@Ignore
 public class LoadSubstitutionsTest {
 
     @ClassRule
@@ -34,20 +36,8 @@ public class LoadSubstitutionsTest {
     private User substitutedUser;
     private UserSubstitution userSubstitution;
 
-    public void tearDown() throws Exception {
-        if (user != null) {
-            cont.deleteRecord(user);
-        }
-        if (substitutedUser != null) {
-            cont.deleteRecord(substitutedUser);
-        }
-        if (userSubstitution != null) {
-            cont.deleteRecord(userSubstitution);
-        }
-    }
-
-    @Test
-    public void testQuerySubstitutions() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         Transaction tx = cont.persistence().createTransaction();
         try {
             EntityManager em = cont.persistence().getEntityManager();
@@ -55,7 +45,7 @@ public class LoadSubstitutionsTest {
             Group group = em.find(Group.class, UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93"));
 
             user = new User();
-            user.setLogin("user");
+            user.setLogin("user-" + user.getId());
             user.setGroup(group);
 
             em.persist(user);
@@ -79,6 +69,20 @@ public class LoadSubstitutionsTest {
             tx.end();
         }
 
+        cont.setupLogging("com.haulmont.cuba.core.sys.FetchGroupManager", Level.TRACE);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        cont.setupLogging("com.haulmont.cuba.core.sys.FetchGroupManager", Level.DEBUG);
+
+        cont.deleteRecord(userSubstitution);
+        cont.deleteRecord(substitutedUser);
+        cont.deleteRecord(user);
+    }
+
+    @Test
+    public void testQuerySubstitutions() throws Exception {
         ViewRepository viewRepository = AppBeans.get(ViewRepository.NAME);
         View userView = new View(new View.ViewParams().src(viewRepository.getView(User.class, View.LOCAL)));
 
@@ -87,25 +91,24 @@ public class LoadSubstitutionsTest {
 
         View substitutionsView = new View(UserSubstitution.class);
         substitutionsView.addProperty("substitutedUser", substitutedUserView);
+        substitutionsView.addProperty("startDate");
+
         userView.addProperty("substitutions", substitutionsView);
 
-        tx = cont.persistence().createTransaction();
         User loadedUser;
-        try {
+        try (Transaction tx = cont.persistence().createTransaction()) {
             EntityManager em = cont.persistence().getEntityManager();
             loadedUser = em.find(User.class, user.getId(), userView);
 
             tx.commit();
-        } finally {
-            tx.end();
         }
 
-        Assert.assertNotNull(loadedUser);
-        Assert.assertNotNull(loadedUser.getSubstitutions());
+        assertNotNull(loadedUser);
+        assertNotNull(loadedUser.getSubstitutions());
         Assert.assertEquals(1, loadedUser.getSubstitutions().size());
 
         UserSubstitution loadedSubstitution = loadedUser.getSubstitutions().iterator().next();
-        Assert.assertNotNull(loadedSubstitution.getUser());
-        Assert.assertNotNull(loadedSubstitution.getSubstitutedUser());
+        assertEquals(user, loadedSubstitution.getUser());
+        assertEquals(substitutedUser, loadedSubstitution.getSubstitutedUser());
     }
 }
