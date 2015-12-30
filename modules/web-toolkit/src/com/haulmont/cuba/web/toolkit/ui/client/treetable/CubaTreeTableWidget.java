@@ -749,7 +749,6 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
     @Override
     protected boolean isColumnCollapsingEnabled() {
-        boolean oneColumnLeft = (collapsedColumns.size() >= (columnOrder.length - 1));
-        return !oneColumnLeft;
+        return visibleColOrder.length > 1;
     }
 }

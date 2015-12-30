@@ -770,7 +770,6 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
     @Override
     protected boolean isColumnCollapsingEnabled() {
-        boolean oneColumnLeft = (collapsedColumns.size() >= (columnOrder.length - 1));
-        return !oneColumnLeft;
+        return visibleColOrder.length > 1;
     }
 }

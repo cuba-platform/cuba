@@ -309,6 +309,11 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
         return null;
     }
 
+    @Override
+    protected boolean isColumnCollapsingEnabled() {
+        return visibleColOrder.length > 2; // +1 for divider column
+    }
+
     protected class GroupTableHead extends CubaScrollTableHead {
         public GroupTableHead() {
             availableCells.put(GROUP_DIVIDER_COLUMN_KEY, new GroupDividerHeaderCell());
