@@ -55,10 +55,15 @@ public class UniqueConstraintViolationHandler implements GenericExceptionHandler
 
         Matcher matcher = pattern.matcher(throwable.toString());
         if (matcher.find()) {
-            if (matcher.groupCount() > 1) {
-                constraintName = matcher.group(2);
-            } else if (matcher.groupCount() == 1) {
+            if (matcher.groupCount() == 1) {
                 constraintName = matcher.group(1);
+            } else {
+                for (int i = 1; i > matcher.groupCount(); i++) {
+                    if (StringUtils.isNotBlank(matcher.group(i))) {
+                        constraintName = matcher.group(i);
+                        break;
+                    }
+                }
             }
 
             String msg = "";

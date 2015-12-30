@@ -52,7 +52,7 @@ public class HsqlDbmsFeatures implements DbmsFeatures {
 
     @Override
     public String getUniqueConstraintViolationPattern() {
-        return "Violation of unique index (.+): duplicate value\\(s\\) for column\\(s\\) (.+) in statement";
+        return "integrity constraint violation: unique constraint or index violation; ([^\\s]+)";
     }
 
     @Override

@@ -17,7 +17,7 @@ create table SYS_SERVER (
     DATA longvarchar,
     --
     primary key (ID),
-    constraint SYS_SERVER_UNIQ_NAME unique (NAME)
+    constraint IDX_SYS_SERVER_UNIQ_NAME unique (NAME)
 )^
 
 ------------------------------------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ create table SYS_CONFIG (
     VALUE longvarchar,
     --
     primary key (ID),
-    constraint SYS_CONFIG_UNIQ_NAME unique (NAME)
+    constraint IDX_SYS_CONFIG_UNIQ_NAME unique (NAME)
 )^
 
 ------------------------------------------------------------------------------------------------------------
@@ -157,6 +157,7 @@ create table SEC_ROLE (
     UPDATED_BY varchar(50),
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
+    DELETE_TS_NN timestamp default '1000-01-01 00:00:00.000' not null,
     --
     NAME varchar(255) not null,
     LOC_NAME varchar(255),
@@ -167,7 +168,20 @@ create table SEC_ROLE (
     primary key (ID)
 )^
 
-alter table SEC_ROLE add constraint SEC_ROLE_UNIQ_NAME unique (NAME, DELETE_TS)^
+-- Trigger example, HSQL throws NPE on constraint violation
+--create trigger SEC_ROLE_DELETE_TS_NN_TRIGGER before update on SEC_ROLE
+--referencing NEW as newrow OLD AS oldrow
+--for each row begin atomic
+--	if newrow.DELETE_TS != oldrow.DELETE_TS then
+--	    if newrow.DELETE_TS is null then
+--		    set newrow.DELETE_TS_NN = '1000-01-01 00:00:00.000';
+--        else
+--            set newrow.DELETE_TS_NN = newrow.DELETE_TS;
+--        end if;
+--	end if;
+--end;^
+
+alter table SEC_ROLE add constraint IDX_SEC_ROLE_UNIQ_NAME unique (NAME, DELETE_TS)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -188,7 +202,7 @@ create table SEC_GROUP (
     constraint SEC_GROUP_PARENT foreign key (PARENT_ID) references SEC_GROUP(ID)
 )^
 
-alter table SEC_GROUP add constraint SEC_GROUP_UNIQ_NAME unique (NAME, DELETE_TS)^
+alter table SEC_GROUP add constraint IDX_SEC_GROUP_UNIQ_NAME unique (NAME, DELETE_TS)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -236,7 +250,7 @@ create table SEC_USER (
     CHANGE_PASSWORD_AT_LOGON boolean,
     --
     primary key (ID),
-    constraint SEC_USER_UNIQ_LOGIN unique (LOGIN_LC, DELETE_TS),
+    constraint IDX_SEC_USER_UNIQ_LOGIN unique (LOGIN_LC, DELETE_TS),
     constraint SEC_USER_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID)
 )^
 
@@ -258,7 +272,7 @@ create table SEC_USER_ROLE (
     primary key (ID),
     constraint SEC_USER_ROLE_USER foreign key (USER_ID) references SEC_USER(ID),
     constraint SEC_USER_ROLE_ROLE foreign key (ROLE_ID) references SEC_ROLE(ID),
-    constraint SEC_USER_ROLE_UNIQ_ROLE unique (USER_ID, ROLE_ID, DELETE_TS)
+    constraint IDX_SEC_USER_ROLE_UNIQ_ROLE unique (USER_ID, ROLE_ID, DELETE_TS)
 )^
 
 ------------------------------------------------------------------------------------------------------------
@@ -280,7 +294,7 @@ create table SEC_PERMISSION (
     --
     primary key (ID),
     constraint SEC_PERMISSION_ROLE foreign key (ROLE_ID) references SEC_ROLE(ID),
-    constraint SEC_PERMISSION_UNIQUE unique (ROLE_ID, PERMISSION_TYPE, TARGET, DELETE_TS)
+    constraint IDX_SEC_PERMISSION_UNIQUE unique (ROLE_ID, PERMISSION_TYPE, TARGET, DELETE_TS)
 )^
 
 ------------------------------------------------------------------------------------------------------------
