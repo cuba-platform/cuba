@@ -116,17 +116,24 @@ public class EntityRestoreServiceBean implements EntityRestoreService {
                     log.debug("Cannot restore " + property.getRange().asClass() + " because it is hard deleted");
                     continue;
                 }
-                String jpql = "select e from " + detailMetaClass + " e where e." + property.getName() + ".id = ?1 " +
-                        "and e.deleteTs >= ?2 and e.deleteTs <= ?3";
-                Query query = em.createQuery(jpql);
-                query.setParameter(1, entity.getId());
-                query.setParameter(2, DateUtils.addMilliseconds(deleteTs, -100));
-                query.setParameter(3, DateUtils.addMilliseconds(deleteTs, 1000));
-                //noinspection unchecked
-                List<Entity> list = query.getResultList();
-                for (Entity detailEntity : list) {
-                    if (entity instanceof SoftDelete) {
-                        restoreEntity(detailEntity);
+                List<MetaClass> metClassesToRestore = new ArrayList<>();
+                metClassesToRestore.add(detailMetaClass);
+                metClassesToRestore.addAll(detailMetaClass.getDescendants());
+                for (MetaClass metaClassToRestore : metClassesToRestore) {
+                    if (!metadata.getTools().isPersistent(metaClassToRestore))
+                        continue;
+                    String jpql = "select e from " + metaClassToRestore.getName() + " e where e." + property.getName()
+                            + ".id = ?1 and e.deleteTs >= ?2 and e.deleteTs <= ?3";
+                    Query query = em.createQuery(jpql);
+                    query.setParameter(1, entity.getId());
+                    query.setParameter(2, DateUtils.addMilliseconds(deleteTs, -100));
+                    query.setParameter(3, DateUtils.addMilliseconds(deleteTs, 1000));
+                    //noinspection unchecked
+                    List<Entity> list = query.getResultList();
+                    for (Entity detailEntity : list) {
+                        if (entity instanceof SoftDelete) {
+                            restoreEntity(detailEntity);
+                        }
                     }
                 }
             }
