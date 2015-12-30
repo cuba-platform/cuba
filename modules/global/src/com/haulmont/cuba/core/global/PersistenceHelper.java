@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.entity.SoftDelete;
 import org.apache.commons.lang.StringUtils;
 
 import java.lang.annotation.Annotation;
+import java.util.Objects;
 
 /**
  * Utility class providing some information about persistent entities.
@@ -116,5 +117,24 @@ public class PersistenceHelper {
     public static boolean isLoaded(Object entity, String property) {
         PersistentAttributesLoadChecker checker = AppBeans.get(PersistentAttributesLoadChecker.NAME);
         return checker.isLoaded(entity, property);
+    }
+
+    /**
+     * Check that entity has all specified properties loaded from DB.
+     * Throw exception if property is not loaded.
+     *
+     * @param entity entity
+     * @param properties property names
+     * @throws IllegalArgumentException if at least one of properties is not loaded
+     */
+    public static void checkLoaded(Object entity, String... properties) {
+        Objects.requireNonNull(entity);
+
+        for (String property: properties) {
+            if (!isLoaded(entity, property)) {
+                String errorMessage = String.format("%s.%s is not loaded", entity.getClass().getSimpleName(), property);
+                throw new IllegalArgumentException(errorMessage);
+            }
+        }
     }
 }

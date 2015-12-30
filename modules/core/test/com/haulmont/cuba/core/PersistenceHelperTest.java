@@ -8,11 +8,9 @@ package com.haulmont.cuba.core;
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.*;
 
 import java.util.UUID;
 
@@ -146,5 +144,27 @@ public class PersistenceHelperTest {
         assertFalse(PersistenceHelper.isNew(server));
         assertFalse(PersistenceHelper.isManaged(server));
         assertTrue(PersistenceHelper.isDetached(server)); // is it correct?
+    }
+
+    @Test
+    public void testCheckLoaded() {
+        Server server = new Server();
+
+        cont.persistence().createTransaction().execute((em) -> {
+            em.persist(server);
+            return null;
+        });
+
+        View view = new View(Server.class).addProperty("name").addProperty("data");
+        Server reloadedServer = cont.persistence().createTransaction().execute((em) -> em.find(Server.class, server.getId(), view));
+
+        PersistenceHelper.checkLoaded(reloadedServer, "name"); // fine
+
+        try {
+            PersistenceHelper.checkLoaded(reloadedServer, "data", "running");
+            Assert.fail("Must throw exception");
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue(e.getMessage().contains("Server.running"));
+        }
     }
 }
