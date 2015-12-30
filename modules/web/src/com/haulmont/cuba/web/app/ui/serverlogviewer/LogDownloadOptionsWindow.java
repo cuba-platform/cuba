@@ -100,7 +100,7 @@ public class LogDownloadOptionsWindow extends AbstractWindow {
             logDataProvider = new LogDataProvider(connection, logFileName,
                     (String) remoteContextField.getValue(), true);
         } else {
-            logDataProvider = new LogDataProvider(connection, logFileName, true);
+            logDataProvider = new LogDataProvider(connection, logFileName, false);
         }
 
         exportFile(logDataProvider, logFileName);
