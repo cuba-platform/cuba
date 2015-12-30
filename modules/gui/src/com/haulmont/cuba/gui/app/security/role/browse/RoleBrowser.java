@@ -170,9 +170,14 @@ public class RoleBrowser extends AbstractLookup {
                 log.error("Unable to delete temp file", e);
             }
 
-            Collection<Entity> importedEntities = entityImportExportService.importEntities(zipBytes, createRolesImportView());
-            showNotification(importedEntities.size() + " entities imported", NotificationType.HUMANIZED);
-            rolesDs.refresh();
+            try {
+                Collection<Entity> importedEntities = entityImportExportService.importEntities(zipBytes, createRolesImportView());
+                long importedRolesCount = importedEntities.stream().filter(entity -> entity instanceof Role).count();
+                showNotification(importedRolesCount + " roles imported", NotificationType.HUMANIZED);
+                rolesDs.refresh();
+            } catch (Exception e) {
+                showNotification(formatMessage("importError", e.getMessage()), NotificationType.ERROR);
+            }
         });
     }
 
