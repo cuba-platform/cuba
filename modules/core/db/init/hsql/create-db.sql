@@ -157,7 +157,6 @@ create table SEC_ROLE (
     UPDATED_BY varchar(50),
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
-    DELETE_TS_NN timestamp default '1000-01-01 00:00:00.000' not null,
     --
     NAME varchar(255) not null,
     LOC_NAME varchar(255),
