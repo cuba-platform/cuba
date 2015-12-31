@@ -32,6 +32,17 @@ public abstract class ContainerLoader<T extends Component> extends AbstractCompo
         pendingLoadComponents.clear();
     }
 
+    @Override
+    public void setMessagesPack(String messagesPack) {
+        super.setMessagesPack(messagesPack);
+
+        for (ComponentLoader loader : pendingLoadComponents) {
+            if (!(loader instanceof FrameComponentLoader) && !(loader instanceof RuntimePropertiesFrameLoader)) {
+                loader.setMessagesPack(messagesPack);
+            }
+        }
+    }
+
     protected void loadSpacing(Component.Spacing layout, Element element) {
         String spacing = element.attributeValue("spacing");
         if (!StringUtils.isEmpty(spacing)) {

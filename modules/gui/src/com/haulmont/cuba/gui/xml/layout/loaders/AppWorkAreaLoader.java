@@ -46,4 +46,13 @@ public class AppWorkAreaLoader extends ContainerLoader<AppWorkArea> {
 
         initialLayoutLoader.loadComponent();
     }
+
+    @Override
+    public void setMessagesPack(String messagesPack) {
+        super.setMessagesPack(messagesPack);
+
+        if (initialLayoutLoader != null) {
+            initialLayoutLoader.setMessagesPack(messagesPack);
+        }
+    }
 }

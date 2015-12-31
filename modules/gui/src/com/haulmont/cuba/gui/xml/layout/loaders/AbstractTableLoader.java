@@ -230,6 +230,15 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         }
     }
 
+    @Override
+    public void setMessagesPack(String messagesPack) {
+        super.setMessagesPack(messagesPack);
+
+        if (buttonsPanelLoader != null) {
+            buttonsPanelLoader.setMessagesPack(messagesPack);
+        }
+    }
+
     protected void loadButtonsPanel(T component) {
         if (buttonsPanelLoader != null) {
             //noinspection unchecked
