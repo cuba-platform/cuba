@@ -293,9 +293,7 @@ public class CubaMultiUpload extends AbstractComponent
     }
 
     /**
-     * Note: this is just a hint for browser, user may select files that do not meet this property
-     *
-     * @param accept mime types, comma separated
+     * @param accept file types, semicolon separated
      */
     @Override
     public void setAccept(String accept) {
