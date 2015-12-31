@@ -30,7 +30,8 @@ import java.util.Map;
  */
 @JavaScript(value = "vaadin://resources/swfobject/swfobject-2.2.js")
 @Deprecated
-public class CubaMultiUpload extends AbstractComponent implements LegacyComponent {
+public class CubaMultiUpload extends AbstractComponent
+        implements LegacyComponent, UploadComponent {
 
     private List<UploadListener> uploadListeners = new ArrayList<>();
 
@@ -284,6 +285,21 @@ public class CubaMultiUpload extends AbstractComponent implements LegacyComponen
 
     public String getFileTypesDescription() {
         return getState(false).fileTypesDescription;
+    }
+
+    @Override
+    public String getAccept() {
+        return getFileTypesMask();
+    }
+
+    /**
+     * Note: this is just a hint for browser, user may select files that do not meet this property
+     *
+     * @param accept mime types, comma separated
+     */
+    @Override
+    public void setAccept(String accept) {
+        setFileTypesMask(accept);
     }
 
     public void setFileTypesDescription(String fileTypesDescription) {

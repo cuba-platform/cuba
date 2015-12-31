@@ -6,18 +6,16 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.compatibility.FileUploadFieldListenerWrapper;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
+import com.haulmont.cuba.web.toolkit.FileUploadTypesHelper;
 import com.haulmont.cuba.web.toolkit.ui.CubaFileUpload;
 import com.haulmont.cuba.web.toolkit.ui.CubaUpload;
+import com.haulmont.cuba.web.toolkit.ui.UploadComponent;
 import com.vaadin.server.Page;
 import com.vaadin.server.WebBrowser;
-import com.vaadin.ui.AbstractComponent;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -34,7 +32,7 @@ import static com.haulmont.cuba.gui.components.Frame.NotificationType;
  * @author abramov
  * @version $Id$
  */
-public class WebFileUploadField extends WebAbstractComponent<AbstractComponent> implements FileUploadField {
+public class WebFileUploadField extends WebAbstractComponent<UploadComponent> implements FileUploadField {
 
     private static final int BYTES_IN_MEGABYTE = 1048576;
 
@@ -44,6 +42,8 @@ public class WebFileUploadField extends WebAbstractComponent<AbstractComponent> 
     protected Messages messages;
 
     protected String fileName;
+
+    protected String accept;
 
     protected UUID fileId;
 
@@ -309,6 +309,19 @@ public class WebFileUploadField extends WebAbstractComponent<AbstractComponent> 
             } else {
                 component.setIcon(null);
             }
+        }
+    }
+
+    @Override
+    public String getAccept() {
+        return accept;
+    }
+
+    @Override
+    public void setAccept(String accept) {
+        if (!StringUtils.equals(accept, getAccept())) {
+            this.accept = accept;
+            component.setAccept(FileUploadTypesHelper.convertToMIME(accept));
         }
     }
 

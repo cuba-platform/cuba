@@ -78,4 +78,7 @@ public interface FileMultiUploadField extends UploadComponentSupport {
 
     void addQueueUploadCompleteListener(QueueUploadCompleteListener listener);
     void removeQueueUploadCompleteListener(QueueUploadCompleteListener listener);
+
+    String getAccept();
+    void setAccept(String accept);
 }

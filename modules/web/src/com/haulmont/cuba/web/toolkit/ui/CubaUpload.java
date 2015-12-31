@@ -14,7 +14,7 @@ import org.apache.commons.lang.StringUtils;
  * @version $Id$
  */
 @Deprecated
-public class CubaUpload extends Upload {
+public class CubaUpload extends Upload implements UploadComponent {
 
     @Override
     protected CubaUploadState getState() {
@@ -26,6 +26,7 @@ public class CubaUpload extends Upload {
         return (CubaUploadState) super.getState(markAsDirty);
     }
 
+    @Override
     public String getAccept() {
         return getState(false).accept;
     }
@@ -35,6 +36,7 @@ public class CubaUpload extends Upload {
      *
      * @param accept mime types, comma separated
      */
+    @Override
     public void setAccept(String accept) {
         if (!StringUtils.equals(accept, getAccept())) {
             getState().accept = accept;

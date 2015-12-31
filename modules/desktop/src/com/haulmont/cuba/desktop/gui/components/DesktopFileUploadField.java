@@ -319,4 +319,15 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
             fileUploadSucceedListeners.remove(listener);
         }
     }
+
+    @Override
+    public String getAccept() {
+        // do nothing
+        return null;
+    }
+
+    @Override
+    public void setAccept(String accept) {
+        // do nothing
+    }
 }

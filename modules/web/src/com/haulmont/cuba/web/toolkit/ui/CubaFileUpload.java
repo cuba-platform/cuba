@@ -33,7 +33,8 @@ import java.util.*;
         "vaadin://resources/jqueryfileupload/jquery.iframe-transport-9.10.5.min.js",
         "vaadin://resources/jqueryfileupload/jquery.fileupload-9.10.5.min.js"
 })
-public class CubaFileUpload extends AbstractComponent implements Component.Focusable, LegacyComponent {
+public class CubaFileUpload extends AbstractComponent
+        implements Component.Focusable, LegacyComponent, UploadComponent {
 
     /**
      * The output of the upload is redirected to this receiver.
@@ -211,6 +212,7 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
         }
     }
 
+    @Override
     public String getAccept() {
         return getState(false).accept;
     }
@@ -220,6 +222,7 @@ public class CubaFileUpload extends AbstractComponent implements Component.Focus
      *
      * @param accept mime types, comma separated
      */
+    @Override
     public void setAccept(String accept) {
         if (!StringUtils.equals(accept, getAccept())) {
             getState().accept = accept;

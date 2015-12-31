@@ -835,6 +835,7 @@
         <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEnableProp"/>
+        <xs:attribute name="accept" type="xs:string"/>
     </xs:complexType>
 
     <!-- FileMultiUploadField -->
@@ -846,6 +847,7 @@
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasIcon"/>
+        <xs:attribute name="accept" type="xs:string"/>
     </xs:complexType>
 
     <!-- Embedded -->

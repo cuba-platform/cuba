@@ -5,6 +5,8 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.FileMultiUploadField;
+import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 /**
  * @author abramov
@@ -33,5 +35,14 @@ public class FileMultiUploadFieldLoader extends AbstractComponentLoader<FileMult
 
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
+
+        loadAccept(resultComponent, element);
+    }
+
+    protected void loadAccept(FileMultiUploadField uploadField, Element element) {
+        String accept = element.attributeValue("accept");
+        if (StringUtils.isNotEmpty(accept)) {
+            uploadField.setAccept(accept);
+        }
     }
 }

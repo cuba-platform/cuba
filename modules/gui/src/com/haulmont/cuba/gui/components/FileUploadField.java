@@ -97,4 +97,7 @@ public interface FileUploadField extends UploadComponentSupport {
 
     void addFileUploadSucceedListener(FileUploadSucceedListener listener);
     void removeFileUploadSucceedListener(FileUploadSucceedListener listener);
+
+    String getAccept();
+    void setAccept(String accept);
 }
