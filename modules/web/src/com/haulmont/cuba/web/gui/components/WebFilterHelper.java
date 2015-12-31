@@ -231,7 +231,8 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public boolean isTableActionsEnabled() {
-        return true;
+        WebConfig config = configuration.getConfig(WebConfig.class);
+        return config.getFoldersPaneEnabled();
     }
 
     @Override
