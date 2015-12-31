@@ -4,7 +4,6 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
