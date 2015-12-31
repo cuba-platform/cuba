@@ -8,14 +8,17 @@ package com.haulmont.cuba.gui.components.actions;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.RelatedEntitiesService;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.ExtendedEntities;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
+import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
@@ -23,6 +26,7 @@ import com.haulmont.cuba.gui.components.filter.FilterParser;
 import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
 import com.haulmont.cuba.gui.components.filter.descriptor.PropertyConditionDescriptor;
+import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -44,7 +48,7 @@ public class RelatedAction extends AbstractAction {
     protected String screen;
     protected String filterCaption;
 
-    protected WindowManager.OpenType openType;
+    protected OpenType openType = OpenType.THIS_TAB;
 
     protected ExtendedEntities extendedEntities = AppBeans.get(ExtendedEntities.NAME);
     protected RelatedEntitiesService relatedEntitiesService = AppBeans.get(RelatedEntitiesService.NAME);
@@ -76,19 +80,25 @@ public class RelatedAction extends AbstractAction {
         this.filterCaption = filterCaption;
     }
 
-    public WindowManager.OpenType getOpenType() {
+    public OpenType getOpenType() {
         return openType;
     }
 
-    public void setOpenType(WindowManager.OpenType openType) {
+    public void setOpenType(OpenType openType) {
         this.openType = openType;
     }
 
     @Override
     public void actionPerform(Component component) {
         final Set<Entity> selected = target.getSelected();
+
         if (!selected.isEmpty()) {
-            Window window = target.getFrame().openWindow(getScreen(), openType);
+            Map<String, Object> params = new HashMap<>();
+
+            WindowParams.DISABLE_AUTO_REFRESH.set(params, true);
+            WindowParams.DISABLE_RESUME_SUSPENDED.set(params, true);
+
+            Window window = target.getFrame().openWindow(getScreen(), getOpenType(), params);
 
             boolean found = ComponentsHelper.walkComponents(window, screenComponent -> {
                 if (!(screenComponent instanceof Filter)) {
@@ -106,6 +116,8 @@ public class RelatedAction extends AbstractAction {
             if (!found) {
                 target.getFrame().showNotification(messages.getMainMessage("actions.Related.FilterNotFound"), Frame.NotificationType.WARNING);
             }
+
+            ((DsContextImplementation) window.getDsContext()).resumeSuspended();
         } else {
             target.getFrame().showNotification(messages.getMainMessage("actions.Related.NotSelected"), Frame.NotificationType.HUMANIZED);
         }
@@ -132,14 +144,7 @@ public class RelatedAction extends AbstractAction {
         filterEntity.setXml(getRelatedEntitiesFilterXml(effectiveMetaClass, relatedIds, component));
 
         component.setFilterEntity(filterEntity);
-
-        Configuration configuration = AppBeans.get(Configuration.NAME);
-        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
-
-        if (Boolean.TRUE.equals(component.getManualApplyRequired())
-                || (component.getManualApplyRequired() == null && clientConfig.getGenericFilterManualApplyRequired())) {
-            component.apply(true);
-        }
+        component.apply(true);
     }
 
     protected String getRelatedEntitiesFilterXml(MetaClass metaClass, List<UUID> ids, Filter component) {
@@ -153,22 +158,14 @@ public class RelatedAction extends AbstractAction {
                 AppConfig.getMessagesPack(), filterComponentName, component.getDatasource());
 
         PropertyCondition condition = (PropertyCondition) conditionDescriptor.createCondition();
+        condition.setInExpr(true);
         condition.setHidden(true);
+        condition.setOperator(Op.IN);
 
         ConditionParamBuilder paramBuilder = AppBeans.get(ConditionParamBuilder.class);
-        Param param;
-        if (!ids.isEmpty()) {
-            condition.setInExpr(true);
-            condition.setOperator(Op.IN);
-            param = new Param(paramBuilder.createParamName(condition), UUID.class, "", "",
-                    component.getDatasource(), metaClass.getProperty("id"), true, true);
-            param.setValue(ids);
-        } else {
-            condition.setOperator(Op.NOT_EMPTY);
-            param = new Param(paramBuilder.createParamName(condition), Boolean.class, "", "",
-                    component.getDatasource(), metaClass.getProperty("id"), false, true);
-            param.setValue(false);
-        }
+        Param param = new Param(paramBuilder.createParamName(condition), UUID.class, "", "", component.getDatasource(),
+                metaClass.getProperty("id"), true, true);
+        param.setValue(ids);
 
         condition.setParam(param);
 
@@ -188,6 +185,7 @@ public class RelatedAction extends AbstractAction {
 
             String parentMetaClass = metaClass.getName();
 
+            //noinspection UnnecessaryLocalVariable
             List<UUID> relatedIds = relatedEntitiesService.getRelatedIds(parentIds, parentMetaClass, metaProperty.getName());
             return relatedIds;
         }
