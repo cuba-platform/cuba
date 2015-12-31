@@ -16,8 +16,8 @@ import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.SearchAutoCompleteSupport;
 import com.haulmont.cuba.desktop.sys.vcl.SearchComboBox;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.SearchField;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -27,7 +27,6 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.awt.Component;
 import java.awt.event.*;
 import java.util.Collections;
 import java.util.Map;
@@ -452,7 +451,11 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
 
     @Override
     public void setCaption(String caption) {
-        this.caption = caption;
+        if (!ObjectUtils.equals(this.caption, caption)) {
+            this.caption = caption;
+
+            requestContainerUpdate();
+        }
     }
 
     @Override

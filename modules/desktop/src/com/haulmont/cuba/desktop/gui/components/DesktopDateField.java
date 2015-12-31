@@ -28,7 +28,6 @@ import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -376,7 +375,11 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
     @Override
     public void setCaption(String caption) {
-        this.caption = caption;
+        if (!ObjectUtils.equals(this.caption, caption)) {
+            this.caption = caption;
+
+            requestContainerUpdate();
+        }
     }
 
     @Override

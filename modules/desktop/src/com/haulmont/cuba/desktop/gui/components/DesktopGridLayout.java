@@ -171,7 +171,6 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
         // captions not added here
         final JComponent composition = DesktopComponentsHelper.getComposition(component);
         impl.add(composition, layoutAdapter.getConstraints(component));
-        //setComponentAlignment(itmillComponent, WebComponentsHelper.convertAlignment(component.getAlignment()));
 
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
@@ -200,14 +199,11 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
 
     protected void requestRepaint() {
         if (!scheduledRepaint) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    impl.revalidate();
-                    impl.repaint();
+            SwingUtilities.invokeLater(() -> {
+                impl.revalidate();
+                impl.repaint();
 
-                    scheduledRepaint = false;
-                }
+                scheduledRepaint = false;
             });
 
             scheduledRepaint = true;
@@ -313,26 +309,58 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
 
     @Override
     public void updateComponent(Component child) {
-        JComponent composition;
-        if (wrappers.containsKey(child)) {
-            composition = wrappers.get(child).getFirst();
-        } else {
-            composition = DesktopComponentsHelper.getComposition(child);
-        }
-        layoutAdapter.updateConstraints(composition, layoutAdapter.getConstraints(child));
-        if (captions.containsKey(child)) {
-            ComponentCaption caption = captions.get(child);
-            caption.update();
-            if (!wrappers.containsKey(child)) {
-                CC c = (CC) layoutAdapter.getConstraints(child);
-                layoutAdapter.updateConstraints(caption, layoutAdapter.getCaptionConstraints(child,
-                        c.getCellX(), c.getCellY(), c.getCellX(), c.getCellY()));
+        boolean componentReAdded = false;
+
+        if (DesktopContainerHelper.mayHaveExternalCaption(child)) {
+            if (captions.containsKey(child)
+                    && !DesktopContainerHelper.hasExternalCaption(child)
+                    && !DesktopContainerHelper.hasExternalDescription(child)) {
+                reAddChild(child);
+                componentReAdded = true;
+            } else if (!captions.containsKey(child)
+                    && (DesktopContainerHelper.hasExternalCaption(child)
+                        || DesktopContainerHelper.hasExternalDescription(child))) {
+                reAddChild(child);
+                componentReAdded = true;
+            } else if (captions.containsKey(child)) {
+                ComponentCaption caption = captions.get(child);
+                caption.update();
+                if (!wrappers.containsKey(child)) {
+                    CC c = (CC) layoutAdapter.getConstraints(child);
+                    layoutAdapter.updateConstraints(caption, layoutAdapter.getCaptionConstraints(child,
+                            c.getCellX(), c.getCellY(), c.getCellX(), c.getCellY()));
+                }
             }
+        }
+
+        if (!componentReAdded) {
+            JComponent composition;
+            if (wrappers.containsKey(child)) {
+                composition = wrappers.get(child).getFirst();
+            } else {
+                composition = DesktopComponentsHelper.getComposition(child);
+            }
+            layoutAdapter.updateConstraints(composition, layoutAdapter.getConstraints(child));
         }
 
         requestRepaint();
 
         requestContainerUpdate();
+    }
+
+    protected void reAddChild(Component child) {
+        CC childCC = (CC) layoutAdapter.getConstraints(child);
+        int col1 = childCC.getCellX();
+        int row1 = childCC.getCellY();
+        int spanX = childCC.getSpanX();
+        int spanY = childCC.getSpanY();
+
+        // readd component
+        int col2 = spanX - 1 + col1;
+        int row2 = spanY - 1 + row1;
+
+        remove(child);
+        add(child, col1, row1, col2, row2);
     }
 
     @Override

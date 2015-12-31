@@ -19,6 +19,10 @@ import org.apache.commons.lang.StringUtils;
  */
 public class DesktopContainerHelper {
 
+    public static boolean mayHaveExternalCaption(Component component) {
+        return (component instanceof Field && !(component instanceof DesktopCheckBox));
+    }
+
     public static boolean hasExternalCaption(Component component) {
         if (component instanceof Field && !(component instanceof DesktopCheckBox)) {
             final String caption = ((Field) component).getCaption();
@@ -48,8 +52,7 @@ public class DesktopContainerHelper {
     public static void assignContainer(Component component, DesktopContainer container) {
         if (component instanceof DesktopComponent) {
             ((DesktopComponent) component).setContainer(container);
-        }
-        else if (component instanceof Component.Wrapper) { // for frame wrappers
+        } else if (component instanceof Component.Wrapper) { // for frame wrappers
             Object wrapped = ((Component.Wrapper) component).getComposition();
             if (wrapped instanceof DesktopComponent) {
                 ((DesktopComponent) wrapped).setContainer(container);

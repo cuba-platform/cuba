@@ -83,6 +83,8 @@ public class MigGridLayoutAdapter extends GridLayoutAdapter {
             // fill up span x span y
             if (layout.getComponentConstraints(composition) instanceof CC) {
                 CC componentConstraints = (CC) layout.getComponentConstraints(composition);
+                defaultContraints.setCellX(componentConstraints.getCellX());
+                defaultContraints.setCellY(componentConstraints.getCellY());
                 defaultContraints.setSpanX(componentConstraints.getSpanX());
                 defaultContraints.setSpanY(componentConstraints.getSpanY());
             }
