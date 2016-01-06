@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.persistence.DbmsFeatures;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import org.apache.commons.collections.CollectionUtils;
+import org.eclipse.persistence.config.CascadePolicy;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.jpa.JpaQuery;
@@ -71,7 +72,6 @@ public class QueryImpl<T> implements TypedQuery<T> {
                     Class effectiveClass = metadata.getExtendedEntities().getEffectiveClass(resultClass);
                     query = (JpaQuery) emDelegate.createNativeQuery(queryString, effectiveClass);
                 }
-                query.setFlushMode(FlushModeType.COMMIT);
             } else {
                 log.trace("Creating JPQL query: " + queryString);
                 String s = transformQueryString();
@@ -81,8 +81,12 @@ public class QueryImpl<T> implements TypedQuery<T> {
                 } else {
                     query = (JpaQuery) emDelegate.createQuery(s);
                 }
-                query.setFlushMode(FlushModeType.COMMIT);
+                if (!views.isEmpty()) {
+                    query.setHint(QueryHints.REFRESH, HintValues.TRUE);
+                    query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
+                }
             }
+            query.setFlushMode(FlushModeType.COMMIT);
 
             boolean nullParam = false;
             for (Param param : params) {

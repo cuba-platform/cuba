@@ -103,6 +103,12 @@ public class EclipseLinkDescriptorEventListener implements DescriptorEventListen
 
     @Override
     public void postRefresh(DescriptorEvent event) {
+        if (event.getObject() instanceof FetchGroupTracker) {
+            FetchGroupTracker entity = (FetchGroupTracker) event.getObject();
+            FetchGroup fetchGroup = entity._persistence_getFetchGroup();
+            if (fetchGroup != null)
+                entity._persistence_setFetchGroup(new CubaEntityFetchGroup(fetchGroup));
+        }
     }
 
     @Override

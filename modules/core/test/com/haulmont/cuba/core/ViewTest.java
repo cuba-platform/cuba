@@ -231,11 +231,14 @@ public class ViewTest {
     /*
      * Pre 6.0: Test that entity which is loaded with view, can lazily fetch not-loaded attributes until transaction ends.
      *
-     * 6.0: Not loaded (unfetched) attributes cannot be loaded lazily.
+     * 6.0: Not loaded (unfetched) attributes cannot be loaded lazily. Otherwise, previously loaded reference attributes are lost.
      */
     @Test
     public void testLazyLoadAfterLoadWithView() throws Exception {
-        View view = new View(User.class, false).addProperty("name");
+        View view = new View(User.class, false)
+                .addProperty("name")
+                .addProperty("group", new View(Group.class)
+                    .addProperty("name"));
 
         User user;
         Transaction tx = cont.persistence().createTransaction();
@@ -248,6 +251,7 @@ public class ViewTest {
         }
 
         user = reserialize(user);
+        assertNotNull(user.getGroup().getName());
 
         // login is not loaded after transaction is finished
         try {
@@ -273,6 +277,8 @@ public class ViewTest {
         } finally {
             tx.end();
         }
+        user = reserialize(user);
+        assertNotNull(user.getGroup().getName());
     }
 
 
