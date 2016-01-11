@@ -176,6 +176,7 @@ public class FileUploadController {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return null;
         }
+
         String ext = request.getParameter("ext");
         if (ext == null) {
             log.error("'ext' request parameter is not specified");
@@ -183,10 +184,16 @@ public class FileUploadController {
             return null;
         }
 
+        String size = request.getParameter("size");
+
         FileDescriptor fd = metadata.create(FileDescriptor.class);
         fd.setName(name);
         fd.setExtension(ext);
         fd.setCreateDate(timeSource.currentTimestamp());
+        if (size != null) {
+            fd.setSize(Long.parseLong(size));
+        }
+
         return fd;
     }
 }

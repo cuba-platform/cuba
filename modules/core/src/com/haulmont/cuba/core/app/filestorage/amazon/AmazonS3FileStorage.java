@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.core.app.filestorage.amazon;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.app.FileStorageAPI;
 import com.haulmont.cuba.core.app.filestorage.amazon.auth.AWS4SignerBase;
 import com.haulmont.cuba.core.app.filestorage.amazon.auth.AWS4SignerForAuthorizationHeader;
@@ -41,6 +42,8 @@ public class AmazonS3FileStorage implements FileStorageAPI {
 
     @Override
     public long saveStream(FileDescriptor fileDescr, InputStream inputStream) throws FileStorageException {
+        Preconditions.checkNotNullArgument(fileDescr.getSize());
+
         AmazonConfiguration amazonConfiguration = configuration.getConfig(AmazonConfiguration.class);
         URL amazonUrl = getAmazonUrl(fileDescr);
 
@@ -111,8 +114,9 @@ public class AmazonS3FileStorage implements FileStorageAPI {
             // make the call to Amazon S3
             HttpUtils.HttpResponse httpResponse = HttpUtils.executeHttpRequest(connection);
             if (!httpResponse.isStatusOk()) {
-                throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION,
-                        "Could not save file " + getFileName(fileDescr));
+                String message = String.format("Could not save file %s. %s",
+                        getFileName(fileDescr), getInputStreamContent(httpResponse));
+                throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, message);
             }
         } catch (IOException e) {
             throw new RuntimeException("Error when sending chunked upload request", e);
@@ -140,8 +144,9 @@ public class AmazonS3FileStorage implements FileStorageAPI {
         headers.put("Authorization", authorization);
         HttpUtils.HttpResponse httpResponse = HttpUtils.invokeHttpRequest(amazonUrl, "DELETE", headers, null);
         if (!httpResponse.isStatusOk()) {
-            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION,
-                    "Could not remove file " + getFileName(fileDescr));
+            String message = String.format("Could not remove file %s. %s",
+                    getFileName(fileDescr), getInputStreamContent(httpResponse));
+            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, message);
         }
     }
 
@@ -164,8 +169,9 @@ public class AmazonS3FileStorage implements FileStorageAPI {
             throw new FileStorageException(FileStorageException.Type.FILE_NOT_FOUND,
                     "File not found" + getFileName(fileDescr));
         } else {
-            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION,
-                    "Could not get file " + getFileName(fileDescr));
+            String message = String.format("Could not get file %s. %s",
+                    getFileName(fileDescr), getInputStreamContent(httpResponse));
+            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, message);
         }
     }
 
@@ -242,5 +248,13 @@ public class AmazonS3FileStorage implements FileStorageAPI {
                 AWS4SignerBase.EMPTY_BODY_SHA256,
                 amazonConfiguration.getAccessKey(),
                 amazonConfiguration.getSecretAccessKey());
+    }
+
+    protected String getInputStreamContent(HttpUtils.HttpResponse httpResponse) {
+        try {
+            return IOUtils.toString(httpResponse.getInputStream());
+        } catch (IOException e) {
+            return null;
+        }
     }
 }
