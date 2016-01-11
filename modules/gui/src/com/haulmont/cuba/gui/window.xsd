@@ -557,7 +557,7 @@
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasAlign"/>
         <xs:attributeGroup ref="hasStyle"/>
-        <xs:attributeGroup ref="hasCaption"/>
+        <xs:attribute name="description" type="resourceString"/>
 
         <xs:attributeGroup ref="hasDatasource"/>
         <xs:attribute name="value" type="resourceString"/>
