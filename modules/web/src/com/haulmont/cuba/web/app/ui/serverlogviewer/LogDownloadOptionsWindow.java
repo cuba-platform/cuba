@@ -98,7 +98,7 @@ public class LogDownloadOptionsWindow extends AbstractWindow {
         LogDataProvider logDataProvider;
         if (remoteContextBox.isVisible()) {
             logDataProvider = new LogDataProvider(connection, logFileName,
-                    (String) remoteContextField.getValue(), true);
+                    (String) remoteContextField.getValue(), false);
         } else {
             logDataProvider = new LogDataProvider(connection, logFileName, false);
         }
