@@ -103,7 +103,7 @@ public class ScriptScanner {
             List<String> modules = Arrays.stream(resources)
                     .map(resource -> {
                         try {
-                            String resourcePath = resource.getURL().toString().replaceFirst(".+?:", "");
+                            String resourcePath = resource.getFile().getPath().replaceFirst(".+?:", "");
                             Matcher matcher = Pattern.compile(".*" + dbDirPath + "/?(.+?)/.*").matcher(resourcePath);
                             return matcher.find() ? matcher.group(1) : null;
                         } catch (IOException e) {

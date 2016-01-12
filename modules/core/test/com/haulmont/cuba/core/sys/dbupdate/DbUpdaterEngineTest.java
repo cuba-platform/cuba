@@ -38,7 +38,7 @@ public class DbUpdaterEngineTest {
     @Before
     public void setUp() throws Exception {
         GlobalConfig config = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
-        dbmsDir = new File(config.getTempDir(), "db");
+        dbmsDir = new File(config.getTempDir(), "db. dir");
         if (dbmsDir.exists()) {
             FileUtils.deleteDirectory(dbmsDir);
         }
@@ -173,7 +173,8 @@ public class DbUpdaterEngineTest {
         engine.dbScriptsDirectory = dbmsDir.getAbsolutePath();
         engine.dbmsType = "mssql";
         List<String> moduleDirs = engine.getModuleDirs();
-        System.out.println(moduleDirs);
+        assertEquals("10-cuba",moduleDirs.get(0));
+        assertEquals("50-app",moduleDirs.get(1));
     }
 
     @Test
