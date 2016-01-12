@@ -25,7 +25,7 @@ public class ScriptResource {
         try {
             this.resource = resource;
             this.name = resource.getFilename();
-            this.path = resource.getURL().getPath();
+            this.path = resource.getFile().getPath();
             this.dir = StringUtils.substringBeforeLast(this.path, "/");
         } catch (IOException e) {
             throw new RuntimeException(e);
