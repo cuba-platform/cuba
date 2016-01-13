@@ -54,6 +54,10 @@
     height: 100%;
   }
 
+  .#{$primary-stylename} .v-button-focus {
+      border-color: $cuba-button-focuced-border-color;
+  }
+
   .#{$primary-stylename}-progresswindow.v-window {
     width: 500px;
 

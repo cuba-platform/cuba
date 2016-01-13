@@ -12,6 +12,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Focusable;
 import com.vaadin.client.StyleConstants;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.ui.VButton;
@@ -22,11 +23,9 @@ import com.vaadin.shared.Position;
  * @author artamonov
  * @version $Id$
  */
-public class CubaFileUploadWidget extends FlowPanel {
+public class CubaFileUploadWidget extends FlowPanel implements Focusable {
 
     public static final String DEFAULT_CLASSNAME = "cuba-fileupload";
-
-    protected Element inputElement;
 
     protected VButton submitButton;
 
@@ -50,7 +49,7 @@ public class CubaFileUploadWidget extends FlowPanel {
         submitButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                fireNativeClick(inputElement);
+                fireNativeClick(getFileInputElement());
             }
         });
         add(submitButton);
@@ -58,10 +57,10 @@ public class CubaFileUploadWidget extends FlowPanel {
 
         setStyleName(DEFAULT_CLASSNAME);
 
-        inputElement = Document.get().createFileInputElement();
+        Element inputElement = Document.get().createFileInputElement();
         inputElement.setAttribute("name", "files[]");
         inputElement.setAttribute("title", "");
-        DOM.sinkEvents(inputElement, Event.ONFOCUS);
+        listenToFocusEvents(inputElement);
 
         getElement().appendChild(inputElement);
 
@@ -82,6 +81,9 @@ public class CubaFileUploadWidget extends FlowPanel {
 
             @Override
             protected void queueUploadStart() {
+                // listen to events of new input element
+                listenToFocusEvents(getFileInputElement());
+
                 progressWindow = new CubaFileUploadProgressWindow();
                 progressWindow.setOwner(CubaFileUploadWidget.this);
                 progressWindow.addStyleName(getStylePrimaryName() + "-progresswindow");
@@ -142,6 +144,8 @@ public class CubaFileUploadWidget extends FlowPanel {
                     progressWindow = null;
                 }
 
+                getFileInputElement().focus();
+
                 if (queueUploadListener != null) {
                     queueUploadListener.uploadFinished();
                 }
@@ -169,6 +173,29 @@ public class CubaFileUploadWidget extends FlowPanel {
         };
     }
 
+    protected void listenToFocusEvents(Element inputElement) {
+        DOM.sinkEvents(inputElement, Event.ONFOCUS | Event.ONBLUR);
+    }
+
+    // Due to jquery file upload behavior we need to get input element from DOM
+    protected Element getFileInputElement() {
+        return getElement().getElementsByTagName("input").getItem(0);
+    }
+
+    @Override
+    public void onBrowserEvent(Event event) {
+        super.onBrowserEvent(event);
+
+        int type = DOM.eventGetType(event);
+        if (getFileInputElement().isOrHasChild(Element.as(event.getEventTarget()))) {
+            if (type == Event.ONFOCUS) {
+                submitButton.addStyleDependentName("focus");
+            } else if (type == Event.ONBLUR) {
+                submitButton.removeStyleDependentName("focus");
+            }
+        }
+    }
+
     protected static native void fireNativeClick(Element element)
     /*-{
         element.click();
@@ -176,9 +203,9 @@ public class CubaFileUploadWidget extends FlowPanel {
 
     public void setMultiSelect(boolean multiple) {
         if (multiple) {
-            inputElement.setAttribute("multiple", "");
+            getFileInputElement().setAttribute("multiple", "");
         } else {
-            inputElement.removeAttribute("multiple");
+            getFileInputElement().removeAttribute("multiple");
         }
     }
 
@@ -188,9 +215,9 @@ public class CubaFileUploadWidget extends FlowPanel {
 
     public void setAccept(String accept) {
         if (accept != null) {
-            inputElement.setAttribute("accept", accept);
+            getFileInputElement().setAttribute("accept", accept);
         } else {
-            inputElement.removeAttribute("accept");
+            getFileInputElement().removeAttribute("accept");
         }
     }
 
@@ -198,13 +225,13 @@ public class CubaFileUploadWidget extends FlowPanel {
         setEnabledForSubmitButton(false);
         // Cannot disable the fileupload while submitting or the file won't
         // be submitted at all
-        inputElement.setAttribute("disabled", "disabled");
+        getFileInputElement().setAttribute("disabled", "disabled");
         enabled = false;
     }
 
     public void enableUpload() {
         setEnabledForSubmitButton(true);
-        inputElement.removeAttribute("disabled");
+        getFileInputElement().removeAttribute("disabled");
         enabled = true;
     }
 
@@ -219,6 +246,29 @@ public class CubaFileUploadWidget extends FlowPanel {
 
     public void cancelAllUploads() {
         fileUpload.cancelUploading();
+    }
+
+    @Override
+    public int getTabIndex() {
+        return getFileInputElement().getTabIndex();
+    }
+
+    @Override
+    public void setAccessKey(char key) {
+    }
+
+    @Override
+    public void setFocus(boolean focused) {
+        if (focused) {
+            getFileInputElement().focus();
+        } else {
+            getFileInputElement().blur();
+        }
+    }
+
+    @Override
+    public void setTabIndex(int index) {
+        getFileInputElement().setTabIndex(index);
     }
 
     public interface FilePermissionsHandler {

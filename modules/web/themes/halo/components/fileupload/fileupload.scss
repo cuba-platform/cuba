@@ -26,6 +26,12 @@
     }
   }
 
+  .#{$primary-stylename} .v-button-focus {
+      &:after {
+        @include valo-button-focus-style($v-background-color);
+      }
+  }
+
   .#{$primary-stylename} input {
     display: block;
     cursor: pointer;
