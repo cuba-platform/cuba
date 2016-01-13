@@ -10,8 +10,13 @@ import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Parser;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.TokenStream;
+import org.antlr.runtime.tree.CommonErrorNode;
+import org.antlr.runtime.tree.CommonTree;
+import org.antlr.runtime.tree.TreeVisitor;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.List;
 
 /**
  * @author degtyarjov
@@ -31,7 +36,7 @@ public class Jpa2GrammarTest {
         TokenStream tstream = new CommonTokenStream(lexer);
         JPA2Parser jpa2Parser = new JPA2Parser(tstream);
         JPA2Parser.ql_statement_return aReturn = jpa2Parser.ql_statement();
-        Assert.assertNotNull(aReturn);
+        Assert.assertTrue(isValid((CommonTree) aReturn.getTree()));
     }
 
     @Test
@@ -44,7 +49,7 @@ public class Jpa2GrammarTest {
         TokenStream tstream = new CommonTokenStream(lexer);
         JPA2Parser jpa2Parser = new JPA2Parser(tstream);
         JPA2Parser.ql_statement_return aReturn = jpa2Parser.ql_statement();
-        Assert.assertNotNull(aReturn);
+        Assert.assertTrue(isValid((CommonTree) aReturn.getTree()));
     }
 
     @Test
@@ -57,7 +62,7 @@ public class Jpa2GrammarTest {
         TokenStream tstream = new CommonTokenStream(lexer);
         JPA2Parser jpa2Parser = new JPA2Parser(tstream);
         JPA2Parser.ql_statement_return aReturn = jpa2Parser.ql_statement();
-        Assert.assertNotNull(aReturn);
+        Assert.assertTrue(isValid((CommonTree) aReturn.getTree()));
     }
 
     @Test
@@ -76,6 +81,30 @@ public class Jpa2GrammarTest {
         tstream = new CommonTokenStream(lexer);
         jpa2Parser = new JPA2Parser(tstream);
         aReturn = jpa2Parser.like_expression();
-        Assert.assertNotNull(aReturn);
+        Assert.assertTrue(isValid((CommonTree) aReturn.getTree()));
+    }
+
+    @Test
+    public void testTypeField() throws Exception {
+        String query = "where e.model.type = :component$filter.model_type89015";
+        CharStream cs = new AntlrNoCaseStringStream(query);
+        JPA2Lexer lexer = new JPA2Lexer(cs);
+        TokenStream tstream = new CommonTokenStream(lexer);
+        JPA2Parser jpa2Parser = new JPA2Parser(tstream);
+        JPA2Parser.where_clause_return aReturn = jpa2Parser.where_clause();
+        Assert.assertTrue(isValid((CommonTree) aReturn.getTree()));
+    }
+
+    protected boolean isValid(CommonTree tree) {
+        TreeVisitor visitor = new TreeVisitor();
+        ErrorNodesFinder errorNodesFinder = new ErrorNodesFinder();
+        visitor.visit(tree, errorNodesFinder);
+
+        List<CommonErrorNode> errorNodes = errorNodesFinder.getErrorNodes();
+        if (!errorNodes.isEmpty()) {
+            System.err.println(errorNodes);
+        }
+
+        return errorNodes.isEmpty();
     }
 }

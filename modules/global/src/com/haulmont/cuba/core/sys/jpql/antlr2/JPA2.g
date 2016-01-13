@@ -395,7 +395,7 @@ entity_type_expression
     | entity_type_literal
     | input_parameter;
 type_discriminator
-    : 'TYPE'(general_identification_variable | path_expression | input_parameter);
+    : 'TYPE(' (general_identification_variable | path_expression | input_parameter) ')';
 functions_returning_numerics
     : 'LENGTH('string_expression')'
     | 'LOCATE(' string_expression',' string_expression(','arithmetic_expression)?')'
