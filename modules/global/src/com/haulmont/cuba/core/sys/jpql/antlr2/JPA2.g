@@ -310,7 +310,8 @@ collection_member_expression
     : entity_or_value_expression  ('NOT')? 'MEMBER' ('OF')? path_expression;
 entity_or_value_expression
     : path_expression
-    | simple_entity_or_value_expression;
+    | simple_entity_or_value_expression
+    | subquery;
 simple_entity_or_value_expression
     : identification_variable
     | input_parameter

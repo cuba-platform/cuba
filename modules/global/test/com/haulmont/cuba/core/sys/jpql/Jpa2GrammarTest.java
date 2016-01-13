@@ -95,6 +95,17 @@ public class Jpa2GrammarTest {
         Assert.assertTrue(isValid((CommonTree) aReturn.getTree()));
     }
 
+    @Test
+    public void testMemberOf() throws Exception {
+        String query = "where p.owner.id = :userParam or (select u from tamsy$User u where u.id = :userParam) member of p.developers";
+        CharStream cs = new AntlrNoCaseStringStream(query);
+        JPA2Lexer lexer = new JPA2Lexer(cs);
+        TokenStream tstream = new CommonTokenStream(lexer);
+        JPA2Parser jpa2Parser = new JPA2Parser(tstream);
+        JPA2Parser.where_clause_return aReturn = jpa2Parser.where_clause();
+        Assert.assertTrue(isValid((CommonTree) aReturn.getTree()));
+    }
+
     protected boolean isValid(CommonTree tree) {
         TreeVisitor visitor = new TreeVisitor();
         ErrorNodesFinder errorNodesFinder = new ErrorNodesFinder();
