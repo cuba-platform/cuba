@@ -1,4 +1,4 @@
-// $ANTLR 3.5.2 JPA2.g 2015-12-25 11:41:59
+// $ANTLR 3.5.2 JPA2.g 2016-01-13 09:04:46
 
 package com.haulmont.cuba.core.sys.jpql.antlr2;
 
@@ -2128,10 +2128,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__127;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:101:8: ( 'TYPE' )
-			// JPA2.g:101:10: 'TYPE'
+			// JPA2.g:101:8: ( 'TYPE(' )
+			// JPA2.g:101:10: 'TYPE('
 			{
-			match("TYPE"); 
+			match("TYPE("); 
 
 			}
 
@@ -2337,8 +2337,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = NOT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:318:4: ( 'NOT' )
-			// JPA2.g:318:6: 'NOT'
+			// JPA2.g:297:4: ( 'NOT' )
+			// JPA2.g:297:6: 'NOT'
 			{
 			match("NOT"); 
 
@@ -2358,8 +2358,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = IN;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:320:3: ( 'IN' )
-			// JPA2.g:320:5: 'IN'
+			// JPA2.g:299:3: ( 'IN' )
+			// JPA2.g:299:5: 'IN'
 			{
 			match("IN"); 
 
@@ -2379,8 +2379,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = TRIM_CHARACTER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:538:5: ( '\\'.\\'' )
-			// JPA2.g:538:7: '\\'.\\''
+			// JPA2.g:518:5: ( '\\'.\\'' )
+			// JPA2.g:518:7: '\\'.\\''
 			{
 			match("'.'"); 
 
@@ -2400,11 +2400,11 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = STRING_LITERAL;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:541:5: ( '\\'' (~ ( '\\'' | '\"' ) )* '\\'' )
-			// JPA2.g:541:7: '\\'' (~ ( '\\'' | '\"' ) )* '\\''
+			// JPA2.g:521:5: ( '\\'' (~ ( '\\'' | '\"' ) )* '\\'' )
+			// JPA2.g:521:7: '\\'' (~ ( '\\'' | '\"' ) )* '\\''
 			{
 			match('\''); 
-			// JPA2.g:541:12: (~ ( '\\'' | '\"' ) )*
+			// JPA2.g:521:12: (~ ( '\\'' | '\"' ) )*
 			loop1:
 			while (true) {
 				int alt1=2;
@@ -2450,8 +2450,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = WORD;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:544:5: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* )
-			// JPA2.g:544:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
+			// JPA2.g:524:5: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* )
+			// JPA2.g:524:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
 			{
 			if ( (input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
 				input.consume();
@@ -2461,7 +2461,7 @@ public class JPA2Lexer extends Lexer {
 				recover(mse);
 				throw mse;
 			}
-			// JPA2.g:544:31: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
+			// JPA2.g:524:31: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
 			loop2:
 			while (true) {
 				int alt2=2;
@@ -2506,8 +2506,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = RUSSIAN_SYMBOLS;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:547:5: ( ( '\\u0400' .. '\\u04FF' | '\\u0500' .. '\\u052F' ) )
-			// JPA2.g:547:7: ( '\\u0400' .. '\\u04FF' | '\\u0500' .. '\\u052F' )
+			// JPA2.g:527:5: ( ( '\\u0400' .. '\\u04FF' | '\\u0500' .. '\\u052F' ) )
+			// JPA2.g:527:7: ( '\\u0400' .. '\\u04FF' | '\\u0500' .. '\\u052F' )
 			{
 			if ( (input.LA(1) >= '\u0400' && input.LA(1) <= '\u052F') ) {
 				input.consume();
@@ -2534,11 +2534,11 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = NAMED_PARAMETER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:550:5: ( ':' ( '(?i)' | '(?I)' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )* )
-			// JPA2.g:550:7: ':' ( '(?i)' | '(?I)' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )*
+			// JPA2.g:530:5: ( ':' ( '(?i)' | '(?I)' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )* )
+			// JPA2.g:530:7: ':' ( '(?i)' | '(?I)' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )*
 			{
 			match(':'); 
-			// JPA2.g:550:11: ( '(?i)' | '(?I)' )?
+			// JPA2.g:530:11: ( '(?i)' | '(?I)' )?
 			int alt3=3;
 			int LA3_0 = input.LA(1);
 			if ( (LA3_0=='(') ) {
@@ -2555,14 +2555,14 @@ public class JPA2Lexer extends Lexer {
 			}
 			switch (alt3) {
 				case 1 :
-					// JPA2.g:550:12: '(?i)'
+					// JPA2.g:530:12: '(?i)'
 					{
 					match("(?i)"); 
 
 					}
 					break;
 				case 2 :
-					// JPA2.g:550:19: '(?I)'
+					// JPA2.g:530:19: '(?I)'
 					{
 					match("(?I)"); 
 
@@ -2579,7 +2579,7 @@ public class JPA2Lexer extends Lexer {
 				recover(mse);
 				throw mse;
 			}
-			// JPA2.g:550:52: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
+			// JPA2.g:530:52: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
 			loop4:
 			while (true) {
 				int alt4=2;
@@ -2608,7 +2608,7 @@ public class JPA2Lexer extends Lexer {
 				}
 			}
 
-			// JPA2.g:550:90: ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )*
+			// JPA2.g:530:90: ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )*
 			loop6:
 			while (true) {
 				int alt6=2;
@@ -2619,15 +2619,15 @@ public class JPA2Lexer extends Lexer {
 
 				switch (alt6) {
 				case 1 :
-					// JPA2.g:550:91: ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+
+					// JPA2.g:530:91: ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+
 					{
-					// JPA2.g:550:91: ( '.' )
-					// JPA2.g:550:92: '.'
+					// JPA2.g:530:91: ( '.' )
+					// JPA2.g:530:92: '.'
 					{
 					match('.'); 
 					}
 
-					// JPA2.g:550:97: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+
+					// JPA2.g:530:97: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+
 					int cnt5=0;
 					loop5:
 					while (true) {
@@ -2684,8 +2684,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = WS;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:552:5: ( ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' ) )
-			// JPA2.g:552:7: ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' )
+			// JPA2.g:532:5: ( ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' ) )
+			// JPA2.g:532:7: ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' )
 			{
 			if ( (input.LA(1) >= '\t' && input.LA(1) <= '\n')||(input.LA(1) >= '\f' && input.LA(1) <= '\r')||input.LA(1)==' ' ) {
 				input.consume();
@@ -2712,12 +2712,12 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = COMMENT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:556:5: ( '/*' ( . )* '*/' )
-			// JPA2.g:556:7: '/*' ( . )* '*/'
+			// JPA2.g:536:5: ( '/*' ( . )* '*/' )
+			// JPA2.g:536:7: '/*' ( . )* '*/'
 			{
 			match("/*"); 
 
-			// JPA2.g:556:12: ( . )*
+			// JPA2.g:536:12: ( . )*
 			loop7:
 			while (true) {
 				int alt7=2;
@@ -2738,7 +2738,7 @@ public class JPA2Lexer extends Lexer {
 
 				switch (alt7) {
 				case 1 :
-					// JPA2.g:556:12: .
+					// JPA2.g:536:12: .
 					{
 					matchAny(); 
 					}
@@ -2768,12 +2768,12 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = LINE_COMMENT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:559:5: ( '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
-			// JPA2.g:559:7: '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
+			// JPA2.g:539:5: ( '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
+			// JPA2.g:539:7: '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
 			{
 			match("//"); 
 
-			// JPA2.g:559:12: (~ ( '\\n' | '\\r' ) )*
+			// JPA2.g:539:12: (~ ( '\\n' | '\\r' ) )*
 			loop8:
 			while (true) {
 				int alt8=2;
@@ -2802,7 +2802,7 @@ public class JPA2Lexer extends Lexer {
 				}
 			}
 
-			// JPA2.g:559:26: ( '\\r' )?
+			// JPA2.g:539:26: ( '\\r' )?
 			int alt9=2;
 			int LA9_0 = input.LA(1);
 			if ( (LA9_0=='\r') ) {
@@ -2810,7 +2810,7 @@ public class JPA2Lexer extends Lexer {
 			}
 			switch (alt9) {
 				case 1 :
-					// JPA2.g:559:26: '\\r'
+					// JPA2.g:539:26: '\\r'
 					{
 					match('\r'); 
 					}
@@ -2836,8 +2836,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = ESCAPE_CHARACTER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:562:5: ( '\\'' (~ ( '\\'' | '\\\\' ) ) '\\'' )
-			// JPA2.g:562:7: '\\'' (~ ( '\\'' | '\\\\' ) ) '\\''
+			// JPA2.g:542:5: ( '\\'' (~ ( '\\'' | '\\\\' ) ) '\\'' )
+			// JPA2.g:542:7: '\\'' (~ ( '\\'' | '\\\\' ) ) '\\''
 			{
 			match('\''); 
 			if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '&')||(input.LA(1) >= '(' && input.LA(1) <= '[')||(input.LA(1) >= ']' && input.LA(1) <= '\uFFFF') ) {
@@ -2865,10 +2865,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = INT_NUMERAL;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:565:5: ( ( '0' .. '9' )+ )
-			// JPA2.g:565:7: ( '0' .. '9' )+
+			// JPA2.g:545:5: ( ( '0' .. '9' )+ )
+			// JPA2.g:545:7: ( '0' .. '9' )+
 			{
-			// JPA2.g:565:7: ( '0' .. '9' )+
+			// JPA2.g:545:7: ( '0' .. '9' )+
 			int cnt10=0;
 			loop10:
 			while (true) {
@@ -3746,18 +3746,18 @@ public class JPA2Lexer extends Lexer {
 		"\10\uffff\1\51\1\u0115\3\51\1\u0119\1\51\1\u011b\2\51\1\uffff\1\51\1\u011f"+
 		"\3\51\1\u0123\2\51\1\u0126\1\u0127\4\51\1\u012c\1\uffff\1\51\1\uffff\1"+
 		"\51\1\uffff\4\51\1\uffff\3\51\1\uffff\1\51\1\u0137\1\51\1\uffff\1\u013a"+
-		"\1\51\1\uffff\3\51\4\uffff\1\u0140\1\u0141\3\51\1\u0145\3\51\1\u0149\1"+
-		"\51\1\u014b\1\51\1\u014d\1\uffff\1\51\1\uffff\1\u014f\2\51\1\uffff\1\51"+
-		"\1\uffff\2\51\1\u0155\1\uffff\1\51\1\u0157\1\51\1\uffff\1\u0159\1\51\2"+
-		"\uffff\2\51\1\u015d\1\51\1\uffff\2\51\1\u0161\1\u0162\1\u0163\4\51\5\uffff"+
-		"\1\u016b\4\51\2\uffff\2\51\2\uffff\3\51\1\uffff\1\u0175\1\uffff\1\u0176"+
-		"\1\uffff\1\51\1\uffff\3\51\1\u017b\1\51\1\uffff\1\51\1\uffff\1\u017e\2"+
-		"\uffff\2\51\1\uffff\1\51\1\u0182\1\u0183\3\uffff\1\u0184\1\51\1\u0186"+
-		"\1\u0187\5\uffff\1\u0188\1\u0189\2\51\1\uffff\1\u018c\4\uffff\1\u018d"+
-		"\1\51\1\uffff\1\51\1\uffff\2\51\1\uffff\1\u0192\5\uffff\1\51\5\uffff\1"+
-		"\51\2\uffff\2\51\1\u0198\1\51\1\uffff\1\51\1\u019b\1\uffff\2\51\2\uffff"+
-		"\1\51\1\uffff\2\51\1\uffff\2\51\1\u01a3\1\u01a5\1\uffff\1\51\1\uffff\3"+
-		"\51\1\u01aa\1\uffff";
+		"\1\51\1\uffff\3\51\4\uffff\1\u0140\1\u0141\7\51\1\u0149\1\51\1\u014b\1"+
+		"\51\1\u014d\1\uffff\1\51\1\uffff\1\u014f\2\51\1\uffff\1\51\1\uffff\2\51"+
+		"\1\u0155\1\uffff\1\51\1\u0157\1\51\1\uffff\1\u0159\1\51\2\uffff\2\51\1"+
+		"\u015d\1\51\1\uffff\2\51\1\u0161\1\u0162\1\u0163\4\51\5\uffff\1\u016b"+
+		"\4\51\2\uffff\2\51\2\uffff\3\51\1\uffff\1\u0175\1\uffff\1\u0176\1\uffff"+
+		"\1\51\1\uffff\3\51\1\u017b\1\51\1\uffff\1\51\1\uffff\1\u017e\2\uffff\2"+
+		"\51\1\uffff\1\51\1\u0182\1\u0183\3\uffff\1\u0184\1\51\1\u0186\1\u0187"+
+		"\5\uffff\1\u0188\1\u0189\2\51\1\uffff\1\u018c\4\uffff\1\u018d\1\51\1\uffff"+
+		"\1\51\1\uffff\2\51\1\uffff\1\u0192\5\uffff\1\51\5\uffff\1\51\2\uffff\2"+
+		"\51\1\u0198\1\51\1\uffff\1\51\1\u019b\1\uffff\2\51\2\uffff\1\51\1\uffff"+
+		"\2\51\1\uffff\2\51\1\u01a3\1\u01a5\1\uffff\1\51\1\uffff\3\51\1\u01aa\1"+
+		"\uffff";
 	static final String DFA11_eofS =
 		"\u01ab\uffff";
 	static final String DFA11_minS =
@@ -3779,18 +3779,18 @@ public class JPA2Lexer extends Lexer {
 		"\1\110\1\44\1\124\1\120\1\116\1\44\1\122\1\130\2\44\1\111\1\124\1\122"+
 		"\1\124\1\44\1\uffff\1\124\1\uffff\1\105\1\uffff\1\110\2\122\1\103\1\uffff"+
 		"\1\124\1\116\1\103\1\uffff\1\50\1\44\1\50\1\105\1\44\1\131\1\uffff\1\131"+
-		"\1\120\1\124\4\uffff\2\44\1\114\1\124\1\50\1\44\1\124\1\122\1\105\1\44"+
-		"\1\105\1\44\1\145\1\44\1\uffff\1\105\1\uffff\1\44\1\123\1\124\1\uffff"+
-		"\1\116\1\uffff\1\105\1\116\1\44\1\uffff\1\111\1\44\1\107\1\uffff\1\44"+
-		"\1\50\2\uffff\1\116\1\110\1\44\1\105\1\uffff\1\105\1\122\3\44\1\124\1"+
-		"\122\1\104\1\124\3\uffff\1\101\1\uffff\1\44\1\50\1\105\1\123\1\106\2\uffff"+
-		"\1\111\1\50\2\uffff\1\105\2\50\1\uffff\1\44\1\uffff\1\44\1\uffff\1\116"+
-		"\1\uffff\1\103\1\50\1\124\1\44\1\103\1\uffff\1\117\1\uffff\1\44\2\uffff"+
-		"\1\107\1\50\1\uffff\1\50\2\44\3\uffff\1\44\1\111\2\44\5\uffff\2\44\1\50"+
-		"\1\116\1\uffff\1\44\4\uffff\1\44\1\105\1\uffff\1\137\1\uffff\1\124\1\116"+
-		"\1\uffff\1\44\5\uffff\1\116\5\uffff\1\107\2\uffff\1\50\1\104\1\44\1\50"+
-		"\1\uffff\1\107\1\44\1\uffff\1\101\1\111\2\uffff\1\50\1\uffff\1\124\1\115"+
-		"\1\uffff\2\105\2\44\1\uffff\1\124\1\uffff\1\101\1\115\1\120\1\44\1\uffff";
+		"\1\120\1\124\4\uffff\2\44\1\114\1\124\2\50\1\124\1\122\1\105\1\44\1\105"+
+		"\1\44\1\145\1\44\1\uffff\1\105\1\uffff\1\44\1\123\1\124\1\uffff\1\116"+
+		"\1\uffff\1\105\1\116\1\44\1\uffff\1\111\1\44\1\107\1\uffff\1\44\1\50\2"+
+		"\uffff\1\116\1\110\1\44\1\105\1\uffff\1\105\1\122\3\44\1\124\1\122\1\104"+
+		"\1\124\3\uffff\1\101\1\uffff\1\44\1\50\1\105\1\123\1\106\2\uffff\1\111"+
+		"\1\50\2\uffff\1\105\2\50\1\uffff\1\44\1\uffff\1\44\1\uffff\1\116\1\uffff"+
+		"\1\103\1\50\1\124\1\44\1\103\1\uffff\1\117\1\uffff\1\44\2\uffff\1\107"+
+		"\1\50\1\uffff\1\50\2\44\3\uffff\1\44\1\111\2\44\5\uffff\2\44\1\50\1\116"+
+		"\1\uffff\1\44\4\uffff\1\44\1\105\1\uffff\1\137\1\uffff\1\124\1\116\1\uffff"+
+		"\1\44\5\uffff\1\116\5\uffff\1\107\2\uffff\1\50\1\104\1\44\1\50\1\uffff"+
+		"\1\107\1\44\1\uffff\1\101\1\111\2\uffff\1\50\1\uffff\1\124\1\115\1\uffff"+
+		"\2\105\2\44\1\uffff\1\124\1\uffff\1\101\1\115\1\120\1\44\1\uffff";
 	static final String DFA11_maxS =
 		"\1\u052f\1\126\1\131\1\125\1\111\1\125\1\122\1\117\1\123\2\117\1\uffff"+
 		"\1\117\1\125\1\uffff\1\125\6\uffff\1\57\1\170\1\76\1\uffff\1\75\1\uffff"+
@@ -3810,19 +3810,19 @@ public class JPA2Lexer extends Lexer {
 		"\1\110\1\172\1\124\1\120\1\116\1\172\1\122\1\130\2\172\1\111\1\124\1\122"+
 		"\1\124\1\172\1\uffff\1\124\1\uffff\1\105\1\uffff\1\110\2\122\1\103\1\uffff"+
 		"\1\124\1\116\1\103\1\uffff\1\50\1\172\1\50\1\105\1\172\1\131\1\uffff\1"+
-		"\131\1\120\1\124\4\uffff\2\172\1\114\1\124\1\50\1\172\1\124\1\122\1\105"+
-		"\1\172\1\105\1\172\1\145\1\172\1\uffff\1\105\1\uffff\1\172\1\123\1\124"+
-		"\1\uffff\1\116\1\uffff\1\105\1\116\1\172\1\uffff\1\111\1\172\1\107\1\uffff"+
-		"\1\172\1\50\2\uffff\1\116\1\110\1\172\1\105\1\uffff\1\105\1\122\3\172"+
-		"\1\124\1\122\1\104\1\124\3\uffff\1\105\1\uffff\1\172\1\50\1\105\1\123"+
-		"\1\106\2\uffff\1\111\1\50\2\uffff\1\105\2\50\1\uffff\1\172\1\uffff\1\172"+
-		"\1\uffff\1\116\1\uffff\1\103\1\50\1\124\1\172\1\103\1\uffff\1\117\1\uffff"+
-		"\1\172\2\uffff\1\107\1\50\1\uffff\1\50\2\172\3\uffff\1\172\1\111\2\172"+
-		"\5\uffff\2\172\1\50\1\116\1\uffff\1\172\4\uffff\1\172\1\105\1\uffff\1"+
-		"\137\1\uffff\1\124\1\116\1\uffff\1\172\5\uffff\1\116\5\uffff\1\107\2\uffff"+
-		"\1\50\1\124\1\172\1\50\1\uffff\1\107\1\172\1\uffff\1\101\1\111\2\uffff"+
-		"\1\50\1\uffff\1\124\1\115\1\uffff\2\105\2\172\1\uffff\1\124\1\uffff\1"+
-		"\101\1\115\1\120\1\172\1\uffff";
+		"\131\1\120\1\124\4\uffff\2\172\1\114\1\124\2\50\1\124\1\122\1\105\1\172"+
+		"\1\105\1\172\1\145\1\172\1\uffff\1\105\1\uffff\1\172\1\123\1\124\1\uffff"+
+		"\1\116\1\uffff\1\105\1\116\1\172\1\uffff\1\111\1\172\1\107\1\uffff\1\172"+
+		"\1\50\2\uffff\1\116\1\110\1\172\1\105\1\uffff\1\105\1\122\3\172\1\124"+
+		"\1\122\1\104\1\124\3\uffff\1\105\1\uffff\1\172\1\50\1\105\1\123\1\106"+
+		"\2\uffff\1\111\1\50\2\uffff\1\105\2\50\1\uffff\1\172\1\uffff\1\172\1\uffff"+
+		"\1\116\1\uffff\1\103\1\50\1\124\1\172\1\103\1\uffff\1\117\1\uffff\1\172"+
+		"\2\uffff\1\107\1\50\1\uffff\1\50\2\172\3\uffff\1\172\1\111\2\172\5\uffff"+
+		"\2\172\1\50\1\116\1\uffff\1\172\4\uffff\1\172\1\105\1\uffff\1\137\1\uffff"+
+		"\1\124\1\116\1\uffff\1\172\5\uffff\1\116\5\uffff\1\107\2\uffff\1\50\1"+
+		"\124\1\172\1\50\1\uffff\1\107\1\172\1\uffff\1\101\1\111\2\uffff\1\50\1"+
+		"\uffff\1\124\1\115\1\uffff\2\105\2\172\1\uffff\1\124\1\uffff\1\101\1\115"+
+		"\1\120\1\172\1\uffff";
 	static final String DFA11_acceptS =
 		"\13\uffff\1\17\2\uffff\1\25\1\uffff\1\27\1\30\1\31\1\32\1\33\1\34\3\uffff"+
 		"\1\42\1\uffff\1\45\13\uffff\1\150\1\uffff\1\155\1\156\1\157\1\160\1\164"+
@@ -4119,7 +4119,7 @@ public class JPA2Lexer extends Lexer {
 			"\1\u0142",
 			"\1\u0143",
 			"\1\u0144",
-			"\1\51\13\uffff\12\51\7\uffff\32\51\4\uffff\1\51\1\uffff\32\51",
+			"\1\u0145",
 			"\1\u0146",
 			"\1\u0147",
 			"\1\u0148",

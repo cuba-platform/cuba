@@ -40,10 +40,7 @@
     opacity: 1;
     // Blur Radius should be more than 0px due Safari bug
     @include box-shadow(0px 0px 100px 5120px rgba(34,34,34,0.5));
-    .v-ff41 & {
-      box-shadow: none;
-    }
-    .v-ff42 & {
+    .v-ff & {
       box-shadow: none;
     }
   }
@@ -57,10 +54,7 @@
     border-radius: 6px;
 
     @include box-shadow(0px 0px 100px 5120px rgba(34,34,34,0.5));
-    .v-ff41 & {
-      box-shadow: none;
-    }
-    .v-ff42 & {
+    .v-ff & {
       box-shadow: none;
     }
   }
