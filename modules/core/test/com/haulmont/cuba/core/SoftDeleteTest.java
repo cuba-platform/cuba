@@ -86,33 +86,10 @@ public class SoftDeleteTest {
 
     @After
     public void tearDown() throws Exception {
-        Transaction tx = cont.persistence().createTransaction();
-        try {
-            EntityManager em = cont.persistence().getEntityManager();
-
-            Query q;
-
-            q = em.createNativeQuery("delete from SEC_USER_ROLE where ID = ? or ID = ?");
-            q.setParameter(1, userRole1Id.toString());
-            q.setParameter(2, userRole2Id.toString());
-            q.executeUpdate();
-
-            q = em.createNativeQuery("delete from SEC_ROLE where ID = ?");
-            q.setParameter(1, role2Id.toString());
-            q.executeUpdate();
-
-            q = em.createNativeQuery("delete from SEC_USER where ID = ?");
-            q.setParameter(1, userId.toString());
-            q.executeUpdate();
-
-            q = em.createNativeQuery("delete from SEC_GROUP where ID = ?");
-            q.setParameter(1, groupId.toString());
-            q.executeUpdate();
-
-            tx.commit();
-        } finally {
-            tx.end();
-        }
+        cont.deleteRecord("SEC_USER_ROLE", userRole1Id, userRole2Id);
+        cont.deleteRecord("SEC_ROLE", role2Id);
+        cont.deleteRecord("SEC_USER", userId);
+        cont.deleteRecord("SEC_GROUP", groupId);
     }
 
     @Test
@@ -327,6 +304,27 @@ public class SoftDeleteTest {
             tx.end();
         }
         System.out.println("===================== END testQuery_CleanupMode =====================");
+    }
+
+    @Test
+    public void testUpdateQuery_CleanupMode() {
+        System.out.println("===================== BEGIN testUpdateQuery_CleanupMode =====================");
+
+        Transaction tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+            em.setSoftDeletion(false);
+            Query query = em.createQuery("update sec$Role r set r.description = ?1 where r.name = ?2");
+            query.setParameter(1, "Updated");
+            query.setParameter(2, "roleToBeDeleted");
+            int updated = query.executeUpdate();
+
+            assertEquals(1, updated);
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+        System.out.println("===================== END testUpdateQuery_CleanupMode =====================");
     }
 
     @Test

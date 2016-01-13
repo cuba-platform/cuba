@@ -37,7 +37,7 @@ public class CubaIsNullExpressionOperator extends ExpressionOperator {
                 && items.get(0) instanceof QueryKeyExpression
                 && "deleteTs".equals(((QueryKeyExpression) items.get(0)).getName())) {
             if (printer.getSession() != null) {
-                if (Boolean.TRUE.equals(printer.getSession().getProperties().get("cuba.disableSoftDelete"))) {
+                if (Boolean.TRUE.equals(printer.getSession().getProperty("cuba.disableSoftDelete"))) {
                     try {
                         printer.getWriter().write("(0=0)");
                         return;
