@@ -10,14 +10,16 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 
 /**
-* @author degtyarjov
-* @version $Id$
-*/
+ * @author degtyarjov
+ * @version $Id$
+ */
 public class ScriptResource {
     protected String dir;
     protected String name;
+
     protected String path;
     protected Resource resource;
 
@@ -25,7 +27,7 @@ public class ScriptResource {
         try {
             this.resource = resource;
             this.name = resource.getFilename();
-            this.path = resource.getFile().getPath();
+            this.path = URLDecoder.decode(resource.getURL().getPath(), "UTF-8");
             this.dir = StringUtils.substringBeforeLast(this.path, "/");
         } catch (IOException e) {
             throw new RuntimeException(e);

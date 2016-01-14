@@ -15,6 +15,7 @@ import org.springframework.web.context.support.ServletContextResourcePatternReso
 import javax.annotation.Nullable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -103,16 +104,24 @@ public class ScriptScanner {
             List<String> modules = Arrays.stream(resources)
                     .map(resource -> {
                         try {
-                            String resourcePath = resource.getFile().getPath().replaceFirst(".+?:", "");
+                            String decodedUrl = URLDecoder.decode(resource.getURL().toString(), "UTF-8");
+                            String resourcePath = decodedUrl.replaceFirst(".+?:", "");
                             Matcher matcher = Pattern.compile(".*" + dbDirPath + "/?(.+?)/.*").matcher(resourcePath);
                             return matcher.find() ? matcher.group(1) : null;
                         } catch (IOException e) {
                             throw new RuntimeException("An error occurred while detecting modules", e);
                         }
                     })
+                    .filter(element -> element != null)
                     .collect(Collectors.toSet()).stream()
                     .sorted()
                     .collect(Collectors.toList());
+
+            if (modules.isEmpty()) {
+                throw new RuntimeException(String.format("No existing modules found. " +
+                        "Please check if [%s] contains DB scripts.", dbDirPath));
+            }
+
             return modules;
         } catch (IOException e) {
             throw new RuntimeException("An error occurred while detecting modules", e);
