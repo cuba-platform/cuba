@@ -167,6 +167,10 @@ public class EntityLog implements EntityLogAPI {
         return originalMetaClass != null ? originalMetaClass.getName() : metaClass.getName();
     }
 
+    protected boolean doNotRegister(BaseEntity entity) {
+        return entity == null || entity instanceof EntityLogItem || !isEnabled();
+    }
+
     @Override
     public void registerCreate(BaseEntity entity) {
         if (entity == null)
@@ -176,7 +180,7 @@ public class EntityLog implements EntityLogAPI {
 
     @Override
     public void registerCreate(BaseEntity entity, boolean auto) {
-        if (entity == null || !isEnabled())
+        if (doNotRegister(entity))
             return;
 
         try {
@@ -233,7 +237,7 @@ public class EntityLog implements EntityLogAPI {
 
     @Override
     public void registerModify(BaseEntity entity, boolean auto) {
-        if (!isEnabled())
+        if (doNotRegister(entity))
             return;
 
         try {
@@ -302,7 +306,7 @@ public class EntityLog implements EntityLogAPI {
 
     @Override
     public void registerDelete(BaseEntity entity, boolean auto) {
-        if (!isEnabled())
+        if (doNotRegister(entity))
             return;
 
         try {

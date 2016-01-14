@@ -34,7 +34,7 @@
                               class="com.haulmont.cuba.security.entity.EntityLogItem"
                               view="logView">
             <query>
-                select e from sec$EntityLog e order by e.entity
+                select e from sec$EntityLog e order by e.eventTs
                 <filter>
                     <and>
                         <c>e.type = :component$changeTypeField</c>
