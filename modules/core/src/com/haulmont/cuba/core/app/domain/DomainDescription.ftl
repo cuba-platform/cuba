@@ -135,7 +135,11 @@
             </tr>
             <#list enum.values as value>
                 <tr>
+                    <#if value.idObj.id?? && value.idObj.id?is_boolean>
+                    <td class="propertyName">${value.idObj.id?c}</td>
+                    <#else>
                     <td class="propertyName">${value.idObj.id!}</td>
+                    </#if>
                     <td>${value.name}</td>
                 </tr>
             </#list>
