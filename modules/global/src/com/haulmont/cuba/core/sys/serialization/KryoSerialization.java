@@ -17,6 +17,7 @@ import com.google.common.collect.HashMultimap;
 import com.haulmont.chile.core.model.impl.MetaClassImpl;
 import com.haulmont.chile.core.model.impl.MetaPropertyImpl;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
+import com.haulmont.cuba.core.global.LoadContext;
 import de.javakaffee.kryoserializers.*;
 import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
 import de.javakaffee.kryoserializers.guava.ImmutableListSerializer;
@@ -98,6 +99,7 @@ public class KryoSerialization implements Serialization {
         kryo.register(ArrayListMultimap.class, new CubaJavaSerializer());
         kryo.register(MetaClassImpl.class, new CubaJavaSerializer());
         kryo.register(MetaPropertyImpl.class, new CubaJavaSerializer());
+        kryo.register(LoadContext.class, new CubaJavaSerializer());
 
         return kryo;
     }
