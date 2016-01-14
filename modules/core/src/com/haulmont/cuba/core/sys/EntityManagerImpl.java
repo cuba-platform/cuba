@@ -189,7 +189,9 @@ public class EntityManagerImpl implements EntityManager {
     public <T extends Entity<K>, K> T getReference(Class<T> clazz, K id) {
         Class<T> effectiveClass = metadata.getExtendedEntities().getEffectiveClass(clazz);
 
-        return delegate.getReference(effectiveClass, id);
+        T reference = delegate.getReference(effectiveClass, id);
+        ((BaseGenericIdEntity) reference).__new(false);
+        return reference;
     }
 
     @Override
