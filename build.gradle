@@ -691,6 +691,7 @@ configure(portalModule) {
         compile(group: 'org.springframework.security', name: 'spring-security-web', version: springSecurityVersion)
         compile(group: 'org.springframework.security', name: 'spring-security-config', version: springSecurityVersion)
         compile(group: 'org.springframework.security', name: 'spring-security-taglibs', version: springSecurityVersion)
+        compile(group: 'org.springframework', name: 'spring-context-support', version: springVersion)
         compile(group: 'org.json', name: 'json', version: '20140107')
         compile(groovyArtifact)
 
