@@ -27,4 +27,6 @@ public interface QueryParser {
 
     /** Returns true if this is a standard select from an entity - not count() and not fields (e.id, etc.) */
     boolean isEntitySelect(String targetEntity);
+
+    boolean hasIsNullCondition(String attribute);
 }
