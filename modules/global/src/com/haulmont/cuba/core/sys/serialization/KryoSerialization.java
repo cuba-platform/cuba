@@ -99,7 +99,7 @@ public class KryoSerialization implements Serialization {
         kryo.register(ArrayListMultimap.class, new CubaJavaSerializer());
         kryo.register(MetaClassImpl.class, new CubaJavaSerializer());
         kryo.register(MetaPropertyImpl.class, new CubaJavaSerializer());
-        kryo.register(LoadContext.class, new CubaJavaSerializer());
+//        kryo.register(LoadContext.class, new CubaJavaSerializer());
 
         return kryo;
     }
