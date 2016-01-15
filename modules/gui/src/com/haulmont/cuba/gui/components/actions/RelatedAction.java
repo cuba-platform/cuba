@@ -171,7 +171,8 @@ public class RelatedAction extends AbstractAction {
 
         tree.setRootNodes(Collections.singletonList(new Node<>(condition)));
 
-        return FilterParser.getXml(tree, Param.ValueProperty.VALUE);
+        FilterParser filterParser = AppBeans.get(FilterParser.class);
+        return filterParser.getXml(tree, Param.ValueProperty.VALUE);
     }
 
     protected List<UUID> getRelatedIds(Set<Entity> selectedParents) {

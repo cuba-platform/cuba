@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.app.security.constraint.edit;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.filter.GroovyGenerator;
@@ -245,8 +246,9 @@ public class ConstraintEditor extends AbstractEditor {
 
         FilterEditor filterEditor = (FilterEditor) windowManagerProvider.get().openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
         filterEditor.addCloseListener(actionId -> {
+            FilterParser filterParser1 = AppBeans.get(FilterParser.class);
             //todo eude rename com.haulmont.cuba.gui.components.filter.FilterParser
-            filterEntity.setXml(FilterParser.getXml(filterEditor.getConditions(), Param.ValueProperty.DEFAULT_VALUE));
+            filterEntity.setXml(filterParser1.getXml(filterEditor.getConditions(), Param.ValueProperty.DEFAULT_VALUE));
             if (filterEntity.getXml() != null) {
                 Element element = Dom4j.readDocument(filterEntity.getXml()).getRootElement();
                 com.haulmont.cuba.core.global.filter.FilterParser filterParser = new com.haulmont.cuba.core.global.filter.FilterParser(element);
