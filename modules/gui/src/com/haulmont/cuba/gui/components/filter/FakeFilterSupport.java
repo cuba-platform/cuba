@@ -29,10 +29,12 @@ public class FakeFilterSupport {
     protected MetaClass metaClass;
     protected ConditionsTree conditionsTree;
     protected Frame frame;
+    protected FilterParser filterParser;
 
     public FakeFilterSupport(Frame frame, MetaClass metaClass) {
         this.metaClass = metaClass;
         this.frame = frame;
+        filterParser =  AppBeans.get(FilterParser.class);
     }
 
     public Filter createFakeFilter() {
@@ -59,7 +61,7 @@ public class FakeFilterSupport {
         boolean emptyFilter = filterEntity.getXml() == null || filterEntity.getXml().equals("<filter/>");
         return conditionsTree != null
                 ? conditionsTree
-                : emptyFilter ? new ConditionsTree() : FilterParser.getConditions(filter, filterEntity.getXml());
+                : emptyFilter ? new ConditionsTree() : filterParser.getConditions(filter, filterEntity.getXml());
     }
 
     public FilterEntity createFakeFilterEntity(String xml) {
