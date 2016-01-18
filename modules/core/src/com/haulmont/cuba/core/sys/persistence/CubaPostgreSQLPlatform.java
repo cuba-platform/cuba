@@ -7,8 +7,10 @@ package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.cuba.core.global.UuidProvider;
 import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
 
+import java.sql.Types;
 import java.util.UUID;
 
 /**
@@ -24,5 +26,10 @@ public class CubaPostgreSQLPlatform extends PostgreSQLPlatform {
             return UuidProvider.fromString((String) sourceObject);
         }
         return super.convertObject(sourceObject, javaClass);
+    }
+
+    @Override
+    public int getJDBCTypeForSetNull(DatabaseField field) {
+        return Types.NULL;
     }
 }
