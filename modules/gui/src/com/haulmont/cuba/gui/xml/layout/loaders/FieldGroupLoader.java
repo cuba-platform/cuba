@@ -42,8 +42,12 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
         if (ds != null && AppBeans.get(MetadataTools.NAME, MetadataTools.class).isPersistent(ds.getMetaClass())) {
             DynamicAttributesGuiTools dynamicAttributesGuiTools =
                     AppBeans.get(DynamicAttributesGuiTools.NAME, DynamicAttributesGuiTools.class);
-            Set<CategoryAttribute> attributesToShow =
-                    dynamicAttributesGuiTools.getAttributesToShowOnTheScreen(ds.getMetaClass(), context.getFullFrameId(), resultComponent.getId());
+            Context topContext = getContext();
+            while (topContext.getParent() != null) {
+                topContext = topContext.getParent();
+            }
+            Set<CategoryAttribute> attributesToShow = dynamicAttributesGuiTools
+                    .getAttributesToShowOnTheScreen(ds.getMetaClass(), topContext.getFullFrameId(), resultComponent.getId());
             if (CollectionUtils.isNotEmpty(attributesToShow)) {
                 ds.setLoadDynamicAttributes(true);
                 for (CategoryAttribute attribute : attributesToShow) {
