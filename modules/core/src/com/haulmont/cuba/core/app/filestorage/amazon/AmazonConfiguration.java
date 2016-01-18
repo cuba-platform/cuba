@@ -27,6 +27,6 @@ public interface AmazonConfiguration extends Config {
     String getBucket();
 
     @Property("cuba.amazon.s3.chunkSize")
-    @DefaultInt(4096)
+    @DefaultInt(8192)
     int getChunkSize();
 }
