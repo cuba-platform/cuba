@@ -99,6 +99,8 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected Security security;
     @Inject
     protected FilterHelper filterHelper;
+    @Inject
+    protected FilterParser filterParser;
 
     protected FtsFilterHelper ftsFilterHelper;
     protected DataService dataService;
@@ -464,7 +466,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     @Override
     public void setFilterEntity(FilterEntity filterEntity) {
         this.filterEntity = filterEntity;
-        conditions = FilterParser.getConditions(filter, filterEntity.getXml());
+        conditions = filterParser.getConditions(filter, filterEntity.getXml());
         initialConditions = conditions.toConditionsList();
         for (AbstractCondition condition : conditions.toConditionsList()) {
             condition.addListener(new AbstractCondition.Listener() {
@@ -663,7 +665,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             folder.setTabName(name);
         }
 
-        String newXml = FilterParser.getXml(conditions, Param.ValueProperty.VALUE);
+        String newXml = filterParser.getXml(conditions, Param.ValueProperty.VALUE);
 
         folder.setFilterComponentId(filterEntity.getComponentId());
         folder.setFilterXml(newXml);
@@ -904,8 +906,8 @@ public class FilterDelegateImpl implements FilterDelegate {
                 !Objects.equals(initialFilterEntity.getCode(), filterEntity.getCode()) ||
                 !Objects.equals(initialFilterEntity.getUser(), filterEntity.getUser());
         if (filterPropertiesModified) return true;
-        String filterXml = filterEntity.getFolder() == null ? FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE)
-                : FilterParser.getXml(conditions, Param.ValueProperty.VALUE);
+        String filterXml = filterEntity.getFolder() == null ? filterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE)
+                : filterParser.getXml(conditions, Param.ValueProperty.VALUE);
         return !StringUtils.equals(filterXml, initialFilterEntity.getXml());
     }
 
@@ -1100,7 +1102,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected void initAdHocFilter() {
         adHocFilter = metadata.create(FilterEntity.class);
-        String emptyXml = FilterParser.getXml(new ConditionsTree(), Param.ValueProperty.VALUE);
+        String emptyXml = filterParser.getXml(new ConditionsTree(), Param.ValueProperty.VALUE);
         adHocFilter.setXml(emptyXml);
         adHocFilter.setComponentId(ComponentsHelper.getFilterComponentPath(filter));
         adHocFilter.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
@@ -1429,7 +1431,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected void applyDatasourceFilter() {
         if (datasource != null) {
 
-            String currentFilterXml = FilterParser.getXml(conditions, Param.ValueProperty.VALUE);
+            String currentFilterXml = filterParser.getXml(conditions, Param.ValueProperty.VALUE);
 
             if (!Strings.isNullOrEmpty(currentFilterXml)) {
                 Element element = Dom4j.readDocument(currentFilterXml).getRootElement();
@@ -1964,7 +1966,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                         String filterName = window.getFilterName();
                         filterEntity.setName(filterName);
-                        filterEntity.setXml(FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE));
+                        filterEntity.setXml(filterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE));
                         saveFilterEntity();
                         initAdHocFilter();
                         initFilterSelectComponents();
@@ -1976,8 +1978,8 @@ public class FilterDelegateImpl implements FilterDelegate {
                     }
                 });
             } else {
-                String xml = filterEntity.getFolder() == null ?  FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE)
-                        : FilterParser.getXml(conditions, Param.ValueProperty.VALUE);
+                String xml = filterEntity.getFolder() == null ?  filterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE)
+                        : filterParser.getXml(conditions, Param.ValueProperty.VALUE);
                 filterEntity.setXml(xml);
                 saveFilterEntity();
             }
@@ -2016,8 +2018,8 @@ public class FilterDelegateImpl implements FilterDelegate {
                     if (newFilterEntity.getUser() == null && !uerCanEditGlobalFilter()) {
                         newFilterEntity.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
                     }
-                    String xml = filterEntity.getFolder() == null ?  FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE)
-                            : FilterParser.getXml(conditions, Param.ValueProperty.VALUE);
+                    String xml = filterEntity.getFolder() == null ?  filterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE)
+                            : filterParser.getXml(conditions, Param.ValueProperty.VALUE);
                     filterEntity = newFilterEntity;
                     filterEntity.setName(filterName);
                     filterEntity.setXml(xml);
@@ -2056,7 +2058,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             window.addCloseListener(actionId -> {
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                     conditions = window.getConditions();
-                    filterEntity.setXml(FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE));
+                    filterEntity.setXml(filterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE));
                     if (filterEntity.getIsDefault()) {
                         resetDefaultFilters();
                     }

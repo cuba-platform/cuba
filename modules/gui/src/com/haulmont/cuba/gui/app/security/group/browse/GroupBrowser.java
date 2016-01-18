@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportDisplay;
@@ -58,6 +59,9 @@ public class GroupBrowser extends AbstractWindow {
 
     @Inject
     protected HierarchicalDatasource<Group, UUID> groupsDs;
+
+    @Inject
+    private CollectionDatasource<Constraint, UUID> constraintsDs;
 
     @Inject
     protected Tree<Group> groupsTree;
@@ -287,6 +291,27 @@ public class GroupBrowser extends AbstractWindow {
         Table constraintsTable = (Table) getComponentNN("constraintsTable");
         constraintCreateAction = new GroupPropertyCreateAction(constraintsTable);
         constraintsTable.addAction(constraintCreateAction);
+
+        ItemTrackingAction activateAction = new ItemTrackingAction("activate") {
+            @Override
+            public void actionPerform(Component component) {
+                Constraint constraint = (Constraint) constraintsTable.getSingleSelected();
+                if (constraint != null) {
+                    constraint.setIsActive(!Boolean.TRUE.equals(constraint.getIsActive()));
+                    constraintsDs.commit();
+                    constraintsDs.refresh();
+                }
+            }
+        };
+        constraintsTable.addAction(activateAction);
+
+        constraintsDs.addItemChangeListener(e -> {
+            if (e.getItem() != null) {
+                activateAction.setCaption(Boolean.TRUE.equals(e.getItem().getIsActive()) ?
+                                messages.getMessage(getClass(), "deactivate") :
+                                messages.getMessage(getClass(), "activate"));
+            }
+        });
 
         constraintsTable.addGeneratedColumn(
                 "entityName",

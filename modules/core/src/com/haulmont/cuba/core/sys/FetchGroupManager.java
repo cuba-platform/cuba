@@ -157,6 +157,22 @@ public class FetchGroupManager {
                 }
             }
 
+            QueryParser parser = QueryTransformerFactory.createParser(queryString);
+
+            for (Iterator<FetchGroupField> fieldIt = joinFields.iterator(); fieldIt.hasNext(); ) {
+                FetchGroupField joinField = fieldIt.next();
+                if (joinField.fetchMode == FetchMode.AUTO && parser.hasIsNullCondition(joinField.path())) {
+                    fieldIt.remove();
+                    for (Iterator<String> attrIt = fetchGroupAttributes.iterator(); attrIt.hasNext(); ) {
+                        String attribute = attrIt.next();
+                        if (attribute.startsWith(joinField.path() + ".")) {
+                            attrIt.remove();
+                        }
+                    }
+                }
+            }
+
+
             long toManyCount = refFields.stream()
                     .filter(f -> f.metaProperty.getRange().getCardinality().isMany()).count();
 

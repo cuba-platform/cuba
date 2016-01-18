@@ -105,4 +105,16 @@ public class QueryParserRegex implements QueryParser {
         Matcher matcher = pattern.matcher(source);
         return matcher.find();
     }
+
+    @Override
+    public boolean hasIsNullCondition(String attribute) {
+        Matcher whereMatcher = WHERE_PATTERN.matcher(source);
+        if (whereMatcher.find()) {
+            String alias = getEntityAlias();
+            Pattern isNullPattern = Pattern.compile("\\b" + alias + "\\." + attribute + "((?i)\\s+is\\s+null)\\b");
+            Matcher isNullMatcher = isNullPattern.matcher(source);
+            return isNullMatcher.find(whereMatcher.end());
+        }
+        return false;
+    }
 }

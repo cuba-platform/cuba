@@ -94,6 +94,7 @@
                         <table id="constraintsTable" width="100%">
                             <buttonsPanel>
                                 <button action="constraintsTable.create"/>
+                                <button action="constraintsTable.activate" caption="msg://activate"/>
                                 <button action="constraintsTable.edit"/>
                                 <button action="constraintsTable.remove"/>
                             </buttonsPanel>
