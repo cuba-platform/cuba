@@ -33,12 +33,6 @@ public class RowLevelSecurityException extends RuntimeException {
         this.operationType = operationType;
     }
 
-    public RowLevelSecurityException(Throwable throwable, String message, String entity) {
-        super(message, throwable);
-        this.entity = entity;
-        this.operationType = null;
-    }
-
     public String getEntity() {
         return entity;
     }

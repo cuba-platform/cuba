@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.jpql.QueryErrorsFoundException;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.global.ConstraintData;
 import com.haulmont.cuba.security.global.UserSession;
@@ -59,11 +60,10 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
         QueryTransformer transformer = QueryTransformerFactory.createTransformer(query.getQueryString());
 
         for (ConstraintData constraint : constraints) {
-            String join = constraint.getJoin();
-            String where = constraint.getWhereClause();
-            processConstraint(transformer, join, where);
+            processConstraint(transformer, constraint, entityName);
         }
         query.setQueryString(transformer.getResult());
+
         for (String paramName : transformer.getAddedParams()) {
             setQueryParam(query, paramName);
         }
@@ -166,12 +166,28 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
         }
     }
 
-    protected void processConstraint(QueryTransformer transformer, String join, String where) {
-        if (StringUtils.isBlank(join)) {
-            if (!StringUtils.isBlank(where))
-                transformer.addWhere(where);
-        } else
-            transformer.addJoinAndWhere(join, where);
+    protected void processConstraint(QueryTransformer transformer, ConstraintData constraint, String entityName) {
+        String join = constraint.getJoin();
+        String where = constraint.getWhereClause();
+        try {
+            if (StringUtils.isBlank(join)) {
+                if (!StringUtils.isBlank(where)) {
+                    transformer.addWhere(where);
+                }
+            } else {
+                transformer.addJoinAndWhere(join, where);
+            }
+        } catch (QueryErrorsFoundException e) {
+            log.error(String.format("Syntax errors found in constraint's JPQL expressions. Entity [%s]. Constraint ID [%s].",
+                    entityName, constraint.getId()), e);
+            throw new RowLevelSecurityException(
+                    "Syntax errors found in constraint's JPQL expressions. Please see the logs.", entityName);
+        } catch (Exception e) {
+            log.error(String.format("An error occurred when applying security constraint. Entity [%s]. Constraint ID [%s].",
+                    entityName, constraint.getId()), e);
+            throw new RowLevelSecurityException(
+                    "An error occurred when applying security constraint. Please see the logs.", entityName);
+        }
     }
 
     protected Set<UUID> internalApplyConstraints(Collection<Entity> entities, Set<UUID> handled) {

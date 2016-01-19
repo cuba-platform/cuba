@@ -233,8 +233,9 @@ public class SecurityImpl implements Security {
             Datatype datatype = Datatypes.get(clazz);
             return datatype != null ? datatype.parse(parameterValue) : parameterValue;
         } catch (ParseException e) {
-            throw new RowLevelSecurityException(e, format("Could not parse a value from constraint. Class [%s], value [%s].",
-                    clazz, parameterValue), null);
+            log.error(format("Could not parse a value from constraint. Class [%s], value [%s].", clazz, parameterValue), e);
+            throw new RowLevelSecurityException(format("Could not parse a value from constraint. Class [%s], value [%s]. " +
+                    "Please see the logs.", clazz, parameterValue), null);
         }
     }
 }
