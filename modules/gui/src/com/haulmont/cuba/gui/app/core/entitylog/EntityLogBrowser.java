@@ -460,10 +460,7 @@ public class EntityLogBrowser extends AbstractWindow {
                         loggedAttrDs.removeItem(removeAtr);
                 }
             }
-            if (loggedAttrDs.isModified())
-                loggedAttrDs.commit();
-            else
-                loggedEntityDs.commit();
+            getDsContext().commit();
 
             loggedEntityDs.refresh();
             disableControls();

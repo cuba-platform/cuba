@@ -22,7 +22,7 @@ public class LoggedAttribute extends BaseUuidEntity {
 
     private static final long serialVersionUID = -615000337312303671L;
                                      
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ENTITY_ID")
     private LoggedEntity entity;
 
