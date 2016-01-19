@@ -754,7 +754,7 @@ public class Param {
             lookup.setOptionsList(runtimeEnum);
 
             lookup.addValueChangeListener(e -> {
-                _setValue(value, valueProperty);
+                _setValue(e.getValue(), valueProperty);
             });
 
             lookup.setValue(_getValue(valueProperty));
