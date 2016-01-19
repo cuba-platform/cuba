@@ -118,47 +118,56 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
 
         String alias = condition.getEntityAlias();
         String cavAlias = "cav" + RandomStringUtils.randomNumeric(5);
-        condition.setJoin(", sys$CategoryAttributeValue " + cavAlias + " ");
 
         String paramName;
         String operation = operationLookup.<Op>getValue().forJpql();
         Op op = operationLookup.getValue();
 
         Class javaClass = DynamicAttributesUtils.getAttributeClass(attribute);
-        String valueFieldName = "stringValue";
-
-        if (Entity.class.isAssignableFrom(javaClass))
-            valueFieldName = "entityValue";
-        else if (String.class.isAssignableFrom(javaClass))
-            valueFieldName = "stringValue";
-        else if (Integer.class.isAssignableFrom(javaClass))
-            valueFieldName = "intValue";
-        else if (Double.class.isAssignableFrom(javaClass))
-            valueFieldName = "doubleValue";
-        else if (Boolean.class.isAssignableFrom(javaClass))
-            valueFieldName = "booleanValue";
-        else if (Date.class.isAssignableFrom(javaClass))
-            valueFieldName = "dateValue";
-
-        String paramStr = " ? ";
-        if (!op.isUnary())
-            if (Op.IN.equals(op) || Op.NOT_IN.equals(op))
-                paramStr = " ( ? ) ";
-
         String propertyPath = Strings.isNullOrEmpty(condition.getPropertyPath()) ? "" : "." + condition.getPropertyPath();
-
-        String where = cavAlias + ".entityId=" +
-                alias +
-                propertyPath +
-                ".id and " + cavAlias + "." +
-                valueFieldName +
-                " " +
-                operation +
-                (op.isUnary() ? " " : paramStr) + "and " + cavAlias + ".categoryAttribute.id='" +
-                attributeLookup.<CategoryAttribute>getValue().getId() + "'";
         ConditionParamBuilder paramBuilder = AppBeans.get(ConditionParamBuilder.class);
         paramName = paramBuilder.createParamName(condition);
-        where = where.replace("?", ":" + paramName);
+
+        String where;
+        if (op == Op.NOT_EMPTY) {
+            where = "exists (select " + cavAlias + " from sys$CategoryAttributeValue " + cavAlias +
+                    " where " + cavAlias + ".entityId=" +
+                    alias +
+                    propertyPath +
+                    ".id and " + cavAlias + ".categoryAttribute.id='" +
+                    attributeLookup.<CategoryAttribute>getValue().getId() + "')";
+        } else {
+            condition.setJoin(", sys$CategoryAttributeValue " + cavAlias + " ");
+            String valueFieldName = "stringValue";
+            if (Entity.class.isAssignableFrom(javaClass))
+                valueFieldName = "entityValue";
+            else if (String.class.isAssignableFrom(javaClass))
+                valueFieldName = "stringValue";
+            else if (Integer.class.isAssignableFrom(javaClass))
+                valueFieldName = "intValue";
+            else if (Double.class.isAssignableFrom(javaClass))
+                valueFieldName = "doubleValue";
+            else if (Boolean.class.isAssignableFrom(javaClass))
+                valueFieldName = "booleanValue";
+            else if (Date.class.isAssignableFrom(javaClass))
+                valueFieldName = "dateValue";
+
+            String paramStr = " ? ";
+            if (!op.isUnary())
+                if (Op.IN.equals(op) || Op.NOT_IN.equals(op))
+                    paramStr = " ( ? ) ";
+
+            where = cavAlias + ".entityId=" +
+                    alias +
+                    propertyPath +
+                    ".id and " + cavAlias + "." +
+                    valueFieldName +
+                    " " +
+                    operation +
+                    (op.isUnary() ? " " : paramStr) + "and " + cavAlias + ".categoryAttribute.id='" +
+                    attributeLookup.<CategoryAttribute>getValue().getId() + "'";
+            where = where.replace("?", ":" + paramName);
+        }
 
         condition.setWhere(where);
         condition.setUnary(op.isUnary());

@@ -223,9 +223,6 @@ public class Param {
                 break;
 
             case RUNTIME_ENUM:
-                value = text;
-                break;
-
             case DATATYPE:
             case UNARY:
                 Datatype datatype = Datatypes.getNN(javaClass);
@@ -302,7 +299,7 @@ public class Param {
             case ENUM:
                 return ((Enum) v).name();
             case RUNTIME_ENUM:
-                return (String) v;
+//                return (String) v;
 
             case DATATYPE:
             case UNARY:
@@ -725,6 +722,9 @@ public class Param {
     }
 
     protected Component createRuntimeEnumLookup(final ValueProperty valueProperty) {
+        if (javaClass == Boolean.class) {
+            return createBooleanField(valueProperty);
+        }
         DataService dataService = AppBeans.get(DataService.NAME);
         LoadContext<CategoryAttribute> context = new LoadContext<>(CategoryAttribute.class);
         LoadContext.Query q = context.setQueryString("select a from sys$CategoryAttribute a where a.id = :id");
