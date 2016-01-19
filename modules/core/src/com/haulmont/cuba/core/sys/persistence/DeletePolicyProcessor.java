@@ -217,7 +217,10 @@ public class DeletePolicyProcessor {
     }
 
     protected boolean referenceExists(String entityName, MetaProperty property) {
-        String qstr = String.format("select e.id from %s e where e.%s.id = ?1", entityName, property.getName());
+        String template = property.getRange().getCardinality().isMany() ?
+                "select e.id from %s e join e.%s c where c.id = ?1" :
+                "select e.id from %s e where e.%s.id = ?1";
+        String qstr = String.format(template, entityName, property.getName());
         Query query = entityManager.createQuery(qstr);
         query.setParameter(1, entity.getId());
         query.setMaxResults(1);
@@ -230,7 +233,10 @@ public class DeletePolicyProcessor {
     }
 
     protected void cascade(String entityName, MetaProperty property) {
-        String qstr = String.format("select e from %s e where e.%s.id = ?1", entityName, property.getName());
+        String template = property.getRange().getCardinality().isMany() ?
+                "select e from %s e join e.%s c where c.id = ?1" :
+                "select e from %s e where e.%s.id = ?1";
+        String qstr = String.format(template, entityName, property.getName());
         Query query = entityManager.createQuery(qstr);
         query.setParameter(1, entity.getId());
         List<BaseEntity> list = query.getResultList();
