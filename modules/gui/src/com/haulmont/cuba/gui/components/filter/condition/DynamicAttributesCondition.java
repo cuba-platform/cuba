@@ -160,7 +160,7 @@ public class DynamicAttributesCondition extends AbstractCondition {
         if (operator == Op.NOT_EMPTY) {
             if (BooleanUtils.isTrue((Boolean) param.getValue())) {
                 text = text.replace("not exists", "exists");
-            } else if (BooleanUtils.isFalse((Boolean) param.getValue())) {
+            } else if (BooleanUtils.isFalse((Boolean) param.getValue()) && !text.contains("not exists")) {
                 text = text.replace("exists ", "not exists ");
             }
         }

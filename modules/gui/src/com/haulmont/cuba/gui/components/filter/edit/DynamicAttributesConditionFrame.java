@@ -130,12 +130,12 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
 
         String where;
         if (op == Op.NOT_EMPTY) {
-            where = "exists (select " + cavAlias + " from sys$CategoryAttributeValue " + cavAlias +
+            where = "(exists (select " + cavAlias + " from sys$CategoryAttributeValue " + cavAlias +
                     " where " + cavAlias + ".entityId=" +
-                    alias +
+                    "{E}" +
                     propertyPath +
                     ".id and " + cavAlias + ".categoryAttribute.id='" +
-                    attributeLookup.<CategoryAttribute>getValue().getId() + "')";
+                    attributeLookup.<CategoryAttribute>getValue().getId() + "'))";
         } else {
             condition.setJoin(", sys$CategoryAttributeValue " + cavAlias + " ");
             String valueFieldName = "stringValue";
@@ -158,7 +158,7 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
                     paramStr = " ( ? ) ";
 
             where = cavAlias + ".entityId=" +
-                    alias +
+                    "{E}" +
                     propertyPath +
                     ".id and " + cavAlias + "." +
                     valueFieldName +
