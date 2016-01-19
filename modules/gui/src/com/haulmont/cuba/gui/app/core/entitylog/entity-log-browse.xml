@@ -131,15 +131,17 @@
                             <rows datasource="loggedEntityDs"/>
                         </groupTable>
                     </vbox>
-                    <vbox id="loggedEntityMiscBox" expand="expandableLabel" height="100%" width="100%" margin="false,false,false,true" spacing="true">
+                    <vbox id="loggedEntityMiscBox" expand="attributesBox" height="100%" width="100%" margin="false,false,false,true" spacing="true">
                         <label id="miscNameLabel" value="msg://name"/>
                         <lookupField width="100%" datasource="loggedEntityDs" id="entityNameField" property="name"/>
                         <hbox id="checkersBox" width="100%">
                             <checkBox id="autoCheckBox" caption="msg://auto" datasource="loggedEntityDs" property="auto"/>
                             <checkBox id="manualCheckBox" caption="msg://manual" datasource="loggedEntityDs" property="manual"/>
                         </hbox>
-                        <groupBox id="attributesBox" width="100%" orientation="vertical" caption="msg://attributes" spacing="true" >
-                            <checkBox id="selectAllCheckBox" caption="msg://[all]"/>
+                        <groupBox id="attributesBox" width="100%" orientation="vertical" caption="msg://attributes" expand="attributesBoxScroll">
+                            <scrollBox id="attributesBoxScroll" width="100%" spacing="true">
+                                <checkBox id="selectAllCheckBox" caption="msg://[all]"/>
+                            </scrollBox>
                         </groupBox>
 
                         <vbox id="actionsPaneLayout" visible="false">
@@ -148,7 +150,6 @@
                                 <button id="cancelBtn" action="cancel" caption="msg://cancel" icon="icons/cancel.png"/>
                             </hbox>
                         </vbox>
-                        <label id="expandableLabel"/>
                     </vbox>
                 </split>
                 <button id="reloadBtn" invoke="reloadConfiguration" caption="msg://reloadConfiguration"/>
