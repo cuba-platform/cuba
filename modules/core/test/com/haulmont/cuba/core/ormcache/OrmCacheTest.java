@@ -11,7 +11,9 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.Group;
+import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.testsupport.TestAppender;
 import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestNamePrinter;
@@ -30,7 +32,7 @@ import static com.haulmont.cuba.testsupport.TestSupport.assertFail;
 import static org.junit.Assert.*;
 
 /**
- * Illustrates issues with EclipseLink shared cache.
+ * Tests of EclipseLink shared cache.
  *
  * @author Konstantin Krivopustov
  * @version $Id$
@@ -47,9 +49,11 @@ public class OrmCacheTest {
 
     private JpaCache cache;
 
-    private UUID userId;
-
     private final TestAppender appender;
+    private Group group;
+    private User user;
+    private Role role;
+    private UserRole userRole;
 
     public OrmCacheTest() {
         appender = new TestAppender();
@@ -69,14 +73,22 @@ public class OrmCacheTest {
 
             cache = (JpaCache) emf.getCache();
 
-            Group group = cont.entityManager().find(Group.class, UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93"));
+            group = cont.entityManager().find(Group.class, UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93"));
 
-            User user = cont.metadata().create(User.class);
-            userId = user.getId();
+            user = cont.metadata().create(User.class);
             user.setLogin("user1");
             user.setPassword("111");
             user.setGroup(group);
             cont.entityManager().persist(user);
+
+            role = cont.metadata().create(Role.class);
+            role.setName("Test role");
+            cont.entityManager().persist(role);
+
+            userRole = cont.metadata().create(UserRole.class);
+            userRole.setRole(role);
+            userRole.setUser(user);
+            cont.entityManager().persist(userRole);
 
             tx.commit();
         }
@@ -85,7 +97,7 @@ public class OrmCacheTest {
 
     @After
     public void tearDown() throws Exception {
-        cont.deleteRecord("SEC_USER", userId);
+        cont.deleteRecord(userRole, role, user);
     }
 
     @Test
@@ -93,7 +105,7 @@ public class OrmCacheTest {
         appender.clearMessages();
 
         try (Transaction tx = cont.persistence().createTransaction()) {
-            User user = cont.entityManager().find(User.class, userId);
+            User user = cont.entityManager().find(User.class, this.user.getId());
             assertNotNull(user);
 
             tx.commit();
@@ -103,7 +115,7 @@ public class OrmCacheTest {
         appender.clearMessages();
 
         try (Transaction tx = cont.persistence().createTransaction()) {
-            User user = cont.entityManager().find(User.class, userId);
+            User user = cont.entityManager().find(User.class, this.user.getId());
             assertNotNull(user);
 
             tx.commit();
@@ -118,7 +130,7 @@ public class OrmCacheTest {
 
         try (Transaction tx = cont.persistence().createTransaction()) {
             TypedQuery<User> query = cont.entityManager().createQuery("select u from sec$User u where u.id = ?1", User.class);
-            query.setParameter(1, userId);
+            query.setParameter(1, user.getId());
             User user = query.getSingleResult();
             assertEquals("user1", user.getLogin());
 
@@ -130,7 +142,7 @@ public class OrmCacheTest {
 
         try (Transaction tx = cont.persistence().createTransaction()) {
             TypedQuery<User> query = cont.entityManager().createQuery("select u from sec$User u where u.id = ?1", User.class);
-            query.setParameter(1, userId);
+            query.setParameter(1, user.getId());
             User user = query.getSingleResult();
             assertEquals("user1", user.getLogin());
 
@@ -148,7 +160,7 @@ public class OrmCacheTest {
         User user;
 
         try (Transaction tx = cont.persistence().createTransaction()) {
-            user = cont.entityManager().find(User.class, userId, "user.browse");
+            user = cont.entityManager().find(User.class, this.user.getId(), "user.browse");
             assertNotNull(user);
 
             tx.commit();
@@ -157,14 +169,16 @@ public class OrmCacheTest {
         assertNotNull(user.getGroup());
 
         try (Transaction tx = cont.persistence().createTransaction()) {
-            user = cont.entityManager().find(User.class, userId, "user.browse");
+            user = cont.entityManager().find(User.class, this.user.getId(), "user.browse");
             assertNotNull(user);
 
             tx.commit();
         }
-        User finalUser = reserialize(user);
-        // fails on getting Group although the view is provided
-        assertFail(finalUser::getGroup);
+        user = reserialize(user);
+        Group g = user.getGroup();
+        assertEquals(this.group, g);
+        assertNotNull(g.getName());
+        assertFail(g::getParent);
     }
 
     /**
@@ -172,11 +186,26 @@ public class OrmCacheTest {
      */
     @Test
     public void testFindWithView2() throws Exception {
+        User u;
         try (Transaction tx = cont.persistence().createTransaction()) {
-            cont.entityManager().find(User.class, userId, "user.edit");
-            fail();
-        } catch (Exception e) {
-            assertTrue(ExceptionUtils.getStackTrace(e).contains("No value was provided for the session property [disableSoftDelete]"));
+            u = cont.entityManager().find(User.class, user.getId(), "user.edit");
+            tx.commit();
         }
+        u = reserialize(u);
+        assertNotNull(u);
+
+        assertEquals(group, u.getGroup());
+        assertNotNull(group.getName());
+        assertFail(group::getParent);
+
+        assertFalse(u.getUserRoles().isEmpty());
+        UserRole ur = u.getUserRoles().iterator().next();
+        assertEquals(userRole, ur);
+
+        Role r = ur.getRole();
+        assertEquals(this.role, r);
+        assertNotNull(r.getName());
+        // fails due to PL-6594 Loading objects with some views does not set FetchGroup to the entities
+        //assertFail(r::getDescription);
     }
 }
