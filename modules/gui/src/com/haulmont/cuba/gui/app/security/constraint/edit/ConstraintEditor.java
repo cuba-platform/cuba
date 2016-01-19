@@ -7,11 +7,12 @@ package com.haulmont.cuba.gui.app.security.constraint.edit;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.ExtendedEntities;
-import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.GroovyGenerator;
 import com.haulmont.cuba.core.global.filter.SecurityJpqlGenerator;
+import com.haulmont.cuba.core.sys.jpql.ErrorRec;
+import com.haulmont.cuba.core.sys.jpql.QueryErrorsFoundException;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.*;
@@ -266,5 +267,42 @@ public class ConstraintEditor extends AbstractEditor {
                 constraint.setFilterXml(filterEntity.getXml());
             }
         });
+    }
+
+    public void testConstraint() {
+        Constraint constraint = (Constraint) getItem();
+        String entityName = constraint.getEntityName();
+        if (StringUtils.isNotBlank(entityName)) {
+            String baseQueryString = "select e from " + entityName + " e";
+            String resultQueryStr = null;
+            if (StringUtils.isNotBlank(constraint.getWhereClause())) {
+                try {
+                    QueryTransformer transformer = QueryTransformerFactory.createTransformer(baseQueryString);
+                    if (StringUtils.isNotBlank(constraint.getJoinClause())) {
+                        transformer.addJoinAndWhere(constraint.getJoinClause(), constraint.getWhereClause());
+                    } else {
+                        transformer.addWhere(constraint.getWhereClause());
+                    }
+
+                    resultQueryStr = transformer.getResult();
+
+                    LoadContext<Entity> loadContext = new LoadContext<>(metadata.getSession().getClassNN(entityName));
+                    loadContext.setQueryString(resultQueryStr).setMaxResults(0);
+                    getDsContext().getDataSupplier().loadList(loadContext);
+
+                    showNotification(getMessage("notification.success"), NotificationType.HUMANIZED);
+                } catch (QueryErrorsFoundException e) {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for (ErrorRec rec : e.getErrorRecs()) {
+                        stringBuilder.append(rec.toString()).append("<br>");
+                    }
+                    showMessageDialog(getMessage("notification.error"),
+                            formatMessage("notification.syntaxErrors", stringBuilder), MessageType.WARNING_HTML);
+                } catch (Exception e) {
+                    showMessageDialog(getMessage("notification.error"),
+                            formatMessage("notification.runtimeError", resultQueryStr, e.getMessage()), MessageType.WARNING_HTML);
+                }
+            }
+        }
     }
 }
