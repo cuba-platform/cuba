@@ -28,6 +28,10 @@ public class CubaSearchSelectWidget extends VFilterSelect {
 
     protected boolean keyboardNavigation = false;
 
+    public CubaSearchSelectWidget() {
+        this.filterOptionsOnPaste = false;
+    }
+
     @Override
     public void filterOptions(int page, String filter) {
         if (preventFilterAfterSelect) {

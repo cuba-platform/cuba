@@ -90,10 +90,10 @@ public class EntityLogBrowser extends AbstractWindow {
     protected Table entityLogTable;
 
     @Inject
-    private Table entityLogAttrTable;
+    protected Table entityLogAttrTable;
 
     @Inject
-    protected GroupBoxLayout attributesBox;
+    protected ScrollBoxLayout attributesBoxScroll;
 
     @Inject
     protected BoxLayout actionsPaneLayout;
@@ -272,7 +272,7 @@ public class EntityLogBrowser extends AbstractWindow {
         entityNameField.setEditable(false);
         autoCheckBox.setEditable(true);
         manualCheckBox.setEditable(true);
-        for (Component c : attributesBox.getComponents())
+        for (Component c : attributesBoxScroll.getComponents())
             ((CheckBox) c).setEditable(true);
         actionsPaneLayout.setVisible(true);
     }
@@ -282,7 +282,7 @@ public class EntityLogBrowser extends AbstractWindow {
         loggedEntityTable.setEnabled(true);
         autoCheckBox.setEditable(false);
         manualCheckBox.setEditable(false);
-        for (Component c : attributesBox.getComponents())
+        for (Component c : attributesBoxScroll.getComponents())
             ((CheckBox) c).setEditable(false);
         actionsPaneLayout.setVisible(false);
     }
@@ -309,7 +309,7 @@ public class EntityLogBrowser extends AbstractWindow {
                     checkBox.setEditable(setEditableCheckboxes);
                     checkBox.addValueChangeListener(e -> checkAllCheckboxes());
 
-                    attributesBox.add(checkBox);
+                    attributesBoxScroll.add(checkBox);
                 }
             }
         }
@@ -317,15 +317,15 @@ public class EntityLogBrowser extends AbstractWindow {
 
     protected void enableAllCheckBoxes(boolean b) {
         if (canSelectAllCheckboxGenerateEvents) {
-            for (Component box : attributesBox.getComponents())
+            for (Component box : attributesBoxScroll.getComponents())
                 ((CheckBox) box).setValue(b);
         }
     }
 
     protected void checkAllCheckboxes() {
-        CheckBox selectAllCheckBox = (CheckBox) attributesBox.getOwnComponent(SELECT_ALL_CHECK_BOX);
+        CheckBox selectAllCheckBox = (CheckBox) attributesBoxScroll.getOwnComponent(SELECT_ALL_CHECK_BOX);
         if (selectAllCheckBox != null) {
-            for (Component c : attributesBox.getComponents()) {
+            for (Component c : attributesBoxScroll.getComponents()) {
                 if (!c.equals(selectAllCheckBox)) {
                     CheckBox checkBox = (CheckBox) c;
                     if (!((boolean) checkBox.getValue())) {
@@ -334,7 +334,7 @@ public class EntityLogBrowser extends AbstractWindow {
                     }
                 }
             }
-            if (attributesBox.getComponents().size() != 1)
+            if (attributesBoxScroll.getComponents().size() != 1)
                 setSelectAllCheckBox(true);
         }
     }
@@ -386,9 +386,9 @@ public class EntityLogBrowser extends AbstractWindow {
     }
 
     public void clearAttributes() {
-        for (Component c : attributesBox.getComponents())
+        for (Component c : attributesBoxScroll.getComponents())
             if (!c.getId().equals(SELECT_ALL_CHECK_BOX))
-                attributesBox.remove(c);
+                attributesBoxScroll.remove(c);
     }
 
     public boolean isEntityHaveAtrribute(String metaPropertyName, Set<LoggedAttribute> enabledAttr) {
@@ -443,7 +443,7 @@ public class EntityLogBrowser extends AbstractWindow {
         public void actionPerform(Component component) {
             LoggedEntity selectedEntity = (LoggedEntity) loggedEntityTable.getSelected().iterator().next();
             Set<LoggedAttribute> enabledAttributes = selectedEntity.getAttributes();
-            for (Component c : attributesBox.getComponents()) {
+            for (Component c : attributesBoxScroll.getComponents()) {
                 CheckBox currentCheckBox = (CheckBox) c;
                 if (currentCheckBox.getId().equals(SELECT_ALL_CHECK_BOX))
                     continue;
