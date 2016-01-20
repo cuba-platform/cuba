@@ -38,6 +38,8 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 @SystemLevel
 public abstract class AbstractCondition extends AbstractNotPersistentEntity {
 
+    public static String ESCAPE_CHARACTER = "\\";
+
     public interface Listener {
 
         void captionChanged();

@@ -27,6 +27,8 @@ import org.dom4j.Element;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
@@ -42,6 +44,7 @@ public class DynamicAttributesCondition extends AbstractCondition {
     protected UUID categoryAttributeId;
     protected String propertyPath;
     protected String join;
+    private static Pattern LIKE_PATTERN = Pattern.compile("(like \\S+)\\s+(?!ESCAPE)");
 
     public DynamicAttributesCondition(DynamicAttributesCondition condition) {
         super(condition);
@@ -162,6 +165,16 @@ public class DynamicAttributesCondition extends AbstractCondition {
                 text = text.replace("not exists", "exists");
             } else if (BooleanUtils.isFalse((Boolean) param.getValue()) && !text.contains("not exists")) {
                 text = text.replace("exists ", "not exists ");
+            }
+        }
+
+        if (operator == Op.ENDS_WITH || operator == Op.STARTS_WITH || operator == Op.CONTAINS || operator == Op.DOES_NOT_CONTAIN) {
+            Matcher matcher = LIKE_PATTERN.matcher(text);
+            if (matcher.find()) {
+                String escapeCharacter = ("\\".equals(ESCAPE_CHARACTER) || "$".equals(ESCAPE_CHARACTER))
+                        ? ESCAPE_CHARACTER + ESCAPE_CHARACTER
+                        : ESCAPE_CHARACTER;
+                text = matcher.replaceAll("$1 ESCAPE '" + escapeCharacter + "' ");
             }
         }
     }

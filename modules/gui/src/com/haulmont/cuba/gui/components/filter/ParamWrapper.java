@@ -45,39 +45,16 @@ public class ParamWrapper implements Component.HasValue {
         Object value = param.getValue();
         if (value instanceof String
                 && !StringUtils.isEmpty((String) value)
-                && !((String) value).contains("%")
                 && !((String) value).startsWith(ParametersHelper.CASE_INSENSITIVE_MARKER)) {
             // try to wrap value for case-insensitive "like" search
-            if (condition instanceof PropertyCondition) {
+            if (condition instanceof PropertyCondition || condition instanceof DynamicAttributesCondition) {
                 Op op = condition.getOperator();
                 if (Op.CONTAINS.equals(op) || op.equals(Op.DOES_NOT_CONTAIN)) {
-                    value = wrapValueForLike(value);
+                    value = wrapValueForLike(escapeValueForLike(value));
                 } else if (Op.STARTS_WITH.equals(op)) {
-                    value = wrapValueForLike(value, false, true);
+                    value = wrapValueForLike(escapeValueForLike(value), false, true);
                 } else if (Op.ENDS_WITH.equals(op)) {
-                    value = wrapValueForLike(value, true, false);
-                }
-            } else if (condition instanceof DynamicAttributesCondition) {
-                Op op = condition.getOperator();
-                if (Op.CONTAINS.equals(op) || op.equals(Op.DOES_NOT_CONTAIN)) {
-                    value = wrapValueForLike(value);
-                } else if (Op.STARTS_WITH.equals(op)) {
-                    value = wrapValueForLike(value, false, true);
-                } else if (Op.ENDS_WITH.equals(op)) {
-                    value = wrapValueForLike(value, true, false);
-                }
-            } else if (condition instanceof CustomCondition) {
-                String where = ((CustomCondition) condition).getWhere();
-                Op op = condition.getOperator();
-                Matcher matcher = LIKE_PATTERN.matcher(where);
-                if (matcher.find()) {
-                    if (Op.STARTS_WITH.equals(op)) {
-                        value = wrapValueForLike(value, false, true);
-                    } else if (Op.ENDS_WITH.equals(op)) {
-                        value = wrapValueForLike(value, true, false);
-                    } else {
-                        value = wrapValueForLike(value);
-                    }
+                    value = wrapValueForLike(escapeValueForLike(value), true, false);
                 }
             }
         } else if (value instanceof EnumClass) {
@@ -87,11 +64,17 @@ public class ParamWrapper implements Component.HasValue {
     }
 
     protected String wrapValueForLike(Object value) {
-        return ParametersHelper.CASE_INSENSITIVE_MARKER + "%" + value + "%";
+        return wrapValueForLike(value, true, true);
     }
 
     protected String wrapValueForLike(Object value, boolean before, boolean after) {
         return ParametersHelper.CASE_INSENSITIVE_MARKER + (before ? "%" : "") + value + (after ? "%" : "");
+    }
+
+    protected String escapeValueForLike(Object value) {
+            return value.toString().replace(AbstractCondition.ESCAPE_CHARACTER, AbstractCondition.ESCAPE_CHARACTER + AbstractCondition.ESCAPE_CHARACTER)
+                    .replace("%", AbstractCondition.ESCAPE_CHARACTER + "%")
+                    .replace("_", AbstractCondition.ESCAPE_CHARACTER + "_");
     }
 
     @Override
