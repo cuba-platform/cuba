@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.client.textfield.CubaTextFieldState;
 import com.vaadin.event.Action;
 import com.vaadin.event.ActionManager;
@@ -30,12 +29,13 @@ public class CubaTextField extends TextField implements Action.Container {
     public CubaTextField() {
         setValidationVisible(false);
         setShowBufferedSourceException(false);
+        setShowErrorForDisabledState(false);
     }
 
     @Override
     public ErrorMessage getErrorMessage() {
         ErrorMessage superError = super.getErrorMessage();
-        if (!isReadOnly() && WebComponentsHelper.isComponentEnabled(this) && isRequired() && isEmpty()) {
+        if (!isReadOnly() && isRequired() && isEmpty()) {
             ErrorMessage error = AbstractErrorMessage.getErrorMessageForException(
                     new com.vaadin.data.Validator.EmptyValueException(getRequiredError()));
             if (error != null) {

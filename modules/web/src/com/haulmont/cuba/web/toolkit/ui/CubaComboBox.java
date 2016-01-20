@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.Action;
@@ -31,12 +30,13 @@ public class CubaComboBox extends ComboBox implements Action.Container {
     public CubaComboBox() {
         setValidationVisible(false);
         setShowBufferedSourceException(false);
+        setShowErrorForDisabledState(false);
     }
 
     @Override
     public ErrorMessage getErrorMessage() {
         ErrorMessage superError = super.getErrorMessage();
-        if (!isReadOnly() && WebComponentsHelper.isComponentEnabled(this) && isRequired() && isEmpty()) {
+        if (!isReadOnly() && isRequired() && isEmpty()) {
 
             ErrorMessage error = AbstractErrorMessage.getErrorMessageForException(
                     new com.vaadin.data.Validator.EmptyValueException(getRequiredError()));

@@ -7,7 +7,6 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebDateField;
 import com.haulmont.cuba.web.toolkit.ui.converters.ObjectToObjectConverter;
 import com.vaadin.data.util.converter.Converter;
@@ -45,6 +44,7 @@ public class CubaDateFieldWrapper extends com.vaadin.ui.CustomField {
 
         setValidationVisible(false);
         setShowBufferedSourceException(false);
+        setShowErrorForDisabledState(false);
 
         setPrimaryStyleName("cuba-datefield-composition");
     }
@@ -141,7 +141,7 @@ public class CubaDateFieldWrapper extends com.vaadin.ui.CustomField {
     @Override
     public ErrorMessage getErrorMessage() {
         ErrorMessage superError = super.getErrorMessage();
-        if (!isReadOnly() && WebComponentsHelper.isComponentEnabled(this) && isRequired() && isEmpty()) {
+        if (!isReadOnly() && isRequired() && isEmpty()) {
             ErrorMessage error = AbstractErrorMessage.getErrorMessageForException(
                     new com.vaadin.data.Validator.EmptyValueException(getRequiredError()));
             if (error != null) {
