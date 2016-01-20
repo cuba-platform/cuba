@@ -440,6 +440,10 @@ configure(guiModule) {
 }
 
 configure(webModule) {
+    configurations {
+        themes
+    }
+
     dependencies {
         compile(sharedLibModule)
         compile(guiModule)
@@ -461,6 +465,8 @@ configure(webModule) {
         compile(group: 'org.vaadin.addons', name: 'contextmenu', version: '4.5')
 
         provided(servletApi)
+
+        themes(vaadinThemes)
 
         testCompile(clientModule.sourceSets.test.output)
         testCompile(guiModule.sourceSets.test.output)
@@ -550,6 +556,10 @@ configure(webModuleThemesModule) {
                 srcDir '.'
             }
         }
+    }
+
+    dependencies {
+        compile(vaadinThemes)
     }
 }
 
