@@ -9,9 +9,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.mp_test.MpTestObj;
 import com.haulmont.cuba.core.mp_test.nested.MpTestNestedEnum;
 import com.haulmont.cuba.core.mp_test.nested.MpTestNestedObj;
@@ -23,9 +21,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
+import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 public class MessagesTest {
 
@@ -232,6 +230,44 @@ public class MessagesTest {
         msg = messages.getMessage("com.haulmont.cuba.something", "trueString", Locale.forLanguageTag("en"));
         assertEquals("True", msg);
         assertEquals(0, getSearchMessagesCount());
+    }
+
+    /**
+     * Test hierarchy of country/language/default message packs.
+     * <p>
+     * messages.properties:<br>
+     * commonMsg=Common Message<br>
+     * languageMsg=Language Message<br>
+     * countryMsg=Country Message<br>
+     * <p>
+     * messages_fr.properties:<br>
+     * languageMsg=Language Message fr<br>
+     * countryMsg=Country Message fr<br>
+     * <p>
+     * messages_fr_CA.properties:<br>
+     * countryMsg=Country Message fr CA<br>
+     */
+    @Test
+    public void testLanguageAndCountry() throws Exception {
+        Messages messages = AppBeans.get(Messages.class);
+
+        Map<String, Locale> availableLocales = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class).getAvailableLocales();
+        assertTrue(availableLocales.containsValue(Locale.forLanguageTag("fr")));
+        assertTrue(availableLocales.containsValue(Locale.forLanguageTag("fr-CA")));
+
+        boolean localeLanguageOnly = messages.getTools().useLocaleLanguageOnly();
+        assertFalse(localeLanguageOnly);
+
+        String msg;
+
+        msg = messages.getMessage("com.haulmont.cuba.core.mp_test", "commonMsg", Locale.forLanguageTag("fr-CA"));
+        assertEquals("Common Message", msg);
+
+        msg = messages.getMessage("com.haulmont.cuba.core.mp_test", "languageMsg", Locale.forLanguageTag("fr-CA"));
+        assertEquals("Language Message fr", msg);
+
+        msg = messages.getMessage("com.haulmont.cuba.core.mp_test", "countryMsg", Locale.forLanguageTag("fr-CA"));
+        assertEquals("Country Message fr CA", msg);
     }
 
     private int getSearchMessagesCount() {

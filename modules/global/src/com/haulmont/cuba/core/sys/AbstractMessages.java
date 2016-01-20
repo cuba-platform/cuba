@@ -289,7 +289,7 @@ public abstract class AbstractMessages implements Messages {
                                         boolean searchMainIfNotFound) {
         locale = messageTools.trimLocale(locale);
 
-        String cacheKey = makeCacheKey(packs, key, locale, false);
+        String cacheKey = makeCacheKey(packs, key, locale, locale);
 
         String msg = strCache.get(cacheKey);
         if (msg != null)
@@ -299,15 +299,15 @@ public abstract class AbstractMessages implements Messages {
         if (notFound != null)
             return defaultValue;
 
-        msg = searchMessage(packs, key, locale, false, new HashSet<>());
+        msg = searchMessage(packs, key, locale, locale, new HashSet<>());
         if (msg != null) {
             cache(cacheKey, msg);
             return msg;
         }
 
         if (searchMainIfNotFound) {
-            String tmpCacheKey = makeCacheKey(mainMessagePack, key, locale, false);
-            msg = searchMessage(tmpCacheKey, key, locale, false, new HashSet<>());
+            String tmpCacheKey = makeCacheKey(mainMessagePack, key, locale, locale);
+            msg = searchMessage(tmpCacheKey, key, locale, locale, new HashSet<>());
             if (msg != null) {
                 cache(cacheKey, msg);
                 return msg;
@@ -319,51 +319,59 @@ public abstract class AbstractMessages implements Messages {
     }
 
     @Nullable
-    protected String searchMessage(String packs, String key, Locale locale, boolean defaultLocale, Set<String> passedPacks) {
+    protected String searchMessage(String packs, String key, Locale locale, Locale truncatedLocale, Set<String> passedPacks) {
         StrTokenizer tokenizer = new StrTokenizer(packs);
         //noinspection unchecked
         List<String> list = tokenizer.getTokenList();
         Collections.reverse(list);
         for (String pack : list) {
-            if (!enterPack(pack, locale, defaultLocale, passedPacks))
+            if (!enterPack(pack, locale, truncatedLocale, passedPacks))
                 continue;
 
-            String msg = searchOnePack(pack, key, locale, defaultLocale, passedPacks);
+            String msg = searchOnePack(pack, key, locale, truncatedLocale, passedPacks);
             if (msg != null)
                 return msg;
 
-            if (!defaultLocale) {
-                msg = searchOnePack(pack, key, locale, true, passedPacks);
+            Locale tmpLocale = truncatedLocale;
+            while (tmpLocale != null) {
+                tmpLocale = truncateLocale(tmpLocale);
+                msg = searchOnePack(pack, key, locale, tmpLocale, passedPacks);
                 if (msg != null)
                     return msg;
             }
         }
         if (log.isTraceEnabled()) {
             String packName = new StrBuilder().appendWithSeparators(list, ",").toString();
-            log.trace("Resource '" + makeCacheKey(packName, key, locale, defaultLocale) + "' not found");
+            log.trace("Resource '" + makeCacheKey(packName, key, locale, locale) + "' not found");
         }
         return null;
     }
 
-    protected boolean enterPack(String pack, Locale locale, boolean defaultLocale, Set<String> passedPacks) {
-        String k = defaultLocale ?
+    private Locale truncateLocale(Locale locale) {
+        if (locale == null || StringUtils.isEmpty(locale.getCountry()))
+            return null;
+        return Locale.forLanguageTag(locale.getLanguage());
+    }
+
+    protected boolean enterPack(String pack, Locale locale, Locale truncatedLocale, Set<String> passedPacks) {
+        String k = truncatedLocale == null ?
                 pack + "/default" :
                 pack + "/" + (locale == null ? "default" : locale);
         return passedPacks.add(k);
     }
 
-    protected String searchOnePack(String pack, String key, Locale locale, boolean defaultLocale, Set<String> passedPacks) {
-        String cacheKey = makeCacheKey(pack, key, locale, defaultLocale);
+    protected String searchOnePack(String pack, String key, Locale locale, Locale truncatedLocale, Set<String> passedPacks) {
+        String cacheKey = makeCacheKey(pack, key, locale, truncatedLocale);
 
         String msg = strCache.get(cacheKey);
         if (msg != null)
             return msg;
 
-        msg = searchFiles(pack, key, locale, defaultLocale, passedPacks);
+        msg = searchFiles(pack, key, locale, truncatedLocale, passedPacks);
         if (msg == null) {
-            msg = searchClasspath(pack, key, locale, defaultLocale, passedPacks);
+            msg = searchClasspath(pack, key, locale, truncatedLocale, passedPacks);
         }
-        if (msg == null && !defaultLocale) {
+        if (msg == null && locale.equals(truncatedLocale)) {
             msg = searchRemotely(pack, key, locale);
             if (msg != null) {
                 cache(cacheKey, msg);
@@ -377,10 +385,10 @@ public abstract class AbstractMessages implements Messages {
             strCache.put(key, msg);
     }
 
-    protected String searchFiles(String pack, String key, Locale locale, boolean defaultLocale, Set<String> passedPacks) {
+    protected String searchFiles(String pack, String key, Locale locale, Locale truncatedLocale, Set<String> passedPacks) {
         StopWatch stopWatch = new Log4JStopWatch("Messages.searchFiles");
         try {
-            String cacheKey = makeCacheKey(pack, key, locale, defaultLocale);
+            String cacheKey = makeCacheKey(pack, key, locale, truncatedLocale);
 
             String msg = strCache.get(cacheKey);
             if (msg != null)
@@ -390,9 +398,9 @@ public abstract class AbstractMessages implements Messages {
 
             String packPath = confDir + "/" + pack.replaceAll("\\.", "/");
             while (packPath != null && !packPath.equals(confDir)) {
-                Properties properties = loadPropertiesFromFile(packPath, locale, defaultLocale);
+                Properties properties = loadPropertiesFromFile(packPath, locale, truncatedLocale);
                 if (properties != PROPERTIES_NOT_FOUND) {
-                    msg = getMessageFromProperties(pack, key, locale, defaultLocale, properties, passedPacks);
+                    msg = getMessageFromProperties(pack, key, locale, truncatedLocale, properties, passedPacks);
                     if (msg != null)
                         return msg;
                 }
@@ -409,10 +417,10 @@ public abstract class AbstractMessages implements Messages {
         }
     }
 
-    protected String searchClasspath(String pack, String key, Locale locale, boolean defaultLocale, Set<String> passedPacks) {
+    protected String searchClasspath(String pack, String key, Locale locale, Locale truncatedLocale, Set<String> passedPacks) {
         StopWatch stopWatch = new Log4JStopWatch("Messages.searchClasspath");
         try {
-            String cacheKey = makeCacheKey(pack, key, locale, defaultLocale);
+            String cacheKey = makeCacheKey(pack, key, locale, truncatedLocale);
 
             String msg = strCache.get(cacheKey);
             if (msg != null)
@@ -422,9 +430,9 @@ public abstract class AbstractMessages implements Messages {
 
             String packPath = "/" + pack.replaceAll("\\.", "/");
             while (packPath != null) {
-                Properties properties = loadPropertiesFromResource(packPath, locale, defaultLocale);
+                Properties properties = loadPropertiesFromResource(packPath, locale, truncatedLocale);
                 if (properties != PROPERTIES_NOT_FOUND) {
-                    msg = getMessageFromProperties(pack, key, locale, defaultLocale, properties, passedPacks);
+                    msg = getMessageFromProperties(pack, key, locale, truncatedLocale, properties, passedPacks);
                     if (msg != null)
                         return msg;
                 }
@@ -442,25 +450,25 @@ public abstract class AbstractMessages implements Messages {
     }
 
     @Nullable
-    protected String getMessageFromProperties(String pack, String key, Locale locale, boolean defaultLocale,
+    protected String getMessageFromProperties(String pack, String key, Locale locale, Locale truncatedLocale,
                                               Properties properties, Set<String> passedPacks) {
         String message;
         message = properties.getProperty(key);
         if (message != null) {
-            cache(makeCacheKey(pack, key, locale, defaultLocale), message);
-            if (defaultLocale)
-                cache(makeCacheKey(pack, key, locale, false), message);
+            cache(makeCacheKey(pack, key, locale, truncatedLocale), message);
+            if (truncatedLocale == null)
+                cache(makeCacheKey(pack, key, locale, null), message);
         }
 
         if (message == null) {
             // process includes after to support overriding
-            message = searchIncludes(properties, key, locale, defaultLocale, passedPacks);
+            message = searchIncludes(properties, key, locale, truncatedLocale, passedPacks);
         }
         return message;
     }
 
     @Nullable
-    protected String searchIncludes(Properties properties, String key, Locale locale, boolean defaultLocale,
+    protected String searchIncludes(Properties properties, String key, Locale locale, Locale truncatedLocale,
                                     Set<String> passedPacks) {
         String includesProperty = properties.getProperty("@include");
         if (includesProperty != null) {
@@ -471,7 +479,7 @@ public abstract class AbstractMessages implements Messages {
                 for (String includePath : includes) {
                     includePath = StringUtils.trimToNull(includePath);
                     if (includePath != null) {
-                        String message = searchMessage(includePath, key, locale, defaultLocale, passedPacks);
+                        String message = searchMessage(includePath, key, locale, truncatedLocale, passedPacks);
                         if (message != null) {
                             return message;
                         }
@@ -482,8 +490,8 @@ public abstract class AbstractMessages implements Messages {
         return null;
     }
 
-    protected Properties loadPropertiesFromFile(String packPath, Locale locale, boolean defaultLocale) {
-        final String fileName = packPath + "/" + BUNDLE_NAME + getLocaleSuffix(defaultLocale ? null : locale) + EXT;
+    protected Properties loadPropertiesFromFile(String packPath, Locale locale, Locale truncatedLocale) {
+        final String fileName = packPath + "/" + BUNDLE_NAME + getLocaleSuffix(truncatedLocale) + EXT;
         try {
             return filePropertiesCache.get(fileName, new Callable<Properties>() {
                 @Override
@@ -505,8 +513,8 @@ public abstract class AbstractMessages implements Messages {
         }
     }
 
-    protected Properties loadPropertiesFromResource(String packPath, Locale locale, boolean defaultLocale) {
-        final String name = packPath + "/" + BUNDLE_NAME + getLocaleSuffix(defaultLocale ? null : locale) + EXT;
+    protected Properties loadPropertiesFromResource(String packPath, Locale locale, Locale truncatedLocale) {
+        final String name = packPath + "/" + BUNDLE_NAME + getLocaleSuffix(truncatedLocale) + EXT;
         try {
             return resourcePropertiesCache.get(name, new Callable<Properties>() {
                 @Override
@@ -533,8 +541,8 @@ public abstract class AbstractMessages implements Messages {
         return (locale != null ? "_" + locale : "");
     }
 
-    protected String makeCacheKey(String pack, String key, @Nullable Locale locale, boolean defaultLocale) {
-        if (defaultLocale)
+    protected String makeCacheKey(String pack, String key, @Nullable Locale locale, @Nullable Locale truncatedLocale) {
+        if (truncatedLocale == null)
             return pack + "/default/" + key;
 
         return pack + "/" + (locale == null ? "default" : locale) + "/" + key;
