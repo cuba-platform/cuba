@@ -293,14 +293,21 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     protected void checkState() {
-        if (!State.VALID.equals(state)) {
+        if (state != State.VALID ) {
+            refresh();
+        }
+    }
+
+    protected void checkStateBeforeAdd() {
+        if (state != State.VALID || isSuspended()) {
+            this.suspended = false;
             refresh();
         }
     }
 
     @Override
     public void addItem(T item) {
-        checkState();
+        checkStateBeforeAdd();
 
         data.put(item.getId(), item);
         attachListener(item);
@@ -331,7 +338,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void includeItem(T item) {
-        checkState();
+        checkStateBeforeAdd();
 
         data.put(item.getId(), item);
         attachListener(item);
