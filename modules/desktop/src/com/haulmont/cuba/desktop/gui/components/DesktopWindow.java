@@ -1027,23 +1027,46 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     @Override
     public void updateComponent(Component child) {
-        JComponent composition;
-        if (wrappers.containsKey(child)) {
-            composition = wrappers.get(child).getFirst();
-        } else {
-            composition = DesktopComponentsHelper.getComposition(child);
-        }
-        layoutAdapter.updateConstraints(composition, layoutAdapter.getConstraints(child));
-        if (captions.containsKey(child)) {
-            ComponentCaption caption = captions.get(child);
-            caption.update();
-            BoxLayoutAdapter adapterForCaption = layoutAdapter;
-            if (wrappers.containsKey(child)) {
-                adapterForCaption = wrappers.get(child).getSecond();
+        boolean componentReAdded = false;
+        if (DesktopContainerHelper.mayHaveExternalCaption(child)) {
+            if (captions.containsKey(child)
+                    && !DesktopContainerHelper.hasExternalCaption(child)
+                    && !DesktopContainerHelper.hasExternalDescription(child)) {
+                reAddChild(child);
+                componentReAdded = true;
+            } else if (!captions.containsKey(child)
+                    && (DesktopContainerHelper.hasExternalCaption(child)
+                    || DesktopContainerHelper.hasExternalDescription(child))) {
+                reAddChild(child);
+                componentReAdded = true;
+            } else if (captions.containsKey(child)) {
+                ComponentCaption caption = captions.get(child);
+                caption.update();
+                BoxLayoutAdapter adapterForCaption = layoutAdapter;
+                if (wrappers.containsKey(child)) {
+                    adapterForCaption = wrappers.get(child).getSecond();
+                }
+                adapterForCaption.updateConstraints(caption, adapterForCaption.getCaptionConstraints(child));
             }
-            adapterForCaption.updateConstraints(caption, adapterForCaption.getCaptionConstraints(child));
         }
+
+        if (!componentReAdded) {
+            JComponent composition;
+            if (wrappers.containsKey(child)) {
+                composition = wrappers.get(child).getFirst();
+            } else {
+                composition = DesktopComponentsHelper.getComposition(child);
+            }
+            layoutAdapter.updateConstraints(composition, layoutAdapter.getConstraints(child));
+        }
+
         requestRepaint();
+    }
+
+    protected void reAddChild(Component child) {
+        int index = indexOf(child);
+        remove(child);
+        add(child, index);
     }
 
     @Override

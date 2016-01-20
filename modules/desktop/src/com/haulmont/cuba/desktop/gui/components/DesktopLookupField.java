@@ -377,7 +377,11 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
 
     @Override
     public void setCaption(String caption) {
-        this.caption = caption;
+        if (!ObjectUtils.equals(this.caption, caption)) {
+            this.caption = caption;
+
+            requestContainerUpdate();
+        }
     }
 
     @Override
