@@ -11,9 +11,7 @@ import com.haulmont.cuba.core.sys.jpql.tree.*;
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
-import org.apache.commons.collections.CollectionUtils;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -145,57 +143,6 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
         }
     }
 
-    @Nullable
-    public IdentificationVariableNode getMainEntityIdentification() {
-        List<IdentificationVariableNode> identificationVariables = getIdentificationVariableNodes();
-
-        String returnedVariableName = getReturnedVariableName();
-        if (returnedVariableName != null) {
-            for (IdentificationVariableNode identificationVariable : identificationVariables) {
-                if (identificationVariable.getVariableName().equalsIgnoreCase(returnedVariableName)) {
-                    return identificationVariable;
-                }
-            }
-        }
-
-        return identificationVariables.size() > 0 ? identificationVariables.get(0) : null;
-    }
-
-    @Nullable
-    public String getReturnedVariableName() {
-        PathNode returnedPathNode = getReturnedPathNode();
-        if (returnedPathNode != null) {
-            return returnedPathNode.getEntityVariableName();
-        }
-
-        return null;
-    }
-
-    @Nullable
-    public PathNode getReturnedPathNode() {
-        CommonTree selectedItems = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SELECTED_ITEMS);
-        SelectedItemNode selectedItemNode = (SelectedItemNode) selectedItems.getFirstChildWithType(JPA2Lexer.T_SELECTED_ITEM);
-        List<PathNode> pathNodes = getChildrenByClass(selectedItemNode, PathNode.class);
-        if (CollectionUtils.isNotEmpty(pathNodes)) {
-            PathNode pathNode = pathNodes.get(0);
-            return pathNode;
-        }
-
-        return null;
-    }
-
-    public List<IdentificationVariableNode> getIdentificationVariableNodes() {
-        FromNode fromNode = (FromNode) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
-        List<IdentificationVariableNode> identificationVariableNodes = new ArrayList<>();
-
-        List<SelectionSourceNode> selectionSources = getChildrenByClass(fromNode, SelectionSourceNode.class);
-        for (SelectionSourceNode selectionSource : selectionSources) {
-            identificationVariableNodes.addAll(getChildrenByClass(selectionSource, IdentificationVariableNode.class));
-        }
-
-        return identificationVariableNodes;
-    }
-
     public void replaceOrderBy(boolean desc, PathEntityReference... orderingFieldRefs) {
         removeOrderBy();
         CommonTree orderBy = new OrderByNode(JPA2Lexer.T_ORDER_BY);
@@ -267,8 +214,8 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
     }
 
     public void replaceWithSelectId() {
-        PathNode returnedPathNode = getReturnedPathNode();
-        if (returnedPathNode != null && (returnedPathNode.getChildCount() == 0 || getReturnedPathNode().getChildCount() > 1)) {
+        PathNode returnedPathNode = getFirstReturnedPathNode();
+        if (returnedPathNode != null && (returnedPathNode.getChildCount() == 0 || getFirstReturnedPathNode().getChildCount() > 1)) {
             returnedPathNode.addChild(new CommonTree(new CommonToken(JPA2Lexer.WORD, "id")));
         }
     }
@@ -294,16 +241,5 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
         result.addChild(ref.createNode());
         result.addChild(new CommonTree(new CommonToken(JPA2Lexer.RPAREN, ")")));
         return result;
-    }
-
-    protected <T> List<T> getChildrenByClass(CommonTree commonTree, Class<?> clazz) {
-        List<Object> childrenByClass = new ArrayList<>();
-        for (Object o : commonTree.getChildren()) {
-            if (clazz.isAssignableFrom(o.getClass())) {
-                childrenByClass.add(o);
-            }
-        }
-
-        return (List<T>) childrenByClass;
     }
 }

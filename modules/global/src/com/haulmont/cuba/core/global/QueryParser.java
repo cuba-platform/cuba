@@ -13,6 +13,7 @@ import java.util.Set;
  * @version $Id$
  */
 public interface QueryParser {
+    String NAME = "cuba_QueryParser";
 
     /** Get all parameter names */
     Set<String> getParamNames();

@@ -106,6 +106,29 @@ public class Jpa2GrammarTest {
         Assert.assertTrue(isValid((CommonTree) aReturn.getTree()));
     }
 
+    @Test
+    public void testIsNull() throws Exception {
+        String query = "select f from sec$Filter f left join f.user u " +
+                "where f.componentId = :component and (u.id = :userId or u is null) order by f.name";
+        CharStream cs = new AntlrNoCaseStringStream(query);
+        JPA2Lexer lexer = new JPA2Lexer(cs);
+        TokenStream tstream = new CommonTokenStream(lexer);
+        JPA2Parser jpa2Parser = new JPA2Parser(tstream);
+        JPA2Parser.ql_statement_return aReturn = jpa2Parser.ql_statement();
+        Assert.assertTrue(isValid((CommonTree) aReturn.getTree()));
+    }
+
+    @Test
+    public void testUpdate() throws Exception {
+        String query = "update sec$User u set u.group = :group where u.id = :userId";
+        CharStream cs = new AntlrNoCaseStringStream(query);
+        JPA2Lexer lexer = new JPA2Lexer(cs);
+        TokenStream tstream = new CommonTokenStream(lexer);
+        JPA2Parser jpa2Parser = new JPA2Parser(tstream);
+        JPA2Parser.update_statement_return aReturn = jpa2Parser.update_statement();
+        Assert.assertTrue(isValid((CommonTree) aReturn.getTree()));
+    }
+
     protected boolean isValid(CommonTree tree) {
         TreeVisitor visitor = new TreeVisitor();
         ErrorNodesFinder errorNodesFinder = new ErrorNodesFinder();

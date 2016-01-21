@@ -41,7 +41,7 @@ public class QueryTransformerAstBased implements QueryTransformer {
         this.query = query;
         initQueryAnalyzer(model, query);
 
-        String returnedVariableName = queryTreeTransformer.getReturnedVariableName();
+        String returnedVariableName = queryTreeTransformer.getFirstReturnedVariableName();
         Entity entity = queryTreeTransformer.getRootQueryVariableContext().getEntityByVariableName(returnedVariableName);
         if (entity != null) {
             returnedEntityName = entity.getName();

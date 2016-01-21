@@ -33,6 +33,14 @@ public class QueryTransformerFactory {
     }
 
     public static QueryParser createParser(String query) {
-        return new QueryParserRegex(query);
+        if (useAst) {
+            if (domainModel == null) {
+                DomainModelBuilder builder = new DomainModelBuilder();
+                domainModel = builder.produce();
+            }
+            return AppBeans.getPrototype(QueryParser.NAME, domainModel, query);
+        } else {
+            return new QueryParserRegex(query);
+        }
     }
 }

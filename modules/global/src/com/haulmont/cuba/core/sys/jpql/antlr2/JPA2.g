@@ -75,16 +75,18 @@ package com.haulmont.cuba.core.sys.jpql.antlr2;
 }
 
 ql_statement
-    : select_statement;
+    : select_statement | update_statement | delete_statement;
 
 select_statement
      : sl='SELECT' select_clause from_clause (where_clause)? (groupby_clause)? (having_clause)? (orderby_clause)?
      -> ^(T_QUERY<QueryNode>[$sl] (select_clause)? from_clause (where_clause)? (groupby_clause)? (having_clause)? (orderby_clause)?);
 
 update_statement
-    : 'UPDATE' update_clause (where_clause)?;
+    : up='UPDATE' update_clause (where_clause)?
+    -> ^(T_QUERY<QueryNode>[$up] update_clause (where_clause)?);
 delete_statement
-    : 'DELETE' 'FROM' delete_clause (where_clause)?;
+    : dl='DELETE' 'FROM' delete_clause (where_clause)?
+    -> ^(T_QUERY<QueryNode>[$dl] delete_clause (where_clause)?);
 
 from_clause
      : fr='FROM' identification_variable_declaration (',' identification_variable_declaration_or_collection_member_declaration)*
@@ -137,16 +139,21 @@ path_expression
 general_identification_variable
     : identification_variable
     | map_field_identification_variable;
+
+//todo eude implement separate node instead of SelectionSourceNode for update and delete?
 update_clause
-    : entity_name (('AS')? identification_variable)? 'SET' update_item (',' update_item)*;
+    : identification_variable_declaration 'SET' update_item (',' update_item)*
+    -> ^(T_SOURCES<SelectionSourceNode> identification_variable_declaration);
 update_item
-    : (identification_variable'.')(single_valued_embeddable_object_field'.')*single_valued_object_field '=' new_value;
+    : path_expression '=' new_value;
 new_value
     : scalar_expression
     | simple_entity_expression
     | 'NULL';
+
 delete_clause
-    : entity_name (('AS')? identification_variable)?;
+    : identification_variable_declaration
+    -> ^(T_SOURCES<SelectionSourceNode> identification_variable_declaration);
 select_clause
     : ('DISTINCT')? select_item (',' select_item)*
     -> ^(T_SELECTED_ITEMS<SelectedItemsNode>[] ('DISTINCT')? ^(T_SELECTED_ITEM<SelectedItemNode>[] select_item)*);
@@ -303,7 +310,7 @@ in_item
 like_expression
     : string_expression ('NOT')? 'LIKE' (pattern_value | input_parameter)('ESCAPE' escape_character)?;
 null_comparison_expression
-    : (path_expression | input_parameter) 'IS' ('NOT')? 'NULL';
+    : (path_expression | input_parameter | join_association_path_expression) 'IS' ('NOT')? 'NULL';
 empty_collection_comparison_expression
     : path_expression 'IS' ('NOT')? 'EMPTY';
 collection_member_expression
