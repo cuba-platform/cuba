@@ -11,6 +11,7 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.QueryUtils;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
@@ -52,6 +53,7 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     protected boolean editable = true;
 
     protected Mode mode = Mode.CASE_SENSITIVE;
+    protected boolean escapeValueForLike = false;
 
     protected Object nullOption;
 
@@ -272,17 +274,21 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
         }
     }
 
-    protected void handleSearch(String newFilter) {
+    protected void handleSearch(final String newFilter) {
         clearSearchVariants();
 
-        String originalFilter = newFilter;
+        String filterForDs = newFilter;
         if (mode == Mode.LOWER_CASE) {
-            newFilter = StringUtils.lowerCase(newFilter);
+            filterForDs = StringUtils.lowerCase(newFilter);
         } else if (mode == Mode.UPPER_CASE) {
-            newFilter = StringUtils.upperCase(newFilter);
+            filterForDs = StringUtils.upperCase(newFilter);
         }
 
-        if (!isRequired() && StringUtils.isEmpty(newFilter)) {
+        if (escapeValueForLike && StringUtils.isNotEmpty(filterForDs)) {
+            filterForDs = QueryUtils.escapeForLike(filterForDs);
+        }
+
+        if (!isRequired() && StringUtils.isEmpty(filterForDs)) {
             if (optionsDatasource.getState() == Datasource.State.VALID) {
                 optionsDatasource.clear();
             }
@@ -292,14 +298,14 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
             return;
         }
 
-        if (StringUtils.length(newFilter) >= minSearchStringLength) {
+        if (StringUtils.length(filterForDs) >= minSearchStringLength) {
             optionsDatasource.refresh(
-                    Collections.singletonMap(SearchField.SEARCH_STRING_PARAM, (Object) newFilter));
+                    Collections.singletonMap(SearchField.SEARCH_STRING_PARAM, (Object) filterForDs));
 
             if (optionsDatasource.getState() == Datasource.State.VALID) {
                 if (optionsDatasource.size() == 0) {
                     if (searchNotifications != null)
-                        searchNotifications.notFoundSuggestions(originalFilter);
+                        searchNotifications.notFoundSuggestions(newFilter);
                 } else if (optionsDatasource.size() == 1) {
                     setValue(optionsDatasource.getItems().iterator().next());
                     updateOptionsDsItem();
@@ -319,8 +325,8 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
                 optionsDatasource.clear();
             }
 
-            if (searchNotifications != null && StringUtils.length(newFilter) > 0) {
-                searchNotifications.needMinSearchStringLength(originalFilter, minSearchStringLength);
+            if (searchNotifications != null && StringUtils.length(filterForDs) > 0) {
+                searchNotifications.needMinSearchStringLength(newFilter, minSearchStringLength);
             }
         }
     }
@@ -650,6 +656,16 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     @Override
     public void setMode(Mode mode) {
         this.mode = mode;
+    }
+
+    @Override
+    public boolean isEscapeValueForLike() {
+        return escapeValueForLike;
+    }
+
+    @Override
+    public void setEscapeValueForLike(boolean escapeValueForLike) {
+        this.escapeValueForLike = escapeValueForLike;
     }
 
     protected class NullOption extends EntityWrapper {

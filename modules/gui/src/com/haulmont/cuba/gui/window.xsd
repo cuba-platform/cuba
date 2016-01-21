@@ -748,9 +748,20 @@
     <!-- SearchField-->
     <xs:complexType name="searchFieldComponent">
         <xs:complexContent>
-            <xs:extension base="lookupFieldComponent">
+            <xs:extension base="baseFieldComponent">
+                <xs:sequence>
+                    <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
+                </xs:sequence>
+
+                <xs:attributeGroup ref="hasOptions"/>
+                <xs:attributeGroup ref="hasCaptionSource"/>
+
+                <xs:attribute name="nullName" type="xs:string"/>
+                <xs:attribute name="inputPrompt" type="xs:string"/>
+
                 <xs:attribute name="minSearchStringLength" type="xs:integer"/>
                 <xs:attribute name="mode" type="searchMode"/>
+                <xs:attribute name="escapeValueForLike" type="xs:boolean"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -790,6 +801,7 @@
         </xs:complexContent>
     </xs:complexType>
 
+    <!-- SearchPickerField -->
     <xs:complexType name="searchPickerFieldComponent">
         <xs:complexContent>
             <xs:extension base="baseFieldComponent">
@@ -801,11 +813,14 @@
                 <xs:attributeGroup ref="hasOptions"/>
                 <xs:attributeGroup ref="hasCaptionSource"/>
 
-                <xs:attribute name="nullName" type="xs:string"/>
                 <xs:attribute name="metaClass" type="xs:string"/>
+
+                <xs:attribute name="nullName" type="xs:string"/>
+                <xs:attribute name="inputPrompt" type="xs:string"/>
 
                 <xs:attribute name="minSearchStringLength" type="xs:integer"/>
                 <xs:attribute name="mode" type="searchMode"/>
+                <xs:attribute name="escapeValueForLike" type="xs:boolean"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

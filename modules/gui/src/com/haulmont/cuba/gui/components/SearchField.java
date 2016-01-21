@@ -27,6 +27,9 @@ public interface SearchField extends LookupField {
     Mode getMode();
     void setMode(Mode mode);
 
+    boolean isEscapeValueForLike();
+    void setEscapeValueForLike(boolean escapeValueForLike);
+
     interface SearchNotifications {
         void notFoundSuggestions(String filterString);
 

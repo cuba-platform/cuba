@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.SearchField;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -41,6 +42,11 @@ public class SearchFieldLoader extends LookupFieldLoader {
                         context.getFullFrameId(), "mode", modeString);
             }
             searchField.setMode(mode);
+        }
+
+        String escapeValueForLike = element.attributeValue("escapeValueForLike");
+        if (StringUtils.isNotEmpty(escapeValueForLike)) {
+            searchField.setEscapeValueForLike(BooleanUtils.toBoolean(escapeValueForLike));
         }
     }
 

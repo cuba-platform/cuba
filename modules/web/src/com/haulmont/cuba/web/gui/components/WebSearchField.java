@@ -5,10 +5,11 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
+import com.haulmont.cuba.core.global.QueryUtils;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SearchField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.Datasource.State;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.ui.CubaSearchSelect;
 import com.vaadin.data.Property;
@@ -27,6 +28,7 @@ public class WebSearchField extends WebLookupField implements SearchField {
 
     protected int minSearchStringLength = 0;
     protected Mode mode = Mode.CASE_SENSITIVE;
+    protected boolean escapeValueForLike = false;
 
     protected Frame.NotificationType defaultNotificationType = Frame.NotificationType.TRAY;
 
@@ -73,41 +75,45 @@ public class WebSearchField extends WebLookupField implements SearchField {
         getSearchComponent().setFilterHandler(this::executeSearch);
     }
 
-    protected void executeSearch(String newFilter) {
-        String originalFilter = newFilter;
+    protected void executeSearch(final String newFilter) {
+        String filterForDs = newFilter;
         if (mode == Mode.LOWER_CASE) {
-            newFilter = StringUtils.lowerCase(newFilter);
+            filterForDs = StringUtils.lowerCase(newFilter);
         } else if (mode == Mode.UPPER_CASE) {
-            newFilter = StringUtils.upperCase(newFilter);
+            filterForDs = StringUtils.upperCase(newFilter);
         }
 
-        if (!isRequired() && StringUtils.isEmpty(newFilter)) {
+        if (escapeValueForLike && StringUtils.isNotEmpty(filterForDs)) {
+            filterForDs = QueryUtils.escapeForLike(filterForDs);
+        }
+
+        if (!isRequired() && StringUtils.isEmpty(filterForDs)) {
             setValue(null);
-            if (optionsDatasource.getState() == Datasource.State.VALID) {
+            if (optionsDatasource.getState() == State.VALID) {
                 optionsDatasource.clear();
             }
             return;
         }
 
-        if (StringUtils.length(newFilter) >= minSearchStringLength) {
-            optionsDatasource.refresh(Collections.singletonMap(SEARCH_STRING_PARAM, (Object) newFilter));
+        if (StringUtils.length(filterForDs) >= minSearchStringLength) {
+            optionsDatasource.refresh(Collections.singletonMap(SEARCH_STRING_PARAM, (Object) filterForDs));
 
-            if (optionsDatasource.getState() == Datasource.State.VALID) {
+            if (optionsDatasource.getState() == State.VALID) {
                 if (optionsDatasource.size() == 0) {
                     if (searchNotifications != null) {
-                        searchNotifications.notFoundSuggestions(originalFilter);
+                        searchNotifications.notFoundSuggestions(newFilter);
                     }
                 } else if (optionsDatasource.size() == 1) {
                     setValue(optionsDatasource.getItems().iterator().next());
                 }
             }
         } else {
-            if (optionsDatasource.getState() == Datasource.State.VALID) {
+            if (optionsDatasource.getState() == State.VALID) {
                 optionsDatasource.clear();
             }
 
             if (searchNotifications != null && StringUtils.length(newFilter) > 0) {
-                searchNotifications.needMinSearchStringLength(originalFilter, minSearchStringLength);
+                searchNotifications.needMinSearchStringLength(newFilter, minSearchStringLength);
             }
         }
     }
@@ -154,6 +160,16 @@ public class WebSearchField extends WebLookupField implements SearchField {
     @Override
     public void setMode(Mode mode) {
         this.mode = mode;
+    }
+
+    @Override
+    public boolean isEscapeValueForLike() {
+        return escapeValueForLike;
+    }
+
+    @Override
+    public void setEscapeValueForLike(boolean escapeValueForLike) {
+        this.escapeValueForLike = escapeValueForLike;
     }
 
     @Override
