@@ -739,6 +739,16 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
     }
 
     @Override
+    public boolean isEscapeValueForLike() {
+        return false;
+    }
+
+    @Override
+    public void setEscapeValueForLike(boolean escapeValueForLike) {
+        throw new UnsupportedOperationException("escapeValueForLike for SuggestionField is unsupported");
+    }
+
+    @Override
     public int getAsyncSearchTimeoutMs() {
         return asyncSearchTimeoutMs;
     }
