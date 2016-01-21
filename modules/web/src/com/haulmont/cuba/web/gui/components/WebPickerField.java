@@ -289,7 +289,9 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
             actionHandler.removeAction(action);
             //noinspection ConstantConditions
             if (action.getOwner() != null && action.getOwner() instanceof WebButton) {
-                Button button = (Button) ((WebButton) action.getOwner()).getComponent();
+                WebButton vButton = (WebButton) action.getOwner();
+                vButton.setAction(null);
+                Button button = (Button) vButton.getComponent();
                 component.removeButton(button);
             }
         }
