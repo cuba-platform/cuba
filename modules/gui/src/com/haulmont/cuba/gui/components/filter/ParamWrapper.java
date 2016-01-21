@@ -6,11 +6,11 @@
 package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
+import com.haulmont.cuba.core.global.QueryUtils;
 import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
-import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
 import com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondition;
 import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
 import com.haulmont.cuba.gui.data.ValueListener;
@@ -19,7 +19,6 @@ import com.haulmont.cuba.core.global.filter.ParametersHelper;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -50,11 +49,11 @@ public class ParamWrapper implements Component.HasValue {
             if (condition instanceof PropertyCondition || condition instanceof DynamicAttributesCondition) {
                 Op op = condition.getOperator();
                 if (Op.CONTAINS.equals(op) || op.equals(Op.DOES_NOT_CONTAIN)) {
-                    value = wrapValueForLike(escapeValueForLike(value));
+                    value = wrapValueForLike(QueryUtils.escapeForLike(value.toString()));
                 } else if (Op.STARTS_WITH.equals(op)) {
-                    value = wrapValueForLike(escapeValueForLike(value), false, true);
+                    value = wrapValueForLike(QueryUtils.escapeForLike(value.toString()), false, true);
                 } else if (Op.ENDS_WITH.equals(op)) {
-                    value = wrapValueForLike(escapeValueForLike(value), true, false);
+                    value = wrapValueForLike(QueryUtils.escapeForLike(value.toString()), true, false);
                 }
             }
         } else if (value instanceof EnumClass) {
@@ -69,12 +68,6 @@ public class ParamWrapper implements Component.HasValue {
 
     protected String wrapValueForLike(Object value, boolean before, boolean after) {
         return ParametersHelper.CASE_INSENSITIVE_MARKER + (before ? "%" : "") + value + (after ? "%" : "");
-    }
-
-    protected String escapeValueForLike(Object value) {
-            return value.toString().replace(AbstractCondition.ESCAPE_CHARACTER, AbstractCondition.ESCAPE_CHARACTER + AbstractCondition.ESCAPE_CHARACTER)
-                    .replace("%", AbstractCondition.ESCAPE_CHARACTER + "%")
-                    .replace("_", AbstractCondition.ESCAPE_CHARACTER + "_");
     }
 
     @Override

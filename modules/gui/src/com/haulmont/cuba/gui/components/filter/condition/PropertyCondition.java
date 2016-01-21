@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.QueryUtils;
 import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.gui.components.filter.Param;
@@ -95,7 +96,7 @@ public class PropertyCondition extends AbstractCondition {
 
             if (operator == Op.ENDS_WITH || operator == Op.STARTS_WITH
                     || operator == Op.CONTAINS || operator == Op.DOES_NOT_CONTAIN) {
-                sb.append(" ESCAPE '").append(ESCAPE_CHARACTER).append("' ");
+                sb.append(" ESCAPE '").append(QueryUtils.ESCAPE_CHARACTER).append("' ");
             }
 
             if (operator == Op.NOT_IN) {

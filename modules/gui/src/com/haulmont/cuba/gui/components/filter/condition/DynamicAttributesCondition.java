@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.QueryUtils;
 import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.gui.components.filter.Param;
@@ -171,9 +172,9 @@ public class DynamicAttributesCondition extends AbstractCondition {
         if (operator == Op.ENDS_WITH || operator == Op.STARTS_WITH || operator == Op.CONTAINS || operator == Op.DOES_NOT_CONTAIN) {
             Matcher matcher = LIKE_PATTERN.matcher(text);
             if (matcher.find()) {
-                String escapeCharacter = ("\\".equals(ESCAPE_CHARACTER) || "$".equals(ESCAPE_CHARACTER))
-                        ? ESCAPE_CHARACTER + ESCAPE_CHARACTER
-                        : ESCAPE_CHARACTER;
+                String escapeCharacter = ("\\".equals(QueryUtils.ESCAPE_CHARACTER) || "$".equals(QueryUtils.ESCAPE_CHARACTER))
+                        ? QueryUtils.ESCAPE_CHARACTER + QueryUtils.ESCAPE_CHARACTER
+                        : QueryUtils.ESCAPE_CHARACTER;
                 text = matcher.replaceAll("$1 ESCAPE '" + escapeCharacter + "' ");
             }
         }
