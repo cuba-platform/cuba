@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesCache;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesCacheService;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.app.LoginService;
@@ -17,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -42,6 +44,8 @@ public class DynamicAttributesCacheStrategy implements CachingStrategy {
     protected LoginService loginService;
     @Inject
     protected Configuration configuration;
+    @Inject
+    protected UserSessionSource userSessionSource;
 
     protected ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     protected DynamicAttributesCache dynamicAttributesCache;
@@ -59,10 +63,14 @@ public class DynamicAttributesCacheStrategy implements CachingStrategy {
             public void run() {
                 UUID lastSessionId = lastRequestedSessionId.get();
                 if (needToValidateCache && lastSessionId != null) {
-                    try{
+                    try {
                         AppContext.setSecurityContext(new SecurityContext(lastSessionId));
-                        loadObject();
-                    } catch (NoUserSessionException e) {
+                        if (userSessionSource.checkCurrentUserSession()) {
+                            loadObject();
+                        } else {
+                            lastRequestedSessionId.compareAndSet(lastSessionId, null);
+                        }
+                    } catch (NoUserSessionException e) {//in case of session death between check and service call
                         lastRequestedSessionId.compareAndSet(lastSessionId, null);
                     } catch (Exception e) {
                         log.error("Unable to update dynamic attributes cache", e);
