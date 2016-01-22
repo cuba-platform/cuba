@@ -50,6 +50,8 @@ import java.util.GregorianCalendar;
 /**
  * @author degtyarjov
  * @version $Id$
+ *
+ * The serialization implementation using Kryo serialization
  */
 public class KryoSerialization implements Serialization {
     protected final ThreadLocal<Kryo> kryos = new ThreadLocal<Kryo>() {

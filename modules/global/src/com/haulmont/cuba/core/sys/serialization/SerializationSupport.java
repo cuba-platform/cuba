@@ -17,6 +17,8 @@ import static java.lang.String.format;
 /**
  * @author degtyarjov
  * @version $Id$
+ *
+ * Static holder for serialization object
  */
 public class SerializationSupport {
     private final static Serialization serialization;

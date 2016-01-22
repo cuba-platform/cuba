@@ -13,6 +13,8 @@ import java.io.*;
 /**
  * @author degtyarjov
  * @version $Id$
+ *
+ * The serialization implementation using standard Java serialization
  */
 public class StandardSerialization implements Serialization {
     @Override
