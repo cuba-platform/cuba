@@ -1723,9 +1723,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                     return column.getFormatter().format(getValue());
                 } else if (column.getXmlDescriptor() != null) {
                     String captionProperty = column.getXmlDescriptor().attributeValue("captionProperty");
-                    if (!StringUtils.isEmpty(captionProperty) && propertyPath.getRange().isClass()) {
-                        final Object value = getValue();
-                        return value != null ? String.valueOf(((Instance) value).getValue(captionProperty)) : null;
+                    if (StringUtils.isNotEmpty(captionProperty)) {
+                        final Instance item = getInstance();
+                        final Object captionValue = item.getValueEx(captionProperty);
+                        return captionValue != null ? String.valueOf(captionValue) : null;
                     }
                 }
             }
