@@ -589,15 +589,17 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
             } else {
                 // a reference attribute
                 MetaClass metaClass = propertyPath.getMetaProperty().getRange().asClass();
-                InstanceUtils.NamePatternRec rec = InstanceUtils.parseNamePattern(metaClass);
-                if (rec != null) {
-                    sortProperties = new String[rec.fields.length];
-                    for (int i = 0; i < rec.fields.length; i++) {
-                        sortProperties[i] = propertyPath.toString() + "." + rec.fields[i];
+                if (!propertyPath.getMetaProperty().getRange().getCardinality().isMany()) {
+                    InstanceUtils.NamePatternRec rec = InstanceUtils.parseNamePattern(metaClass);
+                    if (rec != null) {
+                        sortProperties = new String[rec.fields.length];
+                        for (int i = 0; i < rec.fields.length; i++) {
+                            sortProperties[i] = propertyPath.toString() + "." + rec.fields[i];
+                        }
+                    } else {
+                        sortProperties = new String[1];
+                        sortProperties[0] = propertyPath.toString();
                     }
-                } else {
-                    sortProperties = new String[1];
-                    sortProperties[0] = propertyPath.toString();
                 }
             }
         } else {
