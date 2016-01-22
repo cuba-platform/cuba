@@ -39,6 +39,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -121,6 +122,14 @@ public class LoginWindow extends UIView {
         applyUserTheme();
 
         initUI();
+
+        localesSelect.addValueChangeListener(event -> {
+            if (!resolvedLocale.equals(getUserLocale())) {
+                resolvedLocale = getUserLocale();
+                clearUI();
+                initUI();
+            }
+        });
 
         if (ui.isTestMode()) {
             loginField.setCubaId("loginField");
@@ -305,6 +314,10 @@ public class LoginWindow extends UIView {
         int fieldWidth = theme.getInt("cuba.web.LoginWindow.field.width");
 
         initStandartUI(formWidth, formHeight, fieldWidth, localeSelectVisible);
+    }
+
+    protected void clearUI() {
+        removeAllComponents();
     }
 
     protected void initRememberMe() {
