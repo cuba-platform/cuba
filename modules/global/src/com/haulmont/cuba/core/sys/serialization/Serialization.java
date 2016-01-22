@@ -11,13 +11,27 @@ import java.io.OutputStream;
 /**
  * @author degtyarjov
  * @version $Id$
+ *
+ *  Defines the contract for platform serialization implementations.
  */
 public interface Serialization {
-    public void serialize(Object object, OutputStream os);
+    /**
+     * Serialize object to stream
+     */
+    void serialize(Object object, OutputStream os);
 
-    public Object deserialize(InputStream is);
+    /**
+     * Deserialize object from stream
+     */
+    Object deserialize(InputStream is);
 
-    public byte[] serialize(Object object);
+    /**
+     * Serialize object to byte array
+     */
+    byte[] serialize(Object object);
 
-    public Object deserialize(byte[] bytes);
+    /**
+     * Deserialize object from byte array
+     */
+    Object deserialize(byte[] bytes);
 }
