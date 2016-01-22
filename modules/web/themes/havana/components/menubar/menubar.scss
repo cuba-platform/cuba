@@ -36,6 +36,12 @@
         }
       }
 
+      .#{$primary-stylename}-menuitem-shortcut {
+        display: table-cell;
+        padding-left: 5px;
+        color: #c0c0c0;
+      }
+
       span {
         color: #fff;
         text-shadow: black 1px 1px;
