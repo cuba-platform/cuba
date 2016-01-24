@@ -163,7 +163,7 @@ public class RemoteException extends RuntimeException {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("RemoteException:");
+        StringBuilder sb = new StringBuilder("com.haulmont.cuba.core.global.RemoteException:");
         for (Cause cause : causes) {
             sb.append("\n---\n").append(cause.getClassName()).append(": ").append(cause.getMessage());
         }
