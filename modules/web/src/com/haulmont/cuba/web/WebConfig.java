@@ -245,4 +245,11 @@ public interface WebConfig extends Config {
     @Property("cuba.web.useRedirectWithBlankPageForLinkAction")
     @DefaultBoolean(false)
     boolean getUseRedirectWithBlankPageForLinkAction();
+
+    /**
+     * @return Maximum number of items stored in the {@link com.haulmont.cuba.web.log.AppLog} queue
+     */
+    @Property("cuba.web.appLogMaxItemsCount")
+    @DefaultInt(10)
+    int getAppLogMaxItemsCount();
 }

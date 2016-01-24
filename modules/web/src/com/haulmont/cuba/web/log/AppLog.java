@@ -4,8 +4,11 @@
  */
 package com.haulmont.cuba.web.log;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Logging;
 import com.haulmont.cuba.core.global.SilentException;
+import com.haulmont.cuba.web.WebConfig;
 import com.vaadin.data.Validator;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.ErrorEvent;
@@ -27,7 +30,8 @@ public class AppLog {
 
     private transient LinkedList<LogItem> items = new LinkedList<>();
 
-    private static final int CAPACITY = 100;
+    private static final int CAPACITY = AppBeans.get(Configuration.class)
+            .getConfig(WebConfig.class).getAppLogMaxItemsCount();
 
     private static Logger log = LoggerFactory.getLogger(AppLog.class);
 
