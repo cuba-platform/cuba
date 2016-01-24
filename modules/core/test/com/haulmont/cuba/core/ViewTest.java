@@ -8,11 +8,9 @@ import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.bali.db.ResultSetHandler;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.security.entity.Group;
-import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.testsupport.TestContainer;
+import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -350,5 +348,36 @@ public class ViewTest {
 
         assertNotNull(view.getProperty("group"));
         assertNull(viewRepository.getView(User.class, View.LOCAL).getProperty("group"));
+    }
+
+    @Test
+    public void testFetchGroupIsAbsentIfViewIsFull() throws Exception {
+        ViewRepository viewRepository = cont.metadata().getViewRepository();
+        View view = viewRepository.getView(User.class, View.LOCAL);
+        view.addProperty("group", new View(Group.class)
+                .addProperty("name"))
+            .addProperty("userRoles", new View(UserRole.class)
+                .addProperty("role", new View(Role.class)
+                            .addProperty("name")))
+            .addProperty("substitutions", new View(UserSubstitution.class)
+                .addProperty("startDate")
+                .addProperty("substitutedUser", new View(User.class)
+                        .addProperty("login")
+                        .addProperty("name")));
+
+        User u;
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            EntityManager em = cont.persistence().getEntityManager();
+            u = em.find(User.class, userId, view);
+            tx.commit();
+        }
+        assertNotNull(u);
+        assertTrue(PersistenceHelper.isLoaded(u, "login"));
+        assertTrue(PersistenceHelper.isLoaded(u, "group"));
+        assertTrue(PersistenceHelper.isLoaded(u, "userRoles"));
+        assertTrue(PersistenceHelper.isLoaded(u, "substitutions"));
+
+        assertTrue(u instanceof FetchGroupTracker);
+        assertNull(((FetchGroupTracker) u)._persistence_getFetchGroup());
     }
 }
