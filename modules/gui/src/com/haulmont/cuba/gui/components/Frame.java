@@ -324,4 +324,8 @@ public interface Frame
      * Desktop client doesn't support any parameters and just ignores them.
      */
     void showWebPage(String url, @Nullable Map<String, Object> params);
+
+    interface Wrapper {
+        Frame getWrappedFrame();
+    }
 }

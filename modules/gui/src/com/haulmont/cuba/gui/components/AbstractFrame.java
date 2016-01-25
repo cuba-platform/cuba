@@ -28,7 +28,7 @@ import java.util.Map;
  * @author abramov
  * @version $Id$
  */
-public class AbstractFrame implements Frame, Component.Wrapper, Component.OrderedContainer {
+public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, Component.OrderedContainer {
 
     protected Frame frame;
     private String styleName;
@@ -45,6 +45,11 @@ public class AbstractFrame implements Frame, Component.Wrapper, Component.Ordere
     /** INTERNAL. Don't call from application code. */
     public void setWrappedFrame(Frame frame) {
         this.frame = frame;
+    }
+
+    @Override
+    public Frame getWrappedFrame() {
+        return frame;
     }
 
     /**
