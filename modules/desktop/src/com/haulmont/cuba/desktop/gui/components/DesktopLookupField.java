@@ -387,19 +387,31 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
     @Override
     public void setOptionsList(List optionsList) {
         super.setOptionsList(optionsList);
-        optionsInitialized = false;
+        if (optionsInitialized) {
+            optionsInitialized = false;
+
+            initOptions();
+        }
     }
 
     @Override
     public void setOptionsMap(Map<String, Object> map) {
         super.setOptionsMap(map);
-        optionsInitialized = false;
+        if (optionsInitialized) {
+            optionsInitialized = false;
+
+            initOptions();
+        }
     }
 
     @Override
     public void setOptionsEnum(Class<? extends EnumClass> optionsEnum) {
         super.setOptionsEnum(optionsEnum);
-        optionsInitialized = false;
+        if (optionsInitialized) {
+            optionsInitialized = false;
+
+            initOptions();
+        }
     }
 
     @Override
