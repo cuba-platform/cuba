@@ -105,7 +105,7 @@ public interface FileUploadField extends UploadComponentSupport {
     String getAccept();
 
     /**
-     * Sets the types of files that the server accepts (that can be submitted through a file upload).
+     * Sets the mask for files to filter them in the file selection dialog.
      * @param accept comma separated types of files; possible options to specify the file types are {@code *.png, .png}
      */
     void setAccept(String accept);
