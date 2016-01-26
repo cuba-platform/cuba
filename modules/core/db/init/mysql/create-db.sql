@@ -833,8 +833,9 @@ create index IDX_SEC_REMEMBER_ME_TOKEN on SEC_REMEMBER_ME(TOKEN)^
 
 /**********************************************************************************************/
 
+drop function if exists newid^
 create function newid() returns varchar(32) not deterministic
-return replace(uuid(), '-', '');
+return replace(uuid(), '-', '')^
 
 /**********************************************************************************************/
 
@@ -863,7 +864,7 @@ values ('b61d18cbe79a46f3b16deaf4aebb10dd',{ts '2010-03-01 11:14:06.830'},'admin
 
 /**********************************************************************************************/
 
-create table SYS_SEQUENCE (
+create table IF NOT EXISTS SYS_SEQUENCE (
     NAME varchar(100) not null,
     INCREMENT int unsigned not null default 1,
     CURR_VALUE bigint unsigned default 0,
