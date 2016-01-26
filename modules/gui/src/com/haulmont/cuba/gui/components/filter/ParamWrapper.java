@@ -8,17 +8,19 @@ package com.haulmont.cuba.gui.components.filter;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.global.QueryUtils;
 import com.haulmont.cuba.core.global.filter.Op;
+import com.haulmont.cuba.core.global.filter.ParametersHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
+import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
 import com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondition;
 import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
-import com.haulmont.cuba.core.global.filter.ParametersHelper;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -54,6 +56,19 @@ public class ParamWrapper implements Component.HasValue {
                     value = wrapValueForLike(QueryUtils.escapeForLike(value.toString()), false, true);
                 } else if (Op.ENDS_WITH.equals(op)) {
                     value = wrapValueForLike(QueryUtils.escapeForLike(value.toString()), true, false);
+                }
+            }
+        } else if (condition instanceof CustomCondition) {
+            String where = ((CustomCondition) condition).getWhere();
+            Op op = condition.getOperator();
+            Matcher matcher = LIKE_PATTERN.matcher(where);
+            if (matcher.find()) {
+                if (Op.STARTS_WITH.equals(op)) {
+                    value = wrapValueForLike(QueryUtils.escapeForLike(value.toString()), false, true);
+                } else if (Op.ENDS_WITH.equals(op)) {
+                    value = wrapValueForLike(QueryUtils.escapeForLike(value.toString()), true, false);
+                } else {
+                    value = wrapValueForLike(QueryUtils.escapeForLike(value.toString()));
                 }
             }
         } else if (value instanceof EnumClass) {
