@@ -15,8 +15,6 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
  */
 public class MigBoxLayoutAdapter extends BoxLayoutAdapter {
@@ -41,6 +39,10 @@ public class MigBoxLayoutAdapter extends BoxLayoutAdapter {
 
     @Override
     protected void update() {
+        updateLayoutConstraints(false);
+    }
+
+    private void updateLayoutConstraints(boolean resetExpanded) {
         LC lc = new LC();
         lc.hideMode(2); //  Invisible components will not participate in the layout at all and it will for instance not take up a grid cell
         lc.fill(); // always give all space to components, otherwise align doesn't work
@@ -50,12 +52,12 @@ public class MigBoxLayoutAdapter extends BoxLayoutAdapter {
         if (direction.equals(FlowDirection.X)) {
             rowConstr.align("top");
             lc.flowX();
-            if (expandedComponent != null) {
+            if (expandedComponent != null || resetExpanded) {
                 adjustExpanding(lc, colConstr);
             }
         } else {
             lc.flowY();
-            if (expandedComponent != null) {
+            if (expandedComponent != null || resetExpanded) {
                 adjustExpanding(lc, rowConstr);
             }
         }
@@ -63,10 +65,11 @@ public class MigBoxLayoutAdapter extends BoxLayoutAdapter {
         lc.setInsets(MigLayoutHelper.makeInsets(margins));
 
         if (!spacing) {
-            if (direction.equals(FlowDirection.X))
+            if (direction.equals(FlowDirection.X)) {
                 lc.gridGapX("0");
-            else
+            } else {
                 lc.gridGapY("0");
+            }
         }
 
         if (isDebug())
@@ -77,13 +80,21 @@ public class MigBoxLayoutAdapter extends BoxLayoutAdapter {
         layout.setColumnConstraints(colConstr);
     }
 
+    @Override
+    public void resetExpanded() {
+        expandedComponent = null;
+        updateLayoutConstraints(true);
+    }
+
     private void adjustExpanding(LC lc, AC ac) {
         Component[] components = container.getComponents();
         for (int i = 0; i < components.length; i++) {
-            if (expandedComponent == components[i])
+            if (expandedComponent == null
+                    || expandedComponent == components[i]) {
                 ac.fill(i);
-            else
+            } else {
                 ac.size("min!", i);
+            }
         }
         lc.fill();
     }

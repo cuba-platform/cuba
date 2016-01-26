@@ -21,7 +21,6 @@ import java.util.*;
 
 /**
  * @author krivopustov
- * @version $Id$
  */
 public abstract class DesktopAbstractBox
         extends DesktopAbstractComponent<JPanel>
@@ -295,8 +294,14 @@ public abstract class DesktopAbstractBox
 
     protected void reAddChild(Component child) {
         int index = indexOf(child);
+
+        boolean expanded = expandedComponent == child;
         remove(child);
         add(child, index);
+
+        if (expanded) {
+            expand(child);
+        }
     }
 
     @Override
@@ -360,6 +365,14 @@ public abstract class DesktopAbstractBox
     @Override
     public void expand(Component component) {
         expand(component, "", "");
+    }
+
+    @Override
+    public void resetExpanded() {
+        expandedComponent = null;
+        layoutAdapter.resetExpanded();
+
+        requestRepaint();
     }
 
     @Override

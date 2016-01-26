@@ -26,7 +26,6 @@ import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAl
 
 /**
  * @author abramov
- * @version $Id$
  */
 public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements GroupBoxLayout {
 
@@ -192,6 +191,13 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
     @Override
     public void expand(Component component) {
         expand(component, "", "");
+    }
+
+    @Override
+    public void resetExpanded() {
+        for (com.vaadin.ui.Component child : getComponentContent()) {
+            getComponentContent().setExpandRatio(child, 0.0f);
+        }
     }
 
     @Override

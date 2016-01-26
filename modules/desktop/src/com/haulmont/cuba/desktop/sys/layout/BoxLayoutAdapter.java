@@ -12,7 +12,6 @@ import java.awt.*;
 
 /**
  * @author krivopustov
- * @version $Id$
  */
 public abstract class BoxLayoutAdapter extends LayoutAdapter {
 
@@ -45,6 +44,11 @@ public abstract class BoxLayoutAdapter extends LayoutAdapter {
 
     public void expand(Component component) {
         expand(component, null, null);
+    }
+
+    public void resetExpanded() {
+        expandedComponent = null;
+        update();
     }
 
     public void expand(Component component, String height, String width) {
