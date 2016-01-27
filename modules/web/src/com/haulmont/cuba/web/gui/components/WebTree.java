@@ -4,7 +4,6 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Security;
@@ -17,7 +16,7 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.event.ItemClickEvent;
-import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.Collections;
@@ -26,7 +25,6 @@ import java.util.Set;
 
 /**
  * @author krivopustov
- * @version $Id$
  */
 public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
 
@@ -41,6 +39,8 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
         component = new CubaTree();
         component.setMultiSelect(false);
         component.setImmediate(true);
+
+        component.setItemCaptionMode(ItemCaptionMode.ITEM);
 
         contextMenuPopup.setParent(component);
         component.setContextMenuPopup(contextMenuPopup);
@@ -108,18 +108,19 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
 
     @Override
     public void setCaptionMode(CaptionMode captionMode) {
-        this.captionMode = captionMode;
-        switch (captionMode) {
-            case ITEM: {
-                component.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ITEM);
-                break;
-            }
-            case PROPERTY: {
-                component.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
-                break;
-            }
-            default: {
-                throw new UnsupportedOperationException();
+        if (this.captionMode != captionMode) {
+            this.captionMode = captionMode;
+            switch (captionMode) {
+                case ITEM:
+                    component.setItemCaptionMode(ItemCaptionMode.ITEM);
+                    break;
+
+                case PROPERTY:
+                    component.setItemCaptionMode(ItemCaptionMode.PROPERTY);
+                    break;
+
+                default:
+                    throw new UnsupportedOperationException();
             }
         }
     }
@@ -131,9 +132,17 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
 
     @Override
     public void setCaptionProperty(String captionProperty) {
-        this.captionProperty = captionProperty;
-        if (datasource != null) {
-            component.setItemCaptionPropertyId(datasource.getMetaClass().getProperty(captionProperty));
+        if (!ObjectUtils.equals(this.captionProperty, captionProperty)) {
+            this.captionProperty = captionProperty;
+
+            if (datasource != null) {
+                if (captionProperty != null) {
+                    component.setItemCaptionPropertyId(datasource.getMetaClass().getProperty(captionProperty));
+                } else {
+                    component.setItemCaptionPropertyId(null);
+                    component.setItemCaptionMode(ItemCaptionMode.ITEM);
+                }
+            }
         }
     }
 
@@ -146,10 +155,6 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
     public void setDatasource(HierarchicalDatasource datasource) {
         this.datasource = datasource;
         this.hierarchyProperty = datasource.getHierarchyPropertyName();
-
-        // if showProperty is null, the Tree will use itemId.toString
-        MetaProperty metaProperty = hierarchyProperty == null ? null : datasource.getMetaClass().getProperty(hierarchyProperty);
-        component.setItemCaptionPropertyId(metaProperty);
 
         HierarchicalDsWrapper wrapper = new HierarchicalDsWrapper(datasource);
         component.setContainerDataSource(wrapper);
@@ -197,6 +202,10 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
         }
 
         assignAutoDebugId();
+
+        if (captionProperty != null) {
+            component.setItemCaptionPropertyId(datasource.getMetaClass().getProperty(captionProperty));
+        }
     }
 
     @Override
