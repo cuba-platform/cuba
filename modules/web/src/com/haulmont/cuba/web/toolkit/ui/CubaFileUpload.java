@@ -26,7 +26,6 @@ import java.util.*;
 
 /**
  * @author artamonov
- * @version $Id$
  */
 @JavaScript({
         "vaadin://resources/jqueryfileupload/jquery.ui.widget-1.11.1.min.js",
@@ -78,7 +77,10 @@ public class CubaFileUpload extends AbstractComponent
                 fireQueueUploadFinished();
             }
         });
+    }
 
+    // set error handler for background upload thread
+    protected void setUploadingErrorHandler() {
         setErrorHandler(event -> {
             Logger log = LoggerFactory.getLogger(CubaFileUpload.class);
             //noinspection ThrowableResultOfMethodCallIgnored
@@ -89,6 +91,10 @@ public class CubaFileUpload extends AbstractComponent
                 log.error("Unexpected error in CubaFileUpload", ex);
             }
         });
+    }
+
+    protected void resetUploadingErrorHandler() {
+        setErrorHandler(null);
     }
 
     @Override
@@ -353,18 +359,20 @@ public class CubaFileUpload extends AbstractComponent
      * component going in wrong state and not working. It is currently public
      * because it is used by another class.
      */
-    public void startUpload() {
+    protected void startUpload() {
         if (isUploading) {
             throw new IllegalStateException("uploading already started");
         }
         isUploading = true;
+
+        setUploadingErrorHandler();
     }
 
     /**
      * Interrupts the upload currently being received. The interruption will be done by the receiving thread so this
      * method will return immediately and the actual interrupt will happen a bit later.
      */
-    public void interruptUpload() {
+    protected void interruptUpload() {
         if (isUploading) {
             interrupted = true;
         }
@@ -380,6 +388,8 @@ public class CubaFileUpload extends AbstractComponent
         contentLength = -1;
         interrupted = false;
         markAsDirty();
+
+        resetUploadingErrorHandler();
     }
 
     @Override
