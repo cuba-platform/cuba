@@ -51,9 +51,8 @@
                     <popupButton id="groupCreateButton" caption="msg://create.caption" icon="theme://actions.Create.icon"/>
                     <button action="groupsTree.edit"/>
                     <button id="removeButton" action="groupsTree.remove"/>
-                    <button action="groupsTree.refresh"/>
-                    <button action="groupsTree.export"/>
-                    <upload id="importUpload" caption="msg://import"/>
+                    <button action="groupsTree.export" icon="icons/download.png" caption="" description="mainMsg://actions.Export"/>
+                    <upload id="importUpload" icon="icons/upload.png" caption="" description="mainMsg://actions.Import"/>
                 </buttonsPanel>
                 <tree id="groupsTree" width="100%" multiselect="true">
                     <actions>
@@ -61,9 +60,8 @@
                         <action id="copy" caption="msg://action.copy" icon="icons/copy.png" invoke="copyGroup"/>
                         <action id="edit"/>
                         <action id="remove"/>
-                        <action id="refresh"/>
                     </actions>
-                    <treechildren datasource="groupsDs" captionProperty="name" hierarchyProperty="parent"/>
+                    <treechildren datasource="groupsDs" hierarchyProperty="parent"/>
                 </tree>
             </vbox>
             <vbox id="tabSheetBox" margin="false,false,false,true" height="100%">

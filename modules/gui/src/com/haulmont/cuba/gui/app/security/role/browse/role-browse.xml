@@ -34,8 +34,8 @@
                 <button action="rolesTable.refresh"/>
                 <button action="rolesTable.excel"/>
                 <button action="rolesTable.assignToUsers" icon="icons/user-group-ok.png"/>
-                <button action="rolesTable.export"/>
-                <upload id="importRolesUpload" caption="msg://import"/>
+                <button action="rolesTable.export" icon="icons/download.png"/>
+                <upload id="importRolesUpload" caption="mainMsg://actions.Import" icon="icons/upload.png"/>
             </buttonsPanel>
             <columns>
                 <column id="name" caption="msg://role.name"/>

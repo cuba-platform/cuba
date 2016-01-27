@@ -42,7 +42,6 @@ import java.util.*;
 
 /**
  * @author krivopustov
- * @version $Id$
  */
 public class GroupBrowser extends AbstractWindow {
 
@@ -288,7 +287,7 @@ public class GroupBrowser extends AbstractWindow {
             return;
         }
 
-        Table constraintsTable = (Table) getComponentNN("constraintsTable");
+        Table<Constraint> constraintsTable = (Table) getComponentNN("constraintsTable");
         constraintCreateAction = new GroupPropertyCreateAction(constraintsTable);
         constraintsTable.addAction(constraintCreateAction);
 
@@ -308,26 +307,22 @@ public class GroupBrowser extends AbstractWindow {
         constraintsDs.addItemChangeListener(e -> {
             if (e.getItem() != null) {
                 activateAction.setCaption(Boolean.TRUE.equals(e.getItem().getIsActive()) ?
-                                messages.getMessage(getClass(), "deactivate") :
-                                messages.getMessage(getClass(), "activate"));
+                                getMessage("deactivate") : getMessage("activate"));
             }
         });
 
         constraintsTable.addGeneratedColumn(
                 "entityName",
-                new Table.ColumnGenerator<Constraint>() {
-                    @Override
-                    public Component generateCell(Constraint constraint) {
-                        if (StringUtils.isEmpty(constraint.getEntityName())) {
-                            return componentsFactory.createComponent(Label.class);
-                        }
-
-                        MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(
-                                metadata.getClassNN(constraint.getEntityName()));
-                        Label label = componentsFactory.createComponent(Label.class);
-                        label.setValue(effectiveMetaClass.getName());
-                        return label;
+                constraint -> {
+                    if (StringUtils.isEmpty(constraint.getEntityName())) {
+                        return componentsFactory.createComponent(Label.class);
                     }
+
+                    MetaClass metaClass = metadata.getClassNN(constraint.getEntityName());
+                    MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(metaClass);
+                    Label label = componentsFactory.createComponent(Label.class);
+                    label.setValue(effectiveMetaClass.getName());
+                    return label;
                 }
         );
 
@@ -378,6 +373,8 @@ public class GroupBrowser extends AbstractWindow {
     protected class ExportAction extends ItemTrackingAction {
         public ExportAction() {
             super("export");
+
+            setCaption(messages.getMainMessage("actions.Export"));
         }
 
         @Override
@@ -387,19 +384,18 @@ public class GroupBrowser extends AbstractWindow {
             if (view == null) {
                 throw new DevelopmentException("View 'group.export' for sec$Group was not found");
             }
+
             if (!selected.isEmpty()) {
                 try {
-                    exportDisplay.show(new ByteArrayDataProvider(entityImportExportService.exportEntities(selected, view)), "Groups", ExportFormat.ZIP);
+                    exportDisplay.show(
+                            new ByteArrayDataProvider(entityImportExportService.exportEntities(selected, view)),
+                            "Groups", ExportFormat.ZIP);
+
                 } catch (Exception e) {
                     showNotification(getMessage("exportFailed"), e.getMessage(), NotificationType.ERROR);
                     log.error("Groups export failed", e);
                 }
             }
-        }
-
-        @Override
-        public String getCaption() {
-            return getMessage("export");
         }
     }
 }

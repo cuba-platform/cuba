@@ -31,7 +31,6 @@ import java.util.*;
 
 /**
  * @author krivopustov
- * @version $Id$
  */
 public class RoleBrowser extends AbstractLookup {
 
@@ -190,6 +189,8 @@ public class RoleBrowser extends AbstractLookup {
     protected class ExportAction extends ItemTrackingAction {
         public ExportAction() {
             super("export");
+
+            setCaption(messages.getMainMessage("actions.Export"));
         }
 
         @Override
@@ -208,11 +209,5 @@ public class RoleBrowser extends AbstractLookup {
                 }
             }
         }
-
-        @Override
-        public String getCaption() {
-            return getMessage("export");
-        }
     }
-
 }
