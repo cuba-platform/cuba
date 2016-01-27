@@ -187,9 +187,11 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
 
     @Override
     public void setCaptionMode(CaptionMode captionMode) {
-        this.captionMode = captionMode;
-        if (model != null) {
-            model.setCaptionMode(captionMode);
+        if (this.captionMode != captionMode) {
+            this.captionMode = captionMode;
+            if (model != null) {
+                model.setCaptionMode(captionMode);
+            }
         }
     }
 
@@ -200,9 +202,17 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
 
     @Override
     public void setCaptionProperty(String captionProperty) {
-        this.captionProperty = captionProperty;
-        if (model != null) {
-            model.setCaptionProperty(captionProperty);
+        if (!ObjectUtils.equals(this.captionProperty, captionProperty)) {
+            this.captionProperty = captionProperty;
+            if (model != null) {
+                model.setCaptionProperty(captionProperty);
+
+                if (captionProperty != null) {
+                    setCaptionMode(CaptionMode.PROPERTY);
+                } else {
+                    setCaptionMode(CaptionMode.ITEM);
+                }
+            }
         }
     }
 

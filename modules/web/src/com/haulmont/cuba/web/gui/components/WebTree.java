@@ -159,6 +159,10 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
         HierarchicalDsWrapper wrapper = new HierarchicalDsWrapper(datasource);
         component.setContainerDataSource(wrapper);
 
+        if (captionProperty != null) {
+            component.setItemCaptionPropertyId(datasource.getMetaClass().getProperty(captionProperty));
+        }
+
         Security security = AppBeans.get(Security.NAME);
         if (security.isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
             ShowInfoAction action = (ShowInfoAction) getAction(ShowInfoAction.ACTION_ID);
@@ -202,10 +206,6 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
         }
 
         assignAutoDebugId();
-
-        if (captionProperty != null) {
-            component.setItemCaptionPropertyId(datasource.getMetaClass().getProperty(captionProperty));
-        }
     }
 
     @Override

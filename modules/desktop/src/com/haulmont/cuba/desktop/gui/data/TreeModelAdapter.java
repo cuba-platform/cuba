@@ -6,7 +6,10 @@
 package com.haulmont.cuba.desktop.gui.data;
 
 import com.google.common.collect.Iterables;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
@@ -39,6 +42,8 @@ public class TreeModelAdapter implements TreeModel {
 
     protected boolean autoRefresh;
 
+    protected MetadataTools metadataTools;
+
     public TreeModelAdapter(HierarchicalDatasource datasource, CaptionMode captionMode, String captionProperty,
                             boolean autoRefresh) {
 
@@ -46,6 +51,8 @@ public class TreeModelAdapter implements TreeModel {
         this.captionMode = captionMode;
         this.captionProperty = captionProperty;
         this.autoRefresh = autoRefresh;
+
+        this.metadataTools = AppBeans.get(MetadataTools.NAME);
 
         //noinspection unchecked
         datasource.addCollectionChangeListener(new CollectionDatasource.CollectionChangeListener() {
@@ -276,13 +283,15 @@ public class TreeModelAdapter implements TreeModel {
 
         @Override
         public String toString() {
-            Object value;
+            String value;
             if (captionMode.equals(CaptionMode.ITEM)) {
-                value = entity;
+                value = entity.getInstanceName();
             } else {
-                value = entity.getValue(captionProperty);
+                Object propertyValue = entity.getValue(captionProperty);
+                MetaProperty property = entity.getMetaClass().getProperty(captionProperty);
+                return metadataTools.format(propertyValue, property);
             }
-            return value == null ? "" : value.toString();
+            return value;
         }
     }
 }
