@@ -59,7 +59,7 @@ public class CubaFileUploadWidget extends FlowPanel implements Focusable {
 
         Element inputElement = Document.get().createFileInputElement();
         inputElement.setAttribute("name", "files[]");
-        inputElement.setAttribute("title", "");
+        inputElement.setAttribute("title", " ");
         listenToFocusEvents(inputElement);
 
         getElement().appendChild(inputElement);

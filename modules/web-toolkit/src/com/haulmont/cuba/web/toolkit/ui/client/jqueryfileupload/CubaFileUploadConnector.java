@@ -84,6 +84,12 @@ public class CubaFileUploadConnector extends AbstractComponentConnector implemen
         if (stateChangeEvent.hasPropertyChanged("caption")
                 || stateChangeEvent.hasPropertyChanged("captionAsHtml")) {
             VCaption.setCaptionText(getWidget().submitButton.captionElement, getState());
+
+            if ("".equals(getState().caption) || getState().caption == null) {
+                getWidget().submitButton.addStyleDependentName("empty-caption");
+            } else {
+                getWidget().submitButton.removeStyleDependentName("empty-caption");
+            }
         }
 
         if (stateChangeEvent.hasPropertyChanged("resources")) {

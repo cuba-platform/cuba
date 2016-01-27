@@ -52,6 +52,7 @@
   }
 
   .#{$primary-stylename} input[type="file"]::-webkit-file-upload-button {
+    cursor: pointer;
     display: block;
 
     width: 100%;
