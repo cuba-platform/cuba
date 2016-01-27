@@ -1,4 +1,6 @@
-.gradle
+/.gradle/
+/build/
+/.shelf/
 out
 *.iml
 *.ipr
