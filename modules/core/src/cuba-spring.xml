@@ -77,6 +77,10 @@
 
     <bean id="mbeanInterceptor" class="com.haulmont.cuba.core.sys.MBeanInterceptor"/>
 
+    <bean id="transactionalInterceptor" class="com.haulmont.cuba.core.sys.TransactionalInterceptor">
+        <property name="persistence" ref="cuba_Persistence"/>
+    </bean>
+
     <bean id="performanceLogInterceptor" class="com.haulmont.cuba.core.sys.PerformanceLogInterceptor"/>
 
     <aop:config proxy-target-class="false">
@@ -92,6 +96,11 @@
         <aop:aspect id="authenticationAspect" ref="authenticationInterceptor" order="2">
             <aop:around method="aroundInvoke"
                         pointcut="execution(@com.haulmont.cuba.security.app.Authenticated * *(..))"/>
+        </aop:aspect>
+
+        <aop:aspect id="transactionalAspect" ref="transactionalInterceptor" order="100">
+            <aop:around method="aroundInvoke"
+                        pointcut="execution(@org.springframework.transaction.annotation.Transactional * *(..))"/>
         </aop:aspect>
 
         <aop:aspect id="performanceLogTypeAspect" ref="performanceLogInterceptor" order="3">

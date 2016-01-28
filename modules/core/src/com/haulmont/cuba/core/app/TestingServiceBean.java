@@ -123,6 +123,8 @@ public class TestingServiceBean implements TestingService {
     public void declarativeTransaction() {
         checkTestMode();
         persistence.getEntityManager().find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
+
+        persistence.getEntityManagerContext().setAttribute("test", "test_value");
     }
 
     private void checkTestMode() {
