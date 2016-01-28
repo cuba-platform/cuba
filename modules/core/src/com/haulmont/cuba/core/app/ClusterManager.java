@@ -131,7 +131,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
             registerJmxBeans();
         } catch (Exception e) {
             channel = null;
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error starting cluster", e);
         } finally {
             IOUtils.closeQuietly(stream);
         }
@@ -247,7 +247,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
                         out.write(entry.getValue());
                     }
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 log.error("Error sending state", e);
             }
         }
@@ -286,7 +286,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
                     if (listener != null)
                         listener.setState(data);
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 log.error("Error receiving state", e);
             }
         }
