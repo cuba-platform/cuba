@@ -6,6 +6,7 @@ package com.haulmont.cuba.core.sys.javacl;
 
 import org.apache.commons.io.FileUtils;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -46,14 +47,16 @@ class SourceProvider {
         return dir.exists();
     }
 
-    public List<String> getAllClassesFromPackage(String packageName) {
-        String path = packageName.replace(".", "/");
-        File srcDir = new File(rootDir, path);
+    public List<String> getAllClassesFromPackage(@Nullable String packageName) {
+        String path = packageName != null ? packageName.replace(".", "/") : null;
+        File srcDir = path != null ? new File(rootDir, path) : new File(rootDir);
         String[] fileNames = srcDir.list();
         List<String> classNames = new ArrayList<>();
         for (String fileName : fileNames) {
             if (fileName.endsWith(JAVA_EXT)) {
-                classNames.add(packageName + "." + fileName.replace(JAVA_EXT, ""));
+                String className = fileName.replace(JAVA_EXT, "");
+                String fullClassName = packageName != null ? packageName + "." + className : className;
+                classNames.add(fullClassName);
             }
         }
         return classNames;

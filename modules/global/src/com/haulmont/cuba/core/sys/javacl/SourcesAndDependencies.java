@@ -7,6 +7,7 @@ package com.haulmont.cuba.core.sys.javacl;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -40,8 +41,8 @@ class SourcesAndDependencies {
     public void collectDependencies(String className) throws IOException {
         CharSequence src = sources.get(className);
         List<String> importedClassesNames = getDynamicallyLoadedImports(src);
-        String currentPackageName = className.substring(0, className.lastIndexOf('.'));
-        importedClassesNames.addAll(sourceProvider.getAllClassesFromPackage(currentPackageName));//all src from current package
+        String currentPackageName = extractPackageFromClassname(className);
+        importedClassesNames.addAll(sourceProvider.getAllClassesFromPackage(currentPackageName));
         for (String importedClassName : importedClassesNames) {
             if (!sources.containsKey(importedClassName)) {
                 addSource(importedClassName);
@@ -75,7 +76,7 @@ class SourcesAndDependencies {
     /**
      * Find all dependent classes (hierarchical search)
      */
-    private void collectDependent(String dependencyClassName, Map<String, CharSequence> dependentSources) throws IOException {
+    protected void collectDependent(String dependencyClassName, Map<String, CharSequence> dependentSources) throws IOException {
         TimestampClass removedClass = javaClassLoader.proxyClassLoader.removeFromCache(dependencyClassName);
         if (removedClass != null) {
             for (String dependentName : removedClass.dependent) {
@@ -86,7 +87,7 @@ class SourcesAndDependencies {
         }
     }
 
-    private void addDependency(String dependent, String dependency) {
+    protected void addDependency(String dependent, String dependency) {
         if (!dependent.equals(dependency)) {
             dependencies.put(dependent, dependency);
         }
@@ -96,7 +97,7 @@ class SourcesAndDependencies {
         sources.put(importedClassName, sourceProvider.getSourceString(importedClassName));
     }
 
-    private List<String> unwrapImportValue(String importValue) {
+    protected List<String> unwrapImportValue(String importValue) {
         if (importValue.endsWith(WHOLE_PACKAGE_PLACEHOLDER)) {
             String packageName = importValue.replace(WHOLE_PACKAGE_PLACEHOLDER, "");
             if (sourceProvider.directoryExistsInFileSystem(packageName)) {
@@ -109,7 +110,7 @@ class SourcesAndDependencies {
         return Collections.emptyList();
     }
 
-    private List<String> getDynamicallyLoadedImports(CharSequence src) {
+    protected List<String> getDynamicallyLoadedImports(CharSequence src) {
         List<String> importedClassNames = new ArrayList<>();
 
         List<String> importValues = getMatchedStrings(src, IMPORT_PATTERN, 1);
@@ -124,7 +125,7 @@ class SourcesAndDependencies {
         return importedClassNames;
     }
 
-    private List<String> getMatchedStrings(CharSequence source, String pattern, int groupNumber) {
+    protected List<String> getMatchedStrings(CharSequence source, String pattern, int groupNumber) {
         ArrayList<String> result = new ArrayList<>();
         Pattern importPattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = importPattern.matcher(source);
@@ -132,5 +133,15 @@ class SourcesAndDependencies {
             result.add(matcher.group(groupNumber));
         }
         return result;
+    }
+
+    @Nullable
+    protected String extractPackageFromClassname(String className) {
+        int endOfPackageName = className.lastIndexOf('.');
+        if (endOfPackageName != -1) {
+            return className.substring(0, endOfPackageName);
+        } else {
+            return null;
+        }
     }
 }
