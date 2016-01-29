@@ -21,8 +21,13 @@
     }
   }
 
-  .cuba-app-menubar .cuba-main-menu .v-menubar-menuitem-shortcut {
-    padding-left: round($v-unit-size/5);
+  .cuba-app-menubar .cuba-main-menu {
+    .v-menubar-menuitem-shortcut {
+      padding-left: round($v-unit-size/5);
+    }
+    .v-menubar-menuitem-empty-shortcut {
+      padding-left: 0;
+    }
   }
 
   $border-width: first-number($v-border);

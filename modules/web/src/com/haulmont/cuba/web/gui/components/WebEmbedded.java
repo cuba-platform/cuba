@@ -34,12 +34,11 @@ import java.util.UUID;
 
 /**
  * @author gorodnov
- * @version $Id$
  */
 public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> implements Embedded, Component.Disposable {
 
     protected Map<String, String> parameters = null;
-    protected Type type = Type.OBJECT;
+    protected Type type = Type.IMAGE;
     protected ConnectorResource resource;
     protected boolean disposed;
 
@@ -193,6 +192,9 @@ public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> im
                 break;
             case BROWSER:
                 component.setType(com.vaadin.ui.Embedded.TYPE_BROWSER);
+                if (resource == null) {
+                    setSource(UUID.randomUUID() + ".html", new ByteArrayInputStream("<html></html>".getBytes()));
+                }
                 break;
         }
     }
@@ -207,15 +209,17 @@ public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> im
         return disposed;
     }
 
-    private static class EmptyStreamSource implements StreamResource.StreamSource {
+    protected static class EmptyStreamSource implements StreamResource.StreamSource {
 
-        private byte[] emptyImage;
+        public static final String EMPTY_IMAGE_PATH = "/com/haulmont/cuba/web/gui/components/resources/empty.png";
+
+        protected byte[] emptyImage;
 
         @Override
         public InputStream getStream() {
             if (emptyImage == null) {
                 InputStream stream =
-                        getClass().getResourceAsStream("/com/haulmont/cuba/web/gui/components/resources/empty.png");
+                        getClass().getResourceAsStream(EMPTY_IMAGE_PATH);
                 try {
                     emptyImage = IOUtils.toByteArray(stream);
                 } catch (IOException e) {
