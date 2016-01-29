@@ -18,9 +18,9 @@ import java.util.LinkedHashSet;
 
 /**
  * @author artamonov
- * @version $Id$
  */
 public class JXTreeTableExt extends JXTreeTable implements FocusableTable {
+
     protected HashSet<TreePath> expandedPaths;
 
     protected TableFocusManager focusManager = new TableFocusManager(this);
@@ -73,5 +73,10 @@ public class JXTreeTableExt extends JXTreeTable implements FocusableTable {
     @Override
     public TableFocusManager getFocusManager() {
         return focusManager;
+    }
+
+    @Override
+    public void setFocusManager(TableFocusManager focusManager) {
+        this.focusManager = focusManager;
     }
 }
