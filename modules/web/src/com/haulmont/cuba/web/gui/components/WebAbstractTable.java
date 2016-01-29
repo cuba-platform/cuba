@@ -34,7 +34,6 @@ import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.gui.CompositionLayout;
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
@@ -92,7 +91,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     protected Map<Entity, Datasource> fieldDatasources; // lazily initialized WeakHashMap;
 
-    protected CompositionLayout componentComposition;
+    protected VerticalLayout componentComposition;
 
     protected HorizontalLayout topPanel;
 
@@ -543,7 +542,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
         setEditable(false);
 
-        componentComposition = new CompositionLayout(component);
+        componentComposition = new VerticalLayout();
+        componentComposition.addComponent(component);
+
         componentComposition.setSpacing(true);
         componentComposition.setMargin(false);
         componentComposition.setWidth("-1px");
