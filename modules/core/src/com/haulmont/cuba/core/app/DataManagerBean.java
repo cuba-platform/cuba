@@ -5,10 +5,6 @@
 
 package com.haulmont.cuba.core.app;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
@@ -17,14 +13,12 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesManagerAPI;
 import com.haulmont.cuba.core.app.queryresults.QueryResultsManagerAPI;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.CategoryAttributeValue;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.PermissionType;
-import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -41,8 +35,6 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  */
 @Component(DataManager.NAME)
 public class DataManagerBean implements DataManager {
-
-    public static final int MAX_ENTITIES_FOR_ATTRIBUTE_VALUES_BATCH = 100;
 
     private Logger log = LoggerFactory.getLogger(DataManagerBean.class);
 
@@ -107,7 +99,7 @@ public class DataManagerBean implements DataManager {
                 result = resultList.get(0);
 
             if (result instanceof BaseGenericIdEntity && context.getLoadDynamicAttributes()) {
-                fetchDynamicAttributes(Collections.singletonList((BaseGenericIdEntity) result));
+                dynamicAttributesManagerAPI.fetchDynamicAttributes(Collections.singletonList((BaseGenericIdEntity) result));
             }
 
             tx.commit();
@@ -168,7 +160,7 @@ public class DataManagerBean implements DataManager {
             if (context.getView() != null
                     && BaseGenericIdEntity.class.isAssignableFrom(context.getView().getEntityClass())
                     && context.getLoadDynamicAttributes()) {
-                fetchDynamicAttributes((List<BaseGenericIdEntity>) resultList);
+                dynamicAttributesManagerAPI.fetchDynamicAttributes((List<BaseGenericIdEntity>) resultList);
             }
 
             tx.commit();
@@ -321,7 +313,7 @@ public class DataManagerBean implements DataManager {
                 }
 
                 for (BaseGenericIdEntity entity : entitiesToStoreDynamicAttributes) {
-                    storeDynamicAttributes(entity);
+                    dynamicAttributesManagerAPI.storeDynamicAttributes(entity);
                 }
             }
 
@@ -385,96 +377,6 @@ public class DataManagerBean implements DataManager {
                 && ((BaseGenericIdEntity) entity).getDynamicAttributes() != null;
     }
 
-    @SuppressWarnings("unchecked")
-    protected void storeDynamicAttributes(BaseGenericIdEntity entity) {
-        final EntityManager em = persistence.getEntityManager();
-        Map<String, CategoryAttributeValue> dynamicAttributes = entity.getDynamicAttributes();
-        if (dynamicAttributes != null) {
-            Map<String, CategoryAttributeValue> mergedDynamicAttributes = new HashMap<>();
-            for (Map.Entry<String, CategoryAttributeValue> entry : dynamicAttributes.entrySet()) {
-                CategoryAttributeValue categoryAttributeValue = entry.getValue();
-                if (categoryAttributeValue.getCategoryAttribute() == null
-                        && categoryAttributeValue.getCode() != null) {
-                    CategoryAttribute attribute =
-                            dynamicAttributesManagerAPI.getAttributeForMetaClass(entity.getMetaClass(), categoryAttributeValue.getCode());
-                    categoryAttributeValue.setCategoryAttribute(attribute);
-                }
-
-                //remove deleted and empty attributes
-                if (categoryAttributeValue.getDeleteTs() == null && categoryAttributeValue.getValue() != null) {
-                    CategoryAttributeValue mergedCategoryAttributeValue = em.merge(categoryAttributeValue);
-                    mergedCategoryAttributeValue.setCategoryAttribute(categoryAttributeValue.getCategoryAttribute());
-                    mergedDynamicAttributes.put(entry.getKey(), mergedCategoryAttributeValue);
-                } else {
-                    em.remove(categoryAttributeValue);
-                }
-            }
-
-            entity.setDynamicAttributes(mergedDynamicAttributes);
-        }
-    }
-
-    protected <E extends BaseGenericIdEntity> void fetchDynamicAttributes(List<E> entities) {
-        if (CollectionUtils.isNotEmpty(entities)) {
-            Collection<UUID> ids = Collections2.transform(entities, new Function<Entity, UUID>() {
-                @Nullable
-                @Override
-                public UUID apply(@Nullable Entity input) {
-                    return input != null ? input.getUuid() : null;
-                }
-            });
-
-            Multimap<UUID, CategoryAttributeValue> attributeValuesForEntity = HashMultimap.create();
-
-            List<UUID> currentIds = new ArrayList<>();
-            for (UUID id : ids) {
-                currentIds.add(id);
-                if (currentIds.size() >= MAX_ENTITIES_FOR_ATTRIBUTE_VALUES_BATCH) {
-                    handleAttributeValuesForIds(currentIds, attributeValuesForEntity);
-                    currentIds = new ArrayList<>();
-                }
-            }
-            handleAttributeValuesForIds(currentIds, attributeValuesForEntity);
-
-            for (BaseGenericIdEntity entity : entities) {
-                Collection<CategoryAttributeValue> theEntityAttributeValues = attributeValuesForEntity.get(entity.getUuid());
-                Map<String, CategoryAttributeValue> map = new HashMap<>();
-                entity.setDynamicAttributes(map);
-                if (CollectionUtils.isNotEmpty(theEntityAttributeValues)) {
-                    for (CategoryAttributeValue categoryAttributeValue : theEntityAttributeValues) {
-                        CategoryAttribute attribute = categoryAttributeValue.getCategoryAttribute();
-                        if (attribute != null) {
-                            map.put(attribute.getCode(), categoryAttributeValue);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    protected void handleAttributeValuesForIds(List<UUID> currentIds, Multimap<UUID, CategoryAttributeValue> attributeValuesForEntity) {
-        if (CollectionUtils.isNotEmpty(currentIds)) {
-            List<CategoryAttributeValue> allAttributeValues = loadAttributeValues(currentIds);
-            for (CategoryAttributeValue categoryAttributeValue : allAttributeValues) {
-                attributeValuesForEntity.put(categoryAttributeValue.getEntityId(), categoryAttributeValue);
-            }
-        }
-    }
-
-    protected List<CategoryAttributeValue> loadAttributeValues(List<UUID> entityIds) {
-        final EntityManager em = persistence.getEntityManager();
-        View baseAttributeValueView = viewRepository.getView(CategoryAttributeValue.class, View.LOCAL);
-        View baseAttributeView = viewRepository.getView(CategoryAttribute.class, View.LOCAL);
-
-        View view = new View(baseAttributeValueView, null, false)
-                .addProperty("categoryAttribute", new View(baseAttributeView, null, false).addProperty("category"));
-
-        return em.createQuery("select cav from sys$CategoryAttributeValue cav where cav.entityId in :ids", CategoryAttributeValue.class)
-                .setParameter("ids", entityIds)
-                .setView(view)
-                .getResultList();
-    }
-
     protected void persistOrMergeNotDetached(NotDetachedCommitContext context, EntityManager em, Set<Entity> result) {
         List<EntityLoadInfo> newInstances = new ArrayList<>(context.getNewInstanceIds().size());
         for (String str : context.getNewInstanceIds()) {
@@ -506,7 +408,7 @@ public class DataManagerBean implements DataManager {
             }
 
             if (entity instanceof BaseGenericIdEntity) {
-                storeDynamicAttributes((BaseGenericIdEntity) entity);
+                dynamicAttributesManagerAPI.storeDynamicAttributes((BaseGenericIdEntity) entity);
             }
 
             if (entityLoadInfoBuilder.contains(newInstances, entity)) {

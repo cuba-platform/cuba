@@ -6,12 +6,14 @@
 package com.haulmont.cuba.core.app.dynamicattributes;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author degtyarjov
@@ -43,4 +45,14 @@ public interface DynamicAttributesManagerAPI {
 
     @Nullable
     DynamicAttributesCache getCacheIfNewer(Date clientCacheDate);
+
+    /**
+     *  Fetch dynamic attributes from database for each entity
+     */
+    <E extends BaseGenericIdEntity> void fetchDynamicAttributes(List<E> entities);
+
+    /**
+     * Store dynamic attributes from the entity to database
+     */
+    void storeDynamicAttributes(BaseGenericIdEntity entity);
 }
