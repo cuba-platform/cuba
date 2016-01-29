@@ -66,13 +66,16 @@ public class CubaMenuBarWidget extends VMenuBar implements BlurHandler {
                         .append("-submenu-indicator-icon\"")
                         .append("><span class=\"text\">&#x25BA;</span></span></span>");
             } else {
+                itemHTML.append("<span class=\"");
                 String shortcut = "";
                 if (item.hasAttribute("shortcut")) {
                     shortcut = item.getStringAttribute("shortcut");
+                } else {
+                    itemHTML.append(getStylePrimaryName())
+                            .append("-menuitem-empty-shortcut ");
                 }
 
-                itemHTML.append("<span class=\"")
-                        .append(getStylePrimaryName())
+                itemHTML.append(getStylePrimaryName())
                         .append("-menuitem-shortcut\">")
                         .append(shortcut)
                         .append("</span");

@@ -42,6 +42,10 @@
         color: #c0c0c0;
       }
 
+      .#{$primary-stylename}-menuitem-empty-shortcut {
+        padding-left: 0;
+      }
+
       span {
         color: #fff;
         text-shadow: black 1px 1px;
