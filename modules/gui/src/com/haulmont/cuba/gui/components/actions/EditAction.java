@@ -53,6 +53,8 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
 
     protected AfterWindowClosedHandler afterWindowClosedHandler;
 
+    protected Window.CloseListener editorCloseListener;
+
     public interface AfterCommitHandler {
         /**
         * @param entity    new committed entity instance
@@ -175,29 +177,33 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
                                       Datasource parentDs, Map<String, Object> params) {
 
         Window.Editor window = target.getFrame().openEditor(getWindowId(), existingItem, getOpenType(), params, parentDs);
-        window.addCloseListener(actionId -> {
-            // move focus to owner
-            target.requestFocus();
+        if (editorCloseListener == null) {
+            window.addCloseListener(actionId -> {
+                // move focus to owner
+                target.requestFocus();
 
-            if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                Entity editedItem = window.getItem();
-                if (editedItem != null) {
-                    if (parentDs == null) {
-                        //noinspection unchecked
-                        datasource.updateItem(editedItem);
-                    }
-                    afterCommit(editedItem);
-                    if (afterCommitHandler != null) {
-                        afterCommitHandler.handle(editedItem);
+                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                    Entity editedItem = window.getItem();
+                    if (editedItem != null) {
+                        if (parentDs == null) {
+                            //noinspection unchecked
+                            datasource.updateItem(editedItem);
+                        }
+                        afterCommit(editedItem);
+                        if (afterCommitHandler != null) {
+                            afterCommitHandler.handle(editedItem);
+                        }
                     }
                 }
-            }
 
-            afterWindowClosed(window);
-            if (afterWindowClosedHandler != null) {
-                afterWindowClosedHandler.handle(window);
-            }
-        });
+                afterWindowClosed(window);
+                if (afterWindowClosedHandler != null) {
+                    afterWindowClosedHandler.handle(window);
+                }
+            });
+        } else {
+            window.addCloseListener(editorCloseListener);
+        }
     }
 
     /**
@@ -276,5 +282,14 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
      */
     public void setAfterWindowClosedHandler(AfterWindowClosedHandler afterWindowClosedHandler) {
         this.afterWindowClosedHandler = afterWindowClosedHandler;
+    }
+
+    /**
+     * Overwrites default close listener for editor window.
+     *
+     * @param editorCloseListener new close listener
+     */
+    public void setEditorCloseListener(Window.CloseListener editorCloseListener) {
+        this.editorCloseListener = editorCloseListener;
     }
 }
