@@ -7,9 +7,10 @@ package com.haulmont.cuba.desktop.sys.vcl;
 
 /**
  * @author artamonov
- * @version $Id$
  */
 public interface FocusableTable {
 
     TableFocusManager getFocusManager();
+
+    void setFocusManager(TableFocusManager focusManager);
 }

@@ -13,7 +13,6 @@ import java.awt.event.KeyEvent;
 
 /**
  * @author artamonov
- * @version $Id$
  */
 public class JXTableExt extends JXTable implements FocusableTable {
 
@@ -42,5 +41,10 @@ public class JXTableExt extends JXTable implements FocusableTable {
     @Override
     public TableFocusManager getFocusManager() {
         return focusManager;
+    }
+
+    @Override
+    public void setFocusManager(TableFocusManager focusManager) {
+        this.focusManager = focusManager;
     }
 }
