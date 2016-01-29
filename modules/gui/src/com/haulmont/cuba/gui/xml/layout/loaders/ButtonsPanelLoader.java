@@ -5,16 +5,15 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.bali.util.ReflectionHelper;
-import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.ButtonsPanel;
 import com.haulmont.cuba.gui.components.Component;
+import org.apache.commons.lang.StringUtils;
 
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 
 /**
  * @author gorodnov
- * @version $Id$
  */
 public class ButtonsPanelLoader extends ContainerLoader<ButtonsPanel> {
 
@@ -53,7 +52,7 @@ public class ButtonsPanelLoader extends ContainerLoader<ButtonsPanel> {
             loadSubComponents();
         } else {
             String className = element.attributeValue("providerClass");
-            if (className != null) {
+            if (StringUtils.isNotEmpty(className)) {
                 Class<ButtonsPanel.Provider> clazz = ReflectionHelper.getClass(className);
 
                 try {
@@ -63,9 +62,6 @@ public class ButtonsPanelLoader extends ContainerLoader<ButtonsPanel> {
                 } catch (Throwable e) {
                     throw new RuntimeException("Unable to apply buttons provider", e);
                 }
-            } else {
-                throw new GuiDevelopmentException("'buttonsPanel' element must contain 'class' attribute or at least one 'button' element",
-                        context.getFullFrameId());
             }
         }
     }
