@@ -11,4 +11,4 @@ project.ext.vaadinClient = [group: 'com.vaadin', name: 'vaadin-client', version:
 project.ext.vaadinCompiler = [group: 'com.vaadin', name: 'vaadin-client-compiler', version: vaadinVersion]
 project.ext.vaadinThemes = [group: 'com.vaadin', name: 'vaadin-themes', version: vaadinVersion]
 
-project.ext.eclipselink = [group: 'com.haulmont.thirdparty', name: 'eclipselink', version: '2.6.1.cuba6']
+project.ext.eclipselink = [group: 'com.haulmont.thirdparty', name: 'eclipselink', version: '2.6.1.cuba7']

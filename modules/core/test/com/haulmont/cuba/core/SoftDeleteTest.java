@@ -184,6 +184,41 @@ public class SoftDeleteTest {
     }
 
     @Test
+    public void testOneToManyLazy2() {
+        System.out.println("===================== BEGIN testOneToManyLazy2 =====================");
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            EntityManager em = cont.persistence().getEntityManager();
+            em.setSoftDeletion(false);
+
+            User user = em.find(User.class, userId);
+
+            List<UserRole> userRoles = user.getUserRoles();
+            assertEquals(2, userRoles.size());
+            for (UserRole ur : userRoles) {
+                assertNotNull(ur.getRole());
+            }
+
+            tx.commit();
+        }
+
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            EntityManager em = cont.persistence().getEntityManager();
+
+            User user = em.find(User.class, userId);
+
+            List<UserRole> userRoles = user.getUserRoles();
+            assertEquals(1, userRoles.size());
+            for (UserRole ur : userRoles) {
+                assertNotNull(ur.getRole());
+            }
+
+            tx.commit();
+        }
+
+        System.out.println("===================== END testOneToManyLazy2 =====================");
+    }
+
+    @Test
     public void testOneToMany_CleanupMode() {
         System.out.println("===================== BEGIN testOneToMany_CleanupMode =====================");
 

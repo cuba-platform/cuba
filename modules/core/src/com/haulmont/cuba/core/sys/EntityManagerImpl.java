@@ -71,7 +71,7 @@ public class EntityManagerImpl implements EntityManager {
     @Override
     public void setSoftDeletion(boolean softDeletion) {
         this.softDeletion = softDeletion;
-        delegate.setProperty("cuba.disableSoftDelete", !softDeletion);
+        disableSoftDelete(!softDeletion);
     }
 
     @Override
@@ -99,7 +99,7 @@ public class EntityManagerImpl implements EntityManager {
             return (T) destEntity;
         }
 
-        T merged = delegate.merge(entity);
+        T merged = internalMerge(entity);
         support.registerInstance(merged, this);
         return merged;
     }
@@ -127,7 +127,7 @@ public class EntityManagerImpl implements EntityManager {
         log.debug("remove {}", entity);
 
         if (PersistenceHelper.isDetached(entity)) {
-            entity = delegate.merge(entity);
+            entity = internalMerge(entity);
         }
         if (entity instanceof SoftDelete && softDeletion) {
             TimeSource timeSource = AppBeans.get(TimeSource.NAME);
@@ -352,5 +352,18 @@ public class EntityManagerImpl implements EntityManager {
         }
         //noinspection unchecked
         return (T) reloadedRef;
+    }
+
+    protected <T extends Entity> T internalMerge(T entity) {
+        try {
+            disableSoftDelete(true);
+            return delegate.merge(entity);
+        } finally {
+            disableSoftDelete(!softDeletion);
+        }
+    }
+
+    protected void disableSoftDelete(boolean disable) {
+        delegate.setProperty("cuba.disableSoftDelete", disable);
     }
 }
