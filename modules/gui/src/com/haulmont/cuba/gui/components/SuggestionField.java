@@ -48,6 +48,15 @@ public interface SuggestionField extends SearchField {
         void onEnterKeyPressed(String currentSearchString);
     }
 
+    interface ArrowDownActionHandler {
+        /**
+         * Called by component if user pressed ARROW_DOWN key without search action.
+         *
+         * @param currentSearchString search string as is.
+         */
+        void onArrowDownKeyPressed(String currentSearchString);
+    }
+
     int getAsyncSearchTimeoutMs();
     void setAsyncSearchTimeoutMs(int asyncSearchTimeoutMs);
 
@@ -56,6 +65,9 @@ public interface SuggestionField extends SearchField {
 
     EnterActionHandler getEnterActionHandler();
     void setEnterActionHandler(EnterActionHandler enterActionHandler);
+
+    ArrowDownActionHandler getArrowDownActionHandler();
+    void setArrowDownActionHandler(ArrowDownActionHandler arrowDownActionHandler);
 
     void showSuggestions(List<? extends Entity> suggestions);
 }

@@ -81,6 +81,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
 
     protected String inputPrompt;
     protected String currentSearchComponentText;
+    private ArrowDownActionHandler arrowDownActionHandler;
 
     public DesktopSuggestionField() {
         composition = new JPanel();
@@ -187,6 +188,20 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
 
                         if (e.getKeyChar() != '\n') {
                             handleSearchInput();
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (e.getKeyCode() == KeyEvent.VK_DOWN
+                                && arrowDownActionHandler != null
+                                && !comboBox.isPopupVisible()) {
+                            arrowDownActionHandler.onArrowDownKeyPressed(getComboBoxEditorField().getText());
                         }
                     }
                 });
@@ -781,6 +796,16 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
     @Override
     public void setEnterActionHandler(EnterActionHandler enterActionHandler) {
         this.enterActionHandler = enterActionHandler;
+    }
+
+    @Override
+    public ArrowDownActionHandler getArrowDownActionHandler() {
+        return arrowDownActionHandler;
+    }
+
+    @Override
+    public void setArrowDownActionHandler(ArrowDownActionHandler arrowDownActionHandler) {
+        this.arrowDownActionHandler = arrowDownActionHandler;
     }
 
     @Override
