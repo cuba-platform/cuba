@@ -568,6 +568,21 @@ public class MetadataTools {
         return null;
     }
 
+    @Nullable
+    public String getDatabaseColumn(MetaProperty metaProperty) {
+        if (!isPersistent(metaProperty))
+            return null;
+        Column column = metaProperty.getAnnotatedElement().getAnnotation(Column.class);
+        if (column != null) {
+            return StringUtils.isEmpty(column.name()) ? metaProperty.getName() : column.name();
+        }
+        JoinColumn joinColumn = metaProperty.getAnnotatedElement().getAnnotation(JoinColumn.class);
+        if (joinColumn != null) {
+            return StringUtils.isEmpty(joinColumn.name()) ? metaProperty.getName() : joinColumn.name();
+        }
+        return null;
+    }
+
     /**
      * @return list of related properties defined in {@link com.haulmont.chile.core.annotations.MetaProperty#related()}
      * or empty list

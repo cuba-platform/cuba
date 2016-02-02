@@ -14,13 +14,14 @@ import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
 import com.haulmont.cuba.security.global.UserSession;
+import org.springframework.core.Ordered;
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import org.springframework.stereotype.Component;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
@@ -28,6 +29,7 @@ import javax.sql.DataSource;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.List;
 
 /**
  * @author krivopustov
@@ -35,6 +37,8 @@ import java.lang.reflect.Proxy;
  */
 @Component(Persistence.NAME)
 public class PersistenceImpl implements Persistence {
+
+    public static final String RUN_BEFORE_COMMIT_ATTR = "cuba.runBeforeCommit";
 
     private volatile boolean softDeletion = true;
 
@@ -161,7 +165,7 @@ public class PersistenceImpl implements Persistence {
         return new EntityManagerContextSynchronization();
     }
 
-    private class EntityManagerContextSynchronization implements TransactionSynchronization {
+    private class EntityManagerContextSynchronization implements TransactionSynchronization, Ordered {
 
         private EntityManagerContext context;
 
@@ -182,6 +186,18 @@ public class PersistenceImpl implements Persistence {
 
         @Override
         public void beforeCommit(boolean readOnly) {
+            if (readOnly)
+                return;
+
+            EntityManagerContext context = contextHolder.get();
+            if (context != null) {
+                List<Runnable> list = context.getAttribute(RUN_BEFORE_COMMIT_ATTR);
+                if (list != null && !list.isEmpty()) {
+                    for (Runnable runnable : list) {
+                        runnable.run();
+                    }
+                }
+            }
         }
 
         @Override
@@ -195,6 +211,11 @@ public class PersistenceImpl implements Persistence {
         @Override
         public void afterCompletion(int status) {
             contextHolder.remove();
+        }
+
+        @Override
+        public int getOrder() {
+            return 200;
         }
     }
 

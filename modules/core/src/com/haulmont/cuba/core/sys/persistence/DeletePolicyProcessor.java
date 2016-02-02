@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.core.sys.persistence;
 
+import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.EntityManager;
@@ -14,15 +15,15 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
-import com.haulmont.cuba.core.global.DeletePolicy;
-import com.haulmont.cuba.core.global.DeletePolicyException;
-import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.PersistenceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -40,6 +41,7 @@ public class DeletePolicyProcessor {
     protected BaseEntity entity;
     protected MetaClass metaClass;
 
+    protected Persistence persistence;
     protected EntityManager entityManager;
 
     @Inject
@@ -47,7 +49,8 @@ public class DeletePolicyProcessor {
 
     @Inject
     public void setPersistence(Persistence persistence) {
-        entityManager = persistence.getEntityManager();
+        this.persistence = persistence;
+        this.entityManager = persistence.getEntityManager();
     }
 
     public BaseEntity getEntity() {
@@ -126,7 +129,7 @@ public class DeletePolicyProcessor {
                         if (!isCollectionEmpty(property))
                             throw new DeletePolicyException(this.metaClass.getName(), metaClass.getName());
                     } else {
-                        Object value = entity.getValue(property.getName());
+                        Object value = getReference(entity, property);
                         if (value != null)
                             throw new DeletePolicyException(this.metaClass.getName(), metaClass.getName());
                     }
@@ -140,11 +143,17 @@ public class DeletePolicyProcessor {
                             }
                         }
                     } else {
-                        BaseEntity value = entity.getValue(property.getName());
+                        BaseEntity value = getReference(entity, property);
                         if (value != null && checkIfEntityBelongsToMaster(property, value)) {
-                            entityManager.remove(value);
                             if (!(value instanceof SoftDelete)) {
-                                entity.setValue(property.getName(), null);
+                                if (PersistenceHelper.isLoaded(entity, property.getName())) {
+                                    entity.setValue(property.getName(), null);
+                                    entityManager.remove(value);
+                                } else {
+                                    hardDeleteNotLoadedReference(entity, property, value);
+                                }
+                            } else {
+                                entityManager.remove(value);
                             }
                         }
                     }
@@ -153,10 +162,78 @@ public class DeletePolicyProcessor {
                     if (property.getRange().getCardinality().isMany()) {
                         throw new UnsupportedOperationException("Unable to unlink nested collection items");
                     } else {
-                        entity.setValue(property.getName(), null);
+                        setReferenceNull(entity, property);
                     }
                     break;
             }
+        }
+    }
+
+    protected void hardDeleteNotLoadedReference(BaseEntity entity, MetaProperty property, BaseEntity reference) {
+        List<Runnable> list = persistence.getEntityManagerContext().getAttribute(PersistenceImpl.RUN_BEFORE_COMMIT_ATTR);
+        if (list == null) {
+            list = new ArrayList<>();
+            persistence.getEntityManagerContext().setAttribute(PersistenceImpl.RUN_BEFORE_COMMIT_ATTR, list);
+        }
+        list.add(() -> {
+            MetadataTools metadataTools = metadata.getTools();
+            QueryRunner queryRunner = new QueryRunner();
+            try {
+                String column = metadataTools.getDatabaseColumn(property);
+                if (column != null) { // is null for mapped-by property
+                    String updateMasterSql = "update " + metadataTools.getDatabaseTable(metaClass)
+                            + " set " + column + " = null where "
+                            + metadataTools.getPrimaryKeyName(metaClass) + " = ?";
+                    log.debug("Hard delete unfetched reference: " + updateMasterSql + ", bind: [" + entity.getId() + "]");
+                    queryRunner.update(entityManager.getConnection(), updateMasterSql, persistence.getDbTypeConverter().getSqlObject(entity.getId()));
+                }
+
+                MetaClass refMetaClass = property.getRange().asClass();
+                String deleteRefSql = "delete from " + metadataTools.getDatabaseTable(refMetaClass) + " where "
+                        + metadataTools.getPrimaryKeyName(refMetaClass) + " = ?";
+                log.debug("Hard delete unfetched reference: " + deleteRefSql + ", bind: [" + reference.getId() + "]");
+                queryRunner.update(entityManager.getConnection(), deleteRefSql, persistence.getDbTypeConverter().getSqlObject(reference.getId()));
+            } catch (SQLException e) {
+                throw new RuntimeException("Error processing deletion of " + entity, e);
+            }
+        });
+    }
+
+    protected void setReferenceNull(Entity entity, MetaProperty property) {
+        if (PersistenceHelper.isLoaded(entity, property.getName())) {
+            entity.setValue(property.getName(), null);
+        } else {
+            List<Runnable> list = persistence.getEntityManagerContext().getAttribute(PersistenceImpl.RUN_BEFORE_COMMIT_ATTR);
+            if (list == null) {
+                list = new ArrayList<>();
+                persistence.getEntityManagerContext().setAttribute(PersistenceImpl.RUN_BEFORE_COMMIT_ATTR, list);
+            }
+            list.add(() -> {
+                QueryRunner queryRunner = new QueryRunner();
+                MetaClass entityMetaClass = metadata.getClassNN(entity.getClass());
+                MetadataTools metadataTools = metadata.getTools();
+                String sql = "update " + metadataTools.getDatabaseTable(entityMetaClass)
+                        + " set " + metadataTools.getDatabaseColumn(property) + " = null where "
+                        + metadataTools.getPrimaryKeyName(entityMetaClass) + " = ?";
+                try {
+                    log.debug("Set reference to null: " + sql + ", bind: [" + entity.getId() + "]");
+                    queryRunner.update(entityManager.getConnection(), sql, persistence.getDbTypeConverter().getSqlObject(entity.getId()));
+                } catch (SQLException e) {
+                    throw new RuntimeException("Error processing deletion of " + entity, e);
+                }
+            });
+        }
+    }
+
+    protected BaseEntity getReference(Entity entity, MetaProperty property) {
+        if (PersistenceHelper.isLoaded(entity, property.getName()))
+            return entity.getValue(property.getName());
+        else {
+            Query query = entityManager.createQuery(
+                    "select e." + property.getName() + " from " + entity.getMetaClass().getName() + " e where e.id = ?1");
+            query.setParameter(1, entity.getId());
+            Object refEntity = query.getFirstResult();
+            return (BaseEntity) refEntity;
         }
     }
 
@@ -204,15 +281,18 @@ public class DeletePolicyProcessor {
         query.setParameter(1, entity.getId());
         List<Entity> list = query.getResultList();
 
+        // If the property is not loaded, it means it was not modified and further check is not needed
+        if (!PersistenceHelper.isLoaded(entity, property.getName())) {
+            return list;
+        }
         // Check whether the collection items still belong to the master entity, because they could be changed in the
-        // current transaction that not affected the database yet
+        // current transaction that did not affect the database yet
         List<Entity> result = new ArrayList<>(list.size());
         for (Entity item : list) {
             Entity master = item.getValue(invPropName);
             if (entity.equals(master))
                 result.add(item);
         }
-
         return result;
     }
 
@@ -264,7 +344,7 @@ public class DeletePolicyProcessor {
                     }
                 }
             } else {
-                e.setValue(property.getName(), null);
+                setReferenceNull(e, property);
             }
         }
     }

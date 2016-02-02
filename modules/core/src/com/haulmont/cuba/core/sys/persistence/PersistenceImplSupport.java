@@ -20,6 +20,7 @@ import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChan
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.sessions.UnitOfWork;
+import org.springframework.core.Ordered;
 import org.springframework.transaction.support.ResourceHolderSupport;
 import org.springframework.transaction.support.ResourceHolderSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -179,7 +180,7 @@ public class PersistenceImplSupport {
     }
 
     protected class ContainerResourceSynchronization
-            extends ResourceHolderSynchronization<ContainerResourceHolder, String> {
+            extends ResourceHolderSynchronization<ContainerResourceHolder, String> implements Ordered {
 
         protected final ContainerResourceHolder container;
 
@@ -221,6 +222,11 @@ public class PersistenceImplSupport {
                 }
             }
             super.afterCompletion(status);
+        }
+
+        @Override
+        public int getOrder() {
+            return 100;
         }
     }
 
