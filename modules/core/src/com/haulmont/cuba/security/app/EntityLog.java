@@ -286,6 +286,9 @@ public class EntityLog implements EntityLogAPI {
     }
 
     protected void writeAttribute(Properties properties, BaseEntity entity, String attr) {
+        if (!PersistenceHelper.isLoaded(entity, attr))
+            return;
+
         Object value = entity.getValue(attr);
         properties.setProperty(attr, stringify(value));
 
