@@ -13,14 +13,15 @@
         <collectionDatasource id="historyDs" class="com.haulmont.cuba.security.entity.ScreenHistoryEntity" view="browse"
                 datasourceClass="com.haulmont.cuba.web.app.ui.security.history.ScreenHistoryDatasource">
             <query>
-                <![CDATA[select h from sec$ScreenHistory h where (h.user.id = :param$userId
-                and h.substitutedUser.id is null or h.substitutedUser.id = :param$userId) order by h.createTs desc]]>
+                <![CDATA[select h from sec$ScreenHistory h
+                where ((h.user.id = :custom$userId and h.substitutedUser is null) or h.substitutedUser.id = :custom$userId)
+                order by h.createTs desc]]>
             </query>
         </collectionDatasource>
     </dsContext>
 
     <layout expand="historyTable">
-        <table id="historyTable" width="100%" height="100%">
+        <table id="historyTable" width="100%">
             <columns>
                 <column id="caption" caption="msg://cardHistoryBrowse.name"/>
                 <column id="createTs" caption="msg://cardHistoryBrowse.createTs"/>
