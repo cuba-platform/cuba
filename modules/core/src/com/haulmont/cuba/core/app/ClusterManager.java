@@ -58,6 +58,8 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
     @Inject
     protected ClusterConfig clusterConfig;
 
+    protected ThreadLocal<Boolean> forceSyncSending = new ThreadLocal<>();
+
     protected static final String STATE_MAGIC = "CUBA_STATE";
 
     public ClusterManager() {
@@ -74,19 +76,54 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
         if (channel == null)
             return;
 
-        log.debug("Sending message " + message.getClass() + ": " + message);
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                byte[] bytes = SerializationSupport.serialize(message);
-                Message msg = new Message(null, null, bytes);
-                try {
-                    channel.send(msg);
-                } catch (Exception e) {
-                    log.error("Error sending message", e);
+        Boolean sync = forceSyncSending.get();
+        if (sync != null && sync) {
+            internalSend(message, true);
+        } else {
+            log.trace("Submitting message " + message + " to send asynchronously");
+            executor.submit(new Runnable() {
+                @Override
+                public void run() {
+                    internalSend(message, false);
                 }
-            }
-        });
+            });
+        }
+    }
+
+    @Override
+    public void sendSync(Serializable message) {
+        if (channel == null)
+            return;
+
+        internalSend(message, true);
+    }
+
+    protected void internalSend(Serializable message, boolean sync) {
+        log.debug("Sending message " + message.getClass() + ": " + message);
+        byte[] bytes = SerializationSupport.serialize(message);
+        Message msg = new Message(null, null, bytes);
+        if (sync) {
+            msg.setFlag(Message.Flag.RSVP);
+        }
+        try {
+            channel.send(msg);
+        } catch (Exception e) {
+            log.error("Error sending message", e);
+        }
+    }
+
+    @Override
+    public boolean getSyncSendingForCurrentThread() {
+        return forceSyncSending.get() == null ? false : forceSyncSending.get();
+    }
+
+    @Override
+    public void setSyncSendingForCurrentThread(boolean sync) {
+        if (sync) {
+            forceSyncSending.set(true);
+        } else {
+            forceSyncSending.remove();
+        }
     }
 
     @Override

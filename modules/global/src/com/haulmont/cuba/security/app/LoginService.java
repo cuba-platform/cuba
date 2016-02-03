@@ -40,7 +40,14 @@ public interface LoginService {
      * @param login    login name
      * @param password encrypted password
      * @param locale   client locale
-     * @param params   login params
+     * @param params   map of login parameters. Supported parameters are:
+     *                 <ul>
+     *                 <li>"ClientType": "WEB" or "DESKTOP". It is used to check the "cuba.gui.loginToClient" specific
+     *                      permission.</li>
+     *                 <li>"cuba.syncNewUserSessionReplication": true or false. Indicates that a new user session
+     *                      created on login should be sent to the cluster synchronously. Overrides the application property
+     *                      with the same name.</li>
+     *                 </ul>
      * @return created user session
      * @throws LoginException in case of unsuccessful login
      */

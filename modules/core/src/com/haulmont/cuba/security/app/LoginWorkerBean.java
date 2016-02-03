@@ -5,6 +5,8 @@
 package com.haulmont.cuba.security.app;
 
 import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.app.ClusterManagerAPI;
+import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.remoting.RemoteClientInfo;
 import com.haulmont.cuba.security.entity.RememberMeToken;
@@ -55,6 +57,9 @@ public class LoginWorkerBean implements LoginWorker {
 
     @Inject
     protected TrustedLoginHandler trustedLoginHandler;
+
+    @Inject
+    protected ClusterManagerAPI clusterManager;
 
     @Inject
     public void setConfiguration(Configuration configuration) {
@@ -127,7 +132,18 @@ public class LoginWorkerBean implements LoginWorker {
 
             tx.commit();
 
-            userSessionManager.storeSession(session);
+            Boolean sync = (Boolean) params.get(ServerConfig.SYNC_NEW_USER_SESSION_REPLICATION_PROP);
+            if (sync != null && sync) {
+                boolean saved = clusterManager.getSyncSendingForCurrentThread();
+                clusterManager.setSyncSendingForCurrentThread(true);
+                try {
+                    userSessionManager.storeSession(session);
+                } finally {
+                    clusterManager.setSyncSendingForCurrentThread(saved);
+                }
+            } else {
+                userSessionManager.storeSession(session);
+            }
 
             return session;
         } finally {

@@ -19,6 +19,8 @@ import com.haulmont.cuba.core.config.defaults.*;
 @Source(type = SourceType.APP)
 public interface ServerConfig extends Config {
 
+    String SYNC_NEW_USER_SESSION_REPLICATION_PROP = "cuba.syncNewUserSessionReplication";
+
     /**
      * @return URL of a user session provider - usually the main middleware unit.
      * This URL is used by middleware units which don't login themselves but get existing sessions from the main app.
@@ -128,6 +130,13 @@ public interface ServerConfig extends Config {
     @Property("cuba.clusterMessageSendingThreadPoolSize")
     @DefaultInt(100)
     int getClusterMessageSendingThreadPoolSize();
+
+    /**
+     * Indicates that a new user session created on login should be sent to the cluster synchronously.
+     */
+    @Property(SYNC_NEW_USER_SESSION_REPLICATION_PROP)
+    @DefaultBoolean(false)
+    boolean getSyncNewUserSessionReplication();
 
     @Property("cuba.prettyTimeProperties")
     @DefaultString("")

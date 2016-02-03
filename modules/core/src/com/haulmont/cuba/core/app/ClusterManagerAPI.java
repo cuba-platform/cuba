@@ -23,6 +23,25 @@ public interface ClusterManagerAPI {
     void send(Serializable message);
 
     /**
+     * Send a message to all active cluster nodes synchronously.
+     * @param message   serializable message
+     */
+    void sendSync(Serializable message);
+
+    /**
+     * @return whether the synchronous sending is forced for the current thread
+     * @see #setSyncSendingForCurrentThread(boolean)
+     */
+    boolean getSyncSendingForCurrentThread();
+
+    /**
+     * Forces synchronous sending for the current thread. It means that the {@link #send(Serializable)} method will
+     * send the message in the current thread and block until returning from the clustering implementation.
+     * @param sync true to force synchronous sending
+     */
+    void setSyncSendingForCurrentThread(boolean sync);
+
+    /**
      * Subscribe to messages from other cluster nodes.
      * @param messageClass  the class of messages we want to be notified
      * @param listener      listener instance

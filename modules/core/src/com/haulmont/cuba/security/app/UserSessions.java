@@ -386,8 +386,12 @@ public final class UserSessions implements UserSessionsAPI, AppContext.Listener 
     public void add(UserSession session) {
         UserSessionInfo usi = new UserSessionInfo(session, timeSource.currentTimeMillis());
         cache.put(session.getId(), usi);
-        if (!session.isSystem())
-            clusterManager.send(usi);
+        if (!session.isSystem()) {
+            if (serverConfig.getSyncNewUserSessionReplication())
+                clusterManager.sendSync(usi);
+            else
+                clusterManager.send(usi);
+        }
         Object[] objects = decode();
         if (objects != null) {
             int licensed = (int) objects[5];
