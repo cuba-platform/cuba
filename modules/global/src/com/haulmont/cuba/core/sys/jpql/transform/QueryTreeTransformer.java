@@ -215,7 +215,7 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
 
     public void replaceWithSelectId() {
         PathNode returnedPathNode = getFirstReturnedPathNode();
-        if (returnedPathNode != null && (returnedPathNode.getChildCount() == 0 || getFirstReturnedPathNode().getChildCount() > 1)) {
+        if (returnedPathNode != null) {
             returnedPathNode.addChild(new CommonTree(new CommonToken(JPA2Lexer.WORD, "id")));
         }
     }

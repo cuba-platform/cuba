@@ -8,14 +8,11 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
-import com.haulmont.cuba.core.sys.jpql.transform.QueryTransformerAstBased;
 import org.junit.Test;
 
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class QueryParserAstBasedTest {
 
@@ -116,10 +113,44 @@ public class QueryParserAstBasedTest {
         assertFalse(parser.hasIsNullCondition("model"));
     }
 
+    @Test
+    public void testGetNestedEntityNameIfNestedSelected() throws Exception {
+        DomainModel model = prepareDomainModel();
+        QueryParserAstBased parser = new QueryParserAstBased(model,
+                "select h.group from sec$Constraint u, sec$GroupHierarchy h where h.userGroup = :par"
+        );
+        assertEquals("sec$Group", parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
+
+        parser = new QueryParserAstBased(model,
+                "select h.parent.other from sec$GroupHierarchy h where h.userGroup = :par"
+        );
+        assertEquals("sec$GroupHierarchy", parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
+
+        parser = new QueryParserAstBased(model,
+                "select h.parent.other.group from sec$GroupHierarchy h where h.userGroup = :par"
+        );
+        assertEquals("sec$Group", parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
+
+        parser = new QueryParserAstBased(model,
+                "select g from sec$GroupHierarchy h join h.group g where h.userGroup = :par"
+        );
+        assertEquals("sec$Group", parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
+
+        parser = new QueryParserAstBased(model,
+                "select h from sec$Constraint u, sec$GroupHierarchy h where h.userGroup = :par"
+        );
+        assertNull(parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
+
+        parser = new QueryParserAstBased(model,
+                "select h.parent.other.createdBy from sec$GroupHierarchy h where h.userGroup = :par"
+        );
+        assertNull(parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
+    }
+
     private DomainModel prepareDomainModel() {
         EntityBuilder builder = new EntityBuilder();
         builder.startNewEntity("sec$GroupHierarchy");
-        builder.addStringAttribute("group");
+        builder.addReferenceAttribute("group", "sec$Group");
         builder.addStringAttribute("createdBy");
         builder.addReferenceAttribute("parent", "sec$GroupHierarchy");
         builder.addReferenceAttribute("other", "sec$GroupHierarchy");
@@ -132,6 +163,7 @@ public class QueryParserAstBasedTest {
         Entity constraintEntity = builder.produce();
 
         Entity userEntity = builder.produceImmediately("sec$User", "login");
-        return new DomainModel(groupHierarchy, constraintEntity, userEntity);
+        Entity groupEntity = builder.produceImmediately("sec$Group", "name");
+        return new DomainModel(groupHierarchy, constraintEntity, userEntity, groupEntity);
     }
 }

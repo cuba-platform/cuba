@@ -4,6 +4,8 @@
  */
 package com.haulmont.cuba.core.global;
 
+import com.sun.istack.internal.Nullable;
+
 import java.util.Set;
 
 /**
@@ -30,4 +32,12 @@ public interface QueryParser {
     boolean isEntitySelect(String targetEntity);
 
     boolean hasIsNullCondition(String attribute);
+
+    /**
+     * @return Entity name if not main entity name is returned, otherwise null
+     * Example: select u.group from sec$User u -> sec$Group
+     * Example: select g from sec$User u join u.group g -> sec$Group
+     */
+    @Nullable
+    String getEntityNameIfSecondaryReturnedInsteadOfMain();
 }

@@ -6,10 +6,9 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.sys.PerformanceLog;
-import com.haulmont.cuba.core.sys.jpql.DomainModel;
-import com.haulmont.cuba.core.sys.jpql.ErrorRec;
-import com.haulmont.cuba.core.sys.jpql.QueryErrorsFoundException;
-import com.haulmont.cuba.core.sys.jpql.QueryTreeAnalyzer;
+import com.haulmont.cuba.core.sys.jpql.*;
+import com.haulmont.cuba.core.sys.jpql.model.Attribute;
+import com.haulmont.cuba.core.sys.jpql.model.Entity;
 import com.haulmont.cuba.core.sys.jpql.transform.ParameterCounter;
 import com.haulmont.cuba.core.sys.jpql.tree.IdentificationVariableNode;
 import com.haulmont.cuba.core.sys.jpql.tree.PathNode;
@@ -33,10 +32,12 @@ import java.util.Set;
 @Component(QueryParser.NAME)
 @PerformanceLog
 public class QueryParserAstBased implements QueryParser {
-    private String query;
-    private QueryTreeAnalyzer queryTreeAnalyzer;
+    protected DomainModel model;
+    protected String query;
+    protected QueryTreeAnalyzer queryTreeAnalyzer;
 
     public QueryParserAstBased(DomainModel model, String query) throws RecognitionException {
+        this.model = model;
         this.query = query;
         initQueryAnalyzer(model, query);
     }
@@ -111,5 +112,44 @@ public class QueryParserAstBased implements QueryParser {
             }
         }
         return false;
+    }
+
+    @Override
+    public String getEntityNameIfSecondaryReturnedInsteadOfMain() {
+        List<PathNode> returnedPathNodes = queryTreeAnalyzer.getReturnedPathNodes();
+        if (CollectionUtils.isEmpty(returnedPathNodes) || returnedPathNodes.size() > 1) {
+            return null;
+        }
+
+        QueryVariableContext rootQueryVariableContext = queryTreeAnalyzer.getRootQueryVariableContext();
+        PathNode pathNode = returnedPathNodes.get(0);
+        if (pathNode.getChildren() == null) {
+            Entity entity = rootQueryVariableContext.getEntityByVariableName(pathNode.getEntityVariableName());
+            if (!entity.getName().equals(getEntityName())) {
+                return entity.getName();
+            }
+            return null;
+        }
+
+        String entityName = getEntityName();
+        Entity entity;
+        try {
+            entity = model.getEntityByName(entityName);
+
+            for (int i = 0; i < pathNode.getChildCount(); i++) {
+                String fieldName = pathNode.getChild(i).toString();
+                Attribute entityAttribute = entity.getAttributeByName(fieldName);
+                if (entityAttribute != null && entityAttribute.isEntityReferenceAttribute()) {
+                    entityName = entityAttribute.getReferencedEntityName();
+                    entity = model.getEntityByName(entityName);
+                } else {
+                    return null;
+                }
+            }
+        } catch (UnknownEntityNameException e) {
+            throw new RuntimeException("Could not find entity by name " + entityName, e);
+        }
+
+        return entity != null ? entity.getName() : null;
     }
 }

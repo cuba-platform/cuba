@@ -8,6 +8,7 @@ import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.apache.commons.lang.time.DateUtils;
@@ -31,7 +32,7 @@ public class DataManagerTest {
 
     @ClassRule
     public static TestContainer cont = TestContainer.Common.INSTANCE;
-    
+
     protected DataManager dataManager;
 
     @Before
@@ -85,7 +86,7 @@ public class DataManagerTest {
 
         LoadContext<Server> loadContext = LoadContext.create(Server.class);
         loadContext.setQueryString("select s from " + PersistenceHelper.getEntityName(Server.class) + " s");
-        
+
         List<Server> list = dataManager.loadList(loadContext);
         assertTrue(list.size() > 0);
     }
@@ -107,16 +108,12 @@ public class DataManagerTest {
 
     @Test
     public void testAssociatedResult() throws Exception {
-        LoadContext<User> loadContext = LoadContext.create(User.class);
+        LoadContext<Group> loadContext = LoadContext.create(Group.class);
         loadContext.setQueryString("select u.group from sec$User u where u.id = :userId")
                 .setParameter("userId", UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
 
-        try {
-            dataManager.loadList(loadContext);
-            fail();
-        } catch (DevelopmentException e) {
-            assertEquals("DataManager cannot execute query for single attributes", e.getMessage());
-        }
+        List<Group> groups = dataManager.loadList(loadContext);
+        assertEquals(1, groups.size());
     }
 
     @Test

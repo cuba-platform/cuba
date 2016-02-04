@@ -127,7 +127,9 @@ public class QueryImpl<T> implements TypedQuery<T> {
     private String transformQueryString() {
         String result = expandMacros(queryString);
 
-        String entityName = QueryTransformerFactory.createParser(result).getEntityName();
+        QueryParser parser = QueryTransformerFactory.createParser(result);
+
+        String entityName = parser.getEntityName();
         Class effectiveClass = metadata.getExtendedEntities().getEffectiveClass(entityName);
         String effectiveEntityName = metadata.getSession().getClassNN(effectiveClass).getName();
         if (!effectiveEntityName.equals(entityName)) {
@@ -146,6 +148,15 @@ public class QueryImpl<T> implements TypedQuery<T> {
                 result = transformer.getResult();
                 iterator.remove();
             }
+        }
+
+        String nestedEntityName = parser.getEntityNameIfSecondaryReturnedInsteadOfMain();
+        if (nestedEntityName != null) {
+            QueryTransformer transformer = QueryTransformerFactory.createTransformer(result);
+            transformer.replaceWithSelectId();
+            transformer.removeOrderBy();
+            result = String.format("select tempEntity from %s tempEntity where tempEntity.id in (%s)",
+                    nestedEntityName, transformer.getResult());
         }
 
         return result;

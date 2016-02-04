@@ -117,4 +117,9 @@ public class QueryParserRegex implements QueryParser {
         }
         return false;
     }
+
+    @Override
+    public String getEntityNameIfSecondaryReturnedInsteadOfMain() {
+        return null;
+    }
 }
