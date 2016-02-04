@@ -4,8 +4,8 @@
  */
 package com.haulmont.cuba.core.global;
 
-import com.sun.istack.internal.Nullable;
 
+import javax.annotation.Nullable;
 import java.util.Set;
 
 /**
