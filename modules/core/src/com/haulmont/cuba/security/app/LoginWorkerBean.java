@@ -361,7 +361,7 @@ public class LoginWorkerBean implements LoginWorker {
     protected void checkPermissions(String login, Map<String, Object> params, Locale userLocale, UserSession session)
             throws LoginException {
 
-        String clientTypeParam = (String) params.get(ClientType.class.getSimpleName());
+        String clientTypeParam = (String) params.get(ClientType.class.getName());
         if (ClientType.DESKTOP.name().equals(clientTypeParam) || ClientType.WEB.name().equals(clientTypeParam)) {
             if (!session.isSpecificPermitted("cuba.gui.loginToClient")) {
                 log.warn(String.format("Attempt of login to %s for user '%s' without cuba.gui.loginToClient permission",

@@ -65,7 +65,7 @@ public class Connection {
     }
 
     protected Map<String, Object> getLoginParams() {
-        return ParamsMap.of(ClientType.class.getSimpleName(), ClientType.DESKTOP.name());
+        return ParamsMap.of(ClientType.class.getName(), ClientType.DESKTOP.name());
     }
 
     protected void updateSessionClientInfo() {

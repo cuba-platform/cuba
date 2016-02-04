@@ -107,7 +107,7 @@ public class DefaultConnection extends AbstractConnection implements ExternallyA
     }
 
     protected Map<String, Object> getLoginParams() {
-        return ParamsMap.of(ClientType.class.getSimpleName(), ClientType.WEB.name());
+        return ParamsMap.of(ClientType.class.getName(), ClientType.WEB.name());
     }
 
     @Override

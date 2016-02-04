@@ -42,8 +42,8 @@ public interface LoginService {
      * @param locale   client locale
      * @param params   map of login parameters. Supported parameters are:
      *                 <ul>
-     *                 <li>"ClientType": "WEB" or "DESKTOP". It is used to check the "cuba.gui.loginToClient" specific
-     *                      permission.</li>
+     *                 <li>"com.haulmont.cuba.core.global.ClientType": "WEB" or "DESKTOP". It is used to check the
+     *                      "cuba.gui.loginToClient" specific permission.</li>
      *                 <li>"cuba.syncNewUserSessionReplication": true or false. Indicates that a new user session
      *                      created on login should be sent to the cluster synchronously. Overrides the application property
      *                      with the same name.</li>
