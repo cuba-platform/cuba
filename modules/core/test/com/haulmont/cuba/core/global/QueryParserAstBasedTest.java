@@ -145,6 +145,16 @@ public class QueryParserAstBasedTest {
                 "select h.parent.other.createdBy from sec$GroupHierarchy h where h.userGroup = :par"
         );
         assertNull(parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
+
+        parser = new QueryParserAstBased(model,
+                "select c from sec$GroupHierarchy h, sec$Constraint c where h.userGroup = :par"
+        );
+        assertNull(parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
+
+        parser = new QueryParserAstBased(model,
+                "select c.group from sec$GroupHierarchy h, sec$Constraint c where h.userGroup = :par"
+        );
+        assertEquals("sec$GroupHierarchy", parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
     }
 
     private DomainModel prepareDomainModel() {

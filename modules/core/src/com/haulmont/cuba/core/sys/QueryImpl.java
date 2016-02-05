@@ -155,7 +155,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
             QueryTransformer transformer = QueryTransformerFactory.createTransformer(result);
             transformer.replaceWithSelectId();
             transformer.removeOrderBy();
-            result = String.format("select tempEntity from %s tempEntity where tempEntity.id in (%s)",
+            result = String.format("select tempEntityAlias from %s tempEntityAlias where tempEntityAlias.id in (%s)",
                     nestedEntityName, transformer.getResult());
         }
 
