@@ -172,6 +172,10 @@ public class EntitySqlGenerator {
                     || value instanceof UUID
                     || value.getClass().getName().toLowerCase().contains("uuid")
                     || value instanceof Character) {
+                if (value instanceof String) {
+                    value = ((String) value).replaceAll("\'", "''");
+                }
+
                 valueStr = format("'%s'", value);
             } else {
                 valueStr = value.toString();
