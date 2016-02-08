@@ -131,7 +131,7 @@ public class FileTypesHelper {
             + "audio/x-pn-realaudio                            ra rm ram,"
             + "audio/x-scpls                                   pls,"
             + "audio/x-wav                                     wav,"
-            + "image/bitmap                                    bmp,"
+            + "image/bmp                                       bmp bm,"
             + "image/gif                                       gif,"
             + "image/ief                                       ief,"
             + "image/jpeg                                      jpeg jpg jpe,"
