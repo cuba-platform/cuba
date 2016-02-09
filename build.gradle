@@ -455,6 +455,7 @@ configure(webModule) {
         compile(vaadinShared) {
             exclude(group: 'com.vaadin.external.google', module: 'guava')
         }
+        compile(group: 'com.vaadin.external.google', name: 'guava-vaadin-shaded', version: '16.0.1.vaadin1')
         compile(vaadinServer) {
             exclude(group: 'com.vaadin', module: 'vaadin-sass-compiler')
         }
