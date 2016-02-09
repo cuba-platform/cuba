@@ -503,7 +503,7 @@ subtype
 entity_type_literal
     : WORD;
 function_name
-    : WORD;
+    : STRING_LITERAL;
 state_field
     : WORD;
 result_variable

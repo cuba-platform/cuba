@@ -40,6 +40,17 @@ public class Jpa2GrammarTest {
     }
 
     @Test
+    public void testFunction() throws Exception {
+        CharStream cs = new AntlrNoCaseStringStream(
+                "select u from sec$User u where function('DAYOFMONTH', u.createTs) = 1");
+        JPA2Lexer lexer = new JPA2Lexer(cs);
+        TokenStream tstream = new CommonTokenStream(lexer);
+        JPA2Parser jpa2Parser = new JPA2Parser(tstream);
+        JPA2Parser.ql_statement_return aReturn = jpa2Parser.ql_statement();
+        Assert.assertTrue(isValid((CommonTree) aReturn.getTree()));
+    }
+
+    @Test
     public void testParserParameters() throws Exception {
         String query = "select sm from sys$SendingMessage sm " +
                 "where sm.status=:(?i)statusQueue or (sm.status = :statusSending and sm.updateTs<:time) " +
