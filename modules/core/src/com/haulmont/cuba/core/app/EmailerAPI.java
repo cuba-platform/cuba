@@ -64,6 +64,10 @@ public interface EmailerAPI {
 
     /**
      * Send email asynchronously.
+     * <p>
+     * This method creates a list of {@link SendingMessage} instances, saves it to the database and returns immediately.
+     * The actual sending is performed by the {@link #processQueuedEmails()} method which should be invoked by a
+     * scheduled task.
      *
      * @param info email details
      * @return list of created {@link SendingMessage}s
@@ -72,7 +76,8 @@ public interface EmailerAPI {
 
     /**
      * Send emails added to the queue.
-     * <p/> This method should be called periodically from a scheduled task.
+     * <p>
+     * This method should be called periodically from a scheduled task.
      *
      * @return short message describing how many emails were sent, or error message
      */
