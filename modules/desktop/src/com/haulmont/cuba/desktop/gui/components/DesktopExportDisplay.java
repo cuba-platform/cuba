@@ -14,7 +14,10 @@ import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
-import com.haulmont.cuba.gui.export.*;
+import com.haulmont.cuba.gui.export.ExportDataProvider;
+import com.haulmont.cuba.gui.export.ExportDisplay;
+import com.haulmont.cuba.gui.export.ExportFormat;
+import com.haulmont.cuba.gui.export.FileDataProvider;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -31,16 +34,15 @@ import java.io.InputStream;
  * Allows to show exported data in external desktop app or download it
  *
  * @author artamonov
- * @version $Id$
  */
 @org.springframework.stereotype.Component(ExportDisplay.NAME)
 @Scope("prototype")
 @SuppressWarnings({"UnusedDeclaration"})
 public class DesktopExportDisplay implements ExportDisplay {
 
-    private Frame frame;
+    protected Frame frame;
 
-    private Messages messages;
+    protected Messages messages;
 
     public DesktopExportDisplay() {
         messages = AppBeans.get(Messages.NAME);
@@ -161,7 +163,7 @@ public class DesktopExportDisplay implements ExportDisplay {
         this.frame = frame;
     }
 
-    private boolean saveFile(ExportDataProvider dataProvider, File destinationFile) {
+    protected boolean saveFile(ExportDataProvider dataProvider, File destinationFile) {
         try {
             if (!destinationFile.exists()) {
                 boolean crateResult = destinationFile.createNewFile();
@@ -169,31 +171,29 @@ public class DesktopExportDisplay implements ExportDisplay {
                     throw new IOException("Couldn't create file");
             }
 
+            InputStream fileInput = null;
             try {
-                InputStream fileInput = dataProvider.provide();
+                fileInput = dataProvider.provide();
                 FileOutputStream outputStream = new FileOutputStream(destinationFile);
 
-                // TODO Need progress window
                 IOUtils.copy(fileInput, outputStream);
 
                 IOUtils.closeQuietly(fileInput);
                 IOUtils.closeQuietly(outputStream);
             } finally {
-                dataProvider.close();
+                if (fileInput != null) {
+                    IOUtils.closeQuietly(fileInput);
+                }
             }
         } catch (IOException e) {
             String message = messages.getMessage(DesktopExportDisplay.class, "export.saveError");
             getFrame().getWindowManager().showNotification(message, com.haulmont.cuba.gui.components.Frame.NotificationType.WARNING);
             return false;
-        } catch (ClosedDataProviderException e) {
-            String message = messages.getMessage(DesktopExportDisplay.class, "export.dataProviderError");
-            getFrame().getWindowManager().showNotification(message, Frame.NotificationType.WARNING);
-            return false;
         }
         return true;
     }
 
-    private String getFileExt(String fileName) {
+    protected String getFileExt(String fileName) {
         int i = fileName.lastIndexOf('.');
         if (i > -1)
             return StringUtils.substring(fileName, i + 1, i + 20);
@@ -201,7 +201,7 @@ public class DesktopExportDisplay implements ExportDisplay {
             return "";
     }
 
-    private TopLevelFrame getFrame() {
+    protected TopLevelFrame getFrame() {
         if (frame != null) {
             return DesktopComponentsHelper.getTopLevelFrame(frame);
         } else {

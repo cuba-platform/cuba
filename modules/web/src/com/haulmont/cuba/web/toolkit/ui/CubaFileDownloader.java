@@ -82,7 +82,7 @@ public class CubaFileDownloader extends AbstractExtension {
             return false;
         }
 
-        String targetResourceKey = null;
+        String targetResourceKey;
         DownloadStream stream;
 
         VaadinSession session = getSession();
@@ -133,10 +133,6 @@ public class CubaFileDownloader extends AbstractExtension {
                 }
             }
         } finally {
-            if (targetResourceKey != null) {
-                setResource(targetResourceKey, null);
-            }
-
             session.unlock();
         }
 

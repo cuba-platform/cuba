@@ -9,11 +9,9 @@ import java.io.InputStream;
 
 /**
  * @author krivopustov
- * @version $Id$
  */
 public class ByteArrayDataProvider implements ExportDataProvider {
 
-    private boolean closed = false;
     private byte[] data;
 
     public ByteArrayDataProvider(byte[] data) {
@@ -21,18 +19,7 @@ public class ByteArrayDataProvider implements ExportDataProvider {
     }
 
     @Override
-    public InputStream provide() throws ClosedDataProviderException {
-        if (closed)
-            throw new ClosedDataProviderException();
-
+    public InputStream provide() {
         return new ByteArrayInputStream(data);
-    }
-
-    @Override
-    public void close() {
-        if (!closed) {
-            closed = true;
-            data = null;
-        }
     }
 }

@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.gui.export;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -21,7 +22,9 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,9 +43,6 @@ public class FileDataProvider implements ExportDataProvider {
 
     protected FileDescriptor fileDescriptor;
     protected InputStream inputStream;
-    protected boolean closed = false;
-
-    protected ClientConnectionManager connectionManager;
 
     protected ClusterInvocationSupport clusterInvocationSupport = AppBeans.get(ClusterInvocationSupport.NAME);
 
@@ -53,18 +53,15 @@ public class FileDataProvider implements ExportDataProvider {
     protected String fileDownloadContext;
 
     public FileDataProvider(FileDescriptor fileDescriptor) {
+        Preconditions.checkNotNullArgument(fileDescriptor, "Null file descriptor");
+
         this.fileDescriptor = fileDescriptor;
+
         fileDownloadContext = configuration.getConfig(ClientConfig.class).getFileDownloadContext();
     }
 
     @Override
-    public InputStream provide() throws ClosedDataProviderException {
-        if (closed)
-            throw new ClosedDataProviderException();
-
-        if (fileDescriptor == null)
-            throw new IllegalArgumentException("Null file descriptor");
-
+    public InputStream provide() {
         String useLocalInvocation = AppContext.getProperty("cuba.useLocalServiceInvocation");
         if (Boolean.valueOf(useLocalInvocation)) {
             downloadLocally();
@@ -93,7 +90,11 @@ public class FileDataProvider implements ExportDataProvider {
                     "?s=" + userSessionSource.getUserSession().getId() +
                     "&f=" + fileDescriptor.getId().toString();
 
-            HttpClient httpClient = new DefaultHttpClient();
+            HttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager();
+            HttpClient httpClient = HttpClientBuilder.create()
+                    .setConnectionManager(connectionManager)
+                    .build();
+
             HttpGet httpGet = new HttpGet(url);
 
             try {
@@ -136,25 +137,7 @@ public class FileDataProvider implements ExportDataProvider {
                     );
                 }
             } finally {
-                connectionManager = httpClient.getConnectionManager();
-            }
-        }
-    }
-
-    @Override
-    public void close() {
-        if (inputStream != null) {
-            closed = true;
-            try {
-                inputStream.close();
-                if (connectionManager != null)
-                    connectionManager.shutdown();
-            } catch (IOException e) {
-                log.warn("Error while closing file data provider", e);
-            } finally {
-                inputStream = null;
-                fileDescriptor = null;
-                connectionManager = null;
+                connectionManager.shutdown();
             }
         }
     }

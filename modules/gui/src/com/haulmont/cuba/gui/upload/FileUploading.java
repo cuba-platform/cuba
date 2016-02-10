@@ -16,8 +16,11 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -288,11 +291,15 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
             if (listener != null) {
                 entity = new FileStorageProgressEntity(file, "application/octet-stream", fileId, listener);
             } else {
-                entity = new FileEntity(file, "application/octet-stream");
+                entity = new FileEntity(file, ContentType.APPLICATION_OCTET_STREAM);
             }
 
             method.setEntity(entity);
-            HttpClient client = new DefaultHttpClient();
+
+            HttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager();
+            HttpClient client = HttpClientBuilder.create()
+                    .setConnectionManager(connectionManager)
+                    .build();
             try {
                 HttpResponse response = client.execute(method);
                 int statusCode = response.getStatusLine().getStatusCode();
@@ -317,7 +324,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
                     throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fileDescr.getName(), e);
                 }
             } finally {
-                client.getConnectionManager().shutdown();
+                connectionManager.shutdown();
             }
         }
     }

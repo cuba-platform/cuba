@@ -14,7 +14,6 @@ import java.io.InputStream;
  * DataProvider for application resources
  *
  * @author artamonov
- * @version $Id$
  */
 public class ResourceDataProvider implements ExportDataProvider {
 
@@ -25,13 +24,8 @@ public class ResourceDataProvider implements ExportDataProvider {
     }
 
     @Override
-    public InputStream provide() throws ResourceException {
+    public InputStream provide() {
         Resources resources = AppBeans.get(Resources.NAME);
         return resources.getResourceAsStream(resourcePath);
-    }
-
-    @Override
-    public void close() {
-        // do nothing
     }
 }

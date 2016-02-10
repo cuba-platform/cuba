@@ -18,14 +18,16 @@ import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -55,7 +57,7 @@ import java.util.UUID;
 @Controller
 public class FileDownloadController {
 
-    private static Logger log = LoggerFactory.getLogger(FileDownloadController.class);
+    private Logger log = LoggerFactory.getLogger(FileDownloadController.class);
 
     @Inject
     protected DataService dataService;
@@ -136,7 +138,11 @@ public class FileDownloadController {
                         "?s=" + userSession.getId() +
                         "&f=" + fd.getId().toString();
 
-                HttpClient httpClient = new DefaultHttpClient();
+                HttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager();
+                HttpClient httpClient = HttpClientBuilder.create()
+                        .setConnectionManager(connectionManager)
+                        .build();
+
                 HttpGet httpGet = new HttpGet(url);
 
                 try {
@@ -158,20 +164,23 @@ public class FileDownloadController {
                         }
                     } else {
                         log.debug("Unable to download file from " + url + "\n" + httpResponse.getStatusLine());
-                        if (iterator.hasNext())
+                        if (iterator.hasNext()) {
                             log.debug("Trying next URL");
-                        else
+                        } else {
                             error(response);
+                        }
                     }
                 } catch (IOException ex) {
                     log.debug("Unable to download file from " + url + "\n" + ex);
-                    if (iterator.hasNext())
+                    if (iterator.hasNext()) {
                         log.debug("Trying next URL");
-                    else
+                    } else {
                         error(response);
+                    }
                 } finally {
                     IOUtils.closeQuietly(is);
-                    httpClient.getConnectionManager().shutdown();
+
+                    connectionManager.shutdown();
                 }
             }
         } finally {

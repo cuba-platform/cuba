@@ -16,11 +16,9 @@ import com.haulmont.cuba.web.toolkit.ui.CubaFileDownloader;
 import com.vaadin.server.StreamResource;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
-
 import org.springframework.stereotype.Component;
+
 import java.io.InputStream;
 
 /**
@@ -32,8 +30,6 @@ import java.io.InputStream;
 @Component(ExportDisplay.NAME)
 @Scope("prototype")
 public class WebExportDisplay implements ExportDisplay {
-
-    private static final Logger log = LoggerFactory.getLogger(WebExportDisplay.class);
 
     protected boolean newWindow;
 
@@ -81,15 +77,6 @@ public class WebExportDisplay implements ExportDisplay {
             newWindow = webConfig.getViewFileExtensions().contains(StringUtils.lowerCase(fileExt));
         }
 
-        // Try to get stream
-        final ProxyDataProvider proxyDataProvider;
-        try {
-            proxyDataProvider = new ProxyDataProvider(dataProvider);
-        } catch (ClosedDataProviderException e) {
-            log.error("Unable to open data provider for resource " + resourceName, e);
-            return;
-        }
-
         if (exportFormat != null) {
             if (StringUtils.isEmpty(FilenameUtils.getExtension(resourceName))) {
                 resourceName += "." + exportFormat.getFileExt();
@@ -98,19 +85,13 @@ public class WebExportDisplay implements ExportDisplay {
 
         CubaFileDownloader fileDownloader = App.getInstance().getAppWindow().getFileDownloader();
 
-        final String streamResourceName = resourceName;
-        StreamResource.StreamSource streamSource = new StreamResource.StreamSource() {
+        StreamResource resource = new StreamResource(new StreamResource.StreamSource() {
             @Override
             public InputStream getStream() {
-                try {
-                    return proxyDataProvider.provide();
-                } catch (ClosedDataProviderException e) {
-                    log.error("Unable to open data provider for resource " + streamResourceName, e);
-                    return null;
-                }
+                return dataProvider.provide();
             }
-        };
-        StreamResource resource = new StreamResource(streamSource, resourceName);
+        }, resourceName);
+
         if (exportFormat != null && StringUtils.isNotEmpty(exportFormat.getContentType())) {
             resource.setMIMEType(exportFormat.getContentType());
         } else {

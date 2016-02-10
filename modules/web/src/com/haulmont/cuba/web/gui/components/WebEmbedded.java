@@ -9,7 +9,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Embedded;
-import com.haulmont.cuba.gui.export.ClosedDataProviderException;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
@@ -93,20 +92,15 @@ public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> im
     @Override
     public void setSource(String fileName, final InputStream src) {
         if (src != null) {
-            final StreamResource.StreamSource source = new StreamResource.StreamSource() {
-                @Override
-                public InputStream getStream() {
-                    try {
-                        src.reset();
-                    } catch (IOException e) {
-                        Logger log = LoggerFactory.getLogger(WebEmbedded.this.getClass());
-                        log.debug("Ignored IOException on stream reset", e);
-                    }
-                    return src;
+            resource = new StreamResource((StreamResource.StreamSource) () -> {
+                try {
+                    src.reset();
+                } catch (IOException e) {
+                    Logger log = LoggerFactory.getLogger(WebEmbedded.this.getClass());
+                    log.debug("Ignored IOException on stream reset", e);
                 }
-            };
-
-            resource = new StreamResource(source, fileName);
+                return src;
+            }, fileName);
             component.setSource(resource);
         } else {
             resetSource();
@@ -116,19 +110,12 @@ public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> im
     @Override
     public void setSource(String fileName, final ExportDataProvider dataProvider) {
         if (dataProvider != null) {
-            StreamResource.StreamSource streamSource = new StreamResource.StreamSource() {
+            resource = new StreamResource(new StreamResource.StreamSource() {
                 @Override
                 public InputStream getStream() {
-                    try {
-                        return dataProvider.provide();
-                    } catch (ClosedDataProviderException e) {
-                        // todo log
-                        return null;
-                    }
+                    return dataProvider.provide();
                 }
-            };
-
-            resource = new StreamResource(streamSource, fileName);
+            }, fileName);
             component.setSource(resource);
         } else {
             resetSource();

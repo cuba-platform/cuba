@@ -6,17 +6,21 @@
 package com.haulmont.cuba.gui.export;
 
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,9 +39,6 @@ public class SimpleFileDataProvider implements ExportDataProvider {
 
     protected String filePath;
     protected InputStream inputStream;
-    protected boolean closed = false;
-
-    protected ClientConnectionManager connectionManager;
 
     protected ClusterInvocationSupport clusterInvocationSupport = AppBeans.get(ClusterInvocationSupport.NAME);
 
@@ -53,10 +54,7 @@ public class SimpleFileDataProvider implements ExportDataProvider {
     }
 
     @Override
-    public InputStream provide() throws ClosedDataProviderException {
-        if (closed)
-            throw new ClosedDataProviderException();
-
+    public InputStream provide() {
         if (filePath == null)
             throw new IllegalArgumentException("Null file path");
 
@@ -65,7 +63,10 @@ public class SimpleFileDataProvider implements ExportDataProvider {
                     "?s=" + userSessionSource.getUserSession().getId() +
                     "&p=" + encodeUTF8(filePath);
 
-            HttpClient httpClient = new DefaultHttpClient();
+            HttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager();
+            HttpClient httpClient = HttpClientBuilder.create()
+                    .setConnectionManager(connectionManager)
+                    .build();
             HttpGet httpGet = new HttpGet(url);
 
             try {
@@ -103,29 +104,11 @@ public class SimpleFileDataProvider implements ExportDataProvider {
                             new FileStorageException(FileStorageException.Type.IO_EXCEPTION, filePath, ex)
                     );
             } finally {
-                connectionManager = httpClient.getConnectionManager();
+                connectionManager.shutdown();
             }
         }
 
         return inputStream;
-    }
-
-    @Override
-    public void close() {
-        if (inputStream != null) {
-            closed = true;
-            try {
-                inputStream.close();
-                if (connectionManager != null)
-                    connectionManager.shutdown();
-            } catch (IOException e) {
-                log.warn("Error while closing simple file data provider", e);
-            } finally {
-                inputStream = null;
-                filePath = null;
-                connectionManager = null;
-            }
-        }
     }
 
     protected String encodeUTF8(String str) {

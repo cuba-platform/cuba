@@ -8,14 +8,14 @@ import java.io.InputStream;
 
 /**
  * Provides data for {@link ExportDisplay}.
- * Can be closed after usage to release resources.
  *
  * @author krivopustov
- * @version $Id$
  */
 public interface ExportDataProvider {
 
-    InputStream provide() throws ResourceException, ClosedDataProviderException;
+    InputStream provide();
 
-    void close();
+    @Deprecated
+    default void close() {
+    }
 }
