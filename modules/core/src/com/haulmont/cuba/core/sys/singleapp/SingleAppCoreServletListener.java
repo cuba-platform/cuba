@@ -78,6 +78,7 @@ public class SingleAppCoreServletListener implements ServletContextListener {
 
             Method contextInitialized = ReflectionUtils.findMethod(appContextLoader.getClass(), "contextInitialized", ServletContextEvent.class);
             ReflectionUtils.invokeMethod(contextInitialized, appContextLoader, sce);
+            Thread.currentThread().setContextClassLoader(contextClassLoader);
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("An error occurred while starting single WAR application", e);
         }
