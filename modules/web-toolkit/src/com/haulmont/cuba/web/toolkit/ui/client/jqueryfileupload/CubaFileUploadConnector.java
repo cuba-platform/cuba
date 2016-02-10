@@ -6,7 +6,9 @@
 package com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload;
 
 import com.haulmont.cuba.web.toolkit.ui.CubaFileUpload;
+import com.haulmont.cuba.web.toolkit.ui.client.fileupload.CubaFileUploadClientRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.fileupload.CubaFileUploadServerRpc;
+import com.haulmont.cuba.web.toolkit.ui.client.fileupload.CubaFileUploadState;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.Paintable;
 import com.vaadin.client.UIDL;
@@ -18,10 +20,21 @@ import com.vaadin.shared.ui.Connect;
 
 /**
  * @author artamonov
- * @version $Id$
  */
 @Connect(CubaFileUpload.class)
 public class CubaFileUploadConnector extends AbstractComponentConnector implements Paintable {
+
+    public CubaFileUploadConnector() {
+        registerRpc(CubaFileUploadClientRpc.class, new CubaFileUploadClientRpc() {
+            @Override
+            public void continueUploading() {
+                // check if attached
+                if (getWidget().isAttached()) {
+                    getWidget().continueUploading();
+                }
+            }
+        });
+    }
 
     @Override
     public boolean delegateCaptionHandling() {

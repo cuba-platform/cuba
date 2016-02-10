@@ -48,14 +48,7 @@ public class JQueryFileUploadOverlay {
         upload.bind('fileuploadadd', $entry(function (e, data) {
             data.url = self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::uploadUrl;
 
-            var file = data.files[0];
-            var valid = self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::isValidFile(*)(file.name, file.size);
-
-            if (valid) {
-                self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::addPendingUpload(*)(data);
-
-                data.submit();
-            }
+            self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::addPendingUpload(*)(data);
         }));
 
         upload.bind('fileuploaddone', $entry(function (e, data) {
@@ -70,16 +63,12 @@ public class JQueryFileUploadOverlay {
             self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::uploadProgress(*)(data.loaded, data.total);
         }));
 
-        upload.bind('fileuploadstart', $entry(function (e, data) {
-            self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::queueUploadStart()();
-        }));
-
         upload.bind('fileuploaddone', $entry(function (e, data) {
             self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::fileUploadSucceed(*)(data.files[0].name);
         }));
 
         upload.bind('fileuploadstop', $entry(function (e, data) {
-            self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::queueUploadStop()();
+            self.@com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.JQueryFileUploadOverlay::fileUploadStop()();
         }));
 
         upload.bind('fileuploadfail', $entry(function (e, data) {
@@ -87,16 +76,54 @@ public class JQueryFileUploadOverlay {
         }));
     }-*/;
 
+    protected native void submitXHR(JavaScriptObject jqXHR) /*-{
+        jqXHR.submit();
+    }-*/;
+
     protected native void cancelXHR(JavaScriptObject jqXHR) /*-{
         jqXHR.abort();
     }-*/;
 
+    protected native int getOriginalFilesCount(JavaScriptObject jqXHR) /*-{
+        return jqXHR.originalFiles.length;
+    }-*/;
+
+    protected native String getFileName(JavaScriptObject jqXHR) /*-{
+        return jqXHR.files[0].name;
+    }-*/;
+
+    protected native double getFileSize(JavaScriptObject jqXHR) /*-{
+        return jqXHR.files[0].size;
+    }-*/;
+
     protected void addPendingUpload(JavaScriptObject jqXHR) {
         currentXHRs.add(jqXHR);
+
+        if (currentXHRs.size() == getOriginalFilesCount(jqXHR)) {
+            for (JavaScriptObject xhr : currentXHRs) {
+                if (!isValidFile(getFileName(xhr), getFileSize(xhr))) {
+                    currentXHRs.clear();
+                    return;
+                }
+            }
+
+            queueUploadStart();
+
+            // all files added to pending queue, start uploading
+            submitXHR(currentXHRs.get(0));
+        }
     }
 
     protected void removePendingUpload(JavaScriptObject jqXHR) {
-        currentXHRs.remove(jqXHR);
+        if (!currentXHRs.isEmpty()) {
+            currentXHRs.remove(0);
+        }
+    }
+
+    public void continueUploading() {
+        if (!currentXHRs.isEmpty()) {
+            submitXHR(currentXHRs.get(0));
+        }
     }
 
     public void cancelUploading() {
@@ -118,6 +145,12 @@ public class JQueryFileUploadOverlay {
     protected void uploadFailed(String textStatus, String errorThrown) {
         // show upload error
         // hide upload window
+    }
+
+    protected void fileUploadStop() {
+        if (currentXHRs.isEmpty()) {
+            queueUploadStop();
+        }
     }
 
     protected void queueUploadStop() {

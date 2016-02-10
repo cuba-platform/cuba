@@ -13,9 +13,9 @@ import java.util.Map;
 
 /**
  * Contains email details: list of recipients, from address, caption, body and attachments.
+ * See constructors for more information.
  *
  * @author degtyarjov
- * @version $Id$
  * @see com.haulmont.cuba.core.app.EmailService
  */
 public class EmailInfo implements Serializable {
@@ -34,6 +34,26 @@ public class EmailInfo implements Serializable {
     private EmailAttachment[] attachments;
     private List<EmailHeader> headers;
 
+    /**
+     * Constructor. Example usage:
+     * <pre>
+     *     EmailInfo emailInfo = new EmailInfo(
+                "john.doe@company.com,jane.roe@company.com",
+                "Company news",
+                "do-not-reply@company.com",
+                "com/company/sample/email_templates/news.txt",
+                Collections.singletonMap("some_var", some_value)
+            );
+     * </pre>
+     *
+     * @param addresses             comma or semicolon separated list of addresses
+     * @param caption               email subject
+     * @param from                  "from" address. If null, a default provided by {@code cuba.email.fromAddress} app property is used.
+     * @param templatePath          path to a Freemarker template which is used to create the message body. The template
+     *                              is loaded through {@link Resources} in the <b>core</b> module.
+     * @param templateParameters    map of parameters to be passed to the template
+     * @param attachments           email attachments. Omit this parameter if there are no attachments.
+     */
     public EmailInfo(String addresses, String caption, @Nullable String from, String templatePath,
                      Map<String, Serializable> templateParameters, EmailAttachment... attachments) {
         this.addresses = addresses;
@@ -44,6 +64,23 @@ public class EmailInfo implements Serializable {
         this.from = from;
     }
 
+    /**
+     * Constructor.
+     * <pre>
+     *     EmailInfo emailInfo = new EmailInfo(
+                "john.doe@company.com,jane.roe@company.com",
+                "Company news",
+                null,
+                "Some content"
+            );
+     * </pre>
+     *
+     * @param addresses             comma or semicolon separated list of addresses
+     * @param caption               email subject
+     * @param from                  "from" address. If null, a default provided by {@code cuba.email.fromAddress} app property is used.
+     * @param body                  email body
+     * @param attachments           email attachments. Omit this parameter if there are no attachments.
+     */
     public EmailInfo(String addresses, String caption, @Nullable String from, String body, EmailAttachment... attachments) {
         this.addresses = addresses;
         this.caption = caption;
@@ -53,7 +90,18 @@ public class EmailInfo implements Serializable {
     }
 
     /**
-     * Take "from" value from system settings.
+     * Constructor. The "from" address is taken from the {@code cuba.email.fromAddress} app property.
+     * <pre>
+     *     EmailInfo emailInfo = new EmailInfo(
+                "john.doe@company.com,jane.roe@company.com",
+                "Company news",
+                "Some content"
+            );
+     * </pre>
+     *
+     * @param addresses             comma or semicolon separated list of addresses
+     * @param caption               email subject
+     * @param body                  email body
      */
     public EmailInfo(String addresses, String caption, String body) {
         this.addresses = addresses;

@@ -104,6 +104,10 @@ public class CubaFileUploadWidget extends FlowPanel implements Focusable {
                         progressWindow = null;
 
                         cancelUploading();
+
+                        if (queueUploadListener != null) {
+                            queueUploadListener.uploadFinished();
+                        }
                     }
                 };
 
@@ -246,6 +250,10 @@ public class CubaFileUploadWidget extends FlowPanel implements Focusable {
 
     public void cancelAllUploads() {
         fileUpload.cancelUploading();
+    }
+
+    public void continueUploading() {
+        fileUpload.continueUploading();
     }
 
     @Override

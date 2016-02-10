@@ -1,16 +1,15 @@
 /*
- * Copyright (c) 2008-2015 Haulmont. All rights reserved.
+ * Copyright (c) 2008-2016 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload;
+package com.haulmont.cuba.web.toolkit.ui.client.fileupload;
 
 import com.vaadin.shared.annotations.NoLayout;
 import com.vaadin.shared.ui.TabIndexState;
 
 /**
  * @author artamonov
- * @version $Id$
  */
 public class CubaFileUploadState extends TabIndexState {
 

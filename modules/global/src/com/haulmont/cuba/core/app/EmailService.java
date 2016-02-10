@@ -45,6 +45,8 @@ public interface EmailService {
 
     /**
      * Send email asynchronously, with limited number of attempts.
+     * <p>
+     * The actual sending is performed by invoking the {@code EmailerAPI.processQueuedEmails()} (e.g. from a scheduled task).
      *
      * @param info          email details
      * @param attemptsCount count of attempts to send (1 attempt = 1 emailer cron tick)
@@ -56,6 +58,8 @@ public interface EmailService {
 
     /**
      * Send email asynchronously.
+     * <p>
+     * The actual sending is performed by invoking the {@code EmailerAPI.processQueuedEmails()} (e.g. from a scheduled task).
      *
      * @param info email details
      */
