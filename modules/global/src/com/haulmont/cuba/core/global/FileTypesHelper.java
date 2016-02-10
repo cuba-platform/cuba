@@ -137,6 +137,7 @@ public class FileTypesHelper {
             + "image/jpeg                                      jpeg jpg jpe,"
             + "image/pcx                                       pcx,"
             + "image/png                                       png,"
+            + "image/svg+xml                                   svg,"
             + "image/tiff                                      tiff tif,"
             + "image/vnd.wap.wbmp                              wbmp,"
             + "image/x-cmu-raster                              ras,"
