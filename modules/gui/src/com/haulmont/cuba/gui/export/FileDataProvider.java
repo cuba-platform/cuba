@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
 import com.haulmont.cuba.core.sys.remoting.LocalFileExchangeService;
 import org.apache.http.HttpEntity;
@@ -32,7 +33,6 @@ import java.util.Iterator;
  * Data provider for FileDescriptor
  *
  * @author artamonov
- * @version $Id$
  */
 public class FileDataProvider implements ExportDataProvider {
 
@@ -76,8 +76,15 @@ public class FileDataProvider implements ExportDataProvider {
     }
 
     protected void downloadLocally() {
-        inputStream = AppBeans.get(LocalFileExchangeService.NAME, LocalFileExchangeService.class)
-                .downloadFile(fileDescriptor);
+        try {
+            SecurityContext securityContext = new SecurityContext(userSessionSource.getUserSession());
+            AppContext.setSecurityContext(securityContext);
+
+            LocalFileExchangeService fileExchangeService = AppBeans.get(LocalFileExchangeService.NAME);
+            inputStream = fileExchangeService.downloadFile(fileDescriptor);
+        } finally {
+            AppContext.setSecurityContext(null);
+        }
     }
 
     protected void downloadWithServlet() {
@@ -109,23 +116,25 @@ public class FileDataProvider implements ExportDataProvider {
                     }
                 } else {
                     log.debug("Unable to download file from " + url + "\n" + httpResponse.getStatusLine());
-                    if (iterator.hasNext())
+                    if (iterator.hasNext()) {
                         log.debug("Trying next URL");
-                    else
+                    } else {
                         throw new RuntimeException(
                                 new FileStorageException(FileStorageException.Type.fromHttpStatus(httpStatus),
                                         fileDescriptor.getName())
                         );
+                    }
                 }
             } catch (IOException ex) {
                 log.debug("Unable to download file from " + url + "\n" + ex);
-                if (iterator.hasNext())
+                if (iterator.hasNext()) {
                     log.debug("Trying next URL");
-                else
+                } else {
                     throw new RuntimeException(
                             new FileStorageException(FileStorageException.Type.IO_EXCEPTION,
                                     fileDescriptor.getName(), ex)
                     );
+                }
             } finally {
                 connectionManager = httpClient.getConnectionManager();
             }
