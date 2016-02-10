@@ -12,6 +12,7 @@ import com.vaadin.server.CompositeErrorMessage;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
@@ -42,14 +43,27 @@ public class CubaResizableTextAreaWrapper extends CustomField {
         setShowErrorForDisabledState(false);
 
         CubaResizableTextAreaWrapperServerRpc rpc = new CubaResizableTextAreaWrapperServerRpc() {
+            String oldWidth;
+            String oldHeight;
+
             @Override
             public void sizeChanged(String width, String height) {
+                if (StringUtils.isEmpty(oldWidth)) {
+                    oldWidth = (int) getWidth() + getWidthUnits().getSymbol();
+                }
+                if (StringUtils.isEmpty(oldHeight)) {
+                    oldHeight = ((int) getHeight()) + getHeightUnits().getSymbol();
+                }
+
                 setWidth(width);
                 setHeight(height);
 
                 for (ResizeListener listener : listeners) {
-                    listener.onResize(null, null, width, height);
+                    listener.onResize(oldWidth, oldHeight, width, height);
                 }
+
+                oldWidth = width;
+                oldHeight = height;
             }
 
             @Override
