@@ -113,8 +113,10 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
         compile(group: 'org.springframework', name: 'spring-context', version: springVersion)
         compile(group: 'org.springframework', name: 'spring-web', version: springVersion)
 
-        compile(group: 'com.esotericsoftware', name: 'kryo', version: '3.0.3')
-        compile(group: 'de.javakaffee', name: 'kryo-serializers', version: '0.37')
+        compile(group: 'com.esotericsoftware', name: 'kryo-shaded', version: '3.0.3')
+        compile(group: 'de.javakaffee', name: 'kryo-serializers', version: '0.37') {
+            exclude(group: 'com.esotericsoftware', module: 'kryo')
+        }
 
         testCompile('org.jmockit:jmockit:1.15')
         testCompile('junit:junit:4.12')
