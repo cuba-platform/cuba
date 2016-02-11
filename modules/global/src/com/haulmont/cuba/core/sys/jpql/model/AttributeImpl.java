@@ -16,6 +16,7 @@ public class AttributeImpl implements Attribute {
     private final String referencedEntityName;
     private boolean collection;
     private String userFriendlyName;
+    private boolean isEmbedded;
 
     public AttributeImpl(Class simpleType, String name) {
         this.simpleType = simpleType;
@@ -68,6 +69,14 @@ public class AttributeImpl implements Attribute {
 
     public void setUserFriendlyName(String userFriendlyName) {
         this.userFriendlyName = userFriendlyName;
+    }
+
+    public boolean isEmbedded() {
+        return isEmbedded;
+    }
+
+    public void setEmbedded(boolean embedded) {
+        isEmbedded = embedded;
     }
 
     @Override

@@ -29,7 +29,7 @@ public interface Entity {
 
     void addSingleValueAttribute(Class aClass, String name, String userFriendlyName);
 
-    void addReferenceAttribute(String referencedEntityName, String name, String userFriendlyName);
+    void addReferenceAttribute(String referencedEntityName, String name, String userFriendlyName, boolean isEmbedded);
 
     void addCollectionReferenceAttribute(String referencedEntityName, String name, String userFriendlyName);
 }

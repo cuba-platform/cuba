@@ -62,6 +62,7 @@ public class DomainModelBuilder {
     private void addProperty(EntityBuilder builder, MetaProperty prop) {
         String name = prop.getName();
         String userFriendlyName = messageTools.getPropertyCaption(prop);
+        boolean isEmbedded = metadataTools.isEmbedded(prop);
         MetaProperty.Type type = prop.getType();
         Class<?> javaType = prop.getJavaType();
         Range range = prop.getRange();
@@ -73,7 +74,7 @@ public class DomainModelBuilder {
                     if (range.getCardinality().isMany()) {
                         builder.addCollectionReferenceAttribute(name, metaClass.getName(), userFriendlyName);
                     } else {
-                        builder.addReferenceAttribute(name, metaClass.getName(), userFriendlyName);
+                        builder.addReferenceAttribute(name, metaClass.getName(), userFriendlyName, isEmbedded);
                     }
                 } else {
                     builder.addSingleValueAttribute(javaType, name, userFriendlyName);

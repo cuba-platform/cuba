@@ -23,5 +23,7 @@ public interface Attribute extends Cloneable {
 
     String getUserFriendlyName();
 
+    boolean isEmbedded();
+
     Object clone() throws CloneNotSupportedException;
 }

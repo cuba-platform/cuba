@@ -54,8 +54,8 @@ public class EntityBuilder {
         result.addReferenceAttribute(referencedEntityName, name);
     }
 
-    public void addReferenceAttribute(String name, String referencedEntityName, String userFriendlyName) {
-        result.addReferenceAttribute(referencedEntityName, name ,userFriendlyName);
+    public void addReferenceAttribute(String name, String referencedEntityName, String userFriendlyName, boolean isEmbedded) {
+        result.addReferenceAttribute(referencedEntityName, name ,userFriendlyName, isEmbedded);
     }
 
     public void addCollectionReferenceAttribute(String name, String referencedEntityName) {

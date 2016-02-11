@@ -53,7 +53,7 @@ public class NoEntity implements Entity{
     }
 
     @Override
-    public void addReferenceAttribute(String referencedEntityName, String name, String userFriendlyName) {
+    public void addReferenceAttribute(String referencedEntityName, String name, String userFriendlyName, boolean isEmbedded) {
     }
 
     @Override

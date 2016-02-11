@@ -80,11 +80,11 @@ public class EntityImpl implements Entity {
     }
 
     public void addReferenceAttribute(String referencedEntityName, String name) {
-        addReferenceAttribute(referencedEntityName, name, null);
+        addReferenceAttribute(referencedEntityName, name, null, false);
     }
 
     @Override
-    public void addReferenceAttribute(String referencedEntityName, String name, String userFriendlyName) {
+    public void addReferenceAttribute(String referencedEntityName, String name, String userFriendlyName, boolean isEmbedded) {
         if (referencedEntityName == null)
             throw new NullPointerException("No referencedEntityName passed");
         if (name == null)
@@ -92,6 +92,7 @@ public class EntityImpl implements Entity {
 
         AttributeImpl attribute = new AttributeImpl(referencedEntityName, name, false);
         attribute.setUserFriendlyName(userFriendlyName);
+        attribute.setEmbedded(isEmbedded);
         attributeNames.add(name);
         name2attribute.put(name, attribute);
     }

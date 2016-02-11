@@ -6,7 +6,10 @@
 package com.haulmont.cuba.core.sys.jpql.transform;
 
 import com.haulmont.cuba.core.sys.jpql.QueryTreeAnalyzer;
+import com.haulmont.cuba.core.sys.jpql.UnknownEntityNameException;
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
+import com.haulmont.cuba.core.sys.jpql.model.Attribute;
+import com.haulmont.cuba.core.sys.jpql.model.Entity;
 import com.haulmont.cuba.core.sys.jpql.tree.*;
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.tree.CommonTree;
@@ -156,7 +159,8 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
             orderBy.addChild(orderByField);
 
             PathNode pathNode = orderingFieldRef.getPathNode();
-            if (pathNode.getChildCount() > 1) {
+            if (pathNode.getChildCount() > 1 && needJoinForOrderBy(orderingFieldRef)) {
+                //todo eude what if we need more than 1 join for complex path?
                 CommonTree lastNode = (CommonTree) pathNode.deleteChild(pathNode.getChildCount() - 1);
                 String variableName = pathNode.asPathString('_');
 
@@ -230,7 +234,7 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
                 }).collect(Collectors.toList());
     }
 
-    private AggregateExpressionNode createCountNode(EntityReference ref, boolean distinct) {
+    protected AggregateExpressionNode createCountNode(EntityReference ref, boolean distinct) {
         AggregateExpressionNode result = new AggregateExpressionNode(JPA2Lexer.T_AGGREGATE_EXPR);
 
         result.addChild(new CommonTree(new CommonToken(JPA2Lexer.COUNT, "count")));
@@ -241,5 +245,32 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
         result.addChild(ref.createNode());
         result.addChild(new CommonTree(new CommonToken(JPA2Lexer.RPAREN, ")")));
         return result;
+    }
+
+    //if at least one reference attribute in path is not embedded we decide that order by need join
+    protected boolean needJoinForOrderBy(PathEntityReference orderingFieldRef) {
+        PathNode pathNode = orderingFieldRef.getPathNode();
+        String entityName = orderingFieldRef.getPathStartingEntityName();
+
+        try {
+            Entity entity = model.getEntityByName(entityName);
+
+            for (int i = 0; i < pathNode.getChildCount(); i++) {
+                String fieldName = pathNode.getChild(i).toString();
+                Attribute entityAttribute = entity.getAttributeByName(fieldName);
+                if (entityAttribute.isEntityReferenceAttribute() && !entityAttribute.isEmbedded()) {
+                    return true;
+                }
+
+                if (entityAttribute.isEntityReferenceAttribute()) {
+                    entityName = entityAttribute.getReferencedEntityName();
+                    entity = model.getEntityByName(entityName);
+                }
+            }
+        } catch (UnknownEntityNameException e) {
+            throw new RuntimeException("Could not find entity by name " + entityName, e);
+        }
+
+        return false;
     }
 }

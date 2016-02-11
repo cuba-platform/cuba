@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
  * Time: 18:31:25
  */
 public class QueryTreeAnalyzer {
-    private DomainModel model;
-    private IdVarSelector idVarSelector;
+    protected DomainModel model;
+    protected IdVarSelector idVarSelector;
     protected CommonTree tree;
 
     public void prepare(DomainModel model, String query) throws RecognitionException {

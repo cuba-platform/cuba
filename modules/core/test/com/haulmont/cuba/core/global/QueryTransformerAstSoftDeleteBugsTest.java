@@ -91,8 +91,8 @@ public class QueryTransformerAstSoftDeleteBugsTest extends TestCase {
         Entity agentAllocation = builder.produceImmediately("dn$AgentAllocation", "agent", "debtor");
         Entity scheduleOperation = builder.produceImmediately("dn$ScheduleOperation");
         Entity bailiffDaySchedule = builder.produceImmediately("dn$BailiffDaySchedule", "day");
-        scheduleOperation.addReferenceAttribute("dn$BailiffDaySchedule", "bailiffDaySchedule", "bailiffDaySchedule");
-        scheduleOperation.addReferenceAttribute("dn$Debtor", "debtor", "debtor");
+        scheduleOperation.addReferenceAttribute("dn$BailiffDaySchedule", "bailiffDaySchedule", "bailiffDaySchedule", false);
+        scheduleOperation.addReferenceAttribute("dn$Debtor", "debtor", "debtor", false);
 
         return new DomainModel(userEntity, agentAllocation, scheduleOperation, bailiffDaySchedule, debtorEntity);
     }

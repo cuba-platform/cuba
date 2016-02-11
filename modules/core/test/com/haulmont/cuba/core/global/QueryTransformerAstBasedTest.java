@@ -522,6 +522,8 @@ public class QueryTransformerAstBasedTest {
         builder.addStringAttribute("createdBy");
         builder.addReferenceAttribute("parent", "sec$GroupHierarchy");
         builder.addReferenceAttribute("other", "sec$GroupHierarchy");
+        builder.addReferenceAttribute("token", "fake$EmbeddedToken", "token", true);
+
         builder.addCollectionReferenceAttribute("constraints", "sec$Constraint");
         Entity groupHierarchy = builder.produce();
 
@@ -531,7 +533,16 @@ public class QueryTransformerAstBasedTest {
         Entity constraintEntity = builder.produce();
 
         Entity userEntity = builder.produceImmediately("sec$User", "login");
-        return new DomainModel(groupHierarchy, constraintEntity, userEntity);
+
+        builder = new EntityBuilder();
+        builder.startNewEntity("fake$EmbeddedToken");
+        builder.addStringAttribute("name");
+        builder.addStringAttribute("code");
+        builder.addReferenceAttribute("manager", "sec$User");
+        builder.addReferenceAttribute("parentToken", "fake$EmbeddedToken", "parentToken", true);
+        Entity token = builder.produce();
+
+        return new DomainModel(groupHierarchy, constraintEntity, userEntity, token);
     }
 
     @Test
@@ -867,6 +878,28 @@ public class QueryTransformerAstBasedTest {
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
                         "group by h.level having h.level > 0 order by c.group desc, c.createdBy desc",
                 res);
+
+        transformer = new QueryTransformerAstBased(model,
+                "select h from sec$GroupHierarchy h where h.group = ?1 order by h.level desc, h.createdBy");
+        transformer.replaceOrderBy(true, "token.name", "token.code");
+        res = transformer.getResult();
+        assertEquals("select h from sec$GroupHierarchy h where h.group = ?1 " +
+                "order by h.token.name desc, h.token.code desc", res);
+
+        transformer = new QueryTransformerAstBased(model,
+                "select h from sec$GroupHierarchy h where h.group = ?1 order by h.level desc, h.createdBy");
+        transformer.replaceOrderBy(true, "token.manager.login");
+        res = transformer.getResult();
+        assertEquals("select h from sec$GroupHierarchy h left join h.token.manager h_token_manager " +
+                "where h.group = ?1 order by h_token_manager.login desc", res);
+
+        transformer = new QueryTransformerAstBased(model,
+                "select h from sec$GroupHierarchy h where h.group = ?1 order by h.level desc, h.createdBy");
+        transformer.replaceOrderBy(true, "token.parentToken.name");
+        res = transformer.getResult();
+        assertEquals("select h from sec$GroupHierarchy h where h.group = ?1 order by h.token.parentToken.name desc", res);
+
+
     }
 
     @Test

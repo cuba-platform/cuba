@@ -61,4 +61,8 @@ public class PathEntityReference implements EntityReference {
     public PathNode getPathNode() {
         return pathNode.dupNode();
     }
+
+    public String getPathStartingEntityName() {
+        return pathStartingEntityName;
+    }
 }
