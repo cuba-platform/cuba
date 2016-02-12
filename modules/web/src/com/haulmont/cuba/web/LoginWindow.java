@@ -79,6 +79,7 @@ public class LoginWindow extends UIView {
     protected Property.ValueChangeListener loginChangeListener;
 
     protected Button okButton;
+    protected SubmitListener submitListener;
 
     protected Messages messages = AppBeans.get(Messages.NAME);
 
@@ -109,6 +110,7 @@ public class LoginWindow extends UIView {
         localesSelect.setImmediate(true);
 
         okButton = new CubaButton();
+        submitListener = new SubmitListener();
 
         rememberMeAllowed = webConfig.getRememberMeEnabled();
 
@@ -287,7 +289,7 @@ public class LoginWindow extends UIView {
         }
 
         okButton.setCaption(messages.getMainMessage("loginWindow.okButton", resolvedLocale));
-        okButton.addClickListener(new SubmitListener());
+        okButton.addClickListener(submitListener);
         okButton.setStyleName("cuba-login-submit");
         okButton.setIcon(WebComponentsHelper.getIcon("app/images/login-button.png"));
 
@@ -317,6 +319,7 @@ public class LoginWindow extends UIView {
     }
 
     protected void clearUI() {
+        okButton.removeClickListener(submitListener);
         removeAllComponents();
     }
 
