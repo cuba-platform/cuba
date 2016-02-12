@@ -29,6 +29,7 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
@@ -1168,7 +1169,7 @@ public class DesktopWindowManager extends WindowManager {
         Icon icon = convertNotificationType(type);
 
         showOptionDialog(title, text, icon, false, new Action[]{
-                new DesktopNotificationAction(DialogAction.Type.CLOSE)
+                new DesktopNotificationAction(Type.CLOSE)
         }, "notificationDialog");
     }
 
@@ -1245,12 +1246,14 @@ public class DesktopWindowManager extends WindowManager {
     @Override
     public void showMessageDialog(final String title, final String message, MessageType messageType) {
         showOptionDialog(title, message, messageType, false, new Action[]{
-                new DialogAction(DialogAction.Type.OK)
+                new DialogAction(Type.OK)
         }, "messageDialog");
     }
 
     protected JPanel createButtonsPanel(Action[] actions, final DialogWindow dialog) {
         JPanel buttonsPanel = new JPanel();
+
+        boolean hasPrimaryAction = false;
         for (final Action action : actions) {
             JButton button = new JButton(action.getCaption());
             String icon = action.getIcon();
@@ -1274,35 +1277,78 @@ public class DesktopWindowManager extends WindowManager {
             button.setMaximumSize(new Dimension(Integer.MAX_VALUE, DesktopComponentsHelper.BUTTON_HEIGHT));
 
             if (action instanceof AbstractAction && ((AbstractAction)action).isPrimary()) {
-                button.requestFocus();
+                hasPrimaryAction = true;
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        button.requestFocus();
+                    }
+                });
             }
 
             buttonsPanel.add(button);
         }
+
+        if (!hasPrimaryAction && actions.length == 1) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    buttonsPanel.getComponent(0).requestFocus();
+                }
+            });
+        }
+
         return buttonsPanel;
     }
 
-    protected void initShortcut(final JDialog dialog, JPanel panel, final Action[] actions) {
+    protected void assignDialogShortcuts(final JDialog dialog, JPanel panel, final Action[] actions) {
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
 
-        KeyCombination okCombination = KeyCombination.create(clientConfig.getCommitShortcut());
-        KeyStroke okKeyStroke = DesktopComponentsHelper.convertKeyCombination(okCombination);
-
         InputMap inputMap = panel.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         ActionMap actionMap = panel.getActionMap();
+
+        KeyCombination okCombination = KeyCombination.create(clientConfig.getCommitShortcut());
+        KeyStroke okKeyStroke = DesktopComponentsHelper.convertKeyCombination(okCombination);
 
         inputMap.put(okKeyStroke, "okAction");
         actionMap.put("okAction", new javax.swing.AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Unfortunately, JComponent.processKeyBinding method allows KEY_RELEASE to pass to this point.
-                if (e.getID() == KeyEvent.KEY_PRESSED) {
+                for (Action action : actions) {
+                    if (action instanceof DialogAction) {
+                        switch (((DialogAction) action).getType()) {
+                            case OK:
+                            case YES:
+                                action.actionPerform(null);
+                                dialog.setVisible(false);
+                                cleanupAfterModalDialogClosed(null);
+                                return;
+                        }
+                    }
+                }
+            }
+        });
+
+        KeyCombination closeCombination = KeyCombination.create(clientConfig.getCloseShortcut());
+        KeyStroke closeKeyStroke = DesktopComponentsHelper.convertKeyCombination(closeCombination);
+
+        inputMap.put(closeKeyStroke, "closeAction");
+        actionMap.put("closeAction", new javax.swing.AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (actions.length == 1) {
+                    actions[0].actionPerform(null);
+                    dialog.setVisible(false);
+                    cleanupAfterModalDialogClosed(null);
+                } else {
                     for (Action action : actions) {
                         if (action instanceof DialogAction) {
                             switch (((DialogAction) action).getType()) {
-                                case OK:
-                                case YES:
+                                case CANCEL:
+                                case CLOSE:
+                                case NO:
                                     action.actionPerform(null);
                                     dialog.setVisible(false);
                                     cleanupAfterModalDialogClosed(null);
@@ -1366,6 +1412,14 @@ public class DesktopWindowManager extends WindowManager {
         if (icon != null) {
             panel.add(new JLabel(" "));
         }
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                dialog.requestFocus();
+            }
+        });
+
         final JPanel buttonsPanel = createButtonsPanel(actions, dialog);
         panel.add(buttonsPanel, "alignx right");
 
@@ -1373,7 +1427,7 @@ public class DesktopWindowManager extends WindowManager {
         dialog.setFixedWidth(width);
         dialog.add(panel, "width 100%, growy 0");
 
-        initShortcut(dialog, panel, actions);
+        assignDialogShortcuts(dialog, panel, actions);
 
         dialog.pack();
         dialog.setResizable(false);
@@ -1387,12 +1441,6 @@ public class DesktopWindowManager extends WindowManager {
                 if (container instanceof JDialog) {
                     JDialog dialog = (JDialog) container;
                     dialog.pack();
-                }
-
-                dialog.requestFocus();
-
-                if (buttonsPanel.getComponentCount() == 1) {
-                    buttonsPanel.getComponent(0).requestFocus();
                 }
             }
         });
@@ -1761,13 +1809,13 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     protected class DesktopNotificationAction implements Action {
-        private DialogAction.Type type;
+        private Type type;
 
-        public DesktopNotificationAction(DialogAction.Type type) {
+        public DesktopNotificationAction(Type type) {
             this.type = type;
         }
 
-        public DialogAction.Type getType() {
+        public Type getType() {
             return type;
         }
 
