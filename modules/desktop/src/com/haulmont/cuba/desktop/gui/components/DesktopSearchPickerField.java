@@ -7,6 +7,7 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 
@@ -17,7 +18,6 @@ import java.util.Collection;
 
 /**
  * @author artamonov
- * @version $Id$
  */
 public class DesktopSearchPickerField extends DesktopSearchField implements SearchPickerField {
 
@@ -76,6 +76,11 @@ public class DesktopSearchPickerField extends DesktopSearchField implements Sear
     @Override
     public void addAction(com.haulmont.cuba.gui.components.Action action) {
         pickerField.addAction(action);
+    }
+
+    @Override
+    public void addAction(Action action, int index) {
+        pickerField.addAction(action, index);
     }
 
     @Override

@@ -6,20 +6,18 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.desktop.sys.validation.ValidationAwareAction;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.*;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
+import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 
 /**
  * @author krivopustov
@@ -28,7 +26,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 public class DesktopAbstractActionsHolderComponent<C extends JComponent> extends DesktopAbstractComponent<C>
         implements Component.SecuredActionsHolder {
 
-    protected java.util.List<Action> actionList = new LinkedList<>();
+    protected List<Action> actionList = new LinkedList<>();
 
     protected final ShortcutsDelegate<KeyCombination> shortcutsDelegate;
     protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
@@ -65,24 +63,29 @@ public class DesktopAbstractActionsHolderComponent<C extends JComponent> extends
 
     @Override
     public void addAction(Action action) {
+        int index = findActionById(actionList, action.getId());
+        if (index < 0) {
+            index = actionList.size();
+        }
+
+        addAction(action, index);
+    }
+
+    @Override
+    public void addAction(Action action, int index) {
         checkNotNullArgument(action, "action must be non null");
 
-        Action oldAction = getAction(action.getId());
-
-        boolean added = false;
-        for (int i = 0; i < actionList.size(); i++) {
-            Action a = actionList.get(i);
-            if (ObjectUtils.equals(a.getId(), action.getId())) {
-                actionList.set(i, action);
-                added = true;
-                break;
+        int oldIndex = findActionById(actionList, action.getId());
+        if (oldIndex >= 0) {
+            removeAction(actionList.get(oldIndex));
+            if (index > oldIndex) {
+                index--;
             }
         }
-        if (!added) {
-            actionList.add(action);
-        }
 
-        shortcutsDelegate.addAction(oldAction, action);
+        actionList.add(index, action);
+
+        shortcutsDelegate.addAction(null, action);
 
         attachAction(action);
 

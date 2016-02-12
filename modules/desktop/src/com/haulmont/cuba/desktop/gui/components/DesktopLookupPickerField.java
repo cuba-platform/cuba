@@ -81,6 +81,11 @@ public class DesktopLookupPickerField extends DesktopLookupField implements Look
     }
 
     @Override
+    public void addAction(Action action, int index) {
+        pickerField.addAction(action, index);
+    }
+
+    @Override
     public void removeAction(@Nullable Action action) {
         pickerField.removeAction(action);
     }

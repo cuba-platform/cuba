@@ -24,7 +24,6 @@ import java.util.Set;
 
 /**
  * @author krivopustov
- * @version $Id$
  */
 public class VclTestApp extends JFrame {
 
@@ -284,13 +283,13 @@ public class VclTestApp extends JFrame {
         panel.add(new JLabel("Picker"));
 
         Picker picker1 = new Picker();
-        picker1.addButton(new JButton("..."));
+        picker1.addButton(new JButton("..."), 0);
         panel.add(picker1, "wrap");
 
         panel.add(new JLabel("LookupPicker"));
 
         Picker picker2 = new LookupPicker();
-        picker2.addButton(new JButton("..."));
+        picker2.addButton(new JButton("..."), 0);
         panel.add(picker2, "wrap");
 
         return panel;

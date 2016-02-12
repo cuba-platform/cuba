@@ -30,6 +30,7 @@ import java.awt.event.*;
 import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
 
 /**
@@ -400,61 +401,46 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
     }
 
     @Override
-    public void addAction(final Action action) {
+    public void addAction(Action action) {
+        int index = findActionById(actionsOrder, action.getId());
+        if (index < 0) {
+            index = actionsOrder.size();
+        }
+
+        addAction(action, index);
+    }
+
+    @Override
+    public void addAction(Action action, int index) {
         checkNotNullArgument(action, "action must be non null");
 
-        Action oldAction = getAction(action.getId());
-
-        // get button for old action
-        JButton oldButton = null;
-        DesktopButton oldActionButton = null;
-        if (oldAction != null && oldAction.getOwner() != null && oldAction.getOwner() instanceof DesktopButton) {
-            oldActionButton = (DesktopButton) oldAction.getOwner();
-            oldButton = oldActionButton.getImpl();
+        int oldIndex = findActionById(actionsOrder, action.getId());
+        if (oldIndex >= 0) {
+            removeAction(actionsOrder.get(oldIndex));
+            if (index > oldIndex) {
+                index--;
+            }
         }
 
-        if (oldAction == null) {
-            actionsOrder.add(action);
-        } else {
-            actionsOrder.add(actionsOrder.indexOf(oldAction), action);
-            actionsOrder.remove(oldAction);
-        }
+        actionsOrder.add(index, action);
 
-        final DesktopButton dButton = new DesktopButton();
+        DesktopButton dButton = new DesktopButton();
         dButton.setParentEnabled(isEnabledWithParent());
         dButton.setShouldBeFocused(false);
         dButton.setAction(action);
         dButton.getImpl().setFocusable(false);
         dButton.getImpl().setText("");
 
-        if (oldButton == null) {
-            impl.addButton(dButton.getImpl());
-            buttons.add(dButton);
-        } else {
-            impl.replaceButton(oldButton, dButton.getImpl());
-            buttons.remove(oldActionButton);
-            buttons.add(dButton);
-        }
+        impl.addButton(dButton.getImpl(), index);
+        buttons.add(dButton);
 
         // apply Editable after action owner is set
         if (action instanceof StandardAction) {
             ((StandardAction) action).setEditable(isEditable());
         }
 
-        int position = actionsOrder.indexOf(action);
+        updateOrderedShortcuts();
 
-        @SuppressWarnings("MagicConstant")
-        KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_1 + position, modifiersMask, false);
-        List<KeyStroke> keyStrokes = new LinkedList<>();
-        keyStrokes.add(keyStroke);
-
-        if (oldAction != null) {
-            keyStrokesMap.remove(oldAction);
-        }
-        keyStrokesMap.put(action, keyStrokes);
-
-        InputMap inputMap = getImpl().getInputField().getInputMap(JComponent.WHEN_FOCUSED);
-        inputMap.put(keyStroke, action.getId());
         ActionMap actionMap = getImpl().getInputField().getActionMap();
         actionMap.put(action.getId(), new AbstractAction() {
             @Override
@@ -463,11 +449,9 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
             }
         });
 
-        if (oldAction != null && oldAction.getShortcut() != null) {
-            KeyStroke oldShortcutKeyStroke = DesktopComponentsHelper.convertKeyCombination(oldAction.getShortcut());
-            inputMap.remove(oldShortcutKeyStroke);
-        }
         if (action.getShortcut() != null) {
+            InputMap inputMap = getImpl().getInputField().getInputMap(JComponent.WHEN_FOCUSED);
+
             KeyStroke shortcutKeyStroke = DesktopComponentsHelper.convertKeyCombination(action.getShortcut());
             inputMap.put(shortcutKeyStroke, action.getId());
         }
@@ -493,7 +477,29 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
                     }
                     actionMap.remove(action.getId());
                 }
+
+                updateOrderedShortcuts();
             }
+        }
+    }
+
+    protected void updateOrderedShortcuts() {
+        InputMap inputMap = getImpl().getInputField().getInputMap(JComponent.WHEN_FOCUSED);
+        for (int i = 0; i < 9; i++) {
+            KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_1 + i, modifiersMask, false);
+            inputMap.remove(keyStroke);
+        }
+
+        int index = 0;
+        for (Action action : actionsOrder) {
+            KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_1 + index, modifiersMask, false);
+            List<KeyStroke> keyStrokes = new LinkedList<>();
+            keyStrokes.add(keyStroke);
+            keyStrokesMap.put(action, keyStrokes);
+
+            inputMap.put(keyStroke, action.getId());
+
+            index++;
         }
     }
 

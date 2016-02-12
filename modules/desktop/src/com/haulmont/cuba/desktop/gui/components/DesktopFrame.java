@@ -369,6 +369,13 @@ public class DesktopFrame
     }
 
     @Override
+    public void addAction(Action action, int index) {
+        checkNotNullArgument(action, "action must be non null");
+
+        actionsHolder.addAction(action, index);
+    }
+
+    @Override
     public void removeAction(@Nullable Action action) {
         actionsHolder.removeAction(action);
     }

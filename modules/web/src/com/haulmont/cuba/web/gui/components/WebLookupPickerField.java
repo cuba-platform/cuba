@@ -24,7 +24,6 @@ import java.util.Collection;
 
 /**
  * @author krivopustov
- * @version $Id$
  */
 public class WebLookupPickerField extends WebLookupField implements LookupPickerField {
 
@@ -148,6 +147,11 @@ public class WebLookupPickerField extends WebLookupField implements LookupPicker
     @Override
     public void addAction(Action action) {
         pickerField.addAction(action);
+    }
+
+    @Override
+    public void addAction(Action action, int index) {
+        pickerField.addAction(action, index);
     }
 
     @Override

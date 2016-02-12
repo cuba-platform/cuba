@@ -506,6 +506,11 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
     }
 
     @Override
+    public void addAction(Action action, int index) {
+        frame.addAction(action, index);
+    }
+
+    @Override
     public void removeAction(@Nullable Action action) {
         frame.removeAction(action);
     }

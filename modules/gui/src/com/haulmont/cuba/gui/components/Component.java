@@ -283,6 +283,11 @@ public interface Component {
         void addAction(Action action);
 
         /**
+         * Add an action to the component with index.
+         */
+        void addAction(Action action, int index);
+
+        /**
          * Remove the action from the component
          */
         void removeAction(@Nullable Action action);

@@ -10,16 +10,18 @@ import com.google.common.collect.HashBiMap;
 import com.haulmont.cuba.gui.components.Action;
 import org.apache.commons.lang.ObjectUtils;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
-import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 
 /**
  * Encapsulates {@link com.haulmont.cuba.gui.components.Component.ActionsHolder} functionality for web frames and
  * windows.
  *
  * @author krivopustov
- * @version $Id$
  */
 public class WebFrameActionsHolder {
 
@@ -27,18 +29,28 @@ public class WebFrameActionsHolder {
     protected BiMap<com.vaadin.event.Action, Action> actions = HashBiMap.create();
 
     public void addAction(Action action) {
+        int index = findActionById(actionList, action.getId());
+        if (index < 0) {
+            index = actionList.size();
+        }
+
+        addAction(action, index);
+    }
+
+    public void addAction(Action action, int index) {
+        int oldIndex = findActionById(actionList, action.getId());
+        if (oldIndex >= 0) {
+            removeAction(actionList.get(oldIndex));
+            if (index > oldIndex) {
+                index--;
+            }
+        }
+
         if (action.getShortcut() != null) {
             actions.put(WebComponentsHelper.createShortcutAction(action), action);
         }
 
-        for (int i = 0; i < actionList.size(); i++) {
-            Action a = actionList.get(i);
-            if (ObjectUtils.equals(a.getId(), action.getId())) {
-                actionList.set(i, action);
-                return;
-            }
-        }
-        actionList.add(action);
+        actionList.add(index, action);
     }
 
     public void removeAction(Action action) {

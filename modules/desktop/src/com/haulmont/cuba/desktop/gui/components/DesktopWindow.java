@@ -201,7 +201,7 @@ public class DesktopWindow implements Window, Component.Disposable,
         return false;
     }
 
-    //todo devyatkin find another way to get component to focus
+    // todo devyatkin find another way to get component to focus
     private java.awt.Component getComponentToFocus(java.awt.Container component) {
         if (component.isFocusable() && component.isEnabled()
                 && DesktopComponentsHelper.isRecursivelyVisible(component)) {
@@ -387,10 +387,18 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     @Override
-    public void addAction(final Action action) {
+    public void addAction(Action action) {
         checkNotNullArgument(action, "action must be non null");
 
         actionsHolder.addAction(action);
+        actionsPermissions.apply(action);
+    }
+
+    @Override
+    public void addAction(Action action, int index) {
+        checkNotNullArgument(action, "action must be non null");
+
+        actionsHolder.addAction(action, index);
         actionsPermissions.apply(action);
     }
 
