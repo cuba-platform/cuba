@@ -9,6 +9,7 @@
   .#{$primary-stylename} {
     outline: none;
     padding: 2px;
+    -ms-overflow-y: auto;
     border: 1px solid $cuba-field-border-color;
     margin: 0;
     font-size: 12px;
