@@ -191,7 +191,7 @@ public class PermissionConfig {
 
         private void compileSpecific() {
             Node<BasicPermissionTarget> root = new Node<>(
-                    new BasicPermissionTarget("specific", getMessage("permissionConfig.specificRoot"), null));
+                    new BasicPermissionTarget("category:specific", getMessage("permissionConfig.specificRoot"), null));
             specific = new Tree<>(root);
 
             final String configName = AppContext.getProperty(PERMISSION_CONFIG_XML_PROP);
