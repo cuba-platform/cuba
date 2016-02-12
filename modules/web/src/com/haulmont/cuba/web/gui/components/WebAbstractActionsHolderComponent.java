@@ -107,7 +107,18 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
             contextMenuButtons.add(contextMenuButton);
 
             Component newVButton = WebComponentsHelper.unwrap(contextMenuButton);
-            contextMenuPopup.addComponent(newVButton, index);
+
+            int visibleActionsIndex = 0;
+            int i = 0;
+            while (i < index && i < actionList.size()) {
+                if (StringUtils.isNotEmpty(actionList.get(i).getCaption())) {
+                    visibleActionsIndex++;
+                }
+
+                i++;
+            }
+
+            contextMenuPopup.addComponent(newVButton, visibleActionsIndex);
         }
 
         actionList.add(index, action);
