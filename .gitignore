@@ -1,6 +1,7 @@
 /.gradle/
 /build/
 /.shelf/
+/test-home/
 out
 *.iml
 *.ipr
