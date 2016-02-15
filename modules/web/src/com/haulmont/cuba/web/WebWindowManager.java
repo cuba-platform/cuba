@@ -1091,6 +1091,7 @@ public class WebWindowManager extends WindowManager {
         HorizontalLayout buttonsContainer = new HorizontalLayout();
         buttonsContainer.setSpacing(true);
 
+        boolean hasPrimaryAction = false;
         Map<Action, Button> buttonMap = new HashMap<>();
         for (Action action : actions) {
             Button button = WebComponentsHelper.createButton();
@@ -1108,6 +1109,8 @@ public class WebWindowManager extends WindowManager {
             if (action instanceof AbstractAction && ((AbstractAction)action).isPrimary()) {
                 button.addStyleName("cuba-primary-action");
                 button.focus();
+
+                hasPrimaryAction = true;
             }
 
             if (ui.isTestMode()) {
@@ -1121,7 +1124,7 @@ public class WebWindowManager extends WindowManager {
 
         assignDialogShortcuts(buttonMap);
 
-        if (buttonsContainer.getComponentCount() == 1) {
+        if (!hasPrimaryAction && actions.length > 0) {
             ((Button) buttonsContainer.getComponent(0)).focus();
         }
 

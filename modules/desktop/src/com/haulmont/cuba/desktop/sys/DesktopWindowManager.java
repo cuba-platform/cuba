@@ -1290,7 +1290,7 @@ public class DesktopWindowManager extends WindowManager {
             buttonsPanel.add(button);
         }
 
-        if (!hasPrimaryAction && actions.length == 1) {
+        if (!hasPrimaryAction && actions.length > 0) {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
