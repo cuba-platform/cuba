@@ -25,7 +25,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * @author abramov
- * @version $Id$
  */
 public class WebOptionsGroup extends WebAbstractOptionsField<CubaOptionGroup> implements OptionsGroup {
 
@@ -86,7 +85,7 @@ public class WebOptionsGroup extends WebAbstractOptionsField<CubaOptionGroup> im
             if (newValue instanceof Collection) {
                 Class propertyType = propertyPath.getMetaProperty().getJavaType();
                 if (Set.class.isAssignableFrom(propertyType)) {
-                    newValue = new HashSet<>((Collection<?>) newValue);
+                    newValue = new LinkedHashSet<>((Collection<?>) newValue);
                 } else if (List.class.isAssignableFrom(propertyType)) {
                     newValue = new ArrayList<>((Collection<?>) newValue);
                 }
@@ -100,9 +99,9 @@ public class WebOptionsGroup extends WebAbstractOptionsField<CubaOptionGroup> im
             if (value instanceof Collection) {
                 Class propertyType = propertyPath.getMetaProperty().getJavaType();
                 if (Set.class.isAssignableFrom(propertyType)) {
-                    value = new HashSet<>((Collection<?>) value);
-                } else if (List.class.isAssignableFrom(propertyType)) {
                     value = new LinkedHashSet<>((Collection<?>) value);
+                } else if (List.class.isAssignableFrom(propertyType)) {
+                    value = new ArrayList<>((Collection<?>) value);
                 }
             }
             return value;
@@ -167,7 +166,7 @@ public class WebOptionsGroup extends WebAbstractOptionsField<CubaOptionGroup> im
         Object v;
         if (isMultiSelect()) {
             if (value instanceof Collection) {
-                final Set<Object> set = new HashSet<>();
+                final Set<Object> set = new LinkedHashSet<>();
                 for (Object o : (Collection) value) {
                     Object t = getKey(o);
                     set.add(t);

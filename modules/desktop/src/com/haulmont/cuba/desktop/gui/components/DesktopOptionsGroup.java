@@ -23,13 +23,12 @@ import java.util.*;
 
 /**
  * @author krivopustov
- * @version $Id$
  */
 public class DesktopOptionsGroup extends DesktopAbstractOptionsField<JPanel> implements OptionsGroup {
 
     private boolean multiselect;
     private boolean optionsInitialized;
-    private Map<ValueWrapper, JToggleButton> items = new HashMap<>();
+    private Map<ValueWrapper, JToggleButton> items = new LinkedHashMap<>();
     private ButtonGroup buttonGroup;
 
     private Orientation orientation = Orientation.VERTICAL;
@@ -209,7 +208,7 @@ public class DesktopOptionsGroup extends DesktopAbstractOptionsField<JPanel> imp
                             }
                             updateMissingValueState();
                         } else {
-                            Set<Object> newValue = new HashSet<>();
+                            Set<Object> newValue = new LinkedHashSet<>();
                             for (Map.Entry<ValueWrapper, JToggleButton> item : items.entrySet()) {
                                 if (item.getValue().isSelected()) {
                                     newValue.add(item.getKey().getValue());
@@ -236,7 +235,7 @@ public class DesktopOptionsGroup extends DesktopAbstractOptionsField<JPanel> imp
         if (newValue instanceof Collection && multiselect && metaPropertyPath != null) {
             Class propertyType = metaPropertyPath.getMetaProperty().getJavaType();
             if (Set.class.isAssignableFrom(propertyType)) {
-                newValue = new HashSet<>((Collection<?>) newValue);
+                newValue = new LinkedHashSet<>((Collection<?>) newValue);
             } else if (List.class.isAssignableFrom(propertyType)) {
                 newValue = new ArrayList<>((Collection<?>) newValue);
             }
@@ -297,7 +296,7 @@ public class DesktopOptionsGroup extends DesktopAbstractOptionsField<JPanel> imp
     @Override
     public <T> T getValue() {
         if (multiselect) {
-            Set<Object> set = new HashSet<>();
+            Set<Object> set = new LinkedHashSet<>();
             for (Map.Entry<ValueWrapper, JToggleButton> entry : items.entrySet()) {
                 if (entry.getValue().isSelected()) {
                     set.add(entry.getKey().getValue());
