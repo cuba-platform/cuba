@@ -33,7 +33,6 @@
             <rowsCount/>
             <columns>
                 <column id="nodeName"/>
-                <column id="description"/>
                 <column id="address"/>
                 <column id="login"/>
             </columns>
