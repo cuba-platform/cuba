@@ -22,6 +22,7 @@ import javax.management.*;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Proxy;
+import java.rmi.UnmarshalException;
 import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -30,7 +31,6 @@ import static com.haulmont.cuba.web.jmx.JmxConnectionHelper.withConnection;
 
 /**
  * @author artamonov
- * @version $Id$
  */
 @Component(JmxControlAPI.NAME)
 public class JmxControlBean implements JmxControlAPI {
@@ -129,7 +129,14 @@ public class JmxControlBean implements JmxControlAPI {
                 Set<ObjectName> names = connection.queryNames(null, null);
                 List<ManagedBeanInfo> infoList = new ArrayList<>();
                 for (ObjectName name : names) {
-                    MBeanInfo info = connection.getMBeanInfo(name);
+                    MBeanInfo info;
+                    try {
+                        info = connection.getMBeanInfo(name);
+                    } catch (UnmarshalException | InstanceNotFoundException e) {
+                        // unable to use this bean, may be ClassNotFoundException
+                        continue;
+                    }
+
                     ManagedBeanInfo mbi = createManagedBeanInfo(jmx, name, info);
                     loadOperations(mbi, info);
                     infoList.add(mbi);
