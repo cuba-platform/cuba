@@ -91,7 +91,7 @@ public class ConditionParamBuilderImpl implements ConditionParamBuilder{
                 MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(_condition.getDatasource().getMetaClass(), _condition.getCategoryAttributeId());
                 return new Param(_condition.getParamName(), paramJavaClass, null, null, _condition.getDatasource(),
                         metaPropertyPath != null ? metaPropertyPath.getMetaProperty() : null,
-                        _condition.getInExpr(), _condition.getRequired(), _condition.getCategoryId());
+                        _condition.getInExpr(), _condition.getRequired(), _condition.getCategoryAttributeId());
             } else {
                 return super.createParam(condition);
             }
