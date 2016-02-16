@@ -14,12 +14,13 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.*;
 
+import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
+
 /**
  * Encapsulates {@link com.haulmont.cuba.gui.components.Component.ActionsHolder} functionality for desktop frames and
  * windows.
  *
  * @author krivopustov
- * @version $Id$
  */
 public class DesktopFrameActionsHolder {
 
@@ -34,8 +35,25 @@ public class DesktopFrameActionsHolder {
         this.panel = panel;
     }
 
-    public void addAction(final Action action) {
-        if (action.getShortcut() !=null ) {
+    public void addAction(Action action) {
+        int index = findActionById(actionList, action.getId());
+        if (index < 0) {
+            index = actionList.size();
+        }
+
+        addAction(action, index);
+    }
+
+    public void addAction(Action action, int index) {
+        int oldIndex = findActionById(actionList, action.getId());
+        if (oldIndex >= 0) {
+            removeAction(actionList.get(oldIndex));
+            if (index > oldIndex) {
+                index--;
+            }
+        }
+
+        if (action.getShortcut() != null) {
             KeyStroke keyStroke = DesktopComponentsHelper.convertKeyCombination(action.getShortcut());
             InputMap inputMap = panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
             inputMap.put(keyStroke, action.getId());
@@ -49,14 +67,7 @@ public class DesktopFrameActionsHolder {
             shortcutActions.put(action, keyStroke);
         }
 
-        for (int i = 0; i < actionList.size(); i++) {
-            Action a = actionList.get(i);
-            if (ObjectUtils.equals(a.getId(), action.getId())) {
-                actionList.set(i, action);
-                return;
-            }
-        }
-        actionList.add(action);
+        actionList.add(index, action);
     }
 
     public void removeAction(Action action) {

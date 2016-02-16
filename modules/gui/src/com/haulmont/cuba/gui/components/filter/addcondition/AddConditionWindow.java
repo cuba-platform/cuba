@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.KeyCombination.Key;
 import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.descriptor.HeaderConditionDescriptor;
@@ -81,7 +82,7 @@ public class AddConditionWindow extends AbstractWindow {
             }
         });
 
-        filterHelper.addShortcutListener(treeFilter, new FilterHelper.ShortcutListener("search", new KeyCombination(KeyCombination.Key.ENTER, null)) {
+        filterHelper.addShortcutListener(treeFilter, new FilterHelper.ShortcutListener("search", new KeyCombination(Key.ENTER)) {
             @Override
             public void handleShortcutPressed() {
                 search();

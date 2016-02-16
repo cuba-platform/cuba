@@ -29,6 +29,7 @@ import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
+import com.haulmont.cuba.gui.components.KeyCombination.Key;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
@@ -340,7 +341,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected FilterHelper.ShortcutListener createFtsSearchShortcutListener() {
-        return new FilterHelper.ShortcutListener("ftsSearch", new KeyCombination(KeyCombination.Key.ENTER, null)) {
+        return new FilterHelper.ShortcutListener("ftsSearch", new KeyCombination(Key.ENTER)) {
             @Override
             public void handleShortcutPressed() {
                 applyFts();

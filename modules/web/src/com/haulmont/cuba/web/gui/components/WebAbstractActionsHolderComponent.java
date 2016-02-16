@@ -20,13 +20,13 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 
 /**
  * Base class for action holders with shortcuts support
  *
  * @param <T>
  * @author abramov
- * @version $Id$
  */
 public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.Component & com.vaadin.event.Action.ShortcutNotifier>
         extends WebAbstractComponent<T> implements com.haulmont.cuba.gui.components.Component.SecuredActionsHolder {
@@ -78,41 +78,24 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
     }
 
     @Override
-    public void addAction(final Action action) {
+    public void addAction(Action action) {
+        int index = findActionById(actionList, action.getId());
+        if (index < 0) {
+            index = actionList.size();
+        }
+
+        addAction(action, index);
+    }
+
+    @Override
+    public void addAction(Action action, int index) {
         checkNotNullArgument(action, "action must be non null");
 
-        Action oldAction = getAction(action.getId());
-
-        boolean added = false;
-        for (int i = 0; i < actionList.size(); i++) {
-            Action a = actionList.get(i);
-            if (ObjectUtils.equals(a.getId(), action.getId())) {
-                actionList.set(i, action);
-                added = true;
-                break;
-            }
-        }
-        if (!added) {
-            actionList.add(action);
-        }
-
-        Component oldButton = null;
-
-        if (oldAction != null) {
-            ContextMenuButton oldActionButton = null;
-
-            for (ContextMenuButton button : contextMenuButtons) {
-                if (button.getAction() == oldAction) {
-                    oldActionButton = button;
-                    break;
-                }
-            }
-
-            if (oldActionButton != null) {
-                oldActionButton.setAction(null);
-                contextMenuButtons.remove(oldActionButton);
-
-                oldButton = WebComponentsHelper.unwrap(oldActionButton);
+        int oldIndex = findActionById(actionList, action.getId());
+        if (oldIndex >= 0) {
+            removeAction(actionList.get(oldIndex));
+            if (index > oldIndex) {
+                index--;
             }
         }
 
@@ -124,18 +107,23 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
             contextMenuButtons.add(contextMenuButton);
 
             Component newVButton = WebComponentsHelper.unwrap(contextMenuButton);
-            if (oldButton == null) {
-                contextMenuPopup.addComponent(newVButton);
-            } else {
-                contextMenuPopup.replaceComponent(oldButton, newVButton);
+
+            int visibleActionsIndex = 0;
+            int i = 0;
+            while (i < index && i < actionList.size()) {
+                if (StringUtils.isNotEmpty(actionList.get(i).getCaption())) {
+                    visibleActionsIndex++;
+                }
+
+                i++;
             }
-        } else {
-            if (oldButton != null) {
-                contextMenuPopup.removeComponent(oldButton);
-            }
+
+            contextMenuPopup.addComponent(newVButton, visibleActionsIndex);
         }
 
-        shortcutsDelegate.addAction(oldAction, action);
+        actionList.add(index, action);
+
+        shortcutsDelegate.addAction(null, action);
 
         attachAction(action);
 

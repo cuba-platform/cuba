@@ -25,6 +25,21 @@ public class SourceCodeEditorLoader extends AbstractFieldLoader<SourceCodeEditor
         super.loadComponent();
 
         loadMode(resultComponent, element);
+
+        String showGutter = element.attributeValue("showGutter");
+        if (StringUtils.isNotEmpty(showGutter)) {
+            resultComponent.setShowGutter(Boolean.valueOf(showGutter));
+        }
+
+        String printMargin = element.attributeValue("printMargin");
+        if (StringUtils.isNotEmpty(printMargin)) {
+            resultComponent.setShowPrintMargin(Boolean.valueOf(printMargin));
+        }
+
+        String highlightActiveLine = element.attributeValue("highlightActiveLine");
+        if (StringUtils.isNotEmpty(highlightActiveLine)) {
+            resultComponent.setHighlightActiveLine(Boolean.valueOf(highlightActiveLine));
+        }
     }
 
     protected void loadMode(SourceCodeEditor component, Element element) {

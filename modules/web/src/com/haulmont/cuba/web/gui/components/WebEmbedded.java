@@ -12,10 +12,7 @@ import com.haulmont.cuba.gui.components.Embedded;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
-import com.vaadin.server.ConnectorResource;
-import com.vaadin.server.ExternalResource;
-import com.vaadin.server.FileResource;
-import com.vaadin.server.StreamResource;
+import com.vaadin.server.*;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +35,7 @@ public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> im
 
     protected Map<String, String> parameters = null;
     protected Type type = Type.IMAGE;
-    protected ConnectorResource resource;
+    protected Resource resource;
     protected boolean disposed;
 
     public WebEmbedded() {
@@ -49,7 +46,8 @@ public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> im
     @Override
     public void setSource(URL src) {
         if (src != null) {
-            component.setSource(new ExternalResource(src));
+            resource = new ExternalResource(src);
+            component.setSource(resource);
             setType(Type.BROWSER);
         } else {
             resetSource();
@@ -67,7 +65,8 @@ public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> im
                 }
             } else if (src.startsWith("theme://")) {
                 String themeResource = src.substring("theme://".length());
-                component.setSource(new VersionedThemeResource(themeResource));
+                resource = new VersionedThemeResource(themeResource);
+                component.setSource(resource);
             } else {
                 File file = new File(src);
                 if (!file.isAbsolute()) {
@@ -180,7 +179,9 @@ public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> im
             case BROWSER:
                 component.setType(com.vaadin.ui.Embedded.TYPE_BROWSER);
                 if (resource == null) {
-                    setSource(UUID.randomUUID() + ".html", new ByteArrayInputStream("<html></html>".getBytes()));
+                    component.setSource(new StreamResource((StreamResource.StreamSource) () -> {
+                        return new ByteArrayInputStream("<html></html>".getBytes());
+                    }, UUID.randomUUID() + ".html"));
                 }
                 break;
         }

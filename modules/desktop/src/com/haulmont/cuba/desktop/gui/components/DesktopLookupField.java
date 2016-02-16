@@ -8,6 +8,7 @@ package com.haulmont.cuba.desktop.gui.components;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.matchers.TextMatcherEditor;
 import ca.odell.glazedlists.swing.AutoCompleteSupport;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Enumeration;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.Instance;
@@ -18,6 +19,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
+import com.haulmont.cuba.desktop.sys.vcl.UserSelectionHandler;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.ObjectUtils;
@@ -29,15 +31,13 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author krivopustov
- * @version $Id$
  */
-public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> implements LookupField {
+public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> implements LookupField, UserSelectionHandler {
 
     protected static final FilterMode DEFAULT_FILTER_MODE = FilterMode.CONTAINS;
 
@@ -66,12 +66,21 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
     protected String inputPrompt;
     protected boolean textInputAllowed = true;
 
+    protected List<UserSelectionListener> userSelectionListeners = null; // lazy initialized list
+
     public DesktopLookupField() {
         composition = new JPanel();
         composition.setLayout(new BorderLayout());
         composition.setFocusable(false);
 
-        comboBox = new ExtendedComboBox();
+        comboBox = new ExtendedComboBox() {
+            @Override
+            public void flushValue() {
+                super.flushValue();
+
+                flushSelectedValue();
+            }
+        };
         comboBox.setEditable(true);
         comboBox.setPrototypeDisplayValue("AAAAAAAAAAAA");
         autoComplete = AutoCompleteSupport.install(comboBox, items);
@@ -118,6 +127,8 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
                             }
 
                             updateMissingValueState();
+
+                            fireUserSelectionListeners();
                         }
                     }
 
@@ -161,6 +172,14 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
         initClearShortcut();
     }
 
+    protected void fireUserSelectionListeners() {
+        if (userSelectionListeners != null) {
+            for (UserSelectionListener listener : userSelectionListeners) {
+                listener.userSelectionApplied(this);
+            }
+        }
+    }
+
     protected void initClearShortcut() {
         JComponent editor = (JComponent) comboBox.getEditor().getEditorComponent();
         KeyStroke clearKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, InputEvent.SHIFT_DOWN_MASK, false);
@@ -170,6 +189,8 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
             public void actionPerformed(ActionEvent e) {
                 if (!isRequired()) {
                     setValue(null);
+
+                    fireUserSelectionListeners();
                 }
             }
         });
@@ -228,6 +249,28 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
             if (!(selectedItem instanceof ValueWrapper)) {
                 if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
                     updateComponent(prevValue);
+                } else if (selectedItem == null || !newOptionAllowed) {
+                    if (isRequired()) {
+                        updateComponent(prevValue);
+                    } else {
+                        updateComponent(nullOption);
+                    }
+                }
+            }
+
+            resetValueState = false;
+        }
+    }
+
+    protected void flushSelectedValue() {
+        if (!resetValueState) {
+            resetValueState = true;
+            Object selectedItem = comboBox.getEditor().getItem();
+
+            if (!(selectedItem instanceof ValueWrapper)) {
+                if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
+                    restorePreviousItemText();
+                    newOptionHandler.addNewOption((String) selectedItem);
                 } else if (selectedItem == null || !newOptionAllowed) {
                     if (isRequired()) {
                         updateComponent(prevValue);
@@ -587,6 +630,25 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
         }
 
         return getClass().getSimpleName();
+    }
+
+    @Override
+    public void addUserSelectionListener(UserSelectionListener listener) {
+        Preconditions.checkNotNullArgument(listener);
+
+        if (userSelectionListeners == null) {
+            userSelectionListeners = new LinkedList<>();
+        }
+        if (!userSelectionListeners.contains(listener)) {
+            userSelectionListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeUserSelectionListener(UserSelectionListener listener) {
+        if (userSelectionListeners != null) {
+            userSelectionListeners.remove(listener);
+        }
     }
 
     protected class NullOption extends EntityWrapper {

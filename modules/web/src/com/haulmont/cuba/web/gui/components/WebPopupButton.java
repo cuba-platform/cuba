@@ -23,10 +23,10 @@ import java.beans.PropertyChangeListener;
 import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 
 /**
  * @author pavlov
- * @version $Id$
  */
 public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         implements PopupButton, Component.SecuredActionsHolder {
@@ -148,15 +148,33 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
     }
 
     @Override
-    public void addAction(final Action action) {
+    public void addAction(Action action) {
+        int index = findActionById(actionOrder, action.getId());
+        if (index < 0) {
+            index = actionOrder.size();
+        }
+
+        addAction(action, index);
+    }
+
+    @Override
+    public void addAction(Action action, int index) {
         checkNotNullArgument(action, "action must be non null");
 
-        if (vPopupComponent instanceof com.vaadin.ui.Layout) {
+        if (vPopupComponent instanceof com.vaadin.ui.AbstractOrderedLayout) {
+            int oldIndex = findActionById(actionOrder, action.getId());
+            if (oldIndex >= 0) {
+                removeAction(actionOrder.get(oldIndex));
+                if (index > oldIndex) {
+                    index--;
+                }
+            }
+
             Button vButton = createActionButton(action);
 
-            ((com.vaadin.ui.Layout) vPopupComponent).addComponent(vButton);
+            ((com.vaadin.ui.AbstractOrderedLayout) vPopupComponent).addComponent(vButton, index);
             component.markAsDirty();
-            actionOrder.add(action);
+            actionOrder.add(index, action);
 
             actionsPermissions.apply(action);
         }

@@ -26,6 +26,7 @@
 @import "components/checkbox/checkbox";
 @import "components/groupbox/groupbox";
 @import "components/tabsheet/tabsheet";
+@import "components/textarea/textarea";
 @import "components/tokenlist/tokenlist";
 @import "components/datefield/datefield";
 @import "components/grouptable/grouptable";
@@ -94,6 +95,7 @@
   @include halo-orderedlayout;
   @include halo-sourcecodeeditor;
   @include halo-contextmenu-addon;
+  @include halo-textarea;
 
   @include halo-cuba-groupbox;
   @include halo-cuba-tokenlist;

@@ -13,12 +13,10 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.jmx.support.MBeanServerConnectionFactoryBean;
 
 import javax.annotation.Nullable;
-import javax.management.JMX;
-import javax.management.MBeanInfo;
-import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
+import javax.management.*;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.rmi.UnmarshalException;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.Set;
@@ -26,7 +24,6 @@ import java.util.UUID;
 
 /**
  * @author artamonov
- * @version $Id$
  */
 public final class JmxConnectionHelper {
 
@@ -51,6 +48,8 @@ public final class JmxConnectionHelper {
                 MBeanInfo info;
                 try {
                     info = connection.getMBeanInfo(objectName);
+                } catch (InstanceNotFoundException | UnmarshalException e) {
+                    return false;
                 } catch (Exception e) {
                     throw new JmxControlException(e);
                 }

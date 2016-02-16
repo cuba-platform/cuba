@@ -10,9 +10,8 @@ import java.awt.*;
 
 /**
  * @author artamonov
- * @version $Id$
  */
-public class ExtendedComboBox extends JComboBox<Object> {
+public class ExtendedComboBox extends JComboBox<Object> implements Flushable {
 
     private static final int MAX_LIST_WIDTH = 350;
 
@@ -137,5 +136,9 @@ public class ExtendedComboBox extends JComboBox<Object> {
 
     public void setHideButton(boolean hideButton) {
         this.hideButton = hideButton;
+    }
+
+    @Override
+    public void flushValue() {
     }
 }

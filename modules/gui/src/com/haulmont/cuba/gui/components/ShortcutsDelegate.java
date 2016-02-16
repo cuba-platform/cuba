@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.gui.components;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +16,6 @@ import java.util.Map;
  * @param <T> type of shortcut descriptor
  *
  * @author artamonov
- * @version $Id$
  */
 public abstract class ShortcutsDelegate<T> {
 
@@ -31,7 +31,7 @@ public abstract class ShortcutsDelegate<T> {
         this.allowEnterShortcut = allowEnterShortcut;
     }
 
-    public void addAction(Action oldAction, Action newAction) {
+    public void addAction(@Nullable Action oldAction, Action newAction) {
         KeyCombination newShortcut = newAction.getShortcut();
         if (newShortcut != null) {
             if (oldAction != null) {

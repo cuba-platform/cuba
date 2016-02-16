@@ -150,20 +150,11 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
         return Collections.unmodifiableList(buttons);
     }
 
-    public void replaceButton(Button oldButton, Button button) {
+    public void addButton(Button button, int index) {
         button.setTabIndex(-1);
 
-        buttons.add(buttons.indexOf(oldButton), button);
-        buttons.remove(oldButton);
-
-        container.replaceComponent(oldButton, button);
-    }
-
-    public void addButton(Button button) {
-        button.setTabIndex(-1);
-
-        buttons.add(button);
-        container.addComponent(button);
+        buttons.add(index, button);
+        container.addComponent(button, index + 1); // 0 - field
     }
 
     public void removeButton(Button button) {

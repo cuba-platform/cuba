@@ -30,7 +30,6 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author abramov
- * @version $Id$
  */
 public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
 
@@ -275,6 +274,13 @@ public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
         checkNotNullArgument(action, "action must be non null");
 
         actionsHolder.addAction(action);
+    }
+
+    @Override
+    public void addAction(Action action, int index) {
+        checkNotNullArgument(action, "action must be non null");
+
+        actionsHolder.addAction(action, index);
     }
 
     @Override

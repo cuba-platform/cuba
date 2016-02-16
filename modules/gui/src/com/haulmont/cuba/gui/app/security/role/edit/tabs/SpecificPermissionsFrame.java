@@ -36,6 +36,8 @@ import java.util.UUID;
  */
 public class SpecificPermissionsFrame extends AbstractFrame {
 
+    protected static final String CATEGORY_PREFIX = "category:";
+
     public interface Companion {
         void initPermissionColoredColumns(TreeTable specificPermissionsTree);
     }
@@ -84,12 +86,13 @@ public class SpecificPermissionsFrame extends AbstractFrame {
         companion.initPermissionColoredColumns(specificPermissionsTree);
 
         specificPermissionsTreeDs.addItemChangeListener(e -> {
-            if (!selectedPermissionPanel.isVisible() && (e.getItem() != null)) {
-                selectedPermissionPanel.setVisible(!e.getItem().getId().startsWith("category:"));
+            boolean visible = false;
+            if (e.getItem() != null) {
+                for (BasicPermissionTarget target : specificPermissionsTree.getSelected()) {
+                    visible |= !target.getId().startsWith(CATEGORY_PREFIX);
+                }
             }
-            if (selectedPermissionPanel.isVisible() && (e.getItem() == null)) {
-                selectedPermissionPanel.setVisible(false);
-            }
+            selectedPermissionPanel.setVisible(visible);
 
             updateCheckBoxes(e.getItem());
         });
@@ -161,27 +164,29 @@ public class SpecificPermissionsFrame extends AbstractFrame {
 
     protected void markItemPermission(PermissionVariant permissionVariant) {
         for (BasicPermissionTarget target : specificPermissionsTree.getSelected()) {
-            target.setPermissionVariant(permissionVariant);
-            if (permissionVariant != PermissionVariant.NOTSET) {
-                // Create permission
-                int value = PermissionUiHelper.getPermissionValue(permissionVariant);
-                PermissionUiHelper.createPermissionItem(specificPermissionsDs, roleDs,
-                        target.getPermissionValue(), PermissionType.SPECIFIC, value);
-            } else {
-                // Remove permission
-                Permission permission = null;
-                for (Permission p : specificPermissionsDs.getItems()) {
-                    if (ObjectUtils.equals(p.getTarget(), target.getPermissionValue())) {
-                        permission = p;
-                        break;
+            if (!target.getId().startsWith(CATEGORY_PREFIX)) {
+                target.setPermissionVariant(permissionVariant);
+                if (permissionVariant != PermissionVariant.NOTSET) {
+                    // Create permission
+                    int value = PermissionUiHelper.getPermissionValue(permissionVariant);
+                    PermissionUiHelper.createPermissionItem(specificPermissionsDs, roleDs,
+                            target.getPermissionValue(), PermissionType.SPECIFIC, value);
+                } else {
+                    // Remove permission
+                    Permission permission = null;
+                    for (Permission p : specificPermissionsDs.getItems()) {
+                        if (ObjectUtils.equals(p.getTarget(), target.getPermissionValue())) {
+                            permission = p;
+                            break;
+                        }
+                    }
+                    if (permission != null) {
+                        specificPermissionsDs.removeItem(permission);
                     }
                 }
-                if (permission != null) {
-                    specificPermissionsDs.removeItem(permission);
-                }
+                // trigger generated column update
+                specificPermissionsTreeDs.updateItem(target);
             }
-            // trigger generated column update
-            specificPermissionsTreeDs.updateItem(target);
         }
     }
 }

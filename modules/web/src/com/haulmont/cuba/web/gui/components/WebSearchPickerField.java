@@ -22,7 +22,6 @@ import java.util.Collection;
 
 /**
  * @author artamonov
- * @version $Id$
  */
 public class WebSearchPickerField extends WebSearchField implements SearchPickerField {
 
@@ -129,6 +128,11 @@ public class WebSearchPickerField extends WebSearchField implements SearchPicker
     @Override
     public void addAction(Action action) {
         pickerField.addAction(action);
+    }
+
+    @Override
+    public void addAction(Action action, int index) {
+        pickerField.addAction(action, index);
     }
 
     @Override

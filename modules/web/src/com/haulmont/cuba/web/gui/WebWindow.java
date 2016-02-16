@@ -201,10 +201,18 @@ public class WebWindow implements Window, Component.Wrapper,
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    public void addAction(final com.haulmont.cuba.gui.components.Action action) {
+    public void addAction(Action action) {
         checkNotNullArgument(action, "action must be non null");
 
         actionsHolder.addAction(action);
+        actionsPermissions.apply(action);
+    }
+
+    @Override
+    public void addAction(Action action, int index) {
+        checkNotNullArgument(action, "action must be non null");
+
+        actionsHolder.addAction(action, index);
         actionsPermissions.apply(action);
     }
 

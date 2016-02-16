@@ -657,6 +657,9 @@
         <xs:complexContent>
             <xs:extension base="baseFieldComponent">
                 <xs:attribute name="mode" type="sourceCodeEditorMode"/>
+                <xs:attribute name="printMargin" type="xs:boolean"/>
+                <xs:attribute name="showGutter" type="xs:boolean"/>
+                <xs:attribute name="highlightActiveLine" type="xs:boolean"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
