@@ -54,7 +54,7 @@ public class QueryAnalyzerTest {
         CommonTree source = (CommonTree) sources.getFirstChildWithType(JPA2Lexer.T_SOURCE);
         assertTrue(source.getChild(0) instanceof IdentificationVariableNode);
 
-        JoinVariableNode join = (JoinVariableNode) Parser.parseJoinClause("join a.drivers d");
+        JoinVariableNode join = Parser.parseJoinClause("join a.drivers d").get(0);
         qa.mixinJoinIntoTree(join, new VariableEntityReference("Car", "c"), true);
 
         tree = qa.getTree();
@@ -83,7 +83,7 @@ public class QueryAnalyzerTest {
         CommonTree source = (CommonTree) sources.getFirstChildWithType(JPA2Lexer.T_SOURCE);
         assertTrue(source.getChild(0) instanceof IdentificationVariableNode);
 
-        JoinVariableNode join = (JoinVariableNode) Parser.parseJoinClause("join Driver d on d.car.id = c.id");
+        JoinVariableNode join = Parser.parseJoinClause("join Driver d on d.car.id = c.id").get(0);
         qa.mixinJoinIntoTree(join, new VariableEntityReference("Car", "c"), true);
 
         tree = qa.getTree();
@@ -118,7 +118,7 @@ public class QueryAnalyzerTest {
         Entity car = builder.produce();
         DomainModel model = new DomainModel(car, driver, homeBase);
 
-        JoinVariableNode join = (JoinVariableNode) Parser.parseJoinClause("join c.station h");
+        JoinVariableNode join = Parser.parseJoinClause("join c.station h").get(0);
 
         QueryTreeTransformer qa = new QueryTreeTransformer();
         qa.prepare(model, "select d.name from Car c, in(c.drivers) d");

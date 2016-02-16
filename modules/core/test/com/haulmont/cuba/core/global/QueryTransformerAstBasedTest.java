@@ -681,6 +681,21 @@ public class QueryTransformerAstBasedTest {
     }
 
     @Test
+    public void testDoubleJoins() throws Exception {
+        DomainModel model = prepareDomainModel();
+
+        QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
+                "select h from sec$GroupHierarchy h where h.group = :par");
+
+        transformer.reset();
+        transformer.addJoinAndWhere("join h.parent.constraints c1 join h.constraints c2", "c.createdBy = :par2");
+        String res = transformer.getResult();
+        assertEquals(
+                "select h from sec$GroupHierarchy h join h.parent.constraints c1 join h.constraints c2 where (h.group = :par) and (c.createdBy = :par2)",
+                res);
+    }
+
+    @Test
     public void testJoin_WithComma() throws RecognitionException {
         DomainModel model = prepareDomainModel();
 

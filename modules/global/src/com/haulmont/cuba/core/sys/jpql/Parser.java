@@ -6,6 +6,7 @@ package com.haulmont.cuba.core.sys.jpql;
 
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Parser;
+import com.haulmont.cuba.core.sys.jpql.tree.JoinVariableNode;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
@@ -13,6 +14,7 @@ import org.antlr.runtime.TokenStream;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.TreeVisitor;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,12 +37,21 @@ public class Parser {
         return tree;
     }
 
-    public static CommonTree parseJoinClause(String join) throws RecognitionException {
+    public static List<JoinVariableNode> parseJoinClause(String join) throws RecognitionException {
         JPA2Parser parser = createParser(join);
-        JPA2Parser.join_return aReturn = parser.join();
+        JPA2Parser.join_section_return aReturn = parser.join_section();
         CommonTree tree = (CommonTree) aReturn.getTree();
-        checkTreeForExceptions(tree);
-        return tree;
+        if (tree instanceof JoinVariableNode) {
+            checkTreeForExceptions(tree);
+            return Collections.singletonList((JoinVariableNode) tree);
+        } else {
+            List<JoinVariableNode> joins = tree.getChildren().stream()
+                    .filter(node -> node instanceof JoinVariableNode)
+                    .map(JoinVariableNode.class::cast)
+                    .collect(Collectors.toList());
+            joins.stream().forEach(node -> checkTreeForExceptions(tree));
+            return joins;
+        }
     }
 
     public static CommonTree parseSelectionSource(String input) throws RecognitionException {

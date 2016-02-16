@@ -98,6 +98,8 @@ identification_variable_declaration_or_collection_member_declaration
 identification_variable_declaration
      : range_variable_declaration joined_clause*
      -> ^(T_SOURCE<SelectionSourceNode> range_variable_declaration joined_clause*);
+join_section :
+    joined_clause*;
 joined_clause : join | fetch_join;
 range_variable_declaration
      : entity_name ('AS')? identification_variable

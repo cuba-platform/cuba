@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.sys.jpql.*;
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 import com.haulmont.cuba.core.sys.jpql.tree.IdentificationVariableNode;
+import com.haulmont.cuba.core.sys.jpql.tree.JoinVariableNode;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.TreeVisitor;
@@ -152,8 +153,10 @@ public class QueryTransformerAstBased implements QueryTransformer {
         join = strings[0];
         try {
             if (StringUtils.isNotBlank(join)) {
-                CommonTree joinClause = Parser.parseJoinClause(join);
-                queryTreeTransformer.mixinJoinIntoTree(joinClause, ref, true);
+                List<JoinVariableNode> joinVariableNodes = Parser.parseJoinClause(join);
+                for (JoinVariableNode joinVariableNode : joinVariableNodes) {
+                    queryTreeTransformer.mixinJoinIntoTree(joinVariableNode, ref, true);
+                }
             }
             for (int i = 1; i < strings.length; i++) {
                 CommonTree selectionSource = Parser.parseSelectionSource(strings[i]);
@@ -171,8 +174,10 @@ public class QueryTransformerAstBased implements QueryTransformer {
         String[] strings = join.split(",");
         join = strings[0];
         try {
-            CommonTree joinClause = Parser.parseJoinClause(join);
-            queryTreeTransformer.mixinJoinIntoTree(joinClause, new EntityNameEntityReference(mainEntityName), false);
+            List<JoinVariableNode> joinVariableNodes = Parser.parseJoinClause(join);
+            for (JoinVariableNode joinVariableNode : joinVariableNodes) {
+                queryTreeTransformer.mixinJoinIntoTree(joinVariableNode, new EntityNameEntityReference(mainEntityName), false);
+            }
             for (int i = 1; i < strings.length; i++) {
                 CommonTree selectionSource = Parser.parseSelectionSource(strings[i]);
                 queryTreeTransformer.addSelectionSource(selectionSource);
