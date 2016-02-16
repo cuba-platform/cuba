@@ -71,7 +71,14 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
         composition.setLayout(new BorderLayout());
         composition.setFocusable(false);
 
-        comboBox = new ExtendedComboBox();
+        comboBox = new ExtendedComboBox() {
+            @Override
+            public void flushValue() {
+                super.flushValue();
+
+                flushSelectedValue();
+            }
+        };
         comboBox.setEditable(true);
         comboBox.setPrototypeDisplayValue("AAAAAAAAAAAA");
         autoComplete = AutoCompleteSupport.install(comboBox, items);
@@ -228,6 +235,28 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
             if (!(selectedItem instanceof ValueWrapper)) {
                 if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
                     updateComponent(prevValue);
+                } else if (selectedItem == null || !newOptionAllowed) {
+                    if (isRequired()) {
+                        updateComponent(prevValue);
+                    } else {
+                        updateComponent(nullOption);
+                    }
+                }
+            }
+
+            resetValueState = false;
+        }
+    }
+
+    protected void flushSelectedValue() {
+        if (!resetValueState) {
+            resetValueState = true;
+            Object selectedItem = comboBox.getEditor().getItem();
+
+            if (!(selectedItem instanceof ValueWrapper)) {
+                if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
+                    restorePreviousItemText();
+                    newOptionHandler.addNewOption((String) selectedItem);
                 } else if (selectedItem == null || !newOptionAllowed) {
                     if (isRequired()) {
                         updateComponent(prevValue);
