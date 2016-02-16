@@ -90,6 +90,7 @@ public class DesktopThemeImpl implements DesktopTheme {
         try {
             UIManager.setLookAndFeel(lookAndFeel);
             initUIDefaults();
+            initButtonsKeyBinding();
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
                 | UnsupportedLookAndFeelException e) {
             throw new RuntimeException(e);
@@ -104,6 +105,12 @@ public class DesktopThemeImpl implements DesktopTheme {
             UnitValue spacingValue = new UnitValue(spacingSize);
             PlatformDefaults.setGridCellGap(spacingValue, spacingValue);
         }
+    }
+
+    protected void initButtonsKeyBinding() {
+        InputMap im = (InputMap) UIManager.get("Button.focusInputMap");
+        im.put(KeyStroke.getKeyStroke("ENTER"), "pressed");
+        im.put(KeyStroke.getKeyStroke("released ENTER"), "released");
     }
 
     protected void initUIDefaults() {
