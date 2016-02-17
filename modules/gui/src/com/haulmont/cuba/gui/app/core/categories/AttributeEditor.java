@@ -274,10 +274,10 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     }
 
     protected void fillSelectEntityScreens(Class entityClass) {
+        String value = attribute.getScreen();
         Map<String, Object> screensMap = screensHelper.getAvailableBrowserScreens(entityClass);
         screenField.setValue(null);             // While #PL-4731 unfixed
         screenField.setOptionsMap(screensMap);
-        String value = attribute.getScreen();
         screenField.setValue(screensMap.containsValue(value) ? value : null);
     }
 
