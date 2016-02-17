@@ -105,7 +105,6 @@ public class CubaVaadinServletService extends VaadinServletService {
                             "errors on start. See logs for details.", e);
                 }
             }
-            msgs.setOutOfSyncNotificationEnabled(false);
 
             String redirectUri;
             if (RequestContext.get() != null) {
