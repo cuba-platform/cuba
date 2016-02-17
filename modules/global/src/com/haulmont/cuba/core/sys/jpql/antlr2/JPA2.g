@@ -198,13 +198,12 @@ orderby_clause
     : 'ORDER' 'BY' orderby_item (',' orderby_item)*
     -> ^(T_ORDER_BY<OrderByNode>[] 'ORDER' 'BY' orderby_item*);
 orderby_item
-    : orderby_variable ('ASC')?
-     -> ^(T_ORDER_BY_FIELD<OrderByFieldNode>[] orderby_variable ('ASC')?)
-    | orderby_variable  'DESC'
-    -> ^(T_ORDER_BY_FIELD<OrderByFieldNode>[] orderby_variable 'DESC');
+    : orderby_variable sort?
+     -> ^(T_ORDER_BY_FIELD<OrderByFieldNode>[] orderby_variable sort?);
 orderby_variable
     : path_expression | general_identification_variable | result_variable;
-
+sort
+    : ('ASC' | 'DESC');
 subquery
     : lp='(' 'SELECT' simple_select_clause subquery_from_clause (where_clause)? (groupby_clause)? (having_clause)? rp=')'
      -> ^(T_QUERY<QueryNode>[$lp,$rp] 'SELECT' simple_select_clause subquery_from_clause (where_clause)? (groupby_clause)? (having_clause)? );
@@ -475,7 +474,7 @@ boolean_literal
 
 // my
 field
-    : WORD | 'GROUP';
+    : WORD | 'GROUP' | 'ORDER';
 
 identification_variable
     : WORD;

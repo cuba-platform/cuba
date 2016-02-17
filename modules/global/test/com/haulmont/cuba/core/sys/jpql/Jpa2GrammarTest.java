@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Parser;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.TokenStream;
 import org.antlr.runtime.tree.CommonErrorNode;
 import org.antlr.runtime.tree.CommonTree;
@@ -26,28 +27,16 @@ public class Jpa2GrammarTest {
 
     @Test
     public void testGroupBy() throws Exception {
-        CharStream cs = new AntlrNoCaseStringStream(
-                "select u.login " +
+        testQuery("select u.login " +
                         "from sec$User u " +
                         "where u.login = 'admin' " +
                         "group by u.login having u.version > 0" +
                         "order by u.login");
-        JPA2Lexer lexer = new JPA2Lexer(cs);
-        TokenStream tstream = new CommonTokenStream(lexer);
-        JPA2Parser jpa2Parser = new JPA2Parser(tstream);
-        JPA2Parser.ql_statement_return aReturn = jpa2Parser.ql_statement();
-        Assert.assertTrue(isValid((CommonTree) aReturn.getTree()));
     }
 
     @Test
     public void testFunction() throws Exception {
-        CharStream cs = new AntlrNoCaseStringStream(
-                "select u from sec$User u where function('DAYOFMONTH', u.createTs) = 1");
-        JPA2Lexer lexer = new JPA2Lexer(cs);
-        TokenStream tstream = new CommonTokenStream(lexer);
-        JPA2Parser jpa2Parser = new JPA2Parser(tstream);
-        JPA2Parser.ql_statement_return aReturn = jpa2Parser.ql_statement();
-        Assert.assertTrue(isValid((CommonTree) aReturn.getTree()));
+        testQuery("select u from sec$User u where function('DAYOFMONTH', u.createTs) = 1");
     }
 
     @Test
@@ -55,12 +44,7 @@ public class Jpa2GrammarTest {
         String query = "select sm from sys$SendingMessage sm " +
                 "where sm.status=:(?i)statusQueue or (sm.status = :statusSending and sm.updateTs<:time) " +
                 "order by sm.createTs";
-        CharStream cs = new AntlrNoCaseStringStream(query);
-        JPA2Lexer lexer = new JPA2Lexer(cs);
-        TokenStream tstream = new CommonTokenStream(lexer);
-        JPA2Parser jpa2Parser = new JPA2Parser(tstream);
-        JPA2Parser.ql_statement_return aReturn = jpa2Parser.ql_statement();
-        Assert.assertTrue(isValid((CommonTree) aReturn.getTree()));
+        testQuery(query);
     }
 
     @Test
@@ -68,12 +52,7 @@ public class Jpa2GrammarTest {
         String query = "select h " +
                 "from sec$Constraint u, sec$GroupHierarchy h join sec$Constraint c on c.group.id = h.parent.id " +
                 "where h.userGroup = :par";
-        CharStream cs = new AntlrNoCaseStringStream(query);
-        JPA2Lexer lexer = new JPA2Lexer(cs);
-        TokenStream tstream = new CommonTokenStream(lexer);
-        JPA2Parser jpa2Parser = new JPA2Parser(tstream);
-        JPA2Parser.ql_statement_return aReturn = jpa2Parser.ql_statement();
-        Assert.assertTrue(isValid((CommonTree) aReturn.getTree()));
+        testQuery(query);
     }
 
     @Test
@@ -118,15 +97,50 @@ public class Jpa2GrammarTest {
     }
 
     @Test
-    public void testIsNull() throws Exception {
-        String query = "select f from sec$Filter f left join f.user u " +
-                "where f.componentId = :component and (u.id = :userId or u is null) order by f.name";
+    public void testOrderBy() throws Exception {
+        testQuery("select c from ref$Contract c order by c.number");
+        testQuery("select c from ref$Contract c order by c.number asc");
+        testQuery("select c from ref$Contract c order by c.number desc");
+        testQuery("select c from ref$Contract c order by c.order desc, c.number asc");
+        testQuery("select c from ref$Contract c order by c.order asc, c.number desc");
+    }
+
+    @Test
+    public void testOrderByReservedWords() throws Exception {
+        testQuery("select c from ref$Contract c order by c.order");
+        testQuery("select c from ref$Contract c order by c.from");
+        testQuery("select c from ref$Contract c order by c.max");
+        testQuery("select c from ref$Contract c order by c.min");
+        testQuery("select c from ref$Contract c order by c.select");
+        testQuery("select c from ref$Contract c order by c.count");
+        testQuery("select c from ref$Contract c order by c.group");
+    }
+
+    @Test
+    public void testGroupByReservedWords() throws Exception {
+        testQuery("select c from ref$Contract c group by c.order");
+        testQuery("select c from ref$Contract c group by c.from");
+        testQuery("select c from ref$Contract c group by c.max");
+        testQuery("select c from ref$Contract c group by c.min");
+        testQuery("select c from ref$Contract c group by c.select");
+        testQuery("select c from ref$Contract c group by c.count");
+        testQuery("select c from ref$Contract c group by c.group");
+    }
+
+    private void testQuery(String query) throws RecognitionException {
         CharStream cs = new AntlrNoCaseStringStream(query);
         JPA2Lexer lexer = new JPA2Lexer(cs);
         TokenStream tstream = new CommonTokenStream(lexer);
         JPA2Parser jpa2Parser = new JPA2Parser(tstream);
         JPA2Parser.ql_statement_return aReturn = jpa2Parser.ql_statement();
         Assert.assertTrue(isValid((CommonTree) aReturn.getTree()));
+    }
+
+    @Test
+    public void testIsNull() throws Exception {
+        String query = "select f from sec$Filter f left join f.user u " +
+                "where f.componentId = :component and (u.id = :userId or u is null) order by f.name";
+        testQuery(query);
     }
 
     @Test
