@@ -59,7 +59,7 @@ public class CubaTimerConnector extends AbstractExtensionConnector {
     public void onTimer() {
         if (running) {
             if (getState().listeners) {
-                if (!getConnection().hasActiveRequest()) {
+                if (!getConnection().getServerRpcQueue().isEmpty()) {
                     // if application stopped we will not schedule new timer event
                     if (getConnection().isApplicationRunning()) {
                         rpc.onTimer();

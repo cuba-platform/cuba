@@ -15,7 +15,6 @@ import com.vaadin.ui.Layout;
  * Interface to generalize additional functionality in {@link CubaTable}, {@link CubaGroupTable} and {@link CubaTreeTable}
  *
  * @author artamonov
- * @version $Id$
  */
 public interface CubaEnhancedTable extends AggregationContainer {
     void setContextMenuPopup(Layout contextMenu);
@@ -56,9 +55,6 @@ public interface CubaEnhancedTable extends AggregationContainer {
     boolean isShowTotalAggregation();
     void setShowTotalAggregation(boolean showTotalAggregation);
 
-    void addColumnCollapseListener(ColumnCollapseListener listener);
-    void removeColumnCollapseListener(ColumnCollapseListener listener);
-
     void setClickListener(Object propertyId, CellClickListener clickListener);
     void removeClickListener(Object propertyId);
 
@@ -72,10 +68,6 @@ public interface CubaEnhancedTable extends AggregationContainer {
 
     boolean getColumnSortable(Object columnId);
     void setColumnSortable(Object columnId, boolean sortable);
-
-    interface ColumnCollapseListener {
-        void columnCollapsed(Object columnId, boolean collapsed);
-    }
 
     interface CellClickListener {
         void onClick(Object itemId, Object columnId);

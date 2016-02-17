@@ -8,10 +8,13 @@ package com.haulmont.cuba.web.toolkit.ui;
 import com.haulmont.cuba.web.toolkit.ui.client.button.CubaButtonClientRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.button.CubaButtonState;
 import com.vaadin.shared.MouseEventDetails;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
 
 /**
  * @author artamonov
- * @version $Id$
  */
 public class CubaButton extends com.vaadin.ui.Button {
 
@@ -54,6 +57,42 @@ public class CubaButton extends com.vaadin.ui.Button {
     public void setUseResponsePending(boolean useResponsePending) {
         if (isUseResponsePending() != useResponsePending) {
             getState().useResponsePending = useResponsePending;
+        }
+    }
+
+    @Override
+    public void setClickShortcut(int keyCode, int... modifiers) {
+        if (clickShortcut != null) {
+            removeShortcutListener(clickShortcut);
+        }
+        clickShortcut = new CubaClickShortcut(this, keyCode, modifiers);
+        addShortcutListener(clickShortcut);
+        getState().clickShortcutKeyCode = clickShortcut.getKeyCode();
+    }
+
+    protected static class CubaClickShortcut extends ClickShortcut {
+        public CubaClickShortcut(Button button, int keyCode, int... modifiers) {
+            super(button, keyCode, modifiers);
+        }
+
+        @Override
+        public void handleAction(Object sender, Object target) {
+            if (target instanceof Component) {
+                Component targetTopLevelComponent = getTopLevelComponent((Component) target);
+                Component buttonTopLevelComponent = getTopLevelComponent(button);
+
+                if (targetTopLevelComponent == buttonTopLevelComponent) {
+                    super.handleAction(sender, target);
+                }
+            }
+        }
+
+        protected Component getTopLevelComponent(Component component) {
+            Component parent = component;
+            while (parent != null && !(parent instanceof Window) && !(parent instanceof UI)) {
+                parent = parent.getParent();
+            }
+            return parent;
         }
     }
 }

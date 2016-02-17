@@ -2265,13 +2265,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         if (columnCollapseListeners == null) {
             columnCollapseListeners = new LinkedList<>();
 
-            component.addColumnCollapseListener(new CubaEnhancedTable.ColumnCollapseListener() {
-                @Override
-                public void columnCollapsed(Object columnId, boolean collapsed) {
-                    final Column collapsedColumn = getColumn(columnId.toString());
-                    for (ColumnCollapseListener listener : columnCollapseListeners) {
-                        listener.columnCollapsed(collapsedColumn, collapsed);
-                    }
+            component.addColumnCollapseListener((com.vaadin.ui.Table.ColumnCollapseListener) event -> {
+                Column collapsedColumn = getColumn(event.getPropertyId().toString());
+                boolean collapsed = component.isColumnCollapsed(event.getPropertyId());
+
+                for (ColumnCollapseListener listener : columnCollapseListeners) {
+                    listener.columnCollapsed(collapsedColumn, collapsed);
                 }
             });
         }
