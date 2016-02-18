@@ -180,15 +180,19 @@ public class CategoryAttribute extends StandardEntity {
 
 
     public Object getDefaultValue() {
-        if (defaultInt != null)
-            return defaultInt;
-        else if (defaultDouble != null)
-            return defaultDouble;
-        else if (defaultBoolean != null) return defaultBoolean;
-        else if (defaultDate != null) return defaultDate;
-        else if (defaultString != null) return defaultString;
-        else if (defaultEntityId != null) return defaultEntityId;
-        else return null;
+        if (dataType != null) {
+            switch (PropertyType.valueOf(dataType)) {
+                case INTEGER: return defaultInt;
+                case DOUBLE: return defaultDouble;
+                case BOOLEAN: return defaultBoolean;
+                case DATE: return defaultDate;
+                case STRING: return defaultString;
+                case ENTITY: return defaultEntityId;
+                default: return null;
+            }
+        }
+
+        return null;
     }
 
     public Integer getOrderNo() {
