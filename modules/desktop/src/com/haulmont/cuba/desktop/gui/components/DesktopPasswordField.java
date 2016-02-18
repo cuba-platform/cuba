@@ -36,6 +36,12 @@ public class DesktopPasswordField extends DesktopAbstractTextField<JPasswordFiel
         ((TextComponentDocument) doc).setMaxLength(value);
     }
 
+    @Override
+    public boolean isAutocomplete() { return false; }
+
+    @Override
+    public void setAutocomplete(Boolean value) {}
+
     private class PasswordFlushableField extends JPasswordField implements Flushable {
 
         @Override

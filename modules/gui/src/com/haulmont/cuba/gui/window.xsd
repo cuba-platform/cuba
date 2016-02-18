@@ -679,6 +679,7 @@
         <xs:complexContent>
             <xs:extension base="baseTextComponent">
                 <xs:attribute name="maxLength" type="xs:int"/>
+                <xs:attribute name="autocomplete" type="xs:boolean"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
