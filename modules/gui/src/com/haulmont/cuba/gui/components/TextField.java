@@ -8,7 +8,6 @@ import com.haulmont.chile.core.datatypes.Datatype;
 
 /**
  * @author abramov
- * @version $Id$
  */
 public interface TextField
         extends
@@ -16,22 +15,11 @@ public interface TextField
             TextInputField.MaxLengthLimited,
             TextInputField.TrimSupported,
             TextInputField.CursorPositionSupported,
-            Component.HasFormatter {
+            Component.HasFormatter,
+            Component.HasInputPrompt {
 
     String NAME = "textField";
 
     Datatype getDatatype();
     void setDatatype(Datatype datatype);
-
-    /**
-     * @return current input prompt.
-     */
-    String getInputPrompt();
-    /**
-     * Sets the input prompt - a textual prompt that is displayed when the field
-     * would otherwise be empty, to prompt the user for input.
-     *
-     * @param inputPrompt input prompt
-     */
-    void setInputPrompt(String inputPrompt);
 }

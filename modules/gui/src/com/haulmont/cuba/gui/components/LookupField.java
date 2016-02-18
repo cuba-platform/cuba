@@ -7,9 +7,8 @@ package com.haulmont.cuba.gui.components;
 
 /**
  * @author abramov
- * @version $Id$
  */
-public interface LookupField extends OptionsField {
+public interface LookupField extends OptionsField, Component.HasInputPrompt {
 
     String NAME = "lookupField";
 
@@ -55,18 +54,6 @@ public interface LookupField extends OptionsField {
             STARTS_WITH,
             CONTAINS
     }
-
-    /**
-     * @return current input prompt.
-     */
-    String getInputPrompt();
-    /**
-     * Sets the input prompt - a textual prompt that is displayed when the field
-     * would otherwise be empty, to prompt the user for input.
-     *
-     * @param inputPrompt input prompt
-     */
-    void setInputPrompt(String inputPrompt);
 
     /**
      * Interface to be implemented if {@link #setNewOptionAllowed(boolean)} is set to true.

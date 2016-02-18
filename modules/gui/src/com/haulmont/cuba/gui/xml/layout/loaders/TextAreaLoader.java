@@ -9,7 +9,6 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * @author abramov
- * @version $Id$
  */
 public class TextAreaLoader extends AbstractTextFieldLoader<TextArea> {
     @Override
@@ -24,6 +23,7 @@ public class TextAreaLoader extends AbstractTextFieldLoader<TextArea> {
 
         loadMaxLength(resultComponent, element);
         loadTrimming(resultComponent, element);
+        loadInputPrompt(resultComponent, element);
 
         String cols = element.attributeValue("cols");
         if (StringUtils.isNotEmpty(cols)) {

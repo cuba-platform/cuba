@@ -11,7 +11,6 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * @author abramov
- * @version $Id$
  */
 public class TextFieldLoader extends AbstractTextFieldLoader<TextField> {
     @Override
@@ -29,10 +28,7 @@ public class TextFieldLoader extends AbstractTextFieldLoader<TextField> {
 
         resultComponent.setFormatter(loadFormatter(element));
 
-        String inputPrompt = element.attributeValue("inputPrompt");
-        if (StringUtils.isNotBlank(inputPrompt)) {
-            resultComponent.setInputPrompt(loadResourceString(inputPrompt));
-        }
+        loadInputPrompt(resultComponent, element);
     }
 
     @Override

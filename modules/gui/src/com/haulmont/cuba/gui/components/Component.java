@@ -16,7 +16,6 @@ import java.util.Collection;
  * Root of the GenericUI components hierarchy
  *
  * @author abramov
- * @version $Id$
  */
 public interface Component {
 
@@ -474,5 +473,20 @@ public interface Component {
     interface Margin {
         void setMargin(boolean enable);
         void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable);
+    }
+
+    interface HasInputPrompt {
+        /**
+         * @return current input prompt.
+         */
+        String getInputPrompt();
+
+        /**
+         * Sets the input prompt - a textual prompt that is displayed when the field
+         * would otherwise be empty, to prompt the user for input.
+         *
+         * @param inputPrompt input prompt
+         */
+        void setInputPrompt(String inputPrompt);
     }
 }
