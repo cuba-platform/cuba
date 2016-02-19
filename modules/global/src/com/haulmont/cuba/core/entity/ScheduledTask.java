@@ -20,6 +20,7 @@ import org.dom4j.Element;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -120,6 +121,10 @@ public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDele
 
     @Column(name = "DESCRIPTION", length = 1000)
     protected String description;
+
+    //the following field is part of private API, please do not use it
+    @Transient
+    protected volatile long currentStartTimestamp;
 
     @Override
     public Date getUpdateTs() {
@@ -344,6 +349,14 @@ public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDele
 
     public void setSchedulingType(SchedulingType schedulingType) {
         this.schedulingType = SchedulingType.getId(schedulingType);
+    }
+
+    public long getCurrentStartTimestamp() {
+        return currentStartTimestamp;
+    }
+
+    public void setCurrentStartTimestamp(long currentStartTimestamp) {
+        this.currentStartTimestamp = currentStartTimestamp;
     }
 
     public List<MethodParameterInfo> getMethodParameters() {

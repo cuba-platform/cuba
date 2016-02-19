@@ -19,6 +19,7 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,10 +112,15 @@ public class Scheduling implements SchedulingAPI {
     @Override
     public void setRunning(ScheduledTask task, boolean running) {
         log.trace(task + ": mark running=" + running);
-        if (running)
-            runningTasks.put(task, timeSource.currentTimeMillis());
-        else
-            runningTasks.remove(task);
+        if (running) {
+            task.setCurrentStartTimestamp(timeSource.currentTimeMillis());
+            runningTasks.put(task, task.getCurrentStartTimestamp());
+        } else {
+            Long startTime = runningTasks.get(task);
+            if (ObjectUtils.equals(task.getCurrentStartTimestamp(), startTime)) {
+                runningTasks.remove(task);
+            }
+        }
     }
 
     @Override
@@ -352,10 +358,11 @@ public class Scheduling implements SchedulingAPI {
                 timedOut = (startTime + 1000 * 60 * 60 * 3) < timeSource.currentTimeMillis();
             }
 
-            if (timedOut)
+            if (timedOut) {
                 runningTasks.remove(task);
-            else
+            } else {
                 return true;
+            }
         }
         return false;
     }
