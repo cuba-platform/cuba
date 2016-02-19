@@ -21,6 +21,7 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
+import com.haulmont.cuba.web.toolkit.ui.CubaPasswordField;
 import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
@@ -39,7 +40,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -63,7 +63,7 @@ public class LoginWindow extends UIView {
     protected final Connection connection;
 
     protected TextField loginField;
-    protected PasswordField passwordField;
+    protected CubaPasswordField passwordField;
     protected ComboBox localesSelect;
 
     protected Locale resolvedLocale;
@@ -100,13 +100,14 @@ public class LoginWindow extends UIView {
         connection = app.getConnection();
 
         loginField = new TextField();
-        passwordField = new PasswordField();
+        passwordField = new CubaPasswordField();
         localesSelect = new ComboBox();
         localesSelect.setTextInputAllowed(false);
 
         // make fields immediate to resync fast in case of login is already performed from another UI (i.e. browser tab)
         loginField.setImmediate(true);
         passwordField.setImmediate(true);
+
         localesSelect.setImmediate(true);
 
         okButton = new CubaButton();
@@ -269,6 +270,7 @@ public class LoginWindow extends UIView {
 
         passwordField.setCaption(messages.getMainMessage("loginWindow.passwordField", resolvedLocale));
         passwordField.setWidth(fieldWidth + "px");
+        passwordField.setAutocomplete(true);
         passwordField.setStyleName("password-field");
         loginFormLayout.addComponent(passwordField);
         loginFormLayout.setComponentAlignment(passwordField, Alignment.MIDDLE_CENTER);

@@ -375,17 +375,13 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
     }
 
     public void expandAll() {
-        for (Object id : getItemIds()) {
-            expandItemRecursively(id);
-        }
+        expandAllItems();
     }
 
     public void expandItemRecursively(Object id) {
         setCollapsed(id, false);
-        if (hasChildren(id)) {
-            for (Object childId: getChildren(id)) {
-                expandItemRecursively(childId);
-            }
+        for (Object childId: getChildren(id)) {
+            expandItemRecursively(childId);
         }
     }
 

@@ -9,6 +9,8 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
+import org.apache.commons.lang.StringUtils;
+import org.jdesktop.swingx.prompt.PromptSupport;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
@@ -16,7 +18,6 @@ import java.awt.*;
 
 /**
  * @author krivopustov
- * @version $Id$
  */
 public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> implements TextField {
 
@@ -25,6 +26,7 @@ public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> i
     @Override
     protected JTextField createTextComponentImpl() {
         JTextField field = new FlushableTextField();
+
         int height = (int) field.getPreferredSize().getHeight();
         field.setPreferredSize(new Dimension(150, height));
         return field;
@@ -80,6 +82,12 @@ public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> i
     @Override
     public void setInputPrompt(String inputPrompt) {
         this.inputPrompt = inputPrompt;
+
+        if (StringUtils.isNotBlank(inputPrompt)) {
+            PromptSupport.setPrompt(inputPrompt, impl);
+        } else {
+            PromptSupport.setPrompt(null, impl);
+        }
     }
 
     @Override

@@ -37,7 +37,6 @@ import java.util.Locale;
 
 /**
  * @author abramov
- * @version $Id$
  */
 public abstract class AbstractComponentLoader<T extends Component> implements ComponentLoader<T> {
 
@@ -581,5 +580,12 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         }
 
         return loader;
+    }
+
+    protected void loadInputPrompt(Component.HasInputPrompt component, Element element) {
+        String inputPrompt = element.attributeValue("inputPrompt");
+        if (StringUtils.isNotBlank(inputPrompt)) {
+            component.setInputPrompt(loadResourceString(inputPrompt));
+        }
     }
 }

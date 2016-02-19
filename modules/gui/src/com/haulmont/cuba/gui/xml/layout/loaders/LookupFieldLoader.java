@@ -22,9 +22,9 @@ import java.util.Map;
 
 /**
  * @author abramov
- * @version $Id$
  */
 public class LookupFieldLoader extends AbstractFieldLoader<LookupField> {
+
     @Override
     public void createComponent() {
         resultComponent = (LookupField) factory.createComponent(LookupField.NAME);
@@ -48,14 +48,10 @@ public class LookupFieldLoader extends AbstractFieldLoader<LookupField> {
         }
 
         loadTextInputAllowed();
+        loadInputPrompt(resultComponent, element);
 
         loadFilterMode(resultComponent, element);
         loadNewOptionHandler(resultComponent, element);
-
-        String inputPrompt = element.attributeValue("inputPrompt");
-        if (StringUtils.isNotBlank(inputPrompt)) {
-            resultComponent.setInputPrompt(loadResourceString(inputPrompt));
-        }
     }
 
     protected void loadTextInputAllowed() {

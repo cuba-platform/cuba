@@ -10,7 +10,6 @@ import com.vaadin.ui.TextArea;
 
 /**
  * @author artamonov
- * @version $Id$
  */
 public class WebTextArea
         extends
@@ -26,5 +25,15 @@ public class WebTextArea
     @Override
     public void setCursorPosition(int position) {
         component.setCursorPosition(position);
+    }
+
+    @Override
+    public String getInputPrompt() {
+        return component.getInputPrompt();
+    }
+
+    @Override
+    public void setInputPrompt(String inputPrompt) {
+        component.setInputPrompt(inputPrompt);
     }
 }

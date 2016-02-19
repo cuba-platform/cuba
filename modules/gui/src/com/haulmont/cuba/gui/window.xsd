@@ -633,7 +633,7 @@
 
                 <xs:attribute name="maxLength" type="xs:int"/>
                 <xs:attribute name="trim" type="xs:boolean"/>
-                <xs:attribute name="inputPrompt" type="xs:string"/>
+                <xs:attribute name="inputPrompt" type="resourceString"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -648,6 +648,7 @@
                 <xs:attribute name="maxLength" type="xs:int"/>
                 <xs:attribute name="resizable" type="xs:boolean"/>
                 <xs:attribute name="trim" type="xs:boolean"/>
+                <xs:attribute name="inputPrompt" type="resourceString"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -678,6 +679,7 @@
         <xs:complexContent>
             <xs:extension base="baseTextComponent">
                 <xs:attribute name="maxLength" type="xs:int"/>
+                <xs:attribute name="autocomplete" type="xs:boolean"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -743,7 +745,7 @@
                 <xs:attribute name="newOptionAllowed" type="xs:boolean"/>
                 <xs:attribute name="textInputAllowed" type="xs:boolean"/>
                 <xs:attribute name="newOptionHandler" type="xs:string"/>
-                <xs:attribute name="inputPrompt" type="xs:string"/>
+                <xs:attribute name="inputPrompt" type="resourceString"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

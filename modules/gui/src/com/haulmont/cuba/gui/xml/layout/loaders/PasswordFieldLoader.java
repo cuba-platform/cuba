@@ -5,6 +5,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.PasswordField;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author abramov
@@ -22,5 +23,10 @@ public class PasswordFieldLoader extends AbstractTextFieldLoader<PasswordField> 
         super.loadComponent();
 
         loadMaxLength(resultComponent, element);
+
+        final String autocomplete = element.attributeValue("autocomplete");
+        if (!StringUtils.isEmpty(autocomplete)) {
+            resultComponent.setAutocomplete(Boolean.parseBoolean(String.valueOf(autocomplete)));
+        }
     }
 }

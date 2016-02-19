@@ -20,7 +20,6 @@ import java.util.List;
 
 /**
  * @author subbotin
- * @version $Id$
  */
 public class WebResizableTextArea extends WebAbstractTextArea<CubaTextArea> implements ResizableTextArea {
 
@@ -199,5 +198,15 @@ public class WebResizableTextArea extends WebAbstractTextArea<CubaTextArea> impl
     @Override
     public void setSettingsEnabled(boolean settingsEnabled) {
         this.settingsEnabled = settingsEnabled;
+    }
+
+    @Override
+    public String getInputPrompt() {
+        return component.getInputPrompt();
+    }
+
+    @Override
+    public void setInputPrompt(String inputPrompt) {
+        component.setInputPrompt(inputPrompt);
     }
 }

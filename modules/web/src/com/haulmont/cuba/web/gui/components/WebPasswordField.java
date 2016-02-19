@@ -28,4 +28,13 @@ public class WebPasswordField extends WebAbstractTextField<CubaPasswordField> im
     public void setMaxLength(int value) {
         component.setMaxLength(value);
     }
+
+    public boolean isAutocomplete() {
+        return component.isAutocomplete();
+    }
+
+    @Override
+    public void setAutocomplete(Boolean value) {
+        component.setAutocomplete(value);
+    }
 }
