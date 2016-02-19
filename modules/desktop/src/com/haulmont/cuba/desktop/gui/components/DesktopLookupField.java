@@ -187,7 +187,7 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
         editor.getActionMap().put("clearShortcut", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (!isRequired()) {
+                if (!isRequired() && isEditable() && isEnabled()) {
                     setValue(null);
 
                     fireUserSelectionListeners();
