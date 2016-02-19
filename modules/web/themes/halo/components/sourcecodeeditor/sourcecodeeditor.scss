@@ -33,6 +33,11 @@
     @include valo-textfield-focus-style;
   }
 
+  .#{$primary-stylename}.v-disabled {
+    padding: 0px;
+    overflow: hidden;
+  }
+
   .#{$primary-stylename},
   .#{$primary-stylename}:focus {
     outline: none;

@@ -21,6 +21,11 @@
     }
   }
 
+  .#{$primary-stylename}.v-disabled {
+    padding: 0px;
+    overflow: hidden;
+  }
+
   .#{$primary-stylename} .ace_focus {
     .ace_cursor {
       visibility: visible;
