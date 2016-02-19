@@ -379,6 +379,21 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
     }
 
     @Override
+    public AbstractEditor openEditor(Entity item, WindowManager.OpenType openType) {
+        return (AbstractEditor) frame.openEditor(item, openType);
+    }
+
+    @Override
+    public AbstractEditor openEditor(Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
+        return (AbstractEditor) frame.openEditor(item, openType,params);
+    }
+
+    @Override
+    public AbstractEditor openEditor(Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
+        return (AbstractEditor) frame.openEditor(item, openType, params, parentDs);
+    }
+
+    @Override
     public AbstractEditor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
         return (AbstractEditor) frame.openEditor(windowAlias, item, openType, params, parentDs);
     }
@@ -396,6 +411,16 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
     @Override
     public AbstractEditor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
         return (AbstractEditor) frame.openEditor(windowAlias, item, openType, Collections.<String, Object>emptyMap());
+    }
+
+    @Override
+    public AbstractLookup openLookup(Class<Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+        return (AbstractLookup) frame.openLookup(entityClass, handler, openType);
+    }
+
+    @Override
+    public AbstractLookup openLookup(Class<Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
+        return (AbstractLookup) frame.openLookup(entityClass, handler, openType, params);
     }
 
     @Override

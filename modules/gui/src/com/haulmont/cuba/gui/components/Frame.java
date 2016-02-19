@@ -21,7 +21,6 @@ import java.util.Map;
  * Includes functionality for work with datasources and other windows.
  *
  * @author abramov
- * @version $Id$
  */
 public interface Frame
         extends ExpandingLayout,
@@ -111,6 +110,39 @@ public interface Frame
     Window openWindow(String windowAlias, WindowManager.OpenType openType);
 
     /**
+     * Open an edit screen for entity instance.
+     *
+     * @param item        entity to edit
+     * @param openType    how to open the screen
+     * @return created window
+     */
+    Window.Editor openEditor(Entity item, WindowManager.OpenType openType);
+
+    /**
+     * Open an edit screen for entity instance.
+     *
+     * @param item        entity to edit
+     * @param openType    how to open the screen
+     * @param params      parameters to pass to <code>init()</code> method of the screen's controller
+     * @return created window
+     */
+    Window.Editor openEditor(Entity item, WindowManager.OpenType openType,
+                             Map<String, Object> params);
+
+    /**
+     * Open an edit screen for entity instance.
+     *
+     * @param item        entity to edit
+     * @param openType    how to open the screen
+     * @param params      parameters to pass to <code>init()</code> method of the screen's controller
+     * @param parentDs    if this parameter is not null, the editor will commit edited instance into this
+     *                    datasource instead of directly to database
+     * @return created window
+     */
+    Window.Editor openEditor(Entity item, WindowManager.OpenType openType,
+                             Map<String, Object> params, Datasource parentDs);
+
+    /**
      * Open an edit screen.
      *
      * @param windowAlias screen ID as defined in <code>screens.xml</code>
@@ -157,6 +189,28 @@ public interface Frame
      * @return created window
      */
     Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType);
+
+    /**
+     * Open a lookup screen.
+     *
+     * @param entityClass required class of entity
+     * @param handler     is invoked when selection confirmed and the lookup screen closes
+     * @param openType    how to open the screen
+     * @return created window
+     */
+    Window.Lookup openLookup(Class<Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType);
+
+    /**
+     * Open a lookup screen.
+     *
+     * @param entityClass required class of entity
+     * @param handler     is invoked when selection confirmed and the lookup screen closes
+     * @param openType    how to open the screen
+     * @param params      parameters to pass to <code>init()</code> method of the screen's controller
+     * @return created window
+     */
+    Window.Lookup openLookup(Class<Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType,
+                             Map<String, Object> params);
 
     /**
      * Open a lookup screen.

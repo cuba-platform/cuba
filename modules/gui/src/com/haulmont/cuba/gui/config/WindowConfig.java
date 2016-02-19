@@ -6,6 +6,7 @@ package com.haulmont.cuba.gui.config;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -37,7 +38,6 @@ import java.util.regex.Pattern;
  * GenericUI class holding information about all registered in <code>screens.xml</code> screens.
  *
  * @author krivopustov
- * @version $Id$
  */
 @Component(WindowConfig.NAME)
 public class WindowConfig {
@@ -220,6 +220,18 @@ public class WindowConfig {
 
     public String getEditorScreenId(MetaClass metaClass) {
         return getMetaClassScreenId(metaClass, Window.EDITOR_WINDOW_SUFFIX);
+    }
+
+    public WindowInfo getEditorScreen(Entity entity) {
+        MetaClass metaClass = entity.getMetaClass();
+        String editorScreenId = getEditorScreenId(metaClass);
+        return getWindowInfo(editorScreenId);
+    }
+
+    public WindowInfo getLookupScreen(Class<Entity> entityClass) {
+        MetaClass metaClass = metadata.getSession().getClass(entityClass);
+        String lookupScreenId = getLookupScreenId(metaClass);
+        return getWindowInfo(lookupScreenId);
     }
 
     public String getAvailableLookupScreenId(MetaClass metaClass) {

@@ -186,6 +186,24 @@ public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
     }
 
     @Override
+    public Window.Editor openEditor(Entity item, WindowManager.OpenType openType) {
+        WindowInfo editorScreen = windowConfig.getEditorScreen(item);
+        return App.getInstance().getWindowManager().openEditor(editorScreen, item, openType);
+    }
+
+    @Override
+    public Window.Editor openEditor(Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
+        WindowInfo editorScreen = windowConfig.getEditorScreen(item);
+        return App.getInstance().getWindowManager().openEditor(editorScreen, item, openType, params);
+    }
+
+    @Override
+    public Window.Editor openEditor(Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
+        WindowInfo editorScreen = windowConfig.getEditorScreen(item);
+        return App.getInstance().getWindowManager().openEditor(editorScreen, item, openType, params, parentDs);
+    }
+
+    @Override
     public Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().openEditor(windowInfo, item, openType, params, parentDs);
@@ -213,6 +231,18 @@ public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
     public Window openWindow(String windowAlias, WindowManager.OpenType openType) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().openWindow(windowInfo, openType);
+    }
+
+    @Override
+    public Window.Lookup openLookup(Class<Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+        WindowInfo lookupScreen = windowConfig.getLookupScreen(entityClass);
+        return App.getInstance().getWindowManager().openLookup(lookupScreen, handler, openType);
+    }
+
+    @Override
+    public Window.Lookup openLookup(Class<Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
+        WindowInfo lookupScreen = windowConfig.getLookupScreen(entityClass);
+        return App.getInstance().getWindowManager().openLookup(lookupScreen, handler, openType, params);
     }
 
     @Override

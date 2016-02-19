@@ -534,6 +534,21 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     @Override
+    public Window.Editor openEditor(Entity item, WindowManager.OpenType openType) {
+        return delegate.openEditor(item, openType);
+    }
+
+    @Override
+    public Window.Editor openEditor(Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
+        return delegate.openEditor(item, openType, params);
+    }
+
+    @Override
+    public Window.Editor openEditor(Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
+        return delegate.openEditor(item, openType, params, parentDs);
+    }
+
+    @Override
     public Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
         return delegate.openEditor(windowAlias, item, openType, params, parentDs);
     }
@@ -551,6 +566,16 @@ public class DesktopWindow implements Window, Component.Disposable,
     @Override
     public Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
         return delegate.openEditor(windowAlias, item, openType);
+    }
+
+    @Override
+    public Window.Lookup openLookup(Class<Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+        return delegate.openLookup(entityClass, handler, openType);
+    }
+
+    @Override
+    public Window.Lookup openLookup(Class<Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
+        return delegate.openLookup(entityClass, handler, openType, params);
     }
 
     @Override

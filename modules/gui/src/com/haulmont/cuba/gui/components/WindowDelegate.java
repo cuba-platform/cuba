@@ -26,7 +26,6 @@ import java.util.*;
 
 /**
  * @author krivopustov
- * @version $Id$
  */
 public class WindowDelegate {
 
@@ -215,6 +214,21 @@ public class WindowDelegate {
         return window.getWindowManager().openWindow(windowInfo, openType);
     }
 
+    public Window.Editor openEditor(Entity item, WindowManager.OpenType openType) {
+        WindowInfo editorScreen = windowConfig.getEditorScreen(item);
+        return window.getWindowManager().openEditor(editorScreen, item, openType);
+    }
+
+    public Window.Editor openEditor(Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
+        WindowInfo editorScreen = windowConfig.getEditorScreen(item);
+        return window.getWindowManager().openEditor(editorScreen, item, openType, params);
+    }
+
+    public Window.Editor openEditor(Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
+        WindowInfo editorScreen = windowConfig.getEditorScreen(item);
+        return window.getWindowManager().openEditor(editorScreen, item, openType, params, parentDs);
+    }
+
     public Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return window.getWindowManager().openEditor(windowInfo, item, openType, params, parentDs);
@@ -233,6 +247,16 @@ public class WindowDelegate {
     public Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return window.getWindowManager().openEditor(windowInfo, item, openType);
+    }
+
+    public Window.Lookup openLookup(Class<Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+        WindowInfo lookupScreen = windowConfig.getLookupScreen(entityClass);
+        return window.getWindowManager().openLookup(lookupScreen, handler, openType);
+    }
+
+    public Window.Lookup openLookup(Class<Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
+        WindowInfo lookupScreen = windowConfig.getLookupScreen(entityClass);
+        return window.getWindowManager().openLookup(lookupScreen, handler, openType, params);
     }
 
     public Window.Lookup openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
