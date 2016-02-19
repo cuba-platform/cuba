@@ -43,8 +43,7 @@ public class LookupFieldLoader extends AbstractFieldLoader<LookupField> {
 
         String nullName = element.attributeValue("nullName");
         if (StringUtils.isNotEmpty(nullName)) {
-            nullName = loadResourceString(nullName);
-            resultComponent.setNullOption(nullName);
+            resultComponent.setNullOption(loadResourceString(nullName));
         }
 
         loadTextInputAllowed();

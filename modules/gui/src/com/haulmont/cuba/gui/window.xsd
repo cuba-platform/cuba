@@ -353,10 +353,6 @@
         <xs:attribute name="description" type="resourceString"/>
     </xs:attributeGroup>
 
-    <xs:attributeGroup name="requiresCaption">
-        <xs:attribute name="caption" type="xs:string" use="required"/>
-    </xs:attributeGroup>
-
     <xs:attributeGroup name="hasCaptionProp">
         <xs:attribute name="caption" type="resourceString"/>
     </xs:attributeGroup>
@@ -761,8 +757,8 @@
                 <xs:attributeGroup ref="hasOptions"/>
                 <xs:attributeGroup ref="hasCaptionSource"/>
 
-                <xs:attribute name="nullName" type="xs:string"/>
-                <xs:attribute name="inputPrompt" type="xs:string"/>
+                <xs:attribute name="nullName" type="resourceString"/>
+                <xs:attribute name="inputPrompt" type="resourceString"/>
 
                 <xs:attribute name="minSearchStringLength" type="xs:integer"/>
                 <xs:attribute name="mode" type="searchMode"/>
@@ -800,7 +796,7 @@
                 <xs:attributeGroup ref="hasCaptionSource"/>
 
                 <xs:attribute name="filterMode" type="filterMode"/>
-                <xs:attribute name="nullName" type="xs:string"/>
+                <xs:attribute name="nullName" type="resourceString"/>
                 <xs:attribute name="metaClass" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>
@@ -820,8 +816,8 @@
 
                 <xs:attribute name="metaClass" type="xs:string"/>
 
-                <xs:attribute name="nullName" type="xs:string"/>
-                <xs:attribute name="inputPrompt" type="xs:string"/>
+                <xs:attribute name="nullName" type="resourceString"/>
+                <xs:attribute name="inputPrompt" type="resourceString"/>
 
                 <xs:attribute name="minSearchStringLength" type="xs:integer"/>
                 <xs:attribute name="mode" type="searchMode"/>
@@ -1058,7 +1054,7 @@
             <xs:element name="property" minOccurs="0" maxOccurs="unbounded">
                 <xs:complexType>
                     <xs:attribute name="name" type="xs:string" use="required"/>
-                    <xs:attribute name="caption" type="xs:string"/>
+                    <xs:attribute name="caption" type="resourceString"/>
                     <xs:attribute name="paramWhere" type="xs:string"/>
                     <xs:attribute name="paramView" type="xs:string"/>
                 </xs:complexType>
@@ -1066,7 +1062,7 @@
             <xs:element name="custom" minOccurs="0" maxOccurs="unbounded">
                 <xs:complexType mixed="true">
                     <xs:attribute name="name" type="xs:string" use="required"/>
-                    <xs:attribute name="caption" type="xs:string"/>
+                    <xs:attribute name="caption" type="resourceString"/>
                     <xs:attribute name="paramClass" type="xs:string"/>
                     <xs:attribute name="inExpr" type="xs:boolean"/>
                     <xs:attribute name="join" type="xs:string"/>
@@ -1122,7 +1118,7 @@
         <xs:attributeGroup ref="hasWidthProp"/>
         <xs:attributeGroup ref="hasVisibility"/>
 
-        <xs:attribute name="requiredMessage" type="xs:string"/>
+        <xs:attribute name="requiredMessage" type="resourceString"/>
         <xs:attribute name="custom" type="xs:boolean"/>
 
         <xs:attribute name="datasource" type="xs:string"/>
@@ -1348,7 +1344,7 @@
                     <xs:group ref="layoutOrComponent"/>
 
                     <xs:attributeGroup ref="requiresId"/>
-                    <xs:attributeGroup ref="requiresCaption"/>
+                    <xs:attributeGroup ref="hasCaption"/>
 
                     <xs:attributeGroup ref="hasStyle"/>
 
