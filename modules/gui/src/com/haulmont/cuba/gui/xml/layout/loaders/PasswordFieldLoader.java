@@ -24,9 +24,10 @@ public class PasswordFieldLoader extends AbstractTextFieldLoader<PasswordField> 
 
         loadMaxLength(resultComponent, element);
 
-        final String autocomplete = element.attributeValue("autocomplete");
-        if (!StringUtils.isEmpty(autocomplete)) {
-            resultComponent.setAutocomplete(Boolean.parseBoolean(String.valueOf(autocomplete)));
+        String autocomplete = element.attributeValue("autocomplete");
+
+        if (StringUtils.isNotEmpty(autocomplete)) {
+            resultComponent.setAutocomplete(Boolean.valueOf(autocomplete));
         }
     }
 }

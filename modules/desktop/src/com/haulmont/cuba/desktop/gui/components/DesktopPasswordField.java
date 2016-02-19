@@ -17,6 +17,8 @@ import java.awt.*;
  */
 public class DesktopPasswordField extends DesktopAbstractTextField<JPasswordField> implements PasswordField {
 
+    protected Boolean autocomplete = false;
+
     @Override
     protected JPasswordField createTextComponentImpl() {
         JPasswordField field = new PasswordFlushableField();
@@ -37,10 +39,14 @@ public class DesktopPasswordField extends DesktopAbstractTextField<JPasswordFiel
     }
 
     @Override
-    public boolean isAutocomplete() { return false; }
+    public boolean isAutocomplete() {
+        return autocomplete;
+    }
 
     @Override
-    public void setAutocomplete(Boolean value) {}
+    public void setAutocomplete(Boolean value) {
+        this.autocomplete = value;
+    }
 
     private class PasswordFlushableField extends JPasswordField implements Flushable {
 

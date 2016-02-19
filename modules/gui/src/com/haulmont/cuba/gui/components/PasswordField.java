@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Copyright (c) 2008-2016 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
@@ -13,7 +13,13 @@ public interface PasswordField extends TextInputField, TextInputField.MaxLengthL
 
     String NAME = "passwordField";
 
+    /**
+     * Return autocomplete attribute value to specify saving it in browser
+     */
     boolean isAutocomplete();
 
-    void setAutocomplete(Boolean value);
+    /**
+     * Set autocomplete attribute value to specify saving it in browser
+     */
+    void setAutocomplete(Boolean autocomplete);
 }
