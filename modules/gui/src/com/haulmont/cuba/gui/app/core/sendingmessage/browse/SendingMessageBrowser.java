@@ -66,43 +66,43 @@ public class SendingMessageBrowser extends AbstractWindow {
     protected DataSupplier dataSupplier;
 
     @Inject
-    private ExportDisplay exportDisplay;
+    protected ExportDisplay exportDisplay;
+
+    protected Button showAsHtmlButton;
+    protected TextArea contentTextArea;
 
     @Override
     public void init(Map<String, Object> params) {
         fg.addCustomField(CONTENT_TEXT, new FieldGroup.CustomFieldGenerator() {
             @Override
             public Component generateField(Datasource datasource, String propertyId) {
-                TextArea contentTextArea = factory.createComponent(TextArea.class);
-                contentTextArea.setRows(20);
+                VBoxLayout contentArea = factory.createComponent(VBoxLayout.class);
+                contentArea.setSpacing(true);
+
+                contentTextArea = factory.createComponent(TextArea.class);
+                contentTextArea.setWidth("100%");
                 contentTextArea.setHeight(themeConstants.get("cuba.gui.SendingMessageBrowser.contentTextArea.height"));
-                return contentTextArea;
-            }
-        });
-        fg.setEditable(CONTENT_TEXT, false);
 
-        fg.addCustomField(SHOW_AS_HTML, new FieldGroup.CustomFieldGenerator() {
-            @Override
-            public Component generateField(Datasource datasource, String propertyId) {
-                Button showAsHtmlButton = factory.createComponent(Button.class);
-
+                showAsHtmlButton = factory.createComponent(Button.class);
                 showAsHtmlButton.setAction(new AbstractAction("") {
-
                     @Override
                     public void actionPerform(Component component) {
-                        ByteArrayDataProvider dataProvider = new ByteArrayDataProvider(fg
-                                .getFieldValue(CONTENT_TEXT)
-                                .toString()
-                                .getBytes(StandardCharsets.UTF_8));
+                        ByteArrayDataProvider dataProvider = new ByteArrayDataProvider(
+                                ((String)contentTextArea.getValue()).getBytes(StandardCharsets.UTF_8));
+
                         exportDisplay.show(dataProvider, "Preview", ExportFormat.HTML);
                     }
                 });
-
                 showAsHtmlButton.setEnabled(false);
                 showAsHtmlButton.setCaption(messages.getMessage(getClass(), "sendingMessage.showAsHtml"));
-                return showAsHtmlButton;
+
+                contentArea.add(contentTextArea);
+                contentArea.add(showAsHtmlButton);
+
+                return contentArea;
             }
         });
+        fg.setEditable(CONTENT_TEXT, false);
 
         sendingMessageDs.addItemChangeListener(e -> selectedItemChanged(e.getItem()));
     }
@@ -112,13 +112,10 @@ public class SendingMessageBrowser extends AbstractWindow {
         if (item != null) {
             contentText = emailService.loadContentText(item);
             if (contentText != null) {
-                fg.getFieldComponent(SHOW_AS_HTML)
-                        .setEnabled(true);
+                showAsHtmlButton.setEnabled(true);
             }
         }
-        fg.setEditable(CONTENT_TEXT, true);
-        fg.setFieldValue(CONTENT_TEXT, contentText);
-        fg.setEditable(CONTENT_TEXT, false);
+        contentTextArea.setValue(contentText);
     }
 
     public void download() {
