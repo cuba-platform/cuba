@@ -14,12 +14,13 @@ public interface PasswordField extends TextInputField, TextInputField.MaxLengthL
     String NAME = "passwordField";
 
     /**
-     * Return autocomplete attribute value to specify saving it in browser
+     * Return autocomplete attribute value to specify saving it in browser.
      */
     boolean isAutocomplete();
 
     /**
-     * Set autocomplete attribute value to specify saving it in browser
+     * Set autocomplete attribute value to specify saving it in browser.
+     * False value disables saving passwords in browser.
      */
     void setAutocomplete(Boolean autocomplete);
 }

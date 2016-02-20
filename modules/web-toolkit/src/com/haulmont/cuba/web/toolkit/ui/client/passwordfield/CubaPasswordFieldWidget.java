@@ -12,19 +12,12 @@ import com.vaadin.client.ui.VPasswordField;
  */
 public class CubaPasswordFieldWidget extends VPasswordField {
 
-    protected boolean autocomplete = false;
-
     public void setAutocomplete(boolean autocomplete) {
         if (autocomplete) {
             getElement().removeAttribute("autocomplete");
         } else {
             getElement().setAttribute("autocomplete", "off");
         }
-
-        this.autocomplete = autocomplete;
     }
 
-    public boolean isAutocomplete() {
-        return autocomplete;
-    }
 }
