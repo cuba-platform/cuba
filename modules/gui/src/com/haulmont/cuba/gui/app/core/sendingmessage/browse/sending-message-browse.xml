@@ -55,6 +55,7 @@
                         <field id="from"/>
                         <field id="caption"/>
                         <field id="contentText" custom="true"/>
+                        <field id="showAsHtml" custom="true"/>
                         <field id="status"/>
                         <field id="attachmentsName"/>
                         <field id="dateSent"/>

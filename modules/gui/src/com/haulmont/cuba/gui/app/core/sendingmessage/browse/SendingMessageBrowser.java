@@ -17,6 +17,8 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
+import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
@@ -24,6 +26,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.collections.CollectionUtils;
 
 import javax.inject.Inject;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +39,7 @@ import java.util.UUID;
 public class SendingMessageBrowser extends AbstractWindow {
 
     protected static final String CONTENT_TEXT = "contentText";
+    protected static final String SHOW_AS_HTML = "showAsHtml";
 
     @Inject
     protected CollectionDatasource<SendingMessage, UUID> sendingMessageDs;
@@ -61,6 +65,9 @@ public class SendingMessageBrowser extends AbstractWindow {
     @Inject
     protected DataSupplier dataSupplier;
 
+    @Inject
+    private ExportDisplay exportDisplay;
+
     @Override
     public void init(Map<String, Object> params) {
         fg.addCustomField(CONTENT_TEXT, new FieldGroup.CustomFieldGenerator() {
@@ -74,6 +81,29 @@ public class SendingMessageBrowser extends AbstractWindow {
         });
         fg.setEditable(CONTENT_TEXT, false);
 
+        fg.addCustomField(SHOW_AS_HTML, new FieldGroup.CustomFieldGenerator() {
+            @Override
+            public Component generateField(Datasource datasource, String propertyId) {
+                Button showAsHtmlButton = factory.createComponent(Button.class);
+
+                showAsHtmlButton.setAction(new AbstractAction("") {
+
+                    @Override
+                    public void actionPerform(Component component) {
+                        ByteArrayDataProvider dataProvider = new ByteArrayDataProvider(fg
+                                .getFieldValue(CONTENT_TEXT)
+                                .toString()
+                                .getBytes(StandardCharsets.UTF_8));
+                        exportDisplay.show(dataProvider, "Preview", ExportFormat.HTML);
+                    }
+                });
+
+                showAsHtmlButton.setEnabled(false);
+                showAsHtmlButton.setCaption(messages.getMessage(getClass(), "sendingMessage.showAsHtml"));
+                return showAsHtmlButton;
+            }
+        });
+
         sendingMessageDs.addItemChangeListener(e -> selectedItemChanged(e.getItem()));
     }
 
@@ -81,6 +111,10 @@ public class SendingMessageBrowser extends AbstractWindow {
         String contentText = null;
         if (item != null) {
             contentText = emailService.loadContentText(item);
+            if (contentText != null) {
+                fg.getFieldComponent(SHOW_AS_HTML)
+                        .setEnabled(true);
+            }
         }
         fg.setEditable(CONTENT_TEXT, true);
         fg.setFieldValue(CONTENT_TEXT, contentText);
