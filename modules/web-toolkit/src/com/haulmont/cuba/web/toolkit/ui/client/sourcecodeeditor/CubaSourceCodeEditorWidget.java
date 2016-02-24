@@ -19,7 +19,7 @@ import org.vaadin.aceeditor.client.gwt.GwtAceFocusBlurHandler;
  */
 public class CubaSourceCodeEditorWidget extends AceEditorWidget {
 
-    private boolean readOnly = false;
+    protected boolean readOnly = false;
     protected int tabIndex = 0;
     protected boolean handleTabKey = true;
 
