@@ -81,6 +81,7 @@ public class SendingMessageBrowser extends AbstractWindow {
 
                 contentTextArea = factory.createComponent(TextArea.class);
                 contentTextArea.setWidth("100%");
+                contentTextArea.setEditable(false);
                 contentTextArea.setHeight(themeConstants.get("cuba.gui.SendingMessageBrowser.contentTextArea.height"));
 
                 showAsHtmlButton = factory.createComponent(Button.class);
@@ -90,7 +91,7 @@ public class SendingMessageBrowser extends AbstractWindow {
                         ByteArrayDataProvider dataProvider = new ByteArrayDataProvider(
                                 ((String)contentTextArea.getValue()).getBytes(StandardCharsets.UTF_8));
 
-                        exportDisplay.show(dataProvider, "Preview", ExportFormat.HTML);
+                        exportDisplay.show(dataProvider, "email-preview.html", ExportFormat.HTML);
                     }
                 });
                 showAsHtmlButton.setEnabled(false);
@@ -113,6 +114,8 @@ public class SendingMessageBrowser extends AbstractWindow {
             contentText = emailService.loadContentText(item);
             if (contentText != null) {
                 showAsHtmlButton.setEnabled(true);
+            } else {
+                showAsHtmlButton.setEnabled(false);
             }
         }
         contentTextArea.setValue(contentText);
