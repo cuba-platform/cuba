@@ -9,7 +9,7 @@
   .#{$primary-stylename} {
     $padding-width: ceil($v-unit-size/6);
 
-    @include valo-textfield-style($padding: $padding-width);
+    @include valo-textfield-style($padding: $padding-width, $states:(normal, disabled));
 
     .ace_cursor {
       visibility: hidden;
@@ -31,11 +31,6 @@
 
   .#{$primary-stylename}-focus {
     @include valo-textfield-focus-style;
-  }
-
-  .#{$primary-stylename}.v-disabled {
-    padding: 0px;
-    overflow: hidden;
   }
 
   .#{$primary-stylename},
