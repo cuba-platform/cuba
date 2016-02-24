@@ -137,6 +137,16 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
     }
 
     @Override
+    public void setHandleTabKey(boolean handleTabKey) {
+        component.setHandleTabKey(handleTabKey);
+    }
+
+    @Override
+    public boolean isHandleTabKey() {
+        return component.isHandleTabKey();
+    }
+
+    @Override
     public <T> T getValue() {
         String value = super.getValue();
         return (T) Strings.emptyToNull(value);

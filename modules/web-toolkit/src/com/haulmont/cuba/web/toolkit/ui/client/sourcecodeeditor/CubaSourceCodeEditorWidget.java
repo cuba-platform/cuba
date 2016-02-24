@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.sourcecodeeditor;
 
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.DOM;
@@ -18,7 +19,9 @@ import org.vaadin.aceeditor.client.gwt.GwtAceFocusBlurHandler;
  */
 public class CubaSourceCodeEditorWidget extends AceEditorWidget {
 
+    private boolean readOnly = false;
     protected int tabIndex = 0;
+    protected boolean handleTabKey = true;
 
     public CubaSourceCodeEditorWidget() {
         sinkEvents(Event.ONKEYDOWN | Event.ONFOCUS);
@@ -114,4 +117,16 @@ public class CubaSourceCodeEditorWidget extends AceEditorWidget {
             super.setTabIndex(tabIndex);
         }
     }
+
+    public void setHandleTabKey(boolean handleTabKey) {
+        this.handleTabKey = handleTabKey;
+        if (!handleTabKey) {
+            unbindTabKey(editor);
+        }
+    }
+
+    public native void unbindTabKey(JavaScriptObject editor) /*-{
+        editor.commands.bindKey("Tab", null);
+        editor.commands.bindKey("Shift-Tab", null);
+	}-*/;
 }

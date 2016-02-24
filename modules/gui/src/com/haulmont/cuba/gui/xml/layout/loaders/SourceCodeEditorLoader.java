@@ -11,7 +11,6 @@ import org.dom4j.Element;
 
 /**
  * @author artamonov
- * @version $Id$
  */
 public class SourceCodeEditorLoader extends AbstractFieldLoader<SourceCodeEditor> {
     @Override
@@ -39,6 +38,11 @@ public class SourceCodeEditorLoader extends AbstractFieldLoader<SourceCodeEditor
         String highlightActiveLine = element.attributeValue("highlightActiveLine");
         if (StringUtils.isNotEmpty(highlightActiveLine)) {
             resultComponent.setHighlightActiveLine(Boolean.valueOf(highlightActiveLine));
+        }
+
+        String handleTabKey = element.attributeValue("handleTabKey");
+        if (StringUtils.isNotEmpty("handleTabKey")) {
+            resultComponent.setHandleTabKey(Boolean.valueOf(handleTabKey));
         }
     }
 

@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 public interface SourceCodeEditor extends Field {
 
     String NAME = "sourceCodeEditor";
+    boolean handleTabKey = false;
 
     enum Mode {
         Java,
@@ -58,4 +59,15 @@ public interface SourceCodeEditor extends Field {
 
     void setHighlightActiveLine(boolean highlightActiveLine);
     boolean isHighlightActiveLine();
+
+    /**
+     * Enables Tab key handling as tab symbol.
+     * If handleTabKey is false then Tab/Shift-Tab key press will change focus to next/previous field.
+     */
+    void setHandleTabKey(boolean handleTabKey);
+
+    /**
+     * @return if Tab key handling is enabled
+     */
+    boolean isHandleTabKey();
 }

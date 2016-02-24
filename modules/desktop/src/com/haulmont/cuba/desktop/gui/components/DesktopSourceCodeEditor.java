@@ -31,6 +31,7 @@ public class DesktopSourceCodeEditor extends DesktopAbstractTextField<RSyntaxTex
     protected boolean showGutter = true;
     protected boolean showPrintMargin = true;
     protected boolean highlightActiveLine = true;
+    protected boolean handleTabKey = false;
 
     @Override
     protected RSyntaxTextArea createTextComponentImpl() {
@@ -165,6 +166,16 @@ public class DesktopSourceCodeEditor extends DesktopAbstractTextField<RSyntaxTex
     @Override
     public boolean isHighlightActiveLine() {
         return highlightActiveLine;
+    }
+
+    @Override
+    public void setHandleTabKey(boolean handleTabKey) {
+        this.handleTabKey = handleTabKey;
+    }
+
+    @Override
+    public boolean isHandleTabKey() {
+        return handleTabKey;
     }
 
 }

@@ -6,6 +6,7 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.gui.components.autocomplete.AutoCompleteSupport;
+import com.haulmont.cuba.web.toolkit.ui.client.sourcecodeeditor.CubaSourceCodeEditorState;
 import com.vaadin.server.AbstractErrorMessage;
 import com.vaadin.server.CompositeErrorMessage;
 import com.vaadin.server.ErrorMessage;
@@ -14,7 +15,6 @@ import org.vaadin.aceeditor.AceEditor;
 
 /**
  * @author artamonov
- * @version $Id$
  */
 public class CubaSourceCodeEditor extends AceEditor implements AutoCompleteSupport {
 
@@ -35,6 +35,7 @@ public class CubaSourceCodeEditor extends AceEditor implements AutoCompleteSuppo
         setShowBufferedSourceException(false);
         setShowErrorForDisabledState(false);
 
+        setHandleTabKey(false);
         setFontSize("auto");
     }
 
@@ -50,5 +51,25 @@ public class CubaSourceCodeEditor extends AceEditor implements AutoCompleteSuppo
         }
 
         return superError;
+    }
+
+    @Override
+    protected CubaSourceCodeEditorState getState() {
+        return (CubaSourceCodeEditorState) super.getState();
+    }
+
+    @Override
+    protected CubaSourceCodeEditorState getState(boolean markAsDirty) {
+        return (CubaSourceCodeEditorState) super.getState(markAsDirty);
+    }
+
+    public void setHandleTabKey(boolean handleTabKey) {
+        if (isHandleTabKey() != handleTabKey) {
+            getState().handleTabKey = handleTabKey;
+        }
+    }
+
+    public boolean isHandleTabKey() {
+        return getState(false).handleTabKey;
     }
 }
