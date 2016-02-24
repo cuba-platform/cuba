@@ -39,7 +39,6 @@ import java.util.UUID;
 public class SendingMessageBrowser extends AbstractWindow {
 
     protected static final String CONTENT_TEXT = "contentText";
-    protected static final String SHOW_AS_HTML = "showAsHtml";
 
     @Inject
     protected CollectionDatasource<SendingMessage, UUID> sendingMessageDs;
@@ -112,12 +111,14 @@ public class SendingMessageBrowser extends AbstractWindow {
         String contentText = null;
         if (item != null) {
             contentText = emailService.loadContentText(item);
-            if (contentText != null) {
-                showAsHtmlButton.setEnabled(true);
-            } else {
-                showAsHtmlButton.setEnabled(false);
-            }
         }
+
+        if (contentText != null) {
+            showAsHtmlButton.setEnabled(true);
+        } else {
+            showAsHtmlButton.setEnabled(false);
+        }
+
         contentTextArea.setValue(contentText);
     }
 
