@@ -522,38 +522,32 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
             public void onBrowserEvent(Event event) {
                 if (event.getTypeInt() == Event.ONMOUSEDOWN
                         && event.getButton() == NativeEvent.BUTTON_LEFT
-                        && !isAnyModifierKeyPressed(event)) {
+                        && !isAnyModifierKeyPressed(event)
+                        && isCubaTableClickableCell(event)) {
 
                     Element eventTarget = event.getEventTarget().cast();
                     Element elementTdOrTr = getElementTdOrTr(eventTarget);
 
-                    if (elementTdOrTr != null
-                            && "td".equalsIgnoreCase(elementTdOrTr.getTagName())
-                            && !elementTdOrTr.hasClassName(CUBA_TABLE_CLICKABLE_TEXT_STYLE)) {
-                        // found <td>
+                    int childIndex = DOM.getChildIndex(getElement(), elementTdOrTr);
+                    String columnKey = tHead.getHeaderCell(childIndex).getColKey();
+                    if (columnKey != null) {
+                        WidgetUtil.TextRectangle rect = WidgetUtil.getBoundingClientRect(eventTarget);
+                        lastClickClientX = (int) Math.ceil(rect.getLeft());
+                        lastClickClientY = (int) Math.ceil(rect.getBottom());
 
-                        if ("span".equalsIgnoreCase(eventTarget.getTagName())
-                                && eventTarget.hasClassName(CUBA_TABLE_CLICKABLE_CELL_STYLE)) {
-                            // found <span class="cuba-table-clickable-cell">
+                        if (cellClickListener != null) {
+                            cellClickListener.onClick(columnKey, rowKey);
 
-                            int childIndex = DOM.getChildIndex(getElement(), elementTdOrTr);
-                            String columnKey = tHead.getHeaderCell(childIndex).getColKey();
-                            if (columnKey != null) {
-                                WidgetUtil.TextRectangle rect = WidgetUtil.getBoundingClientRect(eventTarget);
-                                lastClickClientX = (int) Math.ceil(rect.getLeft());
-                                lastClickClientY = (int) Math.ceil(rect.getBottom());
+                            event.preventDefault();
+                            event.stopPropagation();
 
-                                if (cellClickListener != null) {
-                                    cellClickListener.onClick(columnKey, rowKey);
-
-                                    event.preventDefault();
-                                    event.stopPropagation();
-
-                                    return;
-                                }
-                            }
+                            return;
                         }
                     }
+                }
+
+                if (event.getTypeInt() == Event.ONDBLCLICK && isCubaTableClickableCell(event)) {
+                        return;
                 }
 
                 super.onBrowserEvent(event);
@@ -570,6 +564,24 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
                     handleFocusForWidget();
                 }
+            }
+
+            protected boolean isCubaTableClickableCell(Event event) {
+                Element eventTarget = event.getEventTarget().cast();
+                Element elementTdOrTr = getElementTdOrTr(eventTarget);
+
+                if (elementTdOrTr != null
+                        && "td".equalsIgnoreCase(elementTdOrTr.getTagName())
+                        && !elementTdOrTr.hasClassName(CUBA_TABLE_CLICKABLE_TEXT_STYLE)) {
+                    // found <td>
+
+                    if ("span".equalsIgnoreCase(eventTarget.getTagName())
+                            && eventTarget.hasClassName(CUBA_TABLE_CLICKABLE_CELL_STYLE)) {
+                        // found <span class="cuba-table-clickable-cell">
+                        return true;
+                    }
+                }
+                return false;
             }
 
             @Override
