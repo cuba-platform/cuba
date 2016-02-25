@@ -478,10 +478,6 @@ configure(webModule) {
 
     task enhance(type: CubaEnhancing)
 
-    jar {
-        from sourceSets.main.allJava
-    }
-
     task buildScssThemes(type: CubaWebScssThemeCreation) {
         themes = ['halo', 'havana']
 //        compress = true
@@ -518,28 +514,17 @@ configure(webModule) {
         exclude '**/web.xml'
     }
 
-    def webOutDir = file("$buildDir/web")
-    task webArchive(dependsOn: buildScssThemes, type: Zip) {
-        from file('web')
-        from webOutDir
-        exclude '**/web.xml', '**/app.properties'
-        classifier = 'web'
-    }
-
-    artifacts {
-        archives webArchive
+    jar.dependsOn buildScssThemes
+    jar {
+        with copySpec {
+            from sourceSets.main.allJava
+            include "com/haulmont/cuba/web/toolkit/ui/client/**"
+        }
     }
 
     task deploy(dependsOn: assemble, type: CubaDeployment) {
         appName = 'cuba'
         appJars('cuba-global', 'cuba-client', 'cuba-gui', 'cuba-web', 'cuba-web-auth')
-    }
-
-    deploy << {
-        copy {
-            from "$buildDir/web"
-            into "$cuba.tomcat.dir/webapps/cuba"
-        }
     }
 }
 
