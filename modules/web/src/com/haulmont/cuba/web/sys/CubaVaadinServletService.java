@@ -155,7 +155,7 @@ public class CubaVaadinServletService extends VaadinServletService {
                 cubaRequestHandlers.add(new CubaHeartbeatHandler());
             } else if (handler instanceof FileUploadHandler) {
                 // add support for jquery file upload
-                cubaRequestHandlers.add(handler);
+                cubaRequestHandlers.add(new ExtFileUploadHandler());
                 cubaRequestHandlers.add(new CubaFileUploadHandler());
             } else {
                 cubaRequestHandlers.add(handler);
@@ -185,6 +185,15 @@ public class CubaVaadinServletService extends VaadinServletService {
         @Override
         protected InputStream getApplicationResourceAsStream(Class<?> contextClass, String fileName) {
             return VaadinServlet.getCurrent().getServletContext().getResourceAsStream("/VAADIN/" + fileName);
+        }
+    }
+
+    // For com.vaadin.ui.Upload instances
+    protected static class ExtFileUploadHandler extends FileUploadHandler {
+        @Override
+        public boolean handleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response)
+                throws IOException {
+            return withUserSession(session, () -> super.handleRequest(session, request, response));
         }
     }
 
