@@ -65,8 +65,9 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
             public void onClick(String columnKey, String rowKey) {
                 Object columnId = columnIdMap.get(columnKey);
                 Object itemId = itemIdMapper.get(rowKey);
-
-                if (cellClickListeners != null) {
+                // itemId could be null if rendering in process
+                // If itemId is null it causes NPE
+                if (itemId != null && cellClickListeners != null) {
                     CellClickListener cellClickListener = cellClickListeners.get(columnId);
                     if (cellClickListener != null) {
                         cellClickListener.onClick(itemId, columnId);
