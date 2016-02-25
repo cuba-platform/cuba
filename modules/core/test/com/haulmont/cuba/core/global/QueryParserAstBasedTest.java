@@ -155,6 +155,11 @@ public class QueryParserAstBasedTest {
                 "select c.group from sec$GroupHierarchy h, sec$Constraint c where h.userGroup = :par"
         );
         assertEquals("sec$GroupHierarchy", parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
+
+        parser = new QueryParserAstBased(model,
+                "select u.group, u.login from sec$User u where u.name like :mask"
+        );
+        assertNull(parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
     }
 
     private DomainModel prepareDomainModel() {
@@ -172,8 +177,15 @@ public class QueryParserAstBasedTest {
         builder.addReferenceAttribute("group", "sec$GroupHierarchy");
         Entity constraintEntity = builder.produce();
 
-        Entity userEntity = builder.produceImmediately("sec$User", "login");
+
         Entity groupEntity = builder.produceImmediately("sec$Group", "name");
+
+        builder = new EntityBuilder();
+        builder.startNewEntity("sec$User");
+        builder.addStringAttribute("login");
+        builder.addReferenceAttribute("group", "sec$Group");
+        Entity userEntity = builder.produce();
+
         return new DomainModel(groupHierarchy, constraintEntity, userEntity, groupEntity);
     }
 }

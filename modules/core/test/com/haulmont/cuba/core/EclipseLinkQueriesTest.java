@@ -146,4 +146,20 @@ public class EclipseLinkQueriesTest {
             tx.commit();
         }
     }
+
+    @Test
+    public void testSeveralEntriesInSelectClause() {
+        Object resultList = cont.persistence().createTransaction().execute((em) -> {
+            return em.createQuery("select u.group, u.login from sec$User u where u.name like :mask")
+                    .setParameter("mask", "%ser")
+                    .getResultList();
+        });
+        List<Object[]> list = (List<Object[]>) resultList;
+        Object[] row = list.get(0);
+
+        assertEquals(UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93"), ((Group) row[0]).getId());
+        assertEquals("testLogin", row[1]);
+    }
+
+
 }

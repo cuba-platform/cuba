@@ -139,8 +139,9 @@ public class QueryTreeAnalyzer {
             return null;
         }
 
-        SelectedItemNode selectedItemNode = (SelectedItemNode) selectedItems.getFirstChildWithType(JPA2Lexer.T_SELECTED_ITEM);
-        return getChildrenByClass(selectedItemNode, PathNode.class);
+        return getChildrenByClass(selectedItems, SelectedItemNode.class).stream()
+                .flatMap(selectedItemNode -> getChildrenByClass(selectedItemNode, PathNode.class).stream())
+                .collect(Collectors.toList());
     }
 
     public List<IdentificationVariableNode> getIdentificationVariableNodes() {
