@@ -42,6 +42,8 @@ public class CubaSourceCodeEditorWidget extends AceEditorWidget {
                 removeStyleDependentName("focus");
             }
         });
+
+        super.setTabIndex(-1);
     }
 
     @Override
@@ -54,13 +56,6 @@ public class CubaSourceCodeEditorWidget extends AceEditorWidget {
                 && !event.getCtrlKey()) {
             event.stopPropagation();
             return;
-        }
-
-        if (isEnabled() && !readOnly) {
-            if (type == Event.ONFOCUS) {
-                editor.focus();
-                return;
-            }
         }
 
         super.onBrowserEvent(event);
@@ -76,12 +71,6 @@ public class CubaSourceCodeEditorWidget extends AceEditorWidget {
 
         super.setReadOnly(!enabled || readOnly);
 
-        if (!enabled) {
-            super.setTabIndex(-1);
-        } else {
-            super.setTabIndex(tabIndex);
-        }
-
         if (editor != null) {
             if (enabled) {
                 getTextAreaElement().removeAttribute("disabled");
@@ -93,10 +82,6 @@ public class CubaSourceCodeEditorWidget extends AceEditorWidget {
 
     @Override
     public void setTabIndex(int index) {
-        if (enabled && !readOnly) {
-            super.setTabIndex(index);
-        }
-
         this.tabIndex = index;
     }
 
@@ -108,14 +93,7 @@ public class CubaSourceCodeEditorWidget extends AceEditorWidget {
     @Override
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
-
         super.setReadOnly(!this.enabled || readOnly);
-
-        if (!enabled) {
-            super.setTabIndex(-1);
-        } else {
-            super.setTabIndex(tabIndex);
-        }
     }
 
     public void setHandleTabKey(boolean handleTabKey) {
@@ -126,7 +104,7 @@ public class CubaSourceCodeEditorWidget extends AceEditorWidget {
     }
 
     public native void unbindTabKey(JavaScriptObject editor) /*-{
-        editor.commands.bindKey("Tab", null);
         editor.commands.bindKey("Shift-Tab", null);
+        editor.commands.bindKey("Tab", null);
 	}-*/;
 }
