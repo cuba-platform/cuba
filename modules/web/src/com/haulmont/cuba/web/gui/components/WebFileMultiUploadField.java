@@ -4,6 +4,8 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
@@ -45,6 +47,7 @@ public class WebFileMultiUploadField extends WebAbstractComponent<UploadComponen
     protected UUID tempFileId;
     protected String icon;
     protected String accept;
+    protected long fileSizeLimit = 0;
 
     protected List<FileUploadStartListener> fileUploadStartListeners;         // lazily initialized list
     protected List<FileUploadFinishListener> fileUploadFinishListeners;       // lazily initialized list
@@ -165,8 +168,21 @@ public class WebFileMultiUploadField extends WebAbstractComponent<UploadComponen
                         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
                         final int maxUploadSizeMb = clientConfig.getMaxUploadSizeMb();
 
-                        wm.showNotification(messages.formatMessage(WebFileMultiUploadField.class, "multiupload.filesizeLimitExceed", fileName, maxUploadSizeMb),
-                                Frame.NotificationType.WARNING);
+                        String warningMsg;
+                        if (fileSizeLimit > 0) {
+                            double fileSizeInMb;
+                            if (fileSizeLimit % BYTES_IN_MEGABYTE == 0) {
+                                fileSizeInMb = fileSizeLimit / BYTES_IN_MEGABYTE;
+                            } else {
+                                fileSizeInMb = fileSizeLimit / ((double) BYTES_IN_MEGABYTE);
+                            }
+                            Datatype<Double> doubleDatatype = Datatypes.getNN(Double.class);
+                            String fileSizeLimitString = doubleDatatype.format(fileSizeInMb);
+                            warningMsg = messages.formatMessage(WebFileMultiUploadField.class, "multiupload.filesizeLimitExceed", fileName, fileSizeLimitString);
+                        } else {
+                            warningMsg = messages.formatMessage(WebFileMultiUploadField.class, "multiupload.filesizeLimitExceed", fileName, maxUploadSizeMb);
+                        }
+                        wm.showNotification(warningMsg, Frame.NotificationType.WARNING);
                         break;
                     case SECURITY_ERROR:
                         wm.showNotification(messages.getMessage(WebFileMultiUploadField.class, "multiupload.securityError"),
@@ -249,8 +265,20 @@ public class WebFileMultiUploadField extends WebAbstractComponent<UploadComponen
             fireFileUploadError(event.getFileName(), event.getContentLength(), event.getReason());
         });
         impl.addFileSizeLimitExceededListener(e -> {
-            Messages messages1 = AppBeans.get(Messages.NAME);
-            String warningMsg = messages1.formatMainMessage("upload.fileTooBig.message", e.getFileName(), maxUploadSizeMb);
+            String warningMsg;
+            if (fileSizeLimit > 0) {
+                double fileSizeInMb;
+                if (fileSizeLimit % BYTES_IN_MEGABYTE == 0) {
+                    fileSizeInMb = fileSizeLimit / BYTES_IN_MEGABYTE;
+                } else {
+                    fileSizeInMb = fileSizeLimit / ((double) BYTES_IN_MEGABYTE);
+                }
+                Datatype<Double> doubleDatatype = Datatypes.getNN(Double.class);
+                String fileSizeLimitString = doubleDatatype.format(fileSizeInMb);
+                warningMsg = messages.formatMessage(WebFileMultiUploadField.class, "multiupload.filesizeLimitExceed", e.getFileName(), fileSizeLimitString);
+            } else {
+                warningMsg = messages.formatMessage(WebFileMultiUploadField.class, "multiupload.filesizeLimitExceed", e.getFileName(), maxUploadSizeMb);
+            }
             getFrame().showNotification(warningMsg, Frame.NotificationType.WARNING);
         });
 
@@ -523,6 +551,21 @@ public class WebFileMultiUploadField extends WebAbstractComponent<UploadComponen
     public void removeQueueUploadCompleteListener(QueueUploadCompleteListener listener) {
         if (queueUploadCompleteListeners != null) {
             queueUploadCompleteListeners.remove(listener);
+        }
+    }
+
+    @Override
+    public long getFileSizeLimit() {
+        return this.fileSizeLimit;
+    }
+
+    @Override
+    public void setFileSizeLimit(long fileSizeLimit) {
+        this.fileSizeLimit = fileSizeLimit;
+        if (this.component instanceof CubaFileUpload){
+            ((CubaFileUpload) this.component).setFileSizeLimit((int) fileSizeLimit);
+        } else if (this.component instanceof CubaMultiUpload) {
+            ((CubaMultiUpload) this.component).setFileSizeLimitMB((int) fileSizeLimit/BYTES_IN_MEGABYTE);
         }
     }
 }

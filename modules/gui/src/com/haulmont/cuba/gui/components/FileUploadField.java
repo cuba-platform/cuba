@@ -111,7 +111,14 @@ public interface FileUploadField extends UploadComponentSupport {
      */
     void setAccept(String accept);
 
+    /**
+     * Returns maximum allowed file size in bytes.
+     */
     long getFileSizeLimit();
 
+    /**
+     * Sets maximum allowed file size in bytes.
+     * Default value is 0. In this case uploader uses system value
+     */
     void setFileSizeLimit(long fileSizeLimit);
 }

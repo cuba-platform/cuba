@@ -5,6 +5,8 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
@@ -40,6 +42,7 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
 
     protected Map<UUID, String> filesMap = new HashMap<>();
     protected String icon;
+    protected long fileSizeLimit;
 
     protected List<FileUploadStartListener> fileUploadStartListeners;         // lazily initialized list
     protected List<FileUploadFinishListener> fileUploadFinishListeners;       // lazily initialized list
@@ -104,9 +107,14 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
 
     protected boolean checkFiles(File[] files) {
         Configuration configuration = AppBeans.get(Configuration.NAME);
-        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
-        final long maxUploadSizeMb = clientConfig.getMaxUploadSizeMb();
-        final long maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
+        final long maxSize;
+
+        if (fileSizeLimit > 0){
+            maxSize = fileSizeLimit;
+        } else {
+            final long maxUploadSizeMb = configuration.getConfig(ClientConfig.class).getMaxUploadSizeMb();
+            maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
+        }
 
         for (File file : files) {
             if (file.length() > maxSize) {
@@ -119,12 +127,24 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
 
     protected void notifyFileSizeExceedLimit(File file) {
         Messages messages = AppBeans.get(Messages.NAME);
+        String warningMsg;
 
-        Configuration configuration = AppBeans.get(Configuration.NAME);
-        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
-        final int maxUploadSizeMb = clientConfig.getMaxUploadSizeMb();
-
-        String warningMsg = messages.formatMainMessage("upload.fileTooBig.message", file.getName(), maxUploadSizeMb);
+        if (fileSizeLimit > 0) {
+            double fileSizeInMb;
+            if (fileSizeLimit%BYTES_IN_MEGABYTE == 0) {
+                fileSizeInMb = fileSizeLimit / BYTES_IN_MEGABYTE;
+            } else {
+                fileSizeInMb = fileSizeLimit / ((double) BYTES_IN_MEGABYTE);
+            }
+            Datatype<Double> doubleDatatype = Datatypes.getNN(Double.class);
+            String fileSizeLimitString = doubleDatatype.format(fileSizeInMb);
+            warningMsg = messages.formatMainMessage("upload.fileTooBig.message", file.getName(), fileSizeLimitString);
+        } else {
+            Configuration configuration = AppBeans.get(Configuration.NAME);
+            ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+            final int maxUploadSizeMb = clientConfig.getMaxUploadSizeMb();
+            warningMsg = messages.formatMainMessage("upload.fileTooBig.message", file.getName(), maxUploadSizeMb);
+        }
 
         getFrame().showNotification(warningMsg, Frame.NotificationType.WARNING);
     }
@@ -306,5 +326,15 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
     @Override
     public void setAccept(String accept) {
         // do nothing
+    }
+
+    @Override
+    public long getFileSizeLimit() {
+        return fileSizeLimit;
+    }
+
+    @Override
+    public void setFileSizeLimit(long fileSizeLimit) {
+        this.fileSizeLimit = fileSizeLimit;
     }
 }

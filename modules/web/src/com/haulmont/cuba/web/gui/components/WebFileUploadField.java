@@ -107,7 +107,12 @@ public class WebFileUploadField extends WebAbstractComponent<UploadComponent> im
             if (event.getContentLength() > maxSize) {
                 impl.interruptUpload();
 
-                double fileSizeInMb = maxSize / BYTES_IN_MEGABYTE;
+                double fileSizeInMb;
+                if (fileSizeLimit%BYTES_IN_MEGABYTE == 0) {
+                    fileSizeInMb = fileSizeLimit / BYTES_IN_MEGABYTE;
+                } else {
+                    fileSizeInMb = fileSizeLimit / ((double) BYTES_IN_MEGABYTE);
+                }
                 Datatype<Double> doubleDatatype = Datatypes.getNN(Double.class);
                 String fileSizeLimitString = doubleDatatype.format(fileSizeInMb);
                 String warningMsg = messages.formatMainMessage("upload.fileTooBig.message", event.getFilename(), fileSizeLimitString);
@@ -204,7 +209,12 @@ public class WebFileUploadField extends WebAbstractComponent<UploadComponent> im
         impl.addFileSizeLimitExceededListener(e -> {
             String warningMsg;
             if (fileSizeLimit > 0){
-                double fileSizeInMb = fileSizeLimit / BYTES_IN_MEGABYTE;
+                double fileSizeInMb;
+                if (fileSizeLimit%BYTES_IN_MEGABYTE == 0) {
+                    fileSizeInMb = fileSizeLimit / BYTES_IN_MEGABYTE;
+                } else {
+                    fileSizeInMb = fileSizeLimit / ((double) BYTES_IN_MEGABYTE);
+                }
                 Datatype<Double> doubleDatatype = Datatypes.getNN(Double.class);
                 String fileSizeLimitString = doubleDatatype.format(fileSizeInMb);
                 warningMsg = messages.formatMainMessage("upload.fileTooBig.message", e.getFileName(), fileSizeLimitString);
