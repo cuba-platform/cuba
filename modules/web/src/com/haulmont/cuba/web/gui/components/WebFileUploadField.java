@@ -4,6 +4,8 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
@@ -51,6 +53,8 @@ public class WebFileUploadField extends WebAbstractComponent<UploadComponent> im
 
     protected String icon;
 
+    protected long fileSizeLimit = 0;
+
     protected List<FileUploadStartListener> fileUploadStartListeners;     // lazily initialized list
     protected List<FileUploadFinishListener> fileUploadFinishListeners;   // lazily initialized list
     protected List<FileUploadErrorListener> fileUploadErrorListeners;     // lazily initialized list
@@ -90,13 +94,24 @@ public class WebFileUploadField extends WebAbstractComponent<UploadComponent> im
         impl.setImmediate(true);
 
         impl.addStartedListener(event -> {
-            Configuration configuration = AppBeans.get(Configuration.NAME);
-            final long maxUploadSizeMb = configuration.getConfig(ClientConfig.class).getMaxUploadSizeMb();
-            final long maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
+            final long maxSize;
+
+            if (fileSizeLimit > 0) {
+                maxSize = fileSizeLimit;
+            } else {
+                Configuration configuration = AppBeans.get(Configuration.NAME);
+                final long maxUploadSizeMb = configuration.getConfig(ClientConfig.class).getMaxUploadSizeMb();
+                maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
+            }
+
             if (event.getContentLength() > maxSize) {
                 impl.interruptUpload();
 
-                String warningMsg = messages.formatMainMessage("upload.fileTooBig.message", event.getFilename(), maxUploadSizeMb);
+                double fileSizeInMb = maxSize / BYTES_IN_MEGABYTE;
+                Datatype<Double> doubleDatatype = Datatypes.getNN(Double.class);
+                String fileSizeLimitString = doubleDatatype.format(fileSizeInMb);
+                String warningMsg = messages.formatMainMessage("upload.fileTooBig.message", event.getFilename(), fileSizeLimitString);
+
                 getFrame().showNotification(warningMsg, NotificationType.WARNING);
             } else {
                 fireFileUploadStart(event.getFilename(), event.getContentLength());
@@ -141,9 +156,9 @@ public class WebFileUploadField extends WebAbstractComponent<UploadComponent> im
         impl.setDescription(null);
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
+
         final int maxUploadSizeMb = configuration.getConfig(ClientConfig.class).getMaxUploadSizeMb();
         final int maxSizeBytes = maxUploadSizeMb * BYTES_IN_MEGABYTE;
-
         impl.setFileSizeLimit(maxSizeBytes);
 
         impl.setReceiver((fileName1, MIMEType) -> {
@@ -187,7 +202,15 @@ public class WebFileUploadField extends WebAbstractComponent<UploadComponent> im
             fireFileUploadError(event.getFileName(), event.getContentLength(), event.getReason());
         });
         impl.addFileSizeLimitExceededListener(e -> {
-            String warningMsg = messages.formatMainMessage("upload.fileTooBig.message", e.getFileName(), maxUploadSizeMb);
+            String warningMsg;
+            if (fileSizeLimit > 0){
+                double fileSizeInMb = fileSizeLimit / BYTES_IN_MEGABYTE;
+                Datatype<Double> doubleDatatype = Datatypes.getNN(Double.class);
+                String fileSizeLimitString = doubleDatatype.format(fileSizeInMb);
+                warningMsg = messages.formatMainMessage("upload.fileTooBig.message", e.getFileName(), fileSizeLimitString);
+            } else {
+                warningMsg = messages.formatMainMessage("upload.fileTooBig.message", e.getFileName(), maxUploadSizeMb);
+            }
             getFrame().showNotification(warningMsg, NotificationType.WARNING);
         });
 
@@ -426,6 +449,19 @@ public class WebFileUploadField extends WebAbstractComponent<UploadComponent> im
     public void removeFileUploadSucceedListener(FileUploadSucceedListener listener) {
         if (fileUploadSucceedListeners != null) {
             fileUploadSucceedListeners.remove(listener);
+        }
+    }
+
+    @Override
+    public long getFileSizeLimit() {
+        return this.fileSizeLimit;
+    }
+
+    @Override
+    public void setFileSizeLimit(long fileSizeLimit) {
+        this.fileSizeLimit = fileSizeLimit;
+        if (this.component instanceof CubaFileUpload){
+            ((CubaFileUpload) this.component).setFileSizeLimit((int) fileSizeLimit);
         }
     }
 }

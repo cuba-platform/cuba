@@ -5,6 +5,8 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -52,6 +54,8 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
 
     protected UUID fileId;
 
+    protected long fileSizeLimit = 0;
+
     protected UUID tempFileId;
 
     protected List<FileUploadStartListener> fileUploadStartListeners;     // lazily initialized list
@@ -78,11 +82,21 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
 
     protected void uploadFile(File file) {
         Configuration configuration = AppBeans.get(Configuration.NAME);
-        final long maxUploadSizeMb = configuration.getConfig(ClientConfig.class).getMaxUploadSizeMb();
-        final long maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
+        final long maxSize;
+
+        if (fileSizeLimit > 0){
+            maxSize = fileSizeLimit;
+        } else {
+            final long maxUploadSizeMb = configuration.getConfig(ClientConfig.class).getMaxUploadSizeMb();
+            maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
+        }
+
 
         if (file.length() > maxSize) {
-            String warningMsg = messages.formatMainMessage("upload.fileTooBig.message", file.getName(), maxUploadSizeMb);
+            double fileSizeInMb = maxSize / BYTES_IN_MEGABYTE;
+            Datatype<Double> doubleDatatype = Datatypes.getNN(Double.class);
+            String fileSizeLimitString = doubleDatatype.format(fileSizeInMb);
+            String warningMsg = messages.formatMainMessage("upload.fileTooBig.message", file.getName(), fileSizeLimitString);
 
             getFrame().showNotification(warningMsg, Frame.NotificationType.WARNING);
         } else {
@@ -329,5 +343,14 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
     @Override
     public void setAccept(String accept) {
         // do nothing
+    }
+
+    @Override
+    public long getFileSizeLimit() {
+        return fileSizeLimit;
+    }
+
+    public void setFileSizeLimit(long fileSizeLimit) {
+        this.fileSizeLimit = fileSizeLimit;
     }
 }

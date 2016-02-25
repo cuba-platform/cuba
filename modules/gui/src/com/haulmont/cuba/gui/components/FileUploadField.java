@@ -110,4 +110,8 @@ public interface FileUploadField extends UploadComponentSupport {
      * @param accept comma separated types of files
      */
     void setAccept(String accept);
+
+    long getFileSizeLimit();
+
+    void setFileSizeLimit(long fileSizeLimit);
 }
