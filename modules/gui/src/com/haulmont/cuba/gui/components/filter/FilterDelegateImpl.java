@@ -413,8 +413,23 @@ public class FilterDelegateImpl implements FilterDelegate {
         maxResultsLookupField.setAlignment(Component.Alignment.MIDDLE_RIGHT);
         maxResultsLookupField.setWidth(theme.get("cuba.gui.Filter.maxResults.lookup.width"));
         filterHelper.setLookupTextInputAllowed(maxResultsLookupField, false);
-        List<Integer> options = Arrays.asList(20, 50, 100, 500, 1000, 5000);
-        maxResultsLookupField.setOptionsList(options);
+        filterHelper.setLookupNullSelectionAllowed(maxResultsLookupField, false);
+
+        List<Integer> maxResultOptions = new ArrayList<>();
+        String maxResultOptionsStr = clientConfig.getGenericFilterMaxResultsOptions();
+        Iterable<String> split = Splitter.on(",").trimResults().split(maxResultOptionsStr);
+        for (String option : split) {
+            if ("NULL".equals(option)) {
+                filterHelper.setLookupNullSelectionAllowed(maxResultsLookupField, true);
+            }
+            else {
+                try {
+                    Integer value = Integer.valueOf(option);
+                    maxResultOptions.add(value);
+                } catch (NumberFormatException ignored) {}
+            }
+        }
+        maxResultsLookupField.setOptionsList(maxResultOptions);
 
         maxResultsField = textMaxResults ? maxResultsTextField : maxResultsLookupField;
         maxResultsLayout.add(maxResultsField);

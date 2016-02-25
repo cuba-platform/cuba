@@ -172,6 +172,14 @@ public interface ClientConfig extends Config {
     String getGenericFilterControlsLayout();
 
     /**
+     * Returns a comma-separated list of values that are used as options for "Show rows" lookup field
+     * of generic filter component. Add NULL option to the list if the lookup field should contain an empty value.
+     */
+    @Property("cuba.gui.genericFilterMaxResultsOptions")
+    @Default("NULL, 20, 50, 100, 500, 1000, 5000")
+    String getGenericFilterMaxResultsOptions();
+
+    /**
      * Support e-mail. Exception report emails are sent to this address.
      */
     @Property("cuba.supportEmail")
