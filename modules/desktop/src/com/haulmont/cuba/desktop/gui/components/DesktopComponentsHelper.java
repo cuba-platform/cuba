@@ -377,4 +377,17 @@ public class DesktopComponentsHelper {
             }
         });
     }
+
+    public static RootPaneContainer getSwingWindow(java.awt.Component component) {
+        java.awt.Component parent = component;
+        while (parent != null) {
+            if (parent instanceof RootPaneContainer) {
+                return (RootPaneContainer) parent;
+            }
+
+            parent = parent.getParent();
+        }
+
+        return null;
+    }
 }

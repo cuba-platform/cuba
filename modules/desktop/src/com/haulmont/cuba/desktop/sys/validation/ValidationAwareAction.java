@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.desktop.sys.validation;
 
-import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 
 import javax.swing.*;
@@ -18,19 +17,19 @@ import java.awt.event.ActionEvent;
 public abstract class ValidationAwareAction extends AbstractAction {
     @Override
     public void actionPerformed(final ActionEvent e) {
-        final TopLevelFrame topLevelFrame;
+        final RootPaneContainer window;
         if (e.getSource() instanceof Component) {
-            topLevelFrame = DesktopComponentsHelper.getTopLevelFrame((Component) e.getSource());
+            window = DesktopComponentsHelper.getSwingWindow((Component) e.getSource());
         } else {
-            topLevelFrame = null;
+            window = null;
         }
 
         ValidationAlertHolder.runIfValid(new Runnable() {
             @Override
             public void run() {
-                if (topLevelFrame == null
-                        || topLevelFrame.getGlassPane() == null
-                        || !topLevelFrame.getGlassPane().isVisible()) {
+                if (window == null
+                        || window.getGlassPane() == null
+                        || !window.getGlassPane().isVisible()) {
                     // check modal dialogs on the front of current component
                     actionPerformedAfterValidation(e);
                 }
