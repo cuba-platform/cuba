@@ -16,7 +16,6 @@ import org.apache.commons.lang.StringUtils;
 public interface SourceCodeEditor extends Field {
 
     String NAME = "sourceCodeEditor";
-    boolean handleTabKey = false;
 
     enum Mode {
         Java,
