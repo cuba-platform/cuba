@@ -23,7 +23,6 @@ import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.haulmont.cuba.web.toolkit.ui.CubaCopyButtonExtension;
 import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
-import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.*;
@@ -41,6 +40,7 @@ import javax.annotation.Nullable;
 import java.text.SimpleDateFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * This dialog can be used by exception handlers to show an information about error.
@@ -149,7 +149,7 @@ public class ExceptionDialog extends CubaWindow {
         buttonsLayout.addComponent(spacer);
         buttonsLayout.setExpandRatio(spacer, 1);
 
-        String cubaLogContentClass = "cuba-exception-dialog-log-content";
+        String cubaLogContentClass = "cuba-exception-dialog-log-content" + UUID.randomUUID();
 
         copyButton = new CubaButton(messages.getMessage(ExceptionDialog.class, "exceptionDialog.copyStackTrace"));
         copyButton.setVisible(false);
@@ -188,6 +188,7 @@ public class ExceptionDialog extends CubaWindow {
         stackTraceTextArea.setWordwrap(false);
         stackTraceTextArea.setValue(stackTrace);
         stackTraceTextArea.setStyleName(cubaLogContentClass);
+        stackTraceTextArea.setReadOnly(true);
 
         setContent(mainLayout);
         setResizable(false);
