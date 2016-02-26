@@ -99,6 +99,9 @@ public class ConstraintEditor extends AbstractEditor {
     protected WindowManagerProvider windowManagerProvider;
 
     @Inject
+    protected Button testConstraint;
+
+    @Inject
     protected WindowConfig windowConfig;
 
     protected Map<Object, String> entities;
@@ -106,12 +109,13 @@ public class ConstraintEditor extends AbstractEditor {
     @Override
     public void postInit() {
         Map<String, Object> options = new TreeMap<>();
+        MessageTools messageTools = AppBeans.get(MessageTools.NAME);
         entities = new HashMap<>();
         for (MetaClass metaClass : metadata.getTools().getAllPersistentMetaClasses()) {
             if (extendedEntities.getExtendedClass(metaClass) == null) {
                 MetaClass mainMetaClass = extendedEntities.getOriginalOrThisMetaClass(metaClass);
                 String originalName = mainMetaClass.getName();
-                options.put(metaClass.getName(), originalName);
+                options.put(messageTools.getEntityCaption(metaClass) + " (" + metaClass.getName() + ")", originalName);
                 entities.put(originalName, metaClass.getName());
             }
         }
@@ -126,10 +130,6 @@ public class ConstraintEditor extends AbstractEditor {
         whereClause.setShowGutter(false);
         whereClause.setShowPrintMargin(false);
         whereClause.setSuggester((source, text, cursorPosition) -> requestHint(whereClause, text, cursorPosition));
-
-        groovyScript.setHighlightActiveLine(false);
-        groovyScript.setShowGutter(false);
-        groovyScript.setShowPrintMargin(false);
 
         setupVisibility();
         constraint.addItemPropertyChangeListener(e -> {
@@ -153,6 +153,12 @@ public class ConstraintEditor extends AbstractEditor {
             operationType.setEnabled(false);
         } else {
             operationType.setEnabled(true);
+        }
+
+        if ((item.getCheckType() == ConstraintCheckType.DATABASE_AND_MEMORY) || (item.getCheckType() == ConstraintCheckType.DATABASE)) {
+            testConstraint.setVisible(true);
+        } else {
+            testConstraint.setVisible(false);
         }
     }
 
@@ -272,36 +278,35 @@ public class ConstraintEditor extends AbstractEditor {
     public void testConstraint() {
         Constraint constraint = (Constraint) getItem();
         String entityName = constraint.getEntityName();
-        if (StringUtils.isNotBlank(entityName)) {
+        if (validateAll()) {
             String baseQueryString = "select e from " + entityName + " e";
             String resultQueryStr = null;
-            if (StringUtils.isNotBlank(constraint.getWhereClause())) {
-                try {
-                    QueryTransformer transformer = QueryTransformerFactory.createTransformer(baseQueryString);
-                    if (StringUtils.isNotBlank(constraint.getJoinClause())) {
-                        transformer.addJoinAndWhere(constraint.getJoinClause(), constraint.getWhereClause());
-                    } else {
-                        transformer.addWhere(constraint.getWhereClause());
-                    }
 
-                    resultQueryStr = transformer.getResult();
-
-                    LoadContext<Entity> loadContext = new LoadContext<>(metadata.getSession().getClassNN(entityName));
-                    loadContext.setQueryString(resultQueryStr).setMaxResults(0);
-                    getDsContext().getDataSupplier().loadList(loadContext);
-
-                    showNotification(getMessage("notification.success"), NotificationType.HUMANIZED);
-                } catch (QueryErrorsFoundException e) {
-                    StringBuilder stringBuilder = new StringBuilder();
-                    for (ErrorRec rec : e.getErrorRecs()) {
-                        stringBuilder.append(rec.toString()).append("<br>");
-                    }
-                    showMessageDialog(getMessage("notification.error"),
-                            formatMessage("notification.syntaxErrors", stringBuilder), MessageType.WARNING_HTML);
-                } catch (Exception e) {
-                    showMessageDialog(getMessage("notification.error"),
-                            formatMessage("notification.runtimeError", resultQueryStr, e.getMessage()), MessageType.WARNING_HTML);
+            try {
+                QueryTransformer transformer = QueryTransformerFactory.createTransformer(baseQueryString);
+                if (StringUtils.isNotBlank(constraint.getJoinClause())) {
+                    transformer.addJoinAndWhere(constraint.getJoinClause(), constraint.getWhereClause());
+                } else {
+                    transformer.addWhere(constraint.getWhereClause());
                 }
+
+                resultQueryStr = transformer.getResult();
+
+                LoadContext<Entity> loadContext = new LoadContext<>(metadata.getSession().getClassNN(entityName));
+                loadContext.setQueryString(resultQueryStr).setMaxResults(0);
+                getDsContext().getDataSupplier().loadList(loadContext);
+
+                showNotification(getMessage("notification.success"), NotificationType.HUMANIZED);
+            } catch (QueryErrorsFoundException e) {
+                StringBuilder stringBuilder = new StringBuilder();
+                for (ErrorRec rec : e.getErrorRecs()) {
+                    stringBuilder.append(rec.toString()).append("<br>");
+                }
+                showMessageDialog(getMessage("notification.error"),
+                        formatMessage("notification.syntaxErrors", stringBuilder), MessageType.WARNING_HTML);
+            } catch (Exception e) {
+                showMessageDialog(getMessage("notification.error"),
+                        formatMessage("notification.runtimeError", resultQueryStr, e.getMessage()), MessageType.WARNING_HTML);
             }
         }
     }

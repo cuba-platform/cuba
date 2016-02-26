@@ -108,7 +108,10 @@
                                 <column id="operationType" caption="msg://com.haulmont.cuba.security.entity/Constraint.operationType"/>
                                 <column id="joinClause" caption="msg://com.haulmont.cuba.security.entity/Constraint.joinClause"/>
                                 <column id="whereClause" caption="msg://com.haulmont.cuba.security.entity/Constraint.whereClause"/>
-                                <column id="groovyScript" caption="msg://com.haulmont.cuba.security.entity/Constraint.groovyScript"/>
+                                <column id="groovyScript"
+                                        caption="msg://com.haulmont.cuba.security.entity/Constraint.groovyScript"
+                                        width="200px"
+                                />
                             </columns>
                             <rows datasource="constraintsDs"/>
                         </table>

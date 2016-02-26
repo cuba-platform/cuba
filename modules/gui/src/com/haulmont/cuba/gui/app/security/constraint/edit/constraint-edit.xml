@@ -15,69 +15,87 @@
 
     <assign name="width" value="theme://cuba.gui.constraint-edit.field.width"/>
 
-    <layout expand="windowActions" spacing="true">
-        <grid id="grid" spacing="true">
-            <columns count="3"/>
-            <rows>
-                <row id="activeRow">
-                    <label value="msg://com.haulmont.cuba.security.entity/Constraint.isActive" align="MIDDLE_LEFT" width="120"/>
-                    <checkBox id="isActive" datasource="constraint" property="isActive"/>
-                    <label value=""/>
-                </row>
-                <row id="nameRow">
-                    <label value="msg://com.haulmont.cuba.security.entity/Constraint.entityName" align="MIDDLE_LEFT" width="120"/>
-                    <lookupField id="entityName" datasource="constraint" property="entityName" required="true"
-                                 width="${width}"/>
-                    <label value=""/>
-                </row>
-                <row id="typeRow">
-                    <label value="msg://com.haulmont.cuba.security.entity/Constraint.checkType" align="MIDDLE_LEFT"/>
-                    <lookupField id="type" datasource="constraint" property="checkType" required="true"
-                                 width="${width}"/>
-                    <label value=""/>
-                </row>
-                <row id="operationTypeRow">
-                    <label value="msg://com.haulmont.cuba.security.entity/Constraint.operationType" align="MIDDLE_LEFT"/>
-                    <lookupField id="operationType" datasource="constraint" property="operationType" required="true"
-                                 width="${width}"/>
-                </row>
-                <row id="codeRow">
-                    <label id="codeLabel" value="msg://com.haulmont.cuba.security.entity/Constraint.code" align="MIDDLE_LEFT"/>
-                    <textField id="code" datasource="constraint" property="code" required="true"
-                               width="${width}"/>
-                </row>
-                <row>
-                    <label value=""/>
-                    <linkButton colspan="2" id="wizard" caption="msg://wizard" invoke="openWizard"/>
-                </row>
-                <row id="joinRow">
-                    <label id="joinClauseLabel" value="msg://com.haulmont.cuba.security.entity/Constraint.joinClause" align="TOP_LEFT"/>
-                    <sourceCodeEditor id="joinClause" datasource="constraint" property="joinClause"
-                                      width="${width}"
-                                      height="theme://cuba.gui.constraint-edit.joinClause.height"/>
-                    <linkButton id="joinClauseHelp" icon="icons/question-white.png" invoke="getJoinClauseHelp"/>
-                </row>
-                <row id="whereRow">
-                    <label id="whereClauseLabel" value="msg://com.haulmont.cuba.security.entity/Constraint.whereClause" align="TOP_LEFT"/>
-                    <sourceCodeEditor id="whereClause" datasource="constraint" property="whereClause" required="true"
-                                      width="${width}"
-                                      height="theme://cuba.gui.constraint-edit.whereClause.height"/>
-                    <linkButton id="whereClauseHelp" icon="icons/question-white.png" invoke="getWhereClauseHelp"/>
-                </row>
-                <row id="groovyRow">
-                    <label id="groovyScriptLabel"
-                           value="msg://com.haulmont.cuba.security.entity/Constraint.groovyScript" align="TOP_LEFT"/>
-                    <sourceCodeEditor id="groovyScript" datasource="constraint" property="groovyScript" required="true"
-                                      width="${width}"
-                                      height="theme://cuba.gui.constraint-edit.whereClause.height"/>
-                    <linkButton id="groovyScriptHelp" icon="icons/question-white.png" invoke="getGroovyScriptHelp"/>
-                </row>
-            </rows>
-        </grid>
-        <hbox id="windowActions" spacing="true" stylename="cuba-edit-window-actions">
-            <button id="windowCommit" action="windowCommit" icon="icons/ok.png"/>
-            <button id="windowClose" action="windowClose" icon="icons/cancel.png"/>
-            <button invoke="testConstraint" caption="msg://testConstraint"/>
-        </hbox>
+    <layout spacing="true" width="100%" expand="scrollBox">
+        <scrollBox id="scrollBox" width="100%" spacing="true" margin="true" scrollBars="vertical">
+            <grid id="grid" spacing="true" width="100%">
+                <columns>
+                    <column/>
+                    <column flex="1"/>
+                    <column/>
+                </columns>
+                <rows>
+                    <row id="activeRow">
+                        <label value="msg://com.haulmont.cuba.security.entity/Constraint.isActive" align="MIDDLE_LEFT"
+                               width="120"/>
+                        <checkBox id="isActive" datasource="constraint" property="isActive"/>
+                        <label value=""/>
+                    </row>
+                    <row id="nameRow">
+                        <label value="msg://com.haulmont.cuba.security.entity/Constraint.entityName" align="MIDDLE_LEFT"
+                               width="120"/>
+                        <lookupField id="entityName" datasource="constraint" property="entityName" required="true"
+                                     width="${width}"/>
+                        <label value=""/>
+                    </row>
+                    <row id="typeRow">
+                        <label value="msg://com.haulmont.cuba.security.entity/Constraint.checkType"
+                               align="MIDDLE_LEFT"/>
+                        <lookupField id="type" textInputAllowed="false" datasource="constraint" property="checkType"
+                                     required="true"
+                                     width="${width}"/>
+                        <label value=""/>
+                    </row>
+                    <row id="operationTypeRow">
+                        <label value="msg://com.haulmont.cuba.security.entity/Constraint.operationType"
+                               align="MIDDLE_LEFT"/>
+                        <lookupField id="operationType" textInputAllowed="false" datasource="constraint" property="operationType" required="true"
+                                     width="${width}"/>
+                    </row>
+                    <row id="codeRow">
+                        <label id="codeLabel" value="msg://com.haulmont.cuba.security.entity/Constraint.code"
+                               align="MIDDLE_LEFT"/>
+                        <textField id="code" datasource="constraint" property="code" required="true"
+                                   width="${width}"/>
+                    </row>
+                    <row>
+                        <label value=""/>
+                        <linkButton colspan="2" id="wizard" caption="msg://wizard" invoke="openWizard"/>
+                    </row>
+                    <row id="joinRow">
+                        <label id="joinClauseLabel"
+                               value="msg://com.haulmont.cuba.security.entity/Constraint.joinClause" align="TOP_LEFT"/>
+                        <sourceCodeEditor id="joinClause" datasource="constraint" property="joinClause"
+                                          width="100%"
+                                          height="theme://cuba.gui.constraint-edit.joinClause.height"/>
+                        <linkButton id="joinClauseHelp" icon="icons/question-white.png" invoke="getJoinClauseHelp"/>
+                    </row>
+                    <row id="whereRow">
+                        <label id="whereClauseLabel"
+                               value="msg://com.haulmont.cuba.security.entity/Constraint.whereClause" align="TOP_LEFT"/>
+                        <sourceCodeEditor id="whereClause" datasource="constraint" property="whereClause"
+                                          required="true"
+                                          width="100%"
+                                          height="120px"/>
+                        <linkButton id="whereClauseHelp" icon="icons/question-white.png" invoke="getWhereClauseHelp"/>
+                    </row>
+                    <row id="groovyRow">
+                        <label id="groovyScriptLabel"
+                               value="msg://com.haulmont.cuba.security.entity/Constraint.groovyScript"
+                               align="TOP_LEFT"/>
+                        <sourceCodeEditor id="groovyScript" datasource="constraint" property="groovyScript"
+                                          required="true"
+                                          width="100%"
+                                          mode="Groovy"
+                                          height="180px"/>
+                        <linkButton id="groovyScriptHelp" icon="icons/question-white.png" invoke="getGroovyScriptHelp"/>
+                    </row>
+                </rows>
+            </grid>
+            <hbox id="windowActions" spacing="true" stylename="cuba-edit-window-actions">
+                <button id="windowCommit" action="windowCommit" icon="icons/ok.png"/>
+                <button id="windowClose" action="windowClose" icon="icons/cancel.png"/>
+                <button invoke="testConstraint" id="testConstraint" caption="msg://testConstraint"/>
+            </hbox>
+        </scrollBox>
     </layout>
 </window>
