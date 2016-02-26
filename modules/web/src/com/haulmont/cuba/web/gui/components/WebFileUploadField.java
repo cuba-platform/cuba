@@ -108,13 +108,14 @@ public class WebFileUploadField extends WebAbstractComponent<UploadComponent> im
                 impl.interruptUpload();
 
                 double fileSizeInMb;
-                if (fileSizeLimit%BYTES_IN_MEGABYTE == 0) {
-                    fileSizeInMb = fileSizeLimit / BYTES_IN_MEGABYTE;
+                Datatype<Double> doubleDatatype = Datatypes.getNN(Double.class);
+                String fileSizeLimitString;
+                if (fileSizeLimit % BYTES_IN_MEGABYTE == 0) {
+                    fileSizeLimitString = String.valueOf(fileSizeLimit / BYTES_IN_MEGABYTE);
                 } else {
                     fileSizeInMb = fileSizeLimit / ((double) BYTES_IN_MEGABYTE);
+                    fileSizeLimitString = doubleDatatype.format(fileSizeInMb);
                 }
-                Datatype<Double> doubleDatatype = Datatypes.getNN(Double.class);
-                String fileSizeLimitString = doubleDatatype.format(fileSizeInMb);
                 String warningMsg = messages.formatMainMessage("upload.fileTooBig.message", event.getFilename(), fileSizeLimitString);
 
                 getFrame().showNotification(warningMsg, NotificationType.WARNING);
@@ -210,13 +211,14 @@ public class WebFileUploadField extends WebAbstractComponent<UploadComponent> im
             String warningMsg;
             if (fileSizeLimit > 0){
                 double fileSizeInMb;
-                if (fileSizeLimit%BYTES_IN_MEGABYTE == 0) {
-                    fileSizeInMb = fileSizeLimit / BYTES_IN_MEGABYTE;
+                Datatype<Double> doubleDatatype = Datatypes.getNN(Double.class);
+                String fileSizeLimitString;
+                if (fileSizeLimit % BYTES_IN_MEGABYTE == 0) {
+                    fileSizeLimitString = String.valueOf(fileSizeLimit / BYTES_IN_MEGABYTE);
                 } else {
                     fileSizeInMb = fileSizeLimit / ((double) BYTES_IN_MEGABYTE);
+                    fileSizeLimitString = doubleDatatype.format(fileSizeInMb);
                 }
-                Datatype<Double> doubleDatatype = Datatypes.getNN(Double.class);
-                String fileSizeLimitString = doubleDatatype.format(fileSizeInMb);
                 warningMsg = messages.formatMainMessage("upload.fileTooBig.message", e.getFileName(), fileSizeLimitString);
             } else {
                 warningMsg = messages.formatMainMessage("upload.fileTooBig.message", e.getFileName(), maxUploadSizeMb);

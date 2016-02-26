@@ -94,13 +94,14 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
 
         if (file.length() > maxSize) {
             double fileSizeInMb;
-            if (fileSizeLimit%BYTES_IN_MEGABYTE == 0) {
-                fileSizeInMb = fileSizeLimit / BYTES_IN_MEGABYTE;
+            Datatype<Double> doubleDatatype = Datatypes.getNN(Double.class);
+            String fileSizeLimitString;
+            if (fileSizeLimit % BYTES_IN_MEGABYTE == 0) {
+                fileSizeLimitString = String.valueOf(fileSizeLimit / BYTES_IN_MEGABYTE);
             } else {
                 fileSizeInMb = fileSizeLimit / ((double) BYTES_IN_MEGABYTE);
+                fileSizeLimitString = doubleDatatype.format(fileSizeInMb);
             }
-            Datatype<Double> doubleDatatype = Datatypes.getNN(Double.class);
-            String fileSizeLimitString = doubleDatatype.format(fileSizeInMb);
             String warningMsg = messages.formatMainMessage("upload.fileTooBig.message", file.getName(), fileSizeLimitString);
 
             getFrame().showNotification(warningMsg, Frame.NotificationType.WARNING);

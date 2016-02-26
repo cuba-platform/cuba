@@ -37,6 +37,11 @@ public class FileMultiUploadFieldLoader extends AbstractComponentLoader<FileMult
         loadDescription(resultComponent, element);
 
         loadAccept(resultComponent, element);
+
+        String fileSizeLimit = element.attributeValue("fileSizeLimit");
+        if (StringUtils.isNotEmpty(fileSizeLimit)) {
+            resultComponent.setFileSizeLimit(Long.valueOf(fileSizeLimit));
+        }
     }
 
     protected void loadAccept(FileMultiUploadField uploadField, Element element) {

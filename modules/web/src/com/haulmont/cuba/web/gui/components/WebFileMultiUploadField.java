@@ -171,13 +171,14 @@ public class WebFileMultiUploadField extends WebAbstractComponent<UploadComponen
                         String warningMsg;
                         if (fileSizeLimit > 0) {
                             double fileSizeInMb;
+                            Datatype<Double> doubleDatatype = Datatypes.getNN(Double.class);
+                            String fileSizeLimitString;
                             if (fileSizeLimit % BYTES_IN_MEGABYTE == 0) {
-                                fileSizeInMb = fileSizeLimit / BYTES_IN_MEGABYTE;
+                                fileSizeLimitString = String.valueOf(fileSizeLimit / BYTES_IN_MEGABYTE);
                             } else {
                                 fileSizeInMb = fileSizeLimit / ((double) BYTES_IN_MEGABYTE);
+                                fileSizeLimitString = doubleDatatype.format(fileSizeInMb);
                             }
-                            Datatype<Double> doubleDatatype = Datatypes.getNN(Double.class);
-                            String fileSizeLimitString = doubleDatatype.format(fileSizeInMb);
                             warningMsg = messages.formatMessage(WebFileMultiUploadField.class, "multiupload.filesizeLimitExceed", fileName, fileSizeLimitString);
                         } else {
                             warningMsg = messages.formatMessage(WebFileMultiUploadField.class, "multiupload.filesizeLimitExceed", fileName, maxUploadSizeMb);
@@ -268,13 +269,14 @@ public class WebFileMultiUploadField extends WebAbstractComponent<UploadComponen
             String warningMsg;
             if (fileSizeLimit > 0) {
                 double fileSizeInMb;
+                Datatype<Double> doubleDatatype = Datatypes.getNN(Double.class);
+                String fileSizeLimitString;
                 if (fileSizeLimit % BYTES_IN_MEGABYTE == 0) {
-                    fileSizeInMb = fileSizeLimit / BYTES_IN_MEGABYTE;
+                    fileSizeLimitString = String.valueOf(fileSizeLimit / BYTES_IN_MEGABYTE);
                 } else {
                     fileSizeInMb = fileSizeLimit / ((double) BYTES_IN_MEGABYTE);
+                    fileSizeLimitString = doubleDatatype.format(fileSizeInMb);
                 }
-                Datatype<Double> doubleDatatype = Datatypes.getNN(Double.class);
-                String fileSizeLimitString = doubleDatatype.format(fileSizeInMb);
                 warningMsg = messages.formatMessage(WebFileMultiUploadField.class, "multiupload.filesizeLimitExceed", e.getFileName(), fileSizeLimitString);
             } else {
                 warningMsg = messages.formatMessage(WebFileMultiUploadField.class, "multiupload.filesizeLimitExceed", e.getFileName(), maxUploadSizeMb);

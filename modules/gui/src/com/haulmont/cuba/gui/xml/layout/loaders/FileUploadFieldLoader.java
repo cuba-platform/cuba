@@ -37,6 +37,11 @@ public class FileUploadFieldLoader extends AbstractComponentLoader<FileUploadFie
         loadDescription(resultComponent, element);
 
         loadAccept(resultComponent, element);
+
+        String fileSizeLimit = element.attributeValue("fileSizeLimit");
+        if (StringUtils.isNotEmpty(fileSizeLimit)) {
+            resultComponent.setFileSizeLimit(Long.valueOf(fileSizeLimit));
+        }
     }
 
     protected void loadAccept(FileUploadField uploadField, Element element) {

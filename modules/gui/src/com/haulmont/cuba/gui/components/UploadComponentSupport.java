@@ -76,4 +76,15 @@ public interface UploadComponentSupport extends Component, Component.HasCaption,
 
     void addFileUploadErrorListener(FileUploadErrorListener listener);
     void removeFileUploadErrorListener(FileUploadErrorListener listener);
+
+    /**
+     * Returns maximum allowed file size in bytes.
+     */
+    long getFileSizeLimit();
+
+    /**
+     * Sets maximum allowed file size in bytes.
+     * Default value is 0. In this case component uses system value
+     */
+    void setFileSizeLimit(long fileSizeLimit);
 }
