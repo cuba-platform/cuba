@@ -106,12 +106,11 @@
                                 <column id="entityName" caption="msg://com.haulmont.cuba.security.entity/Constraint.entityName"/>
                                 <column id="isActive" caption="msg://com.haulmont.cuba.security.entity/Constraint.isActive"/>
                                 <column id="operationType" caption="msg://com.haulmont.cuba.security.entity/Constraint.operationType"/>
-                                <column id="joinClause" caption="msg://com.haulmont.cuba.security.entity/Constraint.joinClause"/>
-                                <column id="whereClause" caption="msg://com.haulmont.cuba.security.entity/Constraint.whereClause"/>
+                                <column id="joinClause" caption="msg://com.haulmont.cuba.security.entity/Constraint.joinClause" width="200px"/>
+                                <column id="whereClause" caption="msg://com.haulmont.cuba.security.entity/Constraint.whereClause" width="200px"/>
                                 <column id="groovyScript"
                                         caption="msg://com.haulmont.cuba.security.entity/Constraint.groovyScript"
-                                        width="200px"
-                                />
+                                        width="200px"/>
                             </columns>
                             <rows datasource="constraintsDs"/>
                         </table>

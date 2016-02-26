@@ -121,14 +121,7 @@ public class ConstraintEditor extends AbstractEditor {
         }
         entityName.setOptionsMap(options);
 
-        joinClause.setHighlightActiveLine(false);
-        joinClause.setShowGutter(false);
-        joinClause.setShowPrintMargin(false);
         joinClause.setSuggester((source, text, cursorPosition) -> requestHint(joinClause, text, cursorPosition));
-
-        whereClause.setHighlightActiveLine(false);
-        whereClause.setShowGutter(false);
-        whereClause.setShowPrintMargin(false);
         whereClause.setSuggester((source, text, cursorPosition) -> requestHint(whereClause, text, cursorPosition));
 
         setupVisibility();
@@ -155,7 +148,8 @@ public class ConstraintEditor extends AbstractEditor {
             operationType.setEnabled(true);
         }
 
-        if ((item.getCheckType() == ConstraintCheckType.DATABASE_AND_MEMORY) || (item.getCheckType() == ConstraintCheckType.DATABASE)) {
+        if (item.getCheckType() == ConstraintCheckType.DATABASE_AND_MEMORY
+                || item.getCheckType() == ConstraintCheckType.DATABASE) {
             testConstraint.setVisible(true);
         } else {
             testConstraint.setVisible(false);
