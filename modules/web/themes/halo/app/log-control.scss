@@ -7,7 +7,8 @@
 
 @mixin cuba-log-control {
 
-  .v-label.cuba-log-content {
+  .v-label.cuba-log-content,
+  .v-textarea.cuba-exception-dialog-log-content {
     line-height: $v-font-size;
     font-family: monospace;
   }

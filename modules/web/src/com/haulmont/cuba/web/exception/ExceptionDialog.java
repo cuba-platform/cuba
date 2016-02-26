@@ -21,10 +21,10 @@ import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
+import com.haulmont.cuba.web.toolkit.ui.CubaCopyButtonExtension;
 import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.Page;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
@@ -54,7 +54,9 @@ public class ExceptionDialog extends CubaWindow {
 
     protected VerticalLayout mainLayout;
 
-    protected Panel stackTraceScrollablePanel;
+    protected TextArea stackTraceTextArea;
+
+    protected Button copyButton;
 
     protected Button showStackTraceButton;
 
@@ -147,6 +149,13 @@ public class ExceptionDialog extends CubaWindow {
         buttonsLayout.addComponent(spacer);
         buttonsLayout.setExpandRatio(spacer, 1);
 
+        String cubaLogContentClass = "cuba-exception-dialog-log-content";
+
+        copyButton = new CubaButton(messages.getMessage(ExceptionDialog.class, "exceptionDialog.copyStackTrace"));
+        copyButton.setVisible(false);
+        CubaCopyButtonExtension.copyWith(copyButton, cubaLogContentClass);
+        buttonsLayout.addComponent(copyButton);
+
         if (userSessionSource.getUserSession() != null) {
             if (!StringUtils.isBlank(clientConfig.getSupportEmail())) {
                 final Button reportButton = new CubaButton(messages.getMessage(ExceptionDialog.class, "exceptionDialog.reportBtn"));
@@ -174,21 +183,11 @@ public class ExceptionDialog extends CubaWindow {
         });
         buttonsLayout.addComponent(logoutButton);
 
-        VerticalLayout scrollContent = new VerticalLayout();
-        scrollContent.setSizeUndefined();
-
-        stackTraceScrollablePanel = new Panel();
-        stackTraceScrollablePanel.setStyleName("cuba-log-panel");
-        stackTraceScrollablePanel.setHeight("100%");
-        stackTraceScrollablePanel.setContent(scrollContent);
-
-        Label stackTraceLabel = new Label();
-        stackTraceLabel.setContentMode(ContentMode.HTML);
-
-        stackTraceLabel.setValue(htmlStackTrace);
-        stackTraceLabel.setSizeUndefined();
-        stackTraceLabel.setStyleName("cuba-log-content");
-        scrollContent.addComponent(stackTraceLabel);
+        stackTraceTextArea = new TextArea();
+        stackTraceTextArea.setSizeFull();
+        stackTraceTextArea.setWordwrap(false);
+        stackTraceTextArea.setValue(stackTrace);
+        stackTraceTextArea.setStyleName(cubaLogContentClass);
 
         setContent(mainLayout);
         setResizable(false);
@@ -198,8 +197,9 @@ public class ExceptionDialog extends CubaWindow {
             setCubaId("exceptionDialog");
 
             closeButton.setCubaId("closeButton");
+            copyButton.setCubaId("copyStackTraceButton");
             showStackTraceButton.setCubaId("showStackTraceButton");
-            stackTraceLabel.setCubaId("stackTraceLabel");
+            stackTraceTextArea.setCubaId("stackTraceTextArea");
             logoutButton.setCubaId("logoutButton");
         }
     }
@@ -289,10 +289,12 @@ public class ExceptionDialog extends CubaWindow {
 
         ThemeConstants theme = App.getInstance().getThemeConstants();
         if (visible) {
+            copyButton.setVisible(true);
+
             showStackTraceButton.setCaption(messages.getMessage(ExceptionDialog.class, "exceptionDialog.hideStackTrace"));
 
-            mainLayout.addComponent(stackTraceScrollablePanel);
-            mainLayout.setExpandRatio(stackTraceScrollablePanel, 1.0f);
+            mainLayout.addComponent(stackTraceTextArea);
+            mainLayout.setExpandRatio(stackTraceTextArea, 1.0f);
             mainLayout.setHeight(100, Unit.PERCENTAGE);
 
             setWidth(theme.get("cuba.web.ExceptionDialog.expanded.width"));
@@ -300,11 +302,15 @@ public class ExceptionDialog extends CubaWindow {
 
             setResizable(true);
             center();
+            stackTraceTextArea.focus();
+            stackTraceTextArea.setCursorPosition(0);
         } else {
+            copyButton.setVisible(false);
+
             showStackTraceButton.setCaption(messages.getMessage(ExceptionDialog.class, "exceptionDialog.showStackTrace"));
 
             mainLayout.setHeight(-1, Unit.PIXELS);
-            mainLayout.removeComponent(stackTraceScrollablePanel);
+            mainLayout.removeComponent(stackTraceTextArea);
 
             setWidth(theme.get("cuba.web.ExceptionDialog.width"));
             setHeight(-1, Unit.PERCENTAGE);
