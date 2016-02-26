@@ -8,12 +8,9 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.EmailService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.components.AbstractAction;
-import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
-import com.haulmont.cuba.gui.components.DialogAction;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
-import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.User;
@@ -25,10 +22,15 @@ import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TextArea;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -72,6 +74,29 @@ public class ExceptionDialog extends CubaWindow {
 
     public ExceptionDialog(Throwable throwable, @Nullable String caption, @Nullable String message) {
         final AppUI ui = AppUI.getCurrent();
+
+        String closeShortcut = clientConfig.getCloseShortcut();
+        KeyCombination closeCombination = KeyCombination.create(closeShortcut);
+
+        com.vaadin.event.ShortcutAction closeShortcutAction = new com.vaadin.event.ShortcutAction(
+                "closeShortcutAction",
+                closeCombination.getKey().getCode(),
+                KeyCombination.Modifier.codes(closeCombination.getModifiers())
+        );
+
+        addActionHandler(new com.vaadin.event.Action.Handler() {
+            @Override
+            public com.vaadin.event.Action[] getActions(Object target, Object sender) {
+                return new com.vaadin.event.Action[]{closeShortcutAction};
+            }
+
+            @Override
+            public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
+                if (ObjectUtils.equals(action, closeShortcutAction)) {
+                    close();
+                }
+            }
+        });
 
         setCaption(caption != null ? caption : messages.getMessage(ExceptionDialog.class, "exceptionDialog.caption"));
 

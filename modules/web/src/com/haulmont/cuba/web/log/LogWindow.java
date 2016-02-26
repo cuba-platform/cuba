@@ -4,14 +4,15 @@
  */
 package com.haulmont.cuba.web.log;
 
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
-import com.vaadin.event.Action;
-import com.vaadin.event.ShortcutAction;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.ObjectUtils;
@@ -23,7 +24,6 @@ import java.util.List;
 
 /**
  * @author krivopustov
- * @version $Id$
  */
 public class LogWindow extends CubaWindow {
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
@@ -45,18 +45,28 @@ public class LogWindow extends CubaWindow {
     }
 
     private void initUI() {
-        addActionHandler(new com.vaadin.event.Action.Handler() {
-            private ShortcutAction shortcut = new ShortcutAction("escapeAction", ShortcutAction.KeyCode.ESCAPE, null);
+        ClientConfig clientConfig = AppBeans.<Configuration>get(Configuration.NAME).getConfig(ClientConfig.class);
 
+        String closeShortcut = clientConfig.getCloseShortcut();
+        KeyCombination closeCombination = KeyCombination.create(closeShortcut);
+
+        com.vaadin.event.ShortcutAction closeShortcutAction = new com.vaadin.event.ShortcutAction(
+                "closeShortcutAction",
+                closeCombination.getKey().getCode(),
+                KeyCombination.Modifier.codes(closeCombination.getModifiers())
+        );
+
+        addActionHandler(new com.vaadin.event.Action.Handler() {
             @Override
             public com.vaadin.event.Action[] getActions(Object target, Object sender) {
-                return new Action[]{shortcut};
+                return new com.vaadin.event.Action[]{closeShortcutAction};
             }
 
             @Override
             public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
-                if (ObjectUtils.equals(action, shortcut))
+                if (ObjectUtils.equals(action, closeShortcutAction)) {
                     close();
+                }
             }
         });
 
