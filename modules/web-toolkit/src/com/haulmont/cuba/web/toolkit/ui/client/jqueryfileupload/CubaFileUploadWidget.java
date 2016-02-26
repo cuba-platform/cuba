@@ -36,7 +36,7 @@ public class CubaFileUploadWidget extends FlowPanel implements Focusable {
     protected String progressWindowCaption;
     protected String cancelButtonCaption;
 
-    protected int fileSizeLimit = -1;
+    protected long fileSizeLimit = -1;
     protected FilePermissionsHandler filePermissionsHandler;
 
     protected QueueUploadListener queueUploadListener;

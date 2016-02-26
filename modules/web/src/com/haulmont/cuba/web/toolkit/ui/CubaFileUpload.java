@@ -262,7 +262,7 @@ public class CubaFileUpload extends AbstractComponent
     /**
      * @param fileSizeLimit file size limit in bytes
      */
-    public void setFileSizeLimit(int fileSizeLimit) {
+    public void setFileSizeLimit(long fileSizeLimit) {
         getState().fileSizeLimit = fileSizeLimit;
     }
 

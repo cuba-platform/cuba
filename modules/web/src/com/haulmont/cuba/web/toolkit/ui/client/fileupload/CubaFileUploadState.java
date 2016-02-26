@@ -37,5 +37,5 @@ public class CubaFileUploadState extends TabIndexState {
     public String unableToUploadFileMessage;
 
     @NoLayout
-    public int fileSizeLimit;
+    public long fileSizeLimit;
 }

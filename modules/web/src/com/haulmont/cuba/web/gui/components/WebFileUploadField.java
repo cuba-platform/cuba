@@ -139,7 +139,7 @@ public class WebFileUploadField extends WebAbstractUploadComponent<UploadCompone
         impl.setCaption(messages.getMainMessage("upload.submit"));
         impl.setDescription(null);
 
-        impl.setFileSizeLimit((int) getActualFileSizeLimit());
+        impl.setFileSizeLimit(getActualFileSizeLimit());
 
         impl.setReceiver((fileName1, MIMEType) -> {
             FileOutputStream outputStream;
@@ -428,7 +428,7 @@ public class WebFileUploadField extends WebAbstractUploadComponent<UploadCompone
     public void setFileSizeLimit(long fileSizeLimit) {
         this.fileSizeLimit = fileSizeLimit;
         if (this.component instanceof CubaFileUpload){
-            ((CubaFileUpload) this.component).setFileSizeLimit((int) fileSizeLimit);
+            ((CubaFileUpload) this.component).setFileSizeLimit(fileSizeLimit);
         }
     }
 }

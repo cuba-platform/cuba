@@ -527,7 +527,7 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<UploadCo
     public void setFileSizeLimit(long fileSizeLimit) {
         this.fileSizeLimit = fileSizeLimit;
         if (this.component instanceof CubaFileUpload){
-            ((CubaFileUpload) this.component).setFileSizeLimit((int) fileSizeLimit);
+            ((CubaFileUpload) this.component).setFileSizeLimit(fileSizeLimit);
         } else if (this.component instanceof CubaMultiUpload) {
             ((CubaMultiUpload) this.component).setFileSizeLimitMB((double) fileSizeLimit/BYTES_IN_MEGABYTE);
         }
