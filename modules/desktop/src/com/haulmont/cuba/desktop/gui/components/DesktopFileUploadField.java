@@ -5,12 +5,8 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.App;
@@ -31,15 +27,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.haulmont.cuba.gui.upload.FileUploadingAPI.*;
+import static com.haulmont.cuba.gui.upload.FileUploadingAPI.FileInfo;
 
 /**
  * @author budarov
  * @version $Id$
  */
-public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> implements FileUploadField {
-
-    private static final int BYTES_IN_MEGABYTE = 1048576;
+public class DesktopFileUploadField extends DesktopAbstractUploadComponent<JButton> implements FileUploadField {
 
     protected FileUploadingAPI fileUploading;
     protected Messages messages;
@@ -53,8 +47,6 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
     protected String description;
 
     protected UUID fileId;
-
-    protected long fileSizeLimit = 0;
 
     protected UUID tempFileId;
 
@@ -81,29 +73,8 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
     }
 
     protected void uploadFile(File file) {
-        Configuration configuration = AppBeans.get(Configuration.NAME);
-        final long maxSize;
-
-        if (fileSizeLimit > 0){
-            maxSize = fileSizeLimit;
-        } else {
-            final long maxUploadSizeMb = configuration.getConfig(ClientConfig.class).getMaxUploadSizeMb();
-            maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
-        }
-
-
-        if (file.length() > maxSize) {
-            double fileSizeInMb;
-            Datatype<Double> doubleDatatype = Datatypes.getNN(Double.class);
-            String fileSizeLimitString;
-            if (fileSizeLimit % BYTES_IN_MEGABYTE == 0) {
-                fileSizeLimitString = String.valueOf(fileSizeLimit / BYTES_IN_MEGABYTE);
-            } else {
-                fileSizeInMb = fileSizeLimit / ((double) BYTES_IN_MEGABYTE);
-                fileSizeLimitString = doubleDatatype.format(fileSizeInMb);
-            }
-            String warningMsg = messages.formatMainMessage("upload.fileTooBig.message", file.getName(), fileSizeLimitString);
-
+        if (file.length() > getActualFileSizeLimit()) {
+            String warningMsg = messages.formatMainMessage("upload.fileTooBig.message", file.getName(), getFileSizeLimitString());
             getFrame().showNotification(warningMsg, Frame.NotificationType.WARNING);
         } else {
             boolean success = true;
@@ -349,11 +320,6 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
     @Override
     public void setAccept(String accept) {
         // do nothing
-    }
-
-    @Override
-    public long getFileSizeLimit() {
-        return fileSizeLimit;
     }
 
     @Override
