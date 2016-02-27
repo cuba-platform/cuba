@@ -35,6 +35,13 @@ public class Jpa2GrammarTest {
     }
 
     @Test
+    public void testOrderByCount() throws Exception {
+        testQuery("select instance.bookPublication.publisher.name, count(instance) " +
+                "from library$BookInstance instance " +
+                "group by instance.bookPublication.publisher.name order by count(instance) desc");
+    }
+
+    @Test
     public void testFunction() throws Exception {
         testQuery("select u from sec$User u where function('DAYOFMONTH', u.createTs) = 1");
     }

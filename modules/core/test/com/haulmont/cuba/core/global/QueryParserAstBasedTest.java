@@ -137,6 +137,11 @@ public class QueryParserAstBasedTest {
         assertEquals("sec$Group", parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
 
         parser = new QueryParserAstBased(model,
+                "select p from sec$GroupHierarchy h join h.parent p g where h.userGroup = :par"
+        );
+        assertEquals("sec$GroupHierarchy", parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
+
+        parser = new QueryParserAstBased(model,
                 "select h from sec$Constraint u, sec$GroupHierarchy h where h.userGroup = :par"
         );
         assertNull(parser.getEntityNameIfSecondaryReturnedInsteadOfMain());

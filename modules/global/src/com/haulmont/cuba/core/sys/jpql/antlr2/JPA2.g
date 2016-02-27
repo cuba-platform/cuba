@@ -201,7 +201,7 @@ orderby_item
     : orderby_variable sort?
      -> ^(T_ORDER_BY_FIELD<OrderByFieldNode>[] orderby_variable sort?);
 orderby_variable
-    : path_expression | general_identification_variable | result_variable;
+    : path_expression | general_identification_variable | result_variable | scalar_expression | aggregate_expression;
 sort
     : ('ASC' | 'DESC');
 subquery

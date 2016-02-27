@@ -128,6 +128,16 @@ public class QueryParserAstBased implements QueryParser {
             if (!entity.getName().equals(getEntityName())) {
                 return entity.getName();
             }
+
+            //fix for scary Eclipselink which consider "select p from sec$GroupHierarchy h join h.parent p"
+            //(even if h.parent is also sec$GroupHierarchy)
+            //as report query and does not allow to set view
+            IdentificationVariableNode mainEntityIdentification = queryTreeAnalyzer.getMainEntityIdentification();
+            if (mainEntityIdentification != null
+                    && !pathNode.getEntityVariableName().equals(mainEntityIdentification.getVariableName())) {
+                return entity.getName();
+            }
+
             return null;
         }
 
