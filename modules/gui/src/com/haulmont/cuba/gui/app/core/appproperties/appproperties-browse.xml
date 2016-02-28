@@ -1,0 +1,44 @@
+<!--
+  ~ Copyright (c) 2008-2016 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<window
+        xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+        class="com.haulmont.cuba.gui.app.core.appproperties.AppPropertiesBrowse"
+        messagesPack="com.haulmont.cuba.gui.app.core.appproperties"
+        caption="msg://browseCaption"
+        focusComponent="paramsTable">
+
+    <dsContext>
+        <hierarchicalDatasource id="paramsDs"
+                                class="com.haulmont.cuba.core.config.AppPropertyEntity"
+                                view="_local"
+                                hierarchyProperty="parent"
+                                allowCommit="false"
+                                datasourceClass="com.haulmont.cuba.gui.app.core.appproperties.AppPropertiesDatasource">
+        </hierarchicalDatasource>
+    </dsContext>
+
+    <layout expand="paramsTable" spacing="true">
+        <treeTable id="paramsTable" editable="false" multiselect="true" width="100%">
+            <buttonsPanel>
+                <label value="msg://searchByName" align="MIDDLE_LEFT"/>
+                <textField id="searchField" />
+                <button action="paramsTable.refresh" icon="icons/refresh.png"/>
+                <button action="paramsTable.editValue" icon="icons/edit.png"/>
+                <button id="exportBtn" invoke="exportAsSql" caption="msg://export"/>
+            </buttonsPanel>
+            <actions>
+                <action id="editValue" invoke="editValue" caption="mainMsg://actions.Edit" enable="false"/>
+                <action id="refresh"/>
+            </actions>
+            <columns>
+                <column id="name" caption="msg://name"/>
+                <column id="defaultValue" caption="msg://defaultValue"/>
+                <column id="currentValue" caption="msg://currentValue"/>
+            </columns>
+            <rows datasource="paramsDs"/>
+        </treeTable>
+    </layout>
+</window>

@@ -167,4 +167,20 @@ public class MetadataBuildSupport {
         }
     }
 
+    public Set<String> getRootPackages() {
+        Set<String> result = new LinkedHashSet<>();
+        StrTokenizer metadataFilesTokenizer = new StrTokenizer(getMetadataConfig());
+        for (String fileName : metadataFilesTokenizer.getTokenArray()) {
+            Element root = readXml(fileName);
+            //noinspection unchecked
+            for (Element element : (List<Element>) root.elements("metadata-model")) {
+                String rootPackage = element.attributeValue("root-package");
+                if (!StringUtils.isBlank(rootPackage)) {
+                    result.add(rootPackage);
+                }
+            }
+        }
+        return result;
+    }
+
 }

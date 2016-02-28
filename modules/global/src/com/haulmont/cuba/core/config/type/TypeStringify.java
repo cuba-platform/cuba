@@ -85,7 +85,7 @@ public abstract class TypeStringify {
         }
     }
 
-    private static TypeStringify getInferred(Class<?> type) {
+    public static TypeStringify getInferred(Class<?> type) {
         String method;
         if (type.isPrimitive()) {
             return new PrimitiveTypeStringify();

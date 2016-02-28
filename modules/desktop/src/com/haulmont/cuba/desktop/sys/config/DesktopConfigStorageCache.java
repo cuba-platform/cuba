@@ -7,9 +7,11 @@ package com.haulmont.cuba.desktop.sys.config;
 
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.app.ConfigStorageService;
+import com.haulmont.cuba.core.config.AppPropertyEntity;
 import com.haulmont.cuba.core.global.AppBeans;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -52,6 +54,11 @@ public class DesktopConfigStorageCache implements ConfigStorageService {
             getService().setDbProperty(name, value);
             lastInvalidateTs = 0;
         }
+    }
+
+    @Override
+    public List<AppPropertyEntity> getAppProperties() {
+        return getService().getAppProperties();
     }
 
     /**

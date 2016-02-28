@@ -1,0 +1,39 @@
+<!--
+  ~ Copyright (c) 2008-2016 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<window
+        xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+        class="com.haulmont.cuba.gui.app.core.appproperties.AppPropertiesEdit"
+        messagesPack="com.haulmont.cuba.gui.app.core.appproperties"
+        caption="msg://editCaption"
+        focusComponent="fieldGroup">
+
+    <dsContext>
+        <datasource id="appPropertyDs"
+                    class="com.haulmont.cuba.core.config.AppPropertyEntity"
+                    view="_local"
+                    allowCommit="false">
+        </datasource>
+    </dsContext>
+
+    <actions>
+        <action id="okAction" shortcut="Ctrl-Enter" invoke="ok"/>
+        <action id="cancelAction" invoke="cancel"/>
+    </actions>
+    <layout spacing="true">
+        <fieldGroup id="fieldGroup" datasource="appPropertyDs" width="100%">
+            <column width="100%">
+                <field id="name" editable="false" caption="msg://name"/>
+                <field id="defaultValue" editable="false" caption="msg://defaultValue"/>
+                <field id="currentValue" caption="msg://currentValue"/>
+            </column>
+        </fieldGroup>
+        <label id="cannotEditValueLabel" value="msg://cannotEditValue" visible="false" width="100%"/>
+        <hbox spacing="true" align="BOTTOM_RIGHT">
+            <button caption="mainMsg://actions.Ok" action="okAction"/>
+            <button caption="mainMsg://actions.Cancel" action="cancelAction"/>
+        </hbox>
+    </layout>
+</window>
