@@ -472,9 +472,9 @@ boolean_literal
     : 'true'
     | 'false';
 
-// my
+//todo eude the following is just a workaround for entity fields equal to keywords. We need to get rid of it somehow.
 field
-    : WORD | 'GROUP' | 'ORDER';
+    : WORD | 'SELECT' | 'FROM' | 'GROUP' | 'ORDER' | 'MAX' | 'MIN' | 'SUM' | 'AVG' | 'COUNT';
 
 identification_variable
     : WORD;

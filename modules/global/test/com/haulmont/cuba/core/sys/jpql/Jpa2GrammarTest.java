@@ -134,6 +134,24 @@ public class Jpa2GrammarTest {
         testQuery("select c from ref$Contract c group by c.group");
     }
 
+    @Test
+    public void testWhereReservedWords() throws Exception {
+        testQuery("select dB from taxi$DriverBan dB " +
+                "where dB.driver.id = :driverId " +
+                "and ((dB.till >= :date and (dB.from is null or dB.from <= :date)) or dB.bannedForever = true)  " +
+                "and dB.type in (:account, :pin, :individual, :login)");
+
+        testQuery("select dB from taxi$DriverBan dB where dB.select is null");
+        testQuery("select dB from taxi$DriverBan dB where dB.from is null");
+        testQuery("select dB from taxi$DriverBan dB where dB.order is null");
+        testQuery("select dB from taxi$DriverBan dB where dB.max is null");
+        testQuery("select dB from taxi$DriverBan dB where dB.min is null");
+        testQuery("select dB from taxi$DriverBan dB where dB.count is null");
+        testQuery("select dB from taxi$DriverBan dB where dB.group is null");
+        testQuery("select dB from taxi$DriverBan dB where dB.avg is null");
+        testQuery("select dB from taxi$DriverBan dB where dB.size is null");
+    }
+
     private void testQuery(String query) throws RecognitionException {
         CharStream cs = new AntlrNoCaseStringStream(query);
         JPA2Lexer lexer = new JPA2Lexer(cs);
