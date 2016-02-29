@@ -81,6 +81,13 @@ public interface Window extends Frame, Component.HasCaption {
     void addCloseListener(CloseListener listener);
     void removeCloseListener(CloseListener listener);
 
+    /**
+     * Add a listener that will be notified when this screen is closed with actionId {@link #COMMIT_ACTION_ID}.
+     * @param listener listener instance
+     */
+    void addCloseWithCommitListener(CloseWithCommitListener listener);
+    void removeCloseWithCommitListener(CloseWithCommitListener listener);
+
     /** This method is called by the framework after opening the screen to apply user settings to all components. */
     void applySettings(Settings settings);
 
@@ -357,6 +364,16 @@ public interface Window extends Frame, Component.HasCaption {
          * @param actionId ID of action caused the screen closing, passed here from {@link Window#close} methods
          */
         void windowClosed(String actionId);
+    }
+
+    /**
+     * Listener to be notified when a screen is closed with actionId {@link #CLOSE_ACTION_ID}.
+     */
+    interface CloseWithCommitListener {
+        /**
+         * Called when a screen is closed with actionId {@link #CLOSE_ACTION_ID}.
+         */
+        void windowClosedWithCommitAction();
     }
 
     /**

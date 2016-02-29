@@ -69,6 +69,16 @@ public class AbstractWindow extends AbstractFrame
         ((Window) frame).removeCloseListener(listener);
     }
 
+    @Override
+    public void addCloseWithCommitListener(CloseWithCommitListener listener) {
+        ((Window) frame).addCloseWithCommitListener(listener);
+    }
+
+    @Override
+    public void removeCloseWithCommitListener(CloseWithCommitListener listener) {
+        ((Window) frame).removeCloseWithCommitListener(listener);
+    }
+
     /**
      * @return screen caption which is set in XML or via {@link #setCaption(String)}
      */

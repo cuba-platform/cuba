@@ -591,6 +591,25 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     @Override
+    public void addCloseWithCommitListener(CloseWithCommitListener listener) {
+        if (listeners == null) {
+            listeners = new LinkedList<>();
+        }
+
+        CloseListenerAdapter adapter = new CloseListenerAdapter(listener);
+        if (!listeners.contains(adapter)) {
+            listeners.add(adapter);
+        }
+    }
+
+    @Override
+    public void removeCloseWithCommitListener(CloseWithCommitListener listener) {
+        if (listeners != null) {
+            listeners.remove(new CloseListenerAdapter(listener));
+        }
+    }
+
+    @Override
     public void applySettings(Settings settings) {
         delegate.applySettings(settings);
     }
@@ -1387,6 +1406,42 @@ public class WebWindow implements Window, Component.Wrapper,
                     selectButton.setId(testIdManager.getTestId(debugId + "_selectButton"));
                     cancelButton.setId(testIdManager.getTestId(debugId + "_cancelButton"));
                 }
+            }
+        }
+    }
+
+    protected static class CloseListenerAdapter implements CloseListener {
+
+        protected CloseWithCommitListener closeWithCommitListener;
+
+        public CloseListenerAdapter(CloseWithCommitListener closeWithCommitListener) {
+            this.closeWithCommitListener = closeWithCommitListener;
+        }
+
+        @Override
+        public int hashCode() {
+            return closeWithCommitListener.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) {
+                return true;
+            }
+
+            if (obj == null || getClass() != obj.getClass()) {
+                return false;
+            }
+
+            CloseListenerAdapter wrapper = (CloseListenerAdapter) obj;
+
+            return this.closeWithCommitListener.equals(wrapper.closeWithCommitListener);
+        }
+
+        @Override
+        public void windowClosed(String actionId) {
+            if (COMMIT_ACTION_ID.equals(actionId)) {
+                closeWithCommitListener.windowClosedWithCommitAction();
             }
         }
     }
