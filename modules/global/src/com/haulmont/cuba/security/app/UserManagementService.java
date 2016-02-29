@@ -9,6 +9,7 @@ import com.haulmont.cuba.security.entity.Group;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -92,6 +93,11 @@ public interface UserManagementService {
      * Save current user's time zone settings.
      */
     void saveOwnTimeZone(UserTimeZone timeZone);
+
+    /**
+     * Save current user's language settings.
+     */
+    void saveOwnLocale(Locale locale);
 
     /**
      * Change password for user

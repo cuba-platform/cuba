@@ -75,6 +75,9 @@ public class UserManagementServiceBean implements UserManagementService {
     @Inject
     protected Security security;
 
+    @Inject
+    protected Messages messages;
+
     protected void checkUpdatePermission(Class entityClass) {
         MetaClass metaClass = metadata.getClassNN(entityClass);
 
@@ -316,6 +319,20 @@ public class UserManagementServiceBean implements UserManagementService {
             tx.commit();
         } finally {
             tx.end();
+        }
+    }
+
+    @Override
+    public void saveOwnLocale(Locale locale) {
+        log.debug("Saving user's language settings: " + locale);
+        try (Transaction tx = persistence.createTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+            User user = em.find(User.class, userSessionSource.getUserSession().getUser().getId());
+            if (user == null)
+                throw new EntityAccessException();
+
+            user.setLanguage(messages.getTools().localeToString(locale));
+            tx.commit();
         }
     }
 

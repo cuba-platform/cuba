@@ -6,8 +6,9 @@ package com.haulmont.cuba.web.app.ui.core.settings;
 
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.TimeZones;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
@@ -40,9 +41,6 @@ public class SettingsWindow extends AbstractWindow {
     protected UserSettingsTools userSettingsTools;
 
     @Inject
-    protected Configuration configuration;
-
-    @Inject
     protected UserSession userSession;
 
     @Inject
@@ -50,6 +48,9 @@ public class SettingsWindow extends AbstractWindow {
 
     @Inject
     protected ClientConfig clientConfig;
+
+    @Inject
+    protected GlobalConfig globalConfig;
 
     @Inject
     protected TimeZones timeZones;
@@ -73,7 +74,13 @@ public class SettingsWindow extends AbstractWindow {
     protected LookupField timeZoneLookup;
 
     @Inject
+    protected LookupField appLangField;
+
+    @Inject
     protected CheckBox timeZoneAutoField;
+
+    @Inject
+    protected UserSessionSource userSessionSource;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -135,12 +142,22 @@ public class SettingsWindow extends AbstractWindow {
                 AppWorkArea.Mode m = modeOptions.getValue() == msgTabbed ? AppWorkArea.Mode.TABBED : AppWorkArea.Mode.SINGLE;
                 userSettingsTools.saveAppWindowMode(m);
                 saveTimeZoneSettings();
+                if (appLangField.getValue() != null){
+                    saveLocaleSettings();
+                }
                 showNotification(getMessage("modeChangeNotification"), NotificationType.HUMANIZED);
 
                 close(COMMIT_ACTION_ID);
             }
         };
-        
+
+        Map<String, Locale> locales = globalConfig.getAvailableLocales();
+        TreeMap<String, Object> options = new TreeMap<>();
+        for (Map.Entry<String, Locale> entry : locales.entrySet()) {
+            options.put(entry.getKey(), messages.getTools().localeToString(entry.getValue()));
+        }
+        appLangField.setOptionsMap(options);
+        appLangField.setValue(messages.getTools().localeToString(userSessionSource.getUserSession().getLocale()));
         addAction(commitAction);
         okBtn.setAction(commitAction);
 
@@ -174,5 +191,10 @@ public class SettingsWindow extends AbstractWindow {
     protected void saveTimeZoneSettings() {
         UserTimeZone userTimeZone = new UserTimeZone(timeZoneLookup.getValue(), timeZoneAutoField.getValue());
         userManagementService.saveOwnTimeZone(userTimeZone);
+    }
+
+    protected void saveLocaleSettings() {
+        Locale userLocale = new Locale(appLangField.getValue());
+        userManagementService.saveOwnLocale(userLocale);
     }
 }

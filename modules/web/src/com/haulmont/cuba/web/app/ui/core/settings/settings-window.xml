@@ -29,6 +29,11 @@
                                      requiredMessage="msg://mainWindowThemeMsg"/>
                     </row>
                     <row>
+                        <label value="msg://mainWindowLang"/>
+                        <lookupField id="appLangField" width="theme://cuba.web.settings-window.appThemeField.width"
+                                     requiredMessage="msg://mainWindowThemeMsg"/>
+                    </row>
+                    <row>
                         <label value="msg://com.haulmont.cuba.security.entity/User.timeZone"/>
                         <hbox spacing="true" width="100%" expand="timeZoneAutoField">
                             <lookupField id="timeZoneLookup" width="theme://cuba.web.settings-window.timeZoneField.width"/>
