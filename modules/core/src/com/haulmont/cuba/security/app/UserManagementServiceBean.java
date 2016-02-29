@@ -326,7 +326,7 @@ public class UserManagementServiceBean implements UserManagementService {
     public String loadOwnLocale() {
         try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
-            User user = em.find(User.class, userSessionSource.getUserSession().getUser().getId());
+            User user = em.find(User.class, userSessionSource.getUserSession().getUser().getId(), "user.locale");
             if (user == null)
                 throw new EntityAccessException();
             tx.commit();
@@ -339,7 +339,7 @@ public class UserManagementServiceBean implements UserManagementService {
         log.debug("Saving user's language settings: " + locale);
         try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
-            User user = em.find(User.class, userSessionSource.getUserSession().getUser().getId());
+            User user = em.find(User.class, userSessionSource.getUserSession().getUser().getId(), "user.locale");
             if (user == null)
                 throw new EntityAccessException();
 

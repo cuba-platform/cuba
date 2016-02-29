@@ -53,6 +53,10 @@
     <view class="com.haulmont.cuba.security.entity.User" name="user.resetPassword" extends="_local">
     </view>
 
+    <view class="com.haulmont.cuba.security.entity.User" name="user.locale">
+        <property name="language"/>
+    </view>
+
     <view class="com.haulmont.cuba.security.entity.User" name="user.check">
         <property name="password"/>
     </view>
