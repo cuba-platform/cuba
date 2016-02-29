@@ -575,7 +575,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         boolean isDefault = BooleanUtils.isTrue(filterEntity.getIsDefault());
         boolean isAdHocFilter = filterEntity == adHocFilter;
 
-        boolean editActionEnabled = !isSet && filterEditable && userCanEditFilters;
+        boolean editActionEnabled = !isSet && filterEditable && userCanEditFilters && (!isGlobal || userCanEditGlobalFilter);
         filterSavingPossible = editActionEnabled &&
                 ((isGlobal && userCanEditGlobalFilter) || (!isGlobal && createdByCurrentUser)) &&
                 ((!isFolder && !hasCode) || isSearchFolder || (isAppFolder && userCanEditGlobalAppFolder));
@@ -585,7 +585,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 (!hasCode && !isFolder) &&
                 ((isGlobal && userCanEditGlobalFilter) || (!isGlobal && createdByCurrentUser)) &&
                 !isAdHocFilter && filterEditable && userCanEditFilters;
-        boolean makeDefaultActionEnabled = !isDefault && !isFolder && !isSet && !isAdHocFilter;
+        boolean makeDefaultActionEnabled = !isDefault && !isFolder && !isSet && !isAdHocFilter && (!isGlobal || userCanEditGlobalFilter);
         boolean pinAppliedActionEnabled = lastAppliedFilter != null
                 && !(lastAppliedFilter.getFilterEntity() == adHocFilter && lastAppliedFilter.getConditions().getRoots().size() == 0);
         boolean saveAsSearchFolderActionEnabled = folderActionsEnabled && !isFolder && !hasCode;
