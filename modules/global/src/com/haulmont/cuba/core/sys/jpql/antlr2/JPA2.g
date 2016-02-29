@@ -309,7 +309,7 @@ IN: 'IN';
 in_item
     : literal | single_valued_input_parameter;
 like_expression
-    : string_expression ('NOT')? 'LIKE' (pattern_value | input_parameter)('ESCAPE' escape_character)?;
+    : string_expression ('NOT')? 'LIKE' (string_expression | pattern_value | input_parameter)('ESCAPE' escape_character)?;
 null_comparison_expression
     : (path_expression | input_parameter | join_association_path_expression) 'IS' ('NOT')? 'NULL';
 empty_collection_comparison_expression
@@ -329,7 +329,7 @@ exists_expression
 all_or_any_expression
     : ( 'ALL' | 'ANY' | 'SOME') subquery;
 comparison_expression
-    : string_expression comparison_operator (string_expression | all_or_any_expression)
+    : string_expression (comparison_operator | 'REGEXP') (string_expression | all_or_any_expression)
     | boolean_expression ('=' | '<>') (boolean_expression | all_or_any_expression)
     | enum_expression ('='|'<>') (enum_expression | all_or_any_expression)
     | datetime_expression comparison_operator (datetime_expression | all_or_any_expression)
@@ -361,6 +361,7 @@ arithmetic_primary
     | aggregate_expression
     | case_expression
     | function_invocation
+    | extension_functions
     | subquery;
 string_expression
     : path_expression
@@ -370,6 +371,7 @@ string_expression
     | aggregate_expression
     | case_expression
     | function_invocation
+    | extension_functions
     | subquery;
 datetime_expression
     : path_expression
@@ -378,6 +380,7 @@ datetime_expression
     | aggregate_expression
     | case_expression
     | function_invocation
+    | extension_functions
     | date_time_timestamp_literal
     | subquery;
 boolean_expression
@@ -386,6 +389,7 @@ boolean_expression
     | input_parameter
     | case_expression
     | function_invocation
+    | extension_functions
     | subquery;
 enum_expression
     : path_expression
@@ -452,6 +456,13 @@ coalesce_expression
     : 'COALESCE('scalar_expression (',' scalar_expression)+')';
 nullif_expression
     : 'NULLIF('scalar_expression ',' scalar_expression')';
+
+extension_functions
+    : 'CAST(' function_arg WORD ('('INT_NUMERAL (',' INT_NUMERAL)*  ')')* ')'
+    | 'EXTRACT(' date_part 'FROM' function_arg ')';
+
+date_part
+    : 'EPOCH' | 'YEAR' | 'QUARTER' | 'MONTH' | 'WEEK' |'DAY' | 'HOUR' |'MINUTE' | 'SECOND';
 
 //Start : Here we insert tail from old grammar
 input_parameter

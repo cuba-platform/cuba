@@ -26,6 +26,20 @@ import java.util.List;
 public class Jpa2GrammarTest {
 
     @Test
+    public void testExtensionFunctions() throws Exception {
+        testQuery("select cast(e.number text) from app$MyEntity e where e.path like cast(:ds$myEntityDs.id text)");
+        testQuery("select cast(e.number numeric(10,2)) from app$MyEntity e where e.number = cast(:ds$myEntityDs.id numeric(10,2))");
+        testQuery("select cast(e.number varchar(100)) from app$MyEntity e where e.name = cast(:ds$myEntityDs.id varchar(100))");
+        testQuery("select cast(e.number strange_type(1,2,3,4)) from app$MyEntity e where e.field1 = cast(:ds$myEntityDs.id strange_type(1,2,3,4))");
+
+        testQuery("select e from app$MyEntity e where e.name REGEXP '.*'");
+
+        testQuery("select extract(YEAR from e.createTs) from app$MyEntity e where extract(YEAR from e.createTs) > 2012");
+        testQuery("select extract(MONTH from e.createTs) from app$MyEntity e where extract(MONTH from e.createTs) > 10");
+        testQuery("select extract(DAY from e.createTs) from app$MyEntity e where extract(DAY from e.createTs) > 15");
+    }
+
+    @Test
     public void testGroupBy() throws Exception {
         testQuery("select u.login " +
                         "from sec$User u " +
