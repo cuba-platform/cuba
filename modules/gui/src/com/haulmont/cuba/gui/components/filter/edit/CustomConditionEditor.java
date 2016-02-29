@@ -41,12 +41,16 @@ public class CustomConditionEditor extends AbstractWindow {
     protected void hideUnnecessaryFields() {
         hideComponent(customConditionFrame, "width");
         hideComponent(customConditionFrame, "widthLabel");
+        hideComponent(customConditionFrame, "widthHelp");
         hideComponent(customConditionFrame, "hidden");
         hideComponent(customConditionFrame, "hiddenLabel");
+        hideComponent(customConditionFrame, "hiddenHelp");
         hideComponent(customConditionFrame, "required");
         hideComponent(customConditionFrame, "requiredLabel");
+        hideComponent(customConditionFrame, "requiredHelp");
         hideComponent(customConditionFrame, "defaultValueLayout");
         hideComponent(customConditionFrame, "defaultValueLayoutLabel");
+        hideComponent(customConditionFrame, "defaultValueLayoutHelp");
     }
 
     protected void hideComponent(AbstractFrame parentFrame, String componentId) {

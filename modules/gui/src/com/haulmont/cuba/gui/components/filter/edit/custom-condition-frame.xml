@@ -18,27 +18,27 @@
                 <row>
                     <label id="hiddenLabel" value="mainMsg://filter.conditionFrame.hidden" align="MIDDLE_LEFT"/>
                     <checkBox id="hidden"/>
-                    <label value=""/>
+                    <label id="hiddenHelp" value=""/>
                 </row>
                 <row>
                     <label id="requiredLabel" value="mainMsg://filter.conditionFrame.required" align="MIDDLE_LEFT"/>
                     <checkBox id="required"/>
-                    <label value=""/>
+                    <label id="requiredHelp" value=""/>
                 </row>
                 <row>
                     <label id="widthLabel" value="mainMsg://filter.conditionFrame.width" align="MIDDLE_LEFT"/>
                     <lookupField id="width" width="theme://cuba.gui.filterEditor.widthLookup.width"/>
-                    <label value=""/>
+                    <label id="widthHelp" value=""/>
                 </row>
                 <row>
                     <label id="defaultValueLayoutLabel" htmlEnabled="true" value="mainMsg://filter.conditionFrame.defaultValue" align="MIDDLE_LEFT"/>
                     <hbox id="defaultValueLayout" width="100%"/>
-                    <label value=""/>
+                    <label id="defaultValueLayoutHelp" value=""/>
                 </row>
                 <row>
                     <label id="nameLab" value="mainMsg://filter.customConditionFrame.name" align="MIDDLE_LEFT"/>
                     <textField id="nameField" width="theme://cuba.gui.customConditionFrame.field.width" required="true" requiredMessage="mainMsg://filter.customConditionFrame.fillName"/>
-                    <label value=""/>
+                    <label id="nameHelp" value=""/>
                 </row>
                 <row>
                     <label value="mainMsg://filter.customConditionFrame.join"/>
