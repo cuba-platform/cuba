@@ -85,6 +85,7 @@ public abstract class AbstractCondition extends AbstractNotPersistentEntity {
         this.inExpr = other.inExpr;
         this.javaClass = other.javaClass;
         this.paramClass = other.paramClass;
+        this.paramName = other.paramName;
         this.entityAlias = other.entityAlias;
         this.hidden = other.hidden;
         this.required = other.required;
