@@ -212,7 +212,7 @@ public class ExceptionDialog extends CubaWindow {
 
     protected boolean browserSupportCopy() {
         WebBrowser webBrowser = Page.getCurrent().getWebBrowser();
-        return !webBrowser.isSafari() && !webBrowser.isTouchDevice();
+        return !webBrowser.isSafari() && !webBrowser.isIOS() && !webBrowser.isWindowsPhone();
     }
 
     protected String getStackTrace(Throwable throwable) {
