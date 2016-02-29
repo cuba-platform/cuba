@@ -24,6 +24,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.haulmont.cuba.web.toolkit.ui.CubaCopyButtonExtension;
 import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
 import com.vaadin.server.Page;
+import com.vaadin.server.WebBrowser;
 import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
@@ -151,10 +152,12 @@ public class ExceptionDialog extends CubaWindow {
 
         String cubaLogContentClass = "cuba-exception-dialog-log-content" + UUID.randomUUID();
 
-        copyButton = new CubaButton(messages.getMessage(ExceptionDialog.class, "exceptionDialog.copyStackTrace"));
-        copyButton.setVisible(false);
-        CubaCopyButtonExtension.copyWith(copyButton, cubaLogContentClass);
-        buttonsLayout.addComponent(copyButton);
+        if (browserSupportCopy()) {
+            copyButton = new CubaButton(messages.getMessage(ExceptionDialog.class, "exceptionDialog.copyStackTrace"));
+            copyButton.setVisible(false);
+            CubaCopyButtonExtension.copyWith(copyButton, cubaLogContentClass);
+            buttonsLayout.addComponent(copyButton);
+        }
 
         if (userSessionSource.getUserSession() != null) {
             if (!StringUtils.isBlank(clientConfig.getSupportEmail())) {
@@ -198,11 +201,18 @@ public class ExceptionDialog extends CubaWindow {
             setCubaId("exceptionDialog");
 
             closeButton.setCubaId("closeButton");
-            copyButton.setCubaId("copyStackTraceButton");
+            if (copyButton != null) {
+                copyButton.setCubaId("copyStackTraceButton");
+            }
             showStackTraceButton.setCubaId("showStackTraceButton");
             stackTraceTextArea.setCubaId("stackTraceTextArea");
             logoutButton.setCubaId("logoutButton");
         }
+    }
+
+    protected boolean browserSupportCopy() {
+        WebBrowser webBrowser = Page.getCurrent().getWebBrowser();
+        return !webBrowser.isSafari() && !webBrowser.isTouchDevice();
     }
 
     protected String getStackTrace(Throwable throwable) {
@@ -290,7 +300,9 @@ public class ExceptionDialog extends CubaWindow {
 
         ThemeConstants theme = App.getInstance().getThemeConstants();
         if (visible) {
-            copyButton.setVisible(true);
+            if (copyButton != null) {
+                copyButton.setVisible(true);
+            }
 
             showStackTraceButton.setCaption(messages.getMessage(ExceptionDialog.class, "exceptionDialog.hideStackTrace"));
 
@@ -306,7 +318,9 @@ public class ExceptionDialog extends CubaWindow {
             stackTraceTextArea.focus();
             stackTraceTextArea.setCursorPosition(0);
         } else {
-            copyButton.setVisible(false);
+            if (copyButton != null) {
+                copyButton.setVisible(false);
+            }
 
             showStackTraceButton.setCaption(messages.getMessage(ExceptionDialog.class, "exceptionDialog.showStackTrace"));
 
