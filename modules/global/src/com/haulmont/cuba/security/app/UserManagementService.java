@@ -95,9 +95,14 @@ public interface UserManagementService {
     void saveOwnTimeZone(UserTimeZone timeZone);
 
     /**
+     * Load current user's language.
+     */
+    String loadOwnLocale();
+
+    /**
      * Save current user's language settings.
      */
-    void saveOwnLocale(Locale locale);
+    void saveOwnLocale(String locale);
 
     /**
      * Change password for user

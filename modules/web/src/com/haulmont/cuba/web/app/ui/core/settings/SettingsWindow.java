@@ -157,7 +157,8 @@ public class SettingsWindow extends AbstractWindow {
             options.put(entry.getKey(), messages.getTools().localeToString(entry.getValue()));
         }
         appLangField.setOptionsMap(options);
-        appLangField.setValue(messages.getTools().localeToString(userSessionSource.getUserSession().getLocale()));
+        appLangField.setValue(userManagementService.loadOwnLocale());
+
         addAction(commitAction);
         okBtn.setAction(commitAction);
 
@@ -194,7 +195,7 @@ public class SettingsWindow extends AbstractWindow {
     }
 
     protected void saveLocaleSettings() {
-        Locale userLocale = new Locale(appLangField.getValue());
+        String userLocale = appLangField.getValue();
         userManagementService.saveOwnLocale(userLocale);
     }
 }

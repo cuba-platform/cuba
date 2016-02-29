@@ -323,7 +323,19 @@ public class UserManagementServiceBean implements UserManagementService {
     }
 
     @Override
-    public void saveOwnLocale(Locale locale) {
+    public String loadOwnLocale() {
+        try (Transaction tx = persistence.createTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+            User user = em.find(User.class, userSessionSource.getUserSession().getUser().getId());
+            if (user == null)
+                throw new EntityAccessException();
+            tx.commit();
+            return user.getLanguage();
+        }
+    }
+
+    @Override
+    public void saveOwnLocale(String locale) {
         log.debug("Saving user's language settings: " + locale);
         try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
@@ -331,7 +343,7 @@ public class UserManagementServiceBean implements UserManagementService {
             if (user == null)
                 throw new EntityAccessException();
 
-            user.setLanguage(messages.getTools().localeToString(locale));
+            user.setLanguage(locale);
             tx.commit();
         }
     }

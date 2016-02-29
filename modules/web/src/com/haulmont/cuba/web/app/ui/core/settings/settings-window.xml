@@ -30,8 +30,7 @@
                     </row>
                     <row>
                         <label value="msg://mainWindowLang"/>
-                        <lookupField id="appLangField" width="theme://cuba.web.settings-window.appThemeField.width"
-                                     requiredMessage="msg://mainWindowThemeMsg"/>
+                        <lookupField id="appLangField" width="theme://cuba.web.settings-window.appLocaleField.width"/>
                     </row>
                     <row>
                         <label value="msg://com.haulmont.cuba.security.entity/User.timeZone"/>
