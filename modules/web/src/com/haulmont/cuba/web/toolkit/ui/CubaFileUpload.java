@@ -29,9 +29,9 @@ import java.util.*;
  * @author artamonov
  */
 @JavaScript({
-        "vaadin://resources/jqueryfileupload/jquery.ui.widget-1.11.1.min.js",
-        "vaadin://resources/jqueryfileupload/jquery.iframe-transport-9.10.5.min.js",
-        "vaadin://resources/jqueryfileupload/jquery.fileupload-9.10.5.min.js"
+        "vaadin://resources/jqueryfileupload/jquery.ui.widget-1.11.4.min.js",
+        "vaadin://resources/jqueryfileupload/jquery.iframe-transport-9.12.1.min.js",
+        "vaadin://resources/jqueryfileupload/jquery.fileupload-9.12.1.min.js"
 })
 public class CubaFileUpload extends AbstractComponent
         implements Component.Focusable, LegacyComponent, UploadComponent {
