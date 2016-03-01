@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -148,18 +149,23 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
         return action;
     }
 
+    public void checkPropertyDatasource(Datasource datasource, String property){
+        Preconditions.checkNotNullArgument(datasource);
+        Preconditions.checkNotNullArgument(property);
+
+        MetaPropertyPath getMetaProperty = getResolvedMetaPropertyPath(datasource.getMetaClass(), property);
+        if (!getMetaProperty.getRange().isClass()) {
+            throw new DevelopmentException(String.format("property '%s.%s' should have Entity type",  datasource.getMetaClass().getName(), property));
+        }
+    }
+
     @Override
     public void setDatasource(Datasource datasource, String property) {
-        MetaPropertyPath getMetaProperty = getResolvedMetaPropertyPath(metaClass, property);
-        if (!getMetaProperty.getRange().isClass()) {
-            throw new DevelopmentException("property should have Entity type");
-        }
+        this.checkPropertyDatasource(datasource, property);
 
-        final MetaClass metaClass = datasource.getMetaClass();
         this.datasource = datasource;
-        metaPropertyPath = getMetaProperty;
-        this.metaProperty = metaPropertyPath.getMetaProperty();
-        this.metaClass = metaProperty.getRange().asClass();
+        metaPropertyPath = getResolvedMetaPropertyPath(datasource.getMetaClass(), property);
+
 
         final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
         final Property itemProperty = wrapper.getItemProperty(metaPropertyPath);
