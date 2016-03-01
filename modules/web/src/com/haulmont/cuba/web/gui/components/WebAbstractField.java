@@ -90,9 +90,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends We
     }
 
     protected void resolveMetaPropertyPath(MetaClass metaClass, String property) {
-        metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
-                .resolveMetaPropertyPath(metaClass, property);
-        Preconditions.checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
+        metaPropertyPath = getResolvedMetaPropertyPath(metaClass, property);
         this.metaProperty = metaPropertyPath.getMetaProperty();
     }
 

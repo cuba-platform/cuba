@@ -153,8 +153,8 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
         Preconditions.checkNotNullArgument(datasource);
         Preconditions.checkNotNullArgument(property);
 
-        MetaPropertyPath getMetaProperty = getResolvedMetaPropertyPath(datasource.getMetaClass(), property);
-        if (!getMetaProperty.getRange().isClass()) {
+        MetaPropertyPath metaPropertyPath = getResolvedMetaPropertyPath(datasource.getMetaClass(), property);
+        if (!metaPropertyPath.getRange().isClass()) {
             throw new DevelopmentException(String.format("property '%s.%s' should have Entity type",  datasource.getMetaClass().getName(), property));
         }
     }
@@ -165,7 +165,7 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
 
         this.datasource = datasource;
         metaPropertyPath = getResolvedMetaPropertyPath(datasource.getMetaClass(), property);
-
+        metaProperty = metaPropertyPath.getMetaProperty();
 
         final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
         final Property itemProperty = wrapper.getItemProperty(metaPropertyPath);
@@ -204,7 +204,6 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
 
         handleFilteredAttributes(this.datasource, metaProperty, this);
         this.datasource.addItemChangeListener(e -> handleFilteredAttributes(this.datasource, metaProperty, this));
-
     }
 
     @Override

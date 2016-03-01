@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -250,8 +251,19 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
         return metaPropertyPath;
     }
 
+    public void checkPropertyDatasource(Datasource datasource, String property){
+        Preconditions.checkNotNullArgument(datasource);
+        Preconditions.checkNotNullArgument(property);
+
+        MetaPropertyPath metaPropertyPath = getResolvedMetaPropertyPath(datasource.getMetaClass(), property);
+        if (!metaPropertyPath.getRange().isClass()) {
+            throw new DevelopmentException(String.format("property '%s.%s' should have Entity type",  datasource.getMetaClass().getName(), property));
+        }
+    }
+
     @Override
     public void setDatasource(Datasource datasource, String property) {
+        this.checkPropertyDatasource(datasource, property);
         this.datasource = datasource;
 
         if (datasource == null) {

@@ -164,9 +164,15 @@ public abstract class DesktopAbstractField<C extends JComponent> extends Desktop
     }
 
     protected void resolveMetaPropertyPath(MetaClass metaClass, String property) {
-        metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
+        metaPropertyPath = getResolvedMetaPropertyPath(metaClass, property);
+        this.metaProperty = metaPropertyPath.getMetaProperty();
+    }
+
+    protected MetaPropertyPath getResolvedMetaPropertyPath(MetaClass metaClass, String property) {
+        MetaPropertyPath metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
                 .resolveMetaPropertyPath(metaClass, property);
         Preconditions.checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
-        this.metaProperty = metaPropertyPath.getMetaProperty();
+
+        return metaPropertyPath;
     }
 }

@@ -127,6 +127,7 @@ public class DesktopSearchPickerField extends DesktopSearchField implements Sear
 
     @Override
     public void setDatasource(Datasource datasource, String property) {
+        pickerField.checkPropertyDatasource(datasource, property);
         super.setDatasource(datasource, property);
         pickerField.setDatasource(datasource, property);
     }
