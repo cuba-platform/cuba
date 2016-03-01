@@ -15,6 +15,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.annotation.Extends;
 import com.haulmont.cuba.core.global.Metadata;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -292,17 +293,22 @@ public class EntitySqlGenerator {
             }
             fieldToColumnMapping.put(ID, idColumn);
 
-            if (discriminatorValue == null) {
-                DiscriminatorValue discriminatorValueAnnotation = (DiscriminatorValue) clazz.getAnnotation(DiscriminatorValue.class);
-                if (discriminatorValueAnnotation != null) {
-                    discriminatorValue = discriminatorValueAnnotation.value();
-                }
+            DiscriminatorValue discriminatorValueAnnotation = (DiscriminatorValue) clazz.getAnnotation(DiscriminatorValue.class);
+            Extends extendsAnnotation = (Extends) clazz.getAnnotation(Extends.class);
+            javax.persistence.Entity entityAnnotation = (javax.persistence.Entity) clazz.getAnnotation(javax.persistence.Entity.class);
+            if (discriminatorValueAnnotation != null) {
+                discriminatorValue = discriminatorValueAnnotation.value();
+            } else if (extendsAnnotation != null && entityAnnotation != null) {
+                discriminatorValue = entityAnnotation.name();
             }
 
             DiscriminatorColumn discriminatorColumn = (DiscriminatorColumn) clazz.getAnnotation(DiscriminatorColumn.class);
             if (discriminatorColumn != null) {
                 this.discriminatorColumn = discriminatorColumn.name();
                 this.discriminatorType = discriminatorColumn.discriminatorType();
+            } else if (discriminatorValue != null && parent == null) {
+                this.discriminatorColumn = "DTYPE";
+                this.discriminatorType = DiscriminatorType.STRING;
             }
 
             fieldToColumnMapping.putAll(collectFields(clazz));

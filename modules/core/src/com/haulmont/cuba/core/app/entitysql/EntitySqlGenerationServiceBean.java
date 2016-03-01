@@ -80,7 +80,7 @@ public class EntitySqlGenerationServiceBean implements EntitySqlGenerationServic
         View view = new View(entity.getClass());
         for (MetaProperty metaProperty : metaClass.getProperties()) {
             if (isReferenceField(metaProperty)) {
-                view.addProperty(metaProperty.getName(), viewRepository.getView(metaProperty.getRange().asClass(), View.LOCAL));
+                view.addProperty(metaProperty.getName(), viewRepository.getView(metaProperty.getRange().asClass(), View.MINIMAL));
             } else if (isDataField(metaProperty)) {
                 view.addProperty(metaProperty.getName());
             }
