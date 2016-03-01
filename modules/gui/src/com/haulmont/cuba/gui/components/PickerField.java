@@ -255,11 +255,15 @@ public interface PickerField extends Field, Component.ActionsHolder {
                                         }
                                     }
 
+                                    Entity newValue = transformValueFromLookupWindow(item);
+
                                     // we need to reset value and assign it again if entity has same id
-                                    if (oldValue != item && ObjectUtils.equals(oldValue, item)) {
+                                    if (oldValue != item && ObjectUtils.equals(oldValue, newValue)) {
                                         pickerField.setValue(null);
                                     }
-                                    pickerField.setValue(item);
+
+                                    pickerField.setValue(newValue);
+
                                     afterSelect(items);
                                 }
                             }
@@ -274,6 +278,17 @@ public interface PickerField extends Field, Component.ActionsHolder {
                     afterCloseLookup(actionId);
                 });
             }
+        }
+
+        /**
+         * Hook to be implemented in subclasses. Called by the action for new value selected from Lookup window.
+         * Can be used for reloading of entity with different view or to replace value with another value.
+         *
+         * @param valueFromLookupWindow value selected in Lookup window.
+         * @return value that will be set to PickerField
+         */
+        public Entity transformValueFromLookupWindow(Entity valueFromLookupWindow) {
+            return valueFromLookupWindow;
         }
 
         /**
