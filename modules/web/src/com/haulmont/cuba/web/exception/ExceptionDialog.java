@@ -150,12 +150,13 @@ public class ExceptionDialog extends CubaWindow {
         buttonsLayout.addComponent(spacer);
         buttonsLayout.setExpandRatio(spacer, 1);
 
-        String cubaLogContentClass = "cuba-exception-dialog-log-content" + UUID.randomUUID();
+        String cubaLogContentClass = "cuba-exception-dialog-log-content";
+        String cubaCopyLogContentClass = cubaLogContentClass + "-" + UUID.randomUUID();
 
         if (browserSupportCopy()) {
             copyButton = new CubaButton(messages.getMessage(ExceptionDialog.class, "exceptionDialog.copyStackTrace"));
             copyButton.setVisible(false);
-            CubaCopyButtonExtension.copyWith(copyButton, cubaLogContentClass);
+            CubaCopyButtonExtension.copyWith(copyButton, cubaCopyLogContentClass);
             buttonsLayout.addComponent(copyButton);
         }
 
@@ -191,6 +192,7 @@ public class ExceptionDialog extends CubaWindow {
         stackTraceTextArea.setWordwrap(false);
         stackTraceTextArea.setValue(stackTrace);
         stackTraceTextArea.setStyleName(cubaLogContentClass);
+        stackTraceTextArea.addStyleName(cubaCopyLogContentClass);
         stackTraceTextArea.setReadOnly(true);
 
         setContent(mainLayout);
