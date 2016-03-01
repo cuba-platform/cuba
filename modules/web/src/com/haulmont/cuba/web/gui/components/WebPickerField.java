@@ -149,7 +149,7 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
         return action;
     }
 
-    public void checkPropertyDatasource(Datasource datasource, String property){
+    public void checkDatasourceProperty(Datasource datasource, String property){
         Preconditions.checkNotNullArgument(datasource);
         Preconditions.checkNotNullArgument(property);
 
@@ -161,7 +161,7 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
 
     @Override
     public void setDatasource(Datasource datasource, String property) {
-        this.checkPropertyDatasource(datasource, property);
+        checkDatasourceProperty(datasource, property);
 
         this.datasource = datasource;
         metaPropertyPath = getResolvedMetaPropertyPath(datasource.getMetaClass(), property);

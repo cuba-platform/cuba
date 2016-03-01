@@ -251,7 +251,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
         return metaPropertyPath;
     }
 
-    public void checkPropertyDatasource(Datasource datasource, String property){
+    public void checkDatasourceProperty(Datasource datasource, String property){
         Preconditions.checkNotNullArgument(datasource);
         Preconditions.checkNotNullArgument(property);
 
@@ -263,7 +263,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
 
     @Override
     public void setDatasource(Datasource datasource, String property) {
-        this.checkPropertyDatasource(datasource, property);
+        checkDatasourceProperty(datasource, property);
         this.datasource = datasource;
 
         if (datasource == null) {

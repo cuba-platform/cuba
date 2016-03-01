@@ -129,7 +129,7 @@ public class DesktopLookupPickerField extends DesktopLookupField implements Look
 
     @Override
     public void setDatasource(Datasource datasource, String property) {
-        pickerField.checkPropertyDatasource(datasource, property);
+        pickerField.checkDatasourceProperty(datasource, property);
         super.setDatasource(datasource, property);
         pickerField.setDatasource(datasource, property);
     }
