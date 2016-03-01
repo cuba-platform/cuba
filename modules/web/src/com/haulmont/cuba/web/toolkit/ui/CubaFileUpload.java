@@ -85,13 +85,19 @@ public class CubaFileUpload extends AbstractComponent
     // set error handler for background upload thread
     protected void setUploadingErrorHandler() {
         setErrorHandler(event -> {
-            Logger log = LoggerFactory.getLogger(CubaFileUpload.class);
             //noinspection ThrowableResultOfMethodCallIgnored
             Throwable ex = event.getThrowable();
-            if (StringUtils.contains(ExceptionUtils.getRootCauseMessage(ex), "The multipart stream ended unexpectedly")) {
+            String rootCauseMessage = ExceptionUtils.getRootCauseMessage(ex);
+            Logger log = LoggerFactory.getLogger(CubaFileUpload.class);
+            if (StringUtils.contains(rootCauseMessage, "The multipart stream ended unexpectedly")
+                    || StringUtils.contains(rootCauseMessage, "Unexpected EOF read on the socket")) {
                 log.warn("Unable to upload file, it seems upload canceled or network error occurred");
             } else {
                 log.error("Unexpected error in CubaFileUpload", ex);
+            }
+
+            if (isUploading) {
+                endUpload();
             }
         });
     }
@@ -335,17 +341,13 @@ public class CubaFileUpload extends AbstractComponent
 
                 @Override
                 public void streamingFailed(StreamingErrorEvent event) {
-                    try {
-                        Exception exception = event.getException();
-                        if (exception instanceof NoInputStreamException) {
-                            fireNoInputStream(event.getFileName(), event.getMimeType(), 0);
-                        } else if (exception instanceof NoOutputStreamException) {
-                            fireNoOutputStream(event.getFileName(), event.getMimeType(), 0);
-                        } else {
-                            fireUploadInterrupted(event.getFileName(), event.getMimeType(), 0, exception);
-                        }
-                    } finally {
-                        endUpload();
+                    Exception exception = event.getException();
+                    if (exception instanceof NoInputStreamException) {
+                        fireNoInputStream(event.getFileName(), event.getMimeType(), 0);
+                    } else if (exception instanceof NoOutputStreamException) {
+                        fireNoOutputStream(event.getFileName(), event.getMimeType(), 0);
+                    } else {
+                        fireUploadInterrupted(event.getFileName(), event.getMimeType(), 0, exception);
                     }
                 }
             };
