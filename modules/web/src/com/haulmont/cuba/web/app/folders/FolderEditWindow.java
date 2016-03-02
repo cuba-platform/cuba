@@ -56,6 +56,7 @@ public class FolderEditWindow extends CubaWindow {
     protected Runnable commitHandler;
     protected VerticalLayout layout;
     protected Button okBtn;
+    protected Button cancelBtn;
     protected Messages messages;
     protected UserSessionSource userSessionSource;
     protected ClientConfig clientConfig;
@@ -169,7 +170,7 @@ public class FolderEditWindow extends CubaWindow {
         initButtonOkListener();
         buttonsLayout.addComponent(okBtn);
 
-        Button cancelBtn = new CubaButton(getMessage("actions.Cancel"));
+        cancelBtn = new CubaButton(getMessage("actions.Cancel"));
         cancelBtn.setIcon(WebComponentsHelper.getIcon("icons/cancel.png"));
         cancelBtn.addStyleName(WebButton.ICON_STYLE);
         cancelBtn.addClickListener(new Button.ClickListener() {
