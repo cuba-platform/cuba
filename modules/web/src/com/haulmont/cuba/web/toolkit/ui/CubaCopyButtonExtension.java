@@ -5,9 +5,15 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.web.toolkit.ui.client.button.CubaCopyButtonExtensionServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.button.CubaCopyButtonExtensionState;
 import com.vaadin.server.AbstractExtension;
 import com.vaadin.ui.Button;
+import com.vaadin.util.ReflectTools;
+
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.EventObject;
 
 /**
  * @author gorelov
@@ -19,6 +25,13 @@ public class CubaCopyButtonExtension extends AbstractExtension {
     protected CubaCopyButtonExtension(Button button) {
         component = button;
         extend(component);
+
+        registerRpc(new CubaCopyButtonExtensionServerRpc() {
+            @Override
+            public void copied(boolean success) {
+                fireEvent(new CopyEvent(CubaCopyButtonExtension.this, success));
+            }
+        });
     }
 
     public static CubaCopyButtonExtension copyWith(Button button) {
@@ -53,5 +66,32 @@ public class CubaCopyButtonExtension extends AbstractExtension {
 
     protected boolean equalValues(Object a, Object b) {
         return a == b || (a != null && a.equals(b));
+    }
+
+    public static class CopyEvent extends EventObject {
+        private final boolean success;
+
+        public CopyEvent(CubaCopyButtonExtension source, boolean success) {
+            super(source);
+            this.success = success;
+        }
+
+        public boolean isSuccess() {
+            return success;
+        }
+    }
+
+    public interface CopyListener extends Serializable {
+        void copied(CopyEvent event);
+    }
+
+    private static Method COPY_METHOD = ReflectTools.findMethod(CopyListener.class, "copied", CopyEvent.class);
+
+    public void addCopyListener(CopyListener listener) {
+        addListener(CopyEvent.class, listener, COPY_METHOD);
+    }
+
+    public void removeCopyListener(CopyListener listener) {
+        removeListener(CopyEvent.class, listener, COPY_METHOD);
     }
 }
