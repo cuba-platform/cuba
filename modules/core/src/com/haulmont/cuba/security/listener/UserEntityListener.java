@@ -28,7 +28,7 @@ public class UserEntityListener implements BeforeInsertEntityListener<User>, Bef
      */
     @Override
     public void onBeforeInsert(User entity) {
-        if (PersistenceHelper.isLoaded(entity, "login") && persistenceTools.getDirtyFields(entity).contains("login")) {
+        if (PersistenceHelper.isLoaded(entity, "login")) {
             entity.setLoginLowerCase(entity.getLogin() != null ? entity.getLogin().toLowerCase() : null);
         }
     }
@@ -38,7 +38,7 @@ public class UserEntityListener implements BeforeInsertEntityListener<User>, Bef
      */
     @Override
     public void onBeforeUpdate(User entity) {
-        if (PersistenceHelper.isLoaded(entity, "login") && persistenceTools.getDirtyFields(entity).contains("login")) {
+        if (PersistenceHelper.isLoaded(entity, "login") && PersistenceHelper.isLoaded(entity, "loginLowerCase")) {
             entity.setLoginLowerCase(entity.getLogin() != null ? entity.getLogin().toLowerCase() : null);
         }
     }
