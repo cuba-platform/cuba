@@ -26,8 +26,8 @@ import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
 import com.vaadin.server.Page;
 import com.vaadin.server.WebBrowser;
 import com.vaadin.shared.ui.window.WindowMode;
-import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
 import org.apache.commons.lang.ObjectUtils;
@@ -156,7 +156,11 @@ public class ExceptionDialog extends CubaWindow {
         if (browserSupportCopy()) {
             copyButton = new CubaButton(messages.getMessage(ExceptionDialog.class, "exceptionDialog.copyStackTrace"));
             copyButton.setVisible(false);
-            CubaCopyButtonExtension.copyWith(copyButton, cubaCopyLogContentClass);
+            CubaCopyButtonExtension copyExtension = CubaCopyButtonExtension.copyWith(copyButton, cubaCopyLogContentClass);
+            copyExtension.addCopyListener(event ->
+                    Notification.show(messages.getMessage(ExceptionDialog.class,
+                            event.isSuccess() ? "exceptionDialog.copingSuccessful" : "exceptionDialog.copingFailed"),
+                            Notification.Type.TRAY_NOTIFICATION));
             buttonsLayout.addComponent(copyButton);
         }
 

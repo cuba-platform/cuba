@@ -33,18 +33,24 @@ public class CubaCopyButtonExtensionConnector extends AbstractExtensionConnector
             @Override
             public void onClick(ClickEvent event) {
                 if (getState().copyTargetSelector != null) {
-                    copyToClipboard(getState().copyTargetSelector.startsWith(".")
+                    boolean success = copyToClipboard(getState().copyTargetSelector.startsWith(".")
                             ? getState().copyTargetSelector
                             : "." + getState().copyTargetSelector);
+                    getRpcProxy(CubaCopyButtonExtensionServerRpc.class).copied(success);
                 }
             }
         });
 
     }
 
-    private native void copyToClipboard(String selector) /*-{
-        var copyTextarea = $doc.querySelector(selector);
-        copyTextarea.select();
-        $doc.execCommand('copy');
+    private native boolean copyToClipboard(String selector) /*-{
+        var copyTextArea = $doc.querySelector(selector);
+        copyTextArea.select();
+        try {
+            return $doc.execCommand('copy');
+        } catch (e) {
+            console.log(e.message);
+            return false;
+        }
     }-*/;
 }

@@ -21,6 +21,8 @@ import org.jdesktop.swingx.error.ErrorReporter;
 import org.jdesktop.swingx.plaf.basic.BasicErrorPaneUI;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
@@ -29,6 +31,8 @@ import java.util.Locale;
  * @version $Id$
  */
 public class JXErrorPaneExt extends JXErrorPane {
+
+    protected ActionListener copyToClipboardListener;
 
     public JXErrorPaneExt() {
 
@@ -50,7 +54,19 @@ public class JXErrorPaneExt extends JXErrorPane {
         UIManager.put("JXErrorPane.copy_to_clipboard_button_text",
                 messages.getMainMessage("JXErrorPane.copy_to_clipboard_button_text", locale));
 
-        setUI(new ErrorPaneUIExt());
+        ErrorPaneUIExt ui = new ErrorPaneUIExt();
+        setUI(ui);
+
+        JButton copyButton = ui.getCopyToClipboardButton();
+        copyToClipboardListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                TopLevelFrame mainFrame = App.getInstance().getMainFrame();
+                mainFrame.showNotification(messages.getMainMessage("errorPane.copingSuccessful", locale),
+                        Frame.NotificationType.TRAY);
+            }
+        };
+        copyButton.addActionListener(copyToClipboardListener);
 
         if (StringUtils.isNotBlank(clientConfig.getSupportEmail())) {
             setErrorReporter(new ErrorReporter() {
@@ -125,10 +141,20 @@ public class JXErrorPaneExt extends JXErrorPane {
 
     public static class ErrorPaneUIExt extends BasicErrorPaneUI {
 
+        public JButton getCopyToClipboardButton() {
+            return copyToClipboardButton;
+        }
+
         public void setEnabled(boolean enabled) {
             if (reportButton != null) {
                 reportButton.setEnabled(enabled);
             }
+        }
+
+        @Override
+        protected void uninstallComponents() {
+            copyToClipboardButton.removeActionListener(copyToClipboardListener);
+            super.uninstallComponents();
         }
     }
 }
