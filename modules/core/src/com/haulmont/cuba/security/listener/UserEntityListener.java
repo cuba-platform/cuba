@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.security.listener;
 
+import com.haulmont.cuba.core.PersistenceTools;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
 import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
@@ -11,20 +12,23 @@ import com.haulmont.cuba.security.entity.User;
 
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
+
 /**
  * @author krivopustov
- * @version $Id$
  */
 @Component("cuba_UserEntityListener")
-public class UserEntityListener implements
-        BeforeInsertEntityListener<User>,
-        BeforeUpdateEntityListener<User> {
+public class UserEntityListener implements BeforeInsertEntityListener<User>, BeforeUpdateEntityListener<User> {
+
+    @Inject
+    protected PersistenceTools persistenceTools;
+
     /**
      * @param entity updated entity
      */
     @Override
     public void onBeforeInsert(User entity) {
-        if (PersistenceHelper.isLoaded(entity, "login")) {
+        if (PersistenceHelper.isLoaded(entity, "login") && persistenceTools.getDirtyFields(entity).contains("login")) {
             entity.setLoginLowerCase(entity.getLogin() != null ? entity.getLogin().toLowerCase() : null);
         }
     }
@@ -34,7 +38,7 @@ public class UserEntityListener implements
      */
     @Override
     public void onBeforeUpdate(User entity) {
-        if (PersistenceHelper.isLoaded(entity, "login")) {
+        if (PersistenceHelper.isLoaded(entity, "login") && persistenceTools.getDirtyFields(entity).contains("login")) {
             entity.setLoginLowerCase(entity.getLogin() != null ? entity.getLogin().toLowerCase() : null);
         }
     }
