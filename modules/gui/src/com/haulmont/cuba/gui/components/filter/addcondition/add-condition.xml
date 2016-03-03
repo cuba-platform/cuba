@@ -20,7 +20,7 @@
         <tree id="tree" width="100%" multiselect="true">
             <treechildren datasource="conditionDescriptorsDs" captionProperty="treeCaption"/>
         </tree>
-        <hbox spacing="true">
+        <hbox id="actionBox" spacing="true">
             <button id="selectBtn" action="select"/>
             <button id="cancelBtn" action="cancel"/>
         </hbox>

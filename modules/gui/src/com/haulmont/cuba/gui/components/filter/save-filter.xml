@@ -9,7 +9,7 @@
             <label value="mainMsg://filter.saveFilter.name" align="MIDDLE_LEFT"/>
             <textField id="filterName" required="true"/>
         </hbox>
-        <hbox spacing="true" height="AUTO" stylename="cuba-edit-window-actions">
+        <hbox id="actionBox" spacing="true" height="AUTO" stylename="cuba-edit-window-actions">
             <button id="commit" action="commit"/>
             <button id="close" invoke="cancel" caption="mainMsg://actions.Cancel" icon="icons/cancel.png"/>
         </hbox>

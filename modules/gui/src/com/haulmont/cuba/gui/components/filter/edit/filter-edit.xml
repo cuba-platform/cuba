@@ -80,7 +80,7 @@
                 </scrollBox>
             </groupBox>
         </hbox>
-        <hbox spacing="true">
+        <hbox id="actionBox" spacing="true">
             <button id="okBtn" action="commit"/>
             <button id="cancelBtn" invoke="cancel" caption="mainMsg://actions.Cancel" icon="icons/cancel.png"/>
         </hbox>
