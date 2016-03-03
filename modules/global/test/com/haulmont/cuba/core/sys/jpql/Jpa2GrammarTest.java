@@ -53,6 +53,11 @@ public class Jpa2GrammarTest {
         testQuery("select instance.bookPublication.publisher.name, count(instance) " +
                 "from library$BookInstance instance " +
                 "group by instance.bookPublication.publisher.name order by count(instance) desc");
+
+        testQuery("select instance.bookPublication.publisher.name, instance.bookPublication.year, count(instance) " +
+                "from library$BookInstance instance " +
+                        "group by instance.bookPublication.year, instance.bookPublication.publisher.name " +
+                        "order by instance.bookPublication.year, instance.bookPublication.publisher.name");
     }
 
     @Test

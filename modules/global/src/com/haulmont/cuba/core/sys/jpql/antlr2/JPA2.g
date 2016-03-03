@@ -461,7 +461,7 @@ extension_functions
     : 'CAST(' function_arg WORD ('('INT_NUMERAL (',' INT_NUMERAL)*  ')')* ')'
     | 'EXTRACT(' date_part 'FROM' function_arg ')';
 
-date_part
+fragment date_part
     : 'EPOCH' | 'YEAR' | 'QUARTER' | 'MONTH' | 'WEEK' |'DAY' | 'HOUR' |'MINUTE' | 'SECOND';
 
 //Start : Here we insert tail from old grammar
@@ -485,7 +485,7 @@ boolean_literal
 
 //todo eude the following is just a workaround for entity fields equal to keywords. We need to get rid of it somehow.
 field
-    : WORD | 'SELECT' | 'FROM' | 'GROUP' | 'ORDER' | 'MAX' | 'MIN' | 'SUM' | 'AVG' | 'COUNT';
+    : WORD | 'SELECT' | 'FROM' | 'GROUP' | 'ORDER' | 'MAX' | 'MIN' | 'SUM' | 'AVG' | 'COUNT' | date_part;
 
 identification_variable
     : WORD;
