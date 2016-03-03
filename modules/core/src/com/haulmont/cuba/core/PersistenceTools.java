@@ -26,6 +26,7 @@ import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.changesets.ChangeRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -61,12 +62,13 @@ public class PersistenceTools {
     protected Metadata metadata;
 
     /**
-     * Returns the set of dirty fields (fields changed since a last load from DB).
-     * <p> If the entity is new, returns all its fields.
+     * Returns the set of dirty attributes (changed since the last load from the database).
+     * <p> If the entity is new, returns all its attributes.
      * <p> If the entity is not persistent or not in the Managed state, returns empty set.
      *
-     * @param entity entity instance
-     * @return dirty field names
+     * @param entity    entity instance
+     * @return          dirty attribute names
+     * @see #isDirty(Entity, String...)
      */
     public Set<String> getDirtyFields(Entity entity) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
@@ -87,6 +89,54 @@ public class PersistenceTools {
                 result.addAll(objectChanges.getChangedAttributeNames());
         }
         return result;
+    }
+
+    /**
+     * Returns true if at least one of the given attributes is dirty (i.e. changed since the last load from the database).
+     * <p> If the entity is new, always returns true.
+     * <p> If the entity is not persistent or not in the Managed state, always returns false.
+     * @param entity        entity instance
+     * @param attributes    attributes to check
+     * @see #getDirtyFields(Entity)
+     */
+    public boolean isDirty(Entity entity, String... attributes) {
+        Set<String> dirtyFields = getDirtyFields(entity);
+        for (String attribute : attributes) {
+            if (dirtyFields.contains(attribute))
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns an old value of an attribute changed in the current transaction. The entity must be in the Managed state.
+     * @param entity    entity instance
+     * @param attribute attribute name
+     * @return  an old value stored in the database. For a new entity returns null.
+     * @throws IllegalArgumentException if the entity is not persistent or not in the Managed state
+     */
+    @Nullable
+    public Object getOldValue(Entity entity, String attribute) {
+        Preconditions.checkNotNullArgument(entity, "entity is null");
+
+        if (!(entity instanceof ChangeTracker) || !PersistenceHelper.isManaged(entity))
+            throw new IllegalArgumentException("The entity " + entity + " is not a ChangeTracker");
+
+        if (!PersistenceHelper.isManaged(entity))
+            throw new IllegalArgumentException("The entity " + entity + " is not in the Managed state");
+
+        if (PersistenceHelper.isNew(entity)) {
+            return null;
+        } else {
+            ObjectChangeSet objectChanges =
+                    ((AttributeChangeListener)((ChangeTracker) entity)._persistence_getPropertyChangeListener()).getObjectChangeSet();
+            if (objectChanges != null) { // can be null for example in AFTER_DELETE entity listener
+                ChangeRecord changeRecord = objectChanges.getChangesForAttributeNamed(attribute);
+                if (changeRecord != null)
+                    return changeRecord.getOldValue();
+            }
+        }
+        return null;
     }
 
     /**

@@ -7,6 +7,7 @@ package com.haulmont.cuba.core;
 
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.entity.Server;
+import com.haulmont.cuba.core.entity.diff.EntityDiff;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.testsupport.TestContainer;
@@ -57,6 +58,8 @@ public class PersistenceHelperTest {
         } catch (Exception e) {
             //
         }
+
+        assertTrue(PersistenceHelper.isNew(new EntityDiff(null)));
 
         UUID id;
         Server server;

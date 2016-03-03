@@ -141,6 +141,8 @@ public class PersistenceTest {
 
     @Test
     public void testDirtyFields() throws Exception {
+        PersistenceTools persistenceTools = cont.persistence().getTools();
+
         Transaction tx = cont.persistence().createTransaction();
         try {
             EntityManager em = cont.persistence().getEntityManager();
@@ -151,6 +153,9 @@ public class PersistenceTest {
             server.setRunning(true);
             em.persist(server);
 
+            assertTrue(persistenceTools.isDirty(server, "name", "running"));
+            assertNull(persistenceTools.getOldValue(server, "data"));
+
             tx.commitRetaining();
 
             em = cont.persistence().getEntityManager();
@@ -158,8 +163,19 @@ public class PersistenceTest {
             assertNotNull(server);
             server.setData("testData");
 
-            Set<String> dirtyFields = cont.persistence().getTools().getDirtyFields(server);
+            Set<String> dirtyFields = persistenceTools.getDirtyFields(server);
             assertTrue(dirtyFields.contains("data"));
+            assertTrue(persistenceTools.isDirty(server, "data"));
+            assertNull(persistenceTools.getOldValue(server, "data"));
+
+            tx.commitRetaining();
+
+            em = cont.persistence().getEntityManager();
+            server = em.find(Server.class, id);
+            assertNotNull(server);
+
+            server.setData("testData1");
+            assertEquals("testData", persistenceTools.getOldValue(server, "data"));
 
             tx.commit();
         } finally {
