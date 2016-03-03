@@ -142,9 +142,8 @@ public class SettingsWindow extends AbstractWindow {
                 AppWorkArea.Mode m = modeOptions.getValue() == msgTabbed ? AppWorkArea.Mode.TABBED : AppWorkArea.Mode.SINGLE;
                 userSettingsTools.saveAppWindowMode(m);
                 saveTimeZoneSettings();
-                if (appLangField.getValue() != null){
-                    saveLocaleSettings();
-                }
+                saveLocaleSettings();
+
                 showNotification(getMessage("modeChangeNotification"), NotificationType.HUMANIZED);
 
                 close(COMMIT_ACTION_ID);
