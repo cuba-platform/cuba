@@ -16,8 +16,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -25,6 +23,8 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -228,8 +228,7 @@ public class AbstractViewRepository implements ViewRepository {
 
         View.ViewParams viewParams = new View.ViewParams()
                 .entityClass(view.getEntityClass())
-                .name(view.getName())
-                .includeSystemProperties(view.isIncludeSystemProperties());
+                .name(view.getName());
         View copy = new View(viewParams);
         for (ViewProperty property : view.getProperties()) {
             copy.addProperty(property.getName(), copyView(property.getView()), property.getFetchMode());
@@ -416,10 +415,7 @@ public class AbstractViewRepository implements ViewRepository {
         View.ViewParams viewParam = new View.ViewParams().entityClass(metaClass.getJavaClass()).name(viewName);
         if (ancestor != null) {
             View ancestorView = getAncestorView(metaClass, ancestor, visited);
-            boolean includeSystemProperties = systemProperties == null ?
-                    ancestorView.isIncludeSystemProperties() : Boolean.valueOf(systemProperties);
-            viewParam.src(ancestorView)
-                    .includeSystemProperties(includeSystemProperties);
+            viewParam.src(ancestorView);
         } else {
             // system properties are included by default since v.6
             viewParam.includeSystemProperties(systemProperties == null || Boolean.valueOf(systemProperties));
@@ -506,7 +502,6 @@ public class AbstractViewRepository implements ViewRepository {
         return ancestorView;
     }
 
-    @SuppressWarnings("unchecked")
     protected void loadView(Element rootElem, Element viewElem, View view, Set<ViewInfo> visited) {
         final MetaClass metaClass = metadata.getClassNN(view.getEntityClass());
         final String viewName = view.getName();
@@ -537,7 +532,7 @@ public class AbstractViewRepository implements ViewRepository {
                 throw new RuntimeException("cannot find range for meta property: " + metaProperty);
             }
 
-            final List<Element> propertyElements = propElem.elements("property");
+            final List<Element> propertyElements = Dom4j.elements(propElem, "property");
             boolean inlineView = !propertyElements.isEmpty();
 
             if (!range.isClass() && (refViewName != null || inlineView)) {
@@ -550,7 +545,7 @@ public class AbstractViewRepository implements ViewRepository {
 
                 refView = retrieveView(refMetaClass, refViewName, visited);
                 if (refView == null) {
-                    for (Element e : (List<Element>) rootElem.elements("view")) {
+                    for (Element e : Dom4j.elements(rootElem, "view")) {
                         if (refMetaClass.equals(getMetaClass(e.attributeValue("entity"), e.attributeValue("class")))
                                 && refViewName.equals(e.attributeValue("name"))) {
                             refView = deployView(rootElem, e, visited);

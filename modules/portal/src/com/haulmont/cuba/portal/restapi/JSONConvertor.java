@@ -653,7 +653,7 @@ public class JSONConvertor implements Convertor {
         }
 
         ViewProperty viewProperty = view.getProperty(metaProperty.getName());
-        return (viewProperty != null || (view.isIncludeSystemProperties() && metadataTools.isSystem(metaProperty)));
+        return (viewProperty != null);
     }
 
     protected boolean attrViewPermitted(MetaClass metaClass, String property) {

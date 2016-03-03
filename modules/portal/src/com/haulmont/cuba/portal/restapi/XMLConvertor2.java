@@ -613,7 +613,7 @@ public class XMLConvertor2 implements Convertor {
         }
 
         ViewProperty viewProperty = view.getProperty(metaProperty.getName());
-        return (viewProperty != null || (view.isIncludeSystemProperties() && metadataTools.isSystem(metaProperty)));
+        return (viewProperty != null);
     }
 
 

@@ -18,8 +18,8 @@ import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.lang.reflect.Method;
@@ -250,10 +250,6 @@ public class FetchGroupManager {
     }
 
     private void processView(View view, FetchGroupField parentField, Set<FetchGroupField> fetchGroupFields) {
-        if (view.isIncludeSystemProperties()) {
-            includeSystemProperties(view, parentField, fetchGroupFields);
-        }
-
         Class<? extends Entity> entityClass = view.getEntityClass();
 
         // Always add SoftDelete properties to support EntityManager contract

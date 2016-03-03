@@ -4,13 +4,17 @@
  */
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.SoftDelete;
+import com.haulmont.cuba.core.entity.Updatable;
+import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * Class to declare a graph of objects that must be retrieved from the database.
@@ -77,8 +81,6 @@ public class View implements Serializable {
 
     private Map<String, ViewProperty> properties = new LinkedHashMap<>();
 
-    private boolean includeSystemProperties;
-
     public View(Class<? extends Entity> entityClass) {
         this(entityClass, "", true);
     }
@@ -104,7 +106,7 @@ public class View implements Serializable {
 
     public View(View src, @Nullable Class<? extends Entity> entityClass, String name, boolean includeSystemProperties) {
         this(new ViewParams().src(src)
-                        .entityClass(entityClass)
+                        .entityClass(entityClass != null ? entityClass : src.entityClass)
                         .name(name)
                         .includeSystemProperties(includeSystemProperties)
         );
@@ -113,7 +115,11 @@ public class View implements Serializable {
     public View(ViewParams viewParams) {
         this.entityClass = viewParams.entityClass;
         this.name = viewParams.name != null ? viewParams.name : "";
-        this.includeSystemProperties = viewParams.includeSystemProperties;
+        if (viewParams.includeSystemProperties) {
+            for (String propertyName : findSystemProperties(entityClass)) {
+                addProperty(propertyName);
+            }
+        }
         if (viewParams.src != null) {
             this.properties.putAll(viewParams.src.properties);
             if (entityClass == null) {
@@ -141,13 +147,6 @@ public class View implements Serializable {
      */
     public Collection<ViewProperty> getProperties() {
         return properties.values();
-    }
-
-    /**
-     * @return whether this view includes system properties implicitly
-     */
-    public boolean isIncludeSystemProperties() {
-        return includeSystemProperties;
     }
 
     /**
@@ -236,5 +235,46 @@ public class View implements Serializable {
     @Deprecated
     public boolean hasLazyProperties() {
         return false;
+    }
+
+    protected Set<String> findSystemProperties(Class entityClass) {
+        Set<String> result = new LinkedHashSet<>();
+
+        Metadata metadata = AppBeans.get(Metadata.class);
+        MetadataTools metadataTools = metadata.getTools();
+        MetaClass metaClass = metadata.getClassNN(entityClass);
+
+        if (BaseEntity.class.isAssignableFrom(entityClass)) {
+            for (String property : getInterfaceProperties(BaseEntity.class)) {
+                if (metadataTools.isPersistent(metaClass.getPropertyNN(property))) {
+                    result.add(property);
+                }
+            }
+        }
+        if (Updatable.class.isAssignableFrom(entityClass)) {
+            for (String property : getInterfaceProperties(Updatable.class)) {
+                if (metadataTools.isPersistent(metaClass.getPropertyNN(property))) {
+                    result.add(property);
+                }
+            }
+        }
+        if (SoftDelete.class.isAssignableFrom(entityClass)) {
+            for (String property : getInterfaceProperties(SoftDelete.class)) {
+                if (metadataTools.isPersistent(metaClass.getPropertyNN(property))) {
+                    result.add(property);
+                }
+            }
+        }
+        return result;
+    }
+
+    protected List<String> getInterfaceProperties(Class<?> intf) {
+        List<String> result = new ArrayList<>();
+        for (Method method : intf.getDeclaredMethods()) {
+            if (method.getName().startsWith("get") && method.getParameterTypes().length == 0) {
+                result.add(StringUtils.uncapitalize(method.getName().substring(3)));
+            }
+        }
+        return result;
     }
 }

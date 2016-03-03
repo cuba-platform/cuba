@@ -584,7 +584,7 @@ public class XMLConvertor implements Convertor {
         }
 
         ViewProperty viewProperty = view.getProperty(metaProperty.getName());
-        return (viewProperty != null || (view.isIncludeSystemProperties() && metadataTools.isSystem(metaProperty)));
+        return (viewProperty != null);
     }
 
     protected boolean isNullValue(Node fieldNode) {
