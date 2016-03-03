@@ -5,6 +5,7 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
@@ -240,32 +241,26 @@ public class View implements Serializable {
     protected Set<String> findSystemProperties(Class entityClass) {
         Set<String> result = new LinkedHashSet<>();
 
-        Metadata metadata = AppBeans.get(Metadata.class);
+        addSystemPropertiesFrom(BaseEntity.class, entityClass, result);
+        addSystemPropertiesFrom(Updatable.class, entityClass, result);
+        addSystemPropertiesFrom(SoftDelete.class, entityClass, result);
+
+        return result;
+    }
+
+    protected void addSystemPropertiesFrom(Class<?> baseClass, Class<?> entityClass, Set<String> result) {
+        Metadata metadata = AppBeans.get(Metadata.NAME);
         MetadataTools metadataTools = metadata.getTools();
         MetaClass metaClass = metadata.getClassNN(entityClass);
 
-        if (BaseEntity.class.isAssignableFrom(entityClass)) {
-            for (String property : getInterfaceProperties(BaseEntity.class)) {
-                if (metadataTools.isPersistent(metaClass.getPropertyNN(property))) {
+        if (baseClass.isAssignableFrom(entityClass)) {
+            for (String property : getInterfaceProperties(baseClass)) {
+                MetaProperty metaProperty = metaClass.getProperty(property);
+                if (metaProperty != null && metadataTools.isPersistent(metaProperty)) {
                     result.add(property);
                 }
             }
         }
-        if (Updatable.class.isAssignableFrom(entityClass)) {
-            for (String property : getInterfaceProperties(Updatable.class)) {
-                if (metadataTools.isPersistent(metaClass.getPropertyNN(property))) {
-                    result.add(property);
-                }
-            }
-        }
-        if (SoftDelete.class.isAssignableFrom(entityClass)) {
-            for (String property : getInterfaceProperties(SoftDelete.class)) {
-                if (metadataTools.isPersistent(metaClass.getPropertyNN(property))) {
-                    result.add(property);
-                }
-            }
-        }
-        return result;
     }
 
     protected List<String> getInterfaceProperties(Class<?> intf) {
