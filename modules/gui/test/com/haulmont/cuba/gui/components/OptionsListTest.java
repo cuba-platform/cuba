@@ -17,6 +17,7 @@ import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import static org.junit.Assert.*;
 /**
  * @author petunin
  */
+@Ignore
 public abstract class OptionsListTest extends AbstractComponentTest {
 
     @Mocked
