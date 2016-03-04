@@ -197,4 +197,9 @@ public class WebAbstractOptionsBase<T extends com.vaadin.ui.AbstractSelect> exte
 
         return getClass().getSimpleName();
     }
+
+    @Override
+    public void setRequired(boolean required){
+        super.setRequired(required);
+    }
 }
