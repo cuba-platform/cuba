@@ -50,6 +50,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE;
+import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE_PX;
 import static com.haulmont.cuba.gui.components.Frame.MessageType;
 import static com.haulmont.cuba.gui.components.Frame.NotificationType;
 import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertNotificationType;
@@ -57,7 +58,6 @@ import static com.vaadin.server.Sizeable.Unit;
 
 /**
  * @author krivopustov
- * @version $Id$
  */
 public class WebWindowManager extends WindowManager {
 
@@ -129,15 +129,17 @@ public class WebWindowManager extends WindowManager {
 
         WindowOpenMode openMode = windowOpenMode.get(webWindow);
         String formattedCaption;
+
         if (openMode != null
-                && (openMode.getOpenType() == OpenType.NEW_TAB || openMode.getOpenType() == OpenType.THIS_TAB)) {
+            && (openMode.getOpenType().getOpenMode() == OpenMode.NEW_TAB
+                || openMode.getOpenType().getOpenMode() == OpenMode.THIS_TAB)) {
             formattedCaption = formatTabCaption(caption, description);
         } else {
             formattedCaption = formatTabDescription(caption, description);
         }
 
         if (openMode != null) {
-            if (openMode.getOpenType() == OpenType.DIALOG) {
+            if (openMode.getOpenType().getOpenMode() == OpenMode.DIALOG) {
                 com.vaadin.ui.Window dialog = (com.vaadin.ui.Window) openMode.getData();
                 dialog.setCaption(formattedCaption);
             } else {
@@ -211,8 +213,8 @@ public class WebWindowManager extends WindowManager {
     }
 
     protected boolean hasModalWindow() {
-        for (Map.Entry<Window, WindowOpenMode> openMode : windowOpenMode.entrySet()) {
-            if (OpenType.DIALOG.equals(openMode.getValue().getOpenType())) {
+        for (Map.Entry<Window, WindowOpenMode> entry : windowOpenMode.entrySet()) {
+            if (OpenMode.DIALOG == entry.getValue().getOpenType().getOpenMode()) {
                 return true;
             }
         }
@@ -227,23 +229,30 @@ public class WebWindowManager extends WindowManager {
     @Override
     protected void showWindow(final Window window, final String caption, final String description, OpenType type,
                               final boolean multipleOpen) {
+        OpenType targetOpenType = type.copy();
+
+        // for backward compatibility only
+        copyDialogParamsToOpenType(targetOpenType);
+
+        overrideOpenTypeParams(targetOpenType, window.getDialogOptions());
+
         boolean forciblyDialog = false;
-        if (type != OpenType.DIALOG && hasModalWindow()) {
-            type = OpenType.DIALOG;
+        if (targetOpenType.getOpenMode() != OpenMode.DIALOG && hasModalWindow()) {
+            targetOpenType.setOpenMode(OpenMode.DIALOG);
             forciblyDialog = true;
         }
 
-        if (type == OpenType.THIS_TAB && tabs.size() == 0) {
-            type = OpenType.NEW_TAB;
+        if (targetOpenType.getOpenMode() == OpenMode.THIS_TAB && tabs.size() == 0) {
+            targetOpenType.setOpenMode(OpenMode.NEW_TAB);
         }
 
-        final WindowOpenMode openMode = new WindowOpenMode(window, type);
+        final WindowOpenMode openMode = new WindowOpenMode(window, targetOpenType);
         Component component;
 
         window.setCaption(caption);
         window.setDescription(description);
 
-        switch (type) {
+        switch (targetOpenType.getOpenMode()) {
             case NEW_TAB:
             case NEW_WINDOW:
                 final WebAppWorkArea workArea = getConfiguredWorkArea();
@@ -316,7 +325,7 @@ public class WebWindowManager extends WindowManager {
                 break;
 
             case DIALOG:
-                component = showWindowDialog(window, forciblyDialog);
+                component = showWindowDialog(window, targetOpenType, forciblyDialog);
                 break;
 
             default:
@@ -348,7 +357,7 @@ public class WebWindowManager extends WindowManager {
             WindowOpenMode openMode = windowOpenMode.get(window);
             if (openMode != null) {
                 OpenType openType = openMode.getOpenType();
-                if (openType == OpenType.NEW_TAB || openType == OpenType.THIS_TAB) {
+                if (openType.getOpenMode() == OpenMode.NEW_TAB || openType.getOpenMode() == OpenMode.THIS_TAB) {
                     // show in tabsheet
                     Layout layout = (Layout) openMode.getData();
 
@@ -598,7 +607,7 @@ public class WebWindowManager extends WindowManager {
         return (WebAppWorkArea) workArea;
     }
 
-    protected Component showWindowDialog(final Window window, boolean forciblyDialog) {
+    protected Component showWindowDialog(final Window window, OpenType openType, boolean forciblyDialog) {
         final CubaWindow vWindow = createDialogWindow(window);
         vWindow.setStyleName("cuba-app-dialog-window");
         if (ui.isTestMode()) {
@@ -609,13 +618,10 @@ public class WebWindowManager extends WindowManager {
         Layout layout = (Layout) WebComponentsHelper.getComposition(window);
         vWindow.setContent(layout);
 
-        vWindow.addPreCloseListener(new CubaWindow.PreCloseListener() {
-            @Override
-            public void beforeWindowClose(CubaWindow.PreCloseEvent event) {
-                event.setPreventClose(true);
+        vWindow.addPreCloseListener(event -> {
+            event.setPreventClose(true);
 
-                window.close(Window.CLOSE_ACTION_ID);
-            }
+            window.close(Window.CLOSE_ACTION_ID);
         });
 
         String closeShortcut = clientConfig.getCloseShortcut();
@@ -628,17 +634,11 @@ public class WebWindowManager extends WindowManager {
         );
 
         Map<com.vaadin.event.Action, Runnable> actions = new HashMap<>();
-        actions.put(exitAction, new Runnable() {
-            @Override
-            public void run() {
-                window.close(Window.CLOSE_ACTION_ID);
-            }
-        });
+        actions.put(exitAction, () -> window.close(Window.CLOSE_ACTION_ID));
 
         WebComponentsHelper.setActions(vWindow, actions);
 
-        final DialogParams dialogParams = getDialogParams();
-        boolean dialogParamsSizeUndefined = dialogParams.getHeight() == null && dialogParams.getWidth() == null;
+        boolean dialogParamsSizeUndefined = openType.getHeight() == null && openType.getWidth() == null;
 
         ThemeConstants theme = app.getThemeConstants();
 
@@ -649,22 +649,22 @@ public class WebWindowManager extends WindowManager {
             vWindow.setHeight(theme.getInt("cuba.web.WebWindowManager.forciblyDialog.height"), Unit.PIXELS);
 
             // resizable by default, but may be overridden in dialog params
-            vWindow.setResizable(BooleanUtils.isNotFalse(dialogParams.getResizable()));
+            vWindow.setResizable(BooleanUtils.isNotFalse(openType.getResizable()));
 
             window.setHeight("100%");
         } else {
-            if (dialogParams.getWidth() == null) {
+            if (openType.getWidth() == null) {
                 vWindow.setWidth(theme.getInt("cuba.web.WebWindowManager.dialog.width"), Unit.PIXELS);
-            } else if (dialogParams.getWidth() == DialogParams.AUTO_SIZE_PX) {
+            } else if (openType.getWidth() == AUTO_SIZE_PX) {
                 vWindow.setWidthUndefined();
                 layout.setWidthUndefined();
                 window.setWidth(AUTO_SIZE);
             } else {
-                vWindow.setWidth(dialogParams.getWidth().floatValue(), Unit.PIXELS);
+                vWindow.setWidth(openType.getWidth().floatValue(), Unit.PIXELS);
             }
 
-            if (dialogParams.getHeight() != null && dialogParams.getHeight() != DialogParams.AUTO_SIZE_PX) {
-                vWindow.setHeight(dialogParams.getHeight().floatValue(), Unit.PIXELS);
+            if (openType.getHeight() != null && openType.getHeight() != AUTO_SIZE_PX) {
+                vWindow.setHeight(openType.getHeight().floatValue(), Unit.PIXELS);
                 layout.setHeight("100%");
                 window.setHeight("100%");
             } else {
@@ -672,20 +672,20 @@ public class WebWindowManager extends WindowManager {
             }
 
             // non resizable by default
-            vWindow.setResizable(BooleanUtils.isTrue(dialogParams.getResizable()));
+            vWindow.setResizable(BooleanUtils.isTrue(openType.getResizable()));
         }
 
-        if (dialogParams.getCloseable() != null) {
-            vWindow.setClosable(dialogParams.getCloseable());
+        if (openType.getCloseable() != null) {
+            vWindow.setClosable(openType.getCloseable());
         }
 
         boolean modal = true;
-        if (!hasModalWindow() && dialogParams.getModal() != null) {
-            modal = dialogParams.getModal();
+        if (!hasModalWindow() && openType.getModal() != null) {
+            modal = openType.getModal();
         }
         vWindow.setModal(modal);
 
-        dialogParams.reset();
+        getDialogParams().reset();
 
         ui.addWindow(vWindow);
         vWindow.center();
@@ -825,7 +825,7 @@ public class WebWindowManager extends WindowManager {
         WebWindow webWindow = (WebWindow) window;
         webWindow.stopTimers();
 
-        switch (openMode.openType) {
+        switch (openMode.getOpenType().getOpenMode()) {
             case DIALOG: {
                 final CubaWindow cubaDialogWindow = (CubaWindow) openMode.getData();
                 cubaDialogWindow.dispose();
@@ -1267,7 +1267,7 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     protected void checkCanOpenWindow(WindowInfo windowInfo, OpenType openType, Map<String, Object> params) {
-        if (OpenType.NEW_TAB.equals(openType)) {
+        if (OpenMode.NEW_TAB == openType.getOpenMode()) {
             //noinspection StatementWithEmptyBody
             if (!windowInfo.getMultipleOpen() && getWindow(getHash(windowInfo, params)) != null) {
                 //window is already open
@@ -1275,7 +1275,7 @@ public class WebWindowManager extends WindowManager {
                 int maxCount = webConfig.getMaxTabCount();
                 if (maxCount > 0 && maxCount <= tabs.size()) {
                     new Notification(
-                            messages.formatMessage(AppConfig.getMessagesPack(), "tooManyOpenTabs.message", maxCount),
+                            messages.formatMainMessage("tooManyOpenTabs.message", maxCount),
                             Notification.Type.WARNING_MESSAGE
                     ).show(Page.getCurrent());
 

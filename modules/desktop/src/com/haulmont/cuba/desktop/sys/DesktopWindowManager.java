@@ -180,7 +180,7 @@ public class DesktopWindowManager extends WindowManager {
         if (openedWindows.size() > 0) {
             Window w = openedWindows.get(openedWindows.size() - 1);
             WindowOpenMode mode = windowOpenMode.get(w);
-            if (mode.getOpenType().equals(OpenType.DIALOG) && mode.getData() instanceof DialogWindow) {
+            if (mode.getOpenType().getOpenMode() == OpenMode.DIALOG && mode.getData() instanceof DialogWindow) {
                 return (DialogWindow) mode.getData();
             }
         }
@@ -216,7 +216,7 @@ public class DesktopWindowManager extends WindowManager {
     protected boolean hasModalWindow() {
         Set<Map.Entry<Window, WindowOpenMode>> openModes = windowOpenMode.entrySet();
         for (Map.Entry<Window, WindowOpenMode> openMode : openModes) {
-            if (OpenType.DIALOG.equals(openMode.getValue().getOpenType()))
+            if (OpenMode.DIALOG.equals(openMode.getValue().getOpenType().getOpenMode()))
                 return true;
         }
         return false;
@@ -229,15 +229,22 @@ public class DesktopWindowManager extends WindowManager {
 
     @Override
     protected void showWindow(final Window window, final String caption, final String description, OpenType openType, boolean multipleOpen) {
+        OpenType targetOpenType = openType.copy();
+
+        // for backward compatibility only
+        copyDialogParamsToOpenType(targetOpenType);
+
+        overrideOpenTypeParams(targetOpenType, window.getDialogOptions());
+
         boolean forciblyDialog = false;
         boolean addWindowData = true;
-        if (openType != OpenType.DIALOG && hasModalWindow()) {
-            openType = OpenType.DIALOG;
+        if (targetOpenType.getOpenMode() != OpenMode.DIALOG && hasModalWindow()) {
+            targetOpenType.setOpenMode(OpenMode.DIALOG);
             forciblyDialog = true;
         }
 
-        if (openType == OpenType.THIS_TAB && tabs.size() == 0) {
-            openType = OpenType.NEW_TAB;
+        if (targetOpenType.getOpenMode() == OpenMode.THIS_TAB && tabs.size() == 0) {
+            targetOpenType.setOpenMode(OpenMode.NEW_TAB);
         }
 
         window.setCaption(caption);
@@ -245,11 +252,11 @@ public class DesktopWindowManager extends WindowManager {
 
         Object windowData;
 
-        switch (openType) {
+        switch (targetOpenType.getOpenMode()) {
             case NEW_TAB:
                 if (!isMainWindowManager) {
                     addWindowData = false;
-                    showInMainWindowManager(window, caption, description, openType, multipleOpen);
+                    showInMainWindowManager(window, caption, description, targetOpenType, multipleOpen);
                     windowData = null;
                 } else {
                     Integer hashCode = getWindowHashCode(window);
@@ -286,18 +293,18 @@ public class DesktopWindowManager extends WindowManager {
                 windowData = showWindowThisTab(window, caption, description);
                 break;
             case DIALOG:
-                windowData = showWindowDialog(window, caption, description, forciblyDialog);
+                windowData = showWindowDialog(window, caption, description, targetOpenType, forciblyDialog);
                 break;
             case NEW_WINDOW:
                 addWindowData = false;
-                windowData = showNewWindow(window, caption);
+                windowData = showNewWindow(window, targetOpenType, caption);
                 break;
             default:
                 throw new UnsupportedOperationException();
         }
 
         if (addWindowData) {
-            addWindowData(window, windowData, openType);
+            addWindowData(window, windowData, targetOpenType);
         }
         afterShowWindow(window);
     }
@@ -382,33 +389,33 @@ public class DesktopWindowManager extends WindowManager {
         App.getInstance().unregisterFrame(getFrame());
     }
 
-    protected JComponent showNewWindow(Window window, String caption) {
+    protected JComponent showNewWindow(Window window, OpenType openType, String caption) {
         window.setHeight("100%");
         window.setWidth("100%");
 
         TopLevelFrame windowFrame = createTopLevelFrame(caption);
         windowFrame.setName(window.getId());
 
-        DialogParams dialogParams = getDialogParams();
         Dimension dimension = new Dimension();
 
         dimension.width = 800;
-        if (dialogParams.getWidth() != null) {
-            dimension.width = dialogParams.getWidth();
+        if (openType.getWidth() != null) {
+            dimension.width = openType.getWidth();
         }
 
         dimension.height = 500;
-        if (dialogParams.getHeight() != null) {
-            dimension.height = dialogParams.getHeight();
+        if (openType.getHeight() != null) {
+            dimension.height = openType.getHeight();
         }
 
         boolean resizable = true;
-        if (dialogParams.getResizable() != null) {
-            resizable = dialogParams.getResizable();
+        if (openType.getResizable() != null) {
+            resizable = openType.getResizable();
         }
         windowFrame.setResizable(resizable);
         windowFrame.setMinimumSize(dimension);
         windowFrame.pack();
+
         getDialogParams().reset();
 
         WindowBreadCrumbs breadCrumbs = createBreadCrumbs();
@@ -530,17 +537,16 @@ public class DesktopWindowManager extends WindowManager {
         return -1;
     }
 
-    protected JDialog showWindowDialog(final Window window, String caption, String description, boolean forciblyDialog) {
+    protected JDialog showWindowDialog(final Window window, String caption, String description, OpenType openType, boolean forciblyDialog) {
         final DialogWindow dialog = new DialogWindow(frame, caption);
         dialog.setName(window.getId());
         dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
-        final DialogParams dialogParams = getDialogParams();
         JComponent jComponent = DesktopComponentsHelper.getComposition(window);
         dialog.add(jComponent);
 
-        if (dialogParams.getCloseable() == null ||
-                dialogParams.getCloseable()) {
+        if (openType.getCloseable() == null ||
+                openType.getCloseable()) {
             dialog.addWindowListener(new ValidationAwareWindowClosingListener() {
                 @Override
                 public void windowClosingAfterValidation(WindowEvent e) {
@@ -557,7 +563,7 @@ public class DesktopWindowManager extends WindowManager {
             dim.width = 800;
             dim.height = 500;
 
-            dialog.setResizable(BooleanUtils.isNotFalse(dialogParams.getResizable()));
+            dialog.setResizable(BooleanUtils.isNotFalse(openType.getResizable()));
             if (!dialog.isResizable()) {
                 dialog.setFixedHeight(dim.height);
                 dialog.setFixedWidth(dim.width);
@@ -565,23 +571,23 @@ public class DesktopWindowManager extends WindowManager {
 
             window.setHeight("100%");
         } else {
-            dialog.setResizable(BooleanUtils.isTrue(dialogParams.getResizable()));
-            if (dialogParams.getWidth() == null) {
+            dialog.setResizable(BooleanUtils.isTrue(openType.getResizable()));
+            if (openType.getWidth() == null) {
                 dim.width = 600;
                 if (!dialog.isResizable()) {
                     dialog.setFixedWidth(dim.width);
                 }
-            } else if (dialogParams.getWidth() == DialogParams.AUTO_SIZE_PX) {
+            } else if (openType.getWidth() == DialogParams.AUTO_SIZE_PX) {
                 window.setWidth(AUTO_SIZE);
             } else {
-                dim.width = dialogParams.getWidth();
+                dim.width = openType.getWidth();
                 if (!dialog.isResizable()) {
                     dialog.setFixedWidth(dim.width);
                 }
             }
 
-            if (dialogParams.getHeight() != null && dialogParams.getHeight() != DialogParams.AUTO_SIZE_PX) {
-                dim.height = dialogParams.getHeight();
+            if (openType.getHeight() != null && openType.getHeight() != DialogParams.AUTO_SIZE_PX) {
+                dim.height = openType.getHeight();
 
                 if (!dialog.isResizable()) {
                     dialog.setFixedHeight(dim.height);
@@ -592,20 +598,20 @@ public class DesktopWindowManager extends WindowManager {
             }
         }
 
-        if (dialogParams.getCloseable() != null) {
-            if (!dialogParams.getCloseable())
+        if (openType.getCloseable() != null) {
+            if (!openType.getCloseable())
                 dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         }
 
-        dialogParams.reset();
+        getDialogParams().reset();
 
         dialog.setMinimumSize(dim);
         dialog.pack();
         dialog.setLocationRelativeTo(frame);
 
         boolean modal = true;
-        if (!hasModalWindow() && dialogParams.getModal() != null) {
-            modal = dialogParams.getModal();
+        if (!hasModalWindow() && openType.getModal() != null) {
+            modal = openType.getModal();
         }
 
         if (modal) {
@@ -1023,7 +1029,7 @@ public class DesktopWindowManager extends WindowManager {
             screenHistorySupport.saveScreenHistory(window, openMode.getOpenType());
         }
 
-        switch (openMode.openType) {
+        switch (openMode.getOpenType().getOpenMode()) {
             case DIALOG: {
                 JDialog dialog = (JDialog) openMode.getData();
                 dialog.setVisible(false);
@@ -1119,7 +1125,7 @@ public class DesktopWindowManager extends WindowManager {
             Window w = it.next();
             // Check if there is a modal window opened before the current
             WindowOpenMode mode = windowOpenMode.get(w);
-            if (w != closingWindow && mode.getOpenType().equals(OpenType.DIALOG)) {
+            if (w != closingWindow && mode.getOpenType().getOpenMode() == OpenMode.DIALOG) {
                 previous = mode;
             }
             // If there are windows opened after the current, close them
@@ -1579,7 +1585,7 @@ public class DesktopWindowManager extends WindowManager {
      */
     public void dispose() {
         for (WindowOpenMode openMode : windowOpenMode.values()) {
-            if (openMode.getOpenType().equals(OpenType.DIALOG)) {
+            if (openMode.getOpenType().getOpenMode() == OpenMode.DIALOG) {
                 JDialog dialog = (JDialog) openMode.getData();
                 dialog.setVisible(false);
             }

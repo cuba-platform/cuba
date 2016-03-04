@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
 import com.haulmont.cuba.security.entity.PermissionType;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
@@ -45,7 +46,6 @@ import java.util.concurrent.Callable;
  * GenericUI class intended for creation and opening application screens.
  *
  * @author abramov
- * @version $Id$
  */
 public abstract class WindowManager {
 
@@ -58,7 +58,209 @@ public abstract class WindowManager {
     /**
      * How to open a screen: {@link #NEW_TAB}, {@link #THIS_TAB}, {@link #DIALOG}, {@link #NEW_WINDOW}
      */
-    public enum OpenType {
+    public final static class OpenType {
+        /**
+         * Open a screen in new tab of the main window.
+         * <p/> In Web Client with <code>AppWindow.Mode.SINGLE</code> the new screen replaces current screen.
+         */
+        public static final OpenType NEW_TAB = new OpenType(OpenMode.NEW_TAB, false);
+
+        /**
+         * Open a screen on top of the current tab screens stack.
+         */
+        public static final OpenType THIS_TAB = new OpenType(OpenMode.THIS_TAB, false);
+
+        /**
+         * Open a screen as modal dialog.
+         */
+        public static final OpenType DIALOG = new OpenType(OpenMode.DIALOG, false);
+
+        /**
+         * In Desktop Client open a screen in new main window, in Web Client the same as new {@link #NEW_TAB}
+         */
+        public static final OpenType NEW_WINDOW = new OpenType(OpenMode.NEW_WINDOW, false);
+
+        private OpenMode openMode;
+        private boolean mutable = true;
+
+        private Integer width;
+        private Integer height;
+        private Boolean resizable;
+        private Boolean closeable;
+        private Boolean modal;
+
+        public OpenType(OpenMode openMode) {
+            this.openMode = openMode;
+        }
+
+        public OpenType(OpenMode openMode, boolean mutable) {
+            this.openMode = openMode;
+            this.mutable = mutable;
+        }
+
+        public static OpenType dialog() {
+            return new OpenType(OpenMode.DIALOG);
+        }
+
+        public OpenMode getOpenMode() {
+            return openMode;
+        }
+
+        public OpenType setOpenMode(OpenMode openMode) {
+            checkMutable();
+
+            this.openMode = openMode;
+            return this;
+        }
+
+        public Integer getHeight() {
+            return height;
+        }
+
+        public OpenType height(Integer heightPx) {
+            checkMutable();
+
+            this.height = heightPx;
+            return this;
+        }
+
+        public OpenType setHeight(Integer heightPx) {
+            checkMutable();
+
+            this.height = heightPx;
+            return this;
+        }
+
+        public OpenType heightAuto() {
+            checkMutable();
+
+            this.height = -1;
+            return this;
+        }
+
+        public Integer getWidth() {
+            return width;
+        }
+
+        public OpenType width(Integer widthPx) {
+            checkMutable();
+
+            this.width = widthPx;
+            return this;
+        }
+
+        public OpenType setWidth(Integer widthPx) {
+            checkMutable();
+
+            this.width = widthPx;
+            return this;
+        }
+
+        public OpenType widthAuto() {
+            checkMutable();
+
+            this.width = -1;
+            return this;
+        }
+
+        public Boolean getResizable() {
+            return resizable;
+        }
+
+        public OpenType setResizable(Boolean resizable) {
+            checkMutable();
+
+            this.resizable = resizable;
+            return this;
+        }
+
+        public OpenType resizable(Boolean resizable) {
+            checkMutable();
+
+            this.resizable = resizable;
+            return this;
+        }
+
+        public Boolean getCloseable() {
+            return closeable;
+        }
+
+        public OpenType closeable(Boolean closeable) {
+            checkMutable();
+
+            this.closeable = closeable;
+            return this;
+        }
+
+        public OpenType setCloseable(Boolean closeable) {
+            checkMutable();
+
+            this.closeable = closeable;
+            return this;
+        }
+
+        public Boolean getModal() {
+            return modal;
+        }
+
+        public OpenType modal(Boolean modal) {
+            checkMutable();
+
+            this.modal = modal;
+            return this;
+        }
+
+        public OpenType setModal(Boolean modal) {
+            checkMutable();
+
+            this.modal = modal;
+            return this;
+        }
+
+        private void checkMutable() {
+            if (!mutable) {
+                throw new IllegalStateException("Unable to change property of OpenType constant");
+            }
+        }
+
+        @Nullable
+        public static OpenType valueOf(String openTypeString) {
+            if (openTypeString == null) {
+                return null;
+            }
+
+            switch (openTypeString) {
+                case "NEW_TAB":
+                    return NEW_TAB;
+
+                case "THIS_TAB":
+                    return THIS_TAB;
+
+                case "DIALOG":
+                    return DIALOG;
+
+                case "NEW_WINDOW":
+                    return NEW_WINDOW;
+
+                default:
+                    throw new IllegalArgumentException("Unable to parse OpenType");
+            }
+        }
+
+        public OpenType copy() {
+            OpenType openType = new OpenType(openMode);
+
+            openType.setModal(modal);
+            openType.setResizable(resizable);
+            openType.setCloseable(closeable);
+            openType.setHeight(height);
+            openType.setWidth(width);
+
+            return openType;
+        }
+    }
+
+    public enum OpenMode {
         /**
          * Open a screen in new tab of the main window.
          * <p/> In Web Client with <code>AppWindow.Mode.SINGLE</code> the new screen replaces current screen.
@@ -269,7 +471,7 @@ public abstract class WindowManager {
         try {
             window = (Window) windowInfo.getScreenClass().newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to instantiate window class", e);
         }
 
         window.setId(windowInfo.getId());
@@ -308,7 +510,7 @@ public abstract class WindowManager {
                 obj = constructor.newInstance(params);
             }
         } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to instantiate window class", e);
         }
 
         if (obj instanceof Callable) {
@@ -316,7 +518,7 @@ public abstract class WindowManager {
                 Window window = ((Callable<Window>) obj).call();
                 return window;
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Unable to instantiate window class", e);
             }
         } else if (obj instanceof Runnable) {
             ((Runnable) obj).run();
@@ -329,7 +531,7 @@ public abstract class WindowManager {
         return (getWindow(getHash(windowInfo, params)) != null);
     }
 
-    public Window openWindow(WindowInfo windowInfo, WindowManager.OpenType openType, Map<String, Object> params) {
+    public Window openWindow(WindowInfo windowInfo, OpenType openType, Map<String, Object> params) {
         if (params == null) {
             params = Collections.emptyMap();
         }
@@ -414,7 +616,7 @@ public abstract class WindowManager {
     }
 
     public Window.Editor openEditor(WindowInfo windowInfo, Entity item, OpenType openType,
-                                           Datasource parentDs) {
+                                    Datasource parentDs) {
         return openEditor(windowInfo, item, openType, Collections.<String, Object>emptyMap(), parentDs);
     }
 
@@ -427,8 +629,8 @@ public abstract class WindowManager {
     }
 
     public Window.Editor openEditor(WindowInfo windowInfo, Entity item,
-                                           OpenType openType, Map<String, Object> params,
-                                           Datasource parentDs) {
+                                    OpenType openType, Map<String, Object> params,
+                                    Datasource parentDs) {
         if (params == null) {
             params = Collections.emptyMap();
         }
@@ -482,7 +684,7 @@ public abstract class WindowManager {
     }
 
     public Window.Lookup openLookup(WindowInfo windowInfo, Window.Lookup.Handler handler,
-                                           OpenType openType, Map<String, Object> params) {
+                                    OpenType openType, Map<String, Object> params) {
         if (params == null) {
             params = Collections.emptyMap();
         }
@@ -625,10 +827,12 @@ public abstract class WindowManager {
         return map;
     }
 
+    @Deprecated
     protected DialogParams createDialogParams() {
         return new DialogParams();
     }
 
+    @Deprecated
     public DialogParams getDialogParams() {
         return dialogParams;
     }
@@ -646,6 +850,54 @@ public abstract class WindowManager {
     protected abstract void showWindow(Window window, String caption, String description, OpenType openType, boolean multipleOpen);
 
     protected abstract void showFrame(Component parent, Frame frame);
+
+    @Deprecated
+    protected void copyDialogParamsToOpenType(OpenType openTypeCopy) {
+        DialogParams dialogParams = getDialogParams();
+        if (dialogParams.getCloseable() != null && openTypeCopy.getCloseable() == null) {
+            openTypeCopy.closeable(dialogParams.getCloseable());
+        }
+        if (dialogParams.getModal() != null && openTypeCopy.getModal() == null) {
+            openTypeCopy.setModal(dialogParams.getModal());
+        }
+        if (dialogParams.getResizable() != null && openTypeCopy.getResizable() == null) {
+            openTypeCopy.setResizable(dialogParams.getResizable());
+        }
+        if (dialogParams.getWidth() != null && openTypeCopy.getWidth() == null) {
+            openTypeCopy.setWidth(dialogParams.getWidth());
+        }
+        if (dialogParams.getHeight() != null && openTypeCopy.getHeight() == null) {
+            openTypeCopy.setHeight(openTypeCopy.getHeight());
+        }
+    }
+
+    protected OpenType overrideOpenTypeParams(OpenType openTypeCopy, DialogOptions dialogOptions) {
+        if (BooleanUtils.isTrue(dialogOptions.getForceDialog())) {
+            openTypeCopy.setOpenMode(OpenMode.DIALOG);
+        }
+
+        if (dialogOptions.getHeight() != null) {
+            openTypeCopy.setHeight(dialogOptions.getHeight());
+        }
+
+        if (dialogOptions.getWidth() != null) {
+            openTypeCopy.setWidth(dialogOptions.getWidth());
+        }
+
+        if (dialogOptions.getResizable() != null) {
+            openTypeCopy.setResizable(dialogOptions.getResizable());
+        }
+
+        if (dialogOptions.getCloseable() != null) {
+            openTypeCopy.setCloseable(dialogOptions.getCloseable());
+        }
+
+        if (dialogOptions.getModal() != null) {
+            openTypeCopy.setModal(dialogOptions.getModal());
+        }
+
+        return openTypeCopy;
+    }
 
     protected Settings getSettingsImpl(String id) {
         return new SettingsImpl(id);

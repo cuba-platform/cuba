@@ -35,6 +35,7 @@ public interface Component {
     int UNITS_PERCENTAGE = 8;
 
     String AUTO_SIZE = "-1px";
+    int AUTO_SIZE_PX = -1;
 
     /** Component ID as defined in <code>id</code> attribute */
     String getId();

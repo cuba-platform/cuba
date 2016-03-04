@@ -339,6 +339,7 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
         frame.validate();
     }
 
+    @Deprecated
     @Override
     public DialogParams getDialogParams() {
         return frame.getDialogParams();
@@ -414,12 +415,12 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
     }
 
     @Override
-    public AbstractLookup openLookup(Class<Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+    public AbstractLookup openLookup(Class<? extends Entity>  entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
         return (AbstractLookup) frame.openLookup(entityClass, handler, openType);
     }
 
     @Override
-    public AbstractLookup openLookup(Class<Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
+    public AbstractLookup openLookup(Class<? extends Entity>  entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
         return (AbstractLookup) frame.openLookup(entityClass, handler, openType, params);
     }
 

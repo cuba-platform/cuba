@@ -65,7 +65,7 @@ public class ScreenHistorySupport {
         if (security.isEntityOpPermitted(ScreenHistoryEntity.class, EntityOp.CREATE)
                 && window.getFrame() != null
                 && (window.getFrame() instanceof Window.Editor)
-                && !openType.equals(WindowManager.OpenType.DIALOG)
+                && openType.getOpenMode() != WindowManager.OpenMode.DIALOG
                 && (screenIds == null || screenIds.contains(window.getId())))
         {
             String caption = window.getCaption();

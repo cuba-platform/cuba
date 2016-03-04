@@ -249,12 +249,12 @@ public class WindowDelegate {
         return window.getWindowManager().openEditor(windowInfo, item, openType);
     }
 
-    public Window.Lookup openLookup(Class<Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+    public Window.Lookup openLookup(Class<? extends Entity>  entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
         WindowInfo lookupScreen = windowConfig.getLookupScreen(entityClass);
         return window.getWindowManager().openLookup(lookupScreen, handler, openType);
     }
 
-    public Window.Lookup openLookup(Class<Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
+    public Window.Lookup openLookup(Class<? extends Entity>  entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo lookupScreen = windowConfig.getLookupScreen(entityClass);
         return window.getWindowManager().openLookup(lookupScreen, handler, openType, params);
     }

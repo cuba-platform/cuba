@@ -5,8 +5,10 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenMode;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
 import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
@@ -180,6 +182,11 @@ public interface Window extends Frame, Component.HasCaption {
 
     /** INTERNAL. Don't call from application code. */
     void setWindowManager(WindowManager windowManager);
+
+    /**
+     * @return dialog options of window. Options will be applied only if window opened as {@link OpenMode#DIALOG}.
+     */
+    DialogOptions getDialogOptions();
 
 
     /**

@@ -7,6 +7,10 @@
         class="com.haulmont.cuba.gui.app.core.about.AboutWindow"
         caption="msg://caption">
 
+    <dialogMode width="theme://cuba.gui.AboutWindow.width"
+                height="theme://cuba.gui.AboutWindow.height"
+                resizable="false"/>
+
     <layout>
         <tabSheet width="100%" height="100%">
             <tab id="infoTab" caption="msg://info" margin="true" spacing="true">

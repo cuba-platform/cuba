@@ -88,6 +88,7 @@ public interface Frame
      * method of a screen, which is being opened in {@link WindowManager.OpenType#DIALOG} mode, affects the current
      * screen itself.
      */
+    @Deprecated
     DialogParams getDialogParams();
 
     /**
@@ -154,7 +155,7 @@ public interface Frame
      * @return created window
      */
     Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType,
-                                    Map<String, Object> params, Datasource parentDs);
+                             Map<String, Object> params, Datasource parentDs);
 
     /**
      * Open an edit screen.
@@ -166,7 +167,7 @@ public interface Frame
      * @return created window
      */
     Window.Editor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType,
-                                    Map<String, Object> params);
+                             Map<String, Object> params);
 
     /**
      * Open an edit screen.
@@ -198,7 +199,7 @@ public interface Frame
      * @param openType    how to open the screen
      * @return created window
      */
-    Window.Lookup openLookup(Class<Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType);
+    Window.Lookup openLookup(Class<? extends Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType);
 
     /**
      * Open a lookup screen.
@@ -209,7 +210,7 @@ public interface Frame
      * @param params      parameters to pass to <code>init()</code> method of the screen's controller
      * @return created window
      */
-    Window.Lookup openLookup(Class<Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType,
+    Window.Lookup openLookup(Class<? extends Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType,
                              Map<String, Object> params);
 
     /**

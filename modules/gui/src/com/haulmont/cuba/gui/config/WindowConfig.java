@@ -228,7 +228,7 @@ public class WindowConfig {
         return getWindowInfo(editorScreenId);
     }
 
-    public WindowInfo getLookupScreen(Class<Entity> entityClass) {
+    public WindowInfo getLookupScreen(Class<? extends Entity> entityClass) {
         MetaClass metaClass = metadata.getSession().getClass(entityClass);
         String lookupScreenId = getLookupScreenId(metaClass);
         return getWindowInfo(lookupScreenId);

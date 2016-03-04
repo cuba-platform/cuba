@@ -94,6 +94,19 @@
         </xs:union>
     </xs:simpleType>
 
+    <xs:simpleType name="dialogSize">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="AUTO"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
     <xs:simpleType name="resourceString">
         <xs:union>
             <xs:simpleType>
@@ -1812,6 +1825,20 @@
                         <xs:attribute name="value" use="required"/>
                     </xs:complexType>
                 </xs:element>
+                
+                <xs:element name="dialogMode" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:attribute name="width" type="dialogSize"/>
+                        <xs:attribute name="height" type="dialogSize"/>
+
+                        <xs:attribute name="closeable" type="xs:boolean"/>
+                        <xs:attribute name="resizable" type="xs:boolean"/>
+                        <xs:attribute name="modal" type="xs:boolean"/>
+
+                        <xs:attribute name="forceDialog" type="xs:boolean"/>
+                    </xs:complexType>
+                </xs:element>
+                
                 <xs:element name="layout" minOccurs="1" maxOccurs="1">
                     <xs:complexType>
                         <xs:group ref="layoutOrComponent"/>

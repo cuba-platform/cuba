@@ -32,12 +32,13 @@ import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.vaadin.event.ItemClickEvent;
-import com.vaadin.server.Sizeable;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.TabSheet;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.Logger;
@@ -98,6 +99,7 @@ public class WebWindow implements Window, Component.Wrapper,
     protected Messages messages = AppBeans.get(Messages.NAME);
 
     protected boolean disposed = false;
+    protected DialogOptions dialogOptions = new WebDialogOptions();
 
     public WebWindow() {
         component = createLayout();
@@ -133,6 +135,21 @@ public class WebWindow implements Window, Component.Wrapper,
 
     protected ComponentContainer getContainer() {
         return (ComponentContainer) component;
+    }
+
+    @Nullable
+    protected com.vaadin.ui.Window asDialogWindow() {
+        if (component.isAttached()) {
+            com.vaadin.ui.Component parent = component;
+            while (parent != null) {
+                if (parent instanceof com.vaadin.ui.Window) {
+                    return (com.vaadin.ui.Window) parent;
+                }
+
+                parent = parent.getParent();
+            }
+        }
+        return null;
     }
 
     @Override
@@ -378,6 +395,11 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     @Override
+    public DialogOptions getDialogOptions() {
+        return dialogOptions;
+    }
+
+    @Override
     public DialogParams getDialogParams() {
         return getWindowManager().getDialogParams();
     }
@@ -430,12 +452,12 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     @Override
-    public Window.Lookup openLookup(Class<Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+    public Window.Lookup openLookup(Class<? extends Entity>  entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
         return delegate.openLookup(entityClass, handler, openType);
     }
 
     @Override
-    public Window.Lookup openLookup(Class<Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
+    public Window.Lookup openLookup(Class<? extends Entity>  entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
         return delegate.openLookup(entityClass, handler, openType, params);
     }
 
@@ -1140,6 +1162,136 @@ public class WebWindow implements Window, Component.Wrapper,
         return actionsPermissions;
     }
 
+    protected class WebDialogOptions extends DialogOptions {
+        @Override
+        public Integer getWidth() {
+            com.vaadin.ui.Window dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                return (int)dialogWindow.getWidth();
+            }
+
+            return super.getWidth();
+        }
+
+        @Override
+        public DialogOptions setWidth(Integer width) {
+            super.setWidth(width);
+
+            if (width != null) {
+                com.vaadin.ui.Window dialogWindow = asDialogWindow();
+                if (dialogWindow != null) {
+                    if (width < 0) {
+                        dialogWindow.setWidthUndefined();
+                        component.setWidthUndefined();
+                        getContainer().setWidthUndefined();
+                    } else {
+                        dialogWindow.setWidth(width, Unit.PIXELS);
+                        component.setWidth(100, Unit.PERCENTAGE);
+                    }
+                }
+            }
+
+            return this;
+        }
+
+        @Override
+        public Integer getHeight() {
+            com.vaadin.ui.Window dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                return (int)dialogWindow.getHeight();
+            }
+
+            return super.getHeight();
+        }
+
+        @Override
+        public DialogOptions setHeight(Integer height) {
+            super.setHeight(height);
+
+            if (height != null) {
+                com.vaadin.ui.Window dialogWindow = asDialogWindow();
+                if (dialogWindow != null) {
+                    if (height < 0) {
+                        dialogWindow.setHeightUndefined();
+                        component.setHeightUndefined();
+                        getContainer().setHeightUndefined();
+                    } else {
+                        dialogWindow.setHeight(height, Unit.PIXELS);
+                        component.setHeight(100, Unit.PERCENTAGE);
+                    }
+                }
+            }
+
+            return this;
+        }
+
+        @Override
+        public Boolean getModal() {
+            com.vaadin.ui.Window dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                return dialogWindow.isModal();
+            }
+
+            return super.getModal();
+        }
+
+        @Override
+        public DialogOptions setModal(Boolean modal) {
+            super.setModal(modal);
+
+            com.vaadin.ui.Window dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                dialogWindow.setModal(BooleanUtils.isTrue(modal));
+            }
+
+            return this;
+        }
+
+        @Override
+        public Boolean getResizable() {
+            com.vaadin.ui.Window dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                return dialogWindow.isResizable();
+            }
+
+            return super.getResizable();
+        }
+
+        @Override
+        public DialogOptions setResizable(Boolean resizable) {
+            super.setResizable(resizable);
+
+            com.vaadin.ui.Window dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                dialogWindow.setResizable(BooleanUtils.isTrue(resizable));
+            }
+
+            return this;
+        }
+
+        @Override
+        public Boolean getCloseable() {
+            com.vaadin.ui.Window dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                return dialogWindow.isClosable();
+            }
+
+            return super.getCloseable();
+        }
+
+        @Override
+        public DialogOptions setCloseable(Boolean closeable) {
+            super.setCloseable(closeable);
+
+            com.vaadin.ui.Window dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                dialogWindow.setClosable(BooleanUtils.isTrue(closeable));
+            }
+
+            return this;
+        }
+    }
+
     public static class Editor extends WebWindow implements Window.Editor {
 
         @Override
@@ -1353,7 +1505,7 @@ public class WebWindow implements Window, Component.Wrapper,
             boolean isTestMode = AppUI.getCurrent().isTestMode();
 
             HorizontalLayout okbar = new HorizontalLayout();
-            okbar.setHeight(-1, Sizeable.Unit.PIXELS);
+            okbar.setHeight(-1, Unit.PIXELS);
             okbar.setStyleName("cuba-window-actions-pane");
             okbar.setMargin(new MarginInfo(true, false, false, false));
             okbar.setSpacing(true);

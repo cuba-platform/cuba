@@ -4,7 +4,9 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -43,6 +45,8 @@ public class WindowLoader extends FrameLoader<Window> {
     public void loadComponent() {
         context.setFrame(resultComponent);
 
+        loadDialogOptions(resultComponent, element);
+
         assignXmlDescriptor(resultComponent, element);
         loadMessagesPack(resultComponent, element);
         loadCaption(resultComponent, element);
@@ -65,6 +69,51 @@ public class WindowLoader extends FrameLoader<Window> {
         loadSubComponentsAndExpand(resultComponent, layoutElement);
 
         loadFocusedComponent(resultComponent, element);
+    }
+
+    protected void loadDialogOptions(Window resultComponent, Element element) {
+        Element dialogModeElement = element.element("dialogMode");
+        if (dialogModeElement != null) {
+            DialogOptions dialogOptions = resultComponent.getDialogOptions();
+
+            String width = dialogModeElement.attributeValue("width");
+            if (StringUtils.isNotEmpty(width)) {
+                if ("auto".equalsIgnoreCase(width)) {
+                    dialogOptions.setWidth(Component.AUTO_SIZE_PX);
+                } else if (!StringUtils.isBlank(width)) {
+                    dialogOptions.setWidth(loadThemeInt(width));
+                }
+            }
+
+            String height = dialogModeElement.attributeValue("height");
+            if (StringUtils.isNotEmpty(height)) {
+                if ("auto".equalsIgnoreCase(height)) {
+                    dialogOptions.setHeight(Component.AUTO_SIZE_PX);
+                } else if (!StringUtils.isBlank(height)) {
+                    dialogOptions.setHeight(loadThemeInt(height));
+                }
+            }
+
+            String closeable = dialogModeElement.attributeValue("closeable");
+            if (StringUtils.isNotEmpty(closeable)) {
+                dialogOptions.setCloseable(Boolean.parseBoolean(closeable));
+            }
+
+            String resizable = dialogModeElement.attributeValue("resizable");
+            if (StringUtils.isNotEmpty(resizable)) {
+                dialogOptions.setResizable(Boolean.parseBoolean(resizable));
+            }
+
+            String modal = dialogModeElement.attributeValue("modal");
+            if (StringUtils.isNotEmpty(modal)) {
+                dialogOptions.setModal(Boolean.parseBoolean(modal));
+            }
+
+            String forceDialog = dialogModeElement.attributeValue("forceDialog");
+            if (StringUtils.isNotEmpty(forceDialog)) {
+                dialogOptions.setForceDialog(Boolean.parseBoolean(forceDialog));
+            }
+        }
     }
 
     public String getWindowId() {

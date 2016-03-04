@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.app.importexport.ReferenceImportBehaviour;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
@@ -116,7 +117,7 @@ public class GroupBrowser extends AbstractWindow {
         groupsTree.addAction(createAction);
         createAction.setCaption(getMessage("action.create"));
 
-        createAction.setOpenType(WindowManager.OpenType.DIALOG);
+        createAction.setOpenType(OpenType.DIALOG);
 
         EditAction groupEditAction = new EditAction(groupsTree) {
             @Override
@@ -124,7 +125,7 @@ public class GroupBrowser extends AbstractWindow {
                 groupsTree.expandTree();
             }
         };
-        groupEditAction.setOpenType(WindowManager.OpenType.DIALOG);
+        groupEditAction.setOpenType(OpenType.DIALOG);
         groupEditAction.setWindowParams(ParamsMap.of("edit", true));
         groupsTree.addAction(groupEditAction);
 
@@ -162,24 +163,18 @@ public class GroupBrowser extends AbstractWindow {
             public void actionPerform(Component component) {
                 final Set<User> selected = usersTable.getSelected();
                 if (!selected.isEmpty()) {
-                    getDialogParams().setResizable(false);
-                    getDialogParams().setHeight(themeConstants.getInt("cuba.gui.GroupBrowser.moveToGroupLookup.height"));
-
-                    Window lookupWindow = openLookup("sec$Group.lookup", new Lookup.Handler() {
-                        @Override
-                        public void handleLookup(Collection items) {
-                            if (items.size() == 1) {
-                                Group group = (Group) items.iterator().next();
-                                List<UUID> usersForModify = new ArrayList<>();
-                                for (User user : selected) {
-                                    usersForModify.add(user.getId());
-                                }
-                                userManagementService.moveUsersToGroup(usersForModify, group.getId());
-
-                                usersTable.getDatasource().refresh();
+                    Window lookupWindow = openLookup(Group.class, items -> {
+                        if (items.size() == 1) {
+                            Group group = (Group) items.iterator().next();
+                            List<UUID> usersForModify = new ArrayList<>();
+                            for (User user : selected) {
+                                usersForModify.add(user.getId());
                             }
+                            userManagementService.moveUsersToGroup(usersForModify, group.getId());
+
+                            usersTable.getDatasource().refresh();
                         }
-                    }, WindowManager.OpenType.DIALOG);
+                    }, OpenType.DIALOG);
 
                     lookupWindow.addCloseListener(actionId -> {
                         usersTable.requestFocus();
