@@ -826,9 +826,8 @@
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
-
-    <!-- OptionsGroup -->
-    <xs:complexType name="optionsGroupComponent">
+    
+    <xs:complexType name="optionsBaseFieldComponent">
         <xs:complexContent>
             <xs:extension base="baseFieldComponent">
                 <xs:sequence>
@@ -836,9 +835,24 @@
                 </xs:sequence>
                 <xs:attributeGroup ref="hasCaptionSource"/>
                 <xs:attributeGroup ref="hasOptions"/>
-
                 <xs:attribute name="multiselect" type="xs:boolean"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <!-- OptionsGroup -->
+    <xs:complexType name="optionsGroupComponent">
+        <xs:complexContent>
+            <xs:extension base="optionsBaseFieldComponent">
                 <xs:attribute name="orientation" type="orientation"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <!-- OptionsList -->
+    <xs:complexType name="optionsListComponent">
+        <xs:complexContent>
+            <xs:extension base="optionsBaseFieldComponent">
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1699,6 +1713,7 @@
                 <xs:element name="searchPickerField" type="searchPickerFieldComponent"/>
 
                 <xs:element name="optionsGroup" type="optionsGroupComponent"/>
+                <xs:element name="optionsList" type="optionsListComponent"/>
                 <xs:element name="progressBar" type="progressBarComponent"/>
 
                 <xs:element name="upload" type="uploadComponent"/>

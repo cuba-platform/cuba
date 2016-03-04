@@ -70,6 +70,7 @@ public class LayoutLoaderConfig {
         config.register(LookupPickerField.NAME, LookupPickerFieldLoader.class);
         config.register(SearchPickerField.NAME, SearchPickerFieldLoader.class);
         config.register(OptionsGroup.NAME, OptionsGroupLoader.class);
+        config.register(OptionsList.NAME, OptionsListLoader.class);
         config.register(FileUploadField.NAME, FileUploadFieldLoader.class);
         config.register(FileMultiUploadField.NAME, FileMultiUploadFieldLoader.class);
 
