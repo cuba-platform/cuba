@@ -489,7 +489,6 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     /**
      * Load data from middleware into {@link #data} field.
-     * <p>This method can be overridden in descendants to provide specific load functionality.</p>
      * <p>In case of error sets {@link #dataLoadError} field to the exception object.</p>
      * @param params    datasource parameters, as described in {@link CollectionDatasource#refresh(java.util.Map)}
      */
