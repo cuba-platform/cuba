@@ -178,4 +178,13 @@
     <screen id="filterSelect"
             template="/com/haulmont/cuba/gui/components/filter/filterselect/filter-select.xml"/>
 
+    <screen id="appProperties"
+            template="com/haulmont/cuba/gui/app/core/appproperties/appproperties-browse.xml"/>
+
+    <screen id="appPropertyEditor"
+            template="com/haulmont/cuba/gui/app/core/appproperties/appproperties-edit.xml"/>
+
+    <screen id="appPropertiesExport"
+            template="com/haulmont/cuba/gui/app/core/appproperties/appproperties-export.xml"/>
+
 </screen-config>

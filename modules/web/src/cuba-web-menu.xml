@@ -18,10 +18,11 @@
         <item id="sys$SendingMessage.browse"/>
         <item id="sys$ScheduledTask.browse"/>
         <item id="entityRestore"/>
-        <item id="entityLog"/>
         <item id="entityInspector.browse"/>
-        <separator/>
+        <item id="appProperties"/>
         <item id="jmxConsole"/>
+        <separator/>
+        <item id="entityLog"/>
         <item id="serverLog"/>
         <item id="performanceStatistics"/>
     </menu>
