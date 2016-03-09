@@ -310,7 +310,12 @@ public class ExcelExporter {
                 if (printable != null) {
                     cellValue = printable.getValue((Entity) instance);
                 } else {
-                    cellValue = InstanceUtils.getValueEx(instance, ((MetaPropertyPath) column.getId()).getPath());
+                    String captionProperty = column.getXmlDescriptor().attributeValue("captionProperty");
+                    if (StringUtils.isNotBlank(captionProperty)) {
+                        cellValue = InstanceUtils.getValueEx(instance, captionProperty);
+                    } else {
+                        cellValue = InstanceUtils.getValueEx(instance, ((MetaPropertyPath) column.getId()).getPath());
+                    }
                     if (column.getFormatter() != null)
                         cellValue = column.getFormatter().format(cellValue);
                     TemporalType tt = (TemporalType) ((MetaPropertyPath) column.getId()).getMetaProperty().getAnnotations().get("temporal");
