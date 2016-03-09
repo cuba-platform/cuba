@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -16,7 +17,6 @@ import java.util.List;
  * Base class for simple screen controllers.
  *
  * @author Abramov
- * @version $Id$
  */
 public class AbstractWindow extends AbstractFrame 
         implements Window, Component.HasXmlDescriptor, Window.Wrapper, Component.SecuredActionsHolder {
@@ -186,6 +186,11 @@ public class AbstractWindow extends AbstractFrame
     @Override
     public void setWindowManager(WindowManager windowManager) {
         ((Window) frame).setWindowManager(windowManager);
+    }
+
+    @Override
+    public DialogOptions getDialogOptions() {
+        return ((Window) frame).getDialogOptions();
     }
 
     /**

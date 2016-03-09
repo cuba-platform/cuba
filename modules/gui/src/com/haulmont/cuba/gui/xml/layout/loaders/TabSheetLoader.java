@@ -57,6 +57,7 @@ public class TabSheetLoader extends ContainerLoader<TabSheet> {
         assignXmlDescriptor(resultComponent, element);
 
         loadVisible(resultComponent, element);
+        loadEnable(resultComponent, element);
         loadStyleName(resultComponent, element);
         loadAlign(resultComponent, element);
 

@@ -8,7 +8,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.app.security.user.NameBuilderListener;
 import com.haulmont.cuba.gui.components.*;
@@ -310,7 +310,7 @@ public class UserEditor extends AbstractEditor<User> {
                 pickerField.setRequiredMessage(getMessage("groupMsg"));
 
                 PickerField.LookupAction action = pickerField.addLookupAction();
-                action.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
+                action.setLookupScreenOpenType(OpenType.DIALOG);
 
                 return pickerField;
             }
@@ -427,7 +427,7 @@ public class UserEditor extends AbstractEditor<User> {
                     return existingRoleNames;
                 }
 
-            }, WindowManager.OpenType.THIS_TAB, lookupParams);
+            }, OpenType.THIS_TAB, lookupParams);
 
             roleLookupWindow.addCloseListener(actionId -> {
                 rolesTable.requestFocus();
@@ -464,7 +464,7 @@ public class UserEditor extends AbstractEditor<User> {
         public void actionPerform(Component component) {
             if (rolesDs.getItem() == null)
                 return;
-            Window window = openEditor("sec$Role.edit", rolesDs.getItem().getRole(), WindowManager.OpenType.THIS_TAB);
+            Window window = openEditor("sec$Role.edit", rolesDs.getItem().getRole(), OpenType.THIS_TAB);
             window.addCloseListener(actionId -> {
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                     rolesDs.refresh();
@@ -534,10 +534,9 @@ public class UserEditor extends AbstractEditor<User> {
             final UserSubstitution substitution = metadata.create(UserSubstitution.class);
             substitution.setUser(userDs.getItem());
 
-            getDialogParams().setWidth(themeConstants.getInt("cuba.gui.UserEditor.substitutionEditor.width"));
-
+            int dialogWidth = themeConstants.getInt("cuba.gui.UserEditor.substitutionEditor.width");
             Window substitutionEditor = openEditor("sec$UserSubstitution.edit", substitution,
-                    WindowManager.OpenType.DIALOG, substitutionsDs);
+                    OpenType.DIALOG.width(dialogWidth), substitutionsDs);
             substitutionEditor.addCloseListener(actionId -> {
                 substTable.requestFocus();
             });
@@ -565,7 +564,7 @@ public class UserEditor extends AbstractEditor<User> {
 
             if (substitutionsDs.getItem() != null) {
                 Window substitutionEditor = openEditor("sec$UserSubstitution.edit", substitutionsDs.getItem(),
-                        WindowManager.OpenType.DIALOG, substitutionsDs);
+                        OpenType.DIALOG, substitutionsDs);
                 substitutionEditor.addCloseListener(actionId -> {
                     substTable.requestFocus();
                 });

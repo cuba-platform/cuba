@@ -41,7 +41,7 @@ public abstract class AbstractNotPersistentEntity extends AbstractInstance imple
     @Override
     public MetaClass getMetaClass() {
         Metadata metadata = AppBeans.get(Metadata.NAME);
-        return metadata.getSession().getClass(getClass());
+        return metadata.getSession().getClassNN(getClass());
     }
 
     @MetaProperty

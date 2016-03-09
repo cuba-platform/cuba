@@ -14,6 +14,8 @@
         <datasource id="group" class="com.haulmont.cuba.security.entity.Group" view="group.browse"/>
     </dsContext>
 
+    <dialogMode forceDialog="true" width="AUTO"/>
+
     <layout spacing="true">
         <fieldGroup id="fieldGroup" datasource="group">
             <field id="parent" visible="false"

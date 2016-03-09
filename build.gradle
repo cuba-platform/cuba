@@ -492,6 +492,8 @@ configure(webModule) {
 //        cleanup = true
     }
 
+    assemble.dependsOn buildScssThemes
+
     task deployThemes(type: CubaDeployThemeTask, dependsOn: buildScssThemes) {
     }
 

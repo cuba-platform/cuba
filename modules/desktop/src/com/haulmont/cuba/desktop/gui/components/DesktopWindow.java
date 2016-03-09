@@ -107,6 +107,7 @@ public class DesktopWindow implements Window, Component.Disposable,
     protected ComponentSize heightSize;
 
     protected boolean scheduledRepaint = false;
+    protected DialogOptions dialogOptions = new DesktopDialogOptions();
 
     public DesktopWindow() {
         initLayout();
@@ -588,12 +589,12 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     @Override
-    public Window.Lookup openLookup(Class<Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+    public Window.Lookup openLookup(Class<? extends Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
         return delegate.openLookup(entityClass, handler, openType);
     }
 
     @Override
-    public Window.Lookup openLookup(Class<Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
+    public Window.Lookup openLookup(Class<? extends Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
         return delegate.openLookup(entityClass, handler, openType, params);
     }
 
@@ -625,6 +626,11 @@ public class DesktopWindow implements Window, Component.Disposable,
     @Override
     public void setWindowManager(WindowManager windowManager) {
         this.windowManager = (DesktopWindowManager) windowManager;
+    }
+
+    @Override
+    public DialogOptions getDialogOptions() {
+        return dialogOptions;
     }
 
     @Override
@@ -1273,6 +1279,33 @@ public class DesktopWindow implements Window, Component.Disposable,
     @Override
     public ActionsPermissions getActionsPermissions() {
         return actionsPermissions;
+    }
+
+    protected class DesktopDialogOptions extends DialogOptions {
+        @Override
+        public DialogOptions setCloseable(Boolean closeable) {
+            return super.setCloseable(closeable);
+        }
+
+        @Override
+        public DialogOptions setWidth(Integer width) {
+            return super.setWidth(width);
+        }
+
+        @Override
+        public DialogOptions setHeight(Integer height) {
+            return super.setHeight(height);
+        }
+
+        @Override
+        public DialogOptions setModal(Boolean modal) {
+            return super.setModal(modal);
+        }
+
+        @Override
+        public DialogOptions setResizable(Boolean resizable) {
+            return super.setResizable(resizable);
+        }
     }
 
     public static class Editor extends DesktopWindow implements Window.Editor {

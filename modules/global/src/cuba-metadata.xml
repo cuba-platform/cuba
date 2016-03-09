@@ -16,6 +16,7 @@
         <class>com.haulmont.cuba.core.global.LockInfo</class>
         <class>com.haulmont.cuba.security.entity.EntityLogAttr</class>
         <class>com.haulmont.cuba.security.entity.UserSessionEntity</class>
+        <class>com.haulmont.cuba.core.config.AppPropertyEntity</class>
     </metadata-model>
 
     <!-- Use this element to define or override entity annotations available through MetaClass.getAnnotations()

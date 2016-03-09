@@ -9,17 +9,15 @@ import com.haulmont.cuba.core.app.EntitySnapshotService;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
+import com.haulmont.cuba.gui.data.impl.CustomCollectionDatasource;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-public class EntitySnapshotsDatasource extends CollectionDatasourceImpl<EntitySnapshot, UUID> {
+public class EntitySnapshotsDatasource extends CustomCollectionDatasource<EntitySnapshot, UUID> {
 
     protected BaseEntity entity;
     protected List<EntitySnapshot> snapshots;
@@ -38,18 +36,13 @@ public class EntitySnapshotsDatasource extends CollectionDatasourceImpl<EntitySn
     }
 
     @Override
-    protected void loadData(Map<String, Object> params) {
-        clear();
-
+    protected Collection<EntitySnapshot> getEntities(Map<String, Object> params) {
         if (entity != null) {
             EntitySnapshotService snapshotService = AppBeans.get(EntitySnapshotService.NAME);
             snapshots = snapshotService.getSnapshots(entity.getMetaClass(), entity.getUuid());
-
-            for (EntitySnapshot snapshot : snapshots) {
-                data.put(snapshot.getId(), snapshot);
-                attachListener(snapshot);
-            }
+            return snapshots;
         }
+        return Collections.emptyList();
     }
 
     public EntitySnapshot getLatestSnapshot() {

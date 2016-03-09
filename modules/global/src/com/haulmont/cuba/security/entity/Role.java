@@ -64,7 +64,7 @@ public class Role extends StandardEntity {
     }
 
     public void setType(RoleType type) {
-        this.type = type.getId();
+        this.type = type == null ? null : type.getId();
     }
 
     public Set<Permission> getPermissions() {

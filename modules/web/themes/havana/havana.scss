@@ -30,6 +30,7 @@
 @import "components/menubar/menubar";
 @import "components/checkbox/checkbox";
 @import "components/tabsheet/tabsheet";
+@import "components/accordion/accordion";
 @import "components/textarea/textarea";
 @import "components/groupbox/groupbox";
 @import "components/textfield/textfield";
@@ -46,6 +47,7 @@
 @import "components/pickerfield/pickerfield";
 @import "components/maskedfield/maskedfield";
 @import "components/multiupload/multiupload";
+@import "components/optionlist/optionlist";
 @import "components/optiongroup/optiongroup";
 @import "components/contextmenu/contextmenu";
 @import "components/popupbutton/popupbutton";
@@ -94,6 +96,7 @@
   @include havana-tooltip;
   @include havana-checkbox;
   @include havana-tabsheet;
+  @include havana-accordion;
   @include havana-textarea;
   @include havana-treetable;
   @include havana-textfield;
@@ -104,6 +107,7 @@
   @include havana-popupbutton;
   @include havana-contextmenu;
   @include havana-optiongroup;
+  @include havana-optionlist;
   @include havana-twincolumn;
   @include havana-notification;
   @include havana-filterselect;

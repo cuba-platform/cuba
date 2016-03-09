@@ -40,6 +40,7 @@
 @import "components/maskedfield/maskedfield";
 @import "components/multiupload/multiupload";
 @import "components/optiongroup/optiongroup";
+@import "components/optionlist/optionlist";
 @import "components/widgetstree/widgetstree";
 @import "components/popupbutton/popupbutton";
 @import "components/progressbar/progressbar";
@@ -88,6 +89,7 @@
   @include halo-splitpanel;
   @include halo-twincolumn;
   @include halo-optiongroup;
+  @include halo-optionlist;
   @include halo-popupbutton;
   @include halo-filterselect;
   @include halo-notification;

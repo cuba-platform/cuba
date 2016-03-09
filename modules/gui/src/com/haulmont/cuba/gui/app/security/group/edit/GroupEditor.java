@@ -15,7 +15,6 @@ import java.util.Map;
 
 /**
  * @author artamonov
- * @version $Id$
  */
 public class GroupEditor extends AbstractEditor {
 
@@ -25,8 +24,6 @@ public class GroupEditor extends AbstractEditor {
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
-
-        getDialogParams().setWidthAuto();
 
         if (BooleanUtils.isTrue((Boolean) params.get("edit"))) {
             parentField.setVisible(true);

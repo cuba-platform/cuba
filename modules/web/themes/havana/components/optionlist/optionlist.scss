@@ -1,0 +1,26 @@
+/*
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+// Version: $Id$
+
+@mixin havana-optionlist($primary-stylename: v-select) {
+  .#{$primary-stylename} {
+    border: 1px solid $cuba-field-border-color;
+
+    option:focus {
+      background-color: $cuba-field-selection-color;
+    }
+  }
+
+  .#{$primary-stylename}:focus {
+    border: 1px solid $cuba-field-selection-color;
+  }
+
+  .#{$primary-stylename} .v-select-select:focus {
+    outline:none;
+    border: 1px solid $cuba-field-selection-color;
+  }
+
+}

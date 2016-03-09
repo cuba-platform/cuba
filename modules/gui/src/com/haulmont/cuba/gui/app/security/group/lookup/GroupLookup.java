@@ -17,25 +17,17 @@ import java.util.UUID;
 
 /**
  * @author abramov
- * @version $Id$
  */
 public class GroupLookup extends AbstractLookup {
 
     @Inject
-    protected Tree groups;
+    protected Tree<Group> groups;
 
     @Inject
     protected HierarchicalDatasource<Group, UUID> groupsDs;
 
-    @Inject
-    protected ThemeConstants themeConstants;
-
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams()
-                .setWidth(themeConstants.getInt("cuba.gui.GroupLookup.width"))
-                .setHeight(themeConstants.getInt("cuba.gui.GroupLookup.height"));
-
         groupsDs.refresh();
         groups.expandTree();
 

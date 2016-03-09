@@ -240,6 +240,13 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         return value;
     }
 
+    protected int loadThemeInt(String value) {
+        if (value != null && value.startsWith(ThemeConstants.PREFIX)) {
+            value = themeConstants.get(value.substring(ThemeConstants.PREFIX.length()));
+        }
+        return value == null ? 0 : Integer.parseInt(value);
+    }
+
     protected void loadAlign(Component component, Element element) {
         String align = element.attributeValue("align");
         if (!StringUtils.isBlank(align)) {

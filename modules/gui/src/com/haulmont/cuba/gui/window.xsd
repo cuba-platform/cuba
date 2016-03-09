@@ -94,6 +94,19 @@
         </xs:union>
     </xs:simpleType>
 
+    <xs:simpleType name="dialogSize">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="AUTO"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
     <xs:simpleType name="resourceString">
         <xs:union>
             <xs:simpleType>
@@ -826,9 +839,8 @@
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
-
-    <!-- OptionsGroup -->
-    <xs:complexType name="optionsGroupComponent">
+    
+    <xs:complexType name="optionsBaseFieldComponent">
         <xs:complexContent>
             <xs:extension base="baseFieldComponent">
                 <xs:sequence>
@@ -836,9 +848,24 @@
                 </xs:sequence>
                 <xs:attributeGroup ref="hasCaptionSource"/>
                 <xs:attributeGroup ref="hasOptions"/>
-
                 <xs:attribute name="multiselect" type="xs:boolean"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <!-- OptionsGroup -->
+    <xs:complexType name="optionsGroupComponent">
+        <xs:complexContent>
+            <xs:extension base="optionsBaseFieldComponent">
                 <xs:attribute name="orientation" type="orientation"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <!-- OptionsList -->
+    <xs:complexType name="optionsListComponent">
+        <xs:complexContent>
+            <xs:extension base="optionsBaseFieldComponent">
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1348,16 +1375,42 @@
 
                     <xs:attributeGroup ref="requiresId"/>
                     <xs:attributeGroup ref="hasCaption"/>
-
+                    <xs:attributeGroup ref="hasSpacingMargin"/>
+                    <xs:attributeGroup ref="hasVisibility"/>
+                    <xs:attributeGroup ref="hasEnableProp"/>
                     <xs:attributeGroup ref="hasStyle"/>
 
-                    <xs:attribute name="enable" type="xs:boolean"/>
                     <xs:attribute name="lazy" type="xs:boolean"/>
-                    <xs:attribute name="margin" type="xs:string"/>
-                    <xs:attribute name="spacing" type="xs:boolean"/>
+
                     <xs:attribute name="expand" type="xs:string"/>
                     <xs:attribute name="detachable" type="xs:boolean"/>
-                    <xs:attribute name="visible" type="xs:boolean"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+
+        <xs:attributeGroup ref="hasId"/>
+        <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasEnableProp"/>
+        <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasStyle"/>
+    </xs:complexType>
+
+    <!-- Accordion -->
+    <xs:complexType name="accordionContainer">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="tab">
+                <xs:complexType>
+                    <xs:group ref="layoutOrComponent"/>
+
+                    <xs:attributeGroup ref="requiresId"/>
+                    <xs:attributeGroup ref="hasCaption"/>
+                    <xs:attributeGroup ref="hasSpacingMargin"/>
+                    <xs:attributeGroup ref="hasVisibility"/>
+                    <xs:attributeGroup ref="hasEnableProp"/>
+                    <xs:attributeGroup ref="hasStyle"/>
+
+                    <xs:attribute name="lazy" type="xs:boolean"/>
+                    <xs:attribute name="expand" type="xs:string"/>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
@@ -1661,6 +1714,7 @@
 
                 <xs:element name="split" type="splitContainer"/>
                 <xs:element name="tabSheet" type="tabsheetContainer"/>
+                <xs:element name="accordion" type="accordionContainer"/>
                 <xs:element name="frame" type="frameContainer"/>
 
                 <xs:element name="runtimeProperties" type="runtimePropertiesContainer"/>
@@ -1699,6 +1753,7 @@
                 <xs:element name="searchPickerField" type="searchPickerFieldComponent"/>
 
                 <xs:element name="optionsGroup" type="optionsGroupComponent"/>
+                <xs:element name="optionsList" type="optionsListComponent"/>
                 <xs:element name="progressBar" type="progressBarComponent"/>
 
                 <xs:element name="upload" type="uploadComponent"/>
@@ -1797,6 +1852,20 @@
                         <xs:attribute name="value" use="required"/>
                     </xs:complexType>
                 </xs:element>
+                
+                <xs:element name="dialogMode" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:attribute name="width" type="dialogSize"/>
+                        <xs:attribute name="height" type="dialogSize"/>
+
+                        <xs:attribute name="closeable" type="xs:boolean"/>
+                        <xs:attribute name="resizable" type="xs:boolean"/>
+                        <xs:attribute name="modal" type="xs:boolean"/>
+
+                        <xs:attribute name="forceDialog" type="xs:boolean"/>
+                    </xs:complexType>
+                </xs:element>
+                
                 <xs:element name="layout" minOccurs="1" maxOccurs="1">
                     <xs:complexType>
                         <xs:group ref="layoutOrComponent"/>

@@ -199,13 +199,13 @@ public class DesktopFrame
     }
 
     @Override
-    public Window.Lookup openLookup(Class<Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+    public Window.Lookup openLookup(Class<? extends Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
         WindowInfo lookupScreen = windowConfig.getLookupScreen(entityClass);
         return getWindowManager().openLookup(lookupScreen, handler, openType);
     }
 
     @Override
-    public Window.Lookup openLookup(Class<Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
+    public Window.Lookup openLookup(Class<? extends Entity> entityClass, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo lookupScreen = windowConfig.getLookupScreen(entityClass);
         return getWindowManager().openLookup(lookupScreen, handler, openType, params);
     }
