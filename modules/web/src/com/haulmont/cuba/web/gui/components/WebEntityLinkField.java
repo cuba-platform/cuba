@@ -19,6 +19,7 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenMode;
 import com.haulmont.cuba.gui.components.EntityLinkField;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.ListComponent;
@@ -189,11 +190,13 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
         this.screenOpenType = screenOpenType;
     }
 
+    @Deprecated
     @Override
     public DialogParams getScreenDialogParams() {
         return screenDialogParams;
     }
 
+    @Deprecated
     @Override
     public void setScreenDialogParams(DialogParams screenDialogParams) {
         this.screenDialogParams = screenDialogParams;
@@ -286,7 +289,7 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
             wm = window.getWindowManager();
         }
 
-        if (screenOpenType == WindowManager.OpenType.DIALOG && screenDialogParams != null) {
+        if (screenOpenType.getOpenMode() == OpenMode.DIALOG && screenDialogParams != null) {
             wm.getDialogParams().copyFrom(screenDialogParams);
         }
 

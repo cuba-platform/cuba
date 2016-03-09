@@ -33,7 +33,6 @@ import java.util.*;
 
 /**
  * @author gorodnov
- * @version $Id$
  */
 public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> implements TokenList {
 
@@ -344,6 +343,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
         }
     }
 
+    @Deprecated
     @Nullable
     @Override
     public DialogParams getLookupScreenDialogParams() {

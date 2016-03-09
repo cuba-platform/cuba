@@ -58,7 +58,7 @@ public class WebWindow implements Window, Component.Wrapper,
                                   Component.HasXmlDescriptor, WrappedWindow, Component.Disposable,
                                   Component.SecuredActionsHolder {
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    private static Logger log = LoggerFactory.getLogger(WebWindow.class);
 
     protected String id;
     protected String debugId;
@@ -399,6 +399,7 @@ public class WebWindow implements Window, Component.Wrapper,
         return dialogOptions;
     }
 
+    @Deprecated
     @Override
     public DialogParams getDialogParams() {
         return getWindowManager().getDialogParams();
@@ -1113,6 +1114,13 @@ public class WebWindow implements Window, Component.Wrapper,
     @Override
     public void setCaption(String caption) {
         this.caption = caption;
+
+        if (component.isAttached()) {
+            com.vaadin.ui.Window dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                dialogWindow.setCaption(caption);
+            }
+        }
     }
 
     @Override
@@ -1123,6 +1131,13 @@ public class WebWindow implements Window, Component.Wrapper,
     @Override
     public void setDescription(String description) {
         this.description = description;
+
+        if (component.isAttached()) {
+            com.vaadin.ui.Window dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                dialogWindow.setDescription(caption);
+            }
+        }
     }
 
     @Override

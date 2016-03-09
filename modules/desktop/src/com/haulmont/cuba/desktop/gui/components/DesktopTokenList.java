@@ -41,7 +41,6 @@ import java.util.List;
 
 /**
  * @author artamonov
- * @version $Id$
  */
 public class DesktopTokenList extends DesktopAbstractField<JPanel> implements TokenList {
 
@@ -303,6 +302,7 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
         this.lookupScreenDialogParams = dialogparams;
     }
 
+    @Deprecated
     @Nullable
     @Override
     public DialogParams getLookupScreenDialogParams() {

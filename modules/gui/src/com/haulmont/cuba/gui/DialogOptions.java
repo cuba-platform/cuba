@@ -6,9 +6,22 @@
 package com.haulmont.cuba.gui;
 
 /**
+ * Dialog options of window. Can be changed at run time from window controller:
+ * <pre>
+ * getDialogOptions()
+ *     .setWidth(640)
+ *     .setHeight(480);
+ * </pre>
+ *
+ * Dialog mode of window can be forced using setForceDialog method:
+ * <pre>
+ * getDialogOptions()
+ *     .setForceDialog(true);
+ * </pre>
+ *
  * @author artamonov
  */
-public abstract class DialogOptions {
+public class DialogOptions {
     private Integer width;
     private Integer height;
     private Boolean resizable;
@@ -17,7 +30,7 @@ public abstract class DialogOptions {
 
     private Boolean forceDialog;
 
-    protected DialogOptions() {
+    public DialogOptions() {
     }
 
     public Boolean getCloseable() {
@@ -76,5 +89,9 @@ public abstract class DialogOptions {
 
     public DialogOptions setWidthAuto() {
         return setWidth(-1);
+    }
+
+    public DialogOptions setHeightAuto() {
+        return setHeight(-1);
     }
 }

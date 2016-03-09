@@ -29,14 +29,18 @@ import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Timer;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.settings.Settings;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.Logger;
@@ -47,11 +51,13 @@ import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.*;
+import java.util.List;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -126,6 +132,19 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     protected WindowDelegate createDelegate() {
         return new WindowDelegate(this);
+    }
+
+    @Nullable
+    protected DialogWindow asDialogWindow() {
+        java.awt.Component parent = getContainer();
+        while (parent != null) {
+            if (parent instanceof DialogWindow) {
+                return (DialogWindow) parent;
+            }
+
+            parent = parent.getParent();
+        }
+        return null;
     }
 
     @Override
@@ -466,6 +485,11 @@ public class DesktopWindow implements Window, Component.Disposable,
     @Override
     public void setCaption(String caption) {
         this.caption = caption;
+
+        DialogWindow dialogWindow = asDialogWindow();
+        if (dialogWindow != null) {
+            dialogWindow.setTitle(caption);
+        }
     }
 
     @Override
@@ -538,6 +562,7 @@ public class DesktopWindow implements Window, Component.Disposable,
         delegate.validate();
     }
 
+    @Deprecated
     @Override
     public DialogParams getDialogParams() {
         return getWindowManager().getDialogParams();
@@ -1283,28 +1308,128 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     protected class DesktopDialogOptions extends DialogOptions {
         @Override
-        public DialogOptions setCloseable(Boolean closeable) {
-            return super.setCloseable(closeable);
+        public DialogOptions setWidth(Integer width) {
+            super.setWidth(width);
+
+            if (width != null) {
+                DialogWindow dialogWindow = asDialogWindow();
+                if (dialogWindow != null) {
+                    dialogWindow.setFixedWidth(width >= 0 ? width : null);
+
+                    Dimension dim = new Dimension();
+                    if (dialogWindow.getFixedWidth() != null) {
+                        dim.width = dialogWindow.getFixedWidth();
+                    }
+                    if (dialogWindow.getFixedHeight() != null) {
+                        dim.height = dialogWindow.getFixedHeight();
+                    }
+                    dialogWindow.setMinimumSize(dim);
+
+                    dialogWindow.pack();
+                }
+            }
+
+            return this;
         }
 
         @Override
-        public DialogOptions setWidth(Integer width) {
-            return super.setWidth(width);
+        public Boolean getCloseable() {
+            DialogWindow dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                return BooleanUtils.isNotFalse(super.getCloseable());
+            }
+
+            return super.getCloseable();
+        }
+
+        @Override
+        public Integer getWidth() {
+            DialogWindow dialogWindow = asDialogWindow();
+
+            if (dialogWindow == null) {
+                return super.getWidth();
+            } else {
+                return dialogWindow.getFixedWidth() != null ? dialogWindow.getFixedWidth() : -1;
+            }
         }
 
         @Override
         public DialogOptions setHeight(Integer height) {
-            return super.setHeight(height);
+            super.setHeight(height);
+
+            if (height != null) {
+                DialogWindow dialogWindow = asDialogWindow();
+                if (dialogWindow != null) {
+                    dialogWindow.setFixedHeight(height >= 0 ? height : null);
+
+                    Dimension dim = new Dimension();
+                    if (dialogWindow.getFixedWidth() != null) {
+                        dim.width = dialogWindow.getFixedWidth();
+                    }
+                    if (dialogWindow.getFixedHeight() != null) {
+                        dim.height = dialogWindow.getFixedHeight();
+                    }
+                    dialogWindow.setMinimumSize(dim);
+
+                    dialogWindow.pack();
+                }
+            }
+
+            return this;
+        }
+
+        @Override
+        public Integer getHeight() {
+            DialogWindow dialogWindow = asDialogWindow();
+
+            if (dialogWindow == null) {
+                return super.getHeight();
+            } else {
+                return dialogWindow.getFixedHeight() != null ? dialogWindow.getFixedHeight() : -1;
+            }
+        }
+
+        @Override
+        public Boolean getModal() {
+            DialogWindow dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                return dialogWindow.isSoftModal();
+            }
+
+            return super.getModal();
         }
 
         @Override
         public DialogOptions setModal(Boolean modal) {
-            return super.setModal(modal);
+            super.setModal(modal);
+
+            if (asDialogWindow() != null) {
+                log.warn("Changing DesktopWindow modal at run time is not supported");
+            }
+
+            return this;
         }
 
         @Override
         public DialogOptions setResizable(Boolean resizable) {
-            return super.setResizable(resizable);
+            super.setResizable(resizable);
+
+            DialogWindow dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                dialogWindow.setResizable(BooleanUtils.isTrue(resizable));
+            }
+
+            return this;
+        }
+
+        @Override
+        public Boolean getResizable() {
+            DialogWindow dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                return dialogWindow.isResizable();
+            }
+
+            return super.getResizable();
         }
     }
 

@@ -7,7 +7,8 @@ package com.haulmont.cuba.gui.components.actions;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenMode;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
@@ -17,11 +18,10 @@ import java.util.Map;
 
 /**
  * @author artamonov
- * @version $Id$
  */
 public class BulkEditAction extends ItemTrackingAction {
 
-    protected WindowManager.OpenType openType = WindowManager.OpenType.DIALOG;
+    protected OpenType openType = OpenType.DIALOG;
     protected String exclude;
     protected Map<String, Field.Validator> fieldValidators;
     protected List<Field.Validator> modelValidators;
@@ -38,11 +38,11 @@ public class BulkEditAction extends ItemTrackingAction {
         setEnabled(permitted);
     }
 
-    public WindowManager.OpenType getOpenType() {
+    public OpenType getOpenType() {
         return openType;
     }
 
-    public void setOpenType(WindowManager.OpenType openType) {
+    public void setOpenType(OpenType openType) {
         this.openType = openType;
     }
 
@@ -83,7 +83,7 @@ public class BulkEditAction extends ItemTrackingAction {
             return;
         }
 
-        if (openType == WindowManager.OpenType.DIALOG) {
+        if (openType.getOpenMode() == OpenMode.DIALOG) {
             ThemeConstantsManager themeManager = AppBeans.get(ThemeConstantsManager.NAME);
             ThemeConstants theme = themeManager.getConstants();
 

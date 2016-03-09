@@ -31,6 +31,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.Frame.MessageMode;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.executors.*;
@@ -133,7 +134,8 @@ public class DesktopWindowManager extends WindowManager {
             WindowOpenMode openMode = windowOpenMode.get(window);
             if (openMode != null) {
                 OpenType openType = openMode.getOpenType();
-                if (openType == OpenType.NEW_TAB || openType == OpenType.THIS_TAB) {
+                if (openType.getOpenMode() == OpenMode.NEW_TAB
+                        || openType.getOpenMode() == OpenMode.THIS_TAB) {
                     // show in tabsheet
                     JComponent layout = (JComponent) openMode.getData();
                     tabsPane.setSelectedComponent(layout);
@@ -328,7 +330,8 @@ public class DesktopWindowManager extends WindowManager {
             WindowOpenMode openMode = windowOpenMode.get(window);
             if (openMode != null) {
                 OpenType openType = openMode.getOpenType();
-                if (openType == OpenType.NEW_TAB || openType == OpenType.THIS_TAB) {
+                if (openType.getOpenMode() == OpenMode.NEW_TAB
+                        || openType.getOpenMode() == OpenMode.THIS_TAB) {
                     // show in tabsheet
                     JComponent layout = (JComponent) openMode.getData();
 
@@ -545,17 +548,16 @@ public class DesktopWindowManager extends WindowManager {
         JComponent jComponent = DesktopComponentsHelper.getComposition(window);
         dialog.add(jComponent);
 
-        if (openType.getCloseable() == null ||
-                openType.getCloseable()) {
-            dialog.addWindowListener(new ValidationAwareWindowClosingListener() {
-                @Override
-                public void windowClosingAfterValidation(WindowEvent e) {
+        dialog.addWindowListener(new ValidationAwareWindowClosingListener() {
+            @Override
+            public void windowClosingAfterValidation(WindowEvent e) {
+                if (BooleanUtils.isNotFalse(window.getDialogOptions().getCloseable())) {
                     if (window.close("close", false)) {
                         dialog.dispose();
                     }
                 }
-            });
-        }
+            }
+        });
 
         Dimension dim = new Dimension();
         if (forciblyDialog) {
@@ -598,11 +600,6 @@ public class DesktopWindowManager extends WindowManager {
             }
         }
 
-        if (openType.getCloseable() != null) {
-            if (!openType.getCloseable())
-                dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-        }
-
         getDialogParams().reset();
 
         dialog.setMinimumSize(dim);
@@ -620,6 +617,8 @@ public class DesktopWindowManager extends WindowManager {
                 frame.deactivate(null);
             else
                 lastDialogWindow.disableWindow(null);
+
+            dialog.setSoftModal(true);
         }
 
         dialog.setVisible(true);
@@ -1174,7 +1173,7 @@ public class DesktopWindowManager extends WindowManager {
 
         Icon icon = convertNotificationType(type);
 
-        showOptionDialog(title, text, icon, false, new Action[]{
+        showOptionDialog(title, text, null, icon, false, new Action[]{
                 new DesktopNotificationAction(Type.CLOSE)
         }, "notificationDialog");
     }
@@ -1369,7 +1368,7 @@ public class DesktopWindowManager extends WindowManager {
 
     protected void showOptionDialog(final String title, final String message, MessageType messageType,
                                     boolean alwaysModal, final Action[] actions, String debugName) {
-        Icon icon = convertMessageType(messageType);
+        Icon icon = convertMessageType(messageType.getMessageMode());
 
         String msg = message;
         if (!MessageType.isHTML(messageType)) {
@@ -1379,11 +1378,11 @@ public class DesktopWindowManager extends WindowManager {
             msg = "<html>" + msg + "</html>";
         }
 
-        showOptionDialog(title, msg, icon, alwaysModal, actions, debugName);
+        showOptionDialog(title, msg, messageType, icon, alwaysModal, actions, debugName);
     }
 
-    protected void showOptionDialog(final String title, final String message, final Icon icon,
-                                    boolean alwaysModal, final Action[] actions, String debugName) {
+    protected void showOptionDialog(final String title, final String message, @Nullable MessageType messageType,
+                                    final Icon icon, boolean alwaysModal, final Action[] actions, String debugName) {
         final DialogWindow dialog = new DialogWindow(frame, title);
 
         if (App.getInstance().isTestMode()) {
@@ -1397,7 +1396,9 @@ public class DesktopWindowManager extends WindowManager {
 
         int width = 500;
         DialogParams dialogParams = getDialogParams();
-        if (dialogParams.getWidth() != null) {
+        if (messageType != null && messageType.getWidth() != null) {
+            width = messageType.getWidth();
+        } else if (dialogParams.getWidth() != null) {
             width = dialogParams.getWidth();
         }
 
@@ -1454,8 +1455,16 @@ public class DesktopWindowManager extends WindowManager {
 
         boolean modal = true;
         if (!alwaysModal) {
-            if (!hasModalWindow() && dialogParams.getModal() != null) {
-                modal = dialogParams.getModal();
+            if (!hasModalWindow()) {
+                if (messageType != null && messageType.getModal() != null) {
+                    modal = messageType.getModal();
+                } else if (dialogParams.getModal() != null) {
+                    modal = dialogParams.getModal();
+                }
+            }
+        } else {
+            if (messageType != null && messageType.getModal() != null) {
+                log.warn("MessageType.modal is not supported for showOptionDialog");
             }
         }
 
@@ -1527,7 +1536,7 @@ public class DesktopWindowManager extends WindowManager {
         }
     }
 
-    protected Icon convertMessageType(MessageType messageType) {
+    protected Icon convertMessageType(MessageMode messageType) {
         switch (messageType) {
             case CONFIRMATION:
             case CONFIRMATION_HTML:

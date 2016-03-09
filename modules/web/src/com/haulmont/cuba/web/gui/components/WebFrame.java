@@ -152,6 +152,7 @@ public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
         return allComponents.get(id);
     }
 
+    @Deprecated
     @Override
     public DialogParams getDialogParams() {
         return App.getInstance().getWindowManager().getDialogParams();

@@ -6,15 +6,16 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
 /**
  * @author artamonov
- * @version $Id$
  */
 public interface EntityLinkField extends Field {
 
@@ -27,8 +28,13 @@ public interface EntityLinkField extends Field {
     WindowManager.OpenType getScreenOpenType();
     void setScreenOpenType(WindowManager.OpenType openType);
 
+    @Deprecated
     @Nullable
     DialogParams getScreenDialogParams();
+    /**
+     * @deprecated Use {@link #setScreenOpenType(WindowManager.OpenType)}
+     */
+    @Deprecated
     void setScreenDialogParams(@Nullable DialogParams dialogParams);
 
     @Nullable

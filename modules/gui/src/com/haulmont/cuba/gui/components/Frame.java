@@ -87,6 +87,8 @@ public interface Frame
      * <p/> If called in <code>init()</code>
      * method of a screen, which is being opened in {@link WindowManager.OpenType#DIALOG} mode, affects the current
      * screen itself.
+     *
+     * @deprecated Use {@link WindowManager.OpenType}
      */
     @Deprecated
     DialogParams getDialogParams();
@@ -259,7 +261,93 @@ public interface Frame
     /**
      * Message dialog type.
      */
-    enum MessageType {
+    final class MessageType {
+        /** Confirmation with plain text message */
+        public static final MessageType CONFIRMATION = new MessageType(MessageMode.CONFIRMATION, false);
+        /** Confirmation with HTML message */
+        public static final MessageType CONFIRMATION_HTML = new MessageType(MessageMode.CONFIRMATION_HTML, false);
+        /** Warning with plain text message */
+        public static final MessageType WARNING = new MessageType(MessageMode.WARNING, false);
+        /** Warning with HTML message */
+        public static final MessageType WARNING_HTML = new MessageType(MessageMode.WARNING_HTML, false);
+
+        private MessageMode messageMode;
+        private boolean mutable = true;
+
+        public MessageType(MessageMode messageMode) {
+            this.messageMode = messageMode;
+        }
+
+        private MessageType(MessageMode messageMode, boolean mutable) {
+            this.messageMode = messageMode;
+            this.mutable = mutable;
+        }
+
+        private Integer width;
+        private Boolean modal;
+
+        public MessageMode getMessageMode() {
+            return messageMode;
+        }
+
+        public Integer getWidth() {
+            return width;
+        }
+
+        public MessageType width(Integer width) {
+            MessageType instance = getMutableInstance();
+
+            instance.width = width;
+            return instance;
+        }
+
+        public MessageType setWidth(Integer width) {
+            MessageType instance = getMutableInstance();
+
+            instance.width = width;
+            return instance;
+        }
+
+        public Boolean getModal() {
+            return modal;
+        }
+
+        public MessageType setModal(Boolean modal) {
+            MessageType instance = getMutableInstance();
+
+            instance.modal = modal;
+            return instance;
+        }
+
+        public MessageType modal(Boolean modal) {
+            MessageType instance = getMutableInstance();
+
+            instance.modal = modal;
+            return instance;
+        }
+
+        private MessageType getMutableInstance() {
+            if (!mutable) {
+                return copy();
+            }
+
+            return this;
+        }
+
+        public static boolean isHTML(MessageType type) {
+            return MessageMode.isHTML(type.messageMode);
+        }
+
+        public MessageType copy() {
+            MessageType copy = new MessageType(messageMode);
+
+            copy.setWidth(width);
+
+            return copy;
+        }
+    }
+
+    enum MessageMode {
         /** Confirmation with plain text message */
         CONFIRMATION,
         /** Confirmation with HTML message */
@@ -269,7 +357,7 @@ public interface Frame
         /** Warning with HTML message */
         WARNING_HTML;
 
-        public static boolean isHTML(MessageType type) {
+        public static boolean isHTML(MessageMode type) {
             return type == CONFIRMATION_HTML || type == WARNING_HTML;
         }
     }

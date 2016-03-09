@@ -23,7 +23,6 @@ import java.util.List;
  * Represents an independent screen opened inside the main application window.
  *
  * @author Abramov
- * @version $Id$
  */
 public interface Window extends Frame, Component.HasCaption {
 
@@ -184,10 +183,9 @@ public interface Window extends Frame, Component.HasCaption {
     void setWindowManager(WindowManager windowManager);
 
     /**
-     * @return dialog options of window. Options will be applied only if window opened as {@link OpenMode#DIALOG}.
+     * @return dialog options of window. Options will be applied only if window opened with {@link OpenMode#DIALOG}.
      */
     DialogOptions getDialogOptions();
-
 
     /**
      * Represents a window that can be committed on close.

@@ -14,13 +14,14 @@ import java.awt.*;
  * <p>Used by {@link DesktopWindowManager} to show windows in DIALOG mode.</p>
  *
  * @author krivopustov
- * @version $Id$
  */
 public class DialogWindow extends JDialog {
 
     protected DisabledGlassPane glassPane;
     protected Integer fixedHeight;
     protected Integer fixedWidth;
+
+    protected boolean softModal;
 
     public DialogWindow(Frame frame, String title) {
         super(frame, title, false);
@@ -73,5 +74,13 @@ public class DialogWindow extends JDialog {
 
     public void setFixedHeight(Integer fixedHeight) {
         this.fixedHeight = fixedHeight;
+    }
+
+    public boolean isSoftModal() {
+        return softModal;
+    }
+
+    public void setSoftModal(boolean softModal) {
+        this.softModal = softModal;
     }
 }

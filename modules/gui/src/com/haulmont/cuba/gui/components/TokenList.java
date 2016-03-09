@@ -13,7 +13,6 @@ import java.util.Map;
 
 /**
  * @author gorodnov
- * @version $Id$
  */
 public interface TokenList extends Field, Component.BelongToFrame,
         Component.HasCaption, Component.Editable {
@@ -57,7 +56,12 @@ public interface TokenList extends Field, Component.BelongToFrame,
     @Nullable
     Map<String, Object> getLookupScreenParams();
 
+    /**
+     * @deprecated Use {@link #setLookupOpenMode(WindowManager.OpenType)}
+     */
+    @Deprecated
     void setLookupScreenDialogParams(DialogParams dialogparams);
+    @Deprecated
     @Nullable
     DialogParams getLookupScreenDialogParams();
 

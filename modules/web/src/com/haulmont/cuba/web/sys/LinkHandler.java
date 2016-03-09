@@ -9,7 +9,7 @@ import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.NoSuchScreenException;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DialogAction;
@@ -46,7 +46,6 @@ import java.util.UUID;
  * {@link com.haulmont.cuba.web.WebConfig#getLinkHandlerActions()} actions.
  *
  * @author krivopustov
- * @version $Id$
  */
 @org.springframework.stereotype.Component(LinkHandler.NAME)
 @Scope("prototype")
@@ -263,11 +262,11 @@ public class LinkHandler {
     protected void openWindow(WindowInfo windowInfo, Map<String, String> requestParams) {
         String itemStr = requestParams.get("item");
         String openTypeParam = requestParams.get("openType");
-        WindowManager.OpenType openType = WindowManager.OpenType.NEW_TAB;
+        OpenType openType = OpenType.NEW_TAB;
 
-        if (StringUtils.isNotBlank(openTypeParam)) {
+        if (StringUtils.isNotEmpty(openTypeParam)) {
             try {
-                openType = WindowManager.OpenType.valueOf(openTypeParam);
+                openType = OpenType.valueOf(openTypeParam);
             } catch (IllegalArgumentException e) {
                 log.warn("Unknown open type (" + openTypeParam + ") in request parameters");
             }

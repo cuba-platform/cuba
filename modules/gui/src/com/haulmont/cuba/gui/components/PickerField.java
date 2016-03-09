@@ -15,6 +15,8 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenMode;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -41,7 +43,6 @@ import java.util.Map;
  * @see LookupPickerField
  *
  * @author abramov
- * @version $Id$
  */
 public interface PickerField extends Field, Component.ActionsHolder {
 
@@ -139,7 +140,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
         public static final String NAME = ActionType.LOOKUP.getId();
 
         protected String lookupScreen;
-        protected WindowManager.OpenType lookupScreenOpenType = WindowManager.OpenType.THIS_TAB;
+        protected OpenType lookupScreenOpenType = OpenType.THIS_TAB;
         protected DialogParams lookupScreenDialogParams;
         protected Map<String, Object> lookupScreenParams;
 
@@ -166,28 +167,32 @@ public interface PickerField extends Field, Component.ActionsHolder {
             this.lookupScreen = lookupScreen;
         }
 
-        public WindowManager.OpenType getLookupScreenOpenType() {
+        public OpenType getLookupScreenOpenType() {
             return lookupScreenOpenType;
         }
 
         /**
-         * How to open the lookup screen. By default it is opened in {@link WindowManager.OpenType#THIS_TAB} mode.
+         * How to open the lookup screen. By default it is opened in {@link OpenType#THIS_TAB} mode.
          *
          * @param lookupScreenOpenType  open type
          */
-        public void setLookupScreenOpenType(WindowManager.OpenType lookupScreenOpenType) {
+        public void setLookupScreenOpenType(OpenType lookupScreenOpenType) {
             this.lookupScreenOpenType = lookupScreenOpenType;
         }
 
+        @Deprecated
         @Nullable
         public DialogParams getLookupScreenDialogParams() {
             return lookupScreenDialogParams;
         }
 
         /**
-         * Set lookup screen geometry when opening it in {@link WindowManager.OpenType#DIALOG} mode.
+         * Set lookup screen geometry when opening it in {@link OpenType#DIALOG} mode.
          * Doesn't affect other modes.
+         *
+         * @deprecated Use {@link #setLookupScreenOpenType(OpenType)}
          */
+        @Deprecated
         public void setLookupScreenDialogParams(DialogParams lookupScreenDialogParams) {
             this.lookupScreenDialogParams = lookupScreenDialogParams;
         }
@@ -229,11 +234,11 @@ public interface PickerField extends Field, Component.ActionsHolder {
                     wm = window.getWindowManager();
                 }
 
-                WindowManager.OpenType openType = getLookupScreenOpenType();
+                OpenType openType = getLookupScreenOpenType();
                 DialogParams dialogParams = getLookupScreenDialogParams();
                 Map<String, Object> screenParams = getLookupScreenParams();
 
-                if (openType == WindowManager.OpenType.DIALOG && dialogParams != null) {
+                if (openType.getOpenMode() == OpenMode.DIALOG && dialogParams != null) {
                     wm.getDialogParams().copyFrom(dialogParams);
                 }
 
@@ -344,7 +349,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
         public static final String NAME = ActionType.OPEN.getId();
 
         protected String editScreen;
-        protected WindowManager.OpenType editScreenOpenType = WindowManager.OpenType.THIS_TAB;
+        protected OpenType editScreenOpenType = OpenType.THIS_TAB;
         protected DialogParams editScreenDialogParams;
         protected Map<String, Object> editScreenParams;
 
@@ -371,28 +376,32 @@ public interface PickerField extends Field, Component.ActionsHolder {
             this.editScreen = editScreen;
         }
 
-        public WindowManager.OpenType getEditScreenOpenType() {
+        public OpenType getEditScreenOpenType() {
             return editScreenOpenType;
         }
 
         /**
-         * How to open the edit screen. By default it is opened in {@link WindowManager.OpenType#THIS_TAB} mode.
+         * How to open the edit screen. By default it is opened in {@link OpenType#THIS_TAB} mode.
          *
          * @param editScreenOpenType  open type
          */
-        public void setEditScreenOpenType(WindowManager.OpenType editScreenOpenType) {
+        public void setEditScreenOpenType(OpenType editScreenOpenType) {
             this.editScreenOpenType = editScreenOpenType;
         }
 
+        @Deprecated
         @Nullable
         public DialogParams getEditScreenDialogParams() {
             return editScreenDialogParams;
         }
 
         /**
-         * Set edit screen geometry when opening it in {@link WindowManager.OpenType#DIALOG} mode.
+         * Set edit screen geometry when opening it in {@link OpenType#DIALOG} mode.
          * Doesn't affect other modes.
+         *
+         * @deprecated Use {@link #setEditScreenOpenType(OpenType)}
          */
+        @Deprecated
         public void setEditScreenDialogParams(DialogParams editScreenDialogParams) {
             this.editScreenDialogParams = editScreenDialogParams;
         }
@@ -425,11 +434,11 @@ public interface PickerField extends Field, Component.ActionsHolder {
                 wm = window.getWindowManager();
             }
 
-            WindowManager.OpenType openType = getEditScreenOpenType();
+            OpenType openType = getEditScreenOpenType();
             DialogParams dialogParams = getEditScreenDialogParams();
             Map<String, Object> screenParams = getEditScreenParams();
 
-            if (openType == WindowManager.OpenType.DIALOG && dialogParams != null) {
+            if (openType.getOpenMode() == OpenMode.DIALOG && dialogParams != null) {
                 wm.getDialogParams().copyFrom(dialogParams);
             }
 

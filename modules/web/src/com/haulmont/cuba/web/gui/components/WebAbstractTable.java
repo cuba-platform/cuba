@@ -18,6 +18,7 @@ import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.Field;
@@ -69,7 +70,6 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 /**
  * @param <T>
  * @author abramov
- * @version $Id$
  */
 public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhancedTable, E extends Entity>
         extends WebAbstractList<T, E>
@@ -1817,11 +1817,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 windowAlias = windowConfig.getEditorScreenId(entity.getMetaClass());
             }
 
-            WindowManager.OpenType screenOpenType = WindowManager.OpenType.THIS_TAB;
+            OpenType screenOpenType = OpenType.THIS_TAB;
             if (column.getXmlDescriptor() != null) {
                 String openTypeAttribute = column.getXmlDescriptor().attributeValue("linkScreenOpenType");
                 if (StringUtils.isNotEmpty(openTypeAttribute)) {
-                    screenOpenType = WindowManager.OpenType.valueOf(openTypeAttribute);
+                    screenOpenType = OpenType.valueOf(openTypeAttribute);
                 }
             }
 

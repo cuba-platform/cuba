@@ -7,7 +7,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.RelatedEntities;
@@ -17,7 +17,6 @@ import org.dom4j.Element;
 
 /**
  * @author artamonov
- * @version $Id$
  */
 public class RelatedEntitiesLoader extends AbstractComponentLoader<RelatedEntities> {
 
@@ -41,7 +40,7 @@ public class RelatedEntitiesLoader extends AbstractComponentLoader<RelatedEntiti
 
         String openType = element.attributeValue("openType");
         if (StringUtils.isNotEmpty(openType)) {
-            resultComponent.setOpenType(WindowManager.OpenType.valueOf(openType));
+            resultComponent.setOpenType(OpenType.valueOf(openType));
         }
 
         String exclude = element.attributeValue("exclude");

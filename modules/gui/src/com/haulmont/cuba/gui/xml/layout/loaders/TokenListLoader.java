@@ -5,7 +5,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.TokenList;
@@ -135,12 +135,12 @@ public class TokenListLoader extends AbstractFieldLoader<TokenList> {
             component.setLookup(BooleanUtils.toBoolean(lookup));
             if (component.isLookup()) {
                 String lookupScreen = lookupElement.attributeValue("lookupScreen");
-                if (!StringUtils.isEmpty(lookupScreen)) {
+                if (StringUtils.isNotEmpty(lookupScreen)) {
                     component.setLookupScreen(lookupScreen);
                 }
                 String openType = lookupElement.attributeValue("openType");
-                if (!StringUtils.isEmpty(openType)) {
-                    component.setLookupOpenMode(WindowManager.OpenType.valueOf(openType));
+                if (StringUtils.isNotEmpty(openType)) {
+                    component.setLookupOpenMode(OpenType.valueOf(openType));
                 }
             }
         }

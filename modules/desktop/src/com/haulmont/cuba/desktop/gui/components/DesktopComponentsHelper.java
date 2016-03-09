@@ -25,7 +25,6 @@ import java.util.Collections;
 
 /**
  * @author krivopustov
- * @version $Id$
  */
 public class DesktopComponentsHelper {
 
@@ -68,7 +67,7 @@ public class DesktopComponentsHelper {
         return (JComponent) comp;
     }
 
-    public static int convertMessageType(Frame.MessageType messageType) {
+    public static int convertMessageType(Frame.MessageMode messageType) {
         switch (messageType) {
             case CONFIRMATION:
             case CONFIRMATION_HTML:

@@ -5,6 +5,7 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.bali.datastruct.Pair;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -56,7 +57,13 @@ public abstract class WindowManager {
     public static final String MAIN_MENU_ACTION_ID = "mainMenu";
 
     /**
-     * How to open a screen: {@link #NEW_TAB}, {@link #THIS_TAB}, {@link #DIALOG}, {@link #NEW_WINDOW}
+     * How to open a screen: {@link #NEW_TAB}, {@link #THIS_TAB}, {@link #DIALOG}, {@link #NEW_WINDOW}.
+     * <p/>
+     * You can set additional parameters for window using builder style methods:
+     * <pre>
+     * openEditor("sales$Customer.edit", customer,
+     *            OpenType.DIALOG.width(300).resizable(false), params);
+     * </pre>
      */
     public final static class OpenType {
         /**
@@ -93,13 +100,9 @@ public abstract class WindowManager {
             this.openMode = openMode;
         }
 
-        public OpenType(OpenMode openMode, boolean mutable) {
+        private OpenType(OpenMode openMode, boolean mutable) {
             this.openMode = openMode;
             this.mutable = mutable;
-        }
-
-        public static OpenType dialog() {
-            return new OpenType(OpenMode.DIALOG);
         }
 
         public OpenMode getOpenMode() {
@@ -107,10 +110,10 @@ public abstract class WindowManager {
         }
 
         public OpenType setOpenMode(OpenMode openMode) {
-            checkMutable();
+            OpenType instance = getMutableInstance();
 
-            this.openMode = openMode;
-            return this;
+            instance.openMode = openMode;
+            return instance;
         }
 
         public Integer getHeight() {
@@ -118,24 +121,24 @@ public abstract class WindowManager {
         }
 
         public OpenType height(Integer heightPx) {
-            checkMutable();
+            OpenType instance = getMutableInstance();
 
-            this.height = heightPx;
-            return this;
+            instance.height = heightPx;
+            return instance;
         }
 
         public OpenType setHeight(Integer heightPx) {
-            checkMutable();
+            OpenType instance = getMutableInstance();
 
-            this.height = heightPx;
-            return this;
+            instance.height = heightPx;
+            return instance;
         }
 
         public OpenType heightAuto() {
-            checkMutable();
+            OpenType instance = getMutableInstance();
 
-            this.height = -1;
-            return this;
+            instance.height = -1;
+            return instance;
         }
 
         public Integer getWidth() {
@@ -143,24 +146,24 @@ public abstract class WindowManager {
         }
 
         public OpenType width(Integer widthPx) {
-            checkMutable();
+            OpenType instance = getMutableInstance();
 
-            this.width = widthPx;
-            return this;
+            instance.width = widthPx;
+            return instance;
         }
 
         public OpenType setWidth(Integer widthPx) {
-            checkMutable();
+            OpenType instance = getMutableInstance();
 
-            this.width = widthPx;
-            return this;
+            instance.width = widthPx;
+            return instance;
         }
 
         public OpenType widthAuto() {
-            checkMutable();
+            OpenType instance = getMutableInstance();
 
-            this.width = -1;
-            return this;
+            instance.width = -1;
+            return instance;
         }
 
         public Boolean getResizable() {
@@ -168,17 +171,17 @@ public abstract class WindowManager {
         }
 
         public OpenType setResizable(Boolean resizable) {
-            checkMutable();
+            OpenType instance = getMutableInstance();
 
-            this.resizable = resizable;
-            return this;
+            instance.resizable = resizable;
+            return instance;
         }
 
         public OpenType resizable(Boolean resizable) {
-            checkMutable();
+            OpenType instance = getMutableInstance();
 
-            this.resizable = resizable;
-            return this;
+            instance.resizable = resizable;
+            return instance;
         }
 
         public Boolean getCloseable() {
@@ -186,17 +189,17 @@ public abstract class WindowManager {
         }
 
         public OpenType closeable(Boolean closeable) {
-            checkMutable();
+            OpenType instance = getMutableInstance();
 
-            this.closeable = closeable;
-            return this;
+            instance.closeable = closeable;
+            return instance;
         }
 
         public OpenType setCloseable(Boolean closeable) {
-            checkMutable();
+            OpenType instance = getMutableInstance();
 
-            this.closeable = closeable;
-            return this;
+            instance.closeable = closeable;
+            return instance;
         }
 
         public Boolean getModal() {
@@ -204,30 +207,29 @@ public abstract class WindowManager {
         }
 
         public OpenType modal(Boolean modal) {
-            checkMutable();
+            OpenType instance = getMutableInstance();
 
-            this.modal = modal;
-            return this;
+            instance.modal = modal;
+            return instance;
         }
 
         public OpenType setModal(Boolean modal) {
-            checkMutable();
+            OpenType instance = getMutableInstance();
 
-            this.modal = modal;
+            instance.modal = modal;
+            return instance;
+        }
+
+        private OpenType getMutableInstance() {
+            if (!mutable) {
+                return copy();
+            }
+
             return this;
         }
 
-        private void checkMutable() {
-            if (!mutable) {
-                throw new IllegalStateException("Unable to change property of OpenType constant");
-            }
-        }
-
-        @Nullable
         public static OpenType valueOf(String openTypeString) {
-            if (openTypeString == null) {
-                return null;
-            }
+            Preconditions.checkNotNullArgument(openTypeString, "openTypeString should not be null");
 
             switch (openTypeString) {
                 case "NEW_TAB":
@@ -547,7 +549,7 @@ public abstract class WindowManager {
             window = createWindow(windowInfo, openType, params, LayoutLoaderConfig.getWindowLoaders());
             String caption = loadCaption(window, params);
             String description = loadDescription(window, params);
-            if (openType == OpenType.NEW_TAB) {
+            if (openType.getOpenMode() == OpenMode.NEW_TAB) {
                 putToWindowMap(window, hashCode);
             }
             showWindow(window, caption, description, openType, windowInfo.getMultipleOpen());
@@ -556,7 +558,7 @@ public abstract class WindowManager {
             Class screenClass = windowInfo.getScreenClass();
             if (screenClass != null) {
                 window = createWindowByScreenClass(windowInfo, params);
-                if (openType == OpenType.NEW_TAB) {
+                if (openType.getOpenMode() == OpenMode.NEW_TAB) {
                     putToWindowMap(window, hashCode);
                 }
                 return window;

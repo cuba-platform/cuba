@@ -139,6 +139,7 @@ public class DesktopFrame
         return DesktopComponentsHelper.getTopLevelFrame((Frame) this).getWindowManager();
     }
 
+    @Deprecated
     @Override
     public DialogParams getDialogParams() {
         return getWindowManager().getDialogParams();

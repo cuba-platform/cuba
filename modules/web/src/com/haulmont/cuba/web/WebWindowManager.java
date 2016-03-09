@@ -109,7 +109,8 @@ public class WebWindowManager extends WindowManager {
         WindowOpenMode openMode = windowOpenMode.get(window);
         if (openMode != null) {
             OpenType openType = openMode.getOpenType();
-            if (openType == OpenType.NEW_TAB || openType == OpenType.THIS_TAB) {
+            if (openType.getOpenMode() == OpenMode.NEW_TAB
+                    || openType.getOpenMode() == OpenMode.THIS_TAB) {
                 // show in tabsheet
                 Layout layout = (Layout) openMode.getData();
                 TabSheet webTabsheet = getConfiguredWorkArea().getTabbedWindowContainer();
@@ -1028,7 +1029,9 @@ public class WebWindowManager extends WindowManager {
 
         float width;
         DialogParams dialogParams = getDialogParams();
-        if (dialogParams.getWidth() != null) {
+        if (messageType.getWidth() != null) {
+            width = messageType.getWidth().floatValue();
+        } else if (dialogParams.getWidth() != null) {
             width = dialogParams.getWidth().floatValue();
         } else {
             width = app.getThemeConstants().getInt("cuba.web.WebWindowManager.messageDialog.width");
@@ -1038,8 +1041,12 @@ public class WebWindowManager extends WindowManager {
         vWindow.setResizable(false);
 
         boolean modal = true;
-        if (!hasModalWindow() && dialogParams.getModal() != null) {
-            modal = dialogParams.getModal();
+        if (!hasModalWindow()) {
+            if (messageType.getModal() != null) {
+                modal = messageType.getModal();
+            } else if (dialogParams.getModal() != null) {
+                modal = dialogParams.getModal();
+            }
         }
         vWindow.setModal(modal);
 
@@ -1069,11 +1076,18 @@ public class WebWindowManager extends WindowManager {
         }
 
         float width;
-        if (getDialogParams().getWidth() != null) {
+        if (messageType.getWidth() != null) {
+            width = messageType.getWidth().floatValue();
+        } else if (getDialogParams().getWidth() != null) {
             width = getDialogParams().getWidth().floatValue();
         } else {
             width = app.getThemeConstants().getInt("cuba.web.WebWindowManager.optionDialog.width");
         }
+
+        if (messageType.getModal() != null) {
+            log.warn("MessageType.modal is not supported for showOptionDialog");
+        }
+
         getDialogParams().reset();
 
         window.setWidth(width, Unit.PIXELS);

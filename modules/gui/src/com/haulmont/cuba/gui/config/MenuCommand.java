@@ -14,6 +14,8 @@ import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenMode;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.Window;
@@ -26,7 +28,6 @@ import java.util.Map;
 
 /**
  * @author krivopustov
- * @version $Id$
  */
 public class MenuCommand {
 
@@ -42,16 +43,16 @@ public class MenuCommand {
         Element descriptor = item.getDescriptor();
         Map<String, Object> params = loadParams(descriptor);
 
-        WindowManager.OpenType openType = WindowManager.OpenType.NEW_TAB;
+        OpenType openType = OpenType.NEW_TAB;
         String openTypeStr = descriptor.attributeValue("openType");
-        if (openTypeStr != null) {
-            openType = WindowManager.OpenType.valueOf(openTypeStr);
+        if (StringUtils.isNotEmpty(openTypeStr)) {
+            openType = OpenType.valueOf(openTypeStr);
         }
 
         WindowManagerProvider wmProvider = AppBeans.get(WindowManagerProvider.NAME);
         WindowManager wm = wmProvider.get();
 
-        if (openType == WindowManager.OpenType.DIALOG) {
+        if (openType.getOpenMode() == OpenMode.DIALOG) {
             String resizable = descriptor.attributeValue("resizable");
             if (!StringUtils.isEmpty(resizable)) {
                 wm.getDialogParams().setResizable(BooleanUtils.toBoolean(resizable));
