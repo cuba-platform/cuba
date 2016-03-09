@@ -21,11 +21,7 @@ public class ChangeSubstUserAction extends AbstractAction {
     public ChangeSubstUserAction(User user) {
         super("changeSubstUserAction");
         this.user = user;
-    }
-
-    @Override
-    public String getIcon() {
-        return "icons/ok.png";
+        this.icon = "icons/ok.png";
     }
 
     @Override

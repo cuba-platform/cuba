@@ -15,11 +15,7 @@ public class DoNotChangeSubstUserAction extends AbstractAction {
 
     protected DoNotChangeSubstUserAction() {
         super("doNotChangeSubstUserAction", Status.PRIMARY);
-    }
-
-    @Override
-    public String getIcon() {
-        return "icons/cancel.png";
+        this.icon = "icons/cancel.png";
     }
 
     @Override
