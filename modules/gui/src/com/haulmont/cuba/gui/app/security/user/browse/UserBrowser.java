@@ -11,7 +11,6 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParams;
-import com.haulmont.cuba.gui.app.security.user.edit.UserEditor;
 import com.haulmont.cuba.gui.app.security.user.resetpasswords.ResetPasswordsDialog;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
@@ -186,8 +185,8 @@ public class UserBrowser extends AbstractLookup {
                 newUser.setUserRoles(userRoles);
             }
             newUser.setGroup(selectedUser.getGroup());
-            UserEditor editor = (UserEditor) openEditor("sec$User.edit", newUser, OpenType.THIS_TAB);
-            editor.initCopy();
+            AbstractEditor editor = openEditor("sec$User.edit", newUser, OpenType.THIS_TAB,
+                    ParamsMap.of("initCopy", true));
             editor.addCloseListener(actionId -> {
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                     usersDs.refresh();

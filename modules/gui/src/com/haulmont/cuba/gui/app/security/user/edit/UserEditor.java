@@ -9,6 +9,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
+import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.app.security.user.NameBuilderListener;
 import com.haulmont.cuba.gui.components.*;
@@ -24,6 +25,7 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
@@ -91,6 +93,9 @@ public class UserEditor extends AbstractEditor<User> {
     @Inject
     protected TimeZones timeZones;
 
+    @WindowParam(name = "initCopy")
+    protected Boolean initCopy;
+
     public interface Companion {
         void initPasswordField(PasswordField passwordField);
         void refreshUserSubstitutions();
@@ -155,6 +160,11 @@ public class UserEditor extends AbstractEditor<User> {
             if (!allowedRoles.contains(userRole.getRole())) {
                 rolesDs.excludeItem(userRole);
             }
+
+        }
+
+        if (BooleanUtils.isTrue(initCopy)) {
+            initCopy();
         }
 
         // if we add default roles, rolesDs becomes modified on setItem
