@@ -84,6 +84,7 @@ public class LayoutLoaderConfig {
         config.register(SplitPanel.NAME, SplitPanelLoader.class);
         config.register(Tree.NAME, TreeLoader.class);
         config.register(TabSheet.NAME, TabSheetLoader.class);
+        config.register(Accordion.NAME, AccordionLoader.class);
         config.register(Embedded.NAME, EmbeddedLoader.class);
         config.register(Filter.NAME, FilterLoader.class);
         config.register(ButtonsPanel.NAME, ButtonsPanelLoader.class);

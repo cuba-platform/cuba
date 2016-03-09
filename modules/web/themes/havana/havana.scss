@@ -30,6 +30,7 @@
 @import "components/menubar/menubar";
 @import "components/checkbox/checkbox";
 @import "components/tabsheet/tabsheet";
+@import "components/accordion/accordion";
 @import "components/textarea/textarea";
 @import "components/groupbox/groupbox";
 @import "components/textfield/textfield";
@@ -95,6 +96,7 @@
   @include havana-tooltip;
   @include havana-checkbox;
   @include havana-tabsheet;
+  @include havana-accordion;
   @include havana-textarea;
   @include havana-treetable;
   @include havana-textfield;

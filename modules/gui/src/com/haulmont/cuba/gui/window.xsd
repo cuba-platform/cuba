@@ -1375,16 +1375,42 @@
 
                     <xs:attributeGroup ref="requiresId"/>
                     <xs:attributeGroup ref="hasCaption"/>
-
+                    <xs:attributeGroup ref="hasSpacingMargin"/>
+                    <xs:attributeGroup ref="hasVisibility"/>
+                    <xs:attributeGroup ref="hasEnableProp"/>
                     <xs:attributeGroup ref="hasStyle"/>
 
-                    <xs:attribute name="enable" type="xs:boolean"/>
                     <xs:attribute name="lazy" type="xs:boolean"/>
-                    <xs:attribute name="margin" type="xs:string"/>
-                    <xs:attribute name="spacing" type="xs:boolean"/>
+
                     <xs:attribute name="expand" type="xs:string"/>
                     <xs:attribute name="detachable" type="xs:boolean"/>
-                    <xs:attribute name="visible" type="xs:boolean"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+
+        <xs:attributeGroup ref="hasId"/>
+        <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasEnableProp"/>
+        <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasStyle"/>
+    </xs:complexType>
+
+    <!-- Accordion -->
+    <xs:complexType name="accordionContainer">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="tab">
+                <xs:complexType>
+                    <xs:group ref="layoutOrComponent"/>
+
+                    <xs:attributeGroup ref="requiresId"/>
+                    <xs:attributeGroup ref="hasCaption"/>
+                    <xs:attributeGroup ref="hasSpacingMargin"/>
+                    <xs:attributeGroup ref="hasVisibility"/>
+                    <xs:attributeGroup ref="hasEnableProp"/>
+                    <xs:attributeGroup ref="hasStyle"/>
+
+                    <xs:attribute name="lazy" type="xs:boolean"/>
+                    <xs:attribute name="expand" type="xs:string"/>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
@@ -1688,6 +1714,7 @@
 
                 <xs:element name="split" type="splitContainer"/>
                 <xs:element name="tabSheet" type="tabsheetContainer"/>
+                <xs:element name="accordion" type="accordionContainer"/>
                 <xs:element name="frame" type="frameContainer"/>
 
                 <xs:element name="runtimeProperties" type="runtimePropertiesContainer"/>
