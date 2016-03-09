@@ -752,7 +752,6 @@
                 <xs:attribute name="filterMode" type="filterMode"/>
                 <xs:attribute name="nullName" type="xs:string"/>
 
-                <xs:attribute name="description" type="xs:string"/>
                 <xs:attribute name="newOptionAllowed" type="xs:boolean"/>
                 <xs:attribute name="textInputAllowed" type="xs:boolean"/>
                 <xs:attribute name="newOptionHandler" type="xs:string"/>

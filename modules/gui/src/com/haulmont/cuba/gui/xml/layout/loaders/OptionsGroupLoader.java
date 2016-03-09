@@ -36,9 +36,4 @@ public class OptionsGroupLoader extends AbstractOptionsBaseLoader<OptionsGroup> 
         resultComponent = (OptionsGroup) factory.createComponent(OptionsGroup.NAME);
         loadId(resultComponent, element);
     }
-
-    @Override
-    public void loadComponent() {
-        loadDescription(resultComponent, element);
-    }
 }
