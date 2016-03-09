@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.FrameContext;
@@ -344,6 +345,27 @@ public interface Frame
             copy.setWidth(width);
 
             return copy;
+        }
+
+        public static MessageType valueOf(String messageTypeString) {
+            Preconditions.checkNotNullArgument(messageTypeString, "messageTypeString should not be null");
+
+            switch (messageTypeString) {
+                case "CONFIRMATION":
+                    return CONFIRMATION;
+
+                case "CONFIRMATION_HTML":
+                    return CONFIRMATION_HTML;
+
+                case "WARNING":
+                    return WARNING;
+
+                case "WARNING_HTML":
+                    return WARNING_HTML;
+
+                default:
+                    throw new IllegalArgumentException("Unable to parse OpenType");
+            }
         }
     }
 
