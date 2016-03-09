@@ -83,8 +83,8 @@ public abstract class AbstractInstance implements Instance {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T getValue(String s) {
-        return (T) getMethodsCache().invokeGetter(this, s);
+    public <T> T getValue(String name) {
+        return (T) getMethodsCache().invokeGetter(this, name);
     }
 
     protected MethodsCache getMethodsCache() {
@@ -98,33 +98,33 @@ public abstract class AbstractInstance implements Instance {
     }
 
     @Override
-    public void setValue(String s, Object obj) {
-        setValue(s, obj, true);
+    public void setValue(String name, Object value) {
+        setValue(name, value, true);
     }
 
     /**
      * Set value to property in instance
      *
-     * @param property    property name
-     * @param obj         value
+     * @param name          property name
+     * @param value         value
      * @param checkEquals check equals for previous and new value.
      *                    If flag is true and objects equals, then setter will not be invoked
      */
-    public void setValue(String property, Object obj, boolean checkEquals) {
-        Object oldValue = getValue(property);
-        if ((!checkEquals) || (!ObjectUtils.equals(oldValue, obj))) {
-            getMethodsCache().invokeSetter(this, property, obj);
+    public void setValue(String name, Object value, boolean checkEquals) {
+        Object oldValue = getValue(name);
+        if ((!checkEquals) || (!ObjectUtils.equals(oldValue, value))) {
+            getMethodsCache().invokeSetter(this, name, value);
         }
     }
 
     @Override
-    public <T> T getValueEx(String s) {
-        return InstanceUtils.<T>getValueEx(this, s);
+    public <T> T getValueEx(String name) {
+        return InstanceUtils.<T>getValueEx(this, name);
     }
 
     @Override
-    public void setValueEx(String s, Object obj) {
-        InstanceUtils.setValueEx(this, s, obj);
+    public void setValueEx(String name, Object value) {
+        InstanceUtils.setValueEx(this, name, value);
     }
 
     @Override

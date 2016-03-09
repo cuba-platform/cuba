@@ -5,6 +5,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
@@ -61,6 +62,7 @@ import org.dom4j.Element;
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -694,9 +696,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                             setClickListener(propertyPath.toString(), new AbbreviatedCellClickListener());
                         }
                     }
-                } /*else if (propertyPath.getRange().isEnum()) {
-                    // TODO (abramov)
-                } */ else if (!propertyPath.getRange().isEnum()) {
+                } else if (!propertyPath.getRange().isEnum()) {
                     throw new UnsupportedOperationException();
                 }
             }
@@ -707,12 +707,20 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public void setDatasource(final CollectionDatasource datasource) {
+        Preconditions.checkNotNullArgument(datasource, "datasource is null");
+
         MessageTools messageTools = AppBeans.get(MessageTools.NAME);
         MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
         final Collection<Object> columns;
         if (this.columns.isEmpty()) {
-            Collection<MetaPropertyPath> paths = metadataTools.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass());
+            Collection<MetaPropertyPath> paths = datasource.getView() != null ?
+                    // if a view is specified - use view properties
+                    metadataTools.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass()) :
+                    // otherwise use only string properties from meta-class - the temporary solution for KeyValue datasources
+                    metadataTools.getPropertyPaths(datasource.getMetaClass()).stream()
+                            .filter(mpp -> mpp.getRangeJavaClass().equals(String.class))
+                            .collect(Collectors.toList());
             for (MetaPropertyPath metaPropertyPath : paths) {
                 MetaProperty property = metaPropertyPath.getMetaProperty();
                 if (!property.getRange().getCardinality().isMany() && !metadataTools.isSystem(property)) {

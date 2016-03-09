@@ -20,7 +20,7 @@ import java.util.UUID;
  * @author artamonov
  * @version $Id$
  */
-public class EntityParamsDatasource extends CollectionDatasourceImpl<KeyValueEntity, UUID> {
+public class EntityParamsDatasource extends CollectionDatasourceImpl<InfoParamEntity, UUID> {
 
     protected static final String TIMESTAMP_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
@@ -149,8 +149,8 @@ public class EntityParamsDatasource extends CollectionDatasourceImpl<KeyValueEnt
     }
 
     protected void includeParam(String messageKey, String value) {
-        KeyValueEntity keyValueEntity = new KeyValueEntity(messages.getMessage(getClass(), messageKey), value);
-        data.put(keyValueEntity.getId(), keyValueEntity);
+        InfoParamEntity infoParamEntity = new InfoParamEntity(messages.getMessage(getClass(), messageKey), value);
+        data.put(infoParamEntity.getId(), infoParamEntity);
     }
 
     public Entity getInstance() {

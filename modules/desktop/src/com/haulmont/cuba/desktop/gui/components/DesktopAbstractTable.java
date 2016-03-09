@@ -6,6 +6,7 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.google.common.collect.Lists;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -59,6 +60,7 @@ import java.awt.Component;
 import java.awt.event.*;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -512,12 +514,20 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
 
     @Override
     public void setDatasource(final CollectionDatasource datasource) {
+        Preconditions.checkNotNullArgument(datasource, "datasource is null");
+
         final Collection<Object> properties;
         if (this.columns.isEmpty()) {
             MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
             MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-            Collection<MetaPropertyPath> paths =
-                    metadataTools.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass());
+
+            Collection<MetaPropertyPath> paths = datasource.getView() != null ?
+                    // if a view is specified - use view properties
+                    metadataTools.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass()) :
+                    // otherwise use only string properties from meta-class - the temporary solution for KeyValue datasources
+                    metadataTools.getPropertyPaths(datasource.getMetaClass()).stream()
+                            .filter(mpp -> mpp.getRangeJavaClass().equals(String.class))
+                            .collect(Collectors.toList());
 
             for (MetaPropertyPath metaPropertyPath : paths) {
                 MetaProperty property = metaPropertyPath.getMetaProperty();

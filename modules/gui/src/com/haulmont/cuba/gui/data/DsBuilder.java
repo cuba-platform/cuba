@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
 /**
  * Datasources builder.
  * <p/>
- * Use setters to provide parameters and then invoke one of build... mehods to obtain the datasource implementation.<br>
+ * Use setters to provide parameters and then invoke one of the build* methods to obtain the datasource implementation.<br>
  * <p/>
  * Sample usage:
  * <pre>
@@ -205,6 +205,9 @@ public class DsBuilder {
         return dsClass;
     }
 
+    /**
+     * Set datasource implementation class. If not specified, a standard implementation is used.
+     */
     public DsBuilder setDsClass(Class<?> dsClass) {
         this.dsClass = dsClass;
         return this;
@@ -268,6 +271,18 @@ public class DsBuilder {
         return datasource;
     }
 
+    /**
+     * Build a {@link CollectionDatasource} with the specified implementation class.
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T buildCollectionDatasource(Class<T> datasourceClass) {
+        setDsClass(datasourceClass);
+        return (T) buildCollectionDatasource();
+    }
+
+    /**
+     * Build a {@link CollectionDatasource} with the standard implementation.
+     */
     public CollectionDatasource buildCollectionDatasource() {
         init();
         CollectionDatasource datasource;
@@ -281,7 +296,7 @@ public class DsBuilder {
                 datasource.setup(dsContext, dataSupplier, id, metaClass, view);
                 if (maxResults > 0)
                     datasource.setMaxResults(maxResults);
-                else
+                else if (metaClass != null)
                     datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
                 if (datasource instanceof AbstractCollectionDatasource)
                     ((AbstractCollectionDatasource) datasource).setRefreshMode(refreshMode);
@@ -302,6 +317,18 @@ public class DsBuilder {
         return datasource;
     }
 
+    /**
+     * Build a {@link HierarchicalDatasource} with the specified implementation class.
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T buildHierarchicalDatasource(Class<T> datasourceClass) {
+        setDsClass(datasourceClass);
+        return (T) buildHierarchicalDatasource();
+    }
+
+    /**
+     * Build a {@link HierarchicalDatasource} with the standard implementation.
+     */
     public HierarchicalDatasource buildHierarchicalDatasource() {
         init();
         HierarchicalDatasource datasource;
@@ -315,7 +342,7 @@ public class DsBuilder {
                 datasource.setup(dsContext, dataSupplier, id, metaClass, view);
                 if (maxResults > 0)
                     datasource.setMaxResults(maxResults);
-                else
+                else if (metaClass != null)
                     datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
                 if (datasource instanceof AbstractCollectionDatasource)
                     ((AbstractCollectionDatasource) datasource).setRefreshMode(refreshMode);
@@ -336,6 +363,18 @@ public class DsBuilder {
         return datasource;
     }
 
+    /**
+     * Build a {@link GroupDatasource} with the specified implementation class.
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T buildGroupDatasource(Class<T> datasourceClass) {
+        setDsClass(datasourceClass);
+        return (T) buildGroupDatasource();
+    }
+
+    /**
+     * Build a {@link GroupDatasource} with the standard implementation.
+     */
     public GroupDatasource buildGroupDatasource() {
         init();
         GroupDatasource datasource;
@@ -349,7 +388,7 @@ public class DsBuilder {
                 datasource.setup(dsContext, dataSupplier, id, metaClass, view);
                 if (maxResults > 0)
                     datasource.setMaxResults(maxResults);
-                else
+                else if (metaClass != null)
                     datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
                 if (datasource instanceof AbstractCollectionDatasource)
                     ((AbstractCollectionDatasource) datasource).setRefreshMode(refreshMode);

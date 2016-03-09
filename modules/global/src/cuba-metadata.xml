@@ -8,6 +8,7 @@
 
     <metadata-model root-package="com.haulmont.cuba">
         <class>com.haulmont.cuba.core.entity.AbstractNotPersistentEntity</class>
+        <class>com.haulmont.cuba.core.entity.KeyValueEntity</class>
         <class>com.haulmont.cuba.core.entity.diff.EntityBasicPropertyDiff</class>
         <class>com.haulmont.cuba.core.entity.diff.EntityClassPropertyDiff</class>
         <class>com.haulmont.cuba.core.entity.diff.EntityCollectionPropertyDiff</class>
