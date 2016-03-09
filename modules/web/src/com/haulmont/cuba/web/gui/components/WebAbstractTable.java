@@ -245,7 +245,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         if (printable != null) {
             return printable;
         } else {
-            com.vaadin.ui.Table.ColumnGenerator vColumnGenerator = component.getColumnGenerator(columnId);
+            com.vaadin.ui.Table.ColumnGenerator vColumnGenerator = component.getColumnGenerator(getColumn(columnId).getId());
             if (vColumnGenerator instanceof CustomColumnGenerator) {
                 ColumnGenerator columnGenerator = ((CustomColumnGenerator) vColumnGenerator).getColumnGenerator();
                 if (columnGenerator instanceof Printable)
@@ -1810,7 +1810,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             }
 
             WindowManager.OpenType screenOpenType = WindowManager.OpenType.THIS_TAB;
-            if (column.getXmlDescriptor()!= null) {
+            if (column.getXmlDescriptor() != null) {
                 String openTypeAttribute = column.getXmlDescriptor().attributeValue("linkScreenOpenType");
                 if (StringUtils.isNotEmpty(openTypeAttribute)) {
                     screenOpenType = WindowManager.OpenType.valueOf(openTypeAttribute);
@@ -1887,7 +1887,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     protected static class AbbreviatedColumnGenerator implements SystemTableColumnGenerator,
-                                                                 CubaEnhancedTable.PlainTextGeneratedColumn {
+            CubaEnhancedTable.PlainTextGeneratedColumn {
 
         protected Table.Column column;
 
@@ -2119,7 +2119,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 throw new IllegalStateException("Table datasource is null");
 
             MetaPropertyPath metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
-                            .resolveMetaPropertyPath(datasource.getMetaClass(), propertyId);
+                    .resolveMetaPropertyPath(datasource.getMetaClass(), propertyId);
             Column columnConf = columns.get(metaPropertyPath);
             final DsContext dsContext = datasource.getDsContext();
 
@@ -2338,7 +2338,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             if (propertyId != null && itemId != null
                     && !component.isColumnEditable(propertyId)
                     && (component.getColumnGenerator(propertyId) == null
-                        || component.getColumnGenerator(propertyId) instanceof AbbreviatedColumnGenerator)) {
+                    || component.getColumnGenerator(propertyId) instanceof AbbreviatedColumnGenerator)) {
 
                 MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(propertyId.toString());
                 Column column = getColumn(propertyId.toString());
