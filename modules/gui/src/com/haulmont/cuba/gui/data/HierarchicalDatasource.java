@@ -25,18 +25,15 @@ public interface HierarchicalDatasource<T extends Entity<K>, K> extends Collecti
     /** Identifiers of all root items */
     Collection<K> getRootItemIds();
 
-    /** Get parent ID for item with ID specified */
+    /** Get parent ID for item with the given ID */
     K getParent(K itemId);
 
-    /** Get children IDs for item with ID specified */
+    /** Get children IDs for item with the given ID */
     Collection<K> getChildren(K itemId);
 
-    /** True if item with ID specified is root item */
+    /** True if item with the given ID is a root item */
     boolean isRoot(K itemId);
 
-    /** True if item with ID specified has children */
+    /** True if item with the given ID has children */
     boolean hasChildren(K itemId);
-
-    /** True if item with ID specified can ever has children */
-    boolean canHasChildren(K itemId);
 }

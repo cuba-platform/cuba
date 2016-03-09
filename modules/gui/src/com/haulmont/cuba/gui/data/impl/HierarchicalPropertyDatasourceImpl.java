@@ -131,11 +131,6 @@ public class HierarchicalPropertyDatasourceImpl<T extends Entity<K>, K>
         return false;
     }
 
-    @Override
-    public boolean canHasChildren(K itemId) {
-        return hasChildren(itemId);
-    }
-
     /**
      * @return Property of entity which sort the nodes
      */

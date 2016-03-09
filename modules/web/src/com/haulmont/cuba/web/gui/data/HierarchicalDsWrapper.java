@@ -57,7 +57,7 @@ public class HierarchicalDsWrapper extends CollectionDsWrapper implements Contai
     @Override
     public boolean areChildrenAllowed(Object itemId) {
         //noinspection unchecked
-        return ((HierarchicalDatasource) datasource).canHasChildren(itemId);
+        return ((HierarchicalDatasource) datasource).hasChildren(itemId);
     }
 
     @Override
