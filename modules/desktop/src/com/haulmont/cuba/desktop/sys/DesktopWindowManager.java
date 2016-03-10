@@ -76,7 +76,7 @@ public class DesktopWindowManager extends WindowManager {
     protected JTabbedPane tabsPane;
 
     protected final Map<JComponent, WindowBreadCrumbs> tabs = new HashMap<>();
-    protected final Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<>();
+    protected final Map<Window, WindowOpenInfo> windowOpenMode = new LinkedHashMap<>();
     protected final Map<WindowBreadCrumbs, Stack<Map.Entry<Window, Integer>>> stacks = new HashMap<>();
     protected final Map<Window, Integer> windows = new HashMap<>();
     protected final TopLevelFrame frame;
@@ -131,13 +131,13 @@ public class DesktopWindowManager extends WindowManager {
     @Override
     public void selectWindowTab(Window window) {
         if (isMainWindowManager) {
-            WindowOpenMode openMode = windowOpenMode.get(window);
-            if (openMode != null) {
-                OpenType openType = openMode.getOpenType();
-                if (openType.getOpenMode() == OpenMode.NEW_TAB
-                        || openType.getOpenMode() == OpenMode.THIS_TAB) {
+            WindowOpenInfo openInfo = windowOpenMode.get(window);
+            if (openInfo != null) {
+                OpenMode openMode = openInfo.getOpenMode();
+                if (openMode == OpenMode.NEW_TAB
+                        || openMode == OpenMode.THIS_TAB) {
                     // show in tabsheet
-                    JComponent layout = (JComponent) openMode.getData();
+                    JComponent layout = (JComponent) openInfo.getData();
                     tabsPane.setSelectedComponent(layout);
                 }
             }
@@ -153,12 +153,12 @@ public class DesktopWindowManager extends WindowManager {
         window.setCaption(caption);
 
         String formattedCaption = formatTabDescription(caption, description);
-        WindowOpenMode openMode = windowOpenMode.get(desktopWindow);
+        WindowOpenInfo openInfo = windowOpenMode.get(desktopWindow);
 
-        if (openMode != null) {
-            OpenType openType = openMode.getOpenType();
+        if (openInfo != null) {
+            OpenMode openMode = openInfo.getOpenMode();
 
-            if (openType != OpenType.DIALOG) {
+            if (openMode != OpenMode.DIALOG) {
                 if (tabsPane != null) {
                     int selectedIndex = tabsPane.getSelectedIndex();
                     if (selectedIndex != -1) {
@@ -168,7 +168,7 @@ public class DesktopWindowManager extends WindowManager {
                     setTopLevelWindowCaption(formattedCaption);
                 }
             } else {
-                JDialog jDialog = (JDialog) openMode.getData();
+                JDialog jDialog = (JDialog) openInfo.getData();
                 if (jDialog != null) {
                     jDialog.setTitle(formattedCaption);
                 }
@@ -181,8 +181,8 @@ public class DesktopWindowManager extends WindowManager {
         List<Window> openedWindows = new ArrayList<>(windowOpenMode.keySet());
         if (openedWindows.size() > 0) {
             Window w = openedWindows.get(openedWindows.size() - 1);
-            WindowOpenMode mode = windowOpenMode.get(w);
-            if (mode.getOpenType().getOpenMode() == OpenMode.DIALOG && mode.getData() instanceof DialogWindow) {
+            WindowOpenInfo mode = windowOpenMode.get(w);
+            if (mode.getOpenMode() == OpenMode.DIALOG && mode.getData() instanceof DialogWindow) {
                 return (DialogWindow) mode.getData();
             }
         }
@@ -216,9 +216,9 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     protected boolean hasModalWindow() {
-        Set<Map.Entry<Window, WindowOpenMode>> openModes = windowOpenMode.entrySet();
-        for (Map.Entry<Window, WindowOpenMode> openMode : openModes) {
-            if (OpenMode.DIALOG.equals(openMode.getValue().getOpenType().getOpenMode()))
+        Set<Map.Entry<Window, WindowOpenInfo>> openModes = windowOpenMode.entrySet();
+        for (Map.Entry<Window, WindowOpenInfo> openMode : openModes) {
+            if (OpenMode.DIALOG.equals(openMode.getValue().getOpenMode()))
                 return true;
         }
         return false;
@@ -327,13 +327,13 @@ public class DesktopWindowManager extends WindowManager {
      */
     protected void moveWindowTab(Window window, int position) {
         if (isMainWindowManager && position >= 0 && position < tabsPane.getComponentCount()) {
-            WindowOpenMode openMode = windowOpenMode.get(window);
-            if (openMode != null) {
-                OpenType openType = openMode.getOpenType();
-                if (openType.getOpenMode() == OpenMode.NEW_TAB
-                        || openType.getOpenMode() == OpenMode.THIS_TAB) {
+            WindowOpenInfo openInfo = windowOpenMode.get(window);
+            if (openInfo != null) {
+                OpenMode openMode = openInfo.getOpenMode();
+                if (openMode == OpenMode.NEW_TAB
+                        || openMode == OpenMode.THIS_TAB) {
                     // show in tabsheet
-                    JComponent layout = (JComponent) openMode.getData();
+                    JComponent layout = (JComponent) openInfo.getData();
 
                     int currentPosition = getTabPosition(layout);
 
@@ -426,21 +426,21 @@ public class DesktopWindowManager extends WindowManager {
 
         JComponent tabContent = createTabPanel(window, breadCrumbs);
 
-        WindowOpenMode openMode = new WindowOpenMode(window, OpenType.NEW_WINDOW);
-        openMode.setData(tabContent);
-        Map<Window, WindowOpenMode> openModes = new HashMap<>();
+        WindowOpenInfo openInfo = new WindowOpenInfo(window, OpenMode.NEW_WINDOW);
+        openInfo.setData(tabContent);
+        Map<Window, WindowOpenInfo> openInfos = new HashMap<>();
         if (window instanceof Window.Wrapper) {
             Window wrappedWindow = ((Window.Wrapper) window).getWrappedWindow();
-            openModes.put(wrappedWindow, openMode);
+            openInfos.put(wrappedWindow, openInfo);
         } else {
-            openModes.put(window, openMode);
+            openInfos.put(window, openInfo);
         }
 
         windowFrame.getWindowManager().attachTab(breadCrumbs,
                 new Stack<>(),
                 window,
                 getWindowHashCode(window),
-                tabContent, openModes);
+                tabContent, openInfos);
 
         App.getInstance().registerFrame(windowFrame);
 
@@ -915,13 +915,13 @@ public class DesktopWindowManager extends WindowManager {
         }
 
         //WindowOpenMode map
-        Map<Window, WindowOpenMode> detachOpenModes = new HashMap<>();
+        Map<Window, WindowOpenInfo> detachOpenModes = new HashMap<>();
         detachOpenModes.put((Window) window.getFrame(), windowOpenMode.get(window.<Window>getFrame()));
         windowOpenMode.remove(window.<Window>getFrame());
         Stack<Map.Entry<Window, Integer>> stack = stacks.get(breadCrumbs);
         for (Map.Entry<Window, Integer> entry : stack) {
-            WindowOpenMode openMode = windowOpenMode.get(entry.getKey().<Window>getFrame());
-            detachOpenModes.put((Window) entry.getKey().getFrame(), openMode);
+            WindowOpenInfo openInfo = windowOpenMode.get(entry.getKey().<Window>getFrame());
+            detachOpenModes.put((Window) entry.getKey().getFrame(), openInfo);
             windowOpenMode.remove(entry.getKey().<Window>getFrame());
         }
 
@@ -939,7 +939,7 @@ public class DesktopWindowManager extends WindowManager {
 
     public void attachTab(WindowBreadCrumbs breadCrumbs, Stack<Map.Entry<Window, Integer>> stack,
                           Window window, Integer hashCode, final JComponent tabContent,
-                          Map<Window, WindowOpenMode> openModes) {
+                          Map<Window, WindowOpenInfo> openInfos) {
         frame.add(tabContent);
         frame.addWindowListener(new ValidationAwareWindowClosingListener() {
             @Override
@@ -948,7 +948,7 @@ public class DesktopWindowManager extends WindowManager {
             }
         });
         tabs.put(tabContent, breadCrumbs);
-        windowOpenMode.putAll(openModes);
+        windowOpenMode.putAll(openInfos);
         stacks.put(breadCrumbs, stack);
         for (Map.Entry<Window, Integer> entry : stack) {
             entry.getKey().setWindowManager(this);
@@ -1012,25 +1012,25 @@ public class DesktopWindowManager extends WindowManager {
             window = ((Window.Wrapper) window).getWrappedWindow();
         }
 
-        final WindowOpenMode openMode = windowOpenMode.get(window);
-        if (openMode == null) {
+        final WindowOpenInfo openInfo = windowOpenMode.get(window);
+        if (openInfo == null) {
             log.warn("Problem closing window " + window + " : WindowOpenMode not found");
             return;
         }
         disableSavingScreenHistory = false;
-        closeWindow(window, openMode);
+        closeWindow(window, openInfo);
         windowOpenMode.remove(window);
-        windows.remove(openMode.getWindow());
+        windows.remove(openInfo.getWindow());
     }
 
-    protected void closeWindow(Window window, WindowOpenMode openMode) {
+    protected void closeWindow(Window window, WindowOpenInfo openInfo) {
         if (!disableSavingScreenHistory) {
-            screenHistorySupport.saveScreenHistory(window, openMode.getOpenType());
+            screenHistorySupport.saveScreenHistory(window, openInfo.getOpenMode());
         }
 
-        switch (openMode.getOpenType().getOpenMode()) {
+        switch (openInfo.getOpenMode()) {
             case DIALOG: {
-                JDialog dialog = (JDialog) openMode.getData();
+                JDialog dialog = (JDialog) openInfo.getData();
                 dialog.setVisible(false);
                 dialog.dispose();
                 cleanupAfterModalDialogClosed(window);
@@ -1040,7 +1040,7 @@ public class DesktopWindowManager extends WindowManager {
             }
             case NEW_TAB:
             case NEW_WINDOW: {
-                JComponent layout = (JComponent) openMode.getData();
+                JComponent layout = (JComponent) openInfo.getData();
                 layout.remove(DesktopComponentsHelper.getComposition(window));
                 if (isMainWindowManager) {
                     tabsPane.remove(layout);
@@ -1062,7 +1062,7 @@ public class DesktopWindowManager extends WindowManager {
                 break;
             }
             case THIS_TAB: {
-                JComponent layout = (JComponent) openMode.getData();
+                JComponent layout = (JComponent) openInfo.getData();
 
                 final WindowBreadCrumbs breadCrumbs = tabs.get(layout);
                 if (breadCrumbs == null)
@@ -1119,12 +1119,12 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     protected void cleanupAfterModalDialogClosed(@Nullable Window closingWindow) {
-        WindowOpenMode previous = null;
+        WindowOpenInfo previous = null;
         for (Iterator<Window> it = windowOpenMode.keySet().iterator(); it.hasNext(); ) {
             Window w = it.next();
             // Check if there is a modal window opened before the current
-            WindowOpenMode mode = windowOpenMode.get(w);
-            if (w != closingWindow && mode.getOpenType().getOpenMode() == OpenMode.DIALOG) {
+            WindowOpenInfo mode = windowOpenMode.get(w);
+            if (w != closingWindow && mode.getOpenMode() == OpenMode.DIALOG) {
                 previous = mode;
             }
             // If there are windows opened after the current, close them
@@ -1593,9 +1593,9 @@ public class DesktopWindowManager extends WindowManager {
      * Release resources right before throwing away this WindowManager instance.
      */
     public void dispose() {
-        for (WindowOpenMode openMode : windowOpenMode.values()) {
-            if (openMode.getOpenType().getOpenMode() == OpenMode.DIALOG) {
-                JDialog dialog = (JDialog) openMode.getData();
+        for (WindowOpenInfo openInfo : windowOpenMode.values()) {
+            if (openInfo.getOpenMode() == OpenMode.DIALOG) {
+                JDialog dialog = (JDialog) openInfo.getData();
                 dialog.setVisible(false);
             }
         }
@@ -1618,16 +1618,16 @@ public class DesktopWindowManager extends WindowManager {
         stacks.clear();
     }
 
-    protected static class WindowOpenMode {
+    protected static class WindowOpenInfo {
 
         protected Window window;
-        protected OpenType openType;
+        protected OpenMode openMode;
         protected Object data;
         protected java.awt.Component focusOwner;
 
-        public WindowOpenMode(Window window, OpenType openType) {
+        public WindowOpenInfo(Window window, OpenMode openMode) {
             this.window = window;
-            this.openType = openType;
+            this.openMode = openMode;
         }
 
         public Object getData() {
@@ -1642,8 +1642,8 @@ public class DesktopWindowManager extends WindowManager {
             return window;
         }
 
-        public OpenType getOpenType() {
-            return openType;
+        public OpenMode getOpenMode() {
+            return openMode;
         }
 
         public java.awt.Component getFocusOwner() {
@@ -1672,13 +1672,13 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     public void addWindowData(Window window, Object windowData, OpenType openType) {
-        WindowOpenMode openMode = new WindowOpenMode(window, openType);
-        openMode.setData(windowData);
+        WindowOpenInfo openInfo = new WindowOpenInfo(window, openType.getOpenMode());
+        openInfo.setData(windowData);
         if (window instanceof Window.Wrapper) {
             Window wrappedWindow = ((Window.Wrapper) window).getWrappedWindow();
-            windowOpenMode.put(wrappedWindow, openMode);
+            windowOpenMode.put(wrappedWindow, openInfo);
         } else {
-            windowOpenMode.put(window, openMode);
+            windowOpenMode.put(window, openInfo);
         }
 
         addShortcuts(window);
@@ -1688,7 +1688,7 @@ public class DesktopWindowManager extends WindowManager {
         boolean modified = false;
         for (Window window : getOpenWindows()) {
             if (!disableSavingScreenHistory) {
-                screenHistorySupport.saveScreenHistory(window, windowOpenMode.get(window).getOpenType());
+                screenHistorySupport.saveScreenHistory(window, windowOpenMode.get(window).getOpenMode());
             }
 
             recursiveFramesClose = true;

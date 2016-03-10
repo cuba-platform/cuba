@@ -854,51 +854,51 @@ public abstract class WindowManager {
     protected abstract void showFrame(Component parent, Frame frame);
 
     @Deprecated
-    protected void copyDialogParamsToOpenType(OpenType openTypeCopy) {
+    protected void copyDialogParamsToOpenType(OpenType mutableOpenType) {
         DialogParams dialogParams = getDialogParams();
-        if (dialogParams.getCloseable() != null && openTypeCopy.getCloseable() == null) {
-            openTypeCopy.closeable(dialogParams.getCloseable());
+        if (dialogParams.getCloseable() != null && mutableOpenType.getCloseable() == null) {
+            mutableOpenType.closeable(dialogParams.getCloseable());
         }
-        if (dialogParams.getModal() != null && openTypeCopy.getModal() == null) {
-            openTypeCopy.setModal(dialogParams.getModal());
+        if (dialogParams.getModal() != null && mutableOpenType.getModal() == null) {
+            mutableOpenType.setModal(dialogParams.getModal());
         }
-        if (dialogParams.getResizable() != null && openTypeCopy.getResizable() == null) {
-            openTypeCopy.setResizable(dialogParams.getResizable());
+        if (dialogParams.getResizable() != null && mutableOpenType.getResizable() == null) {
+            mutableOpenType.setResizable(dialogParams.getResizable());
         }
-        if (dialogParams.getWidth() != null && openTypeCopy.getWidth() == null) {
-            openTypeCopy.setWidth(dialogParams.getWidth());
+        if (dialogParams.getWidth() != null && mutableOpenType.getWidth() == null) {
+            mutableOpenType.setWidth(dialogParams.getWidth());
         }
-        if (dialogParams.getHeight() != null && openTypeCopy.getHeight() == null) {
-            openTypeCopy.setHeight(openTypeCopy.getHeight());
+        if (dialogParams.getHeight() != null && mutableOpenType.getHeight() == null) {
+            mutableOpenType.setHeight(dialogParams.getHeight());
         }
     }
 
-    protected OpenType overrideOpenTypeParams(OpenType openTypeCopy, DialogOptions dialogOptions) {
+    protected OpenType overrideOpenTypeParams(OpenType mutableOpenType, DialogOptions dialogOptions) {
         if (BooleanUtils.isTrue(dialogOptions.getForceDialog())) {
-            openTypeCopy.setOpenMode(OpenMode.DIALOG);
+            mutableOpenType.setOpenMode(OpenMode.DIALOG);
         }
 
         if (dialogOptions.getHeight() != null) {
-            openTypeCopy.setHeight(dialogOptions.getHeight());
+            mutableOpenType.setHeight(dialogOptions.getHeight());
         }
 
         if (dialogOptions.getWidth() != null) {
-            openTypeCopy.setWidth(dialogOptions.getWidth());
+            mutableOpenType.setWidth(dialogOptions.getWidth());
         }
 
         if (dialogOptions.getResizable() != null) {
-            openTypeCopy.setResizable(dialogOptions.getResizable());
+            mutableOpenType.setResizable(dialogOptions.getResizable());
         }
 
         if (dialogOptions.getCloseable() != null) {
-            openTypeCopy.setCloseable(dialogOptions.getCloseable());
+            mutableOpenType.setCloseable(dialogOptions.getCloseable());
         }
 
         if (dialogOptions.getModal() != null) {
-            openTypeCopy.setModal(dialogOptions.getModal());
+            mutableOpenType.setModal(dialogOptions.getModal());
         }
 
-        return openTypeCopy;
+        return mutableOpenType;
     }
 
     protected Settings getSettingsImpl(String id) {

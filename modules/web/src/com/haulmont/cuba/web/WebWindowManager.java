@@ -75,7 +75,7 @@ public class WebWindowManager extends WindowManager {
 
     protected final Map<ComponentContainer, WindowBreadCrumbs> tabs = new HashMap<>();
     protected final Map<WindowBreadCrumbs, Stack<Map.Entry<Window, Integer>>> stacks = new HashMap<>();
-    protected final Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<>();
+    protected final Map<Window, WindowOpenInfo> windowOpenMode = new LinkedHashMap<>();
     protected final Map<Window, Integer> windows = new HashMap<>();
 
     protected boolean disableSavingScreenHistory;
@@ -106,13 +106,13 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     public void selectWindowTab(Window window) {
-        WindowOpenMode openMode = windowOpenMode.get(window);
-        if (openMode != null) {
-            OpenType openType = openMode.getOpenType();
-            if (openType.getOpenMode() == OpenMode.NEW_TAB
-                    || openType.getOpenMode() == OpenMode.THIS_TAB) {
+        WindowOpenInfo openInfo = windowOpenMode.get(window);
+        if (openInfo != null) {
+            OpenMode openMode = openInfo.getOpenMode();
+            if (openMode == OpenMode.NEW_TAB
+                    || openMode == OpenMode.THIS_TAB) {
                 // show in tabsheet
-                Layout layout = (Layout) openMode.getData();
+                Layout layout = (Layout) openInfo.getData();
                 TabSheet webTabsheet = getConfiguredWorkArea().getTabbedWindowContainer();
                 webTabsheet.setSelectedTab(layout);
             }
@@ -128,27 +128,27 @@ public class WebWindowManager extends WindowManager {
         window.setCaption(caption);
         window.setDebugId(description);
 
-        WindowOpenMode openMode = windowOpenMode.get(webWindow);
+        WindowOpenInfo openInfo = windowOpenMode.get(webWindow);
         String formattedCaption;
 
-        if (openMode != null
-            && (openMode.getOpenType().getOpenMode() == OpenMode.NEW_TAB
-                || openMode.getOpenType().getOpenMode() == OpenMode.THIS_TAB)) {
+        if (openInfo != null
+            && (openInfo.getOpenMode() == OpenMode.NEW_TAB
+                || openInfo.getOpenMode() == OpenMode.THIS_TAB)) {
             formattedCaption = formatTabCaption(caption, description);
         } else {
             formattedCaption = formatTabDescription(caption, description);
         }
 
-        if (openMode != null) {
-            if (openMode.getOpenType().getOpenMode() == OpenMode.DIALOG) {
-                com.vaadin.ui.Window dialog = (com.vaadin.ui.Window) openMode.getData();
+        if (openInfo != null) {
+            if (openInfo.getOpenMode() == OpenMode.DIALOG) {
+                com.vaadin.ui.Window dialog = (com.vaadin.ui.Window) openInfo.getData();
                 dialog.setCaption(formattedCaption);
             } else {
                 if (getConfiguredWorkArea().getMode() == AppWorkArea.Mode.SINGLE) {
                     return;
                 }
 
-                com.vaadin.ui.Component tabContent = (Component) openMode.getData();
+                com.vaadin.ui.Component tabContent = (Component) openInfo.getData();
                 if (tabContent == null) {
                     return;
                 }
@@ -171,14 +171,14 @@ public class WebWindowManager extends WindowManager {
         }
     }
 
-    protected static class WindowOpenMode {
+    protected static class WindowOpenInfo {
         protected Window window;
-        protected OpenType openType;
+        protected OpenMode openMode;
         protected Object data;
 
-        public WindowOpenMode(Window window, OpenType openType) {
+        public WindowOpenInfo(Window window, OpenMode openMode) {
             this.window = window;
-            this.openType = openType;
+            this.openMode = openMode;
         }
 
         public Object getData() {
@@ -193,8 +193,8 @@ public class WebWindowManager extends WindowManager {
             return window;
         }
 
-        public OpenType getOpenType() {
-            return openType;
+        public OpenMode getOpenMode() {
+            return openMode;
         }
     }
 
@@ -214,8 +214,8 @@ public class WebWindowManager extends WindowManager {
     }
 
     protected boolean hasModalWindow() {
-        for (Map.Entry<Window, WindowOpenMode> entry : windowOpenMode.entrySet()) {
-            if (OpenMode.DIALOG == entry.getValue().getOpenType().getOpenMode()) {
+        for (Map.Entry<Window, WindowOpenInfo> entry : windowOpenMode.entrySet()) {
+            if (OpenMode.DIALOG == entry.getValue().getOpenMode()) {
                 return true;
             }
         }
@@ -247,7 +247,7 @@ public class WebWindowManager extends WindowManager {
             targetOpenType.setOpenMode(OpenMode.NEW_TAB);
         }
 
-        final WindowOpenMode openMode = new WindowOpenMode(window, targetOpenType);
+        final WindowOpenInfo openInfo = new WindowOpenInfo(window, targetOpenType.getOpenMode());
         Component component;
 
         window.setCaption(caption);
@@ -333,13 +333,13 @@ public class WebWindowManager extends WindowManager {
                 throw new UnsupportedOperationException();
         }
 
-        openMode.setData(component);
+        openInfo.setData(component);
 
         if (window instanceof Window.Wrapper) {
             Window wrappedWindow = ((Window.Wrapper) window).getWrappedWindow();
-            windowOpenMode.put(wrappedWindow, openMode);
+            windowOpenMode.put(wrappedWindow, openInfo);
         } else {
-            windowOpenMode.put(window, openMode);
+            windowOpenMode.put(window, openInfo);
         }
 
         afterShowWindow(window);
@@ -355,12 +355,12 @@ public class WebWindowManager extends WindowManager {
         CubaTabSheet tabSheet = workArea.getTabbedWindowContainer();
 
         if (position >= 0 && position < tabSheet.getComponentCount()) {
-            WindowOpenMode openMode = windowOpenMode.get(window);
-            if (openMode != null) {
-                OpenType openType = openMode.getOpenType();
-                if (openType.getOpenMode() == OpenMode.NEW_TAB || openType.getOpenMode() == OpenMode.THIS_TAB) {
+            WindowOpenInfo openInfo = windowOpenMode.get(window);
+            if (openInfo != null) {
+                OpenMode openMode = openInfo.getOpenMode();
+                if (openMode == OpenMode.NEW_TAB || openMode == OpenMode.THIS_TAB) {
                     // show in tabsheet
-                    Layout layout = (Layout) openMode.getData();
+                    Layout layout = (Layout) openInfo.getData();
 
                     tabSheet.moveTab(layout, position);
                     tabSheet.setSelectedTab(layout);
@@ -714,15 +714,15 @@ public class WebWindowManager extends WindowManager {
             window = ((Window.Wrapper) window).getWrappedWindow();
         }
 
-        final WindowOpenMode openMode = windowOpenMode.get(window);
-        if (openMode == null) {
+        final WindowOpenInfo openInfo = windowOpenMode.get(window);
+        if (openInfo == null) {
             log.warn("Problem closing window " + window + " : WindowOpenMode not found");
             return;
         }
         disableSavingScreenHistory = false;
-        closeWindow(window, openMode);
+        closeWindow(window, openInfo);
         windowOpenMode.remove(window);
-        removeFromWindowMap(openMode.getWindow());
+        removeFromWindowMap(openInfo.getWindow());
     }
 
     /**
@@ -742,7 +742,7 @@ public class WebWindowManager extends WindowManager {
         boolean modified = false;
         for (Window window : getOpenWindows()) {
             if (!disableSavingScreenHistory) {
-                screenHistorySupport.saveScreenHistory(window, windowOpenMode.get(window).getOpenType());
+                screenHistorySupport.saveScreenHistory(window, windowOpenMode.get(window).getOpenMode());
             }
 
             if (window instanceof WrappedWindow && ((WrappedWindow) window).getWrapper() != null) {
@@ -803,7 +803,7 @@ public class WebWindowManager extends WindowManager {
      * Close all screens in the main window (browser tab) this WindowManager belongs to.
      */
     public void closeAll() {
-        List<Map.Entry<Window, WindowOpenMode>> entries = new ArrayList<>(windowOpenMode.entrySet());
+        List<Map.Entry<Window, WindowOpenInfo>> entries = new ArrayList<>(windowOpenMode.entrySet());
         for (int i = entries.size() - 1; i >= 0; i--) {
             WebWindow window = (WebWindow) entries.get(i).getKey();
             window.stopTimers();
@@ -818,23 +818,23 @@ public class WebWindowManager extends WindowManager {
         windows.clear();
     }
 
-    protected void closeWindow(Window window, WindowOpenMode openMode) {
+    protected void closeWindow(Window window, WindowOpenInfo openInfo) {
         if (!disableSavingScreenHistory) {
-            screenHistorySupport.saveScreenHistory(window, openMode.getOpenType());
+            screenHistorySupport.saveScreenHistory(window, openInfo.getOpenMode());
         }
 
         WebWindow webWindow = (WebWindow) window;
         webWindow.stopTimers();
 
-        switch (openMode.getOpenType().getOpenMode()) {
+        switch (openInfo.getOpenMode()) {
             case DIALOG: {
-                final CubaWindow cubaDialogWindow = (CubaWindow) openMode.getData();
+                final CubaWindow cubaDialogWindow = (CubaWindow) openInfo.getData();
                 cubaDialogWindow.dispose();
                 fireListeners(window, tabs.size() != 0);
                 break;
             }
             case NEW_TAB: {
-                final Layout layout = (Layout) openMode.getData();
+                final Layout layout = (Layout) openInfo.getData();
                 layout.removeComponent(WebComponentsHelper.getComposition(window));
 
                 WebAppWorkArea workArea = getConfiguredWorkArea();
@@ -863,7 +863,7 @@ public class WebWindowManager extends WindowManager {
                 break;
             }
             case THIS_TAB: {
-                final VerticalLayout layout = (VerticalLayout) openMode.getData();
+                final VerticalLayout layout = (VerticalLayout) openInfo.getData();
 
                 final WindowBreadCrumbs breadCrumbs = tabs.get(layout);
                 if (breadCrumbs == null) {

@@ -60,12 +60,12 @@ public class ScreenHistorySupport {
         }
     }
 
-    public void saveScreenHistory(Window window, WindowManager.OpenType openType) {
+    public void saveScreenHistory(Window window, WindowManager.OpenMode openMode) {
         Security security = AppBeans.get(Security.NAME);
         if (security.isEntityOpPermitted(ScreenHistoryEntity.class, EntityOp.CREATE)
                 && window.getFrame() != null
                 && (window.getFrame() instanceof Window.Editor)
-                && openType.getOpenMode() != WindowManager.OpenMode.DIALOG
+                && openMode != WindowManager.OpenMode.DIALOG
                 && (screenIds == null || screenIds.contains(window.getId())))
         {
             String caption = window.getCaption();
