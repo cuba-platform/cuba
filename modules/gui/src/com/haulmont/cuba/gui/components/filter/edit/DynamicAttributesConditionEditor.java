@@ -30,7 +30,7 @@ public class DynamicAttributesConditionEditor extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        getDialogOptions().setWidth(-1);
+        getDialogOptions().setWidth(400);
 
         hideUnnecessaryFields();
     }

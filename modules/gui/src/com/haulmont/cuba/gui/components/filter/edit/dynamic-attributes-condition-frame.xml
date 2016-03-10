@@ -31,19 +31,19 @@
                 <row>
                     <label id="categoryLabel" value="mainMsg://filter.dynamicAttributesConditionFrame.category" align="MIDDLE_LEFT"/>
                     <lookupField id="categoryLookup"
-                                 width="theme://cuba.gui.dynamicAttributesConditionFrame.lookup.width"
+                                 width="100%"
                                  required="true"/>
                 </row>
                 <row>
                     <label value="mainMsg://filter.dynamicAttributesConditionFrame.attribute" align="MIDDLE_LEFT"/>
                     <lookupField id="attributeLookup"
-                                 width="theme://cuba.gui.dynamicAttributesConditionFrame.lookup.width"
+                                 width="100%"
                                  required="true"/>
                 </row>
                 <row>
                     <label value="mainMsg://filter.dynamicAttributesConditionFrame.operation" align="MIDDLE_LEFT"/>
                     <lookupField id="operationLookup"
-                                 width="theme://cuba.gui.dynamicAttributesConditionFrame.lookup.width"
+                                 width="100%"
                                  required="true"/>
                 </row>
             </rows>
