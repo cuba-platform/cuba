@@ -17,6 +17,7 @@ import com.haulmont.cuba.core.config.type.CommaSeparatedStringListTypeFactory;
 import com.haulmont.cuba.core.config.type.Factory;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Configuration parameters interface used by the WEB and DESKTOP layers.
@@ -49,6 +50,12 @@ public interface ClientConfig extends Config {
     @DefaultInt(20)
     int getMaxUploadSizeMb();
     void setMaxUploadSizeMb(int value);
+
+
+    @Factory(factory = UniqueConstraintViolationPatternFactory.class)
+    @Source(type = SourceType.DATABASE)
+    @Property("cuba.uniqueConstraintViolationPattern")
+    Pattern getUniqueConstraintViolationPattern();
 
     /**
      * @return Whether to enable sorting of datasource data on DB (using separate SELECT with ORDER BY clause).

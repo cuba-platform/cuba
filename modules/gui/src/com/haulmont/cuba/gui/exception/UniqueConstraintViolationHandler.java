@@ -5,7 +5,7 @@
 
 package com.haulmont.cuba.gui.exception;
 
-import com.haulmont.cuba.core.global.ExceptionHandlersConfig;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Frame;
@@ -31,7 +31,7 @@ public class UniqueConstraintViolationHandler implements GenericExceptionHandler
     protected Messages messages;
 
     @Inject
-    protected ExceptionHandlersConfig exceptionHandlersConfig;
+    protected ClientConfig clientConfig;
 
     @Override
     public boolean handle(Throwable exception, WindowManager windowManager) {
@@ -50,7 +50,7 @@ public class UniqueConstraintViolationHandler implements GenericExceptionHandler
     }
 
     protected boolean doHandle(Throwable throwable, WindowManager windowManager) {
-        Pattern pattern = exceptionHandlersConfig.getUniqueConstraintViolationPattern();
+        Pattern pattern = clientConfig.getUniqueConstraintViolationPattern();
         String constraintName = "";
 
         Matcher matcher = pattern.matcher(throwable.toString());
