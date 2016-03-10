@@ -120,11 +120,28 @@ public class AbstractWindow extends AbstractFrame
         return (Window) frame;
     }
 
+    /**
+     * This method is called when the screen is opened to restore settings saved in the database for the current user.
+     * <p>You can override it to restore custom settings.
+     * <p>For example:
+     * <pre>
+     * public void applySettings(Settings settings) {
+     *     super.applySettings(settings);
+     *     String visible = settings.get(hintBox.getId()).attributeValue("visible");
+     *     if (visible != null)
+     *         hintBox.setVisible(Boolean.valueOf(visible));
+     * }
+     * </pre>
+     * @param settings settings object loaded from the database for the current user
+     */
     @Override
     public void applySettings(Settings settings) {
         ((Window) frame).applySettings(settings);
     }
 
+    /**
+     * This method is called when the screen is closed to save the screen settings to the database.
+     */
     @Override
     public void saveSettings() {
         ((Window) frame).saveSettings();
@@ -145,6 +162,9 @@ public class AbstractWindow extends AbstractFrame
         return ((Window) frame).getFocusComponent();
     }
 
+    /**
+     * @return  the screen settings interface. Never null.
+     */
     @Override
     public Settings getSettings() {
         return ((Window) frame).getSettings();
