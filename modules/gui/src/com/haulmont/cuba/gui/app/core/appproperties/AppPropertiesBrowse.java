@@ -6,15 +6,10 @@
 package com.haulmont.cuba.gui.app.core.appproperties;
 
 import com.haulmont.bali.util.ParamsMap;
-import com.haulmont.cuba.core.app.importexport.EntityImportExportService;
 import com.haulmont.cuba.core.config.AppPropertyEntity;
-import com.haulmont.cuba.core.entity.Config;
-import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
-import com.haulmont.cuba.gui.export.ExportDisplay;
-import com.haulmont.cuba.gui.export.ExportFormat;
+import com.haulmont.cuba.gui.settings.Settings;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +18,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -47,6 +41,9 @@ public class AppPropertiesBrowse extends AbstractWindow {
 
     @Inject
     private Button exportBtn;
+
+    @Inject
+    private HBoxLayout hintBox;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -78,5 +75,18 @@ public class AppPropertiesBrowse extends AbstractWindow {
         if (!exported.isEmpty()) {
             openWindow("appPropertiesExport", WindowManager.OpenType.DIALOG, ParamsMap.of("exported", exported));
         }
+    }
+
+    public void closeHint() {
+        hintBox.setVisible(false);
+        getSettings().get(hintBox.getId()).addAttribute("visible", "false");
+    }
+
+    @Override
+    public void applySettings(Settings settings) {
+        super.applySettings(settings);
+        String visible = settings.get(hintBox.getId()).attributeValue("visible");
+        if (visible != null)
+            hintBox.setVisible(Boolean.valueOf(visible));
     }
 }

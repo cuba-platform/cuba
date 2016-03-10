@@ -21,6 +21,10 @@
     </dsContext>
 
     <layout expand="paramsTable" spacing="true">
+        <hbox id="hintBox">
+            <label value="msg://hint" align="MIDDLE_LEFT"/>
+            <linkButton icon="icons/close.png" align="MIDDLE_LEFT" invoke="closeHint"/>
+        </hbox>
         <treeTable id="paramsTable" editable="false" multiselect="true" width="100%">
             <buttonsPanel>
                 <label value="msg://searchByName" align="MIDDLE_LEFT"/>
@@ -35,7 +39,6 @@
             </actions>
             <columns>
                 <column id="name" caption="msg://name"/>
-                <column id="defaultValue" caption="msg://defaultValue"/>
                 <column id="currentValue" caption="msg://currentValue"/>
             </columns>
             <rows datasource="paramsDs"/>
