@@ -44,7 +44,8 @@ public interface ClientConfig extends Config {
     /**
      * @return Maximum size of uploaded file in megabytes.
      */
-    @Property("cuba.client.maxUploadSizeMb")
+    @Property("cuba.maxUploadSizeMb")
+    @Source(type = SourceType.DATABASE)
     @DefaultInt(20)
     int getMaxUploadSizeMb();
     void setMaxUploadSizeMb(int value);
@@ -55,6 +56,13 @@ public interface ClientConfig extends Config {
     @Property("cuba.collectionDatasourceDbSortEnabled")
     @DefaultBoolean(true)
     boolean getCollectionDatasourceDbSortEnabled();
+
+    /**
+     * @return If true, client will try to find missing localized messages on the server.
+     */
+    @Property("cuba.remoteMessagesSearchEnabled")
+    @DefaultBoolean(false)
+    boolean getRemoteMessagesSearchEnabled();
 
     /**
      * List of screen aliases for which saving screen history is enabled.
@@ -70,6 +78,7 @@ public interface ClientConfig extends Config {
      * <code>cuba.passwordPolicyRegExp</code>
      */
     @Property("cuba.passwordPolicyEnabled")
+    @Source(type = SourceType.DATABASE)
     @DefaultBoolean(false)
     boolean getPasswordPolicyEnabled();
 
@@ -77,6 +86,7 @@ public interface ClientConfig extends Config {
      * @return The regular expression which is used by password policy (see also <code>cuba.passwordPolicyEnabled<code/>).
      */
     @Property("cuba.passwordPolicyRegExp")
+    @Source(type = SourceType.DATABASE)
     @DefaultString("((?=.*\\d)(?=.*\\p{javaLowerCase})(?=.*\\p{javaUpperCase}).{6,20})")
     String getPasswordPolicyRegExp();
 
@@ -86,6 +96,7 @@ public interface ClientConfig extends Config {
      * If false, the filter will be applied automatically, refreshing the table immediately after the screen opening.
      */
     @Property("cuba.gui.genericFilterManualApplyRequired")
+    @Source(type = SourceType.DATABASE)
     @DefaultBoolean(false)
     boolean getGenericFilterManualApplyRequired();
 
@@ -95,6 +106,7 @@ public interface ClientConfig extends Config {
      * If false, no checks are performed and the filter applyes, refreshing connected table.
      */
     @Property("cuba.gui.genericFilterChecking")
+    @Source(type = SourceType.DATABASE)
     @DefaultBoolean(false)
     boolean getGenericFilterChecking();
 
@@ -103,6 +115,7 @@ public interface ClientConfig extends Config {
      * If false, the text filter will not be trim value.
      */
     @Property("cuba.gui.genericFilterTrimParamValues")
+    @Source(type = SourceType.DATABASE)
     @DefaultBoolean(true)
     boolean getGenericFilterTrimParamValues();
 
@@ -110,6 +123,7 @@ public interface ClientConfig extends Config {
      * @return Number of columns with conditions in generic filter UI component.
      */
     @Property("cuba.gui.genericFilterColumnsCount")
+    @Source(type = SourceType.DATABASE)
     @DefaultInt(3)
     int getGenericFilterColumnsCount();
 
@@ -119,6 +133,7 @@ public interface ClientConfig extends Config {
      * or below them if {@code bottom}.
      */
     @Property("cuba.gui.genericFilterConditionsLocation")
+    @Source(type = SourceType.DATABASE)
     @Default("top")
     String getGenericFilterConditionsLocation();
 
@@ -128,6 +143,7 @@ public interface ClientConfig extends Config {
      * will show new dialog window with all possible filter entities for selecting a desired one.
      */
     @Property("cuba.gui.genericFilterPopupListSize")
+    @Source(type = SourceType.DATABASE)
     @DefaultInt(10)
     int getGenericFilterPopupListSize();
 
@@ -168,6 +184,7 @@ public interface ClientConfig extends Config {
      * @return a template for filter controls layout
      */
     @Property("cuba.gui.genericFilterControlsLayout")
+    @Source(type = SourceType.DATABASE)
     @Default("[filters_popup] [add_condition] [spacer] [settings | save, save_as, edit, remove, make_default, pin, save_search_folder, save_app_folder] [max_results] [fts_switch]")
     String getGenericFilterControlsLayout();
 
@@ -176,6 +193,7 @@ public interface ClientConfig extends Config {
      * of generic filter component. Add NULL option to the list if the lookup field should contain an empty value.
      */
     @Property("cuba.gui.genericFilterMaxResultsOptions")
+    @Source(type = SourceType.DATABASE)
     @Default("NULL, 20, 50, 100, 500, 1000, 5000")
     String getGenericFilterMaxResultsOptions();
 
@@ -183,6 +201,7 @@ public interface ClientConfig extends Config {
      * Support e-mail. Exception report emails are sent to this address.
      */
     @Property("cuba.supportEmail")
+    @Source(type = SourceType.DATABASE)
     String getSupportEmail();
 
     /**
@@ -190,93 +209,107 @@ public interface ClientConfig extends Config {
      */
     @Property("cuba.systemId")
     @DefaultString("CUBA")
+    @Source(type = SourceType.DATABASE)
     String getSystemID();
 
+    @Property("cuba.gui.tableShortcut.insert")
+    @Source(type = SourceType.DATABASE)
     @DefaultString("CTRL-BACKSLASH")
-    @Property("cuba.gui.tableInsertShortcut")
     String getTableInsertShortcut();
 
+    @Property("cuba.gui.tableShortcut.add")
+    @Source(type = SourceType.DATABASE)
     @DefaultString("CTRL-ALT-BACKSLASH")
-    @Property("cuba.gui.tableAddShortcut")
     String getTableAddShortcut();
 
+    @Property("cuba.gui.tableShortcut.remove")
+    @Source(type = SourceType.DATABASE)
     @DefaultString("CTRL-DELETE")
-    @Property("cuba.gui.tableRemoveShortcut")
     String getTableRemoveShortcut();
 
+    @Property("cuba.gui.tableShortcut.edit")
+    @Source(type = SourceType.DATABASE)
     @DefaultString("ENTER")
-    @Property("cuba.gui.tableEditShortcut")
     String getTableEditShortcut();
 
-    @DefaultString("CTRL-ENTER")
     @Property("cuba.gui.commitShortcut")
+    @Source(type = SourceType.DATABASE)
+    @DefaultString("CTRL-ENTER")
     String getCommitShortcut();
 
-    @DefaultString("ESCAPE")
     @Property("cuba.gui.closeShortcut")
+    @Source(type = SourceType.DATABASE)
+    @DefaultString("ESCAPE")
     String getCloseShortcut();
 
-    @DefaultString("SHIFT-ENTER")
     @Property("cuba.gui.filterApplyShortcut")
+    @Source(type = SourceType.DATABASE)
+    @DefaultString("SHIFT-ENTER")
     String getFilterApplyShortcut();
 
-    @DefaultString("SHIFT-BACKSPACE")
     @Property("cuba.gui.filterSelectShortcut")
+    @Source(type = SourceType.DATABASE)
+    @DefaultString("SHIFT-BACKSPACE")
     String getFilterSelectShortcut();
 
-    @DefaultString("CTRL-SHIFT-PAGE_DOWN")
     @Property("cuba.gui.nextTabShortcut")
+    @Source(type = SourceType.DATABASE)
+    @DefaultString("CTRL-SHIFT-PAGE_DOWN")
     String getNextTabShortcut();
 
-    @DefaultString("CTRL-SHIFT-PAGE_UP")
     @Property("cuba.gui.previousTabShortcut")
+    @Source(type = SourceType.DATABASE)
+    @DefaultString("CTRL-SHIFT-PAGE_UP")
     String getPreviousTabShortcut();
 
-    /**
-     * @return If true, client will try to find missing localized messages on the server.
-     */
-    @Property("cuba.remoteMessagesSearchEnabled")
-    @DefaultBoolean(false)
-    boolean getRemoteMessagesSearchEnabled();
-
     @Property("cuba.gui.pickerShortcut.modifiers")
+    @Source(type = SourceType.DATABASE)
     @DefaultString("CTRL-ALT")
     String getPickerShortcutModifiers();
 
     @Property("cuba.gui.pickerShortcut.lookup")
+    @Source(type = SourceType.DATABASE)
     @DefaultString("CTRL-ALT-L")
     String getPickerLookupShortcut();
 
     @Property("cuba.gui.pickerShortcut.open")
+    @Source(type = SourceType.DATABASE)
     @DefaultString("CTRL-ALT-O")
     String getPickerOpenShortcut();
 
     @Property("cuba.gui.pickerShortcut.clear")
+    @Source(type = SourceType.DATABASE)
     @DefaultString("CTRL-ALT-C")
     String getPickerClearShortcut();
 
     @Property("cuba.gui.useSaveConfirmation")
+    @Source(type = SourceType.DATABASE)
     @DefaultBoolean(true)
     boolean getUseSaveConfirmation();
 
     @Property("cuba.gui.loadObsoleteSettingsForTable")
+    @Source(type = SourceType.DATABASE)
     @DefaultBoolean(false)
     boolean getLoadObsoleteSettingsForTable();
 
     @Property("cuba.gui.layoutAnalyzerEnabled")
+    @Source(type = SourceType.DATABASE)
     @DefaultBoolean(true)
     boolean getLayoutAnalyzerEnabled();
 
-    @Property("cuba.systemInfoScriptsEnabled")
+    @Property("cuba.gui.systemInfoScriptsEnabled")
+    @Source(type = SourceType.DATABASE)
     @DefaultBoolean(true)
     boolean getSystemInfoScriptsEnabled();
     void setSystemInfoScriptsEnabled(boolean enabled);
 
-    @Property("cuba.manualScreenSettingsSaving")
+    @Property("cuba.gui.manualScreenSettingsSaving")
+    @Source(type = SourceType.DATABASE)
     @DefaultBoolean(false)
     boolean getManualScreenSettingsSaving();
 
-    @Property("cuba.showIconsForPopupMenuActions")
+    @Property("cuba.gui.showIconsForPopupMenuActions")
+    @Source(type = SourceType.DATABASE)
     @DefaultBoolean(false)
     boolean getShowIconsForPopupMenuActions();
 }

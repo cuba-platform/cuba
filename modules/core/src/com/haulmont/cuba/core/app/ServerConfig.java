@@ -79,16 +79,10 @@ public interface ServerConfig extends Config {
     String getFileStorageDir();
 
     /**
-     * @return Whether to cut query text when logging it.
-     */
-    @Property("cuba.log.cutLoadListQueries")
-    @DefaultBoolean(false)
-    boolean getCutLoadListQueries();
-
-    /**
      * @return Scheduled tasks execution control.
      */
     @Property("cuba.schedulingActive")
+    @Source(type = SourceType.DATABASE)
     @DefaultBoolean(false)
     boolean getSchedulingActive();
     void setSchedulingActive(boolean value);
@@ -97,6 +91,7 @@ public interface ServerConfig extends Config {
      * @return Scheduled tasks execution control.
      */
     @Property("cuba.schedulingInterval")
+    @Source(type = SourceType.DATABASE)
     @DefaultLong(1000)
     long getSchedulingInterval();
     void setSchedulingInterval(long value);
@@ -106,6 +101,7 @@ public interface ServerConfig extends Config {
      * 'select distinct' to the database.
      */
     @Property("cuba.inMemoryDistinct")
+    @Source(type = SourceType.DATABASE)
     @DefaultBoolean(false)
     boolean getInMemoryDistinct();
     void setInMemoryDistinct(boolean value);
@@ -114,6 +110,8 @@ public interface ServerConfig extends Config {
      * @return Default database query timeout in seconds. If 0, middleware doesn't apply any timeout to queries.
      */
     @Property("cuba.defaultQueryTimeoutSec")
+    @Source(type = SourceType.DATABASE)
+    @DefaultInt(0)
     int getDefaultQueryTimeoutSec();
     void setDefaultQueryTimeoutSec(int timeout);
 
@@ -123,13 +121,6 @@ public interface ServerConfig extends Config {
     @Property("cuba.licensePath")
     @Default("/cuba.license")
     String getLicensePath();
-
-    /**
-     * @return Maximum size of thread pool which is used to send messages to the cluster members
-     */
-    @Property("cuba.clusterMessageSendingThreadPoolSize")
-    @DefaultInt(100)
-    int getClusterMessageSendingThreadPoolSize();
 
     /**
      * Indicates that a new user session created on login should be sent to the cluster synchronously.
@@ -147,6 +138,7 @@ public interface ServerConfig extends Config {
      * clients are used.
      */
     @Property("cuba.entityAttributePermissionChecking")
+    @Source(type = SourceType.DATABASE)
     @DefaultBoolean(true)
     boolean getEntityAttributePermissionChecking();
 

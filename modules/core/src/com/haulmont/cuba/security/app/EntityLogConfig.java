@@ -21,7 +21,7 @@ public interface EntityLogConfig extends Config {
     /**
      * @return Whether the EntityLog is enabled
      */
-    @Property("cuba.security.EntityLog.enabled")
+    @Property("cuba.entityLog.enabled")
     @DefaultBoolean(true)
     boolean getEnabled();
     void setEnabled(boolean value);

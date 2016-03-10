@@ -142,13 +142,7 @@ public class DataServiceQueryBuilder {
     public static String printQuery(String query) {
         if (query == null)
             return null;
-
-        String str = StringHelper.removeExtraSpaces(query.replace("\n", " "));
-
-        if (AppBeans.get(Configuration.class).getConfig(ServerConfig.class).getCutLoadListQueries()) {
-            str = StringUtils.abbreviate(str.replaceAll("[\\n\\r]", " "), 50);
-        }
-
-        return str;
+        else
+            return StringHelper.removeExtraSpaces(query.replace("\n", " "));
     }
 }

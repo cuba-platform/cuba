@@ -18,35 +18,35 @@ import java.util.List;
 @Source(type = SourceType.DATABASE)
 public interface FtsConfig extends Config {
 
-    @Property("cuba.fts.enabled")
+    @Property("fts.enabled")
     @DefaultBoolean(false)
     boolean getEnabled();
     void setEnabled(boolean enable);
 
-    @Property("cuba.fts.indexingBatchSize")
+    @Property("fts.indexingBatchSize")
     @DefaultInt(300)
     int getIndexingBatchSize();
 
-    @Property("cuba.fts.indexDir")
+    @Property("fts.indexDir")
     String getIndexDir();
 
-    @Property("cuba.fts.maxSearchResults")
+    @Property("fts.maxSearchResults")
     @DefaultInt(100)
     int getMaxSearchResults();
 
-    @Property("cuba.fts.searchResultsBatchSize")
+    @Property("fts.searchResultsBatchSize")
     @DefaultInt(5)
     int getSearchResultsBatchSize();
 
-    @Property("cuba.fts.storeContentInIndex")
+    @Property("fts.storeContentInIndex")
     @DefaultBoolean(true)
     boolean getStoreContentInIndex();
 
-    @Property("cuba.fts.indexingHosts")
+    @Property("fts.indexingHosts")
     @Factory(factory = StringListTypeFactory.class)
     List<String> getIndexingHosts();
 
-    @Property("cuba.fts.reindexBatchSize")
+    @Property("fts.reindexBatchSize")
     @DefaultInt(5000)
     int getReindexBatchSize();
 }

@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.config.defaults.DefaultInt;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
 import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.core.sys.AvailableLocalesFactory;
+import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
 
 import java.util.Locale;
 import java.util.Map;
@@ -53,6 +54,7 @@ public interface GlobalConfig extends Config {
      * @return Web-client connection URL. Used for making external links to the application screens and for other purposes.
      */
     @Property("cuba.webAppUrl")
+    @Source(type = SourceType.DATABASE)
     @DefaultString("http://localhost:8080/app")
     String getWebAppUrl();
 
@@ -66,6 +68,7 @@ public interface GlobalConfig extends Config {
      * @return REST API connection URL
      */
     @Property("cuba.restApiUrl")
+    @Source(type = SourceType.DATABASE)
     @DefaultString("http://localhost:8080/app-portal/api")
     String getRestApiUrl();
 
@@ -147,6 +150,7 @@ public interface GlobalConfig extends Config {
      * @return Allows to aplly a filter to previously selected rows
      */
     @Property("cuba.allowQueryFromSelected")
+    @Source(type = SourceType.DATABASE)
     @DefaultBoolean(true)
     boolean getAllowQueryFromSelected();
 
@@ -158,7 +162,7 @@ public interface GlobalConfig extends Config {
 
     /**
      * @return the maximum number of idle instances of compiled groovy expressions in {@code Scripting.evaluateGroovy()}
-     * @see org.apache.commons.pool.impl.GenericKeyedObjectPool#setMaxIdle(int)
+     * @see GenericKeyedObjectPoolConfig#setMaxIdlePerKey(int)
      */
     @Property("cuba.groovyEvaluationPoolMaxIdle")
     @DefaultInt(8)

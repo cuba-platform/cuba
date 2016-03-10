@@ -65,11 +65,28 @@ public class AppContext {
 
     // Temporary support for deprecated properties: the second element has priority
     private static final List<Pair<String, String>> DEPRECATED_PROPERTIES = Arrays.asList(
-            new Pair<>("cuba.connectionUrlList", "cuba.connectionUrl"));
+            new Pair<>("cuba.connectionUrlList", "cuba.connectionUrl"),
+            new Pair<>("cuba.entityLog.enabled", "cuba.security.EntityLog.enabled"), // 6.1
+            new Pair<>("cuba.web.externalAuthentication", "cuba.web.ExternalAuthentication"), // 6.1
+            new Pair<>("cuba.cluster.messageSendingThreadPoolSize", "cuba.clusterMessageSendingThreadPoolSize"), // 6.1
+            new Pair<>("reporting.entityTreeModelMaxDepth", "cuba.reporting.entityTreeModelMaxDeep"), // 6.1
+            new Pair<>("cuba.maxUploadSizeMb", "cuba.client.maxUploadSizeMb"), // 6.1
+            new Pair<>("cuba.gui.systemInfoScriptsEnabled", "cuba.systemInfoScriptsEnabled"), // 6.1
+            new Pair<>("cuba.gui.manualScreenSettingsSaving", "cuba.manualScreenSettingsSaving"), // 6.1
+            new Pair<>("cuba.gui.showIconsForPopupMenuActions", "cuba.showIconsForPopupMenuActions"), // 6.1
+            new Pair<>("cuba.gui.tableShortcut.insert", "cuba.gui.tableInsertShortcut"), // 6.1
+            new Pair<>("cuba.gui.tableShortcut.add", "cuba.gui.tableAddShortcut"), // 6.1
+            new Pair<>("cuba.gui.tableShortcut.remove", "cuba.gui.tableRemoveShortcut"), // 6.1
+            new Pair<>("cuba.gui.tableShortcut.edit", "cuba.gui.tableEditShortcut"), // 6.1
+            new Pair<>("reporting.parameterPrototypeQueryLimit", "reporting.parameterPrototype.queryLimit"), // 6.1
+            new Pair<>("reporting.*", "cuba.reporting.*"), // 6.1
+            new Pair<>("fts.*", "cuba.fts.*"), // 6.1
+            new Pair<>("charts.*", "cuba.charts.*"), // 6.1
+            new Pair<>("cuba.amazonS3.*", "cuba.amazon.s3.*") // 6.1
+    );
 
     /**
      * Used by other framework classes to get access Spring's context. Don't use it in application code.
-     * @return
      */
     public static ApplicationContext getApplicationContext() {
         return context;
@@ -98,9 +115,17 @@ public class AppContext {
     @Nullable
     public static String getProperty(String key) {
         for (Pair<String, String> pair : DEPRECATED_PROPERTIES) {
-            if (pair.getFirst().equals(key)) {
-                return getDeprecatedProperty(pair);
-            } else if (pair.getSecond().equals(key)) {
+            if (pair.getFirst().endsWith("*")) {
+                String substring1 = pair.getFirst().substring(0, pair.getFirst().length() - 1);
+                String substring2 = pair.getSecond().substring(0, pair.getSecond().length() - 1);
+                if (key.startsWith(substring1)) {
+                    return getDeprecatedProperty(new Pair<>(key, substring2 + key.substring(substring1.length())));
+                }
+                if (key.startsWith(substring2)) {
+                    return getDeprecatedProperty(new Pair<>(substring1 + key.substring(substring2.length()), key));
+                }
+            }
+            if (pair.getFirst().equals(key) || pair.getSecond().equals(key)) {
                 return getDeprecatedProperty(pair);
             }
         }

@@ -32,7 +32,7 @@ public interface WebAuthConfig extends Config {
     /**
      * @return Whether to use an external authentication
      */
-    @Property("cuba.web.ExternalAuthentication")
+    @Property("cuba.web.externalAuthentication")
     @DefaultBoolean(false)
     boolean getExternalAuthentication();
 

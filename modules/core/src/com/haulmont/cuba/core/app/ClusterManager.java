@@ -68,7 +68,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
 
     @PostConstruct
     public void init() {
-        executor = Executors.newFixedThreadPool(serverConfig.getClusterMessageSendingThreadPoolSize());
+        executor = Executors.newFixedThreadPool(clusterConfig.getClusterMessageSendingThreadPoolSize());
     }
 
     @Override

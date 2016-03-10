@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
+import com.haulmont.cuba.core.config.defaults.DefaultInt;
 import com.haulmont.cuba.core.config.defaults.DefaultLong;
 
 /**
@@ -26,5 +27,12 @@ public interface ClusterConfig extends Config {
     @Property("cuba.cluster.stateTransferTimeout")
     @DefaultLong(10000)
     long getStateReceiveTimeout();
+
+    /**
+     * @return Maximum size of thread pool which is used to send messages to the cluster members
+     */
+    @Property("cuba.cluster.messageSendingThreadPoolSize")
+    @DefaultInt(100)
+    int getClusterMessageSendingThreadPoolSize();
 
 }
