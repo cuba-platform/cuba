@@ -20,7 +20,6 @@ public interface Persistence {
 
     String NAME = "cuba_Persistence";
 
-
     /**
      * Convenient access to {@link PersistenceTools} bean.
      * @return  PersistenceTools instance
@@ -33,6 +32,25 @@ public interface Persistence {
      * @return DbTypeConverter instance
      */
     DbTypeConverter getDbTypeConverter();
+
+    /**
+     * Executes the action specified by the given single method object within a new transaction.
+     * <p>Returns a result object created within the transaction.
+     * <p>A {@code RuntimeException} thrown in the transactional code enforces a rollback.
+     * @param callable  transactional code in the form of {@link com.haulmont.cuba.core.Transaction.Callable}
+     * @param <T>       result type
+     * @return          result object
+     * @see #runInTransaction(Transaction.Runnable)
+     */
+    <T> T callInTransaction(Transaction.Callable<T> callable);
+
+    /**
+     * Executes the action specified by the given single method object within a new transaction.
+     * <p>A {@code RuntimeException} thrown in the transactional code enforces a rollback.
+     * @param runnable  transactional code in the form of {@link com.haulmont.cuba.core.Transaction.Runnable}
+     * @see #callInTransaction(Transaction.Callable)
+     */
+    void runInTransaction(Transaction.Runnable runnable);
 
     /**
      * Creates a new transaction.<br>

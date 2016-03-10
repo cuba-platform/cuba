@@ -57,6 +57,16 @@ public class TransactionImpl implements Transaction {
     }
 
     @Override
+    public void execute(Runnable runnable) {
+        try {
+            runnable.run(persistence.getEntityManager());
+            commit();
+        } finally {
+            end();
+        }
+    }
+
+    @Override
     public void commit() {
         if (committed)
             return;

@@ -83,6 +83,16 @@ public class PersistenceImpl implements Persistence {
     }
 
     @Override
+    public void runInTransaction(Transaction.Runnable runnable) {
+        createTransaction().execute(runnable);
+    }
+
+    @Override
+    public <T> T callInTransaction(Transaction.Callable<T> callable) {
+        return createTransaction().execute(callable);
+    }
+
+    @Override
     public Transaction createTransaction(TransactionParams params) {
         return new TransactionImpl(transactionManager, this, false, params);
     }

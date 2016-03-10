@@ -279,6 +279,26 @@ public class TransactionTest {
         }
     }
 
+    @Test
+    public void testRunInTransaction() throws Exception {
+        UUID id = cont.persistence().callInTransaction(em -> {
+            assertNotNull(em);
+            Server server = new Server();
+            server.setName("localhost");
+            server.setRunning(true);
+            em.persist(server);
+            return server.getId();
+        });
+
+        cont.persistence().runInTransaction(em -> {
+            Server server = em.find(Server.class, id);
+            assertNotNull(server);
+            assertEquals(id, server.getId());
+            server.setRunning(false);
+        });
+
+    }
+
     private void throwException() {
         throw new RuntimeException(TEST_EXCEPTION_MSG);
     }

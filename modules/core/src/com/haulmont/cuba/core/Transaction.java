@@ -15,71 +15,58 @@ package com.haulmont.cuba.core;
  *     }
  * </pre>
  *
- * <p> Plain scenario:
+ * <p> Lambda scenario:
  * <pre>
- *     Transaction tx = persistence.createTransaction();
- *     try {
+ *     persistence.createTransaction().execute((EntityManager em) -> {
  *         // transactional code here
- *         tx.commit();
- *     } finally {
- *         tx.end();
- *     }
- * </pre>
- *
- * <p> Action-like scenario:
- * <pre>
- *     persistence.createTransaction().execute(new Transaction.Runnable() {
- *         public void run(EntityManager em) {
- *             // transactional code here
- *         }
  *     });
  * </pre>
  *
- * @author krivopustov
- * @version $Id$
+ * @see Persistence#runInTransaction(Runnable)
+ * @see Persistence#callInTransaction(Callable)
  */
 public interface Transaction extends AutoCloseable {
 
     /**
      * Interface for transactional code.
-     * Implementors should be passed to {@link Transaction#execute(com.haulmont.cuba.core.Transaction.Callable)} method.
      * @param <T>   result type
      */
     interface Callable<T> {
         /**
          * Gets called within a transaction.
-         * @param em    current EntityManager instance
-         * @return      result object that in turn returns from {@link Transaction#execute(com.haulmont.cuba.core.Transaction.Callable)}.
+         * @param em current EntityManager instance
+         * @return result object that in turn returns from {@link Transaction#execute(com.haulmont.cuba.core.Transaction.Callable)}.
          */
         T call(EntityManager em);
     }
 
     /**
-     * Simplified version of {@link Callable} that is not intended to return a result from transactional code.
+     * Interface for transactional code that is not intended to return a result.
      */
-    abstract class Runnable implements Callable<Object> {
-        @Override
-        public final Object call(EntityManager em) {
-            run(em);
-            return null;
-        }
-
+    interface Runnable {
         /**
          * Gets called within a transaction.
-         * @param em    current EntityManager instance
+         * @param em current EntityManager instance
          */
-        public abstract void run(EntityManager em);
+        void run(EntityManager em);
     }
 
     /**
      * Executes the action specified by the given single method object within a transaction.
-	 * <p>Allows for returning a result object created within the transaction.
-     * A RuntimeException thrown by the callback is treated as a fatal exception that enforces a rollback.
-     * @param callable  transactional code in the form of {@link Callable} or {@link Runnable} implementation
+	 * <p>Returns a result object created within the transaction.
+     * <p>A {@code RuntimeException} thrown in the transactional code enforces a rollback.
+     * @param callable  transactional code in the form of {@link Callable}
      * @param <T>       result type
-     * @return          result object if returned by {@link Callable}
+     * @return          result object
      */
     <T> T execute(Callable<T> callable);
+
+    /**
+     * Executes the action specified by the given single method object within a transaction.
+     * <p>A {@code RuntimeException} thrown in the transactional code enforces a rollback.
+     * @param runnable  transactional code in the form of {@link Runnable}
+     */
+    void execute(Runnable runnable);
 
     /**
      * Commit current transaction.
