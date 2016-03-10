@@ -4,16 +4,21 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.bali.util.Preconditions;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.TypedQuery;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.LockDescriptor;
 import com.haulmont.cuba.core.global.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.*;
 import java.util.ArrayList;
@@ -68,6 +73,9 @@ public class LockManager implements LockManagerAPI, ClusterListener<LockInfo> {
 
     @Inject
     private Persistence persistence;
+
+    @Inject
+    private Metadata metadata;
 
     @Inject
     private UserSessionSource userSessionSource;
@@ -130,6 +138,17 @@ public class LockManager implements LockManagerAPI, ClusterListener<LockInfo> {
         return null;
     }
 
+    @Nullable
+    @Override
+    public LockInfo lock(Entity entity) {
+        Preconditions.checkNotNullArgument(entity, "entity is null");
+
+        MetaClass metaClass = metadata.getClassNN(entity.getClass());
+        MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalOrThisMetaClass(metaClass);
+
+        return lock(originalMetaClass.getName(), entity.getId().toString());
+    }
+
     @Override
     public void unlock(String name, String id) {
         LockInfo lockInfo = locks.remove(new LockKey(name, id));
@@ -138,6 +157,16 @@ public class LockManager implements LockManagerAPI, ClusterListener<LockInfo> {
 
             clusterManager.send(new LockInfo(null, name, id));
         }
+    }
+
+    @Override
+    public void unlock(Entity entity) {
+        Preconditions.checkNotNullArgument(entity, "entity is null");
+
+        MetaClass metaClass = metadata.getClassNN(entity.getClass());
+        MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalOrThisMetaClass(metaClass);
+
+        unlock(originalMetaClass.getName(), entity.getId().toString());
     }
 
     @Override

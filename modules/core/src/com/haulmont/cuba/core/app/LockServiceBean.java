@@ -4,9 +4,11 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.LockInfo;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.List;
 
@@ -25,9 +27,20 @@ public class LockServiceBean implements LockService {
         return lockManager.lock(name, id);
     }
 
+    @Nullable
+    @Override
+    public LockInfo lock(Entity entity) {
+        return lockManager.lock(entity);
+    }
+
     @Override
     public void unlock(String name, String id) {
         lockManager.unlock(name, id);
+    }
+
+    @Override
+    public void unlock(Entity entity) {
+        lockManager.unlock(entity);
     }
 
     @Override
