@@ -19,7 +19,6 @@ import java.util.Map;
 
 /**
  * @author krivopustov
- * @version $Id$
  */
 public final class Dom4j {
 
@@ -145,5 +144,23 @@ public final class Dom4j {
 
             map.put(key, value);
         }
+    }
+
+    public static void walkAttributesRecursive(Element element, ElementAttributeVisitor visitor) {
+        walkAttributes(element, visitor);
+
+        for (Element childElement : elements(element)) {
+            walkAttributesRecursive(childElement, visitor);
+        }
+    }
+
+    public static void walkAttributes(Element element, ElementAttributeVisitor visitor) {
+        for (Attribute attribute : attributes(element)) {
+            visitor.onVisit(element, attribute);
+        }
+    }
+
+    public interface ElementAttributeVisitor {
+        void onVisit(Element element, Attribute attribute);
     }
 }

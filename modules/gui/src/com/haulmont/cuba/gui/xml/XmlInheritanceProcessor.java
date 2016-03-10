@@ -24,7 +24,6 @@ import java.util.*;
  * Provides inheritance of screen XML descriptors.
  *
  * @author krivopustov
- * @version $Id$
  */
 public class XmlInheritanceProcessor {
 
@@ -65,7 +64,7 @@ public class XmlInheritanceProcessor {
             }
             Document ancestorDocument;
             try {
-                ancestorDocument = LayoutLoader.parseDescriptor(ancestorStream, params);
+                ancestorDocument = LayoutLoader.parseDescriptor(ancestorStream);
             } finally {
                 IOUtils.closeQuietly(ancestorStream);
             }

@@ -340,7 +340,7 @@ public abstract class WindowManager {
                 Logger.getLogger(UIPerformanceLogger.class));
         Document document = null;
         try {
-            document = LayoutLoader.parseDescriptor(stream, params);
+            document = LayoutLoader.parseDescriptor(stream);
         } finally {
             IOUtils.closeQuietly(stream);
         }
