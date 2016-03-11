@@ -9,11 +9,12 @@ import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.listener.*;
+import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -166,42 +167,54 @@ public class EntityListenerManager {
             return;
 
         List listeners = getListener(entity.getClass(), type);
-        for (Object listener : listeners) {
-            switch (type) {
-                case BEFORE_DETACH:
-                    logExecution(type, entity);
-                    ((BeforeDetachEntityListener) listener).onBeforeDetach(entity, persistence.getEntityManager());
-                    break;
-                case BEFORE_ATTACH:
-                    logExecution(type, entity);
-                    ((BeforeAttachEntityListener) listener).onBeforeAttach(entity);
-                    break;
-                case BEFORE_INSERT:
-                    logExecution(type, entity);
-                    ((BeforeInsertEntityListener) listener).onBeforeInsert(entity);
-                    break;
-                case AFTER_INSERT:
-                    logExecution(type, entity);
-                    ((AfterInsertEntityListener) listener).onAfterInsert(entity);
-                    break;
-                case BEFORE_UPDATE:
-                    logExecution(type, entity);
-                    ((BeforeUpdateEntityListener) listener).onBeforeUpdate(entity);
-                    break;
-                case AFTER_UPDATE:
-                    logExecution(type, entity);
-                    ((AfterUpdateEntityListener) listener).onAfterUpdate(entity);
-                    break;
-                case BEFORE_DELETE:
-                    logExecution(type, entity);
-                    ((BeforeDeleteEntityListener) listener).onBeforeDelete(entity);
-                    break;
-                case AFTER_DELETE:
-                    logExecution(type, entity);
-                    ((AfterDeleteEntityListener) listener).onAfterDelete(entity);
-                    break;
-                default:
-                    throw new UnsupportedOperationException("Unsupported EntityListenerType: " + type);
+
+        boolean saved = false;
+        if (AppContext.getSecurityContext() != null) { // can be null before login when detaching entities
+            saved = AppContext.getSecurityContext().isAuthorizationRequired();
+            AppContext.getSecurityContext().setAuthorizationRequired(false);
+        }
+        try {
+            for (Object listener : listeners) {
+                switch (type) {
+                    case BEFORE_DETACH:
+                        logExecution(type, entity);
+                        ((BeforeDetachEntityListener) listener).onBeforeDetach(entity, persistence.getEntityManager());
+                        break;
+                    case BEFORE_ATTACH:
+                        logExecution(type, entity);
+                        ((BeforeAttachEntityListener) listener).onBeforeAttach(entity);
+                        break;
+                    case BEFORE_INSERT:
+                        logExecution(type, entity);
+                        ((BeforeInsertEntityListener) listener).onBeforeInsert(entity);
+                        break;
+                    case AFTER_INSERT:
+                        logExecution(type, entity);
+                        ((AfterInsertEntityListener) listener).onAfterInsert(entity);
+                        break;
+                    case BEFORE_UPDATE:
+                        logExecution(type, entity);
+                        ((BeforeUpdateEntityListener) listener).onBeforeUpdate(entity);
+                        break;
+                    case AFTER_UPDATE:
+                        logExecution(type, entity);
+                        ((AfterUpdateEntityListener) listener).onAfterUpdate(entity);
+                        break;
+                    case BEFORE_DELETE:
+                        logExecution(type, entity);
+                        ((BeforeDeleteEntityListener) listener).onBeforeDelete(entity);
+                        break;
+                    case AFTER_DELETE:
+                        logExecution(type, entity);
+                        ((AfterDeleteEntityListener) listener).onAfterDelete(entity);
+                        break;
+                    default:
+                        throw new UnsupportedOperationException("Unsupported EntityListenerType: " + type);
+                }
+            }
+        } finally {
+            if (AppContext.getSecurityContext() != null) {
+                AppContext.getSecurityContext().setAuthorizationRequired(saved);
             }
         }
     }

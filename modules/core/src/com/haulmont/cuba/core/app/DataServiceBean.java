@@ -27,22 +27,22 @@ public class DataServiceBean implements DataService {
 
     @Override
     public Set<Entity> commit(CommitContext context) {
-        return dataManager.commit(context);
+        return dataManager.secure().commit(context);
     }
 
     @Override
     @Nullable
     public <E extends Entity> E load(LoadContext<E> context) {
-        return dataManager.load(context);
+        return dataManager.secure().load(context);
     }
 
     @Override
     public <E extends Entity> List<E> loadList(LoadContext<E> context) {
-        return dataManager.loadList(context);
+        return dataManager.secure().loadList(context);
     }
 
     @Override
     public long getCount(LoadContext<? extends Entity> context) {
-        return dataManager.getCount(context);
+        return dataManager.secure().getCount(context);
     }
 }

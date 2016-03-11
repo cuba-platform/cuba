@@ -71,6 +71,11 @@ public class GenericDataSupplier implements DataSupplier {
     }
 
     @Override
+    public DataManager secure() {
+        return dataManager;
+    }
+
+    @Override
     public Set<Entity> commit(CommitContext context) {
         return dataManager.commit(context);
     }

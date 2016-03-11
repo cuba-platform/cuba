@@ -34,6 +34,8 @@ public class SecurityContext {
     private UserSession session;
     private String user;
 
+    private boolean authorizationRequired;
+
     public SecurityContext(UUID sessionId) {
         Objects.requireNonNull(sessionId, "sessionId is null");
         this.sessionId = sessionId;
@@ -74,6 +76,31 @@ public class SecurityContext {
     @Nullable
     public String getUser() {
         return user;
+    }
+
+    /**
+     * @return Whether the security check is required for standard mechanisms ({@code DataManager} in particular) on
+     * the middleware
+     */
+    public boolean isAuthorizationRequired() {
+        return authorizationRequired;
+    }
+
+    /**
+     * Whether the security check is required for standard mechanisms ({@code DataManager} in particular) on
+     * the middleware. Example usage:
+     * <pre>
+     * boolean saved = AppContext.getSecurityContext().isAuthorizationRequired();
+     * AppContext.getSecurityContext().setAuthorizationRequired(true);
+     * try {
+     *     // all calls to DataManager will apply security restrictions
+     * } finally {
+     *     AppContext.getSecurityContext().setAuthorizationRequired(saved);
+     * }
+     * </pre>
+     */
+    public void setAuthorizationRequired(boolean authorizationRequired) {
+        this.authorizationRequired = authorizationRequired;
     }
 
     @Override

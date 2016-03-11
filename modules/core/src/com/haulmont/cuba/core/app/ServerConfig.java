@@ -148,4 +148,12 @@ public interface ServerConfig extends Config {
     @Property("cuba.keyForSecurityTokenEncryption")
     @DefaultString("CUBA.Platform")
     String getKeyForSecurityTokenEncryption();
+
+    /**
+     * Indicates that {@code DataManager} should always apply security restrictions on the middleware.
+     */
+    @Property("cuba.dataManagerChecksSecurityOnMiddleware")
+    @Source(type = SourceType.DATABASE)
+    @DefaultBoolean(false)
+    boolean getDataManagerChecksSecurityOnMiddleware();
 }

@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.CategoryAttributeValue;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.PermissionType;
@@ -25,6 +26,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.*;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
@@ -45,7 +49,7 @@ public class DataManagerBean implements DataManager {
     protected ViewRepository viewRepository;
 
     @Inject
-    protected Configuration configuration;
+    protected ServerConfig serverConfig;
 
     @Inject
     protected PersistenceSecurity security;
@@ -76,7 +80,7 @@ public class DataManagerBean implements DataManager {
 
         final MetaClass metaClass = metadata.getSession().getClassNN(context.getMetaClass());
 
-        if (!security.isEntityOpPermitted(metaClass, EntityOp.READ)) {
+        if (!isEntityOpPermitted(metaClass, EntityOp.READ)) {
             log.debug("reading of " + metaClass + " not permitted, returning null");
             return null;
         }
@@ -128,7 +132,7 @@ public class DataManagerBean implements DataManager {
 
         MetaClass metaClass = metadata.getClassNN(context.getMetaClass());
 
-        if (!security.isEntityOpPermitted(metaClass, EntityOp.READ)) {
+        if (!isEntityOpPermitted(metaClass, EntityOp.READ)) {
             log.debug("reading of " + metaClass + " not permitted, returning empty list");
             return Collections.emptyList();
         }
@@ -143,7 +147,7 @@ public class DataManagerBean implements DataManager {
             persistence.getEntityManagerContext().setDbHints(context.getDbHints());
 
             boolean ensureDistinct = false;
-            if (configuration.getConfig(ServerConfig.class).getInMemoryDistinct() && context.getQuery() != null) {
+            if (serverConfig.getInMemoryDistinct() && context.getQuery() != null) {
                 QueryTransformer transformer = QueryTransformerFactory.createTransformer(
                         context.getQuery().getQueryString());
                 ensureDistinct = transformer.removeDistinct();
@@ -186,7 +190,7 @@ public class DataManagerBean implements DataManager {
 
         MetaClass metaClass = metadata.getClassNN(context.getMetaClass());
 
-        if (!security.isEntityOpPermitted(metaClass, EntityOp.READ)) {
+        if (!isEntityOpPermitted(metaClass, EntityOp.READ)) {
             log.debug("reading of " + metaClass + " not permitted, returning 0");
             return 0;
         }
@@ -344,7 +348,7 @@ public class DataManagerBean implements DataManager {
             tx.end();
         }
 
-        if (userSessionSource.getUserSession().hasConstraints()) {
+        if (isAuthorizationRequired() && userSessionSource.getUserSession().hasConstraints()) {
             security.applyConstraints(res);
         }
 
@@ -364,7 +368,8 @@ public class DataManagerBean implements DataManager {
     }
 
     protected void checkOperationPermitted(Entity entity, ConstraintOperationType operationType) {
-        if (userSessionSource.getUserSession().hasConstraints()
+        if (isAuthorizationRequired()
+                && userSessionSource.getUserSession().hasConstraints()
                 && security.hasConstraints(entity.getMetaClass())
                 && !security.isPermitted(entity, operationType)) {
             throw new RowLevelSecurityException(
@@ -461,6 +466,19 @@ public class DataManagerBean implements DataManager {
                 Collections.<Entity>emptyList(),
                 Collections.singleton(entity));
         commit(context);
+    }
+
+    @Override
+    public DataManager secure() {
+        if (serverConfig.getDataManagerChecksSecurityOnMiddleware()) {
+            return this;
+        } else {
+            return (DataManager) Proxy.newProxyInstance(
+                    getClass().getClassLoader(),
+                    new Class[]{DataManager.class},
+                    new SecureDataManagerInvocationHandler(this)
+            );
+        }
     }
 
     protected Query createQuery(EntityManager em, LoadContext context) {
@@ -621,8 +639,17 @@ public class DataManagerBean implements DataManager {
     }
 
     protected void checkPermission(MetaClass metaClass, EntityOp operation) {
-        if (!security.isEntityOpPermitted(metaClass, operation))
+        if (!isEntityOpPermitted(metaClass, operation))
             throw new AccessDeniedException(PermissionType.ENTITY_OP, metaClass.getName());
+    }
+
+    private boolean isEntityOpPermitted(MetaClass metaClass, EntityOp operation) {
+        return !isAuthorizationRequired() || security.isEntityOpPermitted(metaClass, operation);
+    }
+
+    protected boolean isAuthorizationRequired() {
+        return serverConfig.getDataManagerChecksSecurityOnMiddleware()
+                || AppContext.getSecurityContext().isAuthorizationRequired();
     }
 
     /**
@@ -688,7 +715,7 @@ public class DataManagerBean implements DataManager {
     }
 
     protected boolean needToApplyConstraints(LoadContext context) {
-        if (!userSessionSource.getUserSession().hasConstraints()) {
+        if (!isAuthorizationRequired() || !userSessionSource.getUserSession().hasConstraints()) {
             return false;
         }
 
@@ -720,5 +747,25 @@ public class DataManagerBean implements DataManager {
             }
         }
         return classes;
+    }
+
+    private class SecureDataManagerInvocationHandler implements InvocationHandler {
+
+        private final DataManager impl;
+
+        private SecureDataManagerInvocationHandler(DataManager impl) {
+            this.impl = impl;
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            boolean authorizationRequired = AppContext.getSecurityContext().isAuthorizationRequired();
+            AppContext.getSecurityContext().setAuthorizationRequired(true);
+            try {
+                return method.invoke(impl, args);
+            } finally {
+                AppContext.getSecurityContext().setAuthorizationRequired(authorizationRequired);
+            }
+        }
     }
 }

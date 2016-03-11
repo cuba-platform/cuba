@@ -18,6 +18,11 @@ import java.util.Set;
  * <p>Works with non-managed (new or detached) entities, always starts and commits new transactions. Can be used on
  * both middle and client tiers.</p>
  *
+ * <p>When used on the client tier - always applies security restrictions.
+ * <p>When used on the middleware - does not apply security restrictions by default. If you want to apply security,
+ * get {@link #secure()} instance or set the {@code cuba.dataManagerChecksSecurityOnMiddleware} application property
+ * to use it by default.
+ *
  * @author krivopustov
  * @version $Id$
  */
@@ -127,4 +132,14 @@ public interface DataManager {
      * @param entity    entity instance
      */
     void remove(Entity entity);
+
+    /**
+     * Returns the DataManager implementation that is guaranteed to apply security restrictions.
+     * <p>By default, DataManager does not apply security when used on the middleware. Use this method if you want
+     * to run the same code both on the client and middle tier. For example:
+     * <pre>
+     *     AppBeans.get(DataManager.class).secure().load(context);
+     * </pre>
+     */
+    DataManager secure();
 }

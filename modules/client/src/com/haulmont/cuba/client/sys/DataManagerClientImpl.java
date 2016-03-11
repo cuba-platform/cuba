@@ -122,4 +122,9 @@ public class DataManagerClientImpl implements DataManager {
                         Collections.singleton(entity));
         commit(context);
     }
+
+    @Override
+    public DataManager secure() {
+        return this;
+    }
 }
