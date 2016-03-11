@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
  * @author abramov
  */
 public class TextAreaLoader extends AbstractTextFieldLoader<TextArea> {
+
     @Override
     public void createComponent() {
         resultComponent = (TextArea) factory.createComponent(TextArea.NAME);
@@ -33,6 +34,11 @@ public class TextAreaLoader extends AbstractTextFieldLoader<TextArea> {
         String rows = element.attributeValue("rows");
         if (StringUtils.isNotEmpty(rows)) {
             resultComponent.setRows(Integer.parseInt(rows));
+        }
+
+        String wordwrap = element.attributeValue("wordwrap");
+        if (StringUtils.isNotEmpty(wordwrap)) {
+            resultComponent.setWordwrap(Boolean.parseBoolean(wordwrap));
         }
     }
 }

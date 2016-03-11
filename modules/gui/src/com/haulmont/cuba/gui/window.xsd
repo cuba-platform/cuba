@@ -658,6 +658,7 @@
                 <xs:attribute name="resizable" type="xs:boolean"/>
                 <xs:attribute name="trim" type="xs:boolean"/>
                 <xs:attribute name="inputPrompt" type="resourceString"/>
+                <xs:attribute name="wordwrap" type="xs:boolean"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

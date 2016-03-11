@@ -20,4 +20,7 @@ public interface TextArea extends TextInputField,
 
     int getColumns();
     void setColumns(int columns);
+
+    boolean isWordwrap();
+    void setWordwrap(boolean wordwrap);
 }

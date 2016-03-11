@@ -36,4 +36,14 @@ public class WebTextArea
     public void setInputPrompt(String inputPrompt) {
         component.setInputPrompt(inputPrompt);
     }
+
+    @Override
+    public boolean isWordwrap() {
+        return component.isWordwrap();
+    }
+
+    @Override
+    public void setWordwrap(boolean wordwrap) {
+        component.setWordwrap(wordwrap);
+    }
 }

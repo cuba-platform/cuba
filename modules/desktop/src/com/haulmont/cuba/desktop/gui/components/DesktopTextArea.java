@@ -166,6 +166,16 @@ public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> impleme
     }
 
     @Override
+    public boolean isWordwrap() {
+        return impl.getLineWrap();
+    }
+
+    @Override
+    public void setWordwrap(boolean wordwrap) {
+        impl.setLineWrap(wordwrap);
+    }
+
+    @Override
     public int getMaxLength() {
         return ((TextComponentDocument) doc).getMaxLength();
     }
