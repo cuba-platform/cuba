@@ -52,6 +52,7 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
     protected MessageTools messageTools;
     protected MetadataTools metadataTools;
     protected DynamicAttributes dynamicAttributes;
+    protected List<String> excludedProperties;
 
     /**
      * @param filter filter
@@ -65,6 +66,7 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
         metadataTools = AppBeans.get(MetadataTools.NAME);
         dynamicAttributes = AppBeans.get(DynamicAttributes.class);
         filterComponentName = getFilterComponentName();
+        excludedProperties = new ArrayList<>();
     }
 
     public Tree<AbstractConditionDescriptor> build() {
@@ -170,6 +172,9 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
             for (MetaProperty property : childMetaClass.getProperties()) {
                 if (isPropertyAllowed(property)) {
                     String propertyPath = mpp.toString() + "." + property.getName();
+                    if (excludedProperties.contains(propertyPath))
+                        continue;
+
                     PropertyConditionDescriptor childPropertyConditionDescriptor =
                             new PropertyConditionDescriptor(propertyPath, null, filter.getFrame().getMessagesPack(), filterComponentName, filter.getDatasource());
                     descriptors.add(childPropertyConditionDescriptor);
@@ -200,6 +205,13 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
         String includeRe = element.attributeValue("include");
         String excludeRe = element.attributeValue("exclude");
         addMultiplePropertyDescriptors(includeRe, excludeRe, descriptors, filter);
+
+        if (element.attribute("excludeProperties") != null) {
+            String excludeProperties = element.attributeValue("excludeProperties");
+            if (StringUtils.isNotEmpty(excludeProperties)) {
+                excludedProperties = Arrays.asList(excludeProperties.replace(" ", "").split(","));
+            }
+        }
     }
 
     protected void addMultiplePropertyDescriptors(String includeRe, String excludeRe, List<AbstractConditionDescriptor> descriptors, Filter filter) {

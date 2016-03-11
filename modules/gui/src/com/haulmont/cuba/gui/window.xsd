@@ -1079,6 +1079,7 @@
                 <xs:complexType>
                     <xs:attribute name="include" type="xs:string" use="required"/>
                     <xs:attribute name="exclude" type="xs:string"/>
+                    <xs:attribute name="excludeProperties" type="xs:string"/>
                 </xs:complexType>
             </xs:element>
             <xs:element name="property" minOccurs="0" maxOccurs="unbounded">
