@@ -146,6 +146,14 @@ public interface Action {
         void setTarget(ListComponent target);
     }
 
+    interface HasBeforeAfterHandlers {
+        Runnable getBeforeActionPerformedHandler();
+        void setBeforeActionPerformedHandler(Runnable handler);
+
+        Runnable getAfterActionPerformedHandler();
+        void setAfterActionPerformedHandler(Runnable handler);
+    }
+
     enum Status {
         NORMAL,
 

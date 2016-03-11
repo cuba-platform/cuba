@@ -5,6 +5,7 @@
 package com.haulmont.cuba.gui.components.actions;
 
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -18,15 +19,17 @@ import java.util.Map;
  * Action's behaviour can be customized by providing arguments to constructor or setting properties.
  *
  * @author krivopustov
- * @version $Id$
  */
-public class RefreshAction extends BaseAction {
+public class RefreshAction extends BaseAction implements Action.HasBeforeAfterHandlers {
 
     public static final String ACTION_ID = ListActionType.REFRESH.getId();
 
     protected ListComponent owner;
 
     protected Map<String, Object> refreshParams;
+
+    protected Runnable beforeActionPerformedHandler;
+    protected Runnable afterActionPerformedHandler;
 
     /**
      * The simplest constructor. The action has default name.
@@ -57,6 +60,10 @@ public class RefreshAction extends BaseAction {
      */
     @Override
     public void actionPerform(Component component) {
+        if (beforeActionPerformedHandler != null) {
+            beforeActionPerformedHandler.run();
+        }
+
         CollectionDatasource datasource = owner.getDatasource();
 
         Map<String, Object> params = getRefreshParams();
@@ -64,6 +71,10 @@ public class RefreshAction extends BaseAction {
             datasource.refresh(params);
         } else {
             datasource.refresh();
+        }
+
+        if (afterActionPerformedHandler != null) {
+            afterActionPerformedHandler.run();
         }
     }
 
@@ -79,5 +90,25 @@ public class RefreshAction extends BaseAction {
      */
     public void setRefreshParams(Map<String, Object> refreshParams) {
         this.refreshParams = refreshParams;
+    }
+
+    @Override
+    public Runnable getBeforeActionPerformedHandler() {
+        return beforeActionPerformedHandler;
+    }
+
+    @Override
+    public void setBeforeActionPerformedHandler(Runnable handler) {
+        this.beforeActionPerformedHandler = handler;
+    }
+
+    @Override
+    public Runnable getAfterActionPerformedHandler() {
+        return afterActionPerformedHandler;
+    }
+
+    @Override
+    public void setAfterActionPerformedHandler(Runnable handler) {
+        this.afterActionPerformedHandler = handler;
     }
 }

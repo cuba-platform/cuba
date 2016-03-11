@@ -30,9 +30,8 @@ import java.util.Map;
  * Action's behaviour can be customized by providing arguments to constructor or setting properties.
  *
  * @author krivopustov
- * @version $Id$
  */
-public class AddAction extends BaseAction implements Action.HasOpenType {
+public class AddAction extends BaseAction implements Action.HasOpenType, Action.HasBeforeAfterHandlers {
 
     public static final String ACTION_ID = ListActionType.ADD.getId();
 
@@ -41,6 +40,9 @@ public class AddAction extends BaseAction implements Action.HasOpenType {
 
     protected String windowId;
     protected Map<String, Object> windowParams;
+
+    protected Runnable beforeActionPerformedHandler;
+    protected Runnable afterActionPerformedHandler;
 
     /**
      * The simplest constructor. The action has default name and opens the lookup screen in THIS tab.
@@ -123,6 +125,10 @@ public class AddAction extends BaseAction implements Action.HasOpenType {
      */
     @Override
     public void actionPerform(Component component) {
+        if (beforeActionPerformedHandler != null) {
+            beforeActionPerformedHandler.run();
+        }
+
         Map<String, Object> params = getWindowParams();
         if (params == null)
             params = new HashMap<>();
@@ -135,6 +141,10 @@ public class AddAction extends BaseAction implements Action.HasOpenType {
             // move focus to owner
             target.requestFocus();
         });
+
+        if (afterActionPerformedHandler != null) {
+            afterActionPerformedHandler.run();
+        }
     }
 
     /**
@@ -201,6 +211,26 @@ public class AddAction extends BaseAction implements Action.HasOpenType {
      */
     public void setWindowParams(Map<String, Object> windowParams) {
         this.windowParams = windowParams;
+    }
+
+    @Override
+    public Runnable getBeforeActionPerformedHandler() {
+        return beforeActionPerformedHandler;
+    }
+
+    @Override
+    public void setBeforeActionPerformedHandler(Runnable handler) {
+        this.beforeActionPerformedHandler = handler;
+    }
+
+    @Override
+    public Runnable getAfterActionPerformedHandler() {
+        return afterActionPerformedHandler;
+    }
+
+    @Override
+    public void setAfterActionPerformedHandler(Runnable handler) {
+        this.afterActionPerformedHandler = handler;
     }
 
     /**

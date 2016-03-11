@@ -29,9 +29,8 @@ import java.util.Map;
  * methods {@link #afterCommit(com.haulmont.cuba.core.entity.Entity)}, {@link #afterWindowClosed(com.haulmont.cuba.gui.components.Window)}
  *
  * @author krivopustov
- * @version $Id$
  */
-public class CreateAction extends BaseAction implements Action.HasOpenType {
+public class CreateAction extends BaseAction implements Action.HasOpenType, Action.HasBeforeAfterHandlers {
 
     public static final String ACTION_ID = ListActionType.CREATE.getId();
 
@@ -48,6 +47,9 @@ public class CreateAction extends BaseAction implements Action.HasOpenType {
     protected AfterWindowClosedHandler afterWindowClosedHandler;
 
     protected Window.CloseListener editorCloseListener;
+
+    protected Runnable beforeActionPerformedHandler;
+    protected Runnable afterActionPerformedHandler;
 
     public interface AfterCommitHandler {
         /**
@@ -136,6 +138,10 @@ public class CreateAction extends BaseAction implements Action.HasOpenType {
      */
     @Override
     public void actionPerform(Component component) {
+        if (beforeActionPerformedHandler != null) {
+            beforeActionPerformedHandler.run();
+        }
+
         final CollectionDatasource datasource = target.getDatasource();
         final DataSupplier dataservice = datasource.getDataSupplier();
 
@@ -203,6 +209,10 @@ public class CreateAction extends BaseAction implements Action.HasOpenType {
         }
 
         internalOpenEditor(datasource, item, parentDs, params);
+
+        if (afterActionPerformedHandler != null) {
+            afterActionPerformedHandler.run();
+        }
     }
 
     protected void internalOpenEditor(CollectionDatasource datasource, Entity newItem, Datasource parentDs, Map<String, Object> params) {
@@ -338,5 +348,25 @@ public class CreateAction extends BaseAction implements Action.HasOpenType {
      */
     public void setEditorCloseListener(Window.CloseListener editorCloseListener) {
         this.editorCloseListener = editorCloseListener;
+    }
+
+    @Override
+    public Runnable getBeforeActionPerformedHandler() {
+        return beforeActionPerformedHandler;
+    }
+
+    @Override
+    public void setBeforeActionPerformedHandler(Runnable handler) {
+        this.beforeActionPerformedHandler = handler;
+    }
+
+    @Override
+    public Runnable getAfterActionPerformedHandler() {
+        return afterActionPerformedHandler;
+    }
+
+    @Override
+    public void setAfterActionPerformedHandler(Runnable handler) {
+        this.afterActionPerformedHandler = handler;
     }
 }

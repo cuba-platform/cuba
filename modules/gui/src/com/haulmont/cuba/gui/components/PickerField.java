@@ -135,7 +135,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
     /**
      * Action to select an entity instance through the entity lookup screen.
      */
-    class LookupAction extends StandardAction {
+    class LookupAction extends StandardAction implements Action.HasBeforeAfterHandlers {
 
         public static final String NAME = ActionType.LOOKUP.getId();
 
@@ -143,6 +143,9 @@ public interface PickerField extends Field, Component.ActionsHolder {
         protected OpenType lookupScreenOpenType = OpenType.THIS_TAB;
         protected DialogParams lookupScreenDialogParams;
         protected Map<String, Object> lookupScreenParams;
+
+        protected Runnable beforeActionPerformedHandler;
+        protected Runnable afterActionPerformedHandler;
 
         protected WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
 
@@ -214,6 +217,10 @@ public interface PickerField extends Field, Component.ActionsHolder {
         @Override
         public void actionPerform(Component component) {
             if (pickerField.isEditable()) {
+                if (beforeActionPerformedHandler != null) {
+                    beforeActionPerformedHandler.run();
+                }
+
                 String windowAlias = getLookupScreen();
                 if (windowAlias == null) {
                     final MetaClass metaClass = pickerField.getMetaClass();
@@ -282,6 +289,10 @@ public interface PickerField extends Field, Component.ActionsHolder {
 
                     afterCloseLookup(actionId);
                 });
+
+                if (afterActionPerformedHandler != null) {
+                    afterActionPerformedHandler.run();
+                }
             }
         }
 
@@ -317,14 +328,37 @@ public interface PickerField extends Field, Component.ActionsHolder {
          */
         public void afterCloseLookup(String actionId) {
         }
+
+        @Override
+        public Runnable getBeforeActionPerformedHandler() {
+            return beforeActionPerformedHandler;
+        }
+
+        @Override
+        public void setBeforeActionPerformedHandler(Runnable handler) {
+            this.beforeActionPerformedHandler = handler;
+        }
+
+        @Override
+        public Runnable getAfterActionPerformedHandler() {
+            return afterActionPerformedHandler;
+        }
+
+        @Override
+        public void setAfterActionPerformedHandler(Runnable handler) {
+            this.afterActionPerformedHandler = handler;
+        }
     }
 
     /**
      * Action to clear the PickerField content.
      */
-    class ClearAction extends StandardAction {
+    class ClearAction extends StandardAction implements Action.HasBeforeAfterHandlers {
 
         public static final String NAME = ActionType.CLEAR.getId();
+
+        protected Runnable beforeActionPerformedHandler;
+        protected Runnable afterActionPerformedHandler;
 
         public ClearAction(PickerField pickerField) {
             super(NAME, pickerField);
@@ -336,15 +370,43 @@ public interface PickerField extends Field, Component.ActionsHolder {
         @Override
         public void actionPerform(Component component) {
             if (pickerField.isEditable()) {
+                if (beforeActionPerformedHandler != null) {
+                    beforeActionPerformedHandler.run();
+                }
+
                 pickerField.setValue(null);
+
+                if (afterActionPerformedHandler != null) {
+                    afterActionPerformedHandler.run();
+                }
             }
+        }
+
+        @Override
+        public Runnable getBeforeActionPerformedHandler() {
+            return beforeActionPerformedHandler;
+        }
+
+        @Override
+        public void setBeforeActionPerformedHandler(Runnable handler) {
+            this.beforeActionPerformedHandler = handler;
+        }
+
+        @Override
+        public Runnable getAfterActionPerformedHandler() {
+            return afterActionPerformedHandler;
+        }
+
+        @Override
+        public void setAfterActionPerformedHandler(Runnable handler) {
+            this.afterActionPerformedHandler = handler;
         }
     }
 
     /**
      * Action to open an edit screen for entity instance which is currently set in the PickerField.
      */
-    class OpenAction extends StandardAction {
+    class OpenAction extends StandardAction implements Action.HasBeforeAfterHandlers {
 
         public static final String NAME = ActionType.OPEN.getId();
 
@@ -352,6 +414,9 @@ public interface PickerField extends Field, Component.ActionsHolder {
         protected OpenType editScreenOpenType = OpenType.THIS_TAB;
         protected DialogParams editScreenDialogParams;
         protected Map<String, Object> editScreenParams;
+
+        protected Runnable beforeActionPerformedHandler;
+        protected Runnable afterActionPerformedHandler;
 
         protected WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
 
@@ -426,6 +491,10 @@ public interface PickerField extends Field, Component.ActionsHolder {
             if (entity == null)
                 return;
 
+            if (beforeActionPerformedHandler != null) {
+                beforeActionPerformedHandler.run();
+            }
+
             WindowManager wm;
             Window window = ComponentsHelper.getWindow(pickerField);
             if (window == null) {
@@ -474,6 +543,10 @@ public interface PickerField extends Field, Component.ActionsHolder {
 
                 afterWindowClosed(editor);
             });
+
+            if (afterActionPerformedHandler != null) {
+                afterActionPerformedHandler.run();
+            }
         }
 
         protected Entity getEntity() {
@@ -549,6 +622,26 @@ public interface PickerField extends Field, Component.ActionsHolder {
             }
 
             return sb.toString();
+        }
+
+        @Override
+        public Runnable getBeforeActionPerformedHandler() {
+            return beforeActionPerformedHandler;
+        }
+
+        @Override
+        public void setBeforeActionPerformedHandler(Runnable handler) {
+            this.beforeActionPerformedHandler = handler;
+        }
+
+        @Override
+        public Runnable getAfterActionPerformedHandler() {
+            return afterActionPerformedHandler;
+        }
+
+        @Override
+        public void setAfterActionPerformedHandler(Runnable handler) {
+            this.afterActionPerformedHandler = handler;
         }
     }
 }

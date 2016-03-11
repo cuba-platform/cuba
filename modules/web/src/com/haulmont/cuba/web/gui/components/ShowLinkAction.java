@@ -6,6 +6,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -15,9 +16,12 @@ import com.haulmont.cuba.web.App;
  * @author novikov
  * @version $Id$
  */
-public class ShowLinkAction extends BaseAction {
+public class ShowLinkAction extends BaseAction implements Action.HasBeforeAfterHandlers {
 
     public static final String ACTION_ID = "showLink";
+
+    protected Runnable beforeActionPerformedHandler;
+    protected Runnable afterActionPerformedHandler;
 
     public interface Handler {
         String makeLink(Entity entity);
@@ -43,11 +47,19 @@ public class ShowLinkAction extends BaseAction {
         if (ds == null)
             return;
 
+        if (beforeActionPerformedHandler != null) {
+            beforeActionPerformedHandler.run();
+        }
+
         App.getInstance().getWindowManager().showMessageDialog(
                 messages.getMainMessage("table.showLinkAction"),
                 compileLink(ds),
                 Frame.MessageType.CONFIRMATION_HTML
         );
+
+        if (afterActionPerformedHandler != null) {
+            afterActionPerformedHandler.run();
+        }
     }
 
     private String compileLink(CollectionDatasource ds) {
@@ -58,5 +70,25 @@ public class ShowLinkAction extends BaseAction {
                 append(handler.makeLink(ds.getItem()).replace("&", "&amp")).append("</textarea>");
 
         return sb.toString();
+    }
+
+    @Override
+    public Runnable getBeforeActionPerformedHandler() {
+        return beforeActionPerformedHandler;
+    }
+
+    @Override
+    public void setBeforeActionPerformedHandler(Runnable handler) {
+        this.beforeActionPerformedHandler = handler;
+    }
+
+    @Override
+    public Runnable getAfterActionPerformedHandler() {
+        return afterActionPerformedHandler;
+    }
+
+    @Override
+    public void setAfterActionPerformedHandler(Runnable handler) {
+        this.afterActionPerformedHandler = handler;
     }
 }

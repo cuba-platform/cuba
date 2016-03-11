@@ -25,7 +25,6 @@ import java.util.Set;
  * The <code>RemoveAction</code> variant that excludes instances from the list, but doesn't delete them from DB.
  *
  * @author krivopustov
- * @version $Id$
  */
 public class ExcludeAction extends RemoveAction {
 
@@ -95,6 +94,10 @@ public class ExcludeAction extends RemoveAction {
         if (!isEnabled())
             return;
 
+        if (beforeActionPerformedHandler != null) {
+            beforeActionPerformedHandler.run();
+        }
+
         Set selected = target.getSelected();
         if (!selected.isEmpty()) {
             if (confirm) {
@@ -103,6 +106,10 @@ public class ExcludeAction extends RemoveAction {
                 doRemove(selected, autocommit);
                 afterRemove(selected);
             }
+        }
+
+        if (afterActionPerformedHandler != null) {
+            afterActionPerformedHandler.run();
         }
     }
 

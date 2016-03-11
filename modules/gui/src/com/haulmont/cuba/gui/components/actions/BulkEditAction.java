@@ -19,12 +19,15 @@ import java.util.Map;
 /**
  * @author artamonov
  */
-public class BulkEditAction extends ItemTrackingAction {
+public class BulkEditAction extends ItemTrackingAction implements Action.HasBeforeAfterHandlers {
 
     protected OpenType openType = OpenType.DIALOG;
     protected String exclude;
     protected Map<String, Field.Validator> fieldValidators;
     protected List<Field.Validator> modelValidators;
+
+    protected Runnable beforeActionPerformedHandler;
+    protected Runnable afterActionPerformedHandler;
 
     public BulkEditAction(ListComponent target) {
         super(target, "bulkEdit");
@@ -83,6 +86,10 @@ public class BulkEditAction extends ItemTrackingAction {
             return;
         }
 
+        if (beforeActionPerformedHandler != null) {
+            beforeActionPerformedHandler.run();
+        }
+
         if (openType.getOpenMode() == OpenMode.DIALOG) {
             ThemeConstantsManager themeManager = AppBeans.get(ThemeConstantsManager.NAME);
             ThemeConstants theme = themeManager.getConstants();
@@ -108,5 +115,29 @@ public class BulkEditAction extends ItemTrackingAction {
             }
             target.requestFocus();
         });
+
+        if (afterActionPerformedHandler != null) {
+            afterActionPerformedHandler.run();
+        }
+    }
+
+    @Override
+    public Runnable getBeforeActionPerformedHandler() {
+        return beforeActionPerformedHandler;
+    }
+
+    @Override
+    public void setBeforeActionPerformedHandler(Runnable handler) {
+        this.beforeActionPerformedHandler = handler;
+    }
+
+    @Override
+    public Runnable getAfterActionPerformedHandler() {
+        return afterActionPerformedHandler;
+    }
+
+    @Override
+    public void setAfterActionPerformedHandler(Runnable handler) {
+        this.afterActionPerformedHandler = handler;
     }
 }

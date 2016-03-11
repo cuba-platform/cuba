@@ -31,9 +31,8 @@ import java.util.Set;
  * method {@link #afterRemove(java.util.Set)} )}
  *
  * @author krivopustov
- * @version $Id$
  */
-public class RemoveAction extends ItemTrackingAction {
+public class RemoveAction extends ItemTrackingAction implements Action.HasBeforeAfterHandlers {
 
     public static final String ACTION_ID = ListActionType.REMOVE.getId();
 
@@ -43,6 +42,9 @@ public class RemoveAction extends ItemTrackingAction {
     protected String confirmationTitle;
 
     protected Security security = AppBeans.get(Security.NAME);
+
+    protected Runnable beforeActionPerformedHandler;
+    protected Runnable afterActionPerformedHandler;
 
     protected AfterRemoveHandler afterRemoveHandler;
 
@@ -130,9 +132,17 @@ public class RemoveAction extends ItemTrackingAction {
             return;
         }
 
+        if (beforeActionPerformedHandler != null) {
+            beforeActionPerformedHandler.run();
+        }
+
         Set selected = target.getSelected();
         if (!selected.isEmpty()) {
             confirmAndRemove(selected);
+        }
+
+        if (afterActionPerformedHandler != null) {
+            afterActionPerformedHandler.run();
         }
     }
 
@@ -248,5 +258,25 @@ public class RemoveAction extends ItemTrackingAction {
      */
     public void setAfterRemoveHandler(AfterRemoveHandler afterRemoveHandler) {
         this.afterRemoveHandler = afterRemoveHandler;
+    }
+
+    @Override
+    public Runnable getBeforeActionPerformedHandler() {
+        return beforeActionPerformedHandler;
+    }
+
+    @Override
+    public void setBeforeActionPerformedHandler(Runnable handler) {
+        this.beforeActionPerformedHandler = handler;
+    }
+
+    @Override
+    public Runnable getAfterActionPerformedHandler() {
+        return afterActionPerformedHandler;
+    }
+
+    @Override
+    public void setAfterActionPerformedHandler(Runnable handler) {
+        this.afterActionPerformedHandler = handler;
     }
 }

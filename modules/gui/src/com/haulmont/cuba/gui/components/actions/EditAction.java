@@ -35,9 +35,8 @@ import java.util.Set;
  * methods {@link #afterCommit(com.haulmont.cuba.core.entity.Entity)}, {@link #afterWindowClosed(com.haulmont.cuba.gui.components.Window)}
  *
  * @author krivopustov
- * @version $Id$
  */
-public class EditAction extends ItemTrackingAction implements Action.HasOpenType {
+public class EditAction extends ItemTrackingAction implements Action.HasOpenType, Action.HasBeforeAfterHandlers {
 
     public static final String ACTION_ID = ListActionType.EDIT.getId();
 
@@ -54,6 +53,9 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
     protected AfterWindowClosedHandler afterWindowClosedHandler;
 
     protected Window.CloseListener editorCloseListener;
+
+    protected Runnable beforeActionPerformedHandler;
+    protected Runnable afterActionPerformedHandler;
 
     public interface AfterCommitHandler {
         /**
@@ -149,10 +151,15 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
     /**
      * This method is invoked by action owner component. Don't override it, there are special methods to
      * customize behaviour below.
+     *
      * @param component component invoking action
      */
     @Override
     public void actionPerform(Component component) {
+        if (beforeActionPerformedHandler != null) {
+            beforeActionPerformedHandler.run();
+        }
+
         final Set selected = target.getSelected();
         if (selected.size() == 1) {
             Datasource parentDs = null;
@@ -170,6 +177,10 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
             }
 
             internalOpenEditor(datasource, datasource.getItem(), parentDs, params);
+        }
+
+        if (afterActionPerformedHandler != null) {
+            afterActionPerformedHandler.run();
         }
     }
 
@@ -291,5 +302,25 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
      */
     public void setEditorCloseListener(Window.CloseListener editorCloseListener) {
         this.editorCloseListener = editorCloseListener;
+    }
+
+    @Override
+    public Runnable getBeforeActionPerformedHandler() {
+        return beforeActionPerformedHandler;
+    }
+
+    @Override
+    public void setBeforeActionPerformedHandler(Runnable handler) {
+        this.beforeActionPerformedHandler = handler;
+    }
+
+    @Override
+    public Runnable getAfterActionPerformedHandler() {
+        return afterActionPerformedHandler;
+    }
+
+    @Override
+    public void setAfterActionPerformedHandler(Runnable handler) {
+        this.afterActionPerformedHandler = handler;
     }
 }
