@@ -12,7 +12,6 @@ import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -56,14 +55,14 @@ public class LookupFieldLoader extends AbstractFieldLoader<LookupField> {
     protected void loadTextInputAllowed() {
         String textInputAllowed = element.attributeValue("textInputAllowed");
         if (StringUtils.isNotEmpty(textInputAllowed)) {
-            resultComponent.setTextInputAllowed(BooleanUtils.toBoolean(textInputAllowed));
+            resultComponent.setTextInputAllowed(Boolean.parseBoolean(textInputAllowed));
         }
     }
 
     protected void loadNewOptionHandler(final LookupField component, Element element) {
         String newOptionAllowed = element.attributeValue("newOptionAllowed");
         if (StringUtils.isNotEmpty(newOptionAllowed)) {
-            component.setNewOptionAllowed(Boolean.valueOf(newOptionAllowed));
+            component.setNewOptionAllowed(Boolean.parseBoolean(newOptionAllowed));
         }
 
         String newOptionHandlerMethod = element.attributeValue("newOptionHandler");

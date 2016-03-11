@@ -54,8 +54,8 @@ public class MenuCommand {
 
         if (openType.getOpenMode() == OpenMode.DIALOG) {
             String resizable = descriptor.attributeValue("resizable");
-            if (!StringUtils.isEmpty(resizable)) {
-                wm.getDialogParams().setResizable(BooleanUtils.toBoolean(resizable));
+            if (StringUtils.isNotEmpty(resizable)) {
+                wm.getDialogParams().setResizable(Boolean.parseBoolean(resizable));
             }
         }
 

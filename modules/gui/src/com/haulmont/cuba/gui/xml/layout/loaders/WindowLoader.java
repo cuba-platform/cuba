@@ -174,7 +174,7 @@ public class WindowLoader extends FrameLoader<Window> {
         }
 
         timer.setDelay(value);
-        timer.setRepeating(BooleanUtils.toBoolean(element.attributeValue("repeating")));
+        timer.setRepeating(Boolean.parseBoolean(element.attributeValue("repeating")));
 
         final String onTimer = element.attributeValue("onTimer");
         if (!StringUtils.isEmpty(onTimer)) {

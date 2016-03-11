@@ -28,7 +28,7 @@ public class ResizableTextAreaLoader extends TextAreaLoader {
         String resizable = element.attributeValue("resizable");
 
         if (StringUtils.isNotEmpty(resizable)) {
-            textArea.setResizable(BooleanUtils.toBoolean(resizable));
+            textArea.setResizable(Boolean.parseBoolean(resizable));
         }
     }
 }

@@ -31,7 +31,7 @@ public class GroupTableLoader extends AbstractTableLoader<GroupTable> {
 
         String fixedGroupingString = element.attributeValue("fixedGrouping");
         if (StringUtils.isNotEmpty(fixedGroupingString)) {
-            resultComponent.setFixedGrouping(Boolean.valueOf(fixedGroupingString));
+            resultComponent.setFixedGrouping(Boolean.parseBoolean(fixedGroupingString));
         }
     }
 

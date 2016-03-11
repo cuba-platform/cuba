@@ -251,7 +251,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
 
         if (xmlDescriptor != null) {
             String showSeconds = xmlDescriptor.attributeValue("showSeconds");
-            if (Boolean.valueOf(showSeconds)) {
+            if (Boolean.parseBoolean(showSeconds)) {
                 timeField.setShowSeconds(true);
             }
         }
@@ -264,7 +264,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
             linkAttribute = xmlDescriptor.attributeValue("link");
         }
 
-        if (!Boolean.valueOf(linkAttribute)) {
+        if (!Boolean.parseBoolean(linkAttribute)) {
             CollectionDatasource optionsDatasource = getOptionsDatasource(datasource, property);
 
             if (DynamicAttributesUtils.isDynamicAttribute(mpp.getMetaProperty())) {

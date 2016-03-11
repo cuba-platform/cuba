@@ -142,8 +142,8 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
         boolean customField = false;
         String custom = element.attributeValue("custom");
-        if (!StringUtils.isEmpty(custom)) {
-            customField = BooleanUtils.toBoolean(custom);
+        if (StringUtils.isNotEmpty(custom)) {
+            customField = Boolean.parseBoolean(custom);
         }
 
         if (!customField && ds == null) {
@@ -196,7 +196,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
         String required = element.attributeValue("required");
         if (StringUtils.isNotEmpty(required)) {
-            field.setRequired(BooleanUtils.toBoolean(required));
+            field.setRequired(Boolean.parseBoolean(required));
         }
 
         String requiredMsg = element.attributeValue("requiredMessage");
@@ -265,7 +265,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
             String required = element.attributeValue("required");
             if (StringUtils.isNotEmpty(required)) {
-                isMandatory = BooleanUtils.toBoolean(required);
+                isMandatory = Boolean.parseBoolean(required);
             }
 
             String requiredMsg = element.attributeValue("requiredMessage");
@@ -288,7 +288,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
             String required = element.attributeValue("required");
             if (StringUtils.isNotEmpty(required)) {
-                resultComponent.setRequired(field, BooleanUtils.toBoolean(required));
+                resultComponent.setRequired(field, Boolean.parseBoolean(required));
 
                 String requiredMessage = element.attributeValue("requiredMessage");
                 if (!Strings.isNullOrEmpty(requiredMessage)) {
@@ -311,8 +311,8 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
             }
         }
         String editable = element.attributeValue("editable");
-        if (!StringUtils.isEmpty(editable)) {
-            fieldGroup.setEditable(BooleanUtils.toBoolean(editable));
+        if (StringUtils.isNotEmpty(editable)) {
+            fieldGroup.setEditable(Boolean.parseBoolean(editable));
         }
     }
 
@@ -320,8 +320,8 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
         if (field.isCustom()) {
             Element element = field.getXmlDescriptor();
             String editable = element.attributeValue("editable");
-            if (!StringUtils.isEmpty(editable)) {
-                resultComponent.setEditable(field, BooleanUtils.toBoolean(editable));
+            if (StringUtils.isNotEmpty(editable)) {
+                resultComponent.setEditable(field, Boolean.parseBoolean(editable));
             }
         } else {
             if (resultComponent.isEditable()) {
@@ -340,8 +340,8 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                 } else if (!DynamicAttributesUtils.isDynamicAttribute(propertyPath.getMetaProperty())) {
                     Element element = field.getXmlDescriptor();
                     String editable = element.attributeValue("editable");
-                    if (!StringUtils.isEmpty(editable)) {
-                        resultComponent.setEditable(field, BooleanUtils.toBoolean(editable));
+                    if (StringUtils.isNotEmpty(editable)) {
+                        resultComponent.setEditable(field, Boolean.parseBoolean(editable));
                     }
                 }
             }
@@ -367,16 +367,16 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
     protected void loadEnable(FieldGroup resultComponent, FieldGroup.FieldConfig field) {
         Element element = field.getXmlDescriptor();
         String enable = element.attributeValue("enable");
-        if (!StringUtils.isEmpty(enable)) {
-            resultComponent.setEnabled(field, resultComponent.isEnabled() && BooleanUtils.toBoolean(enable));
+        if (StringUtils.isNotEmpty(enable)) {
+            resultComponent.setEnabled(field, resultComponent.isEnabled() && Boolean.parseBoolean(enable));
         }
     }
 
     protected void loadVisible(FieldGroup resultComponent, FieldGroup.FieldConfig field) {
         Element element = field.getXmlDescriptor();
         String visible = element.attributeValue("visible");
-        if (!StringUtils.isEmpty(visible)) {
-            resultComponent.setVisible(field, resultComponent.isVisible() && BooleanUtils.toBoolean(visible));
+        if (StringUtils.isNotEmpty(visible)) {
+            resultComponent.setVisible(field, resultComponent.isVisible() && Boolean.parseBoolean(visible));
         }
     }
 

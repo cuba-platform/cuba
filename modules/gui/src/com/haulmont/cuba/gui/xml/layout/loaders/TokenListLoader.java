@@ -62,7 +62,7 @@ public class TokenListLoader extends AbstractFieldLoader<TokenList> {
     protected void loadClearEnabled(TokenList component, Element element) {
         String clearEnabled = element.attributeValue("clearEnabled");
         if (StringUtils.isNotEmpty(clearEnabled)) {
-            component.setClearEnabled(BooleanUtils.toBoolean(clearEnabled));
+            component.setClearEnabled(Boolean.parseBoolean(clearEnabled));
         }
     }
 
@@ -86,8 +86,8 @@ public class TokenListLoader extends AbstractFieldLoader<TokenList> {
 
     protected void loadSimple(TokenList component, Element element) {
         String simple = element.attributeValue("simple");
-        if (!StringUtils.isEmpty(simple)) {
-            component.setSimple(BooleanUtils.toBoolean(simple));
+        if (StringUtils.isNotEmpty(simple)) {
+            component.setSimple(Boolean.parseBoolean(simple));
         } else {
             component.setSimple(false);
         }
@@ -131,8 +131,8 @@ public class TokenListLoader extends AbstractFieldLoader<TokenList> {
         }
 
         String lookup = lookupElement.attributeValue("lookup");
-        if (!StringUtils.isEmpty(lookup)) {
-            component.setLookup(BooleanUtils.toBoolean(lookup));
+        if (StringUtils.isNotEmpty(lookup)) {
+            component.setLookup(Boolean.parseBoolean(lookup));
             if (component.isLookup()) {
                 String lookupScreen = lookupElement.attributeValue("lookupScreen");
                 if (StringUtils.isNotEmpty(lookupScreen)) {
@@ -146,8 +146,8 @@ public class TokenListLoader extends AbstractFieldLoader<TokenList> {
         }
 
         String multiSelect = lookupElement.attributeValue("multiselect");
-        if (!StringUtils.isEmpty(multiSelect)) {
-            component.setMultiSelect(BooleanUtils.toBoolean(multiSelect));
+        if (StringUtils.isNotEmpty(multiSelect)) {
+            component.setMultiSelect(Boolean.parseBoolean(multiSelect));
         }
 
         loadFilterMode(component, lookupElement);
@@ -155,14 +155,14 @@ public class TokenListLoader extends AbstractFieldLoader<TokenList> {
 
     protected void loadInline(TokenList component, Element element) {
         String inline = element.attributeValue("inline");
-        if (!StringUtils.isEmpty(inline)) {
-            component.setInline(BooleanUtils.toBoolean(inline));
+        if (StringUtils.isNotEmpty(inline)) {
+            component.setInline(Boolean.parseBoolean(inline));
         }
     }
 
     protected void loadPosition(TokenList component, Element element) {
         String position = element.attributeValue("position");
-        if (!StringUtils.isEmpty(position)) {
+        if (StringUtils.isNotEmpty(position)) {
             component.setPosition(TokenList.Position.valueOf(position));
         }
     }

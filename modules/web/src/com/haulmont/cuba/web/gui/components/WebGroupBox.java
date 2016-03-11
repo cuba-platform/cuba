@@ -290,7 +290,7 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
             if (groupBoxElement != null) {
                 String expanded = groupBoxElement.attributeValue("expanded");
                 if (expanded != null) {
-                    setExpanded(BooleanUtils.toBoolean(expanded));
+                    setExpanded(Boolean.parseBoolean(expanded));
                 }
             }
         }

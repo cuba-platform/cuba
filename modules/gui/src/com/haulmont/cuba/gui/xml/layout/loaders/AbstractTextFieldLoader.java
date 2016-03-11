@@ -16,8 +16,8 @@ public abstract class AbstractTextFieldLoader<T extends TextInputField> extends 
 
     protected void loadTrimming(TextInputField.TrimSupported component, Element element) {
         String trim = element.attributeValue("trim");
-        if (!StringUtils.isEmpty(trim)) {
-            component.setTrimming(Boolean.valueOf(trim));
+        if (StringUtils.isNotEmpty(trim)) {
+            component.setTrimming(Boolean.parseBoolean(trim));
         }
     }
 

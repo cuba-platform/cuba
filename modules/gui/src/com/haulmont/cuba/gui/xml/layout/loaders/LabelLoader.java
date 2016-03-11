@@ -32,7 +32,7 @@ public class LabelLoader extends AbstractDatasourceComponentLoader<Label> {
 
         String htmlEnabled = element.attributeValue("htmlEnabled");
         if (StringUtils.isNotEmpty(htmlEnabled)) {
-            resultComponent.setHtmlEnabled(Boolean.valueOf(htmlEnabled));
+            resultComponent.setHtmlEnabled(Boolean.parseBoolean(htmlEnabled));
         }
 
         String caption = element.attributeValue("value");

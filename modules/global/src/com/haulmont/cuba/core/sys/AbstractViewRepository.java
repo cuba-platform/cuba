@@ -110,7 +110,7 @@ public class AbstractViewRepository implements ViewRepository {
         for (Element viewElem : Dom4j.elements(rootElem, "view")) {
             String viewName = getViewName(viewElem);
             String key = getMetaClass(viewElem) + "/" + viewName;
-            if (!BooleanUtils.toBoolean(viewElem.attributeValue("overwrite"))) {
+            if (!Boolean.parseBoolean(viewElem.attributeValue("overwrite"))) {
                 String extend = viewElem.attributeValue("extends");
                 if (!StringUtils.equals(extend, viewName) && checked.contains(key)) {
                     log.warn("Duplicate view definition without 'overwrite' attribute and not extending parent view: " + key);
@@ -399,7 +399,7 @@ public class AbstractViewRepository implements ViewRepository {
         }
 
         View v = retrieveView(metaClass, viewName, visited);
-        boolean overwrite = BooleanUtils.toBoolean(viewElem.attributeValue("overwrite"));
+        boolean overwrite = Boolean.parseBoolean(viewElem.attributeValue("overwrite"));
 
         String ancestor = viewElem.attributeValue("extends");
         if (!overwrite) {

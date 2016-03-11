@@ -41,8 +41,8 @@ public class ProgressBarLoader extends AbstractComponentLoader<ProgressBar> {
 
     protected void loadIndeterminate(ProgressBar component, Element element) {
         String indeterminate = element.attributeValue("indeterminate");
-        if (!StringUtils.isEmpty(indeterminate)) {
-            component.setIndeterminate(BooleanUtils.toBoolean(indeterminate));
+        if (StringUtils.isNotEmpty(indeterminate)) {
+            component.setIndeterminate(Boolean.parseBoolean(indeterminate));
         }
     }
 }

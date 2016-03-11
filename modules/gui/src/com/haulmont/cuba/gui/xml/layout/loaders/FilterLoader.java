@@ -53,16 +53,16 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
         loadCollapsible(resultComponent, element, true);
 
         String useMaxResults = element.attributeValue("useMaxResults");
-        resultComponent.setUseMaxResults(useMaxResults == null || Boolean.valueOf(useMaxResults));
+        resultComponent.setUseMaxResults(useMaxResults == null || Boolean.parseBoolean(useMaxResults));
 
         String textMaxResults = element.attributeValue("textMaxResults");
-        resultComponent.setTextMaxResults(Boolean.valueOf(textMaxResults));
+        resultComponent.setTextMaxResults(Boolean.parseBoolean(textMaxResults));
 
         final String manualApplyRequired = element.attributeValue("manualApplyRequired");
         resultComponent.setManualApplyRequired(BooleanUtils.toBooleanObject(manualApplyRequired));
 
         String editable = element.attributeValue("editable");
-        resultComponent.setEditable(editable == null || Boolean.valueOf(editable));
+        resultComponent.setEditable(editable == null || Boolean.parseBoolean(editable));
 
         String columnsQty = element.attributeValue("columnsCount");
         if (!Strings.isNullOrEmpty(columnsQty)) {
@@ -71,7 +71,7 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
 
         String folderActionsEnabled = element.attributeValue("folderActionsEnabled");
         if (folderActionsEnabled != null) {
-            resultComponent.setFolderActionsEnabled(Boolean.valueOf(folderActionsEnabled));
+            resultComponent.setFolderActionsEnabled(Boolean.parseBoolean(folderActionsEnabled));
         }
 
         String datasource = element.attributeValue("datasource");
@@ -101,7 +101,7 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
         }
 
         String modeSwitchVisible = element.attributeValue("modeSwitchVisible");
-        resultComponent.setModeSwitchVisible(modeSwitchVisible == null || Boolean.valueOf(modeSwitchVisible));
+        resultComponent.setModeSwitchVisible(modeSwitchVisible == null || Boolean.parseBoolean(modeSwitchVisible));
 
         context.addPostInitTask((context1, window) -> ((FilterImplementation) resultComponent).loadFiltersAndApplyDefault());
     }

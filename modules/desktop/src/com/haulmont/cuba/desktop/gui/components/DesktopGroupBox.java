@@ -162,7 +162,7 @@ public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayou
             if (groupBoxElement != null) {
                 String expanded = groupBoxElement.attributeValue("expanded");
                 if (expanded != null) {
-                    setExpanded(BooleanUtils.toBoolean(expanded));
+                    setExpanded(Boolean.parseBoolean(expanded));
                 }
             }
         }

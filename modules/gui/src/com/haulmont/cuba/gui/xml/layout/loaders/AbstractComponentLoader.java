@@ -164,7 +164,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
 
             final String editable = element.attributeValue("editable");
             if (!StringUtils.isEmpty(editable)) {
-                ((Component.Editable) component).setEditable(BooleanUtils.toBoolean(editable));
+                ((Component.Editable) component).setEditable(Boolean.parseBoolean(editable));
             }
         }
     }
@@ -203,8 +203,8 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         }
 
         String visible = element.attributeValue("visible");
-        if (!StringUtils.isEmpty(visible)) {
-            Boolean visibleValue = Boolean.valueOf(visible);
+        if (StringUtils.isNotEmpty(visible)) {
+            boolean visibleValue = Boolean.parseBoolean(visible);
             component.setVisible(visibleValue);
 
             return visibleValue;
@@ -215,8 +215,8 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
 
     protected boolean loadEnable(Component component, Element element) {
         String enable = element.attributeValue("enable");
-        if (!StringUtils.isEmpty(enable)) {
-            Boolean enabled = Boolean.valueOf(enable);
+        if (StringUtils.isNotEmpty(enable)) {
+            boolean enabled = Boolean.parseBoolean(enable);
             component.setEnabled(enabled);
 
             return enabled;
@@ -286,12 +286,12 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
 
     protected void loadCollapsible(Component.Collapsable component, Element element, boolean defaultCollapsable) {
         String collapsable = element.attributeValue("collapsable");
-        boolean b = Strings.isNullOrEmpty(collapsable) ? defaultCollapsable : BooleanUtils.toBoolean(collapsable);
+        boolean b = Strings.isNullOrEmpty(collapsable) ? defaultCollapsable : Boolean.parseBoolean(collapsable);
         component.setCollapsable(b);
         if (b) {
             String collapsed = element.attributeValue("collapsed");
             if (!StringUtils.isBlank(collapsed)) {
-                component.setExpanded(!BooleanUtils.toBoolean(collapsed));
+                component.setExpanded(!Boolean.parseBoolean(collapsed));
             }
         }
     }
@@ -318,13 +318,13 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                 }
 
                 layout.setMargin(
-                        Boolean.valueOf(StringUtils.trimToEmpty(margins[0])),
-                        Boolean.valueOf(StringUtils.trimToEmpty(margins[1])),
-                        Boolean.valueOf(StringUtils.trimToEmpty(margins[2])),
-                        Boolean.valueOf(StringUtils.trimToEmpty(margins[3]))
+                        Boolean.parseBoolean(StringUtils.trimToEmpty(margins[0])),
+                        Boolean.parseBoolean(StringUtils.trimToEmpty(margins[1])),
+                        Boolean.parseBoolean(StringUtils.trimToEmpty(margins[2])),
+                        Boolean.parseBoolean(StringUtils.trimToEmpty(margins[3]))
                 );
             } else {
-                layout.setMargin(Boolean.valueOf(margin));
+                layout.setMargin(Boolean.parseBoolean(margin));
             }
         }
     }
@@ -345,8 +345,8 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
 
     protected void loadPresentations(Component.HasPresentations component, Element element) {
         String presentations = element.attributeValue("presentations");
-        if (!StringUtils.isEmpty(presentations)) {
-            component.usePresentations(Boolean.valueOf(presentations));
+        if (StringUtils.isNotEmpty(presentations)) {
+            component.usePresentations(Boolean.parseBoolean(presentations));
             context.addPostInitTask(new LoadPresentationsPostInitTask(component));
         }
     }
@@ -449,7 +449,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
 
         String trackSelection = element.attributeValue("trackSelection");
         String shortcut = StringUtils.trimToNull(element.attributeValue("shortcut"));
-        if (Boolean.valueOf(trackSelection)) {
+        if (Boolean.parseBoolean(trackSelection)) {
             return new DeclarativeTrackingAction(
                     id,
                     loadResourceString(element.attributeValue("caption")),

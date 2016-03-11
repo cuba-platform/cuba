@@ -1155,7 +1155,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
         String textSelection = element.attributeValue("textSelection");
         if (StringUtils.isNotEmpty(textSelection)) {
-            component.setTextSelectionEnabled(Boolean.valueOf(textSelection));
+            component.setTextSelectionEnabled(Boolean.parseBoolean(textSelection));
 
             if (component.getPresentations() != null) {
                 component.getPresentations().updateTextSelection();
@@ -1210,7 +1210,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                     String visible = colElem.attributeValue("visible");
                     if (visible != null) {
                         if (component.isColumnCollapsingAllowed()) { // throws exception if not
-                            component.setColumnCollapsed(column, !Boolean.valueOf(visible));
+                            component.setColumnCollapsed(column, !Boolean.parseBoolean(visible));
                         }
                     }
                     break;
@@ -1238,7 +1238,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             if (!StringUtils.isEmpty(sortProp)) {
                 MetaPropertyPath sortProperty = datasource.getMetaClass().getPropertyPath(sortProp);
                 if (newColumns.contains(sortProperty)) {
-                    boolean sortAscending = BooleanUtils.toBoolean(columnsElem.attributeValue("sortAscending"));
+                    boolean sortAscending = Boolean.parseBoolean(columnsElem.attributeValue("sortAscending"));
 
                     component.setSortContainerPropertyId(null);
                     component.setSortAscending(sortAscending);

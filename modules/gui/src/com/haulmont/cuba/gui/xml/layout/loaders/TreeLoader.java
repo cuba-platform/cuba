@@ -40,7 +40,7 @@ public class TreeLoader extends ActionsHolderLoader<Tree> {
 
         String multiselect = element.attributeValue("multiselect");
         if (StringUtils.isNotEmpty(multiselect)) {
-            resultComponent.setMultiSelect(Boolean.valueOf(multiselect));
+            resultComponent.setMultiSelect(Boolean.parseBoolean(multiselect));
         }
 
         Element itemsElem = element.element("treechildren");

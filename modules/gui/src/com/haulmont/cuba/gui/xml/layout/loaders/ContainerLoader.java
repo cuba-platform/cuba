@@ -45,8 +45,8 @@ public abstract class ContainerLoader<T extends Component> extends AbstractCompo
 
     protected void loadSpacing(Component.Spacing layout, Element element) {
         String spacing = element.attributeValue("spacing");
-        if (!StringUtils.isEmpty(spacing)) {
-            layout.setSpacing(Boolean.valueOf(spacing));
+        if (StringUtils.isNotEmpty(spacing)) {
+            layout.setSpacing(Boolean.parseBoolean(spacing));
         }
     }
 

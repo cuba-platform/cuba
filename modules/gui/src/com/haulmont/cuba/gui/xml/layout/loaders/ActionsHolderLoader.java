@@ -53,12 +53,12 @@ public abstract class ActionsHolderLoader<T extends Component.ActionsHolder> ext
     protected void loadStandardActionProperties(Action instance, Element element) {
         String enable = element.attributeValue("enable");
         if (StringUtils.isNotEmpty(enable)) {
-            instance.setEnabled(Boolean.valueOf(enable));
+            instance.setEnabled(Boolean.parseBoolean(enable));
         }
 
         String visible = element.attributeValue("visible");
         if (StringUtils.isNotEmpty(visible)) {
-            instance.setVisible(Boolean.valueOf(visible));
+            instance.setVisible(Boolean.parseBoolean(visible));
         }
 
         String caption = element.attributeValue("caption");

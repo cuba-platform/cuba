@@ -43,8 +43,8 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
 
     protected void loadRequired(Field component, Element element) {
         String required = element.attributeValue("required");
-        if (!StringUtils.isEmpty(required)) {
-            component.setRequired(BooleanUtils.toBoolean(required));
+        if (StringUtils.isNotEmpty(required)) {
+            component.setRequired(Boolean.parseBoolean(required));
         }
 
         String requiredMessage = element.attributeValue("requiredMessage");

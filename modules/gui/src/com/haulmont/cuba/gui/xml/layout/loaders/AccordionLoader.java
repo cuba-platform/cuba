@@ -31,7 +31,7 @@ public class AccordionLoader extends ContainerLoader<Accordion> {
         for (Element tabElement : tabElements) {
             final String name = tabElement.attributeValue("id");
 
-            boolean lazy = Boolean.valueOf(tabElement.attributeValue("lazy"));
+            boolean lazy = Boolean.parseBoolean(tabElement.attributeValue("lazy"));
             ComponentLoader tabComponentLoader = getLoader(tabElement, TabComponentLoader.class);
             Accordion.Tab tab;
             if (lazy) {
@@ -76,7 +76,7 @@ public class AccordionLoader extends ContainerLoader<Accordion> {
 
                 String visible = tabElement.attributeValue("visible");
                 if (StringUtils.isNotEmpty(visible)) {
-                    tab.setVisible(Boolean.valueOf(visible));
+                    tab.setVisible(Boolean.parseBoolean(visible));
                 }
 
                 String style = tabElement.attributeValue("stylename");
@@ -85,8 +85,8 @@ public class AccordionLoader extends ContainerLoader<Accordion> {
                 }
 
                 String enable = tabElement.attributeValue("enable");
-                if (!StringUtils.isEmpty(enable)) {
-                    tab.setEnabled(Boolean.valueOf(enable));
+                if (StringUtils.isNotEmpty(enable)) {
+                    tab.setEnabled(Boolean.parseBoolean(enable));
                 }
             }
         }

@@ -32,7 +32,7 @@ public class TabSheetLoader extends ContainerLoader<TabSheet> {
         for (Element tabElement : tabElements) {
             final String name = tabElement.attributeValue("id");
 
-            boolean lazy = Boolean.valueOf(tabElement.attributeValue("lazy"));
+            boolean lazy = Boolean.parseBoolean(tabElement.attributeValue("lazy"));
             ComponentLoader tabComponentLoader = getLoader(tabElement, TabComponentLoader.class);
             TabSheet.Tab tab;
             if (lazy) {
@@ -71,7 +71,7 @@ public class TabSheetLoader extends ContainerLoader<TabSheet> {
             if (tab != null) {
                 String detachable = tabElement.attributeValue("detachable");
                 if (StringUtils.isNotEmpty(detachable)) {
-                    tab.setDetachable(Boolean.valueOf(detachable));
+                    tab.setDetachable(Boolean.parseBoolean(detachable));
                 }
 
                 String caption = tabElement.attributeValue("caption");
@@ -82,7 +82,7 @@ public class TabSheetLoader extends ContainerLoader<TabSheet> {
 
                 String visible = tabElement.attributeValue("visible");
                 if (StringUtils.isNotEmpty(visible)) {
-                    tab.setVisible(Boolean.valueOf(visible));
+                    tab.setVisible(Boolean.parseBoolean(visible));
                 }
 
                 String style = tabElement.attributeValue("stylename");
@@ -91,8 +91,8 @@ public class TabSheetLoader extends ContainerLoader<TabSheet> {
                 }
 
                 String enable = tabElement.attributeValue("enable");
-                if (!StringUtils.isEmpty(enable)) {
-                    tab.setEnabled(Boolean.valueOf(enable));
+                if (StringUtils.isNotEmpty(enable)) {
+                    tab.setEnabled(Boolean.parseBoolean(enable));
                 }
             }
         }

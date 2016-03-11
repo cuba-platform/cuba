@@ -46,7 +46,7 @@ public class SearchFieldLoader extends LookupFieldLoader {
 
         String escapeValueForLike = element.attributeValue("escapeValueForLike");
         if (StringUtils.isNotEmpty(escapeValueForLike)) {
-            searchField.setEscapeValueForLike(BooleanUtils.toBoolean(escapeValueForLike));
+            searchField.setEscapeValueForLike(Boolean.parseBoolean(escapeValueForLike));
         }
     }
 

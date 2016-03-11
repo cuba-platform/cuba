@@ -29,7 +29,9 @@ public abstract class AbstractOptionsBaseLoader<T extends OptionsField> extends 
     @Override
     protected void loadDatasource(DatasourceComponent component, Element element) {
         String multiselect = element.attributeValue("multiselect");
-        ((OptionsField) component).setMultiSelect(BooleanUtils.toBoolean(multiselect));
+        if (StringUtils.isNotEmpty(multiselect)) {
+            ((OptionsField) component).setMultiSelect(Boolean.parseBoolean(multiselect));
+        }
 
         String datasource = element.attributeValue("optionsDatasource");
         if (!StringUtils.isEmpty(datasource)) {

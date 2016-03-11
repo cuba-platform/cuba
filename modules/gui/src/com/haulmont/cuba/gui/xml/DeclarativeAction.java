@@ -30,8 +30,8 @@ public class DeclarativeAction extends BaseAction {
         this.description = description;
         this.icon = icon;
 
-        setEnabled(enable == null ? true : Boolean.valueOf(enable));
-        setVisible(visible == null ? true : Boolean.valueOf(visible));
+        setEnabled(enable == null || Boolean.parseBoolean(enable));
+        setVisible(visible == null || Boolean.parseBoolean(visible));
 
         this.methodName = methodName;
         checkActionsHolder(holder);

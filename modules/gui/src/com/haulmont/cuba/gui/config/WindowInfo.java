@@ -61,7 +61,7 @@ public class WindowInfo {
     }
 
     public boolean getMultipleOpen() {
-        return BooleanUtils.toBoolean(descriptor.attributeValue("multipleOpen"));
+        return Boolean.parseBoolean(descriptor.attributeValue("multipleOpen"));
     }
 
     /**

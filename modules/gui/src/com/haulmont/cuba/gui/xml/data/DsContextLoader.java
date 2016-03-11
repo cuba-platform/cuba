@@ -376,7 +376,7 @@ public class DsContextLoader {
         String viewName = element.attributeValue("view");
 
         String deletion = element.attributeValue("softDeletion");
-        boolean softDeletion = deletion == null || Boolean.valueOf(deletion);
+        boolean softDeletion = deletion == null || Boolean.parseBoolean(deletion);
 
         builder.reset()
                 .setMetaClass(metaClass)
@@ -401,7 +401,7 @@ public class DsContextLoader {
 
     private boolean getAllowCommit(Element element) {
         final String allowCommitStr = element.attributeValue("allowCommit");
-        return StringUtils.isEmpty(allowCommitStr) || Boolean.valueOf(allowCommitStr);
+        return StringUtils.isEmpty(allowCommitStr) || Boolean.parseBoolean(allowCommitStr);
     }
 
     protected RuntimePropsDatasource loadRuntimePropsDataSource(Element element){

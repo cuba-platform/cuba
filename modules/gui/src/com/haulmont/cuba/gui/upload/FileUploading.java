@@ -263,7 +263,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
         }
 
         String useLocalInvocation = AppContext.getProperty("cuba.useLocalServiceInvocation");
-        if (Boolean.valueOf(useLocalInvocation)) {
+        if (Boolean.parseBoolean(useLocalInvocation)) {
             uploadLocally(fileDescr, file);
         } else {
             uploadWithServlet(fileId, fileDescr, listener, file);

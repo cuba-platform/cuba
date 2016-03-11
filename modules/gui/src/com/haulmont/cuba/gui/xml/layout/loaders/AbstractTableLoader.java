@@ -146,7 +146,9 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         }
 
         String multiselect = element.attributeValue("multiselect");
-        resultComponent.setMultiSelect(BooleanUtils.toBoolean(multiselect));
+        if (StringUtils.isNotEmpty(multiselect)) {
+            resultComponent.setMultiSelect(Boolean.parseBoolean(multiselect));
+        }
     }
 
     protected void addDynamicAttributes(Table component, Datasource ds, List<Table.Column> availableColumns) {
@@ -178,15 +180,15 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
 
     protected void loadMultiLineCells(Table table, Element element) {
         String multiLineCells = element.attributeValue("multiLineCells");
-        if (StringUtils.isNotBlank(multiLineCells)) {
-            table.setMultiLineCells(BooleanUtils.toBoolean(multiLineCells));
+        if (StringUtils.isNotEmpty(multiLineCells)) {
+            table.setMultiLineCells(Boolean.parseBoolean(multiLineCells));
         }
     }
 
     protected void loadContextMenuEnabled(Table table, Element element) {
         String contextMenuEnabled = element.attributeValue("contextMenuEnabled");
-        if (StringUtils.isNotBlank(contextMenuEnabled)) {
-            table.setContextMenuEnabled(BooleanUtils.toBoolean(contextMenuEnabled));
+        if (StringUtils.isNotEmpty(contextMenuEnabled)) {
+            table.setContextMenuEnabled(Boolean.parseBoolean(contextMenuEnabled));
         }
     }
 
@@ -204,7 +206,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         //noinspection unchecked
         for (Element columnElement : (Collection<Element>) columnsElement.elements("column")) {
             String visible = columnElement.attributeValue("visible");
-            if (StringUtils.isEmpty(visible) || Boolean.valueOf(visible)) {
+            if (StringUtils.isEmpty(visible) || Boolean.parseBoolean(visible)) {
                 columns.add(loadColumn(columnElement, ds));
             }
         }
@@ -213,11 +215,11 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
 
     protected void loadAggregatable(Table component, Element element) {
         String aggregatable = element.attributeValue("aggregatable");
-        if (!StringUtils.isEmpty(aggregatable)) {
-            component.setAggregatable(BooleanUtils.toBoolean(aggregatable));
+        if (StringUtils.isNotEmpty(aggregatable)) {
+            component.setAggregatable(Boolean.parseBoolean(aggregatable));
             String showTotalAggregation = element.attributeValue("showTotalAggregation");
-            if (!StringUtils.isEmpty(showTotalAggregation)) {
-                component.setShowTotalAggregation(BooleanUtils.toBoolean(showTotalAggregation));
+            if (StringUtils.isNotEmpty(showTotalAggregation)) {
+                component.setShowTotalAggregation(Boolean.parseBoolean(showTotalAggregation));
             }
         }
     }
@@ -266,9 +268,9 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
     protected void loadRequired(Table component, Table.Column column) {
         Element element = column.getXmlDescriptor();
         String required = element.attributeValue("required");
-        if (!StringUtils.isEmpty(required)) {
+        if (StringUtils.isNotEmpty(required)) {
             String requiredMsg = element.attributeValue("requiredMessage");
-            component.setRequired(column, BooleanUtils.toBoolean(required), loadResourceString(requiredMsg));
+            component.setRequired(column, Boolean.parseBoolean(required), loadResourceString(requiredMsg));
         }
     }
 
@@ -301,23 +303,23 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         Table.Column column = new Table.Column(metaPropertyPath != null ? metaPropertyPath : id);
 
         String editable = element.attributeValue("editable");
-        if (!StringUtils.isEmpty(editable)) {
-            column.setEditable(Boolean.valueOf(editable));
+        if (StringUtils.isNotEmpty(editable)) {
+            column.setEditable(Boolean.parseBoolean(editable));
         }
 
         String collapsed = element.attributeValue("collapsed");
-        if (!StringUtils.isEmpty(collapsed)) {
-            column.setCollapsed(Boolean.valueOf(collapsed));
+        if (StringUtils.isNotEmpty(collapsed)) {
+            column.setCollapsed(Boolean.parseBoolean(collapsed));
         }
 
         String groupAllowed = element.attributeValue("groupAllowed");
         if (StringUtils.isNotEmpty(groupAllowed)) {
-            column.setGroupAllowed(Boolean.valueOf(groupAllowed));
+            column.setGroupAllowed(Boolean.parseBoolean(groupAllowed));
         }
 
         String sortable = element.attributeValue("sortable");
         if (StringUtils.isNotEmpty(sortable)) {
-            column.setSortable(Boolean.valueOf(sortable));
+            column.setSortable(Boolean.parseBoolean(sortable));
         }
 
         loadCaption(column, element);
@@ -415,8 +417,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
 
     protected void loadCalculatable(Table.Column column, Element columnElement) {
         String calc = columnElement.attributeValue("calculatable");
-        if (!StringUtils.isEmpty(calc)) {
-            column.setCalculatable(Boolean.valueOf(calc));
+        if (StringUtils.isNotEmpty(calc)) {
+            column.setCalculatable(Boolean.parseBoolean(calc));
         }
     }
 
@@ -441,22 +443,22 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
 
     protected void loadSortable(Table component, Element element) {
         String sortable = element.attributeValue("sortable");
-        if (!StringUtils.isEmpty(sortable)) {
-            component.setSortable(Boolean.valueOf(sortable));
+        if (StringUtils.isNotEmpty(sortable)) {
+            component.setSortable(Boolean.parseBoolean(sortable));
         }
     }
 
     protected void loadReorderingAllowed(Table component, Element element) {
         String reorderingAllowed = element.attributeValue("reorderingAllowed");
-        if (!StringUtils.isEmpty(reorderingAllowed)) {
-            component.setColumnReorderingAllowed(Boolean.valueOf(reorderingAllowed));
+        if (StringUtils.isNotEmpty(reorderingAllowed)) {
+            component.setColumnReorderingAllowed(Boolean.parseBoolean(reorderingAllowed));
         }
     }
 
     protected void loadColumnControlVisible(Table component, Element element) {
         String columnControlVisible = element.attributeValue("columnControlVisible");
-        if (!StringUtils.isEmpty(columnControlVisible)) {
-            component.setColumnControlVisible(Boolean.valueOf(columnControlVisible));
+        if (StringUtils.isNotEmpty(columnControlVisible)) {
+            component.setColumnControlVisible(Boolean.parseBoolean(columnControlVisible));
         }
     }
 }

@@ -27,22 +27,22 @@ public class SourceCodeEditorLoader extends AbstractFieldLoader<SourceCodeEditor
 
         String showGutter = element.attributeValue("showGutter");
         if (StringUtils.isNotEmpty(showGutter)) {
-            resultComponent.setShowGutter(Boolean.valueOf(showGutter));
+            resultComponent.setShowGutter(Boolean.parseBoolean(showGutter));
         }
 
         String printMargin = element.attributeValue("printMargin");
         if (StringUtils.isNotEmpty(printMargin)) {
-            resultComponent.setShowPrintMargin(Boolean.valueOf(printMargin));
+            resultComponent.setShowPrintMargin(Boolean.parseBoolean(printMargin));
         }
 
         String highlightActiveLine = element.attributeValue("highlightActiveLine");
         if (StringUtils.isNotEmpty(highlightActiveLine)) {
-            resultComponent.setHighlightActiveLine(Boolean.valueOf(highlightActiveLine));
+            resultComponent.setHighlightActiveLine(Boolean.parseBoolean(highlightActiveLine));
         }
 
         String handleTabKey = element.attributeValue("handleTabKey");
         if (StringUtils.isNotEmpty("handleTabKey")) {
-            resultComponent.setHandleTabKey(Boolean.valueOf(handleTabKey));
+            resultComponent.setHandleTabKey(Boolean.parseBoolean(handleTabKey));
         }
     }
 

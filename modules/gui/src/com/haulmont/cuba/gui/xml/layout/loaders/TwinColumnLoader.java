@@ -39,13 +39,13 @@ public class TwinColumnLoader extends AbstractFieldLoader<TwinColumn> {
         }
 
         String rows = element.attributeValue("rows");
-        if (!StringUtils.isEmpty(rows)) {
+        if (StringUtils.isNotEmpty(rows)) {
             resultComponent.setRows(Integer.parseInt(rows));
         }
 
         String addBtnEnabled = element.attributeValue("addAllBtnEnabled");
-        if (!StringUtils.isEmpty(addBtnEnabled)) {
-            resultComponent.setAddAllBtnEnabled(Boolean.valueOf(addBtnEnabled));
+        if (StringUtils.isNotEmpty(addBtnEnabled)) {
+            resultComponent.setAddAllBtnEnabled(Boolean.parseBoolean(addBtnEnabled));
         }
     }
 

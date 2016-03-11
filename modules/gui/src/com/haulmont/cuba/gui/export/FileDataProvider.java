@@ -63,7 +63,7 @@ public class FileDataProvider implements ExportDataProvider {
     @Override
     public InputStream provide() {
         String useLocalInvocation = AppContext.getProperty("cuba.useLocalServiceInvocation");
-        if (Boolean.valueOf(useLocalInvocation)) {
+        if (Boolean.parseBoolean(useLocalInvocation)) {
             downloadLocally();
         } else {
             downloadWithServlet();
