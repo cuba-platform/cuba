@@ -19,6 +19,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.aggregation.AggregationStrategy;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
+import com.haulmont.cuba.gui.xml.DeclarativeColumnGenerator;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -132,6 +133,17 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         addDynamicAttributes(resultComponent, ds, availableColumns);
 
         resultComponent.setDatasource(cds);
+
+        for (Table.Column column : availableColumns) {
+            if (column.getXmlDescriptor() != null) {
+                String generatorMethod = column.getXmlDescriptor().attributeValue("generator");
+                if (StringUtils.isNotEmpty(generatorMethod)) {
+                    //noinspection unchecked
+                    resultComponent.addGeneratedColumn(String.valueOf(column),
+                            new DeclarativeColumnGenerator(resultComponent, generatorMethod));
+                }
+            }
+        }
 
         String multiselect = element.attributeValue("multiselect");
         resultComponent.setMultiSelect(BooleanUtils.toBoolean(multiselect));

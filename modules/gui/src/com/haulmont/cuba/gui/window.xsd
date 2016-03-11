@@ -1019,6 +1019,8 @@
         <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasVisibility"/>
 
+        <xs:attribute name="generator" type="xs:string"/>
+
         <xs:attribute name="collapsed" type="xs:boolean"/>
         <xs:attribute name="groupAllowed" type="xs:boolean"/>
         <xs:attribute name="sortable" type="xs:boolean"/>
