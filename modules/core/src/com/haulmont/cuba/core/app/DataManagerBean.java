@@ -26,9 +26,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import java.lang.reflect.*;
 import java.util.*;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
@@ -763,6 +761,8 @@ public class DataManagerBean implements DataManager {
             AppContext.getSecurityContext().setAuthorizationRequired(true);
             try {
                 return method.invoke(impl, args);
+            } catch (InvocationTargetException e) {
+                throw e.getTargetException();
             } finally {
                 AppContext.getSecurityContext().setAuthorizationRequired(authorizationRequired);
             }
