@@ -228,7 +228,7 @@ public class Emailer implements EmailerAPI {
     }
 
     protected SendingMessage createClone(SendingMessage srcMessage) {
-        SendingMessage clonedMessage = (SendingMessage) metadata.getTools().copy(srcMessage);
+        SendingMessage clonedMessage = metadata.getTools().copy(srcMessage);
         List<SendingAttachment> clonedList = new ArrayList<>();
         for (SendingAttachment srcAttach : srcMessage.getAttachments()) {
             SendingAttachment clonedAttach = (SendingAttachment) metadata.getTools().copy(srcAttach);

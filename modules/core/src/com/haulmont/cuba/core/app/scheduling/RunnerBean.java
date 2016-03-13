@@ -92,7 +92,7 @@ public class RunnerBean implements Runner {
     @Override
     public void runTask(ScheduledTask task, final long now, final UserSession userSession) {
         // It's better not to pass an entity instance in managed state to another thread
-        final ScheduledTask taskCopy = (ScheduledTask) metadata.getTools().copy(task);
+        final ScheduledTask taskCopy = metadata.getTools().copy(task);
 
         executorService.submit(new Runnable() {
             @Override

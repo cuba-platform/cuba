@@ -500,7 +500,7 @@ public class DsContextTest extends CubaClientTestCase {
     private void setupParentDs(CollectionDatasource parent, Datasource child, Entity<UUID> item) {
         ((DatasourceImplementation) child).setParent(parent);
 
-        Entity itemCopy = (Entity) metadata.getTools().copy(item);
+        Entity itemCopy = metadata.getTools().copy(item);
         child.setItem(itemCopy);
         ((DatasourceImplementation) child).setModified(false);
     }
@@ -525,7 +525,7 @@ public class DsContextTest extends CubaClientTestCase {
 //            }
 //        }
 
-        Entity item = (Entity) metadata.getTools().copy(parent.getItem(itemId));
+        Entity item = metadata.getTools().copy(parent.getItem(itemId));
         child.setItem(item);
         ((DatasourceImplementation) child).setModified(false);
     }

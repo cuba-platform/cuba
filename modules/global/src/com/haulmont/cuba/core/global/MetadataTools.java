@@ -659,10 +659,11 @@ public class MetadataTools {
      * @param source source instance
      * @return new instance of the same Java class as source
      */
-    public Instance copy(Instance source) {
+    public <T extends Instance> T copy(T source) {
         checkNotNullArgument(source, "source is null");
 
-        Instance dest = createInstance(source.getClass());
+        //noinspection unchecked
+        T dest = createInstance((Class<T>) source.getClass());
 
         copy(source, dest);
         return dest;
