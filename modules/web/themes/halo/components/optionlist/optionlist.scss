@@ -10,4 +10,8 @@
   .#{$primary-stylename}-error .#{$primary-stylename}-select {
     @include valo-textfield-error-style;
   }
+
+  .#{$primary-stylename} select:focus {
+    border: 1px solid $v-focus-color;
+  }
 }
