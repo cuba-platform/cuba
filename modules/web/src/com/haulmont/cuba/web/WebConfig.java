@@ -84,7 +84,7 @@ public interface WebConfig extends Config {
      * @return Whether to enable the Folders Pane functionality.
      */
     @Property("cuba.web.foldersPaneEnabled")
-    @DefaultBoolean(true)
+    @DefaultBoolean(false)
     boolean getFoldersPaneEnabled();
 
     /**
