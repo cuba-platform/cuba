@@ -12,6 +12,6 @@
   }
 
   .#{$primary-stylename} select:focus {
-    @include valo-textfield-focus-style;
+    @include valo-textfield-focus-style($bevel: $v-bevel, $shadow: $v-shadow, $gradient: $v-gradient, $background-color: $v-background-color);
   }
 }
