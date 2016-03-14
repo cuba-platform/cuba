@@ -318,6 +318,10 @@
         <xs:attribute name="stylename" type="xs:string"/>
     </xs:attributeGroup>
 
+    <xs:attributeGroup name="hasResponsive">
+        <xs:attribute name="responsive" type="xs:boolean"/>
+    </xs:attributeGroup>
+
     <xs:attributeGroup name="hasSpacingMargin">
         <xs:attribute name="spacing" type="xs:boolean"/>
         <xs:attribute name="margin" type="xs:string"/>
@@ -1335,6 +1339,18 @@
         <xs:attributeGroup ref="hasSpacingMargin"/>
     </xs:complexType>
 
+    <!-- CssLayout -->
+    <xs:complexType name="cssLayout">
+        <xs:group ref="layoutOrComponent"/>
+
+        <xs:attributeGroup ref="hasId"/>
+        <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasResponsive"/>
+        <xs:attributeGroup ref="hasEnableProp"/>
+        <xs:attributeGroup ref="hasVisibility"/>
+    </xs:complexType>
+
     <!-- ScrollBoxLayout -->
     <xs:complexType name="scrollBoxLayout">
         <xs:group ref="layoutOrComponent"/>
@@ -1710,6 +1726,7 @@
                 <xs:element name="vbox" type="boxLayout"/>
                 <xs:element name="hbox" type="boxLayout"/>
                 <xs:element name="flowBox" type="flowBoxLayout"/>
+                <xs:element name="cssLayout" type="cssLayout"/>
 
                 <xs:element name="htmlBox" type="htmlBoxLayout"/>
                 <xs:element name="scrollBox" type="scrollBoxLayout"/>

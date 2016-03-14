@@ -53,6 +53,9 @@
 @import "components/sourcecodeeditor/sourcecodeeditor";
 @import "components/resizabletextarea/resizabletextarea";
 
+//Dashboard
+@import "dashboard/dashboard";
+
 // Application specific
 @import "app/log-control";
 @import "app/login-window";
@@ -98,6 +101,8 @@
   @include halo-sourcecodeeditor;
   @include halo-contextmenu-addon;
   @include halo-textarea;
+
+  @include halo-dashboard;
 
   @include halo-cuba-groupbox;
   @include halo-cuba-tokenlist;

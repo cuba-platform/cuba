@@ -49,6 +49,7 @@ public class LayoutLoaderConfig {
         config.register(GroupBoxLayout.NAME, GroupBoxLayoutLoader.class);
         config.register(HtmlBoxLayout.NAME, HtmlBoxLayoutLoader.class);
         config.register(FlowBoxLayout.NAME, FlowBoxLayoutLoader.class);
+        config.register(CssLayout.NAME, CssLayoutLoader.class);
 
         config.register(Button.NAME, ButtonLoader.class);
         config.register(LinkButton.NAME, LinkButtonLoader.class);
