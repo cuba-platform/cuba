@@ -12,6 +12,6 @@
   }
 
   .#{$primary-stylename} select:focus {
-    border: 1px solid $v-focus-color;
+    @include valo-textfield-focus-style;
   }
 }
