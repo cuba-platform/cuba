@@ -8,6 +8,7 @@ package com.haulmont.cuba.portal;
 import com.haulmont.cuba.client.sys.cache.ClientCacheManager;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.portal.sys.security.PortalSecurityContext;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,13 +36,23 @@ public class App {
     }
 
     public static boolean isBound() {
-        PortalSecurityContext securityContext = (PortalSecurityContext) AppContext.getSecurityContext();
-        return securityContext != null && securityContext.getPortalApp() != null;
+        SecurityContext rawSecurityContext = AppContext.getSecurityContext();
+        if (rawSecurityContext instanceof PortalSecurityContext) {
+            PortalSecurityContext securityContext = (PortalSecurityContext) rawSecurityContext;
+            return securityContext.getPortalApp() != null;
+        } else {
+            return false;
+        }
     }
 
     public static App getInstance() {
-        PortalSecurityContext securityContext = (PortalSecurityContext) AppContext.getSecurityContext();
-        return securityContext != null ? securityContext.getPortalApp() : null;
+        SecurityContext rawSecurityContext = AppContext.getSecurityContext();
+        if (rawSecurityContext instanceof PortalSecurityContext) {
+            PortalSecurityContext securityContext = (PortalSecurityContext) rawSecurityContext;
+            return securityContext.getPortalApp();
+        } else {
+            return null;
+        }
     }
 
     public Connection getConnection() {

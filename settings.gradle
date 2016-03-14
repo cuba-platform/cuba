@@ -5,7 +5,7 @@
  */
 
 include(':cuba-shared-lib', ':cuba-global', ':cuba-core', 'cuba-core-tests', ':cuba-client', ':cuba-client-tests',
-        ':cuba-gui', ':cuba-web-toolkit', ':cuba-web', ':cuba-web-themes', ':cuba-desktop', ':cuba-portal',':cuba-web-auth')
+        ':cuba-gui', ':cuba-web-toolkit', ':cuba-web', ':cuba-web-themes', ':cuba-desktop', ':cuba-portal',':cuba-web-auth', ':cuba-rest-api')
 rootProject.name = 'cuba'
 project(':cuba-shared-lib').projectDir = new File(settingsDir, 'modules/shared-lib')
 project(':cuba-global').projectDir = new File(settingsDir, 'modules/global')
@@ -20,3 +20,4 @@ project(':cuba-desktop').projectDir = new File(settingsDir, 'modules/desktop')
 project(':cuba-portal').projectDir = new File(settingsDir, 'modules/portal')
 project(':cuba-web-auth').projectDir = new File(settingsDir, 'modules/web-auth')
 project(':cuba-web-themes').projectDir = new File(settingsDir, 'modules/web/themes')
+project(':cuba-rest-api').projectDir = new File(settingsDir, 'modules/rest-api')

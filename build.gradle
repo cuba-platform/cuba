@@ -49,6 +49,7 @@ def clientModule = project(':cuba-client')
 def guiModule = project(':cuba-gui')
 def desktopModule = project(':cuba-desktop')
 def portalModule = project(':cuba-portal')
+def restApiModule = project(':cuba-rest-api')
 def webAuthModule = project(':cuba-web-auth')
 def webToolkitModule = project(':cuba-web-toolkit')
 def webModule = project(':cuba-web')
@@ -72,7 +73,7 @@ def hsqldb = 'org.hsqldb:hsqldb:2.3.3'
 def commonsUpload = [group: 'commons-fileupload', name: 'commons-fileupload', version: '1.3.1']
 
 configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
-        webModule, desktopModule, portalModule, webAuthModule]) {
+           webModule, desktopModule, portalModule, webAuthModule, restApiModule]) {
     apply(plugin: 'java')
     apply(plugin: 'idea')
     apply(plugin: 'maven')
@@ -691,11 +692,27 @@ configure(desktopModule) {
     }
 }
 
+configure(restApiModule) {
+    dependencies {
+        compile(globalModule)
+        compile(clientModule)
+        compile(sharedLibModule)
+        provided(servletApi)
+        compile(group: 'org.springframework', name: 'spring-webmvc', version: springVersion)
+        compile(group: 'org.springframework', name: 'spring-context-support', version: springVersion)
+        compile(group: 'org.json', name: 'json', version: '20140107')
+        compile(groovyArtifact)
+
+        testCompile(clientModule.sourceSets.test.output)
+    }
+}
+
 configure(portalModule) {
     dependencies {
         compile(globalModule)
         compile(clientModule)
         compile(sharedLibModule)
+        compile(restApiModule)
         provided(servletApi)
         compile(group: 'org.springframework', name: 'spring-webmvc', version: springVersion)
         compile(group: 'org.springframework.security', name: 'spring-security-core', version: springSecurityVersion)

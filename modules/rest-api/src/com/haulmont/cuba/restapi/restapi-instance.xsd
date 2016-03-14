@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Based on JEST, part of the OpenJPA framework.
+  ~
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<!-- ========================================================================= -->
+<!-- Schema for serialized persistence instance.                               -->
+<!-- ========================================================================= -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	attributeFormDefault="unqualified" elementFormDefault="qualified"
+	version="1.0">
+
+    <!-- The root element of the document contains zero or more instances -->
+	<xsd:element name="instances">
+		<xsd:complexType>
+			<xsd:sequence>
+			    <xsd:element name="uri"         minOccurs="1" maxOccurs="1" type="xsd:anyURI"/>
+			    <xsd:element name="description" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+				<xsd:element name="instance"    minOccurs="0" maxOccurs="unbounded" type="instance-type" />
+			</xsd:sequence>
+			<xsd:attribute name="version" type="xsd:string" />
+		</xsd:complexType>
+	</xsd:element>
+
+	<!-- The root element for a single instance. Children of this element are persistent attribute -->
+	<!-- Persistent Attributes occur in order. The order is determined by the attribute category.  -->
+	<!-- Attribute category is determined by the enumerated PersistentAttributeType defined in     -->
+	<!-- javax.persistence.metamodel and then further refined by id, version, lob and enum.        -->
+	<xsd:complexType name="instance-type">
+		<xsd:sequence>
+			<xsd:element name="id"           type="basic-attr-type"      minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="version"      type="basic-attr-type"      minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="basic"        type="basic-attr-type"      minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="enum"         type="basic-attr-type"      minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="embedded"     type="instance-type"        minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="one-to-one"   type="singular-attr-type"   minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="many-to-one"  type="singular-attr-type"	 minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="one-to-many"  type="collection-attr-type" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="many-to-many" type="map-attr-type"        minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attribute name="id" type="xsd:ID" use="required" />
+	</xsd:complexType>
+
+	<!-- A reference to another instance within the same(?) document -->
+	<xsd:complexType name="ref-type">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attribute name="id" type="xsd:IDREF" />
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	
+	<!-- A null reference                                            -->
+	<xsd:complexType name="ref-null">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+
+	<!-- Basic Attribute has a name and its runtime type   -->
+	<!-- non-null value appears as text content.           -->
+	<!-- null value appears as attribute with empty text . -->
+	<xsd:complexType name="basic-attr-type">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attribute name="name" type="xsd:string" use="required" />
+				<xsd:attribute name="null" type="xsd:boolean" />
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+
+
+	<!-- Singular attribute is a reference to another instance or a null reference. -->
+	<xsd:complexType name="singular-attr-type">
+		<xsd:choice>
+			<xsd:element name="null" type="ref-null" />
+			<xsd:element name="ref" type="ref-type" />
+		</xsd:choice>
+		<xsd:attribute name="name" type="xsd:string" use="required" />
+	</xsd:complexType>
+
+	<!-- Collection attributes list their members with their runtime type -->
+	<!-- Members can be basic or other managed instance                   -->
+	<xsd:complexType name="collection-attr-type">
+		<xsd:sequence>
+			<xsd:element name="member" type="member-type" minOccurs="0"
+				maxOccurs="unbounded" />
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required" />
+		<xsd:attribute name="member-type" type="xsd:string" use="required" />
+	</xsd:complexType>
+
+	<!-- Map attributes list their entries with runtime type of key and value    -->
+	<!-- Both key and value can be independently basic or other managed instance -->
+	<xsd:complexType name="map-attr-type">
+		<xsd:sequence>
+			<xsd:element name="entry" type="entry-type" />
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required" />
+		<xsd:attribute name="key-type" type="xsd:string" use="required" />
+		<xsd:attribute name="value-type" type="xsd:string" use="required" />
+	</xsd:complexType>
+
+	<!-- Value of a member of basic type. -->
+	<xsd:complexType name="basic-value-type">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attribute name="null" type="xsd:boolean" />
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+
+	<!-- Value of a member of a collection/map -->
+	<xsd:complexType name="member-type">
+		<xsd:choice>
+			<xsd:element name="basic" type="basic-value-type" />
+			<xsd:element name="null" type="ref-null" />
+			<xsd:element name="ref" type="ref-type" />
+		</xsd:choice>
+	</xsd:complexType>
+
+	<!-- Denotes entry of a map element -->
+	<xsd:complexType name="entry-type">
+		<xsd:sequence>
+			<xsd:element name="key"   type="member-type" minOccurs="1" maxOccurs="1" />
+			<xsd:element name="value" type="member-type" minOccurs="1" maxOccurs="1"  />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+</xsd:schema>
