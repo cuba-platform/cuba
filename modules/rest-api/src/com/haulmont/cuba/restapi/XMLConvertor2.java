@@ -23,11 +23,14 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 
 import javax.activation.MimeType;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.io.StringWriter;
 import java.util.*;
 
@@ -37,6 +40,7 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
+@Component
 public class XMLConvertor2 implements Convertor {
 
     public static final MimeType MIME_TYPE_XML;
@@ -51,15 +55,19 @@ public class XMLConvertor2 implements Convertor {
         }
     }
 
-    protected final Metadata metadata;
+    @Inject
+    protected Metadata metadata;
 
-    protected final RestConfig restConfig;
-    protected final MetadataTools metadataTools;
+    @Inject
+    protected MetadataTools metadataTools;
 
-    public XMLConvertor2() {
-        metadata = AppBeans.get(Metadata.NAME);
-        metadataTools = metadata.getTools();
-        Configuration configuration = AppBeans.get(Configuration.NAME);
+    @Inject
+    protected Configuration configuration;
+
+    protected RestConfig restConfig;
+
+    @PostConstruct
+    public void init() {
         restConfig = configuration.getConfig(RestConfig.class);
     }
 

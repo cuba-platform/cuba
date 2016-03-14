@@ -36,10 +36,13 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
@@ -49,6 +52,7 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
+@Component
 public class JSONConvertor implements Convertor {
     public static final String MIME_STR = "application/json;charset=UTF-8";
     public static final String TYPE_JSON = "json";
@@ -62,14 +66,16 @@ public class JSONConvertor implements Convertor {
         }
     }
 
-    protected final Metadata metadata;
+    @Inject
+    protected Metadata metadata;
 
-    protected final RestConfig restConfig;
+    @Inject
+    protected Configuration configuration;
 
-    public JSONConvertor() {
-        metadata = AppBeans.get(Metadata.NAME);
+    protected RestConfig restConfig;
 
-        Configuration configuration = AppBeans.get(Configuration.NAME);
+    @PostConstruct
+    public void init() {
         restConfig = configuration.getConfig(RestConfig.class);
     }
 

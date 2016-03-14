@@ -15,10 +15,10 @@ import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -148,7 +148,12 @@ public class LoginServiceController {
                 return;
             }
 
-            setSessionInfo(request, userSession);
+            try {
+                AppContext.setSecurityContext(new SecurityContext(userSession));
+                setSessionInfo(request, userSession);
+            } finally {
+                AppContext.setSecurityContext(null);
+            }
 
             response.setStatus(HttpServletResponse.SC_OK);
             PrintWriter writer = new PrintWriter(response.getOutputStream());

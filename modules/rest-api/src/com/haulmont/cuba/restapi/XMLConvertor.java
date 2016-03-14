@@ -29,6 +29,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
 import org.w3c.dom.*;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
@@ -38,6 +39,8 @@ import org.w3c.dom.ls.LSParserFilter;
 import org.w3c.dom.traversal.NodeFilter;
 
 import javax.activation.MimeType;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.persistence.Embedded;
 import javax.persistence.Id;
 import javax.persistence.Version;
@@ -67,6 +70,7 @@ import java.util.*;
  * @version $Id$
  */
 @Deprecated
+@Component
 public class XMLConvertor implements Convertor {
     public static final MimeType MIME_TYPE_XML;
     public static final String MIME_STR = "text/xml;charset=UTF-8";
@@ -101,14 +105,16 @@ public class XMLConvertor implements Convertor {
         }
     }
 
-    protected final Metadata metadata;
+    @Inject
+    protected Metadata metadata;
 
-    protected final RestConfig restConfig;
+    @Inject
+    protected Configuration configuration;
 
-    public XMLConvertor() {
-        metadata = AppBeans.get(Metadata.NAME);
+    protected RestConfig restConfig;
 
-        Configuration configuration = AppBeans.get(Configuration.NAME);
+    @PostConstruct
+    protected void init() {
         restConfig = configuration.getConfig(RestConfig.class);
     }
 

@@ -45,8 +45,8 @@ public class DataServiceController {
 
     private Logger log = LoggerFactory.getLogger(DataServiceController.class);
 
-    //todo wire
-    protected ConversionFactory conversionFactory = new ConversionFactory();
+    @Inject
+    protected ConversionFactory conversionFactory;
 
     @Inject
     protected DataService dataService;
