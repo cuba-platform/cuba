@@ -241,19 +241,25 @@ public class View implements Serializable {
     protected Set<String> findSystemProperties(Class entityClass) {
         Set<String> result = new LinkedHashSet<>();
 
-        addSystemPropertiesFrom(BaseEntity.class, entityClass, result);
-        addSystemPropertiesFrom(Updatable.class, entityClass, result);
-        addSystemPropertiesFrom(SoftDelete.class, entityClass, result);
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        MetaClass metaClass = metadata.getClassNN(entityClass);
+
+        String pkName = metadata.getTools().getPrimaryKeyName(metaClass);
+        if (pkName != null) {
+            result.add(pkName);
+        }
+
+        addSystemPropertiesFrom(BaseEntity.class, entityClass, metaClass, metadata, result);
+        addSystemPropertiesFrom(Updatable.class, entityClass, metaClass, metadata, result);
+        addSystemPropertiesFrom(SoftDelete.class, entityClass, metaClass, metadata, result);
 
         return result;
     }
 
-    protected void addSystemPropertiesFrom(Class<?> baseClass, Class<?> entityClass, Set<String> result) {
-        Metadata metadata = AppBeans.get(Metadata.NAME);
-        MetadataTools metadataTools = metadata.getTools();
-        MetaClass metaClass = metadata.getClassNN(entityClass);
-
+    protected void addSystemPropertiesFrom(Class<?> baseClass, Class<?> entityClass, MetaClass metaClass,
+                                           Metadata metadata, Set<String> result) {
         if (baseClass.isAssignableFrom(entityClass)) {
+            MetadataTools metadataTools = metadata.getTools();
             for (String property : getInterfaceProperties(baseClass)) {
                 MetaProperty metaProperty = metaClass.getProperty(property);
                 if (metaProperty != null && metadataTools.isPersistent(metaProperty)) {
