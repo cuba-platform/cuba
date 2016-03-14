@@ -11,15 +11,7 @@
 
     <dsContext>
         <collectionDatasource id="locksDs" class="com.haulmont.cuba.core.global.LockInfo"
-                              view="_local"
-                              datasourceClass="com.haulmont.cuba.gui.data.impl.CustomCollectionDatasource">
-            <query>
-                <![CDATA[
-                def service = com.haulmont.cuba.core.global.AppBeans.get(com.haulmont.cuba.core.app.LockService.NAME)
-                return service.getCurrentLocks()
-                ]]>
-            </query>
-        </collectionDatasource>
+                              view="_local" refreshMode="NEVER" allowCommit="false"/>
         <groupDatasource id="lockDescriptorDs" class="com.haulmont.cuba.core.entity.LockDescriptor" view="_local">
             <query>
                 select d from sys$LockDescriptor d order by d.name
