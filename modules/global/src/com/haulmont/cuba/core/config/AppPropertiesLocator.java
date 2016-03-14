@@ -6,6 +6,8 @@
 package com.haulmont.cuba.core.config;
 
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.config.defaults.*;
 import com.haulmont.cuba.core.config.type.*;
@@ -31,7 +33,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -56,12 +57,14 @@ public class AppPropertiesLocator {
     protected Configuration configuration;
 
     public List<AppPropertyEntity> getAppProperties() {
+        log.trace("Locating app properties");
+
         long start = System.currentTimeMillis();
 
         Set<Class> configInterfaces = findConfigInterfaces();
         List<AppPropertyEntity> propertyInfos = findDatabaseStoredProperties(configInterfaces);
 
-        log.debug("Done in " + (System.currentTimeMillis() - start) + "ms");
+        log.trace("Done in " + (System.currentTimeMillis() - start) + "ms");
         return propertyInfos;
     }
 
@@ -138,6 +141,7 @@ public class AppPropertiesLocator {
             entity.setDefaultValue(getDefaultValue(method));
             entity.setCurrentValue(getCurrentValue(method, entry.getValue()));
             entity.setOverridden(StringUtils.isNotEmpty(AppContext.getProperty(name)));
+            setDataType(method, entity);
             result.add(entity);
         }
 
@@ -260,5 +264,70 @@ public class AppPropertiesLocator {
             return String.valueOf(defaultCharAnn.value());
         }
         return null;
+    }
+
+    private String getDataType(Method method) {
+        Class<?> returnType = method.getReturnType();
+        if (returnType.isPrimitive()) {
+            if (returnType == boolean.class)
+                return Datatypes.getNN(Boolean.class).getName();
+            if (returnType == int.class)
+                return Datatypes.getNN(Integer.class).getName();
+            if (returnType == long.class)
+                return Datatypes.getNN(Long.class).getName();
+            if (returnType == double.class || returnType == float.class)
+                return Datatypes.getNN(Double.class).getName();
+        } else if (returnType.isEnum()) {
+            EnumStore enumStoreAnn = method.getAnnotation(EnumStore.class);
+            if (enumStoreAnn != null && enumStoreAnn.value() == EnumStoreMode.ID) {
+                Class<EnumClass> enumeration = (Class<EnumClass>) returnType;
+                return Arrays.asList(enumeration.getEnumConstants()).stream()
+                        .map(ec -> String.valueOf(ec.getId()))
+                        .collect(Collectors.joining(","));
+            } else {
+                return Arrays.asList(returnType.getEnumConstants()).stream()
+                        .map(Object::toString)
+                        .collect(Collectors.joining(","));
+            }
+        } else {
+            Datatype<?> datatype = Datatypes.get(returnType);
+            if (datatype != null)
+                return datatype.getName();
+        }
+        return Datatypes.getNN(String.class).getName();
+    }
+
+    private void setDataType(Method method, AppPropertyEntity entity) {
+        Class<?> returnType = method.getReturnType();
+        if (returnType.isPrimitive()) {
+            if (returnType == boolean.class)
+                entity.setDataTypeName(Datatypes.getNN(Boolean.class).getName());
+            if (returnType == int.class)
+                entity.setDataTypeName(Datatypes.getNN(Integer.class).getName());
+            if (returnType == long.class)
+                entity.setDataTypeName(Datatypes.getNN(Long.class).getName());
+            if (returnType == double.class || returnType == float.class)
+                entity.setDataTypeName(Datatypes.getNN(Double.class).getName());
+        } else if (returnType.isEnum()) {
+            entity.setDataTypeName("enum");
+            EnumStore enumStoreAnn = method.getAnnotation(EnumStore.class);
+            if (enumStoreAnn != null && enumStoreAnn.value() == EnumStoreMode.ID) {
+                //noinspection unchecked
+                Class<EnumClass> enumeration = (Class<EnumClass>) returnType;
+                entity.setEnumValues(Arrays.asList(enumeration.getEnumConstants()).stream()
+                        .map(ec -> String.valueOf(ec.getId()))
+                        .collect(Collectors.joining(",")));
+            } else {
+                entity.setEnumValues(Arrays.asList(returnType.getEnumConstants()).stream()
+                        .map(Object::toString)
+                        .collect(Collectors.joining(",")));
+            }
+        } else {
+            Datatype<?> datatype = Datatypes.get(returnType);
+            if (datatype != null)
+                entity.setDataTypeName(datatype.getName());
+            else
+                entity.setDataTypeName(Datatypes.getNN(String.class).getName());
+        }
     }
 }

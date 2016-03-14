@@ -27,7 +27,7 @@
             <column width="100%">
                 <field id="name" editable="false" caption="msg://name"/>
                 <field id="defaultValue" editable="false" caption="msg://defaultValue"/>
-                <field id="currentValue" caption="msg://currentValue"/>
+                <field id="currentValue" caption="msg://currentValue" custom="true"/>
             </column>
         </fieldGroup>
         <label id="cannotEditValueLabel" value="msg://cannotEditValue" visible="false" width="100%"/>

@@ -9,10 +9,9 @@ import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.config.AppPropertyEntity;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.settings.Settings;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -25,13 +24,14 @@ import java.util.stream.Collectors;
  */
 public class AppPropertiesBrowse extends AbstractWindow {
 
-    private Logger log = LoggerFactory.getLogger(getClass());
-
     @Inject
     private AppPropertiesDatasource paramsDs;
 
     @Named("paramsTable.editValue")
     private Action editValueAction;
+
+    @Named("paramsTable.refresh")
+    private RefreshAction refreshAction;
 
     @Inject
     private TreeTable<AppPropertyEntity> paramsTable;
@@ -44,6 +44,8 @@ public class AppPropertiesBrowse extends AbstractWindow {
 
     @Inject
     private HBoxLayout hintBox;
+
+    private AppPropertyEntity lastSelected;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -62,10 +64,28 @@ public class AppPropertiesBrowse extends AbstractWindow {
                 paramsTable.expandAll();
             }
         });
+
+        refreshAction.setBeforeActionPerformedHandler(() -> {
+            lastSelected = paramsTable.getSingleSelected();
+        });
+        refreshAction.setAfterActionPerformedHandler(() -> {
+            if (lastSelected != null) {
+                for (AppPropertyEntity entity : paramsDs.getItems()) {
+                    if (entity.getName().equals(lastSelected.getName())) {
+                        paramsTable.expand(entity.getId());
+                        paramsTable.setSelected(entity);
+                    }
+                }
+            }
+        });
     }
 
     public void editValue() {
-        openWindow("appPropertyEditor", WindowManager.OpenType.DIALOG, ParamsMap.of("item", paramsDs.getItem()));
+        AppPropertiesEdit editor = (AppPropertiesEdit) openWindow(
+                "appPropertyEditor", WindowManager.OpenType.DIALOG, ParamsMap.of("item", paramsDs.getItem()));
+        editor.addCloseWithCommitListener(() -> {
+            refreshAction.actionPerform(null);
+        });
     }
 
     public void exportAsSql() {

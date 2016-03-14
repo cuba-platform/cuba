@@ -7,7 +7,6 @@ package com.haulmont.cuba.core.config;
 
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
-import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
@@ -35,6 +34,12 @@ public class AppPropertyEntity extends AbstractNotPersistentEntity implements Co
 
     @MetaProperty
     private Boolean overridden = false;
+
+    @MetaProperty
+    private String dataTypeName;
+
+    @MetaProperty
+    private String enumValues;
 
     public AppPropertyEntity getParent() {
         return parent;
@@ -82,6 +87,22 @@ public class AppPropertyEntity extends AbstractNotPersistentEntity implements Co
 
     public void setOverridden(Boolean overridden) {
         this.overridden = overridden;
+    }
+
+    public String getDataTypeName() {
+        return dataTypeName;
+    }
+
+    public void setDataTypeName(String dataTypeName) {
+        this.dataTypeName = dataTypeName;
+    }
+
+    public String getEnumValues() {
+        return enumValues;
+    }
+
+    public void setEnumValues(String enumValues) {
+        this.enumValues = enumValues;
     }
 
     @Override
