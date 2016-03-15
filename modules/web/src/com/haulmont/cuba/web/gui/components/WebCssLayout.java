@@ -26,5 +26,4 @@ public class WebCssLayout extends WebAbstractOrderedLayout<CubaCssLayout> implem
     public void setResponsive(boolean responsive) {
         component.setResponsive(responsive);
     }
-
 }

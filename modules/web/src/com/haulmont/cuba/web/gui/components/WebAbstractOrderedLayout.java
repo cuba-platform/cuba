@@ -17,7 +17,7 @@ import java.util.*;
  * @author petunin
  */
 public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout>
-extends WebAbstractComponent<T>
+        extends WebAbstractComponent<T>
         implements Component.OrderedContainer, Component.BelongToFrame {
 
     protected Collection<Component> ownComponents = new LinkedHashSet<>();
