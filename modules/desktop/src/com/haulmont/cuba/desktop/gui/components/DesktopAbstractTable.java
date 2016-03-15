@@ -31,6 +31,7 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
@@ -98,6 +99,10 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
 
     protected boolean columnsInitialized = false;
     protected int generatedColumnsCount = 0;
+
+    protected boolean columnHeaderVisible = true;
+
+    protected boolean rowsSelectable = true;
 
     // Indicates that model is being changed.
     protected boolean isAdjusting = false;
@@ -2261,6 +2266,26 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     @Override
     public boolean getColumnSortable(Column column) {
         return true;
+    }
+
+    @Override
+    public void setColumnHeaderVisible(boolean visible){
+        columnHeaderVisible = visible;
+    }
+
+    @Override
+    public boolean isColumnHeaderVisible(){
+        return columnHeaderVisible;
+    }
+
+    @Override
+    public void setRowsSelectable(boolean selectable) {
+        rowsSelectable = selectable;
+    }
+
+    @Override
+    public boolean isRowsSelectable() {
+        return rowsSelectable;
     }
 
     /**

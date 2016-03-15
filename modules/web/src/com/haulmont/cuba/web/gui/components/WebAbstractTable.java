@@ -2353,6 +2353,16 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         }
     }
 
+    @Override
+    public void setRowsSelectable(boolean rowsSelectable) {
+            component.setSelectable(rowsSelectable);
+    }
+
+    @Override
+    public boolean isRowsSelectable() {
+        return component.isSelectable();
+    }
+
     protected class StyleGeneratorAdapter implements com.vaadin.ui.Table.CellStyleGenerator {
 
         public static final String CUSTOM_STYLE_NAME_PREFIX = "cs ";

@@ -393,8 +393,17 @@ public interface Table<E extends Entity>
      */
     void showCustomPopupActions(List<Action> actions);
 
+    /**
+     * Set visibility for table header
+     */
     void setColumnHeaderVisible(boolean columnHeaderVisible);
     boolean isColumnHeaderVisible();
+
+    /**
+     * Set possibility to enable or disable row selection
+     */
+    void setRowsSelectable(boolean rowsSelectable);
+    boolean isRowsSelectable();
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     class Column implements HasXmlDescriptor, HasCaption, HasFormatter {
