@@ -102,7 +102,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
 
     protected boolean columnHeaderVisible = true;
 
-    protected boolean rowsSelectable = true;
+    protected boolean showSelection = true;
 
     // Indicates that model is being changed.
     protected boolean isAdjusting = false;
@@ -2279,13 +2279,13 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     }
 
     @Override
-    public void setRowsSelectable(boolean selectable) {
-        rowsSelectable = selectable;
+    public void setShowSelection(boolean selectable) {
+        showSelection = selectable;
     }
 
     @Override
-    public boolean isRowsSelectable() {
-        return rowsSelectable;
+    public boolean isShowSelection() {
+        return showSelection;
     }
 
     /**

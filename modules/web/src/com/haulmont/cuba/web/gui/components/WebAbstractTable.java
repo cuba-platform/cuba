@@ -2354,12 +2354,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
-    public void setRowsSelectable(boolean rowsSelectable) {
+    public void setShowSelection(boolean rowsSelectable) {
             component.setSelectable(rowsSelectable);
     }
 
     @Override
-    public boolean isRowsSelectable() {
+    public boolean isShowSelection() {
         return component.isSelectable();
     }
 

@@ -402,8 +402,9 @@ public interface Table<E extends Entity>
     /**
      * Set possibility to enable or disable row selection
      */
-    void setRowsSelectable(boolean rowsSelectable);
-    boolean isRowsSelectable();
+    void setShowSelection(boolean rowsSelectable);
+    boolean isShowSelection();
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     class Column implements HasXmlDescriptor, HasCaption, HasFormatter {

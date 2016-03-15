@@ -77,6 +77,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         loadMultiLineCells(resultComponent, element);
 
         loadColumnHeaderVisible(resultComponent, element);
+        loadShowSelection(resultComponent, element);
 
         Element columnsElement = element.element("columns");
         Element rowsElement = element.element("rows");
@@ -468,6 +469,13 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         String columnHeaderVisible = element.attributeValue("columnHeaderVisible");
         if (StringUtils.isNotEmpty(columnHeaderVisible)) {
             component.setColumnHeaderVisible(Boolean.parseBoolean(columnHeaderVisible));
+        }
+    }
+
+    protected void loadShowSelection(Table component, Element element) {
+        String showSelection = element.attributeValue("showSelection");
+        if (StringUtils.isNotEmpty(showSelection)) {
+            component.setShowSelection(Boolean.parseBoolean(showSelection));
         }
     }
 }
