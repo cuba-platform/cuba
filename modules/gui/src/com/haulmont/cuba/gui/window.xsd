@@ -404,6 +404,7 @@
         <xs:attribute name="sortable" type="xs:boolean"/>
         <xs:attribute name="reorderingAllowed" type="xs:boolean"/>
         <xs:attribute name="columnControlVisible" type="xs:boolean"/>
+        <xs:attribute name="columnHeaderVisible" type="xs:boolean"/>
 
         <xs:attribute name="aggregatable" type="xs:boolean"/>
         <xs:attribute name="aggregationStyle" type="aggregationStyle"/>

@@ -393,6 +393,8 @@ public interface Table<E extends Entity>
      */
     void showCustomPopupActions(List<Action> actions);
 
+    void setColumnHeaderVisible(boolean columnHeaderVisible);
+    boolean isColumnHeaderVisible();
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     class Column implements HasXmlDescriptor, HasCaption, HasFormatter {

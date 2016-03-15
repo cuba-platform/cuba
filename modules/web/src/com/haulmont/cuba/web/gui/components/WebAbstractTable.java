@@ -2335,6 +2335,24 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         }
     }
 
+    @Override
+    public void setColumnHeaderVisible(boolean visible){
+        if (BooleanUtils.isFalse(visible)) {
+            component.setColumnHeaderMode(com.vaadin.ui.Table.ColumnHeaderMode.HIDDEN);
+        } else {
+            component.setColumnHeaderMode(com.vaadin.ui.Table.ColumnHeaderMode.EXPLICIT_DEFAULTS_ID);
+        }
+    }
+
+    @Override
+    public boolean isColumnHeaderVisible(){
+        if (component.getColumnHeaderMode() == com.vaadin.ui.Table.ColumnHeaderMode.HIDDEN) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     protected class StyleGeneratorAdapter implements com.vaadin.ui.Table.CellStyleGenerator {
 
         public static final String CUSTOM_STYLE_NAME_PREFIX = "cs ";
