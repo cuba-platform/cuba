@@ -1864,7 +1864,12 @@ public class FilterDelegateImpl implements FilterDelegate {
         addConditionHelper = new AddConditionHelper(filter, new AddConditionHelper.Handler() {
             @Override
             public void handle(AbstractCondition condition) {
-                addCondition(condition);
+                try {
+                    addCondition(condition);
+                } catch (Exception e) {
+                    conditions.removeCondition(condition);
+                    throw e;
+                }
             }
         });
     }
