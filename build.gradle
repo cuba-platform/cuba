@@ -451,6 +451,7 @@ configure(webModule) {
         compile(sharedLibModule)
         compile(guiModule)
         compile(webAuthModule)
+        compile(restApiModule)
 
         compile(commonsUpload)
         compile(group: 'org.springframework', name: 'spring-webmvc', version: springVersion)
