@@ -400,9 +400,9 @@ public interface Table<E extends Entity>
     boolean isColumnHeaderVisible();
 
     /**
-     * Set possibility to enable or disable row selection
+     * Set possibility to hide or show selection
      */
-    void setShowSelection(boolean rowsSelectable);
+    void setShowSelection(boolean showSelection);
     boolean isShowSelection();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

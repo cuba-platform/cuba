@@ -2337,11 +2337,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public void setColumnHeaderVisible(boolean visible){
-        if (BooleanUtils.isFalse(visible)) {
-            component.setColumnHeaderMode(com.vaadin.ui.Table.ColumnHeaderMode.HIDDEN);
-        } else {
-            component.setColumnHeaderMode(com.vaadin.ui.Table.ColumnHeaderMode.EXPLICIT_DEFAULTS_ID);
-        }
+        component.setColumnHeaderMode(visible ?
+                com.vaadin.ui.Table.ColumnHeaderMode.HIDDEN :
+                com.vaadin.ui.Table.ColumnHeaderMode.EXPLICIT_DEFAULTS_ID);
     }
 
     @Override
@@ -2354,8 +2352,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
-    public void setShowSelection(boolean rowsSelectable) {
-            component.setSelectable(rowsSelectable);
+    public void setShowSelection(boolean showSelection) {
+            component.setSelectable(showSelection);
     }
 
     @Override
