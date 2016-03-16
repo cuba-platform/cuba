@@ -1,4 +1,3 @@
--- $Id$
 -- Description:
 --  * Drop column 'CLASS_NAME' in table 'REPORT_INPUT_PARAMETER'
 --  * Rename 'POSITION' to 'POSITION_'

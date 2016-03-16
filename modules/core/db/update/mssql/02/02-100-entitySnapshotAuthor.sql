@@ -1,4 +1,3 @@
--- $Id$
 -- Description: core$EntitySnapshot.author attribute added
 
 alter table SYS_ENTITY_SNAPSHOT add AUTHOR_ID uniqueidentifier^

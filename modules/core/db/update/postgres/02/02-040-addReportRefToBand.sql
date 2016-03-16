@@ -1,4 +1,3 @@
--- $Id$
 -- Add to BandDefinition report field
 
 alter table REPORT_BAND_DEFINITION add column REPORT_ID uuid^

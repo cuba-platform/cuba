@@ -3,8 +3,6 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-// Version: $Id$
-
 @mixin havana-cuba-grouptable($primary-stylename : cuba-grouptable) {
   .#{$primary-stylename} {
     .#{$primary-stylename}-group-cell-expander {

@@ -3,8 +3,6 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-// Version: $Id$
-
 $cuba-searchselect-edit-color: scale-color(lighten($v-focus-color, 35%), $saturation: -15%) !default;
 
 @mixin halo-cuba-searchselect($primary-stylename: cuba-searchselect) {

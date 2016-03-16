@@ -1,4 +1,3 @@
--- $Id$
 -- Description:
 create table SEC_TAB_HISTORY (
 	ID uuid,

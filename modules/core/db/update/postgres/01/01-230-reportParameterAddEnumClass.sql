@@ -1,4 +1,3 @@
--- $Id$
 -- Description:
 --  * Add to 'REPORT_INPUT_PARAMETER' column 'ENUM_CLASS'
 

@@ -1,4 +1,3 @@
--- $Id$
 -- Description:
 
 create index IDX_SEC_CONSTRAINT_GROUP on SEC_CONSTRAINT (GROUP_ID)^

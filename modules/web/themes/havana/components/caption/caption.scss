@@ -3,8 +3,6 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-// Version: $Id$
-
 @mixin havana-caption($primary-stylename: v-caption) {
   .#{$primary-stylename} {
     font-size: 12px;

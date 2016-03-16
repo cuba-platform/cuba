@@ -1,4 +1,3 @@
--- $Id$
 -- Add localization to ReportGroup, Report, ReportInputParameter
 
 alter table REPORT_GROUP add LOCALE_NAMES text^

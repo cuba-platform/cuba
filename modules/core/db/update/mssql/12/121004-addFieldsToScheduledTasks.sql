@@ -1,4 +1,3 @@
---$Id$
 -- Description: add defined by, class name and script name fields to scheduled task
 -- also update all existing tasks to beans
 

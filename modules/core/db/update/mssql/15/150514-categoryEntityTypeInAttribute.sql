@@ -1,4 +1,3 @@
--- $Id$
 alter table SYS_CATEGORY_ATTR alter column CODE varchar(100);
 alter table SYS_CATEGORY_ATTR add CATEGORY_ENTITY_TYPE varchar(4000)^
 update SYS_CATEGORY_ATTR set CODE = substring(NAME + convert(nvarchar(50), CATEGORY_ID), 1, 100) where CODE is null^

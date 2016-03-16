@@ -3,8 +3,6 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-// Version: $Id$
-
 @mixin havana-cuba-fieldgroup($primary-stylename: cuba-fieldgroup) {
   @include havana-cuba-groupbox($primary-stylename);
 

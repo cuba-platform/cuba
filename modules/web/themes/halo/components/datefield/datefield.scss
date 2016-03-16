@@ -3,8 +3,6 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-// Version: $Id$
-
 @mixin halo-datefield($primary-stylename : cuba-datefield) {
   @include valo-datefield($primary-stylename);
 

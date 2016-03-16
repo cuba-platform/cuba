@@ -1,4 +1,3 @@
---$Id$
 
 alter table SEC_USER add column TYPE varchar(1)^
 

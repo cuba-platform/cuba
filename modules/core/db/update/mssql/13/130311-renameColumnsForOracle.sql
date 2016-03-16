@@ -1,4 +1,3 @@
---$Id$--
 
 alter table SEC_USER drop column TYPE;
 

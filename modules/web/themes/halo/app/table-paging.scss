@@ -3,8 +3,6 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-// Version: $Id$
-
 @mixin cuba-table-paging {
   .v-button.cuba-paging-change-page {
     height: round($v-unit-size/1.5);

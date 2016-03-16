@@ -3,8 +3,6 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-// Version: $Id$
-
 @mixin halo-label($primary-stylename: v-label) {
   .#{$primary-stylename} {
     font-size: $v-font-size;

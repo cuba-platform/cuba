@@ -3,8 +3,6 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-// Version: $Id$
-
 //noinspection ALL
 @mixin halo-cuba-groupbox($primary-stylename : cuba-groupbox) {
   @include valo-panel($primary-stylename);

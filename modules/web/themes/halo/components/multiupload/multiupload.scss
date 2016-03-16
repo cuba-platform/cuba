@@ -3,8 +3,6 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-// Version: $Id$
-
 @mixin halo-cuba-multiupload($primary-stylename : cuba-multiupload) {
   .#{$primary-stylename} {
     @include box-defaults;

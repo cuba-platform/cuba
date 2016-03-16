@@ -1,7 +1,5 @@
 /*
- * A High-Level Framework for Application Configuration
- *
- * Copyright 2007 Merlin Hughes / Learning Objects, Inc.
+ * Copyright (c) 2008-2016 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
 package com.haulmont.cuba.core.config.type;
@@ -28,8 +27,6 @@ import java.lang.annotation.*;
  * be specified. When applied to a class, applies to the class itself; when
  * applied to a method, applies to the method's return type.
  *
- * @author Merlin Hughes
- * @version $Id$
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})

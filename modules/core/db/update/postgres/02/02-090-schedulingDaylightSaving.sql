@@ -1,5 +1,4 @@
 
--- $Id$ --
 -- Description: Change scheduling column types to work normally during time shift (when clocks go back 1 hour)
 
 alter table SYS_SCHEDULED_TASK alter column LAST_START_TIME type timestamp with time zone;

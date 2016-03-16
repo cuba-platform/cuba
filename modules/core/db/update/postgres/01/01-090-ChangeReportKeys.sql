@@ -1,5 +1,4 @@
--- $Id$
--- Description: reports now are hard deleted 
+-- Description: reports now are hard deleted
 
 alter table report_band_definition drop CONSTRAINT  fk_report_band_definition_to_report_band_definition^
 alter table report_band_definition add CONSTRAINT fk_report_band_definition_to_report_band_definition FOREIGN KEY (parent_definition_id)

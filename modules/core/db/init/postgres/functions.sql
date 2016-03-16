@@ -1,4 +1,3 @@
--- $Id$
 -- Useful SQL functions
 ------------------------------------------------------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION FirstDateOfMonth(date) RETURNS date AS '

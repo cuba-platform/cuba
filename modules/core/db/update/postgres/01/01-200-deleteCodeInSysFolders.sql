@@ -1,4 +1,3 @@
--- $Id$
 -- Description: delete code column in sys_folder
 UPDATE sys_folder as folder1
   SET name = code

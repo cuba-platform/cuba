@@ -3,8 +3,6 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-// Version: $Id$
-
 @mixin halo-richtextarea($primary-stylename: v-richtextarea) {
 
   .#{$primary-stylename} {

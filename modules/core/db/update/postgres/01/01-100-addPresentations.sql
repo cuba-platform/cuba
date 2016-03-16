@@ -1,4 +1,3 @@
--- $Id$
 -- Description: added Presentation table and updated SearchFolder
 
 create table SEC_PRESENTATION (

@@ -1,4 +1,3 @@
--- $Id$
 alter table sec_constraint add CODE varchar(255)^
 alter table sec_constraint add CHECK_TYPE varchar(50) default 'db'^
 alter table sec_constraint add OPERATION_TYPE varchar(50) default 'read'^

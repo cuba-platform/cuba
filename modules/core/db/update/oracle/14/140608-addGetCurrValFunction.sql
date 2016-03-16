@@ -1,4 +1,3 @@
---$Id$
 --Description: create procedure to select current value of a sequence
 
 create or replace function GET_SEQ_VAL(seqname varchar2) return NUMBER

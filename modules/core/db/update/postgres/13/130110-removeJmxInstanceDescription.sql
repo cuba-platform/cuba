@@ -1,4 +1,3 @@
--- $Id$
 -- Description: remove column DESCRIPTION from SYS_JMX_INSTANCE table
 
 do $$

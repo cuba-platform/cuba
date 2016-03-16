@@ -1,4 +1,3 @@
--- $Id$
 -- Description:
 alter table SYS_CATEGORY_ATTR drop column DEFAULT_VALUE^
 alter table SYS_CATEGORY_ATTR add column DEFAULT_STRING varchar^

@@ -1,4 +1,3 @@
--- $Id$
 -- Description: add SYS_JMX_INSTANCE table
 
 create table SYS_JMX_INSTANCE (

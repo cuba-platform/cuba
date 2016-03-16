@@ -3,8 +3,6 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-// Version: $Id$
-
 @mixin halo-cuba-resizabletextarea($primary-stylename: cuba-resizabletextarea) {
   $textarea-corner-color: valo-border-color($color: $v-overlay-background-color, $strength: 1.0);
 

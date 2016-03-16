@@ -1,4 +1,3 @@
--- $Id$ --
 -- Add linking columns from SendingMessage and SendingAttachment to sys$File
 
 alter table SYS_SENDING_MESSAGE add CONTENT_TEXT_FILE_ID uniqueidentifier^

@@ -3,8 +3,6 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-// Version: $Id$
-
 @mixin havana-filterselect($primary-stylename: v-filterselect) {
   $comboBoxBorder: 1px solid $cuba-field-border-color;
   $comboBoxBorderFocused: 1px solid $cuba-field-focused-border-color;

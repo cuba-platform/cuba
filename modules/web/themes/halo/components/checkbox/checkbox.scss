@@ -3,8 +3,6 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-// Version: $Id$
-
 @mixin halo-checkbox($primary-stylename: v-checkbox) {
   :root & .#{$primary-stylename} > input {
     font-size: $v-font-size;

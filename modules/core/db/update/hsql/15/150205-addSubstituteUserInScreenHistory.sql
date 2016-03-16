@@ -1,4 +1,3 @@
--- $Id$
 -- Description:
 
 alter table sec_screen_history add substituted_user_id varchar(36)^

@@ -1,4 +1,3 @@
--- $Id$
 CREATE TABLE report_value_format
 (
     id uuid NOT NULL,

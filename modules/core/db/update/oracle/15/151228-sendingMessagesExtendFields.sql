@@ -1,4 +1,3 @@
---$Id$
 alter table SYS_SENDING_MESSAGE add ADDRESS_TO_ clob^
 alter table SYS_SENDING_MESSAGE add ATTACHMENTS_NAME_ clob^
 

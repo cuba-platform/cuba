@@ -1,4 +1,3 @@
--- $Id$
 -- Description: adding SYS_ENTITY_STATISTICS table
 
 create table SYS_ENTITY_STATISTICS (

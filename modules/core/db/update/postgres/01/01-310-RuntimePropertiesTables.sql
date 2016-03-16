@@ -1,4 +1,3 @@
--- $Id$
 -- Description:
 
  create table SYS_CATEGORY(

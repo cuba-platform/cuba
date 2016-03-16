@@ -1,4 +1,3 @@
--- $Id$
 -- Add tables for core$ScheduledTask and core$ScheduledExecution entities
 
 create table SYS_SCHEDULED_TASK (

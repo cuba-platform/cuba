@@ -3,8 +3,6 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-// Version: $Id$
-
 @mixin halo-table($primary-stylename: v-table) {
   $background-color: $v-table-background-color or valo-table-background-color();
   $border-color: $v-table-border-color or first-color(valo-border($color: $background-color, $strength: 0.8));

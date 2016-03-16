@@ -1,4 +1,3 @@
--- $Id$
 -- Description: add not null constraint on LOGIN and LOGIN_LC for SEC_USER
 
 update SEC_USER

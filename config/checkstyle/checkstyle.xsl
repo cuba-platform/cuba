@@ -1,3 +1,8 @@
+<!--
+  ~ Copyright (c) 2008-2016 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/commercial-software-license for details.
+  -->
+
 <xsl:stylesheet	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 <xsl:output method="html" indent="yes"/>
 <xsl:decimal-format decimal-separator="." grouping-separator="," />

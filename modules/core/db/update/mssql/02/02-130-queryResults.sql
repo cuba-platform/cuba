@@ -1,4 +1,3 @@
---$Id$
 -- Description: DDL for QueryResult entity
 
 create table SYS_QUERY_RESULT (

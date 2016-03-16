@@ -1,7 +1,5 @@
 /*
- * A High-Level Framework for Application Configuration
- *
- * Copyright 2007 Merlin Hughes / Learning Objects, Inc.
+ * Copyright (c) 2008-2016 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
 package com.haulmont.cuba.core.config.type;
@@ -25,8 +24,6 @@ import java.lang.reflect.Method;
  * A stringifier that converts a type to a string by invoking a method
  * on it and converting the result directly to a string.
  *
- * @author Merlin Hughes
- * @version $Id$
  */
 public class MethodTypeStringify extends TypeStringify {
     /**

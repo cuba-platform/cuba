@@ -1,4 +1,3 @@
--- $Id$
 -- Description: add table for server-side remember me
 
 create table SEC_REMEMBER_ME (

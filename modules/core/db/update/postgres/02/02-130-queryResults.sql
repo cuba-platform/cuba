@@ -1,4 +1,3 @@
---$Id$
 -- Description: DDL for QueryResult entity
 
 create sequence SYS_QUERY_RESULT_SEQ

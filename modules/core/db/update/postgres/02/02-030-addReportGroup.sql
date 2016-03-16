@@ -1,4 +1,3 @@
--- $Id$
 -- Add table for ReportGroup
 
 create table REPORT_GROUP (

@@ -1,4 +1,3 @@
--- $Id$
 -- Description: SessionAttributes functionality
 
 create table SEC_SESSION_ATTR (

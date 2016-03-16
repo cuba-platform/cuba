@@ -1,4 +1,3 @@
--- $Id$
 alter table report_input_parameter  add column position integer default 0
 ^
 alter table report_input_parameter  add column meta_class varchar(255)

@@ -5,8 +5,6 @@
 
 /**
  *
- * @author degtyarjov
- * @version $Id$
  */
 package com.haulmont.cuba.core.sys.javacl.test3;
 

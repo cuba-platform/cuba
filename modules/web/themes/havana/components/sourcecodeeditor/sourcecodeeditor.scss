@@ -3,8 +3,6 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-// Version: $Id$
-
 @mixin havana-sourcecodeeditor($primary-stylename : AceEditorWidget) {
   .#{$primary-stylename} {
     border-color: $cuba-field-border-color;

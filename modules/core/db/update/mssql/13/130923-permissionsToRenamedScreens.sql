@@ -1,4 +1,3 @@
--- $Id$
 -- Update permissions to renamed screens
 
 update SEC_PERMISSION set TARGET = 'sys$Category.browse' where PERMISSION_TYPE = 10 and TARGET = 'sys$Categories.browse';

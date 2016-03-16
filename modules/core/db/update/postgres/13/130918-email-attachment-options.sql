@@ -1,4 +1,3 @@
--- $Id$
 -- Add columns to store email attachment disposition and encoding
 
 alter table SYS_SENDING_ATTACHMENT

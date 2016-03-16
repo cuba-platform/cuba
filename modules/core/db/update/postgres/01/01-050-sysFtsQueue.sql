@@ -1,4 +1,3 @@
--- $Id$
 -- Description: SYS_FTS_QUEUE table
 
 create table SYS_FTS_QUEUE (

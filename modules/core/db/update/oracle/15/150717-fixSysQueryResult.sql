@@ -1,4 +1,3 @@
--- $Id$
 
 create sequence SYS_QUERY_RESULT_SEQ
 ^

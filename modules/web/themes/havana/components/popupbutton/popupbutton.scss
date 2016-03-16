@@ -3,8 +3,6 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-// Version: $Id$
-
 @mixin havana-popupbutton($primary-stylename: v-popupbutton) {
   .#{$primary-stylename}-popup {
     padding: 3px;

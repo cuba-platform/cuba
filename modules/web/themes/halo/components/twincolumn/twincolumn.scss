@@ -3,8 +3,6 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-// Version: $Id$
-
 @mixin halo-twincolumn($primary-stylename: v-select-twincol) {
   .#{$primary-stylename} select {
     $padding-width: ceil($v-unit-size/6);

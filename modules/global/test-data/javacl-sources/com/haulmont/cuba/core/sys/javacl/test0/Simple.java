@@ -6,8 +6,6 @@
 package com.haulmont.cuba.core.sys.javacl.test0;
 
 /**
- * @author degtyarjov
- * @version $Id$
  */
 public class Simple {
 }

@@ -1,4 +1,3 @@
--- $Id$
 -- Description: add table SYS_ENTITY_SNAPSHOT
 
 create table SYS_ENTITY_SNAPSHOT (

@@ -1,3 +1,2 @@
--- $Id$
 -- Description:
 ALTER TABLE SYS_CATEGORY_ATTR ALTER COLUMN DEFAULT_DATE TYPE timestamp;

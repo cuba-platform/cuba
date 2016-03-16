@@ -1,4 +1,3 @@
--- $Id$
 -- Description: remove column DESCRIPTION from SYS_JMX_INSTANCE table
 
 if not exists(select SCRIPT_NAME from SYS_DB_CHANGELOG where SCRIPT_NAME like '%131001-removeJmxInstanceDescription.sql')

@@ -1,4 +1,3 @@
--- $Id$
 -- Description: add SALT, HASH_METHOD, CHANGE_PASSWORD_AT_LOGON fields
 
 alter table SEC_USER alter column PASSWORD set data type varchar(40)^

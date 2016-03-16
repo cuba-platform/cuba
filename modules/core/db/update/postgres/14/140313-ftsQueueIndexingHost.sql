@@ -1,4 +1,3 @@
--- $Id$
 -- Add SYS_FTS_QUEUE.INDEXING_HOST
 
 alter table SYS_FTS_QUEUE add INDEXING_HOST varchar(255)^

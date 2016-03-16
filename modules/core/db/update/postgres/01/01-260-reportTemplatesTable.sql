@@ -1,4 +1,3 @@
--- $Id$
 -- Description: add REPORT_TEMPLATE table, drop obsolete columns in REPORT_REPORT
 
 create table REPORT_TEMPLATE

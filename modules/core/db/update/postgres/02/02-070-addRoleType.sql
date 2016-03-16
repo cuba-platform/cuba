@@ -1,4 +1,3 @@
--- $Id$
 -- Replace SEC_ROLE.IS_SUPER with SEC_ROLE.TYPE
 
 alter table SEC_ROLE add TYPE integer

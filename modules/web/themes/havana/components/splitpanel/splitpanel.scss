@@ -3,8 +3,6 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-// Version: $Id$
-
 @mixin havana-splitpanel($primary-stylename: v-splitpanel) {
   .#{$primary-stylename}-horizontal, .#{$primary-stylename}-vertical {
     overflow: hidden;

@@ -3,8 +3,6 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-// Version: $Id$
-
 @mixin havana-popupview($primary-stylename: v-popupview) {
   .#{$primary-stylename}-popup {
     border: 1px solid #babfc0;
