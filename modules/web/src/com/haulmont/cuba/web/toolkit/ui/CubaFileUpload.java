@@ -10,6 +10,7 @@ import com.haulmont.cuba.web.toolkit.ui.client.fileupload.CubaFileUploadServerRp
 import com.haulmont.cuba.web.toolkit.ui.client.fileupload.CubaFileUploadState;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.server.*;
+import com.vaadin.server.communication.FileUploadHandler;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.LegacyComponent;
@@ -342,6 +343,10 @@ public class CubaFileUpload extends AbstractComponent
                 @Override
                 public void streamingFailed(StreamingErrorEvent event) {
                     Exception exception = event.getException();
+                    if (exception instanceof FileUploadHandler.UploadInterruptedException) {
+                        endUpload();
+                    }
+
                     if (exception instanceof NoInputStreamException) {
                         fireNoInputStream(event.getFileName(), event.getMimeType(), 0);
                     } else if (exception instanceof NoOutputStreamException) {
