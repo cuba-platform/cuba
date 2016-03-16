@@ -18,3 +18,4 @@ modules/portal/build/*
 modules/web-auth/build/*
 modules/web-toolkit/build/*
 modules/shared-lib/build/*
+modules/rest-api/build/*
