@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * A High-Level Framework for Application Configuration
+ *
+ * Copyright 2007 Merlin Hughes / Learning Objects, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +25,6 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * A factory that builds a type by invoking a static method, supplying
  * the string value as a parameter.
- *
- * @version 0.1, 2007/04/15
  */
 public class StaticTypeFactory extends TypeFactory {
     /**

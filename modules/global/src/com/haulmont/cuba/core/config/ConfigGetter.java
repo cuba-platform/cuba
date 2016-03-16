@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * A High-Level Framework for Application Configuration
+ *
+ * Copyright 2007 Merlin Hughes / Learning Objects, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
