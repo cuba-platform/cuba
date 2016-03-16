@@ -2279,8 +2279,8 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     }
 
     @Override
-    public void setShowSelection(boolean show) {
-        showSelection = show;
+    public void setShowSelection(boolean showSelection) {
+        this.showSelection = showSelection;
     }
 
     @Override
