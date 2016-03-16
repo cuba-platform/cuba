@@ -280,7 +280,19 @@ public class ExcelExporter {
             val = messages.getMessage(getClass(), "excelExporter.empty");
         }
 
-        formatValueCell(cell, val, groupNumber++, rowNumber, 0, true);
+        MetaPropertyPath propertyPath = (MetaPropertyPath) groupInfo.getProperty();
+        Table.Column column = table.getColumn(propertyPath.toString());
+        Element xmlDescriptor = column.getXmlDescriptor();
+        if (xmlDescriptor != null && StringUtils.isNotEmpty(xmlDescriptor.attributeValue("captionProperty")) && val instanceof Instance) {
+            String captionProperty = xmlDescriptor.attributeValue("captionProperty");
+            captionProperty = captionProperty.substring(captionProperty.indexOf('.') + 1);
+
+            Instance instance = (Instance) val;
+            Object value = InstanceUtils.getValueEx(instance, captionProperty);
+            formatValueCell(cell, value, groupNumber++, rowNumber, 0, true);
+        } else {
+            formatValueCell(cell, val, groupNumber++, rowNumber, 0, true);
+        }
 
         int oldRowNumber = rowNumber;
         List<GroupInfo> children = ds.getChildren(groupInfo);
@@ -307,7 +319,7 @@ public class ExcelExporter {
 
         int level = 0;
         if (table instanceof TreeTable) {
-            level = ((TreeTable)table).getLevel(itemId);
+            level = ((TreeTable) table).getLevel(itemId);
         }
         for (int c = startColumn; c < columns.size(); c++) {
             HSSFCell cell = row.createCell(c);
@@ -419,7 +431,7 @@ public class ExcelExporter {
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
                 sizers[sizersIndex].notifyCellValue(message, stdFont);
             }
-        } else if (cellValue instanceof Entity){
+        } else if (cellValue instanceof Entity) {
             Entity entityVal = (Entity) cellValue;
             String instanceName = entityVal.getInstanceName();
             String str = sizersIndex == 0 ? createSpaceString(level) + instanceName : instanceName;
@@ -427,7 +439,7 @@ public class ExcelExporter {
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
-        } else if (cellValue instanceof Collection){
+        } else if (cellValue instanceof Collection) {
             String str = "";
             cell.setCellValue(new HSSFRichTextString(str));
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
