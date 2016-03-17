@@ -85,7 +85,9 @@ public class DbUpdaterEngine implements DbUpdater {
     }
 
     public List<ScriptResource> getScripts(ScriptType scriptType, @Nullable String moduleName) {
-        return scriptScanner().getScripts(scriptType, moduleName);
+        List<ScriptResource> scripts = scriptScanner().getScripts(scriptType, moduleName);
+        log.trace("Found {} scripts: {}", scriptType, scripts);
+        return scripts;
     }
 
     @Override
@@ -129,6 +131,7 @@ public class DbUpdaterEngine implements DbUpdater {
     }
 
     protected void createChangelogTable() {
+        log.trace("Creating SYS_DB_CHANGELOG table");
         String timeStampType = DbmsSpecificFactory.getDbmsFeatures().getTimeStampType();
         QueryRunner runner = new QueryRunner(getDataSource());
         try {
@@ -154,6 +157,7 @@ public class DbUpdaterEngine implements DbUpdater {
     }
 
     protected boolean dbInitialized() {
+        log.trace("Checking if the database is initialized");
         Connection connection = null;
         try {
             connection = getDataSource().getConnection();
@@ -163,9 +167,11 @@ public class DbUpdaterEngine implements DbUpdater {
             while (tables.next()) {
                 String tableName = tables.getString("TABLE_NAME");
                 if ("SYS_DB_CHANGELOG".equalsIgnoreCase(tableName)) {
+                    log.trace("Found SYS_DB_CHANGELOG table");
                     changelogTableExists = true;
                 }
                 if ("SEC_USER".equalsIgnoreCase(tableName)) {
+                    log.trace("Found SEC_USER table");
                     found = true;
                 }
             }
@@ -221,6 +227,7 @@ public class DbUpdaterEngine implements DbUpdater {
 
         runRequiredInitScripts();
 
+        log.trace("Checking existing and executed update scripts");
         List<ScriptResource> files = getUpdateScripts();
         Set<String> scripts = getExecutedScripts();
         for (ScriptResource file : files) {
@@ -235,10 +242,12 @@ public class DbUpdaterEngine implements DbUpdater {
     }
 
     protected void runRequiredInitScripts() {
+        log.trace("Checking required tables");
         for (String dirName : getModuleDirs()) {
             String moduleName = dirName.substring(3);
             String reqTable = requiredTables.get(moduleName);
             if (reqTable != null) {
+                log.trace("Looking for table {}", reqTable);
                 try {
                     executeSql("select * from " + reqTable + " where 0=1");
                 } catch (SQLException e) {
@@ -287,6 +296,7 @@ public class DbUpdaterEngine implements DbUpdater {
                         }
                         return rows;
                     });
+            log.trace("Found executed scripts: {}", scripts);
             return scripts;
         } catch (SQLException e) {
             throw new RuntimeException("An error occurred while loading executed scripts", e);
@@ -294,6 +304,7 @@ public class DbUpdaterEngine implements DbUpdater {
     }
 
     protected void markScript(String name, boolean init) {
+        log.trace("Marking script as executed: {}", name);
         QueryRunner runner = new QueryRunner(getDataSource());
         try {
             runner.update("insert into SYS_DB_CHANGELOG (SCRIPT_NAME, IS_INIT) values (?, ?)",
