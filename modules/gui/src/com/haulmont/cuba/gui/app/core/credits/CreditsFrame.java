@@ -108,6 +108,8 @@ public class CreditsFrame extends AbstractFrame {
                 grid.add(license, 4, i);
             }
 
+            scrollBox.add(grid);
+
             if (acknowledgements.length() > 0) {
                 Label ackLab = componentsFactory.createComponent(Label.class);
                 ackLab.setWidth("420px");
@@ -115,8 +117,6 @@ public class CreditsFrame extends AbstractFrame {
                 ackLab.setValue(acknowledgements.toString());
                 scrollBox.add(ackLab);
             }
-
-            scrollBox.add(grid);
         }
     }
 
