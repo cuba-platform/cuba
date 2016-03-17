@@ -103,11 +103,6 @@ public class UserSessionServiceBean implements UserSessionService {
     }
 
     @Override
-    public final Map<String, Object> getLicenseInfo() {
-        return userSessions.getLicenseInfo();
-    }
-
-    @Override
     public void killSession(UUID id) {
         userSessions.killSession(id);
     }

@@ -19,7 +19,6 @@ package com.haulmont.cuba.core.app;
 
 /**
  * Interface to provide basic information about the middleware.
- *
  */
 public interface ServerInfoAPI {
 

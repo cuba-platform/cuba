@@ -152,7 +152,6 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
 
     task sourceJar(type: Jar) {
         from file('src')
-        exclude "com/haulmont/cuba/security/app/UserSessions.java"
         classifier = 'sources'
     }
 
@@ -208,7 +207,6 @@ configure(webToolkitModule) {
 
     task sourceJar(type: Jar) {
         from file('src')
-        exclude "com/haulmont/cuba/security/app/UserSessions.java"
         classifier = 'sources'
     }
 
@@ -303,24 +301,6 @@ configure(coreModule) {
         testRuntime(hsqldb)
     	testRuntime(postgres)
     }
-
-    task recompileNoDebug(type: JavaCompile) {
-        source = sourceSets.main.java
-        classpath = sourceSets.main.compileClasspath
-        destinationDir = new File(buildDir, 'nodebug-classes')
-        options.debug = false
-    }
-
-    jar {
-        exclude { details ->
-            return details.file == new File("${sourceSets.main.output.classesDir}/com/haulmont/cuba/security/app/UserSessions.class")
-        }
-        from("$buildDir/nodebug-classes") {
-            include "com/haulmont/cuba/security/app/UserSessions.class"
-        }
-    }
-
-    jar.dependsOn(recompileNoDebug)
 
     test {
         scanForTestClasses = false

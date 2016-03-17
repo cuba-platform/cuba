@@ -93,11 +93,6 @@ public interface UserSessionService {
     Collection<UserSessionEntity> getUserSessionInfo();
 
     /**
-     * @return license information
-     */
-    Map<String, Object> getLicenseInfo();
-
-    /**
      * Disconnect a session. Returns silently if there is no active session with the specified ID.
      * @param id    an active session identifier
      */

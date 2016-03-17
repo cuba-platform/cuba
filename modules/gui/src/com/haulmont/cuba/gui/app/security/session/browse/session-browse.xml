@@ -34,7 +34,7 @@
     <assign name="filterFieldWidth" value="theme://cuba.gui.session-browse.filterField.width"/>
 
     <layout expand="sessionsTable" spacing="true">
-        <hbox id="filterHBox" spacing="true" expand="spacer" width="100%">
+        <hbox id="filterHBox" spacing="true" width="100%">
             <groupBox id="filterGroupBox" caption="msg://filter" orientation="horizontal" spacing="true" width="AUTO">
                 <grid id="filterGrid" spacing="true">
                     <columns count="4"/>
@@ -56,8 +56,6 @@
 
                 <button id="clearButton" caption="msg://clear" align="BOTTOM_RIGHT" invoke="clearTextFields"/>
             </groupBox>
-            <label id="spacer"/>
-            <label id="sessionsInfo" align="TOP_RIGHT"/>
         </hbox>
         <groupTable id="sessionsTable" multiselect="true" width="100%">
             <actions>

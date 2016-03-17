@@ -126,13 +126,6 @@ public interface ServerConfig extends Config {
     void setDefaultQueryTimeoutSec(int timeout);
 
     /**
-     * @return Path to the license file
-     */
-    @Property("cuba.licensePath")
-    @Default("/cuba.license")
-    String getLicensePath();
-
-    /**
      * Indicates that a new user session created on login should be sent to the cluster synchronously.
      */
     @Property(SYNC_NEW_USER_SESSION_REPLICATION_PROP)

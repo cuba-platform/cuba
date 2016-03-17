@@ -25,9 +25,6 @@
 
     <layout>
         <tabSheet width="100%" height="100%">
-            <tab id="infoTab" caption="msg://info" margin="true" spacing="true">
-                <frame id="license" screen="licenseFrame" width="100%" height="100%"/>
-            </tab>
             <tab id="creditsTab" caption="msg://credits" margin="true">
                 <frame id="credits" screen="creditsFrame" width="100%" height="100%"/>
             </tab>
