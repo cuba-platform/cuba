@@ -20,12 +20,10 @@ import com.haulmont.cuba.security.entity.UserSessionEntity;
 import com.haulmont.cuba.security.global.UserSession;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.UUID;
 
 /**
  * User sessions distributed cache API.
- *
  */
 public interface UserSessionsAPI {
 
@@ -53,8 +51,6 @@ public interface UserSessionsAPI {
      * @return collection of all active sessions
      */
     Collection<UserSessionEntity> getUserSessionInfo();
-
-    Map<String, Object> getLicenseInfo();
 
     /**
      * Immediately remove a sessions from cache.

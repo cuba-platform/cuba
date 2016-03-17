@@ -31,7 +31,6 @@ import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
-import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.gui.components.mainwindow.WebAppWorkArea;
 import com.haulmont.cuba.web.toolkit.ui.*;
@@ -149,8 +148,6 @@ public class AppWindow extends UIView implements CubaHistoryControl.HistoryBackH
 
     @Override
     public void show() {
-        checkSessions();
-
         updateClientSystemMessages();
 
         beforeInitLayout();
@@ -228,22 +225,6 @@ public class AppWindow extends UIView implements CubaHistoryControl.HistoryBackH
      */
     @Override
     public void onHistoryBackPerformed() {
-    }
-
-    private void checkSessions() {
-        UserSessionService userSessionService = AppBeans.get(UserSessionService.NAME);
-        Map<String, Object> info = userSessionService.getLicenseInfo();
-        Integer licensed = (Integer) info.get("licensedSessions");
-        if (licensed < 0) {
-            Notification.show("Invalid CUBA platform license. See server log for details.",
-                    Notification.Type.ERROR_MESSAGE);
-        } else {
-            Integer active = (Integer) info.get("activeSessions");
-            if (licensed != 0 && active > licensed) {
-                Notification.show("Number of licensed sessions exceeded", "active: " + active + ", licensed: " + licensed,
-                        Notification.Type.ERROR_MESSAGE);
-            }
-        }
     }
 
     @Override

@@ -19,7 +19,6 @@ package com.haulmont.cuba.gui.app.core.license;
 
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.TextArea;
-import com.haulmont.cuba.security.app.UserSessionService;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -29,25 +28,11 @@ import java.util.Map;
 public class LicenseFrame extends AbstractFrame {
 
     @Inject
-    private UserSessionService uss;
-    @Inject
     private TextArea licenseTxtField;
 
     @Override
     public void init(Map<String, Object> params) {
-        Map<String, Object> info = uss.getLicenseInfo();
-
-        StringBuilder sb = new StringBuilder();
-        for (Map.Entry<String, Object> entry : info.entrySet()) {
-            Object val = entry.getValue();
-            if (entry.getKey().equals("licensedSessions") || entry.getKey().equals("licensedEntities")) {
-                val = ((val instanceof Integer) && ((Integer) val == 0)) ? "Not restricted" : val;
-            }
-            sb.append(getMessage(entry.getKey())).append(": ").append(val).append("\n");
-        }
-
-        licenseTxtField.setValue(sb.toString());
+        licenseTxtField.setValue("Obsolete");
         licenseTxtField.setEditable(false);
-
     }
 }
