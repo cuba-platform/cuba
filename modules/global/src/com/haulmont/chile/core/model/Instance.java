@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  */
-
 package com.haulmont.chile.core.model;
 
 import com.haulmont.chile.core.common.ValueListener;
@@ -25,7 +24,6 @@ import java.util.UUID;
 
 /**
  * Interface to be implemented by data model objects.
- *
  */
 public interface Instance extends Serializable {
 
@@ -58,16 +56,18 @@ public interface Instance extends Serializable {
      * <p/> An implementor should first read a current value of the attribute, and then call an appropriate setter
      * method only if the new value differs. This ensures triggering of {@link PropertyChangeListener}s only if the attribute
      * was actually changed.
+     *
      * @param name  attribute name according to JavaBeans notation
      * @param value attribute value
      */
     void setValue(String name, Object value);
 
     /**
-     * Get an attribute value. Locates the atribute by the given path in object graph starting from this instance.
+     * Get an attribute value. Locates the attribute by the given path in object graph starting from this instance.
      * <p/> The path must consist of attribute names according to JavaBeans notation, separated by dots, e.g.
      * <code>car.driver.name</code>.
-     * @param propertyPath  path to an attibute
+     *
+     * @param propertyPath  path to an attribute
      * @return attribute value. If any traversing attribute value is null or is not an {@link Instance}, this method
      * stops here and returns this value.
      */
@@ -75,7 +75,7 @@ public interface Instance extends Serializable {
     <T> T getValueEx(String propertyPath);
 
     /**
-     * Set an attribute value. Locates the atribute by the given path in object graph starting from this instance.
+     * Set an attribute value. Locates the attribute by the given path in object graph starting from this instance.
      * <p/> The path must consist of attribute names according to JavaBeans notation, separated by dots, e.g.
      * <code>car.driver.name</code>.
      * <p/> In the example above this method first gets value of <code>car.driver</code> attribute, and if it is not
@@ -85,7 +85,8 @@ public interface Instance extends Serializable {
      * <p/> An implementor should first read a current value of the attribute, and then call an appropriate setter
      * method only if the new value differs. This ensures triggering of {@link PropertyChangeListener}s only if the attribute
      * was actually changed.
-     * @param propertyPath  path to an attibute
+     *
+     * @param propertyPath  path to an attribute
      * @param value         attribute value
      */
     void setValueEx(String propertyPath, Object value);
