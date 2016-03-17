@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.app.security.entity.PermissionVariant;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
@@ -34,6 +35,7 @@ import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.inject.Inject;
+import javax.persistence.Entity;
 import java.util.Map;
 import java.util.Set;
 
@@ -75,6 +77,9 @@ public class EntityPermissionsFrame extends AbstractFrame {
 
     @Inject
     protected Metadata metadata;
+
+    @Inject
+    private ComponentsFactory componentsFactory;
 
     /* Filter */
 
@@ -148,7 +153,9 @@ public class EntityPermissionsFrame extends AbstractFrame {
             controlVisible = visible;
             operationLabel.setVisible(visible);
             allowChecker.setVisible(visible);
+            allowChecker.setDescription(operationLabel.getValue());
             denyChecker.setVisible(visible);
+            denyChecker.setDescription(operationLabel.getValue());
         }
 
         public boolean isControlVisible() {
@@ -222,6 +229,26 @@ public class EntityPermissionsFrame extends AbstractFrame {
 
         entityTargetsDs.refresh();
 
+        entityPermissionsTable.addGeneratedColumn("localName", name -> {
+            String localName = name.getCaption();
+            int delimiterIndex = localName.lastIndexOf(" ");
+            Label entityNameLabel = componentsFactory.createComponent(Label.class);
+
+            localName = localName.substring(0, delimiterIndex);
+            entityNameLabel.setValue(localName);
+            return entityNameLabel;
+        });
+
+        entityPermissionsTable.addGeneratedColumn("entityName", name -> {
+            String entityName = name.getCaption();
+            int delimiterIndex = entityName.lastIndexOf(" ");
+            Label entityNameLabel = componentsFactory.createComponent(Label.class);
+
+            entityName = entityName.substring(delimiterIndex + 2, entityName.length() - 1);
+            entityNameLabel.setValue(entityName);
+            return entityNameLabel;
+        });
+
         boolean isCreatePermitted = security.isEntityOpPermitted(Permission.class, EntityOp.CREATE);
         boolean isDeletePermitted = security.isEntityOpPermitted(Permission.class, EntityOp.DELETE);
         boolean hasPermissionsToModifyePermission = isCreatePermitted && isDeletePermitted;
@@ -284,7 +311,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
                         "createAllowCheck", "createDenyCheck") {
                     @Override
                     public boolean applicableToEntity(Class javaClass) {
-                        return javaClass.isAnnotationPresent(javax.persistence.Entity.class);
+                        return javaClass.isAnnotationPresent(Entity.class);
                     }
                 },
                 new EntityOperationControl(EntityOp.READ, "readPermissionVariant", "readOpLabel",
@@ -295,7 +322,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
                         "deleteAllowCheck", "deleteDenyCheck") {
                     @Override
                     public boolean applicableToEntity(Class javaClass) {
-                        return javaClass.isAnnotationPresent(javax.persistence.Entity.class);
+                        return javaClass.isAnnotationPresent(Entity.class);
                     }
                 }
         };
@@ -331,6 +358,10 @@ public class EntityPermissionsFrame extends AbstractFrame {
                 if (delimiterIndex >= 0) {
                     localName = caption.substring(0, delimiterIndex);
                     name = caption.substring(delimiterIndex + 1);
+
+                    if (name.length() > 20) {
+                        name = name.substring(0, 20) + "...)";
+                    }
                 } else {
                     name = caption;
                     localName = "";
@@ -338,7 +369,6 @@ public class EntityPermissionsFrame extends AbstractFrame {
 
                 selectedTargetCaption.setVisible(true);
                 selectedTargetCaption.setValue(name);
-
                 selectedTargetLocalCaption.setVisible(true);
                 selectedTargetLocalCaption.setValue(localName);
 

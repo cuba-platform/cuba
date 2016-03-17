@@ -136,16 +136,19 @@ public class AttributePermissionsFrame extends AbstractFrame {
             modifyCheckBox = uiFactory.createComponent(CheckBox.class);
             modifyCheckBox.setAlignment(Alignment.MIDDLE_CENTER);
             modifyCheckBox.setFrame(getFrame());
+            modifyCheckBox.setDescription(attributeName);
             modifyCheckBox.setId(attributeName + "_modifyCheckBox");
 
             readOnlyCheckBox = uiFactory.createComponent(CheckBox.class);
             readOnlyCheckBox.setAlignment(Alignment.MIDDLE_CENTER);
             readOnlyCheckBox.setFrame(getFrame());
+            readOnlyCheckBox.setDescription(attributeName);
             readOnlyCheckBox.setId(attributeName + "_readOnlyCheckBox");
 
             hideCheckBox = uiFactory.createComponent(CheckBox.class);
             hideCheckBox.setAlignment(Alignment.MIDDLE_CENTER);
             hideCheckBox.setFrame(getFrame());
+            hideCheckBox.setDescription(attributeName);
             hideCheckBox.setId(attributeName + "_hideCheckBox");
 
             updateCheckers(permissionVariant);
@@ -239,6 +242,9 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
     protected final List<AttributePermissionControl> permissionControls = new LinkedList<>();
 
+    @Inject
+    private ComponentsFactory componentsFactory;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
@@ -273,6 +279,10 @@ public class AttributePermissionsFrame extends AbstractFrame {
             if (delimiterIndex >= 0) {
                 localName = caption.substring(0, delimiterIndex);
                 name = caption.substring(delimiterIndex + 1);
+
+                if (name.length() > 20) {
+                    name = name.substring(0, 20) + "...)";
+                }
             } else {
                 name = caption;
                 localName = "";
@@ -288,6 +298,26 @@ public class AttributePermissionsFrame extends AbstractFrame {
             if (e.getItem() != null) {
                 compileEditPane(e.getItem());
             }
+        });
+
+        propertyPermissionsTable.addGeneratedColumn("localName", name -> {
+            String localName = name.getCaption();
+            int delimiterIndex = localName.lastIndexOf(" ");
+            Label entityNameLabel = componentsFactory.createComponent(Label.class);
+
+            localName = localName.substring(0, delimiterIndex);
+            entityNameLabel.setValue(localName);
+            return entityNameLabel;
+        });
+
+        propertyPermissionsTable.addGeneratedColumn("entityName", name -> {
+            String entityName = name.getCaption();
+            int delimiterIndex = entityName.lastIndexOf(" ");
+            Label entityNameLabel = componentsFactory.createComponent(Label.class);
+
+            entityName = entityName.substring(delimiterIndex + 2, entityName.length() - 1);
+            entityNameLabel.setValue(entityName);
+            return entityNameLabel;
         });
 
         attributeTargetsDs.refresh();
