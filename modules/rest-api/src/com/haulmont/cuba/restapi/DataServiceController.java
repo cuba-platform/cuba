@@ -21,6 +21,7 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.client.sys.cache.ClientCacheManager;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.DomainDescriptionService;
 import com.haulmont.cuba.core.entity.Entity;
@@ -79,6 +80,9 @@ public class DataServiceController {
     @Inject
     protected RestServicePermissions restServicePermissions;
 
+    @Inject
+    protected ClientCacheManager clientCacheManager;
+
     @RequestMapping(value = "/api/find.{type}", method = RequestMethod.GET)
     public void find(@PathVariable String type,
                      @RequestParam(value = "e") String entityRef,
@@ -87,10 +91,8 @@ public class DataServiceController {
                      HttpServletRequest request,
                      HttpServletResponse response) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
-        if (!authentication.begin(sessionId)) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
-        }
+        if (!connect(sessionId, response)) return;
+
         try {
             EntityLoadInfo loadInfo = EntityLoadInfo.parse(entityRef);
             if (loadInfo == null) {
@@ -143,10 +145,8 @@ public class DataServiceController {
                       HttpServletRequest request,
                       HttpServletResponse response) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
-        if (!authentication.begin(sessionId)) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
-        }
+        if (!connect(sessionId, response)) return;
+
         try {
             response.addHeader("Access-Control-Allow-Origin", "*");
             MetaClass metaClass = metadata.getClass(entityName);
@@ -217,10 +217,8 @@ public class DataServiceController {
                        HttpServletResponse response) throws
             IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
-        if (!authentication.begin(sessionId)) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
-        }
+        if (!connect(sessionId, response)) return;
+
         try {
             response.addHeader("Access-Control-Allow-Origin", "*");
 
@@ -283,10 +281,8 @@ public class DataServiceController {
                             HttpServletResponse response) throws
             IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
-        if (!authentication.begin(sessionId)) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
-        }
+        if (!connect(sessionId, response)) return;
+
         try {
             response.addHeader("Access-Control-Allow-Origin", "*");
             ViewRepository viewRepository = metadata.getViewRepository();
@@ -304,10 +300,8 @@ public class DataServiceController {
                             HttpServletResponse response) throws
             IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, TemplateException {
 
-        if (!authentication.begin(sessionId)) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
-        }
+        if (!connect(sessionId, response)) return;
+
         try {
             response.addHeader("Access-Control-Allow-Origin", "*");
             response.setContentType("text/html");
@@ -331,10 +325,8 @@ public class DataServiceController {
                              @RequestParam(value = "method") String methodName,
                              HttpServletRequest request,
                              HttpServletResponse response) throws IOException {
-        if (!authentication.begin(sessionId)) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
-        }
+        if (!connect(sessionId, response)) return;
+
         if (!restServicePermissions.isPermitted(serviceName, methodName)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
@@ -394,10 +386,7 @@ public class DataServiceController {
                               HttpServletRequest request,
                               HttpServletResponse response) throws IOException, JSONException {
 
-        if (!authentication.begin(sessionId)) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
-        }
+        if (!connect(sessionId, response)) return;
 
         try {
             response.addHeader("Access-Control-Allow-Origin", "*");
@@ -421,6 +410,16 @@ public class DataServiceController {
         } finally {
             authentication.end();
         }
+    }
+
+    protected boolean connect(@RequestParam(value = "s") String sessionId, HttpServletResponse response) throws IOException {
+        if (!authentication.begin(sessionId)) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return false;
+        }
+        clientCacheManager.initialize();
+
+        return true;
     }
 
     private void writeResponse(HttpServletResponse response, String result, MimeType mimeType) throws IOException {
