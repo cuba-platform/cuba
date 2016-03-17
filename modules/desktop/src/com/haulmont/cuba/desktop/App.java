@@ -33,13 +33,11 @@ import com.haulmont.cuba.desktop.theme.DesktopThemeLoader;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
-import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -633,7 +631,6 @@ public class App implements ConnectionListener {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    checkSessions();
                     afterLoggedIn();
                 }
             });
@@ -670,22 +667,6 @@ public class App implements ConnectionListener {
     @Nullable
     public ApplicationSession getApplicationSession() {
         return applicationSession;
-    }
-
-    private void checkSessions() {
-        UserSessionService userSessionService = AppBeans.get(UserSessionService.NAME);
-        Map<String, Object> info = userSessionService.getLicenseInfo();
-        Integer licensed = (Integer) info.get("licensedSessions");
-        if (licensed < 0) {
-            mainFrame.showNotification("Invalid CUBA platform license. See server log for details.",
-                    Frame.NotificationType.ERROR);
-        } else {
-            Integer active = (Integer) info.get("activeSessions");
-            if (licensed != 0 && active > licensed) {
-                mainFrame.showNotification("Number of licensed sessions exceeded", "active: " + active + ", licensed: " + licensed,
-                        Frame.NotificationType.ERROR);
-            }
-        }
     }
 
     /**
