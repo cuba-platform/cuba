@@ -19,6 +19,8 @@ package com.haulmont.cuba.core.sys.dbupdate;
 
 import com.haulmont.cuba.core.sys.ServletContextHolder;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -44,6 +46,8 @@ public class ScriptScanner {
     protected String dbScriptsDirectory;
     protected String dbmsType;
     protected String dbmsVersion;
+
+    private Logger log = LoggerFactory.getLogger(ScriptScanner.class);
 
     public ScriptScanner(String dbScriptsDirectory, String dbmsType, String dbmsVersion) {
         this.dbScriptsDirectory = dbScriptsDirectory.replace('\\', '/');
@@ -111,6 +115,7 @@ public class ScriptScanner {
         try {
             Resource[] resources = createAppropriateResourceResolver().getResources(dbScriptsDirectoryForSearch() + "/**/*.*");
             String dbDirPath = dbScriptDirectoryPath();
+            log.trace("DB scripts directory: {}", dbDirPath);
             List<String> modules = Arrays.stream(resources)
                     .map(resource -> {
                         try {
@@ -132,6 +137,7 @@ public class ScriptScanner {
                         "Please check if [%s] contains DB scripts.", dbDirPath));
             }
 
+            log.trace("Found modules: {}", modules);
             return modules;
         } catch (IOException e) {
             throw new RuntimeException("An error occurred while detecting modules", e);

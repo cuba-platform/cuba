@@ -59,4 +59,9 @@ public class ScriptResource {
     public String getDir() {
         return dir;
     }
+
+    @Override
+    public String toString() {
+        return path;
+    }
 }
