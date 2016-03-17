@@ -43,7 +43,7 @@ public class FilterConditionUtils {
             MetaProperty[] metaProperties = mpp.getMetaProperties();
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < metaProperties.length; i++) {
-                sb.append(messageTools.getPropertyCaption(metaProperties[i]));
+                sb.append(messageTools.getPropertyCaption(metaClass, metaProperties[i].getName()));
                 if (i < metaProperties.length - 1)
                     sb.append(".");
             }
