@@ -285,11 +285,15 @@ public class ExcelExporter {
         Element xmlDescriptor = column.getXmlDescriptor();
         if (xmlDescriptor != null && StringUtils.isNotEmpty(xmlDescriptor.attributeValue("captionProperty")) && val instanceof Instance) {
             String captionProperty = xmlDescriptor.attributeValue("captionProperty");
-            captionProperty = captionProperty.substring(captionProperty.indexOf('.') + 1);
+            Collection children = table.getDatasource().getGroupItemIds(groupInfo);
+            if (children.isEmpty()) {
+                return rowNumber;
+            }
 
-            Instance instance = (Instance) val;
-            Object value = InstanceUtils.getValueEx(instance, captionProperty);
-            formatValueCell(cell, value, groupNumber++, rowNumber, 0, true);
+            Object itemId = children.iterator().next();
+            Instance item = table.getDatasource().getItem(itemId);
+            Object captionValue = item.getValueEx(captionProperty);
+            formatValueCell(cell, captionValue, groupNumber++, rowNumber, 0, true);
         } else {
             formatValueCell(cell, val, groupNumber++, rowNumber, 0, true);
         }
