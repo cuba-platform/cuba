@@ -678,6 +678,11 @@ public class XMLConvertor implements Convertor {
     }
 
     @Override
+    public QueryRequest parseQueryRequest(String content) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public Collection parseEntitiesCollection(String content, Class<? extends Collection> collectionClass) {
         throw new UnsupportedOperationException();
     }

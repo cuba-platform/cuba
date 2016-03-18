@@ -44,6 +44,7 @@ import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.StringWriter;
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -318,6 +319,78 @@ public class XMLConvertor2 implements Convertor {
         Document document = Dom4j.readDocument(content);
         Element instanceEl = document.getRootElement();
         return parseEntity(instanceEl, null, null);
+    }
+
+    @Override
+    public QueryRequest parseQueryRequest(String content) throws IllegalArgumentException, ClassNotFoundException, ParseException {
+        Document document = Dom4j.readDocument(content);
+        Element rootElement = document.getRootElement();
+        QueryRequest queryRequest = new QueryRequest();
+
+        Element entityElem = rootElement.element("entity");
+        String entity = entityElem.getTextTrim();
+        queryRequest.setEntity(entity);
+
+        Element queryElem = rootElement.element("query");
+        String query = queryElem.getTextTrim();
+        queryRequest.setQuery(query);
+
+        if (rootElement.element("view") != null) {
+            Element viewElem = rootElement.element("view");
+            String view = viewElem.getTextTrim();
+            queryRequest.setViewName(view);
+        }
+
+        if (rootElement.element("max") != null) {
+            Element maxElem = rootElement.element("max");
+            String maxString = maxElem.getTextTrim();
+            int max = Integer.parseInt(maxString);
+            queryRequest.setMax(max);
+        }
+
+        if (rootElement.element("first") != null) {
+            Element firstElem = rootElement.element("first");
+            String firstString = firstElem.getTextTrim();
+            int first = Integer.parseInt(firstString);
+            queryRequest.setFirst(first);
+        }
+
+        if (rootElement.element("dynamicAttributes") != null) {
+            Element dynamicAttributesElem = rootElement.element("dynamicAttributes");
+            String dynamicAttributesString = dynamicAttributesElem.getTextTrim();
+            Boolean dynamicAttributes = Boolean.valueOf(dynamicAttributesString);
+            queryRequest.setDynamicAttributes(dynamicAttributes);
+        }
+
+        if (rootElement.element("params") != null) {
+            Element paramsElem = rootElement.element("params");
+            List paramList = paramsElem.elements("param");
+            for (Object obj : paramList) {
+                if (obj instanceof Element) {
+                    Element paramElem = (Element) obj;
+
+                    Element nameElem = paramElem.element("name");
+                    String paramName = nameElem.getStringValue();
+
+                    Element valueElem = paramElem.element("value");
+                    String paramValue = valueElem.getStringValue();
+
+                    Object value = null;
+                    if (paramElem.element("type") != null) {
+                        Element typeElem = paramElem.element("type");
+                        String typeString = typeElem.getStringValue();
+                        Class type = ClassUtils.forName(typeString, null);
+                        value = ParseUtils.toObject(type, paramValue, this);
+                    } else {
+                        value = ParseUtils.tryParse(paramValue);
+                    }
+
+                    queryRequest.getParams().put(paramName, value != null ? value : paramValue);
+                }
+            }
+        }
+
+        return queryRequest;
     }
 
     @Override

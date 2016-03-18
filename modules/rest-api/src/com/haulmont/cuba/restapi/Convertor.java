@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 
 import javax.activation.MimeType;
+import java.text.ParseException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -71,6 +72,11 @@ public interface Convertor {
      * Converts a string representation of entity to {@code Entity} object
      */
     Entity parseEntity(String content);
+
+    /**
+     * Converts a string representation of JPQL query to {@code QueryRequest} object
+     * */
+    QueryRequest parseQueryRequest(String content) throws ClassNotFoundException, ParseException;
 
     /**
      * Converts a string representation of entities collection to collection of entities
