@@ -106,7 +106,6 @@ public abstract class WindowManager {
         private Boolean resizable;
         private Boolean closeable;
         private Boolean modal;
-        private Boolean centered;
 
         public OpenType(OpenMode openMode) {
             this.openMode = openMode;
@@ -229,24 +228,6 @@ public abstract class WindowManager {
             OpenType instance = getMutableInstance();
 
             instance.modal = modal;
-            return instance;
-        }
-
-        public Boolean getCentered() {
-            return centered;
-        }
-
-        public OpenType centered(Boolean centered) {
-            OpenType instance = getMutableInstance();
-
-            instance.centered = centered;
-            return instance;
-        }
-
-        public OpenType setCentered(Boolean centered) {
-            OpenType instance = getMutableInstance();
-
-            instance.centered = centered;
             return instance;
         }
 

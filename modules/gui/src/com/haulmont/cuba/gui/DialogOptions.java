@@ -40,7 +40,6 @@ public class DialogOptions {
     private Boolean resizable;
     private Boolean closeable;
     private Boolean modal;
-    private Boolean centered;
 
     private Boolean forceDialog;
 
@@ -164,17 +163,9 @@ public class DialogOptions {
     }
 
     /**
-     * Set centered option if window will be shown in the center of screen or change its position if the window is already opened as dialog.
+     * Center window only if it is already opened
      * */
-    public DialogOptions setCentered(boolean centered) {
-        this.centered = centered;
+    public DialogOptions center() {
         return this;
-    }
-
-    /**
-     * @return true if window should be centered
-     * */
-    public Boolean getCentered() {
-        return centered;
     }
 }

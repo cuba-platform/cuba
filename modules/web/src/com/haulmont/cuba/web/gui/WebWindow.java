@@ -1318,14 +1318,12 @@ public class WebWindow implements Window, Component.Wrapper,
         }
 
         @Override
-        public DialogOptions setCentered(boolean centered) {
-            super.setCentered(centered);
+        public DialogOptions center() {
+            super.center();
 
             com.vaadin.ui.Window dialogWindow = asDialogWindow();
             if (dialogWindow != null) {
-                if (BooleanUtils.isTrue(centered)) {
-                    dialogWindow.center();
-                }
+                dialogWindow.center();
             }
 
             return this;

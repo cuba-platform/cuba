@@ -685,10 +685,6 @@ public class WebWindowManager extends WindowManager {
 
             // non resizable by default
             vWindow.setResizable(BooleanUtils.isTrue(openType.getResizable()));
-
-            if (BooleanUtils.isTrue(openType.getCentered())) {
-                vWindow.center();
-            }
         }
 
         if (openType.getCloseable() != null) {
