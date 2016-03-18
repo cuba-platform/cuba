@@ -59,8 +59,8 @@
                 <vbox id="tablePane" height="100%" margin="false;true;false;false">
                     <table id="entityPermissionsTable" multiselect="true" width="100%" height="100%">
                         <columns>
-                            <column id="localName" caption="msg://entities"/>
-                            <column id="metaClassName" caption="msg://metaClasses"/>
+                            <column id="localName" caption="msg://entity"/>
+                            <column id="metaClassName" caption="msg://metaClass"/>
                             <column id="createPermissionVariant"/>
                             <column id="readPermissionVariant"/>
                             <column id="updatePermissionVariant"/>
