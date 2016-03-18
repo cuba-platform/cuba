@@ -445,7 +445,7 @@ public class CubaMaskedFieldWidget extends VTextField {
     public static class LowerCaseMask extends LetterMask {
         @Override
         public boolean isValid(char c) {
-            return Character.isLetter(getChar(c));
+            return (Character.toLowerCase(c) != Character.toUpperCase(c));
         }
 
         @Override
@@ -457,7 +457,7 @@ public class CubaMaskedFieldWidget extends VTextField {
     public static class UpperCaseMask extends LetterMask {
         @Override
         public boolean isValid(char c) {
-            return Character.isLetter(getChar(c));
+            return (Character.toLowerCase(c) != Character.toUpperCase(c));
         }
 
         @Override
