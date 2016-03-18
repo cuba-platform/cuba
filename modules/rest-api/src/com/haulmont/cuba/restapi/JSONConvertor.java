@@ -397,6 +397,62 @@ public class JSONConvertor implements Convertor {
         }
     }
 
+    @Override
+    public QueryRequest parseQueryRequest(String content) throws IllegalArgumentException, ClassNotFoundException, ParseException {
+        JSONObject jsonObject = new JSONObject(content);
+
+        QueryRequest queryRequest = new QueryRequest();
+
+        String entityName = jsonObject.getString("entity");
+        queryRequest.setEntity(entityName);
+
+        String query = jsonObject.getString("query");
+        queryRequest.setQuery(query);
+
+        if (jsonObject.has("viewName")) {
+            String viewName = jsonObject.getString("viewName");
+            queryRequest.setViewName(viewName);
+        }
+
+        if (jsonObject.has("max")) {
+            int max = jsonObject.getInt("max");
+            queryRequest.setMax(max);
+        }
+
+        if (jsonObject.has("first")) {
+            int first = jsonObject.getInt("first");
+            queryRequest.setFirst(first);
+        }
+
+        if (jsonObject.has("loadDynamicAttributes")) {
+            boolean loadDynamicAttributes = jsonObject.getBoolean("loadDynamicAttributes");
+            queryRequest.setDynamicAttributes(loadDynamicAttributes);
+        }
+
+        if (jsonObject.has("params") && jsonObject.get("params") instanceof JSONArray) {
+            JSONArray params = (JSONArray) jsonObject.get("params");
+            for (int i = 0; i < params.length(); i++) {
+                Object obj = params.get(0);
+                if (obj instanceof JSONObject) {
+                    JSONObject parameter = (JSONObject) obj;
+                    String paramName = parameter.getString("name");
+                    String paramValue = parameter.getString("value");
+
+                    Object value = null;
+                    if (parameter.has("type")) {
+                        value = ParseUtils.parseByTypename(paramValue, parameter.getString("type"));
+                    } else {
+                        value = ParseUtils.tryParse(paramValue);
+                    }
+
+                    queryRequest.getParams().put(paramName, value != null ? value : paramValue);
+                }
+            }
+        }
+
+        return queryRequest;
+    }
+
     protected Entity _parseEntity(JSONObject json) {
         try {
             String id = json.getString("id");

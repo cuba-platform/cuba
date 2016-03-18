@@ -17,17 +17,14 @@
 
 package com.haulmont.cuba.restapi;
 
-import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.*;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DatatypeFormatter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class is used for invoking middleware services with REST API
@@ -58,7 +55,7 @@ public class ServiceRequest {
         Class<?>[] types = serviceMethod.getParameterTypes();
         for (int i = 0; i < types.length; i++) {
             Class<?> aClass = types[i];
-            paramValues.add(toObject(aClass, paramValuesString.get(i), convertor));
+            paramValues.add(ParseUtils.toObject(aClass, paramValuesString.get(i), convertor));
         }
 
         return serviceMethod.invoke(service, paramValues.toArray());
@@ -95,35 +92,6 @@ public class ServiceRequest {
     protected boolean validate() throws RestServiceException{
         return true;
     }
-
-    protected Object toObject(Class clazz, String value, Convertor convertor) throws ParseException {
-        if (String.class == clazz) return value;
-        if (Integer.class == clazz || Integer.TYPE == clazz
-                || Byte.class == clazz || Byte.TYPE == clazz
-                || Short.class == clazz || Short.TYPE == clazz) return Datatypes.get(IntegerDatatype.NAME).parse(value);
-        if (Date.class == clazz) {
-            try {
-                return Datatypes.get(DateTimeDatatype.NAME).parse(value);
-            } catch (ParseException e) {
-                try {
-                    return Datatypes.get(DateDatatype.NAME).parse(value);
-                } catch (ParseException e1) {
-                    return Datatypes.get(TimeDatatype.NAME).parse(value);
-
-                }
-            }
-        }
-        if (BigDecimal.class == clazz) return Datatypes.get(BigDecimalDatatype.NAME).parse(value);
-        if (Boolean.class == clazz || Boolean.TYPE == clazz) return Datatypes.get(BooleanDatatype.NAME).parse(value);
-        if (Long.class == clazz || Long.TYPE == clazz) return Datatypes.get(LongDatatype.NAME).parse(value);
-        if (Double.class == clazz || Double.TYPE == clazz
-                || Float.class == clazz || Float.TYPE == clazz) return Datatypes.get(DoubleDatatype.NAME).parse(value);
-        if (UUID.class == clazz) return UUID.fromString(value);
-        if (Entity.class.isAssignableFrom(clazz)) return convertor.parseEntity(value);
-        if (Collection.class.isAssignableFrom(clazz)) return convertor.parseEntitiesCollection(value, clazz);
-        throw new IllegalArgumentException("Parameters of type " + clazz.getName() + " are not supported");
-    }
-
 
     public String getServiceName() {
         return serviceName;

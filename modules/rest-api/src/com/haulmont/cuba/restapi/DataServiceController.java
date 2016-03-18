@@ -17,9 +17,6 @@
 
 package com.haulmont.cuba.restapi;
 
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.sys.cache.ClientCacheManager;
 import com.haulmont.cuba.core.app.DataService;
@@ -46,7 +43,6 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -134,7 +130,7 @@ public class DataServiceController {
     }
 
     @RequestMapping(value = "/api/query.{type}", method = RequestMethod.GET)
-    public void query(@PathVariable String type,
+    public void queryByGet(@PathVariable String type,
                       @RequestParam(value = "e") String entityName,
                       @RequestParam(value = "q") String queryStr,
                       @RequestParam(value = "view", required = false) String viewName,
@@ -202,6 +198,67 @@ public class DataServiceController {
             Convertor convertor = conversionFactory.getConvertor(type);
             String result = convertor.process(entities, metaClass, loadCtx.getView());
             writeResponse(response, result, convertor.getMimeType());
+        } catch (Throwable e) {
+            sendError(request, response, e);
+        } finally {
+            authentication.end();
+        }
+    }
+
+    @RequestMapping(value = "/api/query", method = RequestMethod.POST)
+    public void queryByPost(@RequestParam(value = "s") String sessionId,
+                            @RequestHeader(value = "Content-Type") MimeType contentType,
+                            @RequestBody String requestContent,
+                            HttpServletRequest request,
+                            HttpServletResponse response) throws IOException {
+        if (!authentication.begin(sessionId)) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        try {
+            response.addHeader("Access-Control-Allow-Origin", "*");
+
+            Convertor convertor = conversionFactory.getConvertor(contentType);
+
+            QueryRequest queryRequest = convertor.parseQueryRequest(requestContent);
+
+            MetaClass metaClass = metadata.getClass(queryRequest.getEntity());
+            if (metaClass == null) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Persistent entity " + queryRequest.getEntity() + " does not exist");
+                return;
+            }
+
+            if (!entityOpPermitted(metaClass, EntityOp.READ)) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+
+            LoadContext loadCtx = new LoadContext(metaClass);
+            loadCtx.setLoadDynamicAttributes(Boolean.TRUE.equals(queryRequest.loadDynamicAttributes()));
+            LoadContext.Query query = new LoadContext.Query(queryRequest.getQuery());
+
+            for (String key : queryRequest.getParams().keySet()) {
+                query.setParameter(key, queryRequest.getParams().get(key));
+            }
+
+            loadCtx.setQuery(query);
+            if (queryRequest.getFirst() != null)
+                query.setFirstResult(queryRequest.getFirst());
+            if (queryRequest.getMax() != null)
+                query.setMaxResults(queryRequest.getMax());
+
+            if (queryRequest.getViewName() == null) {
+                View view = metadata.getViewRepository().getView(metaClass, View.LOCAL);
+                loadCtx.setView(new View(view, "local-with-system-props", true));
+            } else {
+                loadCtx.setView(queryRequest.getViewName());
+            }
+            List<Entity> entities = dataService.loadList(loadCtx);
+            String result = convertor.process(entities, metaClass, loadCtx.getView());
+            writeResponse(response, result, convertor.getMimeType());
+        } catch (RowLevelSecurityException e) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "The operation with entity " + e.getEntity() + " is denied");
         } catch (Throwable e) {
             sendError(request, response, e);
         } finally {
@@ -449,78 +506,15 @@ public class DataServiceController {
         String[] typeName = queryParams.get(paramKey + "_type");
         //if the type is specified
         if (typeName != null && typeName.length == 1) {
-            return parseByTypename(paramValue, typeName[0]);
+            return ParseUtils.parseByTypename(paramValue, typeName[0]);
         }
         //if the type is not specified
         else if (typeName == null) {
-            return tryParse(paramValue);
+            return ParseUtils.tryParse(paramValue);
         }
         //if several types have been declared
         else {
             throw new IllegalStateException("Too many parameters in request");
-        }
-    }
-
-    /**
-     * Tries to parse a string value into some of the available Datatypes
-     * when no Datatype was specified.
-     *
-     * @param value value to parse
-     * @return parsed value
-     */
-    private Object tryParse(String value) {
-        try {
-            return parseByDatatypeName(value, UUIDDatatype.NAME);
-        } catch (Exception ignored) {
-        }
-        try {
-            return parseByDatatypeName(value, DateTimeDatatype.NAME);
-        } catch (ParseException ignored) {
-        }
-        try {
-            return parseByDatatypeName(value, TimeDatatype.NAME);
-        } catch (ParseException ignored) {
-        }
-        try {
-            return parseByDatatypeName(value, DateDatatype.NAME);
-        } catch (ParseException ignored) {
-        }
-        try {
-            return parseByDatatypeName(value, BigDecimalDatatype.NAME);
-        } catch (ParseException ignored) {
-        }
-        try {
-            return parseByDatatypeName(value, DoubleDatatype.NAME);
-        } catch (ParseException ignored) {
-        }
-        try {
-            if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
-                return parseByDatatypeName(value, BooleanDatatype.NAME);
-            }
-        } catch (ParseException ignored) {
-        }
-        //return string value if couldn't parse into specific type
-        return value;
-    }
-
-    private Object parseByDatatypeName(String value, String name) throws ParseException {
-        Datatype datatype = Datatypes.get(name);
-        return datatype.parse(value);
-    }
-
-    /**
-     * Parses string value into specific type
-     *
-     * @param value    value to parse
-     * @param typeName Datatype name
-     * @return parsed object
-     */
-    private Object parseByTypename(String value, String typeName) {
-        Datatype datatype = Datatypes.get(typeName);
-        try {
-            return datatype.parse(value);
-        } catch (ParseException e) {
-            throw new IllegalArgumentException(String.format("Cannot parse specified parameter of type '%s'", typeName), e);
         }
     }
 
