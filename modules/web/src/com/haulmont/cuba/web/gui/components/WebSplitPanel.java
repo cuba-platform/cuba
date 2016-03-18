@@ -45,6 +45,7 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     protected boolean settingsEnabled = true;
 
     protected float currentPosition = 0;
+    protected boolean inverse = false;
 
     @Override
     public void add(Component childComponent) {
@@ -89,6 +90,7 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
                 @Override
                 public void setSplitPosition(float pos, Unit unit, boolean reverse) {
                     currentPosition = getSplitPosition();
+                    inverse = isSplitPositionReversed();
 
                     super.setSplitPosition(pos, unit, reverse);
                 }
@@ -201,14 +203,15 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
         if (e != null) {
             String value = e.attributeValue("value");
             String unit = e.attributeValue("unit");
-            if (!StringUtils.isBlank(value) && !StringUtils.isBlank(unit)) {
+            String reversed = e.attributeValue("reversed");
+            if (!StringUtils.isBlank(value) && !StringUtils.isBlank(unit) && !StringUtils.isBlank(reversed)) {
                 Sizeable.Unit convertedUnit;
                 if (NumberUtils.isNumber(unit)) {
                     convertedUnit = convertLegacyUnit(Integer.parseInt(unit));
                 } else {
                     convertedUnit = Sizeable.Unit.getUnitFromSymbol(unit);
                 }
-                component.setSplitPosition(Float.valueOf(value), convertedUnit);
+                component.setSplitPosition(Float.valueOf(value), convertedUnit, Boolean.parseBoolean(reversed));
             }
         }
     }
@@ -225,6 +228,7 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
         }
         e.addAttribute("value", String.valueOf(component.getSplitPosition()));
         e.addAttribute("unit", String.valueOf(component.getSplitPositionUnit()));
+        e.addAttribute("reversed", String.valueOf(component.isSplitPositionReversed()));
         return true;
     }
 
@@ -263,6 +267,44 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
             component.setSplitPosition(pos, Sizeable.Unit.PIXELS);
         } else if (unit == UNITS_PERCENTAGE) {
             component.setSplitPosition(pos, Sizeable.Unit.PERCENTAGE);
+        } else {
+            throw new IllegalArgumentException("Unsupported unit " + unit);
+        }
+    }
+
+    @Override
+    public void setSplitPosition(int pos, int unit, boolean inversePosition) {
+        if (unit == UNITS_PIXELS) {
+            component.setSplitPosition(pos, Sizeable.Unit.PIXELS, inversePosition);
+        } else if (unit == UNITS_PERCENTAGE) {
+            component.setSplitPosition(pos, Sizeable.Unit.PERCENTAGE, inversePosition);
+        } else {
+            throw new IllegalArgumentException("Unsupported unit " + unit);
+        }
+    }
+
+    @Override
+    public boolean isSplitPositionReversed() {
+        return component.isSplitPositionReversed();
+    }
+
+    @Override
+    public void setMinSplitPosition(int pos, int unit) {
+        if (unit == UNITS_PIXELS) {
+            component.setMinSplitPosition(pos, Sizeable.Unit.PIXELS);
+        } else if (unit == UNITS_PERCENTAGE) {
+            component.setMinSplitPosition(pos, Sizeable.Unit.PERCENTAGE);
+        } else {
+            throw new IllegalArgumentException("Unsupported unit " + unit);
+        }
+    }
+
+    @Override
+    public void setMaxSplitPosition(int pos, int unit) {
+        if (unit == UNITS_PIXELS) {
+            component.setMaxSplitPosition(pos, Sizeable.Unit.PIXELS);
+        } else if (unit == UNITS_PERCENTAGE) {
+            component.setMaxSplitPosition(pos, Sizeable.Unit.PERCENTAGE);
         } else {
             throw new IllegalArgumentException("Unsupported unit " + unit);
         }

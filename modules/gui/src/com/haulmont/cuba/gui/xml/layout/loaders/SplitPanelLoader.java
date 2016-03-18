@@ -55,7 +55,34 @@ public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
 
         String pos = element.attributeValue("pos");
         if (!StringUtils.isEmpty(pos)) {
-            resultComponent.setSplitPosition(Integer.parseInt(pos));
+            boolean inversePosition = false;
+            if (Boolean.parseBoolean(element.attributeValue("inversePosition"))) {
+                inversePosition = true;
+            }
+
+            if (pos.endsWith("px")) {
+                resultComponent.setSplitPosition(Integer.parseInt(pos.substring(0, pos.indexOf("px"))), 0, inversePosition);
+            } else {
+                resultComponent.setSplitPosition(Integer.parseInt(pos), 8, inversePosition);
+            }
+        }
+
+        String maxSplitPosition = element.attributeValue("maxSplitPosition");
+        if (!StringUtils.isEmpty(maxSplitPosition)) {
+            if (maxSplitPosition.endsWith("px")) {
+                resultComponent.setMaxSplitPosition(Integer.parseInt(maxSplitPosition.substring(0, maxSplitPosition.indexOf("px"))), 0);
+            } else {
+                resultComponent.setMaxSplitPosition(Integer.parseInt(maxSplitPosition.substring(0, maxSplitPosition.indexOf("px"))), 8);
+            }
+        }
+
+        String minSplitPosition = element.attributeValue("minSplitPosition");
+        if (!StringUtils.isEmpty(minSplitPosition)) {
+            if (minSplitPosition.endsWith("px")) {
+                resultComponent.setMinSplitPosition(Integer.parseInt(minSplitPosition.substring(0, minSplitPosition.indexOf("px"))), 0);
+            } else {
+                resultComponent.setMinSplitPosition(Integer.parseInt(minSplitPosition.substring(0, minSplitPosition.indexOf("%"))), 8);
+            }
         }
 
         String locked = element.attributeValue("locked");

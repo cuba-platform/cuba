@@ -18,8 +18,8 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.SplitPanel;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -114,6 +114,41 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
         }
 
         setSplitPosition(pos);
+    }
+
+    @Override
+    public void setSplitPosition(int pos, int unit, boolean inversePosition) {
+        if (unit != UNITS_PERCENTAGE) {
+            // not supported
+            return;
+        }
+
+        setSplitPosition(pos);
+    }
+
+    @Override
+    public void setMaxSplitPosition(int pos, int unit) {
+        if (unit != UNITS_PERCENTAGE) {
+            // not supported
+            return;
+        }
+
+        setMaxSplitPosition(pos, UNITS_PIXELS);
+    }
+
+    @Override
+    public void setMinSplitPosition(int pos, int unit) {
+        if (unit != UNITS_PERCENTAGE) {
+            // not supported
+            return;
+        }
+
+        setMaxSplitPosition(pos, UNITS_PIXELS);
+    }
+
+    @Override
+    public boolean isSplitPositionReversed() {
+        return isSplitPositionReversed();
     }
 
     @Override
