@@ -1316,6 +1316,18 @@ public class WebWindow implements Window, Component.Wrapper,
 
             return this;
         }
+
+        @Override
+        public DialogOptions center() {
+            super.center();
+
+            com.vaadin.ui.Window dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                dialogWindow.center();
+            }
+
+            return this;
+        }
     }
 
     public static class Editor extends WebWindow implements Window.Editor {

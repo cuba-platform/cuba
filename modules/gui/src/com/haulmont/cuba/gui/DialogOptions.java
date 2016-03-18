@@ -161,4 +161,11 @@ public class DialogOptions {
     public DialogOptions setHeightAuto() {
         return setHeight(-1);
     }
+
+    /**
+     * Center window only if it is already opened
+     * */
+    public DialogOptions center() {
+        return this;
+    }
 }
