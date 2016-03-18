@@ -19,6 +19,9 @@ package com.haulmont.cuba.gui.app.security.entity;
 
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.Metadata;
 import org.apache.commons.collections.CollectionUtils;
 
 import java.util.Iterator;
@@ -38,11 +41,30 @@ public class MultiplePermissionTarget extends AbstractPermissionTarget
     private List<AttributeTarget> permissions = new LinkedList<>();
     private Class entityClass;
 
+    @MetaProperty(mandatory = true)
+    protected String localName;
+
+    @MetaProperty(mandatory = true)
+    protected String metaClassName;
+
     public MultiplePermissionTarget(Class entityClass, String id, String caption, String permissionValue) {
         super(id, caption);
+        Metadata metadata = AppBeans.get(Metadata.class);
+        Messages messages = AppBeans.get(Messages.class);
+
+        this.localName = messages.getTools().getEntityCaption(metadata.getClassNN(entityClass));
+        this.metaClassName = metadata.getClassNN(entityClass).getName();
         this.entityClass = entityClass;
         this.caption = caption;
         this.permissionValue = permissionValue;
+    }
+
+    public String getLocalName() {
+        return localName;
+    }
+
+    public String getMetaClassName() {
+        return metaClassName;
     }
 
     @Override

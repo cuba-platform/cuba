@@ -270,54 +270,22 @@ public class AttributePermissionsFrame extends AbstractFrame {
                 selectedEntityPanel.setVisible(false);
             }
 
-            String caption = e.getItem() != null ? e.getItem().getCaption() : "";
-
-            String name;
-            String localName;
-
-            int delimiterIndex = caption.lastIndexOf(" ");
-            if (delimiterIndex >= 0) {
-                localName = caption.substring(0, delimiterIndex);
-                name = caption.substring(delimiterIndex + 1);
-
-                if (name.length() > 20) {
-                    name = name.substring(0, 20) + "...)";
-                }
-            } else {
-                name = caption;
-                localName = "";
+            String name = e.getItem().getMetaClassName();
+            if (name.length() > 20) {
+                selectedTargetCaption.setDescription(name);
+                name = "(" + name.substring(0, 20) + "...)";
             }
 
             selectedTargetCaption.setVisible(e.getItem() != null);
             selectedTargetCaption.setValue(name);
 
             selectedTargetLocalCaption.setVisible(e.getItem() != null);
-            selectedTargetLocalCaption.setValue(localName);
+            selectedTargetLocalCaption.setValue(e.getItem().getLocalName());
 
             clearEditGrid();
             if (e.getItem() != null) {
                 compileEditPane(e.getItem());
             }
-        });
-
-        propertyPermissionsTable.addGeneratedColumn("localName", name -> {
-            String localName = name.getCaption();
-            int delimiterIndex = localName.lastIndexOf(" ");
-            Label entityNameLabel = componentsFactory.createComponent(Label.class);
-
-            localName = localName.substring(0, delimiterIndex);
-            entityNameLabel.setValue(localName);
-            return entityNameLabel;
-        });
-
-        propertyPermissionsTable.addGeneratedColumn("entityName", name -> {
-            String entityName = name.getCaption();
-            int delimiterIndex = entityName.lastIndexOf(" ");
-            Label entityNameLabel = componentsFactory.createComponent(Label.class);
-
-            entityName = entityName.substring(delimiterIndex + 2, entityName.length() - 1);
-            entityNameLabel.setValue(entityName);
-            return entityNameLabel;
         });
 
         attributeTargetsDs.refresh();

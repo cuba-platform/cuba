@@ -19,6 +19,9 @@ package com.haulmont.cuba.gui.app.security.entity;
 
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.Metadata;
 
 /**
  *
@@ -40,10 +43,21 @@ public class OperationPermissionTarget extends AbstractPermissionTarget
     @MetaProperty(mandatory = true)
     private PermissionVariant deletePermissionVariant = PermissionVariant.NOTSET;
 
+    @MetaProperty(mandatory = true)
+    protected String localName;
+
+    @MetaProperty(mandatory = true)
+    protected String metaClassName;
+
     private Class entityClass;
 
     public OperationPermissionTarget(Class entityClass, String id, String caption, String permissionValue) {
         super(id, caption);
+        Metadata metadata = AppBeans.get(Metadata.class);
+        Messages messages = AppBeans.get(Messages.class);
+
+        this.localName = messages.getTools().getEntityCaption(metadata.getClassNN(entityClass));
+        this.metaClassName = metadata.getClassNN(entityClass).getName();
         this.permissionValue = permissionValue;
         this.entityClass = entityClass;
     }
@@ -108,6 +122,14 @@ public class OperationPermissionTarget extends AbstractPermissionTarget
 
     public void setDeletePermissionVariant(PermissionVariant deletePermissionVariant) {
         this.deletePermissionVariant = deletePermissionVariant;
+    }
+
+    public String getLocalName() {
+        return localName;
+    }
+
+    public String getMetaClassName() {
+        return metaClassName;
     }
 
     @Override

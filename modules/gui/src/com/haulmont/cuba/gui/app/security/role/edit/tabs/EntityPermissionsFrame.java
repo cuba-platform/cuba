@@ -229,26 +229,6 @@ public class EntityPermissionsFrame extends AbstractFrame {
 
         entityTargetsDs.refresh();
 
-        entityPermissionsTable.addGeneratedColumn("localName", name -> {
-            String localName = name.getCaption();
-            int delimiterIndex = localName.lastIndexOf(" ");
-            Label entityNameLabel = componentsFactory.createComponent(Label.class);
-
-            localName = localName.substring(0, delimiterIndex);
-            entityNameLabel.setValue(localName);
-            return entityNameLabel;
-        });
-
-        entityPermissionsTable.addGeneratedColumn("entityName", name -> {
-            String entityName = name.getCaption();
-            int delimiterIndex = entityName.lastIndexOf(" ");
-            Label entityNameLabel = componentsFactory.createComponent(Label.class);
-
-            entityName = entityName.substring(delimiterIndex + 2, entityName.length() - 1);
-            entityNameLabel.setValue(entityName);
-            return entityNameLabel;
-        });
-
         boolean isCreatePermitted = security.isEntityOpPermitted(Permission.class, EntityOp.CREATE);
         boolean isDeletePermitted = security.isEntityOpPermitted(Permission.class, EntityOp.DELETE);
         boolean hasPermissionsToModifyePermission = isCreatePermitted && isDeletePermitted;
@@ -349,28 +329,16 @@ public class EntityPermissionsFrame extends AbstractFrame {
     protected void updateEditPane(OperationPermissionTarget item, Set selected) {
         if (item != null) {
             if (selected.size() == 1) {
-                String caption = item.getCaption();
-
-                String name;
-                String localName;
-
-                int delimiterIndex = caption.lastIndexOf(" ");
-                if (delimiterIndex >= 0) {
-                    localName = caption.substring(0, delimiterIndex);
-                    name = caption.substring(delimiterIndex + 1);
-
-                    if (name.length() > 20) {
-                        name = name.substring(0, 20) + "...)";
-                    }
-                } else {
-                    name = caption;
-                    localName = "";
+                String name = item.getMetaClassName();
+                if (name.length() > 20) {
+                    selectedTargetCaption.setDescription(name);
+                    name = "(" + name.substring(0, 20) + "...)";
                 }
 
                 selectedTargetCaption.setVisible(true);
                 selectedTargetCaption.setValue(name);
                 selectedTargetLocalCaption.setVisible(true);
-                selectedTargetLocalCaption.setValue(localName);
+                selectedTargetLocalCaption.setValue(item.getLocalName());
 
                 // check compatibility, hide not applicable operations
                 for (EntityOperationControl control : operationControls) {
