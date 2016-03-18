@@ -330,15 +330,14 @@ public class EntityPermissionsFrame extends AbstractFrame {
         if (item != null) {
             if (selected.size() == 1) {
                 String name = item.getMetaClassName();
-                if (name.length() > 20) {
-                    selectedTargetCaption.setDescription(name);
-                    name = "(" + name.substring(0, 20) + "...)";
-                }
+                String localName = item.getLocalName();
 
                 selectedTargetCaption.setVisible(true);
                 selectedTargetCaption.setValue(name);
+                selectedTargetCaption.setDescription(name);
                 selectedTargetLocalCaption.setVisible(true);
-                selectedTargetLocalCaption.setValue(item.getLocalName());
+                selectedTargetLocalCaption.setValue(localName);
+                selectedTargetLocalCaption.setDescription(localName);
 
                 // check compatibility, hide not applicable operations
                 for (EntityOperationControl control : operationControls) {

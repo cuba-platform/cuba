@@ -271,16 +271,14 @@ public class AttributePermissionsFrame extends AbstractFrame {
             }
 
             String name = e.getItem().getMetaClassName();
-            if (name.length() > 20) {
-                selectedTargetCaption.setDescription(name);
-                name = "(" + name.substring(0, 20) + "...)";
-            }
+            String localName = e.getItem().getLocalName();
 
             selectedTargetCaption.setVisible(e.getItem() != null);
             selectedTargetCaption.setValue(name);
-
+            selectedTargetCaption.setDescription(name);
             selectedTargetLocalCaption.setVisible(e.getItem() != null);
-            selectedTargetLocalCaption.setValue(e.getItem().getLocalName());
+            selectedTargetLocalCaption.setValue(localName);
+            selectedTargetLocalCaption.setDescription(localName);
 
             clearEditGrid();
             if (e.getItem() != null) {

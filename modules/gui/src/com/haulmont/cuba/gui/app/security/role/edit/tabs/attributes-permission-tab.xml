@@ -59,8 +59,8 @@
                 <vbox id="tablePane" height="100%" margin="false;true;false;false">
                     <table id="propertyPermissionsTable" width="100%" height="100%">
                         <columns>
-                            <column id="localName" caption="msg://entity"/>
-                            <column id="metaClassName" caption="msg://metaClass"/>
+                            <column id="localName" caption="msg://entity" width="300px"/>
+                            <column id="metaClassName" caption="msg://metaClass" width="300px"/>
                             <column id="permissionsInfo"/>
                         </columns>
                         <rows datasource="attributeTargetsDs"/>

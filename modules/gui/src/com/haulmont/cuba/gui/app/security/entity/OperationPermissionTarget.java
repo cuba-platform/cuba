@@ -18,6 +18,7 @@
 package com.haulmont.cuba.gui.app.security.entity;
 
 import com.haulmont.chile.core.annotations.MetaProperty;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
@@ -55,9 +56,10 @@ public class OperationPermissionTarget extends AbstractPermissionTarget
         super(id, caption);
         Metadata metadata = AppBeans.get(Metadata.class);
         Messages messages = AppBeans.get(Messages.class);
+        MetaClass metaclass = metadata.getClassNN(entityClass);
 
-        this.localName = messages.getTools().getEntityCaption(metadata.getClassNN(entityClass));
-        this.metaClassName = metadata.getClassNN(entityClass).getName();
+        this.localName = messages.getTools().getEntityCaption(metaclass);
+        this.metaClassName = metaclass.getName();
         this.permissionValue = permissionValue;
         this.entityClass = entityClass;
     }
