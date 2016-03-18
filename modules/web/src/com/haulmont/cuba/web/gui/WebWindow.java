@@ -1316,6 +1316,20 @@ public class WebWindow implements Window, Component.Wrapper,
 
             return this;
         }
+
+        @Override
+        public DialogOptions setCentered(boolean centered) {
+            super.setCentered(centered);
+
+            com.vaadin.ui.Window dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                if (BooleanUtils.isTrue(centered)) {
+                    dialogWindow.center();
+                }
+            }
+
+            return this;
+        }
     }
 
     public static class Editor extends WebWindow implements Window.Editor {
