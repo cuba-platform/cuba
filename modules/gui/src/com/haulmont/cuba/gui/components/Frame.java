@@ -320,6 +320,13 @@ public interface Frame
             return instance;
         }
 
+        public MessageType widthAuto() {
+            MessageType instance = getMutableInstance();
+
+            instance.width = -1;
+            return instance;
+        }
+
         public Boolean getModal() {
             return modal;
         }
