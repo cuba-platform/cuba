@@ -1004,7 +1004,7 @@ public class WebWindowManager extends WindowManager {
         VerticalLayout layout = new VerticalLayout();
         layout.setStyleName("cuba-app-message-dialog");
         if (messageType.getWidth() == AUTO_SIZE_PX) {
-            layout.setWidth(AUTO_SIZE);
+            layout.setWidthUndefined();
         }
         vWindow.setContent(layout);
 
@@ -1016,7 +1016,7 @@ public class WebWindowManager extends WindowManager {
             messageLab.setContentMode(ContentMode.TEXT);
         }
         if (messageType.getWidth() == AUTO_SIZE_PX) {
-            messageLab.setWidth(AUTO_SIZE);
+            messageLab.setWidthUndefined();
         }
         layout.addComponent(messageLab);
 
@@ -1091,7 +1091,7 @@ public class WebWindowManager extends WindowManager {
             messageLab.setContentMode(ContentMode.TEXT);
         }
         if (messageType.getWidth() == AUTO_SIZE_PX) {
-            messageLab.setWidth(AUTO_SIZE);
+            messageLab.setWidthUndefined();
         }
 
         float width;
@@ -1117,7 +1117,7 @@ public class WebWindowManager extends WindowManager {
         layout.setStyleName("cuba-app-option-dialog");
         layout.setSpacing(true);
         if (messageType.getWidth() == AUTO_SIZE_PX) {
-            layout.setWidth(AUTO_SIZE);
+            layout.setWidthUndefined();
         }
         window.setContent(layout);
 
