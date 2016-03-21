@@ -1003,6 +1003,9 @@ public class WebWindowManager extends WindowManager {
 
         VerticalLayout layout = new VerticalLayout();
         layout.setStyleName("cuba-app-message-dialog");
+        if (messageType.getWidth() == AUTO_SIZE_PX) {
+            layout.setWidthUndefined();
+        }
         vWindow.setContent(layout);
 
         Label messageLab = new CubaLabel();
@@ -1011,6 +1014,9 @@ public class WebWindowManager extends WindowManager {
             messageLab.setContentMode(ContentMode.HTML);
         } else {
             messageLab.setContentMode(ContentMode.TEXT);
+        }
+        if (messageType.getWidth() == AUTO_SIZE_PX) {
+            messageLab.setWidthUndefined();
         }
         layout.addComponent(messageLab);
 
@@ -1035,7 +1041,6 @@ public class WebWindowManager extends WindowManager {
 
         layout.addComponent(buttonsContainer);
 
-        messageLab.setWidth("100%");
         layout.setComponentAlignment(buttonsContainer, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
 
         float width;
@@ -1085,6 +1090,9 @@ public class WebWindowManager extends WindowManager {
         } else {
             messageLab.setContentMode(ContentMode.TEXT);
         }
+        if (messageType.getWidth() == AUTO_SIZE_PX) {
+            messageLab.setWidthUndefined();
+        }
 
         float width;
         if (messageType.getWidth() != null) {
@@ -1108,6 +1116,9 @@ public class WebWindowManager extends WindowManager {
         VerticalLayout layout = new VerticalLayout();
         layout.setStyleName("cuba-app-option-dialog");
         layout.setSpacing(true);
+        if (messageType.getWidth() == AUTO_SIZE_PX) {
+            layout.setWidthUndefined();
+        }
         window.setContent(layout);
 
         HorizontalLayout actionsBar = new HorizontalLayout();
@@ -1158,7 +1169,6 @@ public class WebWindowManager extends WindowManager {
         layout.addComponent(messageLab);
         layout.addComponent(actionsBar);
 
-        messageLab.setSizeFull();
         layout.setExpandRatio(messageLab, 1);
         layout.setComponentAlignment(actionsBar, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
 

@@ -71,6 +71,7 @@ import java.util.List;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.preprocessHtmlMessage;
 import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE;
+import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE_PX;
 import static com.haulmont.cuba.gui.components.Frame.MessageType;
 import static com.haulmont.cuba.gui.components.Frame.NotificationType;
 import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
@@ -1291,7 +1292,7 @@ public class DesktopWindowManager extends WindowManager {
             button.setPreferredSize(new Dimension(button.getPreferredSize().width, DesktopComponentsHelper.BUTTON_HEIGHT));
             button.setMaximumSize(new Dimension(Integer.MAX_VALUE, DesktopComponentsHelper.BUTTON_HEIGHT));
 
-            if (action instanceof AbstractAction && ((AbstractAction)action).isPrimary()) {
+            if (action instanceof AbstractAction && ((AbstractAction) action).isPrimary()) {
                 hasPrimaryAction = true;
 
                 SwingUtilities.invokeLater(new Runnable() {
@@ -1424,7 +1425,11 @@ public class DesktopWindowManager extends WindowManager {
 
         JLabel msgLabel = new JLabel(message);
 
-        panel.add(msgLabel, "width 100%, wrap, growy 0");
+        if (width != AUTO_SIZE_PX) {
+            panel.add(msgLabel, "width 100%, wrap, growy 0");
+        } else {
+            panel.add(msgLabel, "wrap");
+        }
 
         if (icon != null) {
             panel.add(new JLabel(" "));
@@ -1440,9 +1445,13 @@ public class DesktopWindowManager extends WindowManager {
         final JPanel buttonsPanel = createButtonsPanel(actions, dialog);
         panel.add(buttonsPanel, "alignx right");
 
-        dialog.setLayout(new MigLayout(new LC().insets("0").width(width + "px")));
-        dialog.setFixedWidth(width);
-        dialog.add(panel, "width 100%, growy 0");
+        if (width != AUTO_SIZE_PX) {
+            dialog.setLayout(new MigLayout(new LC().insets("0").width(width + "px")));
+            dialog.setFixedWidth(width);
+            dialog.add(panel, "width 100%, growy 0");
+        } else {
+            dialog.add(panel);
+        }
 
         assignDialogShortcuts(dialog, panel, actions);
 
