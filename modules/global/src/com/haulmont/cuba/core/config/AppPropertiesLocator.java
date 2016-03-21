@@ -84,6 +84,7 @@ public class AppPropertiesLocator {
         if (interfacesCache == null) {
             synchronized (this) {
                 if (interfacesCache == null) {
+                    log.trace("Locating config interfaces");
                     Set<String> cache = new HashSet<>();
                     for (String rootPackage : metadataBuildSupport.getRootPackages()) {
                         String packagePrefix = rootPackage.replace(".", "/") + "/**/*.class";
@@ -109,6 +110,7 @@ public class AppPropertiesLocator {
                             throw new RuntimeException("Error searching for Config interfaces", e);
                         }
                     }
+                    log.trace("Found config interfaces: {}", cache);
                     interfacesCache = cache;
                 }
             }
