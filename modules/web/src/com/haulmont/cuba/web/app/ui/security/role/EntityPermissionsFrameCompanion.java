@@ -17,27 +17,32 @@
 
 package com.haulmont.cuba.web.app.ui.security.role;
 
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.app.security.entity.OperationPermissionTarget;
 import com.haulmont.cuba.gui.app.security.entity.PermissionVariant;
 import com.haulmont.cuba.gui.app.security.role.edit.tabs.EntityPermissionsFrame;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebComponentsUtils;
+
+import javax.inject.Inject;
 
 /**
  */
 public class EntityPermissionsFrameCompanion implements EntityPermissionsFrame.Companion {
 
-    protected Messages messages = AppBeans.get(Messages.NAME);
+    @Inject
+    protected Messages messages;
+
+    @Inject
+    protected ComponentsFactory componentsFactory;
+
 
     @Override
-    public void initPermissionColoredColumns(Table entityPermissionsTable) {
+    public void initPermissionColoredColumns(Table<OperationPermissionTarget> entityPermissionsTable) {
         addGeneratedColumnByOperation(entityPermissionsTable, "createPermissionVariant");
         addGeneratedColumnByOperation(entityPermissionsTable, "readPermissionVariant");
         addGeneratedColumnByOperation(entityPermissionsTable, "updatePermissionVariant");
@@ -49,27 +54,20 @@ public class EntityPermissionsFrameCompanion implements EntityPermissionsFrame.C
         WebComponentsHelper.addEnterShortcut(entityFilter, runnable);
     }
 
-    protected void addGeneratedColumnByOperation(Table entityPermissionsTable, final String propertyName) {
-        entityPermissionsTable.addGeneratedColumn(propertyName, new Table.ColumnGenerator<OperationPermissionTarget>() {
-            @Override
-            public Component generateCell(OperationPermissionTarget entity) {
-                return generateLabelByPermissionVariant(entity.<PermissionVariant>getValue(propertyName));
-            }
-        });
+    protected void addGeneratedColumnByOperation(Table<OperationPermissionTarget> entityPermissionsTable, final String propertyName) {
+        entityPermissionsTable.addGeneratedColumn(propertyName, entity -> generateLabelByPermissionVariant(entity.<PermissionVariant>getValue(propertyName)));
     }
 
     protected Label generateLabelByPermissionVariant(PermissionVariant permissionVariant) {
-        Label label = AppConfig.getFactory().createComponent(Label.class);
+        if (permissionVariant == PermissionVariant.NOTSET)
+            return null;
 
+        String labelValue = "<span class=\"role-permission-" + permissionVariant.getColor() + "\">" +
+                messages.getMessage(permissionVariant) + "</span>";
+
+        Label label = componentsFactory.createComponent(Label.class);
         WebComponentsUtils.allowHtmlContent(label);
-
-        StringBuilder builder = new StringBuilder();
-        if (permissionVariant != PermissionVariant.NOTSET) {
-            builder.append("<span class=\"role-permission-").append(permissionVariant.getColor()).append("\">")
-                    .append(messages.getMessage(permissionVariant)).append("</span>");
-        }
-
-        label.setValue(builder.toString());
+        label.setValue(labelValue);
 
         return label;
     }

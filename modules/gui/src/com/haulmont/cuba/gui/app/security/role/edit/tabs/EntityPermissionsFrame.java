@@ -42,7 +42,7 @@ import java.util.Set;
 public class EntityPermissionsFrame extends AbstractFrame {
 
     public interface Companion {
-        void initPermissionColoredColumns(Table entityPermissionsTable);
+        void initPermissionColoredColumns(Table<OperationPermissionTarget> entityPermissionsTable);
         void initTextFieldFilter(TextField entityFilter, Runnable runnable);
     }
 

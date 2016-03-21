@@ -18,55 +18,56 @@
 package com.haulmont.cuba.web.app.ui.security.role;
 
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.app.security.role.edit.tabs.AttributePermissionsFrame;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Label;
-import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.app.security.entity.AttributePermissionVariant;
 import com.haulmont.cuba.gui.app.security.entity.AttributeTarget;
 import com.haulmont.cuba.gui.app.security.entity.MultiplePermissionTarget;
+import com.haulmont.cuba.gui.app.security.role.edit.tabs.AttributePermissionsFrame;
+import com.haulmont.cuba.gui.components.Label;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebComponentsUtils;
 
 import java.util.Iterator;
+import java.util.List;
 
 /**
  */
 public class AttributePermissionsFrameCompanion implements AttributePermissionsFrame.Companion {
 
     @Override
-    public void initPermissionColoredColumn(final Table propertyPermissionsTable) {
-        propertyPermissionsTable.addGeneratedColumn("permissionsInfo", new Table.ColumnGenerator<MultiplePermissionTarget>() {
-            @Override
-            public Component generateCell(MultiplePermissionTarget target) {
-                Label label = AppConfig.getFactory().createComponent(Label.class);
+    public void initPermissionColoredColumn(final Table<MultiplePermissionTarget> propertyPermissionsTable) {
+        propertyPermissionsTable.addGeneratedColumn("permissionsInfo", target -> {
+            List<AttributeTarget> permissions = target.getPermissions();
+            if (permissions.size() == 0)
+                return null;
 
-                WebComponentsUtils.allowHtmlContent(label);
+            Label label = AppConfig.getFactory().createComponent(Label.class);
 
-                int i = 0;
-                StringBuilder builder = new StringBuilder();
-                Iterator<AttributeTarget> iterator = target.getPermissions().iterator();
-                while (iterator.hasNext() && i < MultiplePermissionTarget.SHOW_PERMISSIONS_COUNT) {
-                    AttributeTarget attributeTarget = iterator.next();
-                    AttributePermissionVariant permissionVariant = attributeTarget.getPermissionVariant();
-                    if (permissionVariant != AttributePermissionVariant.NOTSET) {
-                        if (i < MultiplePermissionTarget.SHOW_PERMISSIONS_COUNT - 1) {
-                            if (i > 0)
-                                builder.append(", ");
+            WebComponentsUtils.allowHtmlContent(label);
 
-                            builder.append("<span class=\"role-permission-").append(permissionVariant.getColor()).append("\">")
-                                    .append(attributeTarget.getId()).append("</span>");
-                        } else {
-                            builder.append(", ...");
-                        }
-                        i++;
+            int i = 0;
+            StringBuilder builder = new StringBuilder();
+            Iterator<AttributeTarget> iterator = permissions.iterator();
+            while (iterator.hasNext() && i < MultiplePermissionTarget.SHOW_PERMISSIONS_COUNT) {
+                AttributeTarget attributeTarget = iterator.next();
+                AttributePermissionVariant permissionVariant = attributeTarget.getPermissionVariant();
+                if (permissionVariant != AttributePermissionVariant.NOTSET) {
+                    if (i < MultiplePermissionTarget.SHOW_PERMISSIONS_COUNT - 1) {
+                        if (i > 0)
+                            builder.append(", ");
+
+                        builder.append("<span class=\"role-permission-").append(permissionVariant.getColor()).append("\">")
+                                .append(attributeTarget.getId()).append("</span>");
+                    } else {
+                        builder.append(", ...");
                     }
+                    i++;
                 }
-                label.setValue(builder.toString());
-
-                return label;
             }
+            label.setValue(builder.toString());
+
+            return label;
         });
     }
 

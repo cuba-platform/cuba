@@ -47,7 +47,7 @@ import java.util.*;
 public class UiPermissionsFrame extends AbstractFrame {
 
     public interface Companion {
-        void initPermissionsColoredColumns(Table uiPermissionsTable);
+        void initPermissionsColoredColumns(Table<UiPermissionTarget> uiPermissionsTable);
     }
 
     @Inject

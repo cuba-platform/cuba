@@ -17,46 +17,42 @@
 
 package com.haulmont.cuba.web.app.ui.security.role;
 
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.app.security.role.edit.tabs.ScreenPermissionsFrame;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Label;
-import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.app.security.entity.BasicPermissionTarget;
 import com.haulmont.cuba.gui.app.security.entity.PermissionVariant;
+import com.haulmont.cuba.gui.app.security.role.edit.tabs.ScreenPermissionsFrame;
+import com.haulmont.cuba.gui.components.Label;
+import com.haulmont.cuba.gui.components.TreeTable;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.gui.components.WebComponentsUtils;
+
+import javax.inject.Inject;
 
 /**
  */
 public class ScreenPermissionsFrameCompanion implements ScreenPermissionsFrame.Companion {
 
-    protected Messages messages = AppBeans.get(Messages.NAME);
+    @Inject
+    protected Messages messages;
+
+    @Inject
+    protected ComponentsFactory componentsFactory;
 
     @Override
-    public void initPermissionColoredColumns(TreeTable screenPermissionsTree) {
-        screenPermissionsTree.addGeneratedColumn("permissionVariant", new Table.ColumnGenerator<BasicPermissionTarget>() {
-            @Override
-            public Component generateCell(BasicPermissionTarget entity) {
-                Label label = AppConfig.getFactory().createComponent(Label.class);
+    public void initPermissionColoredColumns(TreeTable<BasicPermissionTarget> screenPermissionsTree) {
+        screenPermissionsTree.addGeneratedColumn("permissionVariant", entity -> {
+            PermissionVariant permissionVariant = entity.getPermissionVariant();
+            if (permissionVariant == PermissionVariant.NOTSET)
+                return null;
 
-                WebComponentsUtils.allowHtmlContent(label);
+            String labelValue = "<span class=\"role-permission-" + permissionVariant.getColor() + "\">" +
+                    messages.getMessage(permissionVariant) + "</span>";
 
-                StringBuilder builder = new StringBuilder();
+            Label label = componentsFactory.createComponent(Label.class);
+            WebComponentsUtils.allowHtmlContent(label);
+            label.setValue(labelValue);
 
-                PermissionVariant permissionVariant = entity.getPermissionVariant();
-
-                if (permissionVariant != PermissionVariant.NOTSET) {
-                    builder.append("<span class=\"role-permission-").append(permissionVariant.getColor()).append("\">")
-                            .append(messages.getMessage(permissionVariant)).append("</span>");
-                }
-
-                label.setValue(builder.toString());
-
-                return label;
-            }
+            return label;
         });
     }
 }

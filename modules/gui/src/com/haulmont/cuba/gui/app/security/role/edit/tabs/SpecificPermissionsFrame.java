@@ -49,7 +49,7 @@ public class SpecificPermissionsFrame extends AbstractFrame {
     protected static final String CATEGORY_PREFIX = "category:";
 
     public interface Companion {
-        void initPermissionColoredColumns(TreeTable specificPermissionsTree);
+        void initPermissionColoredColumns(TreeTable<BasicPermissionTarget> specificPermissionsTree);
     }
 
     @Inject
