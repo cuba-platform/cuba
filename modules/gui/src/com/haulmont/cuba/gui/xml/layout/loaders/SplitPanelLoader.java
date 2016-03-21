@@ -55,15 +55,15 @@ public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
 
         String pos = element.attributeValue("pos");
         if (!StringUtils.isEmpty(pos)) {
-            boolean inversePosition = false;
-            if (Boolean.parseBoolean(element.attributeValue("inversePosition"))) {
-                inversePosition = true;
+            boolean reversePosition = false;
+            if (Boolean.parseBoolean(element.attributeValue("reversePosition"))) {
+                reversePosition = true;
             }
 
             if (pos.endsWith("px")) {
-                resultComponent.setSplitPosition(Integer.parseInt(pos.substring(0, pos.indexOf("px"))), 0, inversePosition);
+                resultComponent.setSplitPosition(Integer.parseInt(pos.substring(0, pos.indexOf("px"))), 0, reversePosition);
             } else {
-                resultComponent.setSplitPosition(Integer.parseInt(pos), 8, inversePosition);
+                resultComponent.setSplitPosition(Integer.parseInt(pos), 8, reversePosition);
             }
         }
 

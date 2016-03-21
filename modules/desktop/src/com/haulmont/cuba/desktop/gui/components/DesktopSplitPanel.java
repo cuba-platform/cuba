@@ -117,7 +117,7 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
     }
 
     @Override
-    public void setSplitPosition(int pos, int unit, boolean inversePosition) {
+    public void setSplitPosition(int pos, int unit, boolean reversePosition) {
         if (unit != UNITS_PERCENTAGE) {
             // not supported
             return;

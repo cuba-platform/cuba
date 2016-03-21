@@ -1399,7 +1399,7 @@
         <xs:attribute name="pos" type="xs:string"/>
         <xs:attribute name="minSplitPosition" type="xs:string"/>
         <xs:attribute name="maxSplitPosition" type="xs:string"/>
-        <xs:attribute name="inversePosition" type="xs:boolean"/>
+        <xs:attribute name="reversePosition" type="xs:boolean"/>
         <xs:attribute name="locked" type="xs:boolean"/>
     </xs:complexType>
 
