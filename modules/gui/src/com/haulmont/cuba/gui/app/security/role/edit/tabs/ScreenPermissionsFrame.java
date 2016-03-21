@@ -42,7 +42,7 @@ import java.util.UUID;
 public class ScreenPermissionsFrame extends AbstractFrame {
 
     public interface Companion {
-        void initPermissionColoredColumns(TreeTable screenPermissionsTree);
+        void initPermissionColoredColumns(TreeTable<BasicPermissionTarget> screenPermissionsTree);
     }
 
     @Inject

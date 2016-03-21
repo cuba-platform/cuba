@@ -17,45 +17,41 @@
 
 package com.haulmont.cuba.web.app.ui.security.role;
 
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.app.security.role.edit.tabs.UiPermissionsFrame;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Label;
-import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.app.security.entity.UiPermissionTarget;
 import com.haulmont.cuba.gui.app.security.entity.UiPermissionVariant;
+import com.haulmont.cuba.gui.app.security.role.edit.tabs.UiPermissionsFrame;
+import com.haulmont.cuba.gui.components.Label;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.gui.components.WebComponentsUtils;
+
+import javax.inject.Inject;
 
 /**
  */
 public class UiPermissionsFrameCompanion implements UiPermissionsFrame.Companion {
 
-    protected Messages messages = AppBeans.get(Messages.NAME);
+    @Inject
+    protected Messages messages;
+
+    @Inject
+    protected ComponentsFactory componentsFactory;
 
     @Override
-    public void initPermissionsColoredColumns(Table uiPermissionsTable) {
-        uiPermissionsTable.addGeneratedColumn("permissionVariant", new Table.ColumnGenerator<UiPermissionTarget>() {
-            @Override
-            public Component generateCell(UiPermissionTarget entity) {
-                Label label = AppConfig.getFactory().createComponent(Label.class);
+    public void initPermissionsColoredColumns(Table<UiPermissionTarget> uiPermissionsTable) {
+        uiPermissionsTable.addGeneratedColumn("permissionVariant", entity -> {
+            UiPermissionVariant permissionVariant = entity.getPermissionVariant();
+            if (permissionVariant == UiPermissionVariant.NOTSET)
+                return null;
 
-                WebComponentsUtils.allowHtmlContent(label);
+            Label label = componentsFactory.createComponent(Label.class);
+            WebComponentsUtils.allowHtmlContent(label);
 
-                StringBuilder builder = new StringBuilder();
-
-                UiPermissionVariant permissionVariant = entity.getPermissionVariant();
-
-                if (permissionVariant != UiPermissionVariant.NOTSET) {
-                    builder.append("<span style=\"role-permission-").append(permissionVariant.getColor()).append("\">")
-                            .append(messages.getMessage(permissionVariant)).append("</span>");
-                }
-
-                label.setValue(builder.toString());
-
-                return label;
-            }
+            String labelValue = "<span style=\"role-permission-" + permissionVariant.getColor() + "\">" +
+                    messages.getMessage(permissionVariant) + "</span>";
+            label.setValue(labelValue);
+            return label;
         });
     }
 }

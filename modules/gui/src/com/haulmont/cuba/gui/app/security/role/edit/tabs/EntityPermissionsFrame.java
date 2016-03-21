@@ -26,7 +26,6 @@ import com.haulmont.cuba.gui.app.security.entity.PermissionVariant;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
@@ -44,7 +43,7 @@ import java.util.Set;
 public class EntityPermissionsFrame extends AbstractFrame {
 
     public interface Companion {
-        void initPermissionColoredColumns(Table entityPermissionsTable);
+        void initPermissionColoredColumns(Table<OperationPermissionTarget> entityPermissionsTable);
         void initTextFieldFilter(TextField entityFilter, Runnable runnable);
     }
 
@@ -77,9 +76,6 @@ public class EntityPermissionsFrame extends AbstractFrame {
 
     @Inject
     protected Metadata metadata;
-
-    @Inject
-    private ComponentsFactory componentsFactory;
 
     /* Filter */
 
