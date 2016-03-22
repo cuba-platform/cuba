@@ -1,0 +1,1 @@
+alter table SYS_SCHEDULED_TASK drop constraint UNIQ_SYS_SCHEDULED_TASK_BEAN_METHOD;

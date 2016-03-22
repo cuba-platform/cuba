@@ -1,0 +1,1 @@
+drop index if exists IDX_SYS_SCHEDULED_TASK_UNIQ_BEAN_METHOD;

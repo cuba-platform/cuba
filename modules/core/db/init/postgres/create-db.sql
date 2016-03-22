@@ -123,8 +123,6 @@ create table SYS_SCHEDULED_TASK (
     primary key (ID)
 )^
 
-create unique index IDX_SYS_SCHEDULED_TASK_UNIQ_BEAN_METHOD on SYS_SCHEDULED_TASK (BEAN_NAME, METHOD_NAME, METHOD_PARAMS) where DELETE_TS is null^
-
 ------------------------------------------------------------------------------------------------------------
 
 create table SYS_SCHEDULED_EXECUTION (

@@ -123,8 +123,7 @@ create table SYS_SCHEDULED_TASK (
     CRON varchar(100),
     SCHEDULING_TYPE varchar(1) default 'P',
     --
-    primary key (ID),
-    constraint UNIQ_SYS_SCHEDULED_TASK_BEAN_METHOD unique (BEAN_NAME, METHOD_NAME)
+    primary key (ID)
 )^
 
 ------------------------------------------------------------------------------------------------------------
