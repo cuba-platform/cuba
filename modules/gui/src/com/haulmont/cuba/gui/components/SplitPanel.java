@@ -33,25 +33,24 @@ public interface SplitPanel extends Component.Container, Component.BelongToFrame
 
     /**
      * Set position of split from the left side by default.
-     * If reversePosition is true position would be set from right.
+     * If reversePosition is true position will be set from right.
      */
     void setSplitPosition(int pos, int unit, boolean reversePosition);
 
     /**
-     * Return the position of the split.
-     * If split is set to the right will return true.
+     * Return from which side position is set.
      */
     boolean isSplitPositionReversed();
 
     /**
-     * Set minimum aviliable position of split.
-     * Minimum position of split would be set from the right if position is reversed.
+     * Set minimum available position of split.
+     * Minimum position of split will be set from the right if position is reversed.
      */
     void setMinSplitPosition(int pos, int unit);
 
     /**
-     * Set maximum aviliable position of split.
-     * Maximum position of split would be set from the right if position is reversed.
+     * Set maximum available position of split.
+     * Maximum position of split will be set from the right if position is reversed.
      */
     void setMaxSplitPosition(int pos, int unit);
 
