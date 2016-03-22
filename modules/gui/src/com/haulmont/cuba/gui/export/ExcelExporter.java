@@ -283,7 +283,7 @@ public class ExcelExporter {
         MetaPropertyPath propertyPath = (MetaPropertyPath) groupInfo.getProperty();
         Table.Column column = table.getColumn(propertyPath.toString());
         Element xmlDescriptor = column.getXmlDescriptor();
-        if (xmlDescriptor != null && StringUtils.isNotEmpty(xmlDescriptor.attributeValue("captionProperty")) && val instanceof Instance) {
+        if (xmlDescriptor != null && StringUtils.isNotEmpty(xmlDescriptor.attributeValue("captionProperty"))) {
             String captionProperty = xmlDescriptor.attributeValue("captionProperty");
             Collection children = table.getDatasource().getGroupItemIds(groupInfo);
             if (children.isEmpty()) {
@@ -389,12 +389,14 @@ public class ExcelExporter {
                 try {
                     str = datatype.format(n);
                     Number result = (Number) datatype.parse(str);
-                    if (n instanceof Integer || n instanceof Long || n instanceof Byte || n instanceof Short) {
-                        cell.setCellValue(result.longValue());
-                        cell.setCellStyle(integerFormatCellStyle);
-                    } else {
-                        cell.setCellValue(result.doubleValue());
-                        cell.setCellStyle(doubleFormatCellStyle);
+                    if (result != null) {
+                        if (n instanceof Integer || n instanceof Long || n instanceof Byte || n instanceof Short) {
+                            cell.setCellValue(result.longValue());
+                            cell.setCellStyle(integerFormatCellStyle);
+                        } else {
+                            cell.setCellValue(result.doubleValue());
+                            cell.setCellStyle(doubleFormatCellStyle);
+                        }
                     }
                 } catch (ParseException e) {
                     throw new RuntimeException(e);
@@ -413,7 +415,7 @@ public class ExcelExporter {
                 cell.setCellStyle(dateFormatCellStyle);
 
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
-                String str = Datatypes.getNN(Date.class).format((Date) cellValue);
+                String str = Datatypes.getNN(Date.class).format(cellValue);
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         } else if (cellValue instanceof Boolean) {
