@@ -1396,7 +1396,10 @@
         <xs:attributeGroup ref="hasAlign"/>
 
         <xs:attribute name="orientation" type="orientation"/>
-        <xs:attribute name="pos" type="xs:int"/>
+        <xs:attribute name="pos" type="xs:string"/>
+        <xs:attribute name="minSplitPosition" type="xs:string"/>
+        <xs:attribute name="maxSplitPosition" type="xs:string"/>
+        <xs:attribute name="reversePosition" type="xs:boolean"/>
         <xs:attribute name="locked" type="xs:boolean"/>
     </xs:complexType>
 

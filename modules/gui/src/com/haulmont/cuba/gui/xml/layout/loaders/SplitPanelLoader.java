@@ -55,7 +55,59 @@ public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
 
         String pos = element.attributeValue("pos");
         if (!StringUtils.isEmpty(pos)) {
-            resultComponent.setSplitPosition(Integer.parseInt(pos));
+            boolean reversePosition = false;
+            int position;
+            int reversion;
+
+            if (Boolean.parseBoolean(element.attributeValue("reversePosition"))) {
+                reversePosition = true;
+            }
+
+            if (pos.endsWith("px")) {
+                position = Integer.parseInt(pos.substring(0, pos.indexOf("px")));
+                reversion = Component.UNITS_PIXELS;
+            } else {
+                if (pos.endsWith("%")) {
+                    position = Integer.parseInt(pos.substring(0, pos.indexOf("%")));
+                } else {
+                    position = Integer.parseInt(pos);
+                }
+                reversion = Component.UNITS_PERCENTAGE;
+            }
+
+            resultComponent.setSplitPosition(position, reversion, reversePosition);
+        }
+
+        String maxSplitPosition = element.attributeValue("maxSplitPosition");
+        if (!StringUtils.isEmpty(maxSplitPosition)) {
+            int position;
+            int reversion;
+
+            if (maxSplitPosition.endsWith("px")) {
+                position = Integer.parseInt(maxSplitPosition.substring(0, maxSplitPosition.indexOf("px")));
+                reversion = Component.UNITS_PIXELS;
+            } else {
+                position = Integer.parseInt(maxSplitPosition.substring(0, maxSplitPosition.indexOf("%")));
+                reversion = Component.UNITS_PERCENTAGE;
+            }
+
+            resultComponent.setMaxSplitPosition(position, reversion);
+        }
+
+        String minSplitPosition = element.attributeValue("minSplitPosition");
+        if (!StringUtils.isEmpty(minSplitPosition)) {
+            int position;
+            int reversion;
+
+            if (minSplitPosition.endsWith("px")) {
+                position = Integer.parseInt(minSplitPosition.substring(0, minSplitPosition.indexOf("px")));
+                reversion = Component.UNITS_PIXELS;
+            } else {
+                position = Integer.parseInt(minSplitPosition.substring(0, minSplitPosition.indexOf("%")));
+                reversion = Component.UNITS_PERCENTAGE;
+            }
+
+            resultComponent.setMinSplitPosition(position, reversion);
         }
 
         String locked = element.attributeValue("locked");
