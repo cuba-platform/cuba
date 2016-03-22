@@ -30,8 +30,16 @@ public interface SplitPanel extends Component.Container, Component.BelongToFrame
 
     void setSplitPosition(int pos);
     void setSplitPosition(int pos, int unit);
+
+    /**
+     * Set position of split from left side by default
+     * If reversePosition is true position would be set from right
+     */
     void setSplitPosition(int pos, int unit, boolean reversePosition);
 
+    /**
+     * Return split reversion
+     */
     boolean isSplitPositionReversed();
 
     void setMinSplitPosition(int pos, int unit);
