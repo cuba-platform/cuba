@@ -203,15 +203,15 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
         if (e != null) {
             String value = e.attributeValue("value");
             String unit = e.attributeValue("unit");
-            String reversed = e.attributeValue("reversed");
-            if (!StringUtils.isBlank(value) && !StringUtils.isBlank(unit) && !StringUtils.isBlank(reversed)) {
+
+            if (!StringUtils.isBlank(value) && !StringUtils.isBlank(unit)) {
                 Sizeable.Unit convertedUnit;
                 if (NumberUtils.isNumber(unit)) {
                     convertedUnit = convertLegacyUnit(Integer.parseInt(unit));
                 } else {
                     convertedUnit = Sizeable.Unit.getUnitFromSymbol(unit);
                 }
-                component.setSplitPosition(Float.valueOf(value), convertedUnit, Boolean.parseBoolean(reversed));
+                component.setSplitPosition(Float.parseFloat(value), convertedUnit, component.isSplitPositionReversed());
             }
         }
     }
@@ -228,7 +228,6 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
         }
         e.addAttribute("value", String.valueOf(component.getSplitPosition()));
         e.addAttribute("unit", String.valueOf(component.getSplitPositionUnit()));
-        e.addAttribute("reversed", String.valueOf(component.isSplitPositionReversed()));
         return true;
     }
 
