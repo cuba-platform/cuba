@@ -58,7 +58,7 @@ public class PopupButtonLoader extends AbstractComponentLoader<PopupButton> {
     protected void loadIconsEnabled(PopupButton component, Element element) {
         String iconsEnabled = element.attributeValue("iconsEnabled");
         if (!StringUtils.isEmpty(iconsEnabled)) {
-            component.setIconsEnabled(Boolean.parseBoolean(iconsEnabled));
+            component.setActionsIconsEnabled(Boolean.parseBoolean(iconsEnabled));
         }
     }
 }
