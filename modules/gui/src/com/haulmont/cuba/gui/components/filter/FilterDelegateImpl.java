@@ -258,7 +258,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         controlsLayout = componentsFactory.createComponent(HBoxLayout.class);
         controlsLayout.setSpacing(true);
         controlsLayout.setWidth("100%");
-        filterHelper.setInternalDebugId(controlsLayout, "filterControlsLayout");
+        filterHelper.setInternalDebugId(controlsLayout, "controlsLayout");
 
         filtersPopupBox = componentsFactory.createComponent(HBoxLayout.class);
         filtersPopupBox.setStyleName("filter-search-button-layout");
