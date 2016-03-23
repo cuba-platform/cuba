@@ -498,6 +498,9 @@ public class WebWindowManager extends WindowManager {
                             WindowBreadCrumbs breadCrumbs = tabs.get(tabContent);
                             Runnable closeTask = new TabCloseTask(breadCrumbs);
                             closeTask.run();
+
+                            // it is needed to force redraw tabsheet if it has a lot of tabs and part of them are hidden
+                            tabSheet.markAsDirty();
                         }
                     });
             tabSheet.setSelectedTab(layout);
