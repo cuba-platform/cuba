@@ -29,6 +29,7 @@ import org.antlr.runtime.tree.CommonErrorNode;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 
+import javax.annotation.Nullable;
 import java.util.Deque;
 import java.util.List;
 
@@ -39,6 +40,7 @@ import java.util.List;
  */
 public class IdentificationVariableNode extends BaseCustomNode {
     private String variableName;
+    private String effectiveEntityName;
 
     private IdentificationVariableNode(Token token, String variableName) {
         super(token);
@@ -89,6 +91,7 @@ public class IdentificationVariableNode extends BaseCustomNode {
                 try {
                     String entityName = child0.token.getText();
                     Entity entity = model.getEntityByName(entityName);
+                    effectiveEntityName = entity.getName();
                     stack.peekLast().addEntityVariable(variableName, entity);
                 } catch (UnknownEntityNameException e) {
                     stack.peekLast().addEntityVariable(variableName, NoEntity.getInstance());
@@ -149,7 +152,12 @@ public class IdentificationVariableNode extends BaseCustomNode {
         return this;
     }
 
-    public String getEntityName() {
+    public String getEntityNameFromQuery() {
         return getChild(0).getText();
+    }
+
+    @Nullable
+    public String getEffectiveEntityName() {
+        return effectiveEntityName;
     }
 }
