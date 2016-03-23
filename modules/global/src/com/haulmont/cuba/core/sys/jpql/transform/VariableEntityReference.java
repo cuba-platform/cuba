@@ -52,7 +52,7 @@ public class VariableEntityReference implements EntityReference {
 
     @Override
     public boolean isJoinableTo(IdentificationVariableNode node) {
-        return entityName.equals(node.getEntityName());
+        return entityName.equals(node.getEffectiveEntityName());
     }
 
 
