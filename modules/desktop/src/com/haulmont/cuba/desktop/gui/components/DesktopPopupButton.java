@@ -178,12 +178,12 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
     }
 
     @Override
-    public void setActionsIconsEnabled(boolean iconsEnabled) {
+    public void setShowActionIcons(boolean iconsEnabled) {
         // do nothing
     }
 
     @Override
-    public boolean isActionsIconsEnabled() {
+    public boolean isShowActionIcons() {
         return false;
     }
 

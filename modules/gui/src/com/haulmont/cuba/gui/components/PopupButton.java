@@ -33,6 +33,13 @@ public interface PopupButton extends Component.ActionsHolder,
 
     void setAutoClose(boolean autoClose);
 
-    void setActionsIconsEnabled(boolean iconsEnabled);
-    boolean isActionsIconsEnabled();
+    /**
+     * Set show icons for action buttons
+     */
+    void setShowActionIcons(boolean iconsEnabled);
+
+    /**
+     * Return show icons for action buttons
+     */
+    boolean isShowActionIcons();
 }

@@ -992,7 +992,7 @@
         <xs:attributeGroup ref="hasAlign"/>
         <xs:attributeGroup ref="hasIcon"/>
 
-        <xs:attribute name="iconsEnabled" type="xs:boolean"/>
+        <xs:attribute name="showActionIcons" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- ButtonsPanel -->

@@ -155,12 +155,15 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
     }
 
     @Override
-    public void setActionsIconsEnabled(boolean iconsEnabled) {
-        this.actionsIconsEnabled = iconsEnabled;
+    public void setShowActionIcons(boolean iconsEnabled) {
+        if (this.actionsIconsEnabled != iconsEnabled) {
+            this.actionsIconsEnabled = iconsEnabled;
+            updateAcionsIcons();
+        }
     }
 
     @Override
-    public boolean isActionsIconsEnabled() {
+    public boolean isShowActionIcons() {
         return this.actionsIconsEnabled;
     }
 
@@ -202,6 +205,22 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         }
     }
 
+    protected void updateAcionsIcons() {
+        for (Action action : actionOrder) {
+            for (ActionOwner actionOwner : action.getOwners()) {
+                if (actionOwner instanceof PopupButtonActionButton) {
+                    PopupButtonActionButton button = (PopupButtonActionButton) actionOwner;
+
+                    if (actionsIconsEnabled) {
+                        button.setIcon(action.getIcon());
+                    } else {
+                        button.setIcon(null);
+                    }
+                }
+            }
+        }
+    };
+
     protected Button createActionButton(Action action) {
         WebButton button = new PopupButtonActionButton() {
             @Override
@@ -216,7 +235,7 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         if (clientConfig.getShowIconsForPopupMenuActions()) {
             button.setIcon(action.getIcon());
         } else {
-            button.setIcon(this.isActionsIconsEnabled() ? action.getIcon() : null);
+            button.setIcon(this.isShowActionIcons() ? action.getIcon() : null);
         }
 
         Button vButton = (Button) button.getComposition();
