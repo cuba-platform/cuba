@@ -45,7 +45,7 @@
             </hbox>
         </hbox>
 
-        <split id="foldersSplit" width="100%" orientation="horizontal">
+        <split id="foldersSplit" width="100%" orientation="horizontal" pos="200px">
             <main:foldersPane id="foldersPane" width="100%" height="100%"/>
 
             <main:workArea id="workArea" width="100%" height="100%">
