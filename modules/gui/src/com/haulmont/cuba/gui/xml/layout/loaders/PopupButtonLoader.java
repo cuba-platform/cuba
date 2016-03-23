@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.PopupButton;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 /**
  */
@@ -46,10 +47,18 @@ public class PopupButtonLoader extends AbstractComponentLoader<PopupButton> {
         loadWidth(resultComponent, element);
 
         loadActions(resultComponent, element);
+        loadIconsEnabled(resultComponent, element);
 
         String menuWidth = element.attributeValue("menuWidth");
         if (!StringUtils.isEmpty(menuWidth)) {
             resultComponent.setMenuWidth(menuWidth);
+        }
+    }
+
+    protected void loadIconsEnabled(PopupButton component, Element element) {
+        String iconsEnabled = element.attributeValue("iconsEnabled");
+        if (!StringUtils.isEmpty(iconsEnabled)) {
+            component.setIconsEnabled(Boolean.parseBoolean(iconsEnabled));
         }
     }
 }
