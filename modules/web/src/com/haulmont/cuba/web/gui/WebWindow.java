@@ -234,6 +234,11 @@ public class WebWindow implements Window, Component.Wrapper,
 
         actionsHolder.addAction(action);
         actionsPermissions.apply(action);
+
+        // force update of actions on client side
+        if (action.getShortcut() != null) {
+            component.markAsDirty();
+        }
     }
 
     @Override
@@ -242,6 +247,11 @@ public class WebWindow implements Window, Component.Wrapper,
 
         actionsHolder.addAction(action, index);
         actionsPermissions.apply(action);
+
+        // force update of actions on client side
+        if (action.getShortcut() != null) {
+            component.markAsDirty();
+        }
     }
 
     @Override
