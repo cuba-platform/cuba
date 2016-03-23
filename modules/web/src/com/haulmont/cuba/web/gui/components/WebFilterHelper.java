@@ -328,8 +328,8 @@ public class WebFilterHelper implements FilterHelper {
     }
 
     @Override
-    public void setDebugId(com.haulmont.cuba.gui.components.Component component, String id) {
-        if (component != null && AppUI.getCurrent().isTestMode()) {
+    public void setInternalDebugId(com.haulmont.cuba.gui.components.Component component, String id) {
+        if (AppUI.getCurrent().isTestMode()) {
             WebComponentsHelper.unwrap(component).setCubaId(id);
         }
     }

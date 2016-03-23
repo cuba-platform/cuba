@@ -258,11 +258,11 @@ public class FilterDelegateImpl implements FilterDelegate {
         controlsLayout = componentsFactory.createComponent(HBoxLayout.class);
         controlsLayout.setSpacing(true);
         controlsLayout.setWidth("100%");
-        filterHelper.setDebugId(controlsLayout, "filterControlsLayout");
+        filterHelper.setInternalDebugId(controlsLayout, "filterControlsLayout");
 
         filtersPopupBox = componentsFactory.createComponent(HBoxLayout.class);
         filtersPopupBox.setStyleName("filter-search-button-layout");
-        filterHelper.setDebugId(filtersPopupBox, "filterPopupBox");
+        filterHelper.setInternalDebugId(filtersPopupBox, "filtersPopupBox");
 
         searchBtn = componentsFactory.createComponent(Button.class);
         filtersPopupBox.add(searchBtn);
@@ -275,17 +275,17 @@ public class FilterDelegateImpl implements FilterDelegate {
                 apply(false);
             }
         });
-        filterHelper.setDebugId(searchBtn, "filterSearchBtn");
+        filterHelper.setInternalDebugId(searchBtn, "searchBtn");
 
         filtersPopupButton = componentsFactory.createComponent(PopupButton.class);
-        filterHelper.setDebugId(filtersPopupButton, "filterPopupButton");
+        filterHelper.setInternalDebugId(filtersPopupButton, "filtersPopupButton");
         filtersPopupBox.add(filtersPopupButton);
 
         filtersLookup = componentsFactory.createComponent(LookupField.class);
         filtersLookup.setWidth(theme.get("cuba.gui.filter.select.width"));
         filtersLookup.addValueChangeListener(new FiltersLookupChangeListener());
         filterHelper.setLookupNullSelectionAllowed(filtersLookup, false);
-        filterHelper.setDebugId(filtersLookup, "filterLookup");
+        filterHelper.setInternalDebugId(filtersLookup, "filtersLookup");
 
         addConditionBtn = componentsFactory.createComponent(LinkButton.class);
         addConditionBtn.setAlignment(Component.Alignment.MIDDLE_LEFT);
@@ -296,29 +296,29 @@ public class FilterDelegateImpl implements FilterDelegate {
                 addConditionHelper.addCondition(conditions);
             }
         });
-        filterHelper.setDebugId(addConditionBtn, "filterAddConditionBtn");
+        filterHelper.setInternalDebugId(addConditionBtn, "addConditionBtn");
 
         controlsLayoutGap = componentsFactory.createComponent(Label.class);
-        filterHelper.setDebugId(controlsLayoutGap, "filterControlsLayoutGap");
+        filterHelper.setInternalDebugId(controlsLayoutGap, "controlsLayoutGap");
         controlsLayout.add(controlsLayoutGap);
         controlsLayout.expand(controlsLayoutGap);
 
         settingsBtn = componentsFactory.createComponent(PopupButton.class);
         settingsBtn.setIcon("icons/gear.png");
-        filterHelper.setDebugId(settingsBtn, "filterSettingsBtn");
+        filterHelper.setInternalDebugId(settingsBtn, "settingsBtn");
         createFilterActions();
 
         createMaxResultsLayout();
         createFtsSwitch();
         ftsSwitch.setAlignment(Component.Alignment.MIDDLE_RIGHT);
-        filterHelper.setDebugId(ftsSwitch, "filterFtsSwitch");
+        filterHelper.setInternalDebugId(ftsSwitch, "ftsSwitch");
 
         String layoutDescription = clientConfig.getGenericFilterControlsLayout();
         ControlsLayoutBuilder controlsLayoutBuilder = createControlsLayoutBuilder(layoutDescription);
         controlsLayoutBuilder.build();
 
         maxResultsLayout.setVisible(isMaxResultsLayoutVisible());
-        filterHelper.setDebugId(maxResultsLayout, "filterMaxResultsLayout");
+        filterHelper.setInternalDebugId(maxResultsLayout, "maxResultsLayout");
     }
 
     protected void createControlsLayoutForFts() {

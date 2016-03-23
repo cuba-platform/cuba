@@ -94,5 +94,5 @@ public interface FilterHelper {
 
     void setLookupFieldPageLength(LookupField lookupField, int pageLength);
 
-    void setDebugId(Component component, String id);
+    void setInternalDebugId(Component component, String id);
 }

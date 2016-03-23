@@ -160,5 +160,7 @@ public class DesktopFilterHelper implements FilterHelper {
     }
 
     @Override
-    public void setDebugId(com.haulmont.cuba.gui.components.Component component, String id) {}
+    public void setInternalDebugId(Component component, String id) {
+        // do nothing
+    }
 }
