@@ -73,7 +73,7 @@ public class QueryParserAstBased implements QueryParser {
     public String getEntityName() {
         IdentificationVariableNode mainEntityIdentification = queryTreeAnalyzer.getMainEntityIdentification();
         if (mainEntityIdentification != null) {
-            return mainEntityIdentification.getEffectiveEntityName();
+            return mainEntityIdentification.getEntityNameFromQuery();
         }
         throw new RuntimeException("Unable to find entity name [" + query + "]");
     }
