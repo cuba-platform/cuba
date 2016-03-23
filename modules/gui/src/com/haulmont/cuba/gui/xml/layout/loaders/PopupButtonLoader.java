@@ -46,8 +46,8 @@ public class PopupButtonLoader extends AbstractComponentLoader<PopupButton> {
 
         loadWidth(resultComponent, element);
 
-        loadActions(resultComponent, element);
         loadIconsEnabled(resultComponent, element);
+        loadActions(resultComponent, element);
 
         String menuWidth = element.attributeValue("menuWidth");
         if (!StringUtils.isEmpty(menuWidth)) {

@@ -45,7 +45,7 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
     protected Component popupComponent;
     protected com.vaadin.ui.Component vPopupComponent;
     protected String icon;
-    protected boolean iconsEnabled;
+    protected boolean actionsIconsEnabled;
 
     protected List<Action> actionOrder = new LinkedList<>();
     protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
@@ -156,12 +156,12 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
 
     @Override
     public void setActionsIconsEnabled(boolean iconsEnabled) {
-        this.iconsEnabled = iconsEnabled;
+        this.actionsIconsEnabled = iconsEnabled;
     }
 
     @Override
     public boolean isActionsIconsEnabled() {
-        return this.iconsEnabled;
+        return this.actionsIconsEnabled;
     }
 
     @Override
