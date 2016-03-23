@@ -158,4 +158,7 @@ public class DesktopFilterHelper implements FilterHelper {
     @Override
     public void setLookupFieldPageLength(LookupField lookupField, int pageLength) {
     }
+
+    @Override
+    public void setDebugId(com.haulmont.cuba.gui.components.Component component, String id) {}
 }

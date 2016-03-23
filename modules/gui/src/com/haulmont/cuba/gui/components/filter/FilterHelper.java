@@ -93,4 +93,6 @@ public interface FilterHelper {
     void addShortcutListener(TextField textField, ShortcutListener listener);
 
     void setLookupFieldPageLength(LookupField lookupField, int pageLength);
+
+    void setDebugId(Component component, String id);
 }

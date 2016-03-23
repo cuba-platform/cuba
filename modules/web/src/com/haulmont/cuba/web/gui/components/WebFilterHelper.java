@@ -326,4 +326,11 @@ public class WebFilterHelper implements FilterHelper {
         ComboBox vComboBox = (ComboBox) WebComponentsHelper.unwrap(lookupField);
         vComboBox.setPageLength(pageLength);
     }
+
+    @Override
+    public void setDebugId(com.haulmont.cuba.gui.components.Component component, String id) {
+        if (component != null && AppUI.getCurrent().isTestMode()) {
+            WebComponentsHelper.unwrap(component).setCubaId(id);
+        }
+    }
 }
