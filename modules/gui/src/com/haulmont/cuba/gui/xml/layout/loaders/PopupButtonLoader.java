@@ -46,7 +46,7 @@ public class PopupButtonLoader extends AbstractComponentLoader<PopupButton> {
 
         loadWidth(resultComponent, element);
 
-        loadIconsEnabled(resultComponent, element);
+        loadShowActionIcons(resultComponent, element);
         loadActions(resultComponent, element);
 
         String menuWidth = element.attributeValue("menuWidth");
@@ -55,7 +55,7 @@ public class PopupButtonLoader extends AbstractComponentLoader<PopupButton> {
         }
     }
 
-    protected void loadIconsEnabled(PopupButton component, Element element) {
+    protected void loadShowActionIcons(PopupButton component, Element element) {
         String showActionIcons = element.attributeValue("showActionIcons");
         if (!StringUtils.isEmpty(showActionIcons)) {
             component.setShowActionIcons(Boolean.parseBoolean(showActionIcons));

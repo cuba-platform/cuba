@@ -45,7 +45,8 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
     protected Component popupComponent;
     protected com.vaadin.ui.Component vPopupComponent;
     protected String icon;
-    protected boolean actionsIconsEnabled;
+    protected boolean showActionIcons;
+    protected boolean showIconsForPopupMenuActions;
 
     protected List<Action> actionOrder = new LinkedList<>();
     protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
@@ -68,6 +69,10 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         component.setContent(vPopupComponent);
 
         component.setDescription(null);
+
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+        showIconsForPopupMenuActions = clientConfig.getShowIconsForPopupMenuActions();
     }
 
     protected boolean hasVisibleActions() {
@@ -155,16 +160,16 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
     }
 
     @Override
-    public void setShowActionIcons(boolean iconsEnabled) {
-        if (this.actionsIconsEnabled != iconsEnabled) {
-            this.actionsIconsEnabled = iconsEnabled;
+    public void setShowActionIcons(boolean showActionIcons) {
+        if (this.showActionIcons != showActionIcons) {
+            this.showActionIcons = showActionIcons;
             updateAcionsIcons();
         }
     }
 
     @Override
     public boolean isShowActionIcons() {
-        return this.actionsIconsEnabled;
+        return this.showActionIcons;
     }
 
     @Override
@@ -211,7 +216,7 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
                 if (actionOwner instanceof PopupButtonActionButton) {
                     PopupButtonActionButton button = (PopupButtonActionButton) actionOwner;
 
-                    if (actionsIconsEnabled) {
+                    if (showActionIcons) {
                         button.setIcon(action.getIcon());
                     } else {
                         button.setIcon(null);
@@ -229,10 +234,8 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
             }
         };
         button.setAction(new PopupActionWrapper(action));
-        Configuration configuration = AppBeans.get(Configuration.NAME);
-        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
 
-        if (clientConfig.getShowIconsForPopupMenuActions()) {
+        if (showIconsForPopupMenuActions) {
             button.setIcon(action.getIcon());
         } else {
             button.setIcon(this.isShowActionIcons() ? action.getIcon() : null);
