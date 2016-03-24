@@ -26,10 +26,10 @@ buildscript {
         mavenLocal()
         maven {
             credentials {
-                username System.getenv('HAULMONT_REPOSITORY_USER')
-                password System.getenv('HAULMONT_REPOSITORY_PASSWORD')
+                username System.getenv('HAULMONT_REPOSITORY_USER') ?: 'cuba'
+                password System.getenv('HAULMONT_REPOSITORY_PASSWORD') ?: 'cuba123'
             }
-            url "http://repository.haulmont.com:8587/nexus/content/groups/work"
+            url System.getenv('HAULMONT_REPOSITORY_URL') ?: 'https://repo.cuba-platform.com/content/groups/work'
         }
     }
     dependencies {
@@ -544,7 +544,7 @@ configure(webModule) {
 
     task deploy(dependsOn: assemble, type: CubaDeployment) {
         appName = 'cuba'
-        appJars('cuba-global', 'cuba-client', 'cuba-gui', 'cuba-web', 'cuba-web-auth')
+        appJars('cuba-global', 'cuba-client', 'cuba-gui', 'cuba-web', 'cuba-web-auth', 'cuba-rest-api')
     }
 }
 
