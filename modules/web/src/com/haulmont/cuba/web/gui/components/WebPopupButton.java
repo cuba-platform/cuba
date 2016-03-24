@@ -46,7 +46,6 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
     protected com.vaadin.ui.Component vPopupComponent;
     protected String icon;
     protected boolean showActionIcons;
-    protected boolean showIconsForPopupMenuActions;
 
     protected List<Action> actionOrder = new LinkedList<>();
     protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
@@ -72,7 +71,7 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
-        showIconsForPopupMenuActions = clientConfig.getShowIconsForPopupMenuActions();
+        showActionIcons = clientConfig.getShowIconsForPopupMenuActions();
     }
 
     protected boolean hasVisibleActions() {
@@ -235,11 +234,8 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         };
         button.setAction(new PopupActionWrapper(action));
 
-        if (showIconsForPopupMenuActions) {
-            button.setIcon(action.getIcon());
-        } else {
-            button.setIcon(this.isShowActionIcons() ? action.getIcon() : null);
-        }
+        button.setIcon(this.isShowActionIcons() ? action.getIcon() : null);
+
 
         Button vButton = (Button) button.getComposition();
         vButton.setImmediate(true);
