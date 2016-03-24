@@ -48,6 +48,8 @@ public class HtmlBoxLayoutLoader extends ContainerLoader<HtmlBoxLayout> {
 
         loadHeight(resultComponent, element);
         loadWidth(resultComponent, element);
+
+        loadSubComponents();
     }
 
     protected void loadTemplate(HtmlBoxLayout htmlBox, Element element) {
