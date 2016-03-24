@@ -54,6 +54,9 @@
 //Dashboard
 @import "dashboard/dashboard";
 
+//HTML Layout
+@import "htmlLayout/htmlLayout";
+
 // Application specific
 @import "app/log-control";
 @import "app/login-window";
@@ -101,6 +104,8 @@
   @include halo-textarea;
 
   @include halo-dashboard;
+
+  @include halo-html-layout;
 
   @include halo-cuba-groupbox;
   @include halo-cuba-tokenlist;
