@@ -118,7 +118,6 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected PersistenceManagerClient persistenceManager;
     protected ClientConfig clientConfig;
     protected GlobalConfig globalConfig;
-    protected FtsConfig ftsConfig;
     protected AddConditionHelper addConditionHelper;
     protected ThemeConstants theme;
     protected WindowManager windowManager;
@@ -203,7 +202,6 @@ public class FilterDelegateImpl implements FilterDelegate {
         persistenceManager = AppBeans.get(PersistenceManagerClient.class);
         globalConfig = configuration.getConfig(GlobalConfig.class);
         clientConfig = configuration.getConfig(ClientConfig.class);
-        ftsConfig = configuration.getConfig(FtsConfig.class);
         if (AppBeans.containsBean(FtsFilterHelper.NAME)) {
             ftsFilterHelper = AppBeans.get(FtsFilterHelper.class);
         }
@@ -1313,7 +1311,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected boolean isFtsModeEnabled() {
-        return ftsConfig.getEnabled()
+        return FtsConfigHelper.getEnabled()
                 && ftsFilterHelper != null
                 && datasource != null
                 && ftsFilterHelper.isEntityIndexed(datasource.getMetaClass().getName());

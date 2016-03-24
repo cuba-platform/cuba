@@ -21,23 +21,23 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.app.FtsSender;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.FtsConfig;
+import com.haulmont.cuba.core.global.FtsConfigHelper;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
 import com.haulmont.cuba.security.app.EntityLogAPI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.sessions.UnitOfWork;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.ResourceHolderSupport;
 import org.springframework.transaction.support.ResourceHolderSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -55,9 +55,6 @@ public class PersistenceImplSupport {
 
     @Inject
     protected EntityLogAPI entityLog;
-
-    @Inject
-    protected FtsConfig ftsConfig;
 
     protected volatile FtsSender ftsSender;
 
@@ -274,7 +271,7 @@ public class PersistenceImplSupport {
         }
 
         protected void enqueueForFts(BaseEntity entity, FtsChangeType changeType) {
-            if (!ftsConfig.getEnabled())
+            if (!FtsConfigHelper.getEnabled())
                 return;
             try {
                 if (ftsSender == null) {

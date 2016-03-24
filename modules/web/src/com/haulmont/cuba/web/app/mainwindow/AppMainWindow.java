@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.web.app.mainwindow;
 
-import com.haulmont.cuba.core.global.FtsConfig;
+import com.haulmont.cuba.core.global.FtsConfigHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
@@ -60,9 +60,6 @@ public class AppMainWindow extends AbstractMainWindow {
     @Inject
     protected WebConfig webConfig;
 
-    @Inject
-    protected FtsConfig ftsConfig;
-
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
@@ -78,7 +75,7 @@ public class AppMainWindow extends AbstractMainWindow {
             titleBar.setStyleName("cuba-app-menubar cuba-inverse-header");
         }
 
-        if (!ftsConfig.getEnabled()) {
+        if (!FtsConfigHelper.getEnabled()) {
             ftsField.setVisible(false);
         }
 
