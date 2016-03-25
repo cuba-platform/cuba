@@ -53,6 +53,7 @@ public class DeletePolicyProcessor {
 
     protected Persistence persistence;
     protected EntityManager entityManager;
+    private String primaryKeyName;
 
     @Inject
     protected Metadata metadata;
@@ -70,6 +71,7 @@ public class DeletePolicyProcessor {
     public void setEntity(BaseEntity entity) {
         this.entity = entity;
         this.metaClass = metadata.getSession().getClass(entity.getClass());
+        primaryKeyName = metadata.getTools().getPrimaryKeyName(metaClass);
     }
 
     public void process() {
@@ -240,7 +242,7 @@ public class DeletePolicyProcessor {
             return entity.getValue(property.getName());
         else {
             Query query = entityManager.createQuery(
-                    "select e." + property.getName() + " from " + entity.getMetaClass().getName() + " e where e.id = ?1");
+                    "select e." + property.getName() + " from " + entity.getMetaClass().getName() + " e where e." + primaryKeyName + " = ?1");
             query.setParameter(1, entity.getId());
             Object refEntity = query.getFirstResult();
             return (BaseEntity) refEntity;
@@ -266,7 +268,9 @@ public class DeletePolicyProcessor {
         }
 
         String invPropName = inverseProperty.getName();
-        String qlStr = "select e.id from " + property.getRange().asClass().getName() + " e where e." + invPropName + ".id = ?1";
+        String primaryKeyName = metadata.getTools().getPrimaryKeyName(metaClass);
+        String qlStr = "select e." + primaryKeyName + " from " + property.getRange().asClass().getName() +
+                " e where e." + invPropName + "." + primaryKeyName + " = ?1";
 
         Query query = entityManager.createQuery(qlStr);
         query.setParameter(1, entity.getId());
@@ -285,7 +289,8 @@ public class DeletePolicyProcessor {
         }
 
         String invPropName = inverseProperty.getName();
-        String qlStr = "select e from " + property.getRange().asClass().getName() + " e where e." + invPropName + ".id = ?1";
+        String qlStr = "select e from " + property.getRange().asClass().getName() + " e where e." + invPropName + "." +
+                primaryKeyName + " = ?1";
 
         Query query = entityManager.createQuery(qlStr);
         query.setParameter(1, entity.getId());
@@ -308,8 +313,8 @@ public class DeletePolicyProcessor {
 
     protected boolean referenceExists(String entityName, MetaProperty property) {
         String template = property.getRange().getCardinality().isMany() ?
-                "select e.id from %s e join e.%s c where c.id = ?1" :
-                "select e.id from %s e where e.%s.id = ?1";
+                "select e.id from %s e join e.%s c where c." + primaryKeyName + "= ?1" :
+                "select e.id from %s e where e.%s." + primaryKeyName + " = ?1";
         String qstr = String.format(template, entityName, property.getName());
         Query query = entityManager.createQuery(qstr);
         query.setParameter(1, entity.getId());
@@ -324,8 +329,8 @@ public class DeletePolicyProcessor {
 
     protected void cascade(String entityName, MetaProperty property) {
         String template = property.getRange().getCardinality().isMany() ?
-                "select e from %s e join e.%s c where c.id = ?1" :
-                "select e from %s e where e.%s.id = ?1";
+                "select e from %s e join e.%s c where c." + primaryKeyName + " = ?1" :
+                "select e from %s e where e.%s." + primaryKeyName + " = ?1";
         String qstr = String.format(template, entityName, property.getName());
         Query query = entityManager.createQuery(qstr);
         query.setParameter(1, entity.getId());
@@ -337,8 +342,8 @@ public class DeletePolicyProcessor {
 
     protected void unlink(String entityName, MetaProperty property) {
         String template = property.getRange().getCardinality().isMany() ?
-                "select e from %s e join e.%s c where c.id = ?1" :
-                "select e from %s e where e.%s.id = ?1";
+                "select e from %s e join e.%s c where c." + primaryKeyName + " = ?1" :
+                "select e from %s e where e.%s." + primaryKeyName + " = ?1";
         String qstr = String.format(template, entityName, property.getName());
         Query query = entityManager.createQuery(qstr);
         query.setParameter(1, entity.getId());
