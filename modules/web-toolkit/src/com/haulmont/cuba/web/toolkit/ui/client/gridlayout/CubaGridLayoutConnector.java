@@ -45,7 +45,7 @@ public class CubaGridLayoutConnector extends GridLayoutConnector {
         // CAUTION copied from GridLayoutConnector.updateCaption(ComponentConnector childConnector)
         VGridLayout layout = getWidget();
         VGridLayout.Cell cell = layout.widgetToCell.get(childConnector.getWidget());
-        if (VCaption.isNeeded(childConnector.getState())) {
+        if (VCaption.isNeeded(childConnector.getState()) || !"".equals(childConnector.getState().description)) {
             VLayoutSlot layoutSlot = cell.slot;
             VCaption caption = layoutSlot.getCaption();
             if (caption == null) {
