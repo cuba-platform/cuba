@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2008-2016 Haulmont.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!--
+    This is the default Logback configuration file that comes into play
+    when logback.configurationFile system property is not set
+ -->
+
+<configuration debug="true">
+
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread%X{cubaApp}%X{cubaUser}] %logger - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root>
+        <appender-ref ref="Console"/>
+    </root>
+
+    <!-- Begin CUBA -->
+
+    <logger name="com.haulmont.cuba" level="DEBUG"/>
+
+    <logger name="com.haulmont.cuba.core.sys" level="INFO"/>
+
+    <logger name="com.haulmont.cuba.core.sys.CubaDefaultListableBeanFactory" level="WARN"/>
+    
+    <logger name="com.haulmont.cuba.core.app.scheduling" level="INFO"/>
+
+    <logger name="com.haulmont.cuba.web.sys" level="INFO"/>
+
+    <logger name="com.haulmont.cuba.portal" level="INFO"/>
+
+    <!-- End CUBA -->
+
+    <logger name="eclipselink" level="WARN"/>
+    
+    <logger name="eclipselink.sql" level="INFO"/>
+
+    <logger name="org.springframework" level="WARN"/>
+
+    <logger name="org.activiti" level="INFO"/>
+    
+    <logger name="freemarker" level="INFO"/>
+
+    <logger name="org.docx4j" level="WARN"/>
+    
+	<logger name="org.xlsx4j" level="WARN"/>
+
+    <logger name="org.hibernate" level="WARN"/>
+
+    <logger name="sun" level="INFO"/>
+
+    <logger name="com.sun" level="INFO"/>
+
+    <logger name="javax" level="INFO"/>
+
+    <logger name="org.apache" level="INFO"/>
+
+    <!-- Begin Perf4J  -->
+
+    <logger name="org.perf4j.TimingLogger" level="OFF"/>
+
+    <logger name="com.haulmont.cuba.gui.logging.UIPerformanceLogger" level="OFF"/>
+
+    <!-- End Perf4J  -->
+
+</configuration>
