@@ -52,7 +52,7 @@ public interface Accordion extends Component.Container, Component.BelongToFrame 
     void removeAllTabs();
 
     /**
-     * Get selected tab. May be null if the tabsheet does not contain tabs at all.
+     * Get selected tab. May be null if the accordion does not contain tabs at all.
      */
     Tab getTab();
 
