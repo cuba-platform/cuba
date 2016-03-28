@@ -27,43 +27,119 @@ import java.util.Collection;
 public interface Accordion extends Component.Container, Component.BelongToFrame {
     String NAME = "accordion";
 
+    /**
+     * Add a new tab to the component.
+     * @param name      id of the new tab
+     * @param component a component that will be the content of the new tab
+     * @return  the new tab
+     */
     Tab addTab(String name, Component component);
+
+    /**
+     * INTERNAL. Add a new lazy tab to the component.
+     */
     Tab addLazyTab(String name, Element descriptor, ComponentLoader loader);
 
-    /** Get current tab. May be null */
+    /**
+     * Remove tab.
+     * @param name id of the tab to remove
+     */
+    void removeTab(String name);
+
+    /**
+     * Remove all tabs.
+     */
+    void removeAllTabs();
+
+    /**
+     * Get selected tab. May be null if the accordion does not contain tabs at all.
+     */
     Tab getTab();
+
+    /**
+     * Set selected tab.
+     * @param tab tab instance
+     */
     void setTab(Tab tab);
+
+    /**
+     * Set selected tab.
+     * @param name tab id
+     */
     void setTab(String name);
 
+    /**
+     * Get tab with the provided id.
+     * @param name tab id
+     * @return tab instance
+     */
     Tab getTab(String name);
+
+    /**
+     * Get a component that is a content of the tab.
+     * @param name tab id
+     * @return  tab content
+     */
     Component getTabComponent(String name);
 
+    /**
+     * Get all tabs.
+     */
     Collection<Tab> getTabs();
 
+    /**
+     * Add a listener that will be notified when a selected tab is changed.
+     */
     void addListener(TabChangeListener listener);
     void removeListener(TabChangeListener listener);
 
+    /**
+     * Tab interface.
+     */
     interface Tab {
+        /**
+         * Get tab id.
+         */
         String getName();
+
+        /**
+         * INTERNAL. Set tab id.
+         */
         void setName(String name);
 
+        /**
+         * Get tab caption.
+         */
         String getCaption();
+
+        /**
+         * Set tab caption.
+         */
         void setCaption(String caption);
 
+        /**
+         * Whether the tab is enabled.
+         */
         boolean isEnabled();
         void setEnabled(boolean enabled);
 
+        /**
+         * Whether the tab is visible.
+         */
         boolean isVisible();
         void setVisible(boolean visible);
 
         /**
-         * Set style for UI element that represents tab header.
+         * Set style for UI element that represents the tab header.
          * @param styleName style
          */
         void setStyleName(String styleName);
         String getStyleName();
     }
 
+    /**
+     * Listener notified when a selected tab is changed.
+     */
     interface TabChangeListener {
         void tabChanged(Tab newTab);
     }

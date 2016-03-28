@@ -53,9 +53,5 @@ public abstract class AbstractOptionsBaseLoader<T extends OptionsField> extends 
         super.loadDatasource(component, element);
     }
 
-    @Override
-    public void loadComponent() {
-        super.loadComponent();
-        loadCaptionProperty(resultComponent, element);
-    }
+
 }

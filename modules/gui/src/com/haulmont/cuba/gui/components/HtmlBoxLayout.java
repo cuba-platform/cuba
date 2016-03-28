@@ -22,6 +22,13 @@ public interface HtmlBoxLayout extends Component.Container, Component.BelongToFr
 
     String NAME = "htmlBox";
 
+    /**
+     * Return filename of the related HTML template.
+     */
     String getTemplateName();
+
+    /**
+     * Set filename of the related HTML template inside theme/layouts directory.
+     */
     void setTemplateName(String templateName);
 }
