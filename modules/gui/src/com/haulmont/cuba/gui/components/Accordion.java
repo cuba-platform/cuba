@@ -30,6 +30,9 @@ public interface Accordion extends Component.Container, Component.BelongToFrame 
     Tab addTab(String name, Component component);
     Tab addLazyTab(String name, Element descriptor, ComponentLoader loader);
 
+    void removeTab(String name);
+    void removeAllTabs();
+
     /** Get current tab. May be null */
     Tab getTab();
     void setTab(Tab tab);
