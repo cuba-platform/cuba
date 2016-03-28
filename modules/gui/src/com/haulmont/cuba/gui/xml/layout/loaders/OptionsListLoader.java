@@ -27,4 +27,10 @@ public class OptionsListLoader extends AbstractOptionsBaseLoader<OptionsList> {
         resultComponent = (OptionsList) factory.createComponent(OptionsList.NAME);
         loadId(resultComponent, element);
     }
+
+    @Override
+    public void loadComponent() {
+        super.loadComponent();
+        loadCaptionProperty(resultComponent, element);
+    }
 }

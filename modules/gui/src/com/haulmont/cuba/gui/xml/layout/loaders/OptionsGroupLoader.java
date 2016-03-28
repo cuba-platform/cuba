@@ -23,6 +23,13 @@ import org.dom4j.Element;
 /**
  */
 public class OptionsGroupLoader extends AbstractOptionsBaseLoader<OptionsGroup> {
+    @Override
+    public void loadComponent() {
+        super.loadComponent();
+
+        loadOrientation(resultComponent, element);
+        loadCaptionProperty(resultComponent, element);
+    }
 
     protected void loadOrientation(OptionsGroup component, Element element) {
         String orientation = element.attributeValue("orientation");
