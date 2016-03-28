@@ -268,8 +268,9 @@ public class DeletePolicyProcessor {
         }
 
         String invPropName = inverseProperty.getName();
-        String primaryKeyName = metadata.getTools().getPrimaryKeyName(metaClass);
-        String qlStr = "select e." + primaryKeyName + " from " + property.getRange().asClass().getName() +
+        String collectionPkName = metadata.getTools().getPrimaryKeyName(property.getRange().asClass());
+
+        String qlStr = "select e." + collectionPkName + " from " + property.getRange().asClass().getName() +
                 " e where e." + invPropName + "." + primaryKeyName + " = ?1";
 
         Query query = entityManager.createQuery(qlStr);
