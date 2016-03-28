@@ -178,6 +178,42 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
     }
 
     @Override
+    public void removeTab(String name) {
+        final Tab tab = tabs.get(name);
+        if (tab == null) {
+            throw new IllegalStateException(String.format("Can't find tab '%s'", name));
+        }
+        tabs.remove(name);
+
+        Component childComponent = tab.getComponent();
+        com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(childComponent);
+        this.component.removeComponent(vComponent);
+
+        if (childComponent.getId() != null) {
+            componentByIds.remove(childComponent.getId());
+        }
+        tabMapping.remove(vComponent);
+
+        childComponent.setParent(null);
+    }
+
+    @Override
+    public void removeAllTabs() {
+        tabMapping.clear();
+        componentByIds.clear();
+        component.removeAllComponents();
+
+        List<Tab> currentTabs = new ArrayList<>(tabs.values());
+        tabs.clear();
+
+        for (Tab tab : currentTabs) {
+            Component childComponent = tab.getComponent();
+
+            childComponent.setParent(null);
+        }
+    }
+
+    @Override
     public Accordion.Tab addTab(String name, Component childComponent) {
         if (childComponent.getParent() != null && childComponent.getParent() != this) {
             throw new IllegalStateException("Component already has parent");
