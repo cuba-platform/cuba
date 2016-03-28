@@ -225,6 +225,7 @@ public class WebLookupPickerField extends WebLookupField implements LookupPicker
     public void setFrame(Frame frame) {
         super.setFrame(frame);
         pickerField.setFrame(frame);
+        pickerField.getComposition().setCubaId(component.getCubaId());
     }
 
     @Override
