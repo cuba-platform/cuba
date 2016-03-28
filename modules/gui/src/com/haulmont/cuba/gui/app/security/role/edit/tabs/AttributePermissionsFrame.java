@@ -137,19 +137,16 @@ public class AttributePermissionsFrame extends AbstractFrame {
             modifyCheckBox = componentsFactory.createComponent(CheckBox.class);
             modifyCheckBox.setAlignment(Alignment.MIDDLE_CENTER);
             modifyCheckBox.setFrame(getFrame());
-            modifyCheckBox.setDescription(attributeName);
             modifyCheckBox.setId(attributeName + "_modifyCheckBox");
 
             readOnlyCheckBox = componentsFactory.createComponent(CheckBox.class);
             readOnlyCheckBox.setAlignment(Alignment.MIDDLE_CENTER);
             readOnlyCheckBox.setFrame(getFrame());
-            readOnlyCheckBox.setDescription(attributeName);
             readOnlyCheckBox.setId(attributeName + "_readOnlyCheckBox");
 
             hideCheckBox = componentsFactory.createComponent(CheckBox.class);
             hideCheckBox.setAlignment(Alignment.MIDDLE_CENTER);
             hideCheckBox.setFrame(getFrame());
-            hideCheckBox.setDescription(attributeName);
             hideCheckBox.setId(attributeName + "_hideCheckBox");
 
             updateCheckers(permissionVariant);
