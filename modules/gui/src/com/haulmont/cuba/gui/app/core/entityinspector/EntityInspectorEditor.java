@@ -102,6 +102,9 @@ public class EntityInspectorEditor extends AbstractWindow {
     @WindowParam(name = "parentProperty")
     protected String parentProperty;
 
+    @WindowParam(name = "parentDs")
+    protected Datasource parentDs;
+
     @WindowParam(name = "datasource")
     protected Datasource datasource;
 
@@ -168,6 +171,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         if (datasource == null) {
             datasource = new DatasourceImpl<>();
             datasource.setup(dsContext, dataSupplier, meta.getName() + "Ds", item.getMetaClass(), view);
+            ((DatasourceImpl) datasource).setParent(parentDs);
             ((DatasourceImpl) datasource).valid();
         }
 
@@ -989,6 +993,8 @@ public class EntityInspectorEditor extends AbstractWindow {
             if (inverseProperty != null)
                 editorParams.put("parentProperty", inverseProperty.getName());
             editorParams.put("parent", item);
+            if (metaProperty.getType() == MetaProperty.Type.COMPOSITION)
+                editorParams.put("parentDs", entitiesDs);
             Window window = openWindow("entityInspector.edit", OPEN_TYPE, editorParams);
             if (!(entitiesDs instanceof PropertyDatasource)) {
                 window.addCloseListener(actionId -> {
@@ -1027,6 +1033,8 @@ public class EntityInspectorEditor extends AbstractWindow {
             MetaProperty inverseProperty = metaProperty.getInverse();
             if (inverseProperty != null)
                 editorParams.put("parentProperty", inverseProperty.getName());
+            if (metaProperty.getType() == MetaProperty.Type.COMPOSITION)
+                editorParams.put("parentDs", entitiesDs);
 
             Window window = openWindow("entityInspector.edit", OPEN_TYPE, editorParams);
             window.addCloseListener(actionId -> {
