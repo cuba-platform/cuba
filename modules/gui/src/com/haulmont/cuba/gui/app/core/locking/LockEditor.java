@@ -50,7 +50,7 @@ public class LockEditor extends AbstractEditor {
             if (metadata.getExtendedEntities().getExtendedClass(metaClass) == null) {
                 MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
                 String originalName = originalMetaClass == null ? metaClass.getName() : originalMetaClass.getName();
-                options.put(metaClass.getName(), originalName);
+                options.put(messages.getTools().getEntityCaption(metaClass) + " (" + metaClass.getName() + ")", originalName);
             }
         }
         nameLookupField.setOptionsMap(options);
