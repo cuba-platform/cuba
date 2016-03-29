@@ -314,14 +314,14 @@ public class DeletePolicyProcessor {
 
     protected boolean referenceExists(String entityName, MetaProperty property) {
         String template = property.getRange().getCardinality().isMany() ?
-                "select e.id from %s e join e.%s c where c." + primaryKeyName + "= ?1" :
-                "select e.id from %s e where e.%s." + primaryKeyName + " = ?1";
+                "select count(e) from %s e join e.%s c where c." + primaryKeyName + "= ?1" :
+                "select count(e) from %s e where e.%s." + primaryKeyName + " = ?1";
         String qstr = String.format(template, entityName, property.getName());
         Query query = entityManager.createQuery(qstr);
         query.setParameter(1, entity.getId());
         query.setMaxResults(1);
-        List list = query.getResultList();
-        return !list.isEmpty();
+        Long count = (Long) query.getSingleResult();
+        return count > 0;
     }
 
     protected boolean isPersistent(MetaClass metaClass) {
