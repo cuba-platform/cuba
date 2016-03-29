@@ -108,7 +108,7 @@ public class PropertyConditionDescriptor extends AbstractConditionDescriptor {
     public String getTreeCaption() {
         MessageTools messageTools = AppBeans.get(MessageTools.class);
         MetaPropertyPath mpp = datasourceMetaClass.getPropertyPath(name);
-        return mpp != null ? messageTools.getPropertyCaption(mpp.getMetaProperty()) : name;
+        return mpp != null ? messageTools.getPropertyCaption(datasourceMetaClass, mpp.getMetaProperty().getName()) : name;
     }
 
     @Nullable
