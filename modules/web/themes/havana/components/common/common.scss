@@ -67,6 +67,14 @@
   ::-ms-clear {
     display: none;
   }
+
+  .v-assistive-device-only {
+  	position: absolute;
+  	top: -2000px;
+  	left: -2000px;
+  	width: 10px;
+  	overflow: hidden;
+  }
 }
 
 @mixin box-defaults {

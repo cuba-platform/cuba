@@ -145,12 +145,4 @@
   @include cuba-role-editor;
   @include cuba-report-wizard;
   @include cuba-diff-viewer;
-
-  .v-assistive-device-only {
-  	position: absolute;
-  	top: -2000px;
-  	left: -2000px;
-  	width: 10px;
-  	overflow: hidden;
-  }
 }
