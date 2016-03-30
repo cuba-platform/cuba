@@ -3,13 +3,13 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-// Inherit base theme
-@import "../base/base";
-
-// Havana - Generic Platform SCSS theme
+/* Havana - Generic Platform SCSS theme */
 /** sprite: components; sprite-image: url('compiled/components.png'); sprite-layout: vertical */
 /** sprite: components-large; sprite-image: url('compiled/components-large.png'); sprite-layout: vertical */
 /** sprite: application; sprite-image: url('compiled/application.png'); sprite-layout: vertical */
+
+// Inherit base theme
+@import "../base/base";
 
 // Common
 @import "components/common/common";
