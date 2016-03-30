@@ -383,7 +383,7 @@ public interface Window extends Frame, Component.HasCaption {
     }
 
     /**
-     * Listener to be notified when a screen is closed with actionId {@link #CLOSE_ACTION_ID}.
+     * Listener to be notified when a screen is closed with actionId {@link #COMMIT_ACTION_ID}.
      */
     interface CloseWithCommitListener {
         /**
