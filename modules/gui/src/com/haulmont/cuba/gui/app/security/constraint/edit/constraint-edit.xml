@@ -27,7 +27,7 @@
 
     <assign name="width" value="theme://cuba.gui.constraint-edit.field.width"/>
 
-    <layout spacing="true" width="100%" expand="scrollBox">
+    <layout spacing="true" width="100%" expand="scrollBox" margin="true">
         <scrollBox id="scrollBox" spacing="true">
             <grid id="grid" spacing="true" width="100%">
                 <columns>
