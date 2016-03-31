@@ -24,14 +24,13 @@ import java.util.Date;
 /**
  * The most widely used base class for persistent entities.
  * <p/>Optimistically locked, implements Updatable and SoftDelete.
- *
  */
 @MappedSuperclass
 public class StandardEntity extends BaseUuidEntity implements Versioned, Updatable, SoftDelete {
     private static final long serialVersionUID = 5642226839555253331L;
 
     @Version
-    @Column(name = "VERSION")
+    @Column(name = "VERSION", nullable = false)
     protected Integer version;
 
     @Column(name = "UPDATE_TS")
