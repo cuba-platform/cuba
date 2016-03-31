@@ -167,6 +167,8 @@ public class CubaVaadinServletService extends VaadinServletService {
                 // add support for jquery file upload
                 cubaRequestHandlers.add(new ExtFileUploadHandler());
                 cubaRequestHandlers.add(new CubaFileUploadHandler());
+            } else if (handler instanceof ConnectorResourceHandler) {
+                cubaRequestHandlers.add(new CubaConnectorResourceHandler());
             } else {
                 cubaRequestHandlers.add(handler);
             }
@@ -311,6 +313,15 @@ public class CubaVaadinServletService extends VaadinServletService {
         public boolean synchronizedHandleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response)
                 throws IOException {
             return withUserSession(session, () -> super.synchronizedHandleRequest(session, request, response));
+        }
+    }
+
+    // Set security context to AppContext for connector resources
+    protected static class CubaConnectorResourceHandler extends ConnectorResourceHandler {
+        @Override
+        public boolean handleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response)
+                throws IOException {
+            return withUserSession(session, () -> super.handleRequest(session, request, response));
         }
     }
 
