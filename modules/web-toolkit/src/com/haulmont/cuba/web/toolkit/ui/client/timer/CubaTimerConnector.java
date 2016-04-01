@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  */
-
 package com.haulmont.cuba.web.toolkit.ui.client.timer;
 
 import com.google.gwt.user.client.Timer;
@@ -25,8 +24,6 @@ import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.extensions.AbstractExtensionConnector;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
 @Connect(CubaTimer.class)
 public class CubaTimerConnector extends AbstractExtensionConnector {
 
@@ -69,7 +66,7 @@ public class CubaTimerConnector extends AbstractExtensionConnector {
     public void onTimer() {
         if (running) {
             if (getState().listeners) {
-                if (!getConnection().getServerRpcQueue().isEmpty()) {
+                if (getConnection().getServerRpcQueue().isEmpty()) {
                     // if application stopped we will not schedule new timer event
                     if (getConnection().isApplicationRunning()) {
                         rpc.onTimer();
