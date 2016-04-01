@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.components.autocomplete.Suggester;
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.fife.ui.rtextarea.RTextScrollPane;
 
 import javax.swing.*;
 import javax.swing.text.Document;
@@ -50,7 +51,10 @@ public class DesktopSourceCodeEditor extends DesktopAbstractTextField<RSyntaxTex
         int height = (int) impl.getPreferredSize().getHeight();
         impl.setMinimumSize(new Dimension(0, height));
 
-        composition = new JScrollPane(impl);
+        RTextScrollPane scrollPane = new RTextScrollPane(impl);
+        scrollPane.setLineNumbersEnabled(showGutter);
+
+        composition = scrollPane;
         composition.setPreferredSize(new Dimension(150, height));
         composition.setMinimumSize(new Dimension(0, height));
 
@@ -151,6 +155,7 @@ public class DesktopSourceCodeEditor extends DesktopAbstractTextField<RSyntaxTex
     @Override
     public void setShowGutter(boolean showGutter) {
         this.showGutter = showGutter;
+        ((RTextScrollPane)composition).setLineNumbersEnabled(showGutter);
     }
 
     @Override
