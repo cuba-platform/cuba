@@ -106,9 +106,10 @@
 
         display: table-cell;
         height: 1px;
-        border-top: floor(round($v-unit-size/6)/2) solid $v-overlay-background-color;
-        border-bottom: floor(round($v-unit-size/6)/2) solid $v-overlay-background-color;
+        border-top: floor(round($v-unit-size/6)/2) solid transparent;
+        border-bottom: floor(round($v-unit-size/6)/2) solid transparent;
         background-color: valo-border-color($color: $v-overlay-background-color, $strength: 0.5);
+        background-clip: padding-box;
       }
     }
 
