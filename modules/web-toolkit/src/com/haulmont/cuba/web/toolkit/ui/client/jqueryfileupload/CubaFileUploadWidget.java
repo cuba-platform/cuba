@@ -30,6 +30,12 @@ import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.ui.VButton;
 import com.vaadin.client.ui.VNotification;
 import com.vaadin.shared.Position;
+import freemarker.template.utility.CollectionUtils;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  */
@@ -47,6 +53,7 @@ public class CubaFileUploadWidget extends FlowPanel implements Focusable {
     protected String cancelButtonCaption;
 
     protected long fileSizeLimit = -1;
+    protected Set<String> permittedExtensions;
     protected FilePermissionsHandler filePermissionsHandler;
 
     protected QueueUploadListener queueUploadListener;
@@ -86,7 +93,25 @@ public class CubaFileUploadWidget extends FlowPanel implements Focusable {
                     return false;
                 }
 
+                if (hasInvalidExtension(name)) {
+                    if (filePermissionsHandler != null) {
+                        filePermissionsHandler.fileExtensionNotAllowed(name);
+                    }
+                    return false;
+                }
+
                 return true;
+            }
+
+            protected boolean hasInvalidExtension(String name) {
+                if (permittedExtensions != null && !permittedExtensions.isEmpty()) {
+                    if (name.lastIndexOf(".") > 0) {
+                        String fileExtension = name.substring(name.lastIndexOf("."), name.length());
+                        return !permittedExtensions.contains(fileExtension.toLowerCase());
+                    }
+                    return true;
+                }
+                return false;
             }
 
             @Override
@@ -291,6 +316,7 @@ public class CubaFileUploadWidget extends FlowPanel implements Focusable {
 
     public interface FilePermissionsHandler {
         void fileSizeLimitExceeded(String filename);
+        void fileExtensionNotAllowed(String filename);
     }
 
     public interface QueueUploadListener {

@@ -172,6 +172,10 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<UploadCo
                         wm.showNotification(messages.getMessage(WebFileMultiUploadField.class, "multiupload.queueLimitExceed"),
                                 Frame.NotificationType.WARNING);
                         break;
+                    case INVALID_FILETYPE:
+                        String invalidFiletypeMsg = messages.formatMainMessage("upload.fileIncorrectExtension.message", fileName);
+                        wm.showNotification(invalidFiletypeMsg, Frame.NotificationType.WARNING);
+                        break;
                     case FILE_EXCEEDS_SIZE_LIMIT:
                         String warningMsg = messages.formatMessage(WebFileMultiUploadField.class, "multiupload.filesizeLimitExceed", fileName, getFileSizeLimitString());
                         wm.showNotification(warningMsg, Frame.NotificationType.WARNING);
@@ -258,6 +262,10 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<UploadCo
         });
         impl.addFileSizeLimitExceededListener(e -> {
             String warningMsg = messages.formatMessage(WebFileMultiUploadField.class, "multiupload.filesizeLimitExceed", e.getFileName(), getFileSizeLimitString());
+            getFrame().showNotification(warningMsg, Frame.NotificationType.WARNING);
+        });
+        impl.addFileExtensionNotAllowedListener(e ->{
+            String warningMsg = messages.formatMainMessage("upload.fileIncorrectExtension.message", e.getFileName());
             getFrame().showNotification(warningMsg, Frame.NotificationType.WARNING);
         });
 
@@ -540,6 +548,17 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<UploadCo
             ((CubaFileUpload) this.component).setFileSizeLimit(fileSizeLimit);
         } else if (this.component instanceof CubaMultiUpload) {
             ((CubaMultiUpload) this.component).setFileSizeLimitMB((double) fileSizeLimit/BYTES_IN_MEGABYTE);
+        }
+    }
+
+    @Override
+    public void setPermittedExtensions(Set<String> permittedExtensions) {
+        this.permittedExtensions = permittedExtensions;
+        if (this.component instanceof CubaFileUpload){
+            ((CubaFileUpload) this.component).setPermittedExtensions(permittedExtensions);
+        } else if (this.component instanceof CubaMultiUpload) {
+            ((CubaMultiUpload) this.component).setPermittedExtensions(permittedExtensions);
+            ((CubaMultiUpload) this.component).setFileTypesDescription("");
         }
     }
 }

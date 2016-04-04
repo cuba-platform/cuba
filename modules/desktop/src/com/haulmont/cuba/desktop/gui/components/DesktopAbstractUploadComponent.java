@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.UploadComponentSupport;
 
 import javax.swing.*;
+import java.util.Set;
 
 /**
  */
@@ -35,6 +36,8 @@ public abstract class DesktopAbstractUploadComponent<T extends JComponent>
     protected static final int BYTES_IN_MEGABYTE = 1048576;
 
     protected long fileSizeLimit = 0;
+
+    protected Set<String> permittedExtensions;
 
     @Override
     public long getFileSizeLimit() {
@@ -51,6 +54,16 @@ public abstract class DesktopAbstractUploadComponent<T extends JComponent>
             maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
         }
         return maxSize;
+    }
+
+    @Override
+    public Set<String> getPermittedExtensions() {
+        return permittedExtensions;
+    }
+
+    @Override
+    public void setPermittedExtensions(Set<String> permittedExtensions) {
+        this.permittedExtensions = permittedExtensions;
     }
 
     protected String getFileSizeLimitString() {

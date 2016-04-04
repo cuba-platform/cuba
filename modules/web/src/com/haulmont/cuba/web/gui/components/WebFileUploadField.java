@@ -40,6 +40,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static com.haulmont.cuba.gui.components.Frame.NotificationType;
@@ -106,6 +107,10 @@ public class WebFileUploadField extends WebAbstractUploadComponent<UploadCompone
                 impl.interruptUpload();
                 String warningMsg = messages.formatMainMessage("upload.fileTooBig.message", event.getFilename(), getFileSizeLimitString());
 
+                getFrame().showNotification(warningMsg, NotificationType.WARNING);
+            } else if (hasInvalidExtensionOld(event.getFilename())) {
+                impl.interruptUpload();
+                String warningMsg = messages.formatMainMessage("upload.fileIncorrectExtension.message", event.getFilename());
                 getFrame().showNotification(warningMsg, NotificationType.WARNING);
             } else {
                 fireFileUploadStart(event.getFilename(), event.getContentLength());
@@ -195,6 +200,10 @@ public class WebFileUploadField extends WebAbstractUploadComponent<UploadCompone
             String warningMsg = messages.formatMainMessage("upload.fileTooBig.message", e.getFileName(), getFileSizeLimitString());
             getFrame().showNotification(warningMsg, NotificationType.WARNING);
         });
+        impl.addFileExtensionNotAllowedListener(e ->{
+            String warningMsg = messages.formatMainMessage("upload.fileIncorrectExtension.message", e.getFileName());
+            getFrame().showNotification(warningMsg, NotificationType.WARNING);
+        });
 
         this.component = impl;
     }
@@ -205,6 +214,18 @@ public class WebFileUploadField extends WebAbstractUploadComponent<UploadCompone
 
     protected CubaUpload createOldComponent() {
         return new CubaUpload();
+    }
+
+    protected boolean hasInvalidExtensionOld(String name) {
+        if (getPermittedExtensions() != null && !getPermittedExtensions().isEmpty()) {
+            if (name.lastIndexOf(".") > 0) {
+                String fileExtension = name.substring(name.lastIndexOf("."), name.length());
+                return !getPermittedExtensions().contains(fileExtension.toLowerCase());
+            } else {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -439,6 +460,14 @@ public class WebFileUploadField extends WebAbstractUploadComponent<UploadCompone
         this.fileSizeLimit = fileSizeLimit;
         if (this.component instanceof CubaFileUpload){
             ((CubaFileUpload) this.component).setFileSizeLimit(fileSizeLimit);
+        }
+    }
+
+    @Override
+    public void setPermittedExtensions(Set<String> permittedExtensions) {
+        this.permittedExtensions = permittedExtensions;
+        if (this.component instanceof CubaFileUpload){
+            ((CubaFileUpload) this.component).setPermittedExtensions(permittedExtensions);
         }
     }
 }

@@ -20,6 +20,8 @@ package com.haulmont.cuba.web.toolkit.ui.client.fileupload;
 import com.vaadin.shared.annotations.NoLayout;
 import com.vaadin.shared.ui.TabIndexState;
 
+import java.util.Set;
+
 /**
  */
 public class CubaFileUploadState extends TabIndexState {
@@ -49,4 +51,7 @@ public class CubaFileUploadState extends TabIndexState {
 
     @NoLayout
     public long fileSizeLimit;
+
+    @NoLayout
+    public Set<String> permittedExtensions;
 }

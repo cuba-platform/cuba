@@ -20,6 +20,9 @@ import com.haulmont.cuba.gui.components.FileUploadField;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import java.util.Arrays;
+import java.util.HashSet;
+
 /**
  */
 public class FileUploadFieldLoader extends AbstractComponentLoader<FileUploadField> {
@@ -48,6 +51,8 @@ public class FileUploadFieldLoader extends AbstractComponentLoader<FileUploadFie
 
         loadAccept(resultComponent, element);
 
+        loadPermittedExtentions(resultComponent, element);
+
         String fileSizeLimit = element.attributeValue("fileSizeLimit");
         if (StringUtils.isNotEmpty(fileSizeLimit)) {
             resultComponent.setFileSizeLimit(Long.valueOf(fileSizeLimit));
@@ -58,6 +63,13 @@ public class FileUploadFieldLoader extends AbstractComponentLoader<FileUploadFie
         String accept = element.attributeValue("accept");
         if (StringUtils.isNotEmpty(accept)) {
             uploadField.setAccept(accept);
+        }
+    }
+
+    protected void loadPermittedExtentions(FileUploadField uploadField, Element element) {
+        String permittedExtensions = element.attributeValue("permittedExtensions");
+        if (StringUtils.isNotEmpty(permittedExtensions)) {
+            uploadField.setPermittedExtensions(new HashSet<>(Arrays.asList(permittedExtensions.split("\\s*,\\s*"))));
         }
     }
 }

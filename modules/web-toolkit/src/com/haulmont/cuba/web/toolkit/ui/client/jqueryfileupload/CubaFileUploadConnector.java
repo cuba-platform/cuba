@@ -78,6 +78,11 @@ public class CubaFileUploadConnector extends AbstractComponentConnector implemen
             public void fileSizeLimitExceeded(String filename) {
                 getRpcProxy(CubaFileUploadServerRpc.class).fileSizeLimitExceeded(filename);
             }
+
+            @Override
+            public void fileExtensionNotAllowed(String filename) {
+                getRpcProxy(CubaFileUploadServerRpc.class).fileExtensionNotAllowed(filename);
+            }
         };
 
         getWidget().queueUploadListener = new CubaFileUploadWidget.QueueUploadListener() {
@@ -168,6 +173,10 @@ public class CubaFileUploadConnector extends AbstractComponentConnector implemen
 
         if (stateChangeEvent.hasPropertyChanged("fileSizeLimit")) {
             getWidget().fileSizeLimit = getState().fileSizeLimit;
+        }
+
+        if (stateChangeEvent.hasPropertyChanged("permittedExtensions")) {
+            getWidget().permittedExtensions = getState().permittedExtensions;
         }
 
         if (!isEnabled() || isReadOnly()) {

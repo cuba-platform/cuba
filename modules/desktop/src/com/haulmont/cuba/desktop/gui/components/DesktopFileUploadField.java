@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static com.haulmont.cuba.gui.upload.FileUploadingAPI.FileInfo;
@@ -86,6 +87,9 @@ public class DesktopFileUploadField extends DesktopAbstractUploadComponent<JButt
         if (file.length() > getActualFileSizeLimit()) {
             String warningMsg = messages.formatMainMessage("upload.fileTooBig.message", file.getName(), getFileSizeLimitString());
             getFrame().showNotification(warningMsg, Frame.NotificationType.WARNING);
+        } else if (hasInvalidExtension(file.getName())) {
+            String warningMsg = messages.formatMainMessage("upload.fileIncorrectExtension.message", file.getName());
+            getFrame().showNotification(warningMsg, Frame.NotificationType.WARNING);
         } else {
             boolean success = true;
             try {
@@ -121,6 +125,18 @@ public class DesktopFileUploadField extends DesktopAbstractUploadComponent<JButt
                 fireFileUploadSucceed(file.getName(), file.length());
             }
         }
+    }
+
+    protected boolean hasInvalidExtension(String name) {
+        if (getPermittedExtensions() != null && !getPermittedExtensions().isEmpty()) {
+            if (name.lastIndexOf(".") > 0) {
+                String fileExtension = name.substring(name.lastIndexOf("."), name.length());
+                return !getPermittedExtensions().contains(fileExtension.toLowerCase());
+            } else {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

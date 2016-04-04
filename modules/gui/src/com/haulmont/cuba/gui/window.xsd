@@ -900,6 +900,7 @@
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attribute name="accept" type="xs:string"/>
+        <xs:attribute name="permittedExtensions" type="xs:string"/>
         <xs:attribute name="fileSizeLimit" type="xs:long"/>
     </xs:complexType>
 
@@ -913,6 +914,7 @@
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasIcon"/>
         <xs:attribute name="accept" type="xs:string"/>
+        <xs:attribute name="permittedExtensions" type="xs:string"/>
         <xs:attribute name="fileSizeLimit" type="xs:long"/>
     </xs:complexType>
 

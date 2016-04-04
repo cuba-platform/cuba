@@ -27,5 +27,7 @@ public interface CubaFileUploadServerRpc extends ServerRpc {
 
     void fileSizeLimitExceeded(String fileName);
 
+    void fileExtensionNotAllowed(String fileName);
+
     void queueUploadFinished();
 }

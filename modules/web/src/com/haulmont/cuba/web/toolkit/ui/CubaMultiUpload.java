@@ -28,12 +28,11 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.LegacyComponent;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @deprecated Use {@link CubaFileUpload}
@@ -48,6 +47,9 @@ public class CubaMultiUpload extends AbstractComponent
     private BootstrapFailureHandler bootstrapFailureHandler;
 
     private boolean interrupted = false;
+
+    private Set<String> permittedExtensions;
+    private String accept;
 
     /**
      * The output of the upload is redirected to this receiver.
@@ -299,7 +301,7 @@ public class CubaMultiUpload extends AbstractComponent
 
     @Override
     public String getAccept() {
-        return getFileTypesMask();
+        return this.accept;
     }
 
     /**
@@ -307,7 +309,38 @@ public class CubaMultiUpload extends AbstractComponent
      */
     @Override
     public void setAccept(String accept) {
-        setFileTypesMask(accept);
+        this.accept = accept;
+        setResultExtensions();
+    }
+
+    public void setPermittedExtensions(Set<String> permittedExtensions) {
+        if (!permittedExtensions.isEmpty()) {
+            this.permittedExtensions.clear();
+            for (String type : permittedExtensions) {
+                this.permittedExtensions.add("*" + type);
+            }
+
+            setResultExtensions();
+        }
+    }
+
+    protected void setResultExtensions() {
+        if (this.permittedExtensions.isEmpty() && StringUtils.isEmpty(this.accept)) {
+            setFileTypesMask("*.*");
+        } else if (this.permittedExtensions.isEmpty()) {
+            setFileTypesMask(this.accept);
+        } else if (StringUtils.isEmpty(this.accept)) {
+            setFileTypesMask(StringUtils.join(this.permittedExtensions, ";"));
+        } else {
+            Set<String> acceptSet = new HashSet<>(Arrays.asList(this.accept.split("\\s*;\\s*")));
+            List<String> fileTypeMask = new ArrayList<>();
+            for (String extension : permittedExtensions) {
+                if (acceptSet.contains(extension)) {
+                    fileTypeMask.add(extension);
+                }
+            }
+            setFileTypesMask(StringUtils.join(fileTypeMask, ";"));
+        }
     }
 
     public void setFileTypesDescription(String fileTypesDescription) {

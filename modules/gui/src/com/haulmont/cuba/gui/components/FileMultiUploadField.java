@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.components;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**

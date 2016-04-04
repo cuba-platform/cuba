@@ -114,13 +114,36 @@ public class DesktopFileMultiUploadField extends DesktopAbstractUploadComponent<
                 notifyFileSizeExceedLimit(file);
                 return false;
             }
+
+            if (hasInvalidExtension(file.getName())) {
+                notifyFileExtensionNotAllowed(file);
+                return false;
+            }
         }
         return true;
+    }
+
+    protected boolean hasInvalidExtension(String name) {
+        if (getPermittedExtensions() != null && !getPermittedExtensions().isEmpty()) {
+            if (name.lastIndexOf(".") > 0) {
+                String fileExtension = name.substring(name.lastIndexOf("."), name.length());
+                return !getPermittedExtensions().contains(fileExtension.toLowerCase());
+            } else {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected void notifyFileSizeExceedLimit(File file) {
         Messages messages = AppBeans.get(Messages.NAME);
         String warningMsg = messages.formatMainMessage("upload.fileTooBig.message", file.getName(), getFileSizeLimitString());
+        getFrame().showNotification(warningMsg, Frame.NotificationType.WARNING);
+    }
+
+    protected void notifyFileExtensionNotAllowed(File file) {
+        Messages messages = AppBeans.get(Messages.NAME);
+        String warningMsg = messages.formatMainMessage("upload.fileIncorrectExtension.message", file.getName());
         getFrame().showNotification(warningMsg, Frame.NotificationType.WARNING);
     }
 

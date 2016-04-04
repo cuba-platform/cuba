@@ -17,6 +17,8 @@
 
 package com.haulmont.cuba.gui.components;
 
+import java.util.Set;
+
 /**
  */
 public interface UploadComponentSupport extends Component, Component.HasCaption, Component.BelongToFrame, Component.HasIcon {
@@ -97,4 +99,17 @@ public interface UploadComponentSupport extends Component, Component.HasCaption,
      * Default value is 0. In this case component uses system value
      */
     void setFileSizeLimit(long fileSizeLimit);
+
+    /**
+     * Set white list of file extensions.
+     * Example: <pre>{@code fileUpload.setPermittedExtensions(".png,.jpeg")}</pre>
+     * @param permittedExtensions set of file extensions.
+     */
+    void setPermittedExtensions(Set<String> permittedExtensions);
+
+    /**
+     * Return white list of file extensions.
+     * @return set of file extensions.
+     */
+    Set<String> getPermittedExtensions();
 }

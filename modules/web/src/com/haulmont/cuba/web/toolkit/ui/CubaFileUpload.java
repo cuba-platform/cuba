@@ -66,8 +66,6 @@ public class CubaFileUpload extends AbstractComponent
      */
     protected com.vaadin.server.StreamVariable streamVariable;
 
-    protected Set<String> permittedExtensions;
-
     public CubaFileUpload() {
         registerRpc(new CubaFileUploadServerRpc() {
             @Override
@@ -80,6 +78,11 @@ public class CubaFileUpload extends AbstractComponent
             @Override
             public void fileSizeLimitExceeded(String fileName) {
                 fireFileSizeLimitExceeded(fileName);
+            }
+
+            @Override
+            public void fileExtensionNotAllowed(String fileName) {
+                fireFileExtensionNotAllowed(fileName);
             }
 
             @Override
@@ -257,20 +260,11 @@ public class CubaFileUpload extends AbstractComponent
     }
 
     public Set<String> getPermittedExtensions() {
-        if (permittedExtensions == null) {
-            return Collections.emptySet();
-        }
-        return Collections.unmodifiableSet(permittedExtensions);
+        return getState(false).permittedExtensions;
     }
 
     public void setPermittedExtensions(Set<String> permittedExtensions) {
-        this.permittedExtensions = permittedExtensions == null ? null : new HashSet<>(permittedExtensions);
-    }
-
-    public void setPermittedExtensions(String... permittedExtensions) {
-        if (permittedExtensions != null) {
-            this.permittedExtensions = new HashSet<>(Arrays.asList(permittedExtensions));
-        }
+        getState().permittedExtensions = permittedExtensions;
     }
 
     public double getFileSizeLimit() {
@@ -333,6 +327,14 @@ public class CubaFileUpload extends AbstractComponent
                     contentLength = event.getContentLength();
                     lastStartedEvent = event;
 
+                    if (hasInvalidExtension(event.getFileName())) {
+                        Logger log = LoggerFactory.getLogger(CubaFileUpload.class);
+                        log.warn("Unable to start upload. File extension is not allowed.");
+
+                        interruptUpload();
+                        return;
+                    }
+
                     double fileSizeLimit = getFileSizeLimit();
                     if (fileSizeLimit > 0 && event.getContentLength() > fileSizeLimit) {
                         Logger log = LoggerFactory.getLogger(CubaFileUpload.class);
@@ -344,6 +346,19 @@ public class CubaFileUpload extends AbstractComponent
                     }
 
                     fireStarted(event.getFileName(), event.getMimeType());
+                }
+
+
+                private boolean hasInvalidExtension(String name) {
+                    if (getPermittedExtensions() != null && !getPermittedExtensions().isEmpty()) {
+                        if (name.lastIndexOf(".") > 0) {
+                            String fileExtension = name.substring(name.lastIndexOf("."), name.length());
+                            return !getPermittedExtensions().contains(fileExtension.toLowerCase());
+                        } else {
+                            return true;
+                        }
+                    }
+                    return false;
                 }
 
                 @Override
@@ -448,6 +463,10 @@ public class CubaFileUpload extends AbstractComponent
 
     protected void fireFileSizeLimitExceeded(String fileName) {
         fireEvent(new FileSizeLimitExceededEvent(this, fileName));
+    }
+
+    protected void fireFileExtensionNotAllowed(String fileName) {
+        fireEvent(new FileExtensionNotAllowedEvent(this, fileName));
     }
 
     protected void fireQueueUploadFinished() {
@@ -581,6 +600,25 @@ public class CubaFileUpload extends AbstractComponent
          * @param fileName the received file name.
          */
         public FileSizeLimitExceededEvent(CubaFileUpload source, String fileName) {
+            super(source);
+
+            this.fileName = fileName;
+        }
+
+        public String getFileName() {
+            return fileName;
+        }
+    }
+
+    public static class FileExtensionNotAllowedEvent extends Component.Event {
+
+        private String fileName;
+
+        /**
+         * @param source   the source of the file.
+         * @param fileName the received file name.
+         */
+        public FileExtensionNotAllowedEvent(CubaFileUpload source, String fileName) {
             super(source);
 
             this.fileName = fileName;
@@ -764,6 +802,14 @@ public class CubaFileUpload extends AbstractComponent
         void fileSizeLimitExceeded(FileSizeLimitExceededEvent e);
     }
 
+    /**
+     * Receives events when the file extension is not included in {@link #getPermittedExtensions()}.
+     */
+    public interface FileExtensionNotAllowedListener extends Serializable {
+
+        void fileExtensionNotAllowed(FileExtensionNotAllowedEvent e);
+    }
+
     private static final Method UPLOAD_FINISHED_METHOD = ReflectTools.findMethod(
             FinishedListener.class, "uploadFinished", FinishedEvent.class);
 
@@ -781,6 +827,9 @@ public class CubaFileUpload extends AbstractComponent
 
     private static final Method FILESIZE_LIMIT_EXCEEDED_METHOD = ReflectTools.findMethod(
             FileSizeLimitExceededListener.class, "fileSizeLimitExceeded", FileSizeLimitExceededEvent.class);
+
+    private static final Method EXTENSION_NOT_ALLOWED_METHOD = ReflectTools.findMethod(
+            FileExtensionNotAllowedListener.class, "fileExtensionNotAllowed", FileExtensionNotAllowedEvent.class);
 
     public void addStartedListener(StartedListener listener) {
         addListener(StartedEvent.class, listener, UPLOAD_STARTED_METHOD);
@@ -816,6 +865,14 @@ public class CubaFileUpload extends AbstractComponent
 
     public void addFileSizeLimitExceededListener(FileSizeLimitExceededListener listener) {
         addListener(FileSizeLimitExceededEvent.class, listener, FILESIZE_LIMIT_EXCEEDED_METHOD);
+    }
+
+    public void addFileExtensionNotAllowedListener(FileExtensionNotAllowedListener listener) {
+        addListener(FileExtensionNotAllowedEvent.class, listener, EXTENSION_NOT_ALLOWED_METHOD);
+    }
+
+    public void removeFileExtensionNotAllowedListener(FileExtensionNotAllowedListener listener) {
+        removeListener(FileExtensionNotAllowedEvent.class, listener, EXTENSION_NOT_ALLOWED_METHOD);
     }
 
     public void removeFileSizeLimitExceededListener(FileSizeLimitExceededListener listener) {
