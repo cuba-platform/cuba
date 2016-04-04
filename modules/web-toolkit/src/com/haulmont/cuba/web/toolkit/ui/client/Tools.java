@@ -110,24 +110,31 @@ public class Tools {
                 Element target = Element.as(nativeEvent.getEventTarget());
 
                 if (Event.ONKEYDOWN == event.getTypeInt()) {
-                    VAbstractOrderedLayout verticalLayout = ((VVerticalLayout) getWidget());
-                    Widget widget = WidgetUtil.findWidget(target, null);
-                    if (isLayoutChild(verticalLayout, widget)) {
-                        Widget widgetParent = widget.getParent();
-                        VAbstractOrderedLayout layout = (VAbstractOrderedLayout) widgetParent.getParent();
+                    if (KeyCodes.KEY_ESCAPE == event.getNativeEvent().getKeyCode()) {
+                        event.cancel();
+                        event.getNativeEvent().stopPropagation();
+                        event.getNativeEvent().preventDefault();
+                        hide();
+                    } else {
+                        VAbstractOrderedLayout verticalLayout = ((VVerticalLayout) getWidget());
+                        Widget widget = WidgetUtil.findWidget(target, null);
+                        if (isLayoutChild(verticalLayout, widget)) {
+                            Widget widgetParent = widget.getParent();
+                            VAbstractOrderedLayout layout = (VAbstractOrderedLayout) widgetParent.getParent();
 
-                        Widget focusWidget = null;
-                        int widgetIndex = layout.getWidgetIndex(widgetParent);
-                        if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_DOWN) {
-                            focusWidget = Tools.findNextWidget(layout, widgetIndex);
-                        } else if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_UP) {
-                            focusWidget = Tools.findPrevWidget(layout, widgetIndex);
-                        }
+                            Widget focusWidget = null;
+                            int widgetIndex = layout.getWidgetIndex(widgetParent);
+                            if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_DOWN) {
+                                focusWidget = Tools.findNextWidget(layout, widgetIndex);
+                            } else if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_UP) {
+                                focusWidget = Tools.findPrevWidget(layout, widgetIndex);
+                            }
 
-                        if (focusWidget instanceof VButton) {
-                            VButton button = (VButton) focusWidget;
-                            focusSelectedItem(widgetParent.getParent(), button);
-                            button.setFocus(true);
+                            if (focusWidget instanceof VButton) {
+                                VButton button = (VButton) focusWidget;
+                                focusSelectedItem(widgetParent.getParent(), button);
+                                button.setFocus(true);
+                            }
                         }
                     }
                 } else if (Event.ONMOUSEOVER == event.getTypeInt()) {
