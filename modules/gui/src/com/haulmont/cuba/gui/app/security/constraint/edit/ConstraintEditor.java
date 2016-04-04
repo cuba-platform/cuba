@@ -37,7 +37,9 @@ import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.edit.FilterEditor;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.security.entity.Constraint;
 import com.haulmont.cuba.security.entity.ConstraintCheckType;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
@@ -293,12 +295,12 @@ public class ConstraintEditor extends AbstractEditor {
                 } else {
                     transformer.addWhere(constraint.getWhereClause());
                 }
-
-                resultQueryStr = transformer.getResult();
-
-                LoadContext<Entity> loadContext = new LoadContext<>(metadata.getSession().getClassNN(entityName));
-                loadContext.setQueryString(resultQueryStr).setMaxResults(0);
-                getDsContext().getDataSupplier().loadList(loadContext);
+                CollectionDatasource datasource = new DsBuilder()
+                        .setMetaClass(metadata.getSession().getClassNN(entityName))
+                        .setMaxResults(0)
+                        .buildCollectionDatasource();
+                datasource.setQuery(transformer.getResult());
+                datasource.refresh();
 
                 showNotification(getMessage("notification.success"), NotificationType.HUMANIZED);
             } catch (QueryErrorsFoundException e) {
