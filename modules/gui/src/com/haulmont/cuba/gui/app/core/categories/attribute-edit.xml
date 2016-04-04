@@ -19,7 +19,8 @@
         class="com.haulmont.cuba.gui.app.core.categories.AttributeEditor"
         messagesPack="com.haulmont.cuba.gui.app.core.categories"
         datasource="attributeDs"
-        caption="msg://AttributeEditor.caption">
+        caption="msg://AttributeEditor.caption"
+        focusComponent="attributeFieldGroup">
     <dsContext>
         <datasource
                 id="attributeDs"
@@ -33,25 +34,25 @@
     <layout spacing="true" expand="buttons">
         <tabSheet id="tabsheet">
             <tab id="main" caption="msg://caption.mainTab" spacing="true" margin="true">
-                <fieldGroup id="attributeFieldGroup" datasource="attributeDs">
+                <fieldGroup id="attributeFieldGroup" datasource="attributeDs" width="100%">
                     <column>
-                        <field id="name" required="true"/>
-                        <field id="code" required="true"/>
+                        <field id="name" required="true" width="100%"/>
+                        <field id="code" required="true" width="100%"/>
                         <field id="required"/>
-                        <field id="dataType" custom="true" required="true"/>
+                        <field id="dataType" custom="true" required="true" width="100%"/>
 
-                        <field id="entityClass" custom="true" required="true"/>
-                        <field id="screen" custom="true"/>
+                        <field id="entityClass" custom="true" required="true" width="100%"/>
+                        <field id="screen" custom="true" width="100%"/>
                         <field id="lookup"/>
-                        <field id="defaultEntityId" custom="true"/>
+                        <field id="defaultEntityId" custom="true" width="100%"/>
 
-                        <field id="enumeration" required="true"/>
-                        <field id="defaultString"/>
-                        <field id="defaultInt"/>
-                        <field id="defaultDouble"/>
-                        <field id="defaultBoolean" custom="true"/>
-                        <field id="defaultDate"/>
-                        <field id="defaultDateIsCurrent"/>
+                        <field id="enumeration" required="true" width="100%"/>
+                        <field id="defaultString" width="100%"/>
+                        <field id="defaultInt" width="100%"/>
+                        <field id="defaultDouble" width="100%"/>
+                        <field id="defaultBoolean" custom="true" width="100%"/>
+                        <field id="defaultDate" width="100%"/>
+                        <field id="defaultDateIsCurrent" width="100%"/>
                     </column>
                 </fieldGroup>
             </tab>
