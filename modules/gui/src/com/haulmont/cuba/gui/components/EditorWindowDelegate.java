@@ -165,7 +165,9 @@ public class EditorWindowDelegate extends WindowDelegate {
 
         if (ds.getLoadDynamicAttributes() && item instanceof BaseGenericIdEntity) {
             DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.NAME);
-            dynamicAttributesGuiTools.initDefaultAttributeValues((BaseGenericIdEntity) item, item.getMetaClass());
+            if (PersistenceHelper.isNew(item)) {
+                dynamicAttributesGuiTools.initDefaultAttributeValues((BaseGenericIdEntity) item, item.getMetaClass());
+            }
             if (item instanceof Categorized) {
                 dynamicAttributesGuiTools.listenCategoryChanges(ds);
             }

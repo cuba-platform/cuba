@@ -79,6 +79,8 @@ public class DynamicAttributesGuiTools {
         return categoryAttributes;
     }
 
+
+
     public void initDefaultAttributeValues(BaseGenericIdEntity item, MetaClass metaClass) {
         Preconditions.checkNotNullArgument(metaClass, "metaClass is null");
         Collection<CategoryAttribute> attributes =

@@ -238,7 +238,11 @@ public class RuntimePropsDatasourceImpl
                     public void valueChanged(Entity source, String property, Object prevValue, Object value) {
                         if (property.equals("category")) {
                             categoryChanged = true;
-                            initMetaClass(mainDs.getItem());
+                            try {
+                                initMetaClass(mainDs.getItem());
+                            } finally {
+                                categoryChanged = false;
+                            }
                         }
                     }
 
@@ -275,7 +279,9 @@ public class RuntimePropsDatasourceImpl
         }
 
         item = new DynamicAttributesEntity(baseGenericIdEntity, attributes);
-        dynamicAttributesGuiTools.initDefaultAttributeValues(baseGenericIdEntity, resolveCategorizedEntityClass());
+        if (PersistenceHelper.isNew(entity) || categoryChanged) {
+            dynamicAttributesGuiTools.initDefaultAttributeValues(baseGenericIdEntity, resolveCategorizedEntityClass());
+        }
 
         view = new View(DynamicAttributesEntity.class, false);
         Collection<MetaProperty> properties = metaClass.getProperties();
