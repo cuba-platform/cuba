@@ -56,6 +56,7 @@ public class CubaGroupBoxConnector extends PanelConnector {
         LayoutManager layoutManager = getLayoutManager();
         layoutManager.registerDependency(this, widget.captionStartDeco);
         layoutManager.registerDependency(this, widget.captionEndDeco);
+        layoutManager.registerDependency(this, widget.captionTextNode);
     }
 
     @Override
@@ -67,6 +68,7 @@ public class CubaGroupBoxConnector extends PanelConnector {
 
         layoutManager.unregisterDependency(this, widget.captionStartDeco);
         layoutManager.unregisterDependency(this, widget.captionEndDeco);
+        layoutManager.unregisterDependency(this, widget.captionTextNode);
     }
 
     @Override
