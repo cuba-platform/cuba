@@ -47,6 +47,8 @@ create table SYS_CATEGORY (
     primary key(ID)
 )^
 
+create unique index IDX_SYS_CATEGORY_UNIQ_NAME_ENTITY_TYPE on SYS_CATEGORY (NAME, ENTITY_TYPE, DELETE_TS)^
+
 create table SYS_CATEGORY_ATTR (
     ID varchar2(32) not null,
     CREATE_TS timestamp,

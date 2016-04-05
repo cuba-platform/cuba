@@ -233,11 +233,15 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         });
 
         attributeDs.addItemPropertyChangeListener(e -> {
-            if ("dataType".equalsIgnoreCase(e.getProperty())
-                    || "lookup".equalsIgnoreCase(e.getProperty())
-                    || "defaultDateIsCurrent".equalsIgnoreCase(e.getProperty())
-                    || "entityClass".equalsIgnoreCase(e.getProperty())) {
+            String property = e.getProperty();
+            if ("dataType".equalsIgnoreCase(property)
+                    || "lookup".equalsIgnoreCase(property)
+                    || "defaultDateIsCurrent".equalsIgnoreCase(property)
+                    || "entityClass".equalsIgnoreCase(property)) {
                 setupVisibility();
+            }
+            if ("name".equalsIgnoreCase(property)) {
+                fillAttributeCode();
             }
         });
     }
@@ -305,6 +309,17 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             } else {
                 defaultEntityField.setValue(null);
             }
+        }
+    }
+
+    protected void fillAttributeCode() {
+        CategoryAttribute attribute = getItem();
+        if (StringUtils.isBlank(attribute.getCode()) && StringUtils.isNotBlank(attribute.getName())) {
+            String categoryName = StringUtils.EMPTY;
+            if (attribute.getCategory() != null) {
+                categoryName = StringUtils.defaultString(attribute.getCategory().getName());
+            }
+            attribute.setCode(StringUtils.deleteWhitespace(categoryName + attribute.getName()));
         }
     }
 
