@@ -34,7 +34,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -46,23 +45,21 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 /**
  */
 public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
-    protected DynamicAttributes dynamicAttributes = AppBeans.get(DynamicAttributes.NAME);
 
-    protected void addDynamicAttributes(FieldGroup resultComponent, Datasource ds) {
-        if (ds != null && AppBeans.get(MetadataTools.NAME, MetadataTools.class).isPersistent(ds.getMetaClass())) {
-            DynamicAttributesGuiTools dynamicAttributesGuiTools =
-                    AppBeans.get(DynamicAttributesGuiTools.NAME, DynamicAttributesGuiTools.class);
-            Context topContext = getContext();
-            while (topContext.getParent() != null) {
-                topContext = topContext.getParent();
-            }
-            Set<CategoryAttribute> attributesToShow = dynamicAttributesGuiTools
-                    .getAttributesToShowOnTheScreen(ds.getMetaClass(), topContext.getFullFrameId(), resultComponent.getId());
+    protected DynamicAttributes dynamicAttributes = AppBeans.get(DynamicAttributes.NAME);
+    protected DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.NAME, DynamicAttributesGuiTools.class);
+    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME, MetadataTools.class);
+
+    protected List<FieldGroup.FieldConfig> loadDynamicAttributeFields(Datasource ds) {
+        if (ds != null && metadataTools.isPersistent(ds.getMetaClass())) {
+            Set<CategoryAttribute> attributesToShow = dynamicAttributesGuiTools.getAttributesToShowOnTheScreen(ds.getMetaClass(),
+                    getFrameId(), resultComponent.getId());
             if (CollectionUtils.isNotEmpty(attributesToShow)) {
-                ds.setLoadDynamicAttributes(true);
+                List<FieldGroup.FieldConfig> fields = new ArrayList<>();
+                        ds.setLoadDynamicAttributes(true);
                 for (CategoryAttribute attribute : attributesToShow) {
                     MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(ds.getMetaClass(), attribute);
-                    final FieldGroup.FieldConfig field = new FieldGroup.FieldConfig(
+                    FieldGroup.FieldConfig field = new FieldGroup.FieldConfig(
                             DynamicAttributesUtils.encodeAttributeCode(attribute.getCode()));
                     field.setMetaPropertyPath(metaPropertyPath);
                     field.setType(metaPropertyPath.getRangeJavaClass());
@@ -73,18 +70,13 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                             messages.getMainMessagePack(),
                             "validation.required.defaultMsg",
                             attribute.getName()));
-
-                    if (resultComponent.getWidth() > 0) {
-                        field.setWidth("100%");
-                    } else {
-                        field.setWidth(FieldGroup.DEFAULT_FIELD_WIDTH);
-                    }
-                    resultComponent.addField(field);
+                    fields.add(field);
                 }
+                return fields;
             }
-
             dynamicAttributesGuiTools.listenDynamicAttributesChanges(ds);
         }
+        return Collections.emptyList();
     }
 
     protected void loadFieldCaptionWidth(FieldGroup resultComponent, Element element) {
@@ -113,13 +105,17 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
         return null;
     }
 
-    protected List<FieldGroup.FieldConfig> loadFields(FieldGroup resultComponent, Element element, Datasource ds) {
+    protected List<FieldGroup.FieldConfig> loadFields(FieldGroup resultComponent, Element element, Datasource ds, boolean addDynamicAttributes) {
         @SuppressWarnings("unchecked")
         List<Element> fieldElements = element.elements("field");
         if (!fieldElements.isEmpty()) {
-            return loadFields(resultComponent, fieldElements, ds);
+            List<FieldGroup.FieldConfig> fields = loadFields(resultComponent, fieldElements, ds);
+            if (addDynamicAttributes) {
+                fields.addAll(loadDynamicAttributeFields(ds));
+            }
+            return fields;
         }
-        return Collections.emptyList();
+        return addDynamicAttributes ? loadDynamicAttributeFields(ds) : Collections.emptyList();
     }
 
     protected List<FieldGroup.FieldConfig> loadFields(FieldGroup resultComponent, List<Element> elements, Datasource ds) {
@@ -412,7 +408,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
         Datasource ds = loadDatasource(element);
         if (element.elements("column").isEmpty()) {
-            List<FieldGroup.FieldConfig> rootFields = loadFields(resultComponent, element, ds);
+            List<FieldGroup.FieldConfig> rootFields = loadFields(resultComponent, element, ds, true);
             for (FieldGroup.FieldConfig field : rootFields) {
                 resultComponent.addField(field);
             }
@@ -440,7 +436,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
                 String width = loadThemeString(columnElement.attributeValue("width"));
 
-                List<FieldGroup.FieldConfig> columnFields = loadFields(resultComponent, columnElement, ds);
+                List<FieldGroup.FieldConfig> columnFields = loadFields(resultComponent, columnElement, ds, colIndex == 0);
                 for (FieldGroup.FieldConfig field : columnFields) {
                     resultComponent.addField(field, colIndex);
                     if (StringUtils.isNotEmpty(width) && field.getWidth() == null) {
@@ -464,8 +460,6 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
             }
         }
 
-        addDynamicAttributes(resultComponent, ds);
-
         resultComponent.setDatasource(ds);
 
         loadEditable(resultComponent, element);
@@ -485,8 +479,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
         loadFieldCaptionWidth(resultComponent, element);
 
-        List<FieldGroup.FieldConfig> fields = resultComponent.getFields();
-        for (FieldGroup.FieldConfig field : fields) {
+        for (FieldGroup.FieldConfig field : resultComponent.getFields()) {
             if (!field.isCustom()) {
                 if (!DynamicAttributesUtils.isDynamicAttribute(field.getId())) {//the following does not make sense for dynamic attrs
                     loadValidators(resultComponent, field);
@@ -494,7 +487,6 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                     loadEnable(resultComponent, field);
                     loadVisible(resultComponent, field);
                 }
-
                 loadEditable(resultComponent, field);
             }
         }
@@ -517,5 +509,13 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                 }
             }
         });
+    }
+
+    protected String getFrameId() {
+        Context context = getContext();
+        while (context.getParent() != null) {
+            context = context.getParent();
+        }
+        return context.getFullFrameId();
     }
 }
