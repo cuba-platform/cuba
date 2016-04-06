@@ -96,19 +96,20 @@ public interface UploadComponentSupport extends Component, Component.HasCaption,
 
     /**
      * Sets maximum allowed file size in bytes.
-     * Default value is 0. In this case component uses system value
+     * Default value is 0. In this case component uses system value.
      */
     void setFileSizeLimit(long fileSizeLimit);
 
     /**
-     * Set white list of file extensions.
-     * Example: <pre>{@code fileUpload.setPermittedExtensions(".png,.jpeg")}</pre>
-     * @param permittedExtensions set of file extensions.
+     * Set white list of comma separated file extensions.
+     *
+     * @param permittedExtensions permitted extensions.
      */
     void setPermittedExtensions(Set<String> permittedExtensions);
 
     /**
      * Return white list of file extensions.
+     *
      * @return set of file extensions.
      */
     Set<String> getPermittedExtensions();
