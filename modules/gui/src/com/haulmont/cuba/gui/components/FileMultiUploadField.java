@@ -89,17 +89,4 @@ public interface FileMultiUploadField extends UploadComponentSupport {
 
     void addQueueUploadCompleteListener(QueueUploadCompleteListener listener);
     void removeQueueUploadCompleteListener(QueueUploadCompleteListener listener);
-
-    /**
-     * Returns comma separated types of files.
-     * @return comma separated types of files
-     */
-    String getAccept();
-
-    /**
-     * Sets the mask for files to filter them in the file selection dialog.<br/>
-     * Example: <pre>{@code fileUpload.setAccept(".png,.jpeg")}</pre>
-     * @param accept comma separated types of files
-     */
-    void setAccept(String accept);
 }
