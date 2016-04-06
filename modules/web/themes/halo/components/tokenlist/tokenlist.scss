@@ -22,7 +22,6 @@
     width: $v-unit-size;
     cursor: pointer;
     display: inline-block;
-    float: right;
     text-align: center;
     font-size: $v-font-size;
     line-height: $v-unit-size;
@@ -37,6 +36,7 @@
     white-space: nowrap;
     outline: none;
     font-size: 0;
+    padding-right: $v-unit-size;
   }
 
   .#{$primary-stylename} .cuba-tokenlist-label-content .content {
@@ -47,7 +47,7 @@
     line-height: $v-unit-size;
     font-size: $v-font-size;
     vertical-align: top;
-    float: left;
+    width: 100%;
   }
 
   .#{$primary-stylename} .cuba-tokenlist-label.noedit {
@@ -74,12 +74,12 @@
       display: inline-block;
     }
 
-    .cuba-tokenlist-label-close {
-      float: none;
+    .cuba-tokenlist-label-content {
+      padding-right: 0;
     }
 
     .cuba-tokenlist-label-content .content {
-      float: none;
+      width: auto;
     }
   }
 }
