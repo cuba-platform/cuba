@@ -18,6 +18,7 @@
 package com.haulmont.cuba.gui.app.security.role.edit.tabs;
 
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.app.security.ds.MultiplePermissionTargetsDatasource;
 import com.haulmont.cuba.gui.app.security.ds.RestorablePermissionDatasource;
@@ -244,7 +245,13 @@ public class AttributePermissionsFrame extends AbstractFrame {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        assignedOnlyCheckBox.setValue(Boolean.TRUE);
+        if (!PersistenceHelper.isNew(params.get("ITEM"))) {
+            assignedOnlyCheckBox.setValue(Boolean.TRUE);
+        }
+
+        assignedOnlyCheckBox.addValueChangeListener(e -> {
+            applyFilter();
+        });
 
         attributeTargetsDs.setPermissionDs(propertyPermissionsDs);
         attributeTargetsDs.setFilter(
