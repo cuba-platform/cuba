@@ -23,7 +23,7 @@ import java.util.UUID;
 
 /**
  */
-public class CubaMySQLPlatform1 extends MySQLPlatform {
+public class CubaMySQLPlatform extends MySQLPlatform {
 
     @Override
     public Object convertObject(Object sourceObject, Class javaClass) throws ConversionException {
