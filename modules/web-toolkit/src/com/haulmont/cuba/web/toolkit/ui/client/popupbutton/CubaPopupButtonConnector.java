@@ -25,13 +25,13 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaPopupButton;
+import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.CubaFileUploadWidget;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.VButton;
 import com.vaadin.client.ui.VUpload;
-import com.vaadin.client.ui.orderedlayout.Slot;
 import com.vaadin.client.ui.orderedlayout.VAbstractOrderedLayout;
 import com.vaadin.shared.ui.Connect;
 import org.vaadin.hene.popupbutton.widgetset.client.ui.PopupButtonConnector;
@@ -139,9 +139,9 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
 
                             int widgetIndex = layout.getWidgetIndex(widgetParent);
                             if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_DOWN) {
-                                focusWidget = findNextWidget(layout, widgetIndex);
+                                focusWidget = Tools.findNextWidget(layout, widgetIndex);
                             } else if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_UP) {
-                                focusWidget = findPrevWidget(layout, widgetIndex);
+                                focusWidget = Tools.findPrevWidget(layout, widgetIndex);
                             }
 
                             if (focusWidget instanceof VButton
@@ -194,58 +194,5 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
         VAbstractOrderedLayout layout = (VAbstractOrderedLayout) widgetParent.getParent();
         int widgetIndex = layout.getWidgetIndex(widgetParent);
         return widgetIndex == layout.getWidgetCount() - 1;
-    }
-
-    protected Widget findPrevWidget(VAbstractOrderedLayout layout, int widgetIndex) {
-        for (int i = widgetIndex - 1; i >= 0; i--) {
-            Slot slot = (Slot) layout.getWidget(i);
-            if (isSuitableWidget(slot.getWidget())) {
-                return slot.getWidget();
-            }
-        }
-
-        // try to find button from last
-        for (int i = layout.getWidgetCount() - 1; i > widgetIndex; i--) {
-            Slot slot = (Slot) layout.getWidget(i);
-            if (isSuitableWidget(slot.getWidget())) {
-                return slot.getWidget();
-            }
-        }
-        return null;
-    }
-
-    protected Widget findNextWidget(VAbstractOrderedLayout layout, int widgetIndex) {
-        for (int i = widgetIndex + 1; i < layout.getWidgetCount(); i++) {
-            Slot slot = (Slot) layout.getWidget(i);
-            if (isSuitableWidget(slot.getWidget())) {
-                return slot.getWidget();
-            }
-        }
-
-        // try to find button from first
-        for (int i = 0; i < widgetIndex; i++) {
-            Slot slot = (Slot) layout.getWidget(i);
-            if (isSuitableWidget(slot.getWidget())) {
-                return slot.getWidget();
-            }
-        }
-
-        return null;
-    }
-
-    protected boolean isSuitableWidget(Widget slotWidget) {
-        if (slotWidget instanceof VButton) {
-            VButton button = (VButton) slotWidget;
-
-            if (button.isEnabled()) {
-                return true;
-            }
-        } else if (slotWidget instanceof CubaFileUploadWidget) {
-            return true;
-        } else if (slotWidget instanceof VUpload) {
-            return true;
-        }
-
-        return false;
     }
 }

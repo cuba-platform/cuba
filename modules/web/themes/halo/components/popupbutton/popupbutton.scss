@@ -5,6 +5,18 @@
 
 @mixin halo-popupbutton($primary-stylename: v-popupbutton) {
 
+  @include halo-cuba-contextmenu($primary-stylename + "-popup");
+
+  .#{$primary-stylename}-popup {
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .v-disabled.v-button.v-selected {
+    background: transparent;
+    color: inherit;
+  }
+
   .#{$primary-stylename} {
     .v-popup-indicator {
       padding-left: round($v-unit-size/4);
@@ -17,41 +29,5 @@
         content: "\f107";
       }
     }
-  }
-
-  .#{$primary-stylename}-popup {
-    @include valo-selection-overlay-style;
-
-    .v-button {
-      font-size: $v-font-size;
-
-      @include valo-button-borderless-style;
-      cursor: pointer;
-      line-height: $v-selection-item-height;
-      padding: 0 $v-selection-item-padding-horizontal*2 0 $v-selection-item-padding-horizontal;
-      @if $v-selection-item-border-radius > 0 {
-        border-radius: $v-selection-item-border-radius;
-      }
-      font-weight: $v-selection-item-font-weight;
-      white-space: nowrap;
-      height: $v-selection-item-height;
-      display: block; // Firefox 24 needs this to make position: relative; work
-
-      text-decoration: none;
-      text-align: left;
-    }
-
-    .v-button.v-selected {
-      @include valo-selection-item-selected-style;
-    }
-  }
-
-  .v-disabled.v-button.v-selected {
-    background: transparent;
-    color: inherit;
-  }
-
-  .v-disabled.v-button:active {
-    opacity: 0.5;
   }
 }

@@ -255,7 +255,7 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
             }
         }
 
-        customContextMenuPopup = Tools.createCubaContextMenu();
+        customContextMenuPopup = Tools.createCubaTableContextMenu();
         customContextMenuPopup.setOwner(this);
         customContextMenuPopup.setWidget(customContextMenu);
 

@@ -5,36 +5,36 @@
 
 // default vaadin context menu
 @mixin havana-contextmenu($primary-stylename: v-contextmenu) {
-  .#{$primary-stylename} {
-    font-family: $cuba-havana-fonts;
-    font-size: 12px;
+.#{$primary-stylename} {
+  font-family: $cuba-havana-fonts;
+  font-size: 12px;
 
-    color: $cuba-contextmenu-font-color;
+  color: $cuba-contextmenu-font-color;
 
-    background: $cuba-contextmenu-background-color;
-    border: 1px solid $cuba-field-focused-border-color;
+  background: $cuba-contextmenu-background-color;
+  border: 1px solid $cuba-field-focused-border-color;
 
-    .popupContent {
-      padding: 3px;
+  .popupContent {
+    padding: 3px;
 
-      .gwt-MenuItem {
-        border: 1px solid transparent;
-      }
+    .gwt-MenuItem {
+      border: 1px solid transparent;
+    }
 
-      .gwt-MenuItem > div {
-        padding: 3px 7px;
-      }
+    .gwt-MenuItem > div {
+      padding: 3px 7px;
+    }
 
-      .gwt-MenuItem-selected > div {
-        background: $cuba-field-selection-color;
-      }
+    .gwt-MenuItem-selected > div {
+      background: $cuba-field-selection-color;
     }
   }
+ }
 }
 
 // custom cuba context menu with normal buttons
-@mixin havana-cuba-contextmenu($primary-stylename: cuba-context-menu) {
-  .#{$primary-stylename}-container {
+@mixin havana-cuba-contextmenu($primary-stylename: cuba-context-menu-container) {
+  .#{$primary-stylename} {
     background: $cuba-contextmenu-background-color;
     overflow: auto;
     padding: 3px;
@@ -46,6 +46,7 @@
       width: 100%;
       border: 1px solid transparent;
       padding: 0 2px;
+      text-decoration: none;
     }
 
     .v-button-wrap {
@@ -60,12 +61,26 @@
       text-decoration: none;
     }
 
-    .v-button:hover {
+    .cuba-context-menu-button-selected {
       background: $cuba-field-selection-color;
+      color: #fff;
+      text-decoration: none;
 
       .v-button-caption {
         color: #fff;
+        text-decoration: none;
       }
+    }
+
+    .cuba-context-menu-button-selected.v-disabled {
+       background: transparent;
+       color: inherit;
+       border: 1px solid transparent;
+
+       .v-button-caption {
+         color: inherit;
+         text-decoration: none;
+       }
     }
 
     .v-ie9 & {
@@ -83,14 +98,6 @@
         .v-button-caption {
           color: #fff;
         }
-      }
-    }
-
-    .v-disabled.v-button:hover {
-      background: transparent;
-
-      .v-button-caption {
-        color: #000;
       }
     }
 
