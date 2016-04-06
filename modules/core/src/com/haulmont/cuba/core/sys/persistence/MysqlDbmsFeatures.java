@@ -28,7 +28,7 @@ public class MysqlDbmsFeatures implements DbmsFeatures {
     @Override
     public Map<String, String> getJpaParameters() {
         HashMap<String, String> params = new HashMap<>();
-        params.put("eclipselink.target-database", "org.eclipse.persistence.platform.database.MySQLPlatform");
+        params.put("eclipselink.target-database", "com.haulmont.cuba.core.sys.persistence.CubaMySQLPlatform");
         return params;
     }
 
