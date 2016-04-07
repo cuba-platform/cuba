@@ -17,9 +17,11 @@
 
 package com.haulmont.cuba.gui.dynamicattributes;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesMetaProperty;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Categorized;
@@ -27,8 +29,13 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.TimeSource;
+import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.commonlookup.CommonLookupController;
+import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
@@ -46,6 +53,9 @@ public class DynamicAttributesGuiTools {
 
     @Inject
     protected MetadataTools metadataTools;
+
+    @Inject
+    protected WindowConfig windowConfig;
 
     /**
      * Enforce the datasource to change modified status if dynamic attribute is changed
@@ -115,6 +125,25 @@ public class DynamicAttributesGuiTools {
                 initDefaultAttributeValues((BaseGenericIdEntity) e.getItem(), e.getItem().getMetaClass());
             }
         });
+    }
+
+    public PickerField.LookupAction addEntityLookupAction(PickerField owner, DynamicAttributesMetaProperty metaProperty) {
+        String screen = metaProperty.getAttribute().getScreen();
+        PickerField.LookupAction lookupAction = owner.addLookupAction();
+        if (StringUtils.isBlank(screen)) {
+            MetaClass metaClass = metaProperty.getRange().asClass();
+            screen = windowConfig.getBrowseScreenId(metaClass);
+            if (windowConfig.findWindowInfo(screen) != null) {
+                lookupAction.setLookupScreen(screen);
+            } else {
+                lookupAction.setLookupScreen(CommonLookupController.SCREEN_ID);
+                lookupAction.setLookupScreenParams(ParamsMap.of(CommonLookupController.CLASS_PARAMETER, metaClass));
+                lookupAction.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
+            }
+        } else {
+            lookupAction.setLookupScreen(screen);
+        }
+        return lookupAction;
     }
 
     protected boolean attributeShouldBeShownOnTheScreen(String screen, String component, CategoryAttribute attribute) {
