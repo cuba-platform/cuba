@@ -24,12 +24,12 @@
     background: #fafafa url(images/token-remove.png) center no-repeat;
     cursor: pointer;
     display: inline-block;
-    float: right;
   }
 
   .#{$primary-stylename} .cuba-tokenlist-label-content {
     white-space: nowrap;
     outline: none;
+    padding-right: 25px;
   }
 
   .#{$primary-stylename} .cuba-tokenlist-label-content .content {
@@ -40,7 +40,7 @@
     display: inline-block;
     line-height: 25px;
     vertical-align: top;
-    float: left;
+    width: 100%;
   }
 
   .#{$primary-stylename} .cuba-tokenlist-label.noedit {
@@ -67,12 +67,12 @@
       display: inline-block;
     }
 
-    .cuba-tokenlist-label-close {
-      float: none;
+    .cuba-tokenlist-label-content {
+      padding-right: 0;
     }
 
     .cuba-tokenlist-label-content .content {
-      float: none;
+      width: auto;
     }
   }
 }
