@@ -63,10 +63,10 @@ public class DbUpdaterEngine implements DbUpdater {
     protected final Map<String, String> requiredTables = new HashMap<>();
 
     {
-        requiredTables.put("reports", "report_report");
-        requiredTables.put("workflow", "wf_proc");
-        requiredTables.put("ccpayments", "cc_credit_card");
-        requiredTables.put("bpm", "bpm_proc_definition");
+        requiredTables.put("reports", "REPORT_REPORT");
+        requiredTables.put("workflow", "WF_PROC");
+        requiredTables.put("ccpayments", "CC_CREDIT_CARD");
+        requiredTables.put("bpm", "BPM_PROC_DEFINITION");
     }
 
     // register handlers for script files
