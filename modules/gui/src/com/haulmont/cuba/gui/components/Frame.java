@@ -100,7 +100,7 @@ public interface Frame
      * method of a screen, which is being opened in {@link WindowManager.OpenType#DIALOG} mode, affects the current
      * screen itself.
      *
-     * @deprecated Use {@link WindowManager.OpenType}
+     * @deprecated Use {@link WindowManager.OpenType} or {@link Window#getDialogOptions()} from screen controller
      */
     @Deprecated
     DialogParams getDialogParams();
