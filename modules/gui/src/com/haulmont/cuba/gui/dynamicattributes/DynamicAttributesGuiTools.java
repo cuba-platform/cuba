@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.dynamicattributes;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
@@ -52,6 +53,9 @@ public class DynamicAttributesGuiTools {
 
     @Inject
     protected MetadataTools metadataTools;
+
+    @Inject
+    protected WindowConfig windowConfig;
 
     /**
      * Enforce the datasource to change modified status if dynamic attribute is changed
@@ -129,16 +133,13 @@ public class DynamicAttributesGuiTools {
         String screen = metaProperty.getAttribute().getScreen();
         PickerField.LookupAction lookupAction = owner.addLookupAction();
         if (StringUtils.isBlank(screen)) {
-            WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
             MetaClass metaClass = metaProperty.getRange().asClass();
-            screen = windowConfig.getBrowseScreenId(metaProperty.getRange().asClass());
+            screen = windowConfig.getBrowseScreenId(metaClass);
             if (windowConfig.findWindowInfo(screen) != null) {
                 lookupAction.setLookupScreen(screen);
             } else {
                 lookupAction.setLookupScreen(CommonLookupController.SCREEN_ID);
-                Map<String, Object> lookupParams = new HashMap<>();
-                lookupParams.put(CommonLookupController.CLASS_PARAMETER, metaClass);
-                lookupAction.setLookupScreenParams(lookupParams);
+                lookupAction.setLookupScreenParams(ParamsMap.of(CommonLookupController.CLASS_PARAMETER, metaClass));
                 lookupAction.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
             }
         } else {

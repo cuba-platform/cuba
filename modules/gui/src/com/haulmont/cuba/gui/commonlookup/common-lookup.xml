@@ -14,11 +14,9 @@
   ~ limitations under the License.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
         class="com.haulmont.cuba.gui.commonlookup.CommonLookupController">
 
-    <dsContext/>
     <layout expand="mainPane">
         <vbox id="mainPane" spacing="true"/>
     </layout>

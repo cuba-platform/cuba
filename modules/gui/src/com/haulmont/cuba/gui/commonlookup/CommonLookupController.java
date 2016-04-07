@@ -33,10 +33,6 @@ import javax.inject.Inject;
 import java.util.LinkedList;
 import java.util.Map;
 
-/**
- *
- * @author subbotin
- */
 public class CommonLookupController extends AbstractLookup {
 
     @Inject
