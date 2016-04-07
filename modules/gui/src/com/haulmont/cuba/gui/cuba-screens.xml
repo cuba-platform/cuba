@@ -199,4 +199,7 @@
     <screen id="appPropertiesExport"
             template="com/haulmont/cuba/gui/app/core/appproperties/appproperties-export.xml"/>
 
+    <screen id="commonLookup"
+            template="com/haulmont/cuba/gui/commonlookup/common-lookup.xml"/>
+
 </screen-config>

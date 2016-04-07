@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.View;
 import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.*;
@@ -183,6 +184,7 @@ public class CategoryAttributeValue extends StandardEntity {
                     "Could not resolve class by empty dataType. Attribute value " + id);
             return AppBeans.get(DataManager.NAME, DataManager.class)
                     .load(LoadContext.create(categoryAttribute.getJavaClassForEntity())
+                            .setView(View.MINIMAL)
                             .setSoftDeletion(false).setId(entityValue));
         }
 

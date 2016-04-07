@@ -35,6 +35,7 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
+import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -104,7 +105,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
                     }
                 }
             } else if (mpp.getRange().isClass()) {
-                return createEntityField(datasource, property,mpp, xmlDescriptor);
+                return createEntityField(datasource, property, mpp, xmlDescriptor);
             } else if (mpp.getRange().isEnum()) {
                 return createEnumField(datasource, property);
             }
@@ -299,7 +300,12 @@ public abstract class AbstractFieldFactory implements FieldFactory {
             PickerField pickerField;
             if (optionsDatasource == null) {
                 pickerField = componentsFactory.createComponent(PickerField.class);
-                pickerField.addLookupAction();
+                if (DynamicAttributesUtils.isDynamicAttribute(mpp.getMetaProperty())) {
+                    DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.class);
+                    dynamicAttributesGuiTools.addEntityLookupAction(pickerField, (DynamicAttributesMetaProperty) mpp.getMetaProperty());
+                } else {
+                    pickerField.addLookupAction();
+                }
                 pickerField.addClearAction();
             } else {
                 LookupPickerField lookupPickerField = componentsFactory.createComponent(LookupPickerField.class);
