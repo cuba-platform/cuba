@@ -115,7 +115,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams().setWidth(themeConstants.getInt("cuba.gui.AttributeEditor.width"));
+        getDialogOptions().setWidth(themeConstants.getInt("cuba.gui.AttributeEditor.width"));
 
         fieldWidth = themeConstants.get("cuba.gui.AttributeEditor.field.width");
 
@@ -214,22 +214,17 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             }
         });
 
-        attributeFieldGroup.addCustomField("defaultEntityId", new FieldGroup.CustomFieldGenerator() {
-            @Override
-            public Component generateField(Datasource datasource, String propertyId) {
-                defaultEntityField = factory.createComponent(PickerField.class);
+        attributeFieldGroup.addCustomField("defaultEntityId", (datasource, propertyId) -> {
+            defaultEntityField = factory.createComponent(PickerField.class);
+            defaultEntityField.addValueChangeListener(e -> {
+                if (e.getValue() instanceof BaseUuidEntity) {
+                    attribute.setDefaultEntityId(((BaseUuidEntity) e.getValue()).getId());
+                } else {
+                    attribute.setDefaultEntityId(null);
+                }
+            });
 
-                defaultEntityField.addLookupAction();
-                defaultEntityField.addValueChangeListener(e -> {
-                    if (e.getValue() instanceof BaseUuidEntity) {
-                        attribute.setDefaultEntityId(((BaseUuidEntity) e.getValue()).getId());
-                    } else {
-                        attribute.setDefaultEntityId(null);
-                    }
-                });
-
-                return defaultEntityField;
-            }
+            return defaultEntityField;
         });
 
         attributeDs.addItemPropertyChangeListener(e -> {

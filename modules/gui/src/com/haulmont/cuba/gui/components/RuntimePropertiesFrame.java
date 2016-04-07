@@ -28,11 +28,12 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesMetaPropert
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParam;
+import com.haulmont.cuba.gui.commonlookup.CommonLookupController;
 import com.haulmont.cuba.gui.components.validators.DateValidator;
 import com.haulmont.cuba.gui.components.validators.DoubleValidator;
 import com.haulmont.cuba.gui.components.validators.IntegerValidator;
@@ -42,27 +43,23 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
+import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.haulmont.cuba.gui.components.PickerField.LookupAction;
 
 /**
  * Universal frame for editing dynamic attributes
  * of any {@link com.haulmont.cuba.core.entity.Categorized} implementations.
- *
  */
 public class RuntimePropertiesFrame extends AbstractWindow {
 
     public static final String NAME = "runtimeProperties";
     public static final String DEFAULT_FIELD_WIDTH = "100%";
-    private final DynamicAttributes dynamicAttributes = AppBeans.get(DynamicAttributes.NAME);
 
     protected RuntimePropsDatasource rds;
 
@@ -78,6 +75,12 @@ public class RuntimePropertiesFrame extends AbstractWindow {
 
     @Inject
     protected ComponentsFactory componentsFactory;
+
+    @Inject
+    protected DynamicAttributes dynamicAttributes;
+
+    @Inject
+    protected DynamicAttributesGuiTools dynamicAttributesGuiTools;
 
     @WindowParam
     protected String rows;
@@ -240,20 +243,11 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                             ((LookupPickerField) pickerField).setOptionsDatasource(optionsDs);
                         } else {
                             pickerField = componentsFactory.createComponent(PickerField.class);
-                            pickerField.addLookupAction();
+                            dynamicAttributesGuiTools.addEntityLookupAction(pickerField, metaProperty);
                         }
                         pickerField.setMetaClass(ds.getMetaClass());
                         pickerField.setFrame(RuntimePropertiesFrame.this);
                         pickerField.setDatasource(ds, propertyId);
-                        LookupAction lookupAction = (LookupAction) pickerField.getAction(LookupAction.NAME);
-                        if (lookupAction != null) {
-                            String screen = metaProperty.getAttribute().getScreen();
-                            if (StringUtils.isBlank(screen)) {
-                                WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
-                                screen = windowConfig.getBrowseScreenId(pickerField.getMetaClass());
-                            }
-                            lookupAction.setLookupScreen(screen);
-                        }
                         pickerField.addOpenAction();
                         pickerField.setWidth(fieldWidth);
                         return pickerField;
