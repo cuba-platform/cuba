@@ -305,6 +305,11 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup>
                     }
                 }
 
+                String stylename = fieldConfig.getStyleName();
+                if (StringUtils.isNotEmpty(stylename)) {
+                    fieldComponent.setStyleName(stylename);
+                }
+
                 applyPermissions(fieldComponent);
 
                 registerFieldComponent(fieldConfig, fieldComponent);
@@ -463,6 +468,11 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup>
 
         if (fieldComponent instanceof HasFormatter) {
             ((HasFormatter) fieldComponent).setFormatter(fieldConf.getFormatter());
+        }
+
+        String stylename = fieldConf.getStyleName();
+        if (StringUtils.isNotEmpty(stylename)) {
+            fieldComponent.setStyleName(stylename);
         }
 
         // some components (e.g. LookupPickerField) have width from the creation, so I commented out this check

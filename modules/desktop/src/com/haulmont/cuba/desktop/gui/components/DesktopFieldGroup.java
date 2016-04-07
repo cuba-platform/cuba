@@ -46,6 +46,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
+
 /**
  */
 public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implements FieldGroup, AutoExpanding {
@@ -780,6 +781,11 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         if (repaintRequired) {
             impl.validate();
             impl.repaint();
+        }
+
+        String stylename = fieldConfig.getStyleName();
+        if (StringUtils.isNotEmpty(stylename)) {
+            fieldComponent.setStyleName(stylename);
         }
 
         if (App.getInstance().isTestMode()) {

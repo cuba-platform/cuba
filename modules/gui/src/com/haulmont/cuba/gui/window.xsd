@@ -1187,6 +1187,8 @@
         <xs:attribute name="cols" type="xs:int"/>
         <xs:attribute name="rows" type="xs:int"/>
 
+        <xs:attribute name="stylename" type="xs:string"/>
+
         <xs:attribute name="optionsDatasource" type="xs:string"/>
         <xs:attribute name="captionProperty" type="xs:string"/>
         <xs:attribute name="descriptionProperty" type="xs:string"/>
