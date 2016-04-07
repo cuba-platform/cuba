@@ -46,15 +46,15 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  */
 public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
-    protected DynamicAttributes dynamicAttributes = AppBeans.get(DynamicAttributes.NAME);
-    protected DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.NAME, DynamicAttributesGuiTools.class);
-    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME, MetadataTools.class);
+    protected DynamicAttributes dynamicAttributes = AppBeans.get(DynamicAttributes.class);
+    protected DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.class);
+    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
 
     protected List<FieldGroup.FieldConfig> loadDynamicAttributeFields(Datasource ds) {
         if (ds != null && metadataTools.isPersistent(ds.getMetaClass())) {
             Set<CategoryAttribute> attributesToShow = dynamicAttributesGuiTools.getAttributesToShowOnTheScreen(ds.getMetaClass(),
                     getFrameId(), resultComponent.getId());
-            if (CollectionUtils.isNotEmpty(attributesToShow)) {
+            if (!attributesToShow.isEmpty()) {
                 List<FieldGroup.FieldConfig> fields = new ArrayList<>();
                         ds.setLoadDynamicAttributes(true);
                 for (CategoryAttribute attribute : attributesToShow) {
