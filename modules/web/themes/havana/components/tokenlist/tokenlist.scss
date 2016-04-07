@@ -6,6 +6,10 @@
 @mixin havana-cuba-tokenlist($primary-stylename: cuba-tokenlist) {
   .#{$primary-stylename} .v-csslayout {
     clear: both;
+    }
+
+  .#{$primary-stylename} .v-scrollable.v-panel-content > .v-widget {
+    overflow: auto;
   }
 
   .#{$primary-stylename} .cuba-tokenlist-label.v-widget {
