@@ -116,6 +116,7 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
         private Formatter formatter;
         private Element element;
         private String width;
+        private String stylename;
         private Datasource datasource;
         private String requiredError;
         private MetaPropertyPath metaPropertyPath;
@@ -189,6 +190,14 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
 
         public void setWidth(String width) {
             this.width = width;
+        }
+
+        public String getStyleName() {
+            return stylename;
+        }
+
+        public void setStyleName(String stylename) {
+            this.stylename = stylename;
         }
 
         public Datasource getDatasource() {

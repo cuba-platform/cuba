@@ -181,6 +181,11 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
             field.setDatasource(datasource);
         }
 
+        String stylename = element.attributeValue("stylename");
+        if (StringUtils.isNotEmpty(stylename)) {
+            field.setStyleName(stylename);
+        }
+
         String propertyName = metaPropertyPath != null ? metaPropertyPath.getMetaProperty().getName() : null;
         if (metaPropertyPath != null && DynamicAttributesUtils.isDynamicAttribute(metaPropertyPath.getMetaProperty())) {
             CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaPropertyPath.getMetaProperty());
