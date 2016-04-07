@@ -133,7 +133,7 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
                 continue;
             }
             MetaProperty metaProperty = propertyPath.getMetaProperty();
-            if (isPropertyAllowed(metaProperty)) {
+            if (isPropertyAllowed(metaProperty) && !excludedProperties.contains(metaProperty.getName())) {
                 Node<AbstractConditionDescriptor> node = new Node<>(propertyDescriptor);
                 propertyHeaderNode.addChild(node);
 
