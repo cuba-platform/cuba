@@ -134,6 +134,7 @@
                                 <button action="loggedEntityTable.create" icon="icons/create.png" caption="msg://create"/>
                                 <button action="loggedEntityTable.edit" icon="icons/edit.png" caption="msg://edit"/>
                                 <button action="loggedEntityTable.remove"/>
+                                <button id="reloadBtn" invoke="reloadConfiguration" icon="icons/ok.png" caption="msg://reloadConfiguration"/>
                             </buttonsPanel>
                             <columns>
                                 <column id="name"/>
@@ -164,7 +165,6 @@
                         </vbox>
                     </vbox>
                 </split>
-                <button id="reloadBtn" invoke="reloadConfiguration" caption="msg://reloadConfiguration"/>
             </tab>
         </tabSheet>
     </layout>
