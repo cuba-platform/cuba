@@ -350,6 +350,9 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
         frame.validate();
     }
 
+    /**
+     * @deprecated Use {@link WindowManager.OpenType} or {@link Window#getDialogOptions()} from screen controller
+     */
     @Deprecated
     @Override
     public DialogParams getDialogParams() {
