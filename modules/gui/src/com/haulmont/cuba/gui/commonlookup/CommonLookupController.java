@@ -16,21 +16,15 @@
 package com.haulmont.cuba.gui.commonlookup;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
-import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 
 import javax.inject.Inject;
-import java.util.LinkedList;
 import java.util.Map;
 
 public class CommonLookupController extends AbstractLookup {
