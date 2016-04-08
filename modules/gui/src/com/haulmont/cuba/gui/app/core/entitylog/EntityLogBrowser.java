@@ -434,6 +434,7 @@ public class EntityLogBrowser extends AbstractWindow {
 
     public void reloadConfiguration() {
         logService.invalidateCache();
+        showNotification(getMessage("changesApplied"), NotificationType.HUMANIZED);
     }
 
     public void modify() {
