@@ -36,7 +36,7 @@ import java.util.Map;
 public class CommonLookupController extends AbstractLookup {
 
     @Inject
-    protected Messages messages;
+    protected MessageTools messageTools;
     @Inject
     protected ComponentsFactory componentsFactory;
     @Inject
@@ -68,7 +68,7 @@ public class CommonLookupController extends AbstractLookup {
         getDialogOptions().setWidth(themeConstantsManager.getThemeValueInt("cuba.gui.commonLookup.width"))
                 .setHeight(themeConstantsManager.getThemeValueInt("cuba.gui.commonLookup.height"))
                 .setResizable(true);
-        setCaption(messages.getMessage(metaClass.getJavaClass(), metaClass.getJavaClass().getSimpleName()));
+        setCaption(messageTools.getEntityCaption(metaClass));
         initView();
         initDatasource();
         initTable();
@@ -103,14 +103,11 @@ public class CommonLookupController extends AbstractLookup {
         ((FilterImplementation) filter).loadFiltersAndApplyDefault();
 
         filter.apply(true);
-
-
     }
 
     protected void initTable() {
         entitiesTable = componentsFactory.createComponent(Table.class);
         entitiesTable.setId("table");
-        entitiesTable.setFrame(this);
         entitiesTable.setDatasource(entitiesDs);
         entitiesTable.setMultiSelect(true);
         entitiesTable.setWidth("100%");
