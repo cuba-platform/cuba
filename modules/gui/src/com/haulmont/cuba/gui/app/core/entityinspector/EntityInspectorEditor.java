@@ -189,10 +189,6 @@ public class EntityInspectorEditor extends AbstractWindow {
             createRuntimeDataComponents();
         }
 
-        if (datasource instanceof CollectionDatasource && createRequest) {
-            ((CollectionDatasource) datasource).addItem(item);
-        }
-
         datasource.setItem(item);
 
         if (categorizedEntity) {
@@ -206,6 +202,11 @@ public class EntityInspectorEditor extends AbstractWindow {
             focusFieldGroup.requestFocus(focusFieldId);
         }
     }
+
+    public Entity getItem() {
+        return datasource.getItem();
+    }
+
 
     private void initShortcuts() {
         final String commitShortcut =  configuration.getConfig(ClientConfig.class).getCommitShortcut();
@@ -303,24 +304,6 @@ public class EntityInspectorEditor extends AbstractWindow {
 //            return findPropertyByMappedColumn(meta, columnName);
 //        else
 //            return null;
-    }
-
-    private boolean isEmpty(String str) {
-        return str == null || str.isEmpty();
-    }
-
-    private MetaProperty findPropertyByMappedColumn(MetaClass meta, String columnName) {
-        for (MetaProperty metaProperty : meta.getProperties()) {
-            Column columnAnn = metaProperty.getAnnotatedElement().getAnnotation(Column.class);
-            if (columnAnn == null)
-                continue;
-            String name = columnAnn.name();
-            if (name == null)
-                continue;
-            if (name.equals(columnName))
-                return metaProperty;
-        }
-        return null;
     }
 
     /**
@@ -724,6 +707,11 @@ public class EntityInspectorEditor extends AbstractWindow {
             return;
         }
 
+        //don't show table on new master item, because an exception occurred on safe new item in table
+        if (isNew && childMeta.getType().equals(MetaProperty.Type.ASSOCIATION)) {
+            return;
+        }
+
         //vertical box for the table and its label
         BoxLayout vbox = componentsFactory.createComponent(VBoxLayout.class);
         vbox.setWidth("100%");
@@ -985,6 +973,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public void actionPerform(Component component) {
             Map<String, Object> editorParams = new HashMap<>();
             editorParams.put("metaClass", entityMeta.getName());
@@ -995,12 +984,14 @@ public class EntityInspectorEditor extends AbstractWindow {
             editorParams.put("parent", item);
             if (metaProperty.getType() == MetaProperty.Type.COMPOSITION)
                 editorParams.put("parentDs", entitiesDs);
-            Window window = openWindow("entityInspector.edit", OPEN_TYPE, editorParams);
-            if (!(entitiesDs instanceof PropertyDatasource)) {
-                window.addCloseListener(actionId -> {
-                    entitiesDs.refresh();
-                });
-            }
+            EntityInspectorEditor editor = (EntityInspectorEditor) openWindow("entityInspector.edit", OPEN_TYPE, editorParams);
+            editor.addCloseListener(actionId -> {
+                if (COMMIT_ACTION_ID.equals(actionId) && metaProperty.getType() == MetaProperty.Type.ASSOCIATION) {
+                    boolean modified = entitiesDs.isModified();
+                    entitiesDs.addItem(editor.getItem());
+                    ((DatasourceImplementation) entitiesDs).setModified(modified);
+                }
+            });
         }
     }
 
