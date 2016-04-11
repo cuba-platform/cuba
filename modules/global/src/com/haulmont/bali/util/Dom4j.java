@@ -57,8 +57,8 @@ public final class Dom4j {
     }
 
     private static SAXReader getSaxReader() {
-        Boolean useThreadLocalCache = BooleanUtils.toBooleanObject(AppContext.getProperty("cuba.saxParser.threadLocalCache"));
-        if (BooleanUtils.isNotFalse(useThreadLocalCache)) {
+        String useThreadLocalCache = AppContext.getProperty("cuba.saxParser.threadLocalCache");
+        if (useThreadLocalCache == null || Boolean.parseBoolean(useThreadLocalCache)) {
             try {
                 return new SAXReader(getParser().getXMLReader());
             } catch (SAXException e) {
