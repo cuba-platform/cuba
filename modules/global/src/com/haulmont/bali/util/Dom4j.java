@@ -16,22 +16,29 @@
  */
 package com.haulmont.bali.util;
 
+import com.haulmont.cuba.core.sys.AppContext;
+import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
-import org.dom4j.io.OutputFormat;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
 
-/**
- */
 public final class Dom4j {
+
+    private static final ThreadLocal<SAXParser> saxParserHolder = new ThreadLocal<>();
 
     private Dom4j() {
     }
@@ -41,20 +48,49 @@ public final class Dom4j {
     }
 
     public static Document readDocument(Reader reader) {
-        SAXReader xmlReader = new SAXReader();
+        SAXReader xmlReader = getSaxReader();
         try {
             return xmlReader.read(reader);
         } catch (DocumentException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to read XML from reader", e);
         }
     }
 
+    private static SAXReader getSaxReader() {
+        Boolean useThreadLocalCache = BooleanUtils.toBooleanObject(AppContext.getProperty("cuba.saxParser.threadLocalCache"));
+        if (BooleanUtils.isNotFalse(useThreadLocalCache)) {
+            try {
+                return new SAXReader(getParser().getXMLReader());
+            } catch (SAXException e) {
+                throw new RuntimeException("Unable to create SAX reader", e);
+            }
+        } else {
+            return new SAXReader();
+        }
+    }
+
+    public static SAXParser getParser() {
+        SAXParser parser = saxParserHolder.get();
+        if (parser == null) {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setValidating(false);
+            factory.setNamespaceAware(false);
+            try {
+                parser = factory.newSAXParser();
+            } catch (ParserConfigurationException | SAXException e) {
+                throw new RuntimeException("Unable to create SAX parser", e);
+            }
+            saxParserHolder.set(parser);
+        }
+        return parser;
+    }
+
     public static Document readDocument(InputStream stream) {
-        SAXReader xmlReader = new SAXReader();
+        SAXReader xmlReader = getSaxReader();
         try {
             return xmlReader.read(stream);
         } catch (DocumentException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to read XML from stream", e);
         }
     }
 
@@ -64,14 +100,9 @@ public final class Dom4j {
             inputStream = new FileInputStream(file);
             return Dom4j.readDocument(inputStream);
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to read XML from file", e);
         } finally {
-            if (inputStream != null)
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    //
-                }
+            IOUtils.closeQuietly(inputStream);
         }
     }
 
@@ -92,7 +123,7 @@ public final class Dom4j {
             }
             xmlWriter.write(doc);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to write XML", e);
         }
     }
 
@@ -107,18 +138,21 @@ public final class Dom4j {
             }
             xmlWriter.write(doc);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to write XML", e);
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static List<Element> elements(Element element) {
         return element.elements();
     }
 
+    @SuppressWarnings("unchecked")
     public static List<Element> elements(Element element, String name) {
         return element.elements(name);
     }
 
+    @SuppressWarnings("unchecked")
     public static List<Attribute> attributes(Element element) {
         return element.attributes();
     }
@@ -126,7 +160,7 @@ public final class Dom4j {
     public static void storeMap(Element parentElement, Map<String, String> map) {
         if (map == null)
             return;
-        
+
         Element mapElem = parentElement.addElement("map");
         for (Map.Entry<String, String> entry : map.entrySet()) {
             Element entryElem = mapElem.addElement("entry");
@@ -140,9 +174,8 @@ public final class Dom4j {
     }
 
     public static void loadMap(Element mapElement, Map<String, String> map) {
-        if (map == null)
-            throw new IllegalArgumentException("map is null");
-        
+        Preconditions.checkNotNullArgument(map, "map is null");
+
         for (Element entryElem : elements(mapElement, "entry")) {
             String key = entryElem.attributeValue("key");
             if (key == null)
