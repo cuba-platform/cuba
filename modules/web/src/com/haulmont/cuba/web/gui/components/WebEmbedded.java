@@ -19,9 +19,12 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Embedded;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.server.*;
@@ -120,10 +123,16 @@ public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> im
     @Override
     public void setSource(String fileName, final ExportDataProvider dataProvider) {
         if (dataProvider != null) {
-            resource = new StreamResource(new StreamResource.StreamSource() {
-                @Override
-                public InputStream getStream() {
+            resource = new StreamResource((StreamResource.StreamSource) () -> {
+                UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
+                if (userSession != null) {
+                    AppContext.setSecurityContext(new SecurityContext(userSession));
+                }
+
+                try {
                     return dataProvider.provide();
+                } finally {
+                    AppContext.setSecurityContext(null);
                 }
             }, fileName);
             component.setSource(resource);
