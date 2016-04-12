@@ -18,7 +18,6 @@
 package com.haulmont.cuba.core.app;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  */
@@ -26,5 +25,5 @@ public interface RelatedEntitiesService {
 
     String NAME = "cuba_RelatedEntitiesService";
 
-    List<UUID> getRelatedIds(List<UUID> parents, String parentMetaClass, String relationProperty);
+    List<Object> getRelatedIds(List<Object> parentIds, String parentMetaClass, String relationProperty);
 }

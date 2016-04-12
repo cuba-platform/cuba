@@ -20,7 +20,6 @@ package com.haulmont.cuba.core.app;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.Metadata;
@@ -52,8 +51,8 @@ public class RelatedEntitiesServiceBean implements RelatedEntitiesService {
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<UUID> getRelatedIds(List<UUID> parents, String parentMetaClass, String relationProperty) {
-        checkNotNullArgument(parents, "parents argument is null");
+    public List<Object> getRelatedIds(List<Object> parentIds, String parentMetaClass, String relationProperty) {
+        checkNotNullArgument(parentIds, "parents argument is null");
         checkNotNullArgument(parentMetaClass, "parentMetaClass argument is null");
         checkNotNullArgument(relationProperty, "relationProperty argument is null");
 
@@ -63,35 +62,38 @@ public class RelatedEntitiesServiceBean implements RelatedEntitiesService {
         MetaProperty metaProperty = metaClass.getPropertyNN(relationProperty);
 
         // return empty list only after all argument checks
-        if (parents.isEmpty()) {
+        if (parentIds.isEmpty()) {
             return Collections.emptyList();
         }
 
         MetaClass propertyMetaClass = extendedEntities.getEffectiveMetaClass(metaProperty.getRange().asClass());
         Class propertyClass = propertyMetaClass.getJavaClass();
 
-        List<UUID> relatedIds = new ArrayList<>();
+        List<Object> relatedIds = new ArrayList<>();
 
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            String queryString = "select x from " + parentMetaClass + " x where x.id in :ids";
+            String parentPrimaryKey = metadata.getTools().getPrimaryKeyName(metaClass);
+            String queryString = "select x from " + parentMetaClass + " x where x." +
+                    parentPrimaryKey + " in :ids";
             Query query = em.createQuery(queryString);
 
+            String relatedPrimaryKey = metadata.getTools().getPrimaryKeyName(propertyMetaClass);
             View view = new View(parentClass);
-            view.addProperty(relationProperty, new View(propertyClass).addProperty("id"));
+            view.addProperty(relationProperty, new View(propertyClass).addProperty(relatedPrimaryKey));
 
             query.setView(view);
-            query.setParameter("ids", parents);
+            query.setParameter("ids", parentIds);
 
             List<Entity> resultList = query.getResultList();
             for (Entity e : resultList) {
                 Object value = e.getValue(relationProperty);
-                if (value instanceof BaseUuidEntity) {
-                    relatedIds.add(((BaseUuidEntity) value).getId());
+                if (value instanceof Entity) {
+                    relatedIds.add(((Entity) value).getId());
                 } else if (value instanceof Collection) {
                     for (Object collectionItem : (Collection)value) {
-                        relatedIds.add(((BaseUuidEntity) collectionItem).getId());
+                        relatedIds.add(((Entity) collectionItem).getId());
                     }
                 }
             }

@@ -22,10 +22,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.RelatedEntitiesService;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.ExtendedEntities;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -137,7 +134,7 @@ public class RelatedAction extends AbstractAction {
         MessageTools messageTools = AppBeans.get(MessageTools.NAME);
         Metadata metadata = AppBeans.get(Metadata.NAME);
 
-        List<UUID> relatedIds = getRelatedIds(selectedParents);
+        List<Object> relatedIds = getRelatedIds(selectedParents);
 
         FilterEntity filterEntity = metadata.create(FilterEntity.class);
         filterEntity.setComponentId(ComponentsHelper.getFilterComponentPath(component));
@@ -157,14 +154,17 @@ public class RelatedAction extends AbstractAction {
         component.apply(true);
     }
 
-    protected String getRelatedEntitiesFilterXml(MetaClass metaClass, List<UUID> ids, Filter component) {
+    protected String getRelatedEntitiesFilterXml(MetaClass metaClass, List<Object> ids, Filter component) {
         ConditionsTree tree = new ConditionsTree();
 
         String filterComponentPath = ComponentsHelper.getFilterComponentPath(component);
         String[] strings = ValuePathHelper.parse(filterComponentPath);
         String filterComponentName = ValuePathHelper.format(Arrays.copyOfRange(strings, 1, strings.length));
 
-        PropertyConditionDescriptor conditionDescriptor = new PropertyConditionDescriptor("id", "id",
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+        String primaryKey = metadataTools.getPrimaryKeyName(metaClass);
+
+        PropertyConditionDescriptor conditionDescriptor = new PropertyConditionDescriptor(primaryKey, primaryKey,
                 AppConfig.getMessagesPack(), filterComponentName, component.getDatasource());
 
         PropertyCondition condition = (PropertyCondition) conditionDescriptor.createCondition();
@@ -173,8 +173,12 @@ public class RelatedAction extends AbstractAction {
         condition.setOperator(Op.IN);
 
         ConditionParamBuilder paramBuilder = AppBeans.get(ConditionParamBuilder.class);
-        Param param = new Param(paramBuilder.createParamName(condition), UUID.class, "", "", component.getDatasource(),
-                metaClass.getProperty("id"), true, true);
+
+        @SuppressWarnings("ConstantConditions")
+        Class idType = metaClass.getProperty(primaryKey).getJavaType();
+
+        Param param = new Param(paramBuilder.createParamName(condition), idType, "", "", component.getDatasource(),
+                metaClass.getProperty(primaryKey), true, true);
         param.setValue(ids);
 
         condition.setParam(param);
@@ -185,19 +189,19 @@ public class RelatedAction extends AbstractAction {
         return filterParser.getXml(tree, Param.ValueProperty.VALUE);
     }
 
-    protected List<UUID> getRelatedIds(Set<Entity> selectedParents) {
+    protected List<Object> getRelatedIds(Set<Entity> selectedParents) {
         if (selectedParents.isEmpty()) {
             return Collections.emptyList();
         } else {
-            List<UUID> parentIds = new ArrayList<>();
+            List<Object> parentIds = new ArrayList<>();
             for (Entity e : selectedParents) {
-                parentIds.add((UUID) e.getId());
+                parentIds.add(e.getId());
             }
 
             String parentMetaClass = metaClass.getName();
 
             //noinspection UnnecessaryLocalVariable
-            List<UUID> relatedIds = relatedEntitiesService.getRelatedIds(parentIds, parentMetaClass, metaProperty.getName());
+            List<Object> relatedIds = relatedEntitiesService.getRelatedIds(parentIds, parentMetaClass, metaProperty.getName());
             return relatedIds;
         }
     }
