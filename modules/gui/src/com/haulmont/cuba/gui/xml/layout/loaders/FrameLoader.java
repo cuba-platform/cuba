@@ -25,7 +25,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
-import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -35,13 +34,10 @@ import org.perf4j.log4j.Log4JStopWatch;
 
 import java.util.Map;
 
-/**
- */
 public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
 
     protected Element layoutElement;
     protected ComponentLoaderContext innerContext;
-    protected Element rootFrameElement;
 
     protected String frameId;
 
@@ -106,11 +102,7 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
         Frame clientSpecificFrame = (T) factory.createComponent(Frame.NAME);
         clientSpecificFrame.setId(frameId);
 
-        Map<String, Object> params = context.getParams();
-        XmlInheritanceProcessor processor = new XmlInheritanceProcessor(element.getDocument(), params);
-        rootFrameElement = processor.getResultRoot();
-
-        loadMessagesPack(clientSpecificFrame, rootFrameElement);
+        loadMessagesPack(clientSpecificFrame, element);
 
         ComponentLoaderContext parentContext = (ComponentLoaderContext) getContext();
 
@@ -119,14 +111,14 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
             frameId = parentContext.getFullFrameId() + "." + frameId;
         }
 
-        innerContext = new ComponentLoaderContext(params);
+        innerContext = new ComponentLoaderContext(context.getParams());
         innerContext.setCurrentFrameId(parentContext.getCurrentFrameId());
         innerContext.setFullFrameId(frameId);
         innerContext.setFrame(clientSpecificFrame);
         innerContext.setParent(parentContext);
         setContext(innerContext);
 
-        layoutElement = rootFrameElement.element("layout");
+        layoutElement = element.element("layout");
         if (layoutElement == null) {
             throw new GuiDevelopmentException("Required element 'layout' is not found", this.context.getFullFrameId());
         }
@@ -141,17 +133,17 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
 
     @Override
     public void loadComponent() {
-        WindowCreationHelper.deployViews(rootFrameElement);
+        WindowCreationHelper.deployViews(element);
 
-        Element dsContextElement = rootFrameElement.element("dsContext");
+        Element dsContextElement = element.element("dsContext");
         DsContextLoader contextLoader = new DsContextLoader(context.getDsContext().getDataSupplier());
 
         DsContext dsContext = contextLoader.loadDatasources(dsContextElement, context.getDsContext());
 
-        assignXmlDescriptor(resultComponent, rootFrameElement);
+        assignXmlDescriptor(resultComponent, element);
 
         loadVisible(resultComponent, layoutElement);
-        loadActions(resultComponent, rootFrameElement);
+        loadActions(resultComponent, element);
 
         loadSpacing(resultComponent, layoutElement);
         loadMargin(resultComponent, layoutElement);
@@ -181,7 +173,7 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
 
         loadSubComponentsAndExpand(resultComponent, layoutElement);
 
-        initWrapperFrame(resultComponent, rootFrameElement, parentContext.getParams(), parentContext);
+        initWrapperFrame(resultComponent, element, parentContext.getParams(), parentContext);
 
         parentContext.getInjectTasks().addAll(innerContext.getInjectTasks());
         parentContext.getPostInitTasks().addAll(innerContext.getPostInitTasks());
@@ -211,7 +203,7 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
             String loggingId = context.getFullFrameId();
             try {
                 if (wrappingFrame instanceof AbstractFrame) {
-                    Element companionsElem = rootFrameElement.element("companions");
+                    Element companionsElem = element.element("companions");
                     if (companionsElem != null) {
                         StopWatch companionStopWatch = new Log4JStopWatch(loggingId + "#" +
                                 UIPerformanceLogger.LifeCycle.COMPANION,

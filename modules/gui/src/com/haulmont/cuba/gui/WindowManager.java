@@ -37,6 +37,7 @@ import com.haulmont.cuba.gui.xml.data.DsContextLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.cuba.gui.xml.layout.ScreenXmlCache;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
 import com.haulmont.cuba.security.entity.PermissionType;
 import org.apache.commons.io.IOUtils;
@@ -49,6 +50,7 @@ import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -57,7 +59,6 @@ import java.util.concurrent.Callable;
 
 /**
  * GenericUI class intended for creation and opening application screens.
- *
  */
 public abstract class WindowManager {
 
@@ -309,6 +310,8 @@ public abstract class WindowManager {
 
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
+    protected ScreenXmlCache screenXmlCache = AppBeans.get(ScreenXmlCache.class);
+
     private DialogParams dialogParams;
 
     protected List<WindowCloseListener> listeners = new ArrayList<>();
@@ -346,17 +349,32 @@ public abstract class WindowManager {
             throw new DevelopmentException("Template is not found", "Path", templatePath);
         }
 
-        StopWatch xmlLoadWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
-                UIPerformanceLogger.LifeCycle.XML,
-                Logger.getLogger(UIPerformanceLogger.class));
-        Document document = null;
+        String template;
         try {
-            document = LayoutLoader.parseDescriptor(stream);
+            template = IOUtils.toString(stream);
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to read screen template");
         } finally {
             IOUtils.closeQuietly(stream);
         }
-        XmlInheritanceProcessor processor = new XmlInheritanceProcessor(document, params);
-        Element element = processor.getResultRoot();
+
+        StopWatch xmlLoadWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
+                UIPerformanceLogger.LifeCycle.XML,
+                Logger.getLogger(UIPerformanceLogger.class));
+
+        Document document = screenXmlCache.get(template);
+        if (document == null) {
+            Document originalDocument = LayoutLoader.parseDescriptor(template);
+
+            XmlInheritanceProcessor processor = new XmlInheritanceProcessor(originalDocument, params);
+            Element resultRoot = processor.getResultRoot();
+
+            document = resultRoot.getDocument();
+
+            screenXmlCache.put(template, document);
+        }
+
+        Element element = document.getRootElement();
 
         xmlLoadWatch.stop();
 

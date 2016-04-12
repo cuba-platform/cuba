@@ -18,12 +18,12 @@ package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
+import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
 import com.haulmont.cuba.gui.xml.layout.loaders.FrameLoader;
 import com.haulmont.cuba.gui.xml.layout.loaders.WindowLoader;
 import org.apache.commons.io.IOUtils;
@@ -44,8 +44,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-/**
- */
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+
 public class LayoutLoader {
 
     protected ComponentLoader.Context context;
@@ -56,15 +56,22 @@ public class LayoutLoader {
     protected String messagesPack;
 
     public static Document parseDescriptor(InputStream stream) {
-        Preconditions.checkNotNullArgument(stream, "Input stream is null");
+        checkNotNullArgument(stream, "Input stream is null");
 
-        Document document;
+        String template;
         try {
-            String template = IOUtils.toString(stream, StandardCharsets.UTF_8);
-            document = Dom4j.readDocument(template);
+            template = IOUtils.toString(stream, StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
+
+        return parseDescriptor(template);
+    }
+
+    public static Document parseDescriptor(String template) {
+        checkNotNullArgument(template, "template is null");
+
+        Document document = Dom4j.readDocument(template);
 
         replaceAssignParameters(document);
 
@@ -149,7 +156,7 @@ public class LayoutLoader {
             loader.setFactory(factory);
             loader.setElement(element);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
-            throw new GuiDevelopmentException("Loader instatiation error: " + e, context.getFullFrameId());
+            throw new GuiDevelopmentException("Loader instantiation error: " + e, context.getFullFrameId());
         }
 
         return loader;
@@ -160,12 +167,34 @@ public class LayoutLoader {
                 UIPerformanceLogger.LifeCycle.XML,
                 Logger.getLogger(UIPerformanceLogger.class));
 
-        Document doc = parseDescriptor(stream);
-        Element element = doc.getRootElement();
+        String template;
+        try {
+            template = IOUtils.toString(stream);
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to read screen template", e);
+        }
+
+        ScreenXmlCache screenXmlCache = AppBeans.get(ScreenXmlCache.class);
+
+        Document document = screenXmlCache.get(template);
+        if (document == null) {
+            Document originalDocument = parseDescriptor(template);
+
+            XmlInheritanceProcessor processor = new XmlInheritanceProcessor(originalDocument, context.getParams());
+            Element resultRoot = processor.getResultRoot();
+
+            document = resultRoot.getDocument();
+
+            screenXmlCache.put(template, document);
+        }
+
+        Element element = document.getRootElement();
+
         xmlLoadWatch.stop();
 
         ComponentLoader loader = getLoader(element);
-        ((FrameLoader) loader).setFrameId(id);
+        FrameLoader frameLoader = (FrameLoader) loader;
+        frameLoader.setFrameId(id);
 
         loader.createComponent();
 
