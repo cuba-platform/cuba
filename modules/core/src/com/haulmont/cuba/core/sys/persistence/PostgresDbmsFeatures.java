@@ -57,7 +57,7 @@ public class PostgresDbmsFeatures implements DbmsFeatures {
     @Nullable
     @Override
     public String getTransactionTimeoutStatement() {
-        return "set local statement_timeout to %d";
+        return null;
     }
 
     @Override
