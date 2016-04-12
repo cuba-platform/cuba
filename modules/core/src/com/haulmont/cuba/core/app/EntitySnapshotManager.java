@@ -18,10 +18,7 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
@@ -74,8 +71,9 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            Query query = em.createQuery(
-                    "select s from sys$EntitySnapshot s where s.entityId = :entityId and s.entityMetaClass = :metaClass");
+            TypedQuery<EntitySnapshot> query = em.createQuery(
+                    "select s from sys$EntitySnapshot s where s.entityId = :entityId and s.entityMetaClass = :metaClass " +
+                            "order by s.snapshotDate desc", EntitySnapshot.class);
             query.setParameter("entityId", id);
             query.setParameter("metaClass", metaClass.getName());
             query.setView(view);
@@ -203,7 +201,7 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
     @Override
     public EntitySnapshot createSnapshot(BaseEntity entity, View view, Date snapshotDate) {
         User user = userSessionSource.getUserSession().getUser();
-        return createSnapshot(entity, view, timeSource.currentTimestamp(), user);
+        return createSnapshot(entity, view, snapshotDate, user);
     }
 
     @Override
@@ -214,6 +212,10 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
 
         if (view == null) {
             throw new NullPointerException("Could not be create snapshot for entity with null view");
+        }
+
+        if (snapshotDate == null) {
+            throw new NullPointerException("Could not be create snapshot for null snapshotDate");
         }
 
         Class viewEntityClass = view.getEntityClass();
