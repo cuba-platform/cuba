@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.BaseEntity;
@@ -206,17 +207,9 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
 
     @Override
     public EntitySnapshot createSnapshot(BaseEntity entity, View view, Date snapshotDate, User author) {
-        if (entity == null) {
-            throw new NullPointerException("Could not be create snapshot for null entity");
-        }
-
-        if (view == null) {
-            throw new NullPointerException("Could not be create snapshot for entity with null view");
-        }
-
-        if (snapshotDate == null) {
-            throw new NullPointerException("Could not be create snapshot for null snapshotDate");
-        }
+        Preconditions.checkNotNullArgument(entity);
+        Preconditions.checkNotNullArgument(view);
+        Preconditions.checkNotNullArgument(snapshotDate);
 
         Class viewEntityClass = view.getEntityClass();
         Class entityClass = entity.getClass();
