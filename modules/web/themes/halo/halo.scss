@@ -49,6 +49,7 @@
 @import "components/fieldgrouplayout/fieldgrouplayout";
 @import "components/sourcecodeeditor/sourcecodeeditor";
 @import "components/resizabletextarea/resizabletextarea";
+@import "components/draganddrop/draganddrop";
 
 // Application specific
 @import "app/log-control";
@@ -95,6 +96,7 @@
   @include halo-sourcecodeeditor;
   @include halo-contextmenu-addon;
   @include halo-textarea;
+  @include halo-draganddrop;
 
   @include halo-cuba-groupbox;
   @include halo-cuba-tokenlist;

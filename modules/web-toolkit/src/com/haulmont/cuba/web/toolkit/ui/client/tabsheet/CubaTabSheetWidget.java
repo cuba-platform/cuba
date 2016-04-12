@@ -22,10 +22,11 @@ import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.appui.ValidationErrorHolder;
 import com.vaadin.client.ui.VTabsheet;
 import com.vaadin.shared.ui.tabsheet.TabState;
+import fi.jasoft.dragdroplayouts.client.ui.tabsheet.VDDTabSheet;
 
 /**
  */
-public class CubaTabSheetWidget extends VTabsheet {
+public class CubaTabSheetWidget extends VDDTabSheet {
 
     protected TabContextMenuHandler tabContextMenuHandler;
     protected CubaTabBar tabBar;

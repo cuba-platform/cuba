@@ -30,6 +30,8 @@ import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
+import fi.jasoft.dragdroplayouts.client.ui.LayoutDragMode;
+import fi.jasoft.dragdroplayouts.drophandlers.DefaultTabSheetDropHandler;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -186,6 +188,8 @@ public class WebAppWorkArea extends WebAbstractComponent<VerticalLayout> impleme
 
     protected CubaTabSheet createTabbedModeContainer() {
         CubaTabSheet tabSheet = new CubaTabSheet();
+        tabSheet.setDragMode(LayoutDragMode.CLONE);
+        tabSheet.setDropHandler(new DefaultTabSheetDropHandler());
         tabSheet.setHeight("100%");
         tabSheet.setStyleName(TABBED_CONTAINER_STYLENAME);
 

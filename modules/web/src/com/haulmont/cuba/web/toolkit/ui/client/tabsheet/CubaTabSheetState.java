@@ -18,11 +18,11 @@
 package com.haulmont.cuba.web.toolkit.ui.client.tabsheet;
 
 import com.vaadin.shared.annotations.NoLayout;
-import com.vaadin.shared.ui.tabsheet.TabsheetState;
+import fi.jasoft.dragdroplayouts.client.ui.tabsheet.DDTabSheetState;
 
 /**
  */
-public class CubaTabSheetState extends TabsheetState {
+public class CubaTabSheetState extends DDTabSheetState {
 
     private static final long serialVersionUID = 4132538424243246049L;
 

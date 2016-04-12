@@ -473,6 +473,7 @@ configure(webModule) {
         compile(group: 'com.haulmont.thirdparty', name: 'popupbutton', version: '2.5.2.cuba.3')
         compile(group: 'com.haulmont.thirdparty', name: 'aceeditor', version: '0.8.15')
         compile(group: 'org.vaadin.addons', name: 'contextmenu', version: '4.5')
+        compile(group: 'org.vaadin.addons', name: 'dragdroplayouts', version: '1.2.2')
 
         provided(servletApi)
 

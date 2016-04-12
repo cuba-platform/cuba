@@ -25,13 +25,13 @@ import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.Action;
-import com.vaadin.client.ui.tabsheet.TabsheetConnector;
 import com.vaadin.shared.ui.Connect;
+import fi.jasoft.dragdroplayouts.client.ui.tabsheet.DDTabsheetConnector;
 
 /**
  */
 @Connect(CubaTabSheet.class)
-public class CubaTabSheetConnector extends TabsheetConnector {
+public class CubaTabSheetConnector extends DDTabsheetConnector {
 
     protected CubaTabSheetServerRpc rpc = RpcProxy.create(CubaTabSheetServerRpc.class, this);
 

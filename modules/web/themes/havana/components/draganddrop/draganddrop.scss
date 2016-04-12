@@ -1,0 +1,12 @@
+@mixin havana-draganddrop($primary-stylename: v-drag-element) {
+  .#{$primary-stylename} {
+    background-color: #f5f7f9;
+    border: 1px solid #647e9b;
+    color: #1e3146;
+    font-family: $cuba-havana-fonts;
+    font-size: 12px;
+    opacity: 0.8;
+    padding: 7px 6px 0px 6px;
+    white-space: nowrap;
+  }
+}

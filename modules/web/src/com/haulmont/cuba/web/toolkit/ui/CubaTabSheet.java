@@ -23,12 +23,13 @@ import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.CubaTabSheetState;
 import com.vaadin.event.Action;
 import com.vaadin.server.KeyMapper;
 import com.vaadin.ui.Component;
+import fi.jasoft.dragdroplayouts.DDTabSheet;
 
 import java.util.*;
 
 /**
  */
-public class CubaTabSheet extends com.vaadin.ui.TabSheet implements Action.Container {
+public class CubaTabSheet extends DDTabSheet implements Action.Container {
 
     private static final long serialVersionUID = -2956008661221108673L;
 
@@ -114,7 +115,7 @@ public class CubaTabSheet extends com.vaadin.ui.TabSheet implements Action.Conta
     }
 
     @Override
-    protected CubaTabSheetState getState() {
+    public CubaTabSheetState getState() {
         return (CubaTabSheetState) super.getState();
     }
 

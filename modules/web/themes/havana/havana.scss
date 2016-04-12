@@ -61,6 +61,7 @@
 @import "components/tokenlist/tokenlist";
 @import "components/twincolumn/twincolumn";
 @import "components/richtextarea/richtextarea";
+@import "components/draganddrop/draganddrop";
 
 // Application specific
 @import "app/app-window";
@@ -117,6 +118,7 @@
   @include havana-sourcecodeeditor;
   @include havana-progressindicator;
   @include havana-contextmenu-addon;
+  @include havana-draganddrop;
 
   @include havana-cuba-groupbox;
   @include havana-cuba-tokenlist;
