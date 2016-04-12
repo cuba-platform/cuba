@@ -21,15 +21,15 @@ import com.google.common.cache.CacheBuilder;
 import org.dom4j.Document;
 import org.springframework.stereotype.Component;
 
-@Component("cuba_ScreenXMLCache")
-public class ScreenXmlCache {
+@Component("cuba_ScreenXmlDocumentCache")
+public class ScreenXmlDocumentCache {
     protected Cache<String, Document> cache;
 
-    public ScreenXmlCache() {
+    public ScreenXmlDocumentCache() {
         this(100);
     }
 
-    protected ScreenXmlCache(int cacheDescriptorsCount) {
+    protected ScreenXmlDocumentCache(int cacheDescriptorsCount) {
         cache = CacheBuilder.newBuilder().maximumSize(cacheDescriptorsCount).build();
     }
 

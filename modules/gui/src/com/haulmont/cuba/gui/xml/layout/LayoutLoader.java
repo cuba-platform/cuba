@@ -174,7 +174,7 @@ public class LayoutLoader {
             throw new RuntimeException("Unable to read screen template", e);
         }
 
-        ScreenXmlCache screenXmlCache = AppBeans.get(ScreenXmlCache.class);
+        ScreenXmlDocumentCache screenXmlCache = AppBeans.get(ScreenXmlDocumentCache.class);
 
         Document document = screenXmlCache.get(template);
         if (document == null) {

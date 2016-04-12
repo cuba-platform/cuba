@@ -37,7 +37,7 @@ import com.haulmont.cuba.gui.xml.data.DsContextLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import com.haulmont.cuba.gui.xml.layout.ScreenXmlCache;
+import com.haulmont.cuba.gui.xml.layout.ScreenXmlDocumentCache;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
 import com.haulmont.cuba.security.entity.PermissionType;
 import org.apache.commons.io.IOUtils;
@@ -310,7 +310,7 @@ public abstract class WindowManager {
 
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
-    protected ScreenXmlCache screenXmlCache = AppBeans.get(ScreenXmlCache.class);
+    protected ScreenXmlDocumentCache screenXmlCache = AppBeans.get(ScreenXmlDocumentCache.class);
 
     private DialogParams dialogParams;
 
