@@ -43,7 +43,7 @@ public interface EntitySnapshotAPI {
      *
      * @param metaClass Entity metaclass
      * @param id        Entity Id
-     * @return Snapshot list
+     * @return Snapshot list sorted by snapshotDate desc
      */
     List<EntitySnapshot> getSnapshots(MetaClass metaClass, UUID id);
 

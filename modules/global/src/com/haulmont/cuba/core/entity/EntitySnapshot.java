@@ -52,7 +52,7 @@ public class EntitySnapshot extends BaseUuidEntity {
     @Column(name = "ENTITY_META_CLASS")
     private String entityMetaClass;
 
-    @Column(name = "SNAPSHOT_DATE")
+    @Column(name = "SNAPSHOT_DATE", nullable = false)
     private Date snapshotDate;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
