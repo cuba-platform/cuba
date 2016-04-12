@@ -18,7 +18,6 @@ package com.haulmont.bali.util;
 
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.compress.utils.IOUtils;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -36,6 +35,10 @@ import java.io.*;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Helper class for XML parsing.
+ * Caches SAXParser instance if application property cuba.saxParserThreadLocalCache is not set or set to true.
+ */
 public final class Dom4j {
 
     private static final ThreadLocal<SAXParser> saxParserHolder = new ThreadLocal<>();
@@ -57,7 +60,7 @@ public final class Dom4j {
     }
 
     private static SAXReader getSaxReader() {
-        String useThreadLocalCache = AppContext.getProperty("cuba.saxParser.threadLocalCache");
+        String useThreadLocalCache = AppContext.getProperty("cuba.saxParserThreadLocalCache");
         if (useThreadLocalCache == null || Boolean.parseBoolean(useThreadLocalCache)) {
             try {
                 return new SAXReader(getParser().getXMLReader());
@@ -158,8 +161,9 @@ public final class Dom4j {
     }
 
     public static void storeMap(Element parentElement, Map<String, String> map) {
-        if (map == null)
+        if (map == null) {
             return;
+        }
 
         Element mapElem = parentElement.addElement("map");
         for (Map.Entry<String, String> entry : map.entrySet()) {
@@ -178,13 +182,15 @@ public final class Dom4j {
 
         for (Element entryElem : elements(mapElement, "entry")) {
             String key = entryElem.attributeValue("key");
-            if (key == null)
+            if (key == null) {
                 throw new IllegalStateException("No 'key' attribute");
+            }
 
             String value = null;
             Element valueElem = entryElem.element("value");
-            if (valueElem != null)
+            if (valueElem != null) {
                 value = StringEscapeUtils.unescapeXml(valueElem.getText());
+            }
 
             map.put(key, value);
         }
