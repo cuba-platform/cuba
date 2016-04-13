@@ -52,10 +52,17 @@ public class DateFieldLoader extends AbstractFieldLoader<DateField> {
             DateField.Resolution res = DateField.Resolution.valueOf(resolution);
             resultComponent.setResolution(res);
             if (dateFormat == null) {
-                if (res == DateField.Resolution.DAY) {
-                    mainDateFormat = "dateFormat";
-                } else if (res == DateField.Resolution.MIN) {
-                    mainDateFormat = "dateTimeFormat";
+                switch (res) {
+                    case YEAR:
+                    case MONTH:
+                    case DAY:
+                        mainDateFormat = "dateFormat";
+                        break;
+                    case HOUR:
+                    case MIN:
+                    case SEC:
+                        mainDateFormat = "dateTimeFormat";
+                        break;
                 }
             }
         } else if (tt == TemporalType.DATE) {
