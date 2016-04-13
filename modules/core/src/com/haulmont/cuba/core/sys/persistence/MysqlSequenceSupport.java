@@ -47,7 +47,7 @@ public class MysqlSequenceSupport implements SequenceSupport {
     @Override
     public String getNextValueSql(String sequenceName) {
         Preconditions.checkNotNullArgument(sequenceName, "sequenceName is null");
-        return "update SYS_SEQUENCE set CURR_VALUE = last_insert_id(CURR_VALUE + INCREMENT) where NAME = '" + sequenceName + "' ^ select last_insert_id()";
+        return "update SYS_SEQUENCE set CURR_VALUE = last_insert_id(CURR_VALUE + INCREMENT) where NAME = '" + sequenceName + "' ^ select last_insert_id() - INCREMENT from SYS_SEQUENCE where NAME = '" + sequenceName +"'";
     }
 
     @Override
