@@ -110,7 +110,14 @@ public abstract class AbstractFieldFactory implements FieldFactory {
                 return createEnumField(datasource, property);
             }
         }
-        return createUnsupportedField(mpp);
+
+        String exceptionMessage;
+        if (mpp != null) {
+            exceptionMessage = String.format("Can't create field \"%s\" with data type: %s", property, mpp.getRange().asDatatype().getName());
+        } else {
+            exceptionMessage = String.format("Can't create field \"%s\" with given data type", property);
+        }
+        throw new UnsupportedOperationException(exceptionMessage);
     }
 
     protected Component createDatatypeLinkField(Datasource datasource, String property, Element xmlDescriptor) {
@@ -352,12 +359,6 @@ public abstract class AbstractFieldFactory implements FieldFactory {
         lookupField.setDatasource(datasource, property);
 
         return lookupField;
-    }
-
-    protected Component createUnsupportedField(MetaPropertyPath mpp) {
-        Label label = componentsFactory.createComponent(Label.class);
-        label.setValue("TODO: " + (mpp != null ? mpp.getRange() : ""));
-        return label;
     }
 
     @Nullable
