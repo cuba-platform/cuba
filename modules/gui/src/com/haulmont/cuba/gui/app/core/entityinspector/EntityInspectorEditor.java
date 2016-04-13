@@ -207,7 +207,6 @@ public class EntityInspectorEditor extends AbstractWindow {
         return datasource.getItem();
     }
 
-
     private void initShortcuts() {
         final String commitShortcut =  configuration.getConfig(ClientConfig.class).getCommitShortcut();
         Action commitAction = new AbstractAction("commitAndClose", commitShortcut) {
