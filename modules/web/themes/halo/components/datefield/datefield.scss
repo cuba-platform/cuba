@@ -43,4 +43,8 @@
       @include valo-textfield-error-style;
     }
   }
+
+  .#{$primary-stylename}-calendarpanel-day.#{$primary-stylename}-calendarpanel-day-focused {
+    border-color: $v-focus-color;
+  }
 }
