@@ -33,8 +33,8 @@ import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
 import com.vaadin.server.VaadinSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.*;
@@ -259,6 +259,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
             } finally {
                 // Set null security permissions
                 securityContext = null;
+                AppContext.setSecurityContext(null);
                 // Save result
                 this.result = result;
                 // Is done
@@ -291,7 +292,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 // Interrupt
                 interrupt();
 
-                session.accessSynchronously(new Runnable() {
+                Runnable removeTaskRunnable = new Runnable() {
                     @Override
                     public void run() {
                         // Remove task from execution
@@ -302,7 +303,15 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
                         stopTimer();
                     }
-                });
+                };
+
+                if (VaadinSession.getCurrent() != session) {
+                    // access to vaadin session asynchronously
+                    // to prevent deadlock with com.haulmont.cuba.gui.executors.impl.TasksWatchDog
+                    session.access(removeTaskRunnable);
+                } else {
+                    removeTaskRunnable.run();
+                }
 
                 canceled = true;
             }
