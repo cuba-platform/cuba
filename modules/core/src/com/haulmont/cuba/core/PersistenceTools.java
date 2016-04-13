@@ -214,6 +214,7 @@ public class PersistenceTools {
 
         try {
             Method vhMethod = entity.getClass().getMethod("_persistence_get_" + property + "_vh");
+            vhMethod.setAccessible(true);
             ValueHolderInterface vh = (ValueHolderInterface) vhMethod.invoke(entity);
             if (vh instanceof DatabaseValueHolder) {
                 AbstractRecord row = ((DatabaseValueHolder) vh).getRow();
