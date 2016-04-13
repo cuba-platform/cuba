@@ -28,8 +28,8 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.haulmont.chile.core.model.impl.MetaClassImpl;
 import com.haulmont.chile.core.model.impl.MetaPropertyImpl;
+import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.global.LoadContext;
 import de.javakaffee.kryoserializers.*;
 import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
 import de.javakaffee.kryoserializers.guava.ImmutableListSerializer;
@@ -60,11 +60,11 @@ import java.util.Collections;
 import java.util.GregorianCalendar;
 
 /**
- *
  * The serialization implementation using Kryo serialization
  */
 public class KryoSerialization implements Serialization {
     protected final ThreadLocal<Kryo> kryos = new ThreadLocal<Kryo>() {
+        @Override
         protected Kryo initialValue() {
             return newKryoInstance();
         }
@@ -116,27 +116,32 @@ public class KryoSerialization implements Serialization {
         return kryo;
     }
 
+    @Override
     public void serialize(Object object, OutputStream os) {
         try (Output output = new Output(os)) {
-            if (object instanceof BaseGenericIdEntity && ((BaseGenericIdEntity) object).__managed()) {
-                ((BaseGenericIdEntity) object).__detached(true);
+            if (object instanceof BaseGenericIdEntity
+                    && BaseEntityInternalAccess.isManaged((BaseGenericIdEntity) object)) {
+                BaseEntityInternalAccess.setDetached((BaseGenericIdEntity) object, true);
             }
             kryos.get().writeClassAndObject(output, object);
         }
     }
 
+    @Override
     public Object deserialize(InputStream is) {
         try (Input input = new Input(is)) {
             return kryos.get().readClassAndObject(input);
         }
     }
 
+    @Override
     public byte[] serialize(Object object) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         serialize(object, bos);
         return bos.toByteArray();
     }
 
+    @Override
     public Object deserialize(byte[] bytes) {
         if (bytes == null) {
             return null;

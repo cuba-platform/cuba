@@ -18,10 +18,7 @@
 package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.entity.BaseEntity;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.entity.SoftDelete;
-import com.haulmont.cuba.core.entity.Updatable;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
@@ -36,8 +33,6 @@ import javax.inject.Inject;
 import java.util.Date;
 import java.util.Vector;
 
-/**
- */
 @Component(EclipseLinkDescriptorEventListener.NAME)
 public class EclipseLinkDescriptorEventListener implements DescriptorEventListener {
 
@@ -82,7 +77,7 @@ public class EclipseLinkDescriptorEventListener implements DescriptorEventListen
     @Override
     public void postBuild(DescriptorEvent event) {
         if (event.getObject() instanceof BaseGenericIdEntity) {
-            ((BaseGenericIdEntity) event.getObject()).__new(false);
+            BaseEntityInternalAccess.setNew((BaseGenericIdEntity) event.getObject(), false);
         }
         if (event.getObject() instanceof FetchGroupTracker) {
             FetchGroupTracker entity = (FetchGroupTracker) event.getObject();

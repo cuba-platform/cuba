@@ -20,6 +20,7 @@ package com.haulmont.cuba.core;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
@@ -56,7 +57,6 @@ import java.util.Vector;
  * <p/> Implemented as Spring bean to allow extension in application projects.
  * <p/> A reference to this class can be obtained either via DI or by
  * {@link com.haulmont.cuba.core.Persistence#getTools()} method.
- *
  */
 @Component(PersistenceTools.NAME)
 public class PersistenceTools {
@@ -192,8 +192,9 @@ public class PersistenceTools {
         if (!PersistenceHelper.isManaged(entity))
             throw new IllegalStateException("Entity must be in managed state");
 
-        if (entity.__inaccessibleAttributes() != null) {
-            for (String inaccessibleAttr : entity.__inaccessibleAttributes()) {
+        String[] inaccessibleAttributes = BaseEntityInternalAccess.getInaccessibleAttributes(entity);
+        if (inaccessibleAttributes != null) {
+            for (String inaccessibleAttr : inaccessibleAttributes) {
                 if (inaccessibleAttr.equals(property))
                     return RefId.createNotLoaded(property);
             }

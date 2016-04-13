@@ -22,10 +22,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.TypedQuery;
-import com.haulmont.cuba.core.entity.BaseEntity;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.SoftDelete;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
@@ -145,8 +142,9 @@ public class EntityManagerImpl implements EntityManager {
             ((SoftDelete) entity).setDeletedBy(userSession != null ? userSession.getUser().getLogin() : "<unknown>");
         } else {
             delegate.remove(entity);
-            if (entity instanceof BaseGenericIdEntity)
-                ((BaseGenericIdEntity) entity).__removed(true);
+            if (entity instanceof BaseGenericIdEntity) {
+                BaseEntityInternalAccess.setRemoved((BaseGenericIdEntity) entity, true);
+            }
         }
     }
 
@@ -200,7 +198,7 @@ public class EntityManagerImpl implements EntityManager {
         Class<T> effectiveClass = metadata.getExtendedEntities().getEffectiveClass(clazz);
 
         T reference = delegate.getReference(effectiveClass, id);
-        ((BaseGenericIdEntity) reference).__new(false);
+        BaseEntityInternalAccess.setNew((BaseGenericIdEntity) reference, false);
         return reference;
     }
 

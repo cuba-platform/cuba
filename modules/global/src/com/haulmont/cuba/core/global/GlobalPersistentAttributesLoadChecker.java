@@ -20,6 +20,7 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
@@ -29,10 +30,9 @@ import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
 
-/**
- */
 @Component(PersistentAttributesLoadChecker.NAME)
 public class GlobalPersistentAttributesLoadChecker implements PersistentAttributesLoadChecker {
+
     @Inject
     protected MetadataTools metadataTools;
 
@@ -46,9 +46,9 @@ public class GlobalPersistentAttributesLoadChecker implements PersistentAttribut
 
         if (!metadataTools.isPersistent(metaProperty)) {
             List<String> relatedProperties = metadataTools.getRelatedProperties(metaProperty);
-            if (relatedProperties.isEmpty())
+            if (relatedProperties.isEmpty()) {
                 return true;
-            else {
+            } else {
                 for (String relatedProperty : relatedProperties) {
                     if (!isLoaded(entity, relatedProperty))
                         return false;
@@ -69,8 +69,9 @@ public class GlobalPersistentAttributesLoadChecker implements PersistentAttribut
         if (entity instanceof BaseGenericIdEntity) {
             BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) entity;
 
-            if (baseGenericIdEntity.__inaccessibleAttributes() != null) {
-                for (String inaccessibleAttr : baseGenericIdEntity.__inaccessibleAttributes()) {
+            String[] inaccessibleAttributes = BaseEntityInternalAccess.getInaccessibleAttributes(baseGenericIdEntity);
+            if (inaccessibleAttributes != null) {
+                for (String inaccessibleAttr : inaccessibleAttributes) {
                     if (inaccessibleAttr.equals(property))
                         return false;
                 }

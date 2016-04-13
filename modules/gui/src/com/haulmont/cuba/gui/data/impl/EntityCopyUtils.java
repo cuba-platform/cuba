@@ -20,6 +20,7 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
+import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.IllegalEntityStateException;
@@ -88,9 +89,12 @@ public class EntityCopyUtils {
             }
         }
         if (source instanceof BaseGenericIdEntity && dest instanceof BaseGenericIdEntity) {
-            ((BaseGenericIdEntity) dest).__detached(((BaseGenericIdEntity) source).__detached());
-            ((BaseGenericIdEntity) dest).__new(((BaseGenericIdEntity) source).__new());
-            ((BaseGenericIdEntity) dest).setDynamicAttributes(((BaseGenericIdEntity<?>) source).getDynamicAttributes());
+            BaseGenericIdEntity destGenericEntity = (BaseGenericIdEntity) dest;
+            BaseGenericIdEntity<?> sourceGenericEntity = (BaseGenericIdEntity<?>) source;
+
+            BaseEntityInternalAccess.setDetached(destGenericEntity, BaseEntityInternalAccess.isDetached(sourceGenericEntity));
+            BaseEntityInternalAccess.setNew(destGenericEntity, BaseEntityInternalAccess.isNew(sourceGenericEntity));
+            destGenericEntity.setDynamicAttributes(sourceGenericEntity.getDynamicAttributes());
         }
     }
 

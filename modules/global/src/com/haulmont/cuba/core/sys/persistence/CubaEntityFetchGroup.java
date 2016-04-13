@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.sys.persistence;
 
+import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.global.IllegalEntityStateException;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -26,8 +27,6 @@ import org.eclipse.persistence.queries.FetchGroupTracker;
 
 import java.util.Collection;
 
-/**
- */
 public class CubaEntityFetchGroup extends EntityFetchGroup {
 
     public CubaEntityFetchGroup(FetchGroup fetchGroup) {
@@ -40,7 +39,7 @@ public class CubaEntityFetchGroup extends EntityFetchGroup {
 
     @Override
     public String onUnfetchedAttribute(FetchGroupTracker entity, String attributeName) {
-        String[] inaccessible = ((BaseGenericIdEntity) entity).__inaccessibleAttributes();
+        String[] inaccessible = BaseEntityInternalAccess.getInaccessibleAttributes((BaseGenericIdEntity) entity);
         if (inaccessible != null) {
             for (String inaccessibleAttribute : inaccessible) {
                 if (attributeName.equals(inaccessibleAttribute))
@@ -49,7 +48,7 @@ public class CubaEntityFetchGroup extends EntityFetchGroup {
         }
 
         if ((attributeName == null && entity._persistence_getSession() != null) // occurs on merge
-                || ((BaseGenericIdEntity) entity).__removed() /* EclipseLink can access reference fields to reorder deletes */) {
+                || BaseEntityInternalAccess.isRemoved((BaseGenericIdEntity) entity) /* EclipseLink can access reference fields to reorder deletes */) {
             return super.onUnfetchedAttribute(entity, null);
         }
 

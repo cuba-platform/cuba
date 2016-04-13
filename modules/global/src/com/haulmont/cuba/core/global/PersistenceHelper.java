@@ -17,6 +17,7 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.bali.util.Preconditions;
+import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import org.apache.commons.lang.StringUtils;
@@ -41,7 +42,7 @@ public class PersistenceHelper {
      */
     public static boolean isNew(Object entity) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
-        if (entity instanceof BaseGenericIdEntity && !((BaseGenericIdEntity) entity).__new()) {
+        if (entity instanceof BaseGenericIdEntity && !BaseEntityInternalAccess.isNew((BaseGenericIdEntity) entity)) {
             return false;
         }
         return true;
@@ -58,7 +59,7 @@ public class PersistenceHelper {
     public static boolean isManaged(Object entity) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
         if (entity instanceof BaseGenericIdEntity) {
-            return ((BaseGenericIdEntity) entity).__managed();
+            return BaseEntityInternalAccess.isManaged((BaseGenericIdEntity) entity);
         }
         return false;
     }
@@ -74,7 +75,7 @@ public class PersistenceHelper {
      */
     public static boolean isDetached(Object entity) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
-        if (entity instanceof BaseGenericIdEntity && ((BaseGenericIdEntity) entity).__detached()) {
+        if (entity instanceof BaseGenericIdEntity && BaseEntityInternalAccess.isDetached((BaseGenericIdEntity) entity)) {
             return true;
         }
         return false;

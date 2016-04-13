@@ -21,6 +21,7 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.PersistenceSecurity;
+import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -37,7 +38,6 @@ import java.util.List;
 
 /**
  * Supports enforcing entity attribute permissions on Middleware.
- *
  */
 @Component(AttributeSecuritySupport.NAME)
 public class AttributeSecuritySupport {
@@ -195,10 +195,10 @@ public class AttributeSecuritySupport {
     }
 
     private void addInaccessibleAttribute(BaseGenericIdEntity entity, String property) {
-        String[] attributes = entity.__inaccessibleAttributes();
+        String[] attributes = BaseEntityInternalAccess.getInaccessibleAttributes(entity);
         attributes = attributes == null ? new String[1] : Arrays.copyOf(attributes, attributes.length + 1);
         attributes[attributes.length - 1] = property;
-        entity.__inaccessibleAttributes(attributes);
+        BaseEntityInternalAccess.setInaccessibleAttributes(entity, attributes);
     }
 
     private class FillingInaccessibleAttributesVisitor implements EntityAttributeVisitor {

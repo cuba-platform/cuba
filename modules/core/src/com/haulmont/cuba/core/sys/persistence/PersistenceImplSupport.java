@@ -41,8 +41,6 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import javax.inject.Inject;
 import java.util.*;
 
-/**
- */
 @Component(PersistenceImplSupport.NAME)
 public class PersistenceImplSupport {
 
@@ -68,7 +66,7 @@ public class PersistenceImplSupport {
         getInstanceContainerResourceHolder().registerInstanceForUnitOfWork(entity, unitOfWork);
 
         if (entity instanceof BaseGenericIdEntity) {
-            ((BaseGenericIdEntity) entity).__detached(false);
+            BaseEntityInternalAccess.setDetached((BaseGenericIdEntity) entity, false);
         }
     }
 
@@ -118,8 +116,9 @@ public class PersistenceImplSupport {
                     && changeSet.getAttributesToChanges().containsKey("deleteTs")
                     && ((SoftDelete) entity).isDeleted();
 
-        } else
-            return entity.__removed();
+        } else {
+            return BaseEntityInternalAccess.isRemoved(entity);
+        }
     }
 
     protected void traverseEntities(ContainerResourceHolder container, EntityVisitor visitor) {
@@ -162,7 +161,7 @@ public class PersistenceImplSupport {
                         instance + ", UnitOfWork = " + unitOfWork);
 
             if (instance instanceof BaseGenericIdEntity) {
-                ((BaseGenericIdEntity) instance).__managed(true);
+                BaseEntityInternalAccess.setManaged((BaseGenericIdEntity) instance, true);
             }
 
             Set<Object> instances = unitOfWorkMap.get(unitOfWork);
@@ -223,9 +222,11 @@ public class PersistenceImplSupport {
                 log.trace("ContainerResourceSynchronization.afterCompletion: instances = " + instances);
             for (Object instance : instances) {
                 if (instance instanceof BaseGenericIdEntity) {
-                    ((BaseGenericIdEntity) instance).__new(false);
-                    ((BaseGenericIdEntity) instance).__managed(false);
-                    ((BaseGenericIdEntity) instance).__detached(true);
+                    BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) instance;
+
+                    BaseEntityInternalAccess.setNew(baseGenericIdEntity, false);
+                    BaseEntityInternalAccess.setManaged(baseGenericIdEntity, false);
+                    BaseEntityInternalAccess.setDetached(baseGenericIdEntity, true);
                 }
             }
             super.afterCompletion(status);
@@ -240,7 +241,7 @@ public class PersistenceImplSupport {
     protected class OnCommitEntityVisitor implements EntityVisitor {
         @Override
         public boolean visit(BaseGenericIdEntity entity) {
-            if (entity.__new()) {
+            if (BaseEntityInternalAccess.isNew(entity)) {
                 entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_INSERT);
                 entityLog.registerCreate(entity, true);
                 enqueueForFts(entity, FtsChangeType.INSERT);
@@ -298,7 +299,7 @@ public class PersistenceImplSupport {
     protected class OnFlushEntityVisitor implements EntityVisitor {
         @Override
         public boolean visit(BaseGenericIdEntity entity) {
-            if (entity.__new()) {
+            if (BaseEntityInternalAccess.isNew(entity)) {
                 entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_INSERT);
                 return true;
             }
