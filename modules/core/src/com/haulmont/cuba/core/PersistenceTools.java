@@ -213,8 +213,14 @@ public class PersistenceTools {
         }
 
         try {
-            Method vhMethod = entity.getClass().getMethod("_persistence_get_" + property + "_vh");
+            Class<?> declaringClass = metaProperty.getDeclaringClass();
+            if (declaringClass == null) {
+                throw new RuntimeException("Property does not belong to persistent class");
+            }
+
+            Method vhMethod = declaringClass.getDeclaredMethod(String.format("_persistence_get_%s_vh", property));
             vhMethod.setAccessible(true);
+
             ValueHolderInterface vh = (ValueHolderInterface) vhMethod.invoke(entity);
             if (vh instanceof DatabaseValueHolder) {
                 AbstractRecord row = ((DatabaseValueHolder) vh).getRow();
@@ -242,8 +248,9 @@ public class PersistenceTools {
             }
             return RefId.createNotLoaded(property);
         } catch (Exception e) {
-            throw new RuntimeException("Error retrieving reference ID from "
-                    + entity.getClass().getSimpleName() + "." + property, e);
+            throw new RuntimeException(
+                    String.format("Error retrieving reference ID from %s.%s", entity.getClass().getSimpleName(), property),
+                    e);
         }
     }
 
