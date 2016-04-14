@@ -57,6 +57,8 @@ public class LogDataProvider implements ExportDataProvider {
     protected String remoteContext;
     protected boolean downloadFullLog = false;
 
+    protected String url;
+
     public LogDataProvider(JmxInstance jmxInstance, String logFileName) {
         this(jmxInstance, logFileName, null, false);
     }
@@ -72,9 +74,7 @@ public class LogDataProvider implements ExportDataProvider {
         this.downloadFullLog = downloadFullLog;
     }
 
-    @Override
-    public InputStream provide() {
-        String url;
+    public void obtainUrl() {
         try {
             url = jmxRemoteLoggingAPI.getLogFileLink(jmxInstance, remoteContext, logFileName);
         } catch (Exception e) {
@@ -82,7 +82,13 @@ public class LogDataProvider implements ExportDataProvider {
 
             throw new RuntimeException(e);
         }
+    }
 
+    /**
+    * You should call {@link LogDataProvider#obtainUrl()} before
+    * */
+    @Override
+    public InputStream provide() {
         HttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager();
         HttpClient httpClient = HttpClientBuilder.create()
                 .setConnectionManager(connectionManager)
@@ -111,9 +117,9 @@ public class LogDataProvider implements ExportDataProvider {
                 log.debug("Unable to download log from " + url + "\n" + httpResponse.getStatusLine());
                 throw new RuntimeException("Unable to download log from " + url + "\n" + httpResponse.getStatusLine());
             }
-        } catch (IOException ex) {
-            log.debug("Unable to download log from " + url + "\n" + ex);
-            throw new RuntimeException(ex);
+        } catch (IOException e) {
+            log.debug("Unable to download log from " + url + "\n" + e);
+            throw new RuntimeException(e);
         } finally {
             connectionManager.shutdown();
         }
