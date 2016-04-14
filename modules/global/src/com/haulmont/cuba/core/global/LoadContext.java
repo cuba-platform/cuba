@@ -51,6 +51,7 @@ public class LoadContext<E extends Entity> implements Serializable {
     protected int queryKey;
     protected Map<String, Object> dbHints = new HashMap<>();
     protected boolean loadDynamicAttributes;
+    protected boolean loadPartialEntities = true;
 
     /**
      * Factory method to create a LoadContext instance.
@@ -212,7 +213,7 @@ public class LoadContext<E extends Entity> implements Serializable {
     /**
      * @return whether to load dynamic attributes
      */
-    public boolean getLoadDynamicAttributes() {
+    public boolean isLoadDynamicAttributes() {
         return loadDynamicAttributes;
     }
 
@@ -222,6 +223,24 @@ public class LoadContext<E extends Entity> implements Serializable {
     public LoadContext<E> setLoadDynamicAttributes(boolean loadDynamicAttributes) {
         this.loadDynamicAttributes = loadDynamicAttributes;
         return this;
+    }
+
+    /**
+     * @return whether to load partial entities. When true (which is by default), some local attributes can be unfetched
+     * according to {@link #setView(View)}.
+     * <p>The state of {@link View#loadPartialEntities} is ignored when the view is passed to {@link DataManager}.
+     */
+    public boolean isLoadPartialEntities() {
+        return loadPartialEntities;
+    }
+
+    /**
+     * Whether to load partial entities. When true (which is by default), some local attributes can be unfetched
+     * according to {@link #setView(View)}.
+     * <p>The state of {@link View#loadPartialEntities} is ignored when the view is passed to {@link DataManager}.
+     */
+    public void setLoadPartialEntities(boolean loadPartialEntities) {
+        this.loadPartialEntities = loadPartialEntities;
     }
 
     /**

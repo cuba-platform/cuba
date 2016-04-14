@@ -24,6 +24,8 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestSupport;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 
@@ -39,6 +41,25 @@ public class GetReferenceIdTest {
 
     @ClassRule
     public static TestContainer cont = TestContainer.Common.INSTANCE;
+    private User user;
+
+    @Before
+    public void setUp() throws Exception {
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            user = cont.metadata().create(User.class);
+            user.setName("test user");
+            user.setLogin("test login");
+            user.setGroup(cont.entityManager().find(Group.class, TestSupport.COMPANY_GROUP_ID));
+            cont.entityManager().persist(user);
+
+            tx.commit();
+        }
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        cont.deleteRecord(user);
+    }
 
     @Test
     public void testWithFetchGroup() throws Exception {
@@ -55,8 +76,9 @@ public class GetReferenceIdTest {
                             .addProperty("userRoles", new View(UserRole.class)
                                     .addProperty("role", new View(Role.class)
                                             .addProperty("name")))
+                            .setLoadPartialEntities(true)
             );
-            q.setParameter(1, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
+            q.setParameter(1, this.user.getId());
             List<User> list = q.getResultList();
             if (!list.isEmpty()) {
                 user = list.get(0);
@@ -90,8 +112,9 @@ public class GetReferenceIdTest {
                             .addProperty("userRoles", new View(UserRole.class)
                                     .addProperty("role", new View(Role.class)
                                             .addProperty("name")))
+                            .setLoadPartialEntities(true)
             );
-            q.setParameter(1, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
+            q.setParameter(1, this.user.getId());
             List<User> list = q.getResultList();
             if (!list.isEmpty()) {
                 user = list.get(0);
@@ -117,7 +140,7 @@ public class GetReferenceIdTest {
             EntityManager em = cont.persistence().getEntityManager();
 
             TypedQuery<User> q = em.createQuery("select u from sec$User u where u.id = ?1", User.class);
-            q.setParameter(1, TestSupport.ADMIN_USER_ID);
+            q.setParameter(1, this.user.getId());
             List<User> list = q.getResultList();
             if (!list.isEmpty()) {
                 user = list.get(0);

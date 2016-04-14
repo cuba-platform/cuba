@@ -76,12 +76,8 @@ public class UnfetchedAttributeTest {
             List<User> list = q.getResultList();
             if (!list.isEmpty()) {
                 user = list.get(0);
-
-                try {
-                    user.getGroup();
-                    fail();
-                } catch (IllegalStateException ignored) {
-                }
+                // lazy fetch
+                user.getGroup();
             }
 
             tx.commit();
@@ -92,6 +88,7 @@ public class UnfetchedAttributeTest {
         assertNotNull(user);
         assertNotNull(user.getUserRoles());
         user.getUserRoles().size();
+        assertNotNull(user.getGroup());
     }
 
     @Test
@@ -114,11 +111,8 @@ public class UnfetchedAttributeTest {
             List<User> list = q.getResultList();
             if (!list.isEmpty()) {
                 user = list.get(0);
-                try {
-                    user.setGroup(group);
-                    fail();
-                } catch (IllegalStateException ignored) {
-                }
+                // set value to not present in view
+                user.setGroup(group);
             }
 
             tx.commit();
@@ -129,5 +123,6 @@ public class UnfetchedAttributeTest {
         assertNotNull(user);
         assertNotNull(user.getUserRoles());
         user.getUserRoles().size();
+        assertNotNull(user.getGroup());
     }
 }

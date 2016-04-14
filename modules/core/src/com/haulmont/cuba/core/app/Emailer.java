@@ -330,8 +330,7 @@ public class Emailer implements EmailerAPI {
 
         List<SendingMessage> emailsToSend = new ArrayList<>();
 
-        Transaction tx = persistence.createTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
             TypedQuery<SendingMessage> query = em.createQuery(
                     "select sm from sys$SendingMessage sm" +
@@ -342,7 +341,11 @@ public class Emailer implements EmailerAPI {
             query.setParameter("statusQueue", SendingStatus.QUEUE.getId());
             query.setParameter("time", sendTimeoutTime);
             query.setParameter("statusSending", SendingStatus.SENDING.getId());
-            query.setViewName("sendingMessage.loadFromQueue");
+
+            View view = metadata.getViewRepository().getView(SendingMessage.class, "sendingMessage.loadFromQueue");
+            view.setLoadPartialEntities(true); // because SendingAttachment.content has FetchType.LAZY
+            query.setView(view);
+
             query.setMaxResults(config.getMessageQueueCapacity());
 
             List<SendingMessage> resList = query.getResultList();
@@ -356,8 +359,6 @@ public class Emailer implements EmailerAPI {
                 }
             }
             tx.commit();
-        } finally {
-            tx.end();
         }
 
         for (SendingMessage message : emailsToSend) {
@@ -369,13 +370,10 @@ public class Emailer implements EmailerAPI {
     @Override
     public String loadContentText(SendingMessage sendingMessage) {
         SendingMessage msg;
-        Transaction tx = persistence.createTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
             msg = em.reload(sendingMessage, "sendingMessage.loadContentText");
             tx.commit();
-        } finally {
-            tx.end();
         }
         Objects.requireNonNull(msg, "Sending message not found: " + sendingMessage.getId());
         if (msg.getContentTextFile() != null) {
@@ -416,8 +414,7 @@ public class Emailer implements EmailerAPI {
         MessagePersistingContext context = new MessagePersistingContext();
 
         try {
-            Transaction tx = persistence.createTransaction();
-            try {
+            try (Transaction tx = persistence.createTransaction()) {
                 EntityManager em = persistence.getEntityManager();
                 for (SendingMessage message : sendingMessageList) {
                     message.setStatus(status);
@@ -429,8 +426,6 @@ public class Emailer implements EmailerAPI {
                     }
                 }
                 tx.commit();
-            } finally {
-                tx.end();
             }
             context.finished();
         } finally {
@@ -501,8 +496,7 @@ public class Emailer implements EmailerAPI {
     }
 
     protected void returnToQueue(SendingMessage sendingMessage) {
-        Transaction tx = persistence.createTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
             SendingMessage msg = em.merge(sendingMessage);
 
@@ -510,14 +504,11 @@ public class Emailer implements EmailerAPI {
             msg.setStatus(SendingStatus.QUEUE);
 
             tx.commit();
-        } finally {
-            tx.end();
         }
     }
 
     protected void markAsSent(SendingMessage sendingMessage) {
-        Transaction tx = persistence.createTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
             SendingMessage msg = em.merge(sendingMessage);
 
@@ -526,14 +517,11 @@ public class Emailer implements EmailerAPI {
             msg.setDateSent(timeSource.currentTimestamp());
 
             tx.commit();
-        } finally {
-            tx.end();
         }
     }
 
     protected void markAsNonSent(SendingMessage sendingMessage) {
-        Transaction tx = persistence.createTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
             SendingMessage msg = em.merge(sendingMessage);
 
@@ -541,8 +529,6 @@ public class Emailer implements EmailerAPI {
             msg.setAttemptsMade(msg.getAttemptsMade() + 1);
 
             tx.commit();
-        } finally {
-            tx.end();
         }
     }
 
@@ -636,23 +622,19 @@ public class Emailer implements EmailerAPI {
 
     @Override
     public void migrateEmailsToFileStorage(List<SendingMessage> messages) {
-        Transaction tx = persistence.createTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
 
             for (SendingMessage msg : messages) {
                 migrateMessage(em, msg);
             }
             tx.commit();
-        } finally {
-            tx.end();
         }
     }
 
     @Override
     public void migrateAttachmentsToFileStorage(List<SendingAttachment> attachments) {
-        Transaction tx = persistence.createTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
 
             for (SendingAttachment attachment : attachments) {
@@ -660,10 +642,7 @@ public class Emailer implements EmailerAPI {
             }
 
             tx.commit();
-        } finally {
-            tx.end();
         }
-
     }
 
     protected void migrateMessage(EntityManager em, SendingMessage msg) {

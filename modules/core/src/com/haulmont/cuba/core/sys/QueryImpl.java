@@ -104,14 +104,20 @@ public class QueryImpl<T> implements TypedQuery<T> {
                 if (param.value == null)
                     nullParam = true;
             }
+
+            addMacroParams(query);
+
             // disable SQL caching to support "is null" generation
             if (nullParam)
                 query.setHint(QueryHints.PREPARE, HintValues.FALSE);
 
-            if (maxResults != null)
+            // Set maxResults and firstResult only if the query is not by ID, otherwise EclipseLink does not select
+            // nested collections in some cases
+            if (maxResults != null && !singleResultExpected)
                 query.setMaxResults(maxResults);
-            if (firstResult != null)
+            if (firstResult != null && !singleResultExpected)
                 query.setFirstResult(firstResult);
+
             if (lockMode != null)
                 query.setLockMode(lockMode);
 
@@ -121,9 +127,6 @@ public class QueryImpl<T> implements TypedQuery<T> {
                 else
                     fetchGroupMgr.addView(query, queryString, views.get(i), singleResultExpected);
             }
-
-            addMacroParams(query);
-
         }
         //noinspection unchecked
         return query;

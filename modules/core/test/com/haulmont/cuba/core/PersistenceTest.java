@@ -80,7 +80,7 @@ public class PersistenceTest {
             EntityManager em = cont.persistence().getEntityManager();
 
             user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"),
-                    new View(User.class, false).addProperty("login"));
+                    new View(User.class, false).addProperty("login").setLoadPartialEntities(true));
 
             assertTrue(cont.persistence().getTools().isLoaded(user, "login"));
             assertFalse(cont.persistence().getTools().isLoaded(user, "name"));
@@ -92,8 +92,8 @@ public class PersistenceTest {
             em = cont.persistence().getEntityManager();
 
             user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"),
-                    new View(User.class, false).addProperty("login"),
-                    new View(User.class, false).addProperty("name")
+                    new View(User.class, false).addProperty("login").setLoadPartialEntities(true),
+                    new View(User.class, false).addProperty("name").setLoadPartialEntities(true)
             );
 
             assertTrue(cont.persistence().getTools().isLoaded(user, "login"));
@@ -106,8 +106,8 @@ public class PersistenceTest {
             em = cont.persistence().getEntityManager();
 
             user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"),
-                    new View(User.class, false).addProperty("login"),
-                    new View(User.class, false).addProperty("group", new View(Group.class).addProperty("name"))
+                    new View(User.class, false).addProperty("login").setLoadPartialEntities(true),
+                    new View(User.class, false).addProperty("group", new View(Group.class).addProperty("name")).setLoadPartialEntities(true)
             );
 
             assertTrue(cont.persistence().getTools().isLoaded(user, "login"));

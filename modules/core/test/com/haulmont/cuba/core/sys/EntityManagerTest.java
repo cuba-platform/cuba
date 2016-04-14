@@ -132,23 +132,15 @@ public class EntityManagerTest {
 
         User user;
 
-        Transaction tx = cont.persistence().createTransaction();
-        try {
+        try (Transaction tx = cont.persistence().createTransaction()) {
             EntityManager em = cont.persistence().getEntityManager();
             user = em.find(User.class, userId, view);
 
             tx.commit();
-        } finally {
-            tx.end();
         }
         user = reserialize(user);
 
-        assertNotNull(user);
-        try {
-            user.getCreatedBy();
-            fail();
-        } catch (Exception ignored) {
-        }
+        assertNotNull(user.getCreatedBy());
         assertNotNull(user.getGroup());
     }
 
@@ -189,42 +181,26 @@ public class EntityManagerTest {
 
         User user1, user2;
 
-        Transaction tx = cont.persistence().createTransaction();
-        try {
+        try (Transaction tx = cont.persistence().createTransaction()) {
             EntityManager em = cont.persistence().getEntityManager();
             user1 = em.find(User.class, userId, view1);
             user2 = em.find(User.class, user2Id, view2);
 
             tx.commit();
-        } finally {
-            tx.end();
         }
         user1 = reserialize(user1);
         user2 = reserialize(user2);
 
         assertNotNull(user1);
-        try {
-            user1.getCreatedBy();
-            fail();
-        } catch (Exception ignored) {
-        }
+        assertNotNull(user1.getCreatedBy());
         try {
             user1.getGroup();
             fail();
         } catch (Exception ignored) {
         }
-        assertNotNull(user2);
 
-        try {
-            user2.getCreatedBy();
-            fail();
-        } catch (Exception ignored) {
-        }
-        try {
-            user2.getCreatedBy();
-            fail();
-        } catch (Exception ignored) {
-        }
+        assertNotNull(user2);
+        assertNotNull(user2.getCreatedBy());
         assertNotNull(user2.getGroup());
     }
 
@@ -243,23 +219,16 @@ public class EntityManagerTest {
 
         User user1;
 
-        Transaction tx = cont.persistence().createTransaction();
-        try {
+        try (Transaction tx = cont.persistence().createTransaction()) {
             EntityManager em = cont.persistence().getEntityManager();
             user1 = em.find(User.class, userId, view1, view2);
 
             tx.commit();
-        } finally {
-            tx.end();
         }
         user1 = reserialize(user1);
 
         assertNotNull(user1);
-        try {
-            user1.getCreatedBy();
-            fail();
-        } catch (Exception ignored) {
-        }
+        assertNotNull(user1.getCreatedBy());
         assertNotNull(user1.getGroup());
     }
 
@@ -276,8 +245,7 @@ public class EntityManagerTest {
 
         User user;
 
-        Transaction tx = cont.persistence().createTransaction();
-        try {
+        try (Transaction tx = cont.persistence().createTransaction()) {
             EntityManager em = cont.persistence().getEntityManager();
 
             TypedQuery<User> query = em.createQuery("select u from sec$User u where u.id = ?1", User.class);
@@ -286,40 +254,28 @@ public class EntityManagerTest {
             user = query.getSingleResult();
 
             tx.commit();
-        } finally {
-            tx.end();
         }
         user = reserialize(user);
 
-        try {
-            user.getCreatedBy();
-            fail();
-        } catch (Exception ignored) {
-        }
+        assertNotNull(user.getCreatedBy());
         assertNotNull(user.getGroup());
     }
 
     @Test
     public void testReload() throws Exception {
         User originalUser, reloadedUser;
-        Transaction tx = cont.persistence().createTransaction();
-        try {
+        try (Transaction tx = cont.persistence().createTransaction()) {
             EntityManager em = cont.persistence().getEntityManager();
             originalUser = em.find(User.class, userId, "user.browse");
             tx.commit();
-        } finally {
-            tx.end();
         }
         assertNotNull(originalUser);
         assertFalse(PersistenceHelper.isLoaded(originalUser, "userRoles"));
 
-        tx = cont.persistence().createTransaction();
-        try {
+        try (Transaction tx = cont.persistence().createTransaction()) {
             EntityManager em = cont.persistence().getEntityManager();
             reloadedUser = em.reload(originalUser, "user.edit");
             tx.commit();
-        } finally {
-            tx.end();
         }
         assertNotNull(reloadedUser);
         assertTrue(PersistenceHelper.isLoaded(reloadedUser, "userRoles"));

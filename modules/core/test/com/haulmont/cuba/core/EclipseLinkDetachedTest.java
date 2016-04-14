@@ -145,8 +145,8 @@ public class EclipseLinkDetachedTest {
         tx = cont.persistence().createTransaction();
         try {
             em = cont.persistence().getEntityManager();
-            View view = new View(User.class)
-                    .addProperty("login");
+            View view = new View(User.class).addProperty("login")
+                    .setLoadPartialEntities(true);
             user = em.find(User.class, userId, view);
             assertNotNull(user);
             tx.commit();
@@ -177,8 +177,8 @@ public class EclipseLinkDetachedTest {
         tx = cont.persistence().createTransaction();
         try {
             em = cont.persistence().getEntityManager();
-            View view = new View(User.class)
-                    .addProperty("login");
+            View view = new View(User.class).addProperty("login")
+                    .setLoadPartialEntities(true);
             user = em.find(User.class, userId, view);
             assertNotNull(user);
             tx.commit();
@@ -215,8 +215,8 @@ public class EclipseLinkDetachedTest {
         tx = cont.persistence().createTransaction();
         try {
             em = cont.persistence().getEntityManager();
-            View view = new View(User.class)
-                    .addProperty("login");
+            View view = new View(User.class).addProperty("login")
+                    .setLoadPartialEntities(true);
             user = em.find(User.class, userId, view);
             assertNotNull(user);
 
@@ -286,52 +286,6 @@ public class EclipseLinkDetachedTest {
         user = reserialize(user);
 
         assertEquals("testLogin-1", user.getLogin());
-        assertEquals("testUser", user.getName());
-    }
-
-    @Test
-    public void testModifiedFetchGroup() throws Exception {
-        Transaction tx;
-        EntityManager em;
-        User user;
-        tx = cont.persistence().createTransaction();
-        try {
-            em = cont.persistence().getEntityManager();
-            View view = new View(User.class)
-                    .addProperty("login")
-                    .addProperty("position");
-            user = em.find(User.class, userId, view);
-            assertNotNull(user);
-
-            tx.commit();
-        } finally {
-            tx.end();
-        }
-        user.setPosition(""); // restricted attribute
-        user = reserialize(user);
-
-        Set<String> attributeNames = ((FetchGroupTracker) user)._persistence_getFetchGroup().getAttributeNames();
-        attributeNames.remove("position");
-        ((FetchGroupTracker) user)._persistence_setFetchGroup(new EntityFetchGroup(attributeNames));
-
-        user.setLogin("testLogin-1");
-
-        // merge
-        tx = cont.persistence().createTransaction();
-        try {
-            em = cont.persistence().getEntityManager();
-            user = em.merge(user);
-
-            tx.commit();
-        } finally {
-            tx.end();
-        }
-        user = reserialize(user);
-
-        assertEquals("testLogin-1", user.getLogin());
-        // restricted was not changed
-        assertEquals("manager", user.getPosition());
-        // loaded by mapping rules
         assertEquals("testUser", user.getName());
     }
 }

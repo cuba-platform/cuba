@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.View;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
@@ -163,9 +164,8 @@ public class PersistenceTools {
     /**
      * Returns an ID of directly referenced entity without loading it from DB.
      *
-     * <p>Use this method only when the given entity has been loaded <b>without a view</b>. If the entity is loaded with a view
-     * and the view contains the reference attribute, you can get the reference value from the corresponding getter.
-     * If the view does not contain the reference, the returned {@link RefId} will have {@link RefId#isLoaded()} = false.
+     * If the view does not contain the reference and {@link View#loadPartialEntities()} is true,
+     * the returned {@link RefId} will have {@link RefId#isLoaded()} = false.
      *
      * <p>Usage example:
      * <pre>

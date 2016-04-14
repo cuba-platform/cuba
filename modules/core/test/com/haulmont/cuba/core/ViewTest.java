@@ -33,6 +33,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.UUID;
 
+import static com.haulmont.cuba.testsupport.TestSupport.assertFail;
 import static com.haulmont.cuba.testsupport.TestSupport.reserialize;
 import static org.junit.Assert.*;
 
@@ -90,7 +91,8 @@ public class ViewTest {
                     .addProperty("group",
                             new View(Group.class)
                                     .addProperty("name")
-                    );
+                    )
+                    .setLoadPartialEntities(true);
             q.setView(view);
 
             User user = (User) q.getSingleResult();
@@ -121,7 +123,7 @@ public class ViewTest {
                     .addProperty("group",
                             new View(Group.class)
                                     .addProperty("name")
-                    );
+                    ).setLoadPartialEntities(true);
 
             User user = em.find(User.class, userId, view);
 
@@ -153,7 +155,7 @@ public class ViewTest {
                     .addProperty("group",
                             new View(Group.class, false)
                                     .addProperty("name")
-                    );
+                    ).setLoadPartialEntities(true);
 
             User user = em.find(User.class, userId, view);
 
@@ -204,19 +206,14 @@ public class ViewTest {
             User user = em.find(User.class, userId, view);
             user.setName(new Date().toString());
 
-            try {
-                tx.commitRetaining();
+            tx.commitRetaining();
 
-                assertTrue(getCurrentUpdateTs() > ts);
-            } catch (Exception e) {
-                // todo el: commit is failed because updateTs & updatedBy can not be changed (https://bugs.eclipse.org/bugs/show_bug.cgi?id=466841)
-                tx = cont.persistence().createTransaction();
-            }
+            assertTrue(getCurrentUpdateTs() > ts);
 
             // Second stage: change detached
 
             ts = timeSource.currentTimeMillis();
-            Thread.sleep(200);
+            Thread.sleep(1000);
 
             em = cont.persistence().getEntityManager();
             user = em.find(User.class, userId, view);
@@ -246,7 +243,8 @@ public class ViewTest {
         View view = new View(User.class, false)
                 .addProperty("name")
                 .addProperty("group", new View(Group.class)
-                    .addProperty("name"));
+                    .addProperty("name"))
+                .setLoadPartialEntities(true);
 
         User user;
         Transaction tx = cont.persistence().createTransaction();
@@ -274,19 +272,15 @@ public class ViewTest {
             user = em.find(User.class, userId, view);
             assertNotNull(user);
 
-            // field is not loaded lazily
-            try {
-                user.getLogin();
-                fail();
-            } catch (Exception ignored) {
-            }
+            // field is loaded lazily but the object becomes not partial and references loaded by previous view are cleared
+            user.getLogin();
 
             tx.commit();
         } finally {
             tx.end();
         }
         user = reserialize(user);
-        assertNotNull(user.getGroup().getName());
+        assertFail(user::getGroup);
     }
 
 
@@ -306,7 +300,7 @@ public class ViewTest {
                     .addProperty("group",
                             new View(Group.class)
                                     .addProperty("name")
-                    );
+                    ).setLoadPartialEntities(true);
             q.setView(view);
 
             User user = (User) q.getSingleResult();

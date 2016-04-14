@@ -92,6 +92,8 @@ public class View implements Serializable {
 
     private Map<String, ViewProperty> properties = new LinkedHashMap<>();
 
+    private boolean loadPartialEntities;
+
     public View(Class<? extends Entity> entityClass) {
         this(entityClass, "", true);
     }
@@ -137,6 +139,22 @@ public class View implements Serializable {
                 this.entityClass = viewParams.src.entityClass;
             }
         }
+    }
+
+    public static View copy(@Nullable View view) {
+        if (view == null) {
+            return null;
+        }
+
+        View.ViewParams viewParams = new View.ViewParams()
+                .entityClass(view.getEntityClass())
+                .name(view.getName());
+        View copy = new View(viewParams);
+        for (ViewProperty property : view.getProperties()) {
+            copy.addProperty(property.getName(), copy(property.getView()), property.getFetchMode());
+        }
+
+        return copy;
     }
 
     /**
@@ -238,6 +256,50 @@ public class View implements Serializable {
      */
     public boolean containsProperty(String name) {
         return properties.containsKey(name);
+    }
+
+    /**
+     * If true, the view affects loading of local attributes. If false, only reference attributes are affected and
+     * local are always loaded.
+     *
+     * @see #setLoadPartialEntities(boolean)
+     */
+    public boolean loadPartialEntities() {
+        return loadPartialEntities;
+    }
+
+    /**
+     * Specifies whether the view affects loading of local attributes. By default only reference attributes are affected and
+     * local are always loaded.
+     *
+     * @param loadPartialEntities true to affect loading of local attributes
+     * @return this view instance for chaining
+     */
+    public View setLoadPartialEntities(boolean loadPartialEntities) {
+        this.loadPartialEntities = loadPartialEntities;
+        return this;
+    }
+
+    /**
+     * If true, the view affects loading of local attributes. If false, only reference attributes are affected and
+     * local are always loaded.
+     *
+     * @see #setLoadPartialEntities(boolean)
+     */
+    public boolean loadPartialEntities() {
+        return loadPartialEntities;
+    }
+
+    /**
+     * Specifies whether the view affects loading of local attributes. By default only reference attributes are affected and
+     * local are always loaded.
+     *
+     * @param loadPartialEntities true to affect loading of local attributes
+     * @return this view instance for chaining
+     */
+    public View setLoadPartialEntities(boolean loadPartialEntities) {
+        this.loadPartialEntities = loadPartialEntities;
+        return this;
     }
 
     /**

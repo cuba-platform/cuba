@@ -163,13 +163,13 @@ public class PersistenceHelperTest {
     public void testCheckLoaded() {
         Server server = new Server();
 
-        cont.persistence().createTransaction().execute((em) -> {
+        cont.persistence().runInTransaction((em) -> {
             em.persist(server);
-            return null;
         });
 
-        View view = new View(Server.class).addProperty("name").addProperty("data");
-        Server reloadedServer = cont.persistence().createTransaction().execute((em) -> {
+        View view = new View(Server.class).addProperty("name").addProperty("data")
+                .setLoadPartialEntities(true);
+        Server reloadedServer = cont.persistence().callInTransaction((em) -> {
             return em.find(Server.class, server.getId(), view);
         });
 

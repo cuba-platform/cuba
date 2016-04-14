@@ -200,27 +200,4 @@ public class UpdateDetachedTest {
         assertTrue(PersistenceHelper.isDetached(result.getRole()));
         assertTrue(PersistenceHelper.isLoaded(result, "role"));
     }
-
-    @Test
-    public void testUpdateNotLoaded() throws Exception {
-        Permission p;
-        Role role;
-        Transaction tx = cont.persistence().createTransaction();
-        try {
-            EntityManager em = cont.persistence().getEntityManager();
-
-            p = em.find(Permission.class, permissionId, new View(Permission.class).addProperty("target"));
-            tx.commitRetaining();
-
-            em = cont.persistence().getEntityManager();
-            role = em.find(Role.class, role2Id);
-            tx.commit();
-        } finally {
-            tx.end();
-        }
-        p = reserialize(p);
-
-        assertFalse(PersistenceHelper.isLoaded(p, "role"));
-        assertFalse(PersistenceHelper.isLoaded(p, "value"));
-    }
 }

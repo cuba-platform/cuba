@@ -27,7 +27,9 @@ import com.haulmont.cuba.core.global.*;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.jpa.JpaQuery;
+import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.FetchGroup;
+import org.eclipse.persistence.queries.LoadGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -57,8 +59,8 @@ public class FetchGroupManager {
     public void setView(JpaQuery query, String queryString, @Nullable View view, boolean singleResultExpected) {
         Preconditions.checkNotNullArgument(query, "query is null");
         if (view != null) {
-            FetchGroup fg = new FetchGroup();
-            applyView(query, queryString, fg, view, singleResultExpected);
+            AttributeGroup ag = view.loadPartialEntities() ? new FetchGroup() : new LoadGroup();
+            applyView(query, queryString, ag, view, singleResultExpected);
         } else {
             query.setHint(QueryHints.FETCH_GROUP, null);
         }
@@ -69,19 +71,29 @@ public class FetchGroupManager {
         Preconditions.checkNotNullArgument(view, "view is null");
 
         Map<String, Object> hints = query.getHints();
-        FetchGroup fg = null;
-        if (hints != null)
-            fg = (FetchGroup) hints.get(QueryHints.FETCH_GROUP);
-        if (fg == null)
-            fg = new FetchGroup();
+        AttributeGroup ag = null;
+        if (view.loadPartialEntities()) {
+            if (hints != null)
+                ag = (FetchGroup) hints.get(QueryHints.FETCH_GROUP);
+            if (ag == null)
+                ag = new FetchGroup();
+        } else {
+            if (hints != null)
+                ag = (LoadGroup) hints.get(QueryHints.LOAD_GROUP);
+            if (ag == null)
+                ag = new LoadGroup();
+        }
 
-        applyView(query, queryString, fg, view, singleResultExpected);
+        applyView(query, queryString, ag, view, singleResultExpected);
     }
 
-    private void applyView(JpaQuery query, String queryString, FetchGroup fetchGroup, View view,
+    private void applyView(JpaQuery query, String queryString, AttributeGroup attrGroup, View view,
                            boolean singleResultExpected) {
+
+        boolean useFetchGroup = attrGroup instanceof FetchGroup;
+
         Set<FetchGroupField> fetchGroupFields = new LinkedHashSet<>();
-        processView(view, null, fetchGroupFields);
+        processView(view, null, fetchGroupFields, useFetchGroup);
 
         Set<String> fetchGroupAttributes = new TreeSet<>();
         Map<String, String> fetchHints = new TreeMap<>(); // sort hints by attribute path
@@ -89,13 +101,17 @@ public class FetchGroupManager {
         for (FetchGroupField field : fetchGroupFields) {
             fetchGroupAttributes.add(field.path());
         }
-        fetchGroup.setShouldLoadAll(true);
+        if (attrGroup instanceof FetchGroup)
+            ((FetchGroup) attrGroup).setShouldLoadAll(true);
 
         List<FetchGroupField> refFields = new ArrayList<>();
         for (FetchGroupField field : fetchGroupFields) {
             if (field.metaProperty.getRange().isClass() && !metadataTools.isEmbedded(field.metaProperty))
                 refFields.add(field);
         }
+
+        boolean hasBatches = false;
+
         if (!refFields.isEmpty()) {
             MetaClass metaClass = metadata.getClassNN(view.getEntityClass());
             String alias = QueryTransformerFactory.createParser(queryString).getEntityAlias();
@@ -106,7 +122,7 @@ public class FetchGroupManager {
             for (FetchGroupField refField : refFields) {
                 if (refField.fetchMode == FetchMode.UNDEFINED) {
                     if (refField.metaProperty.getRange().getCardinality().isMany()) {
-                        List<String> masterAttributes = getMasterEntityAttributes(fetchGroup, fetchGroupFields, refField);
+                        List<String> masterAttributes = getMasterEntityAttributes(fetchGroupFields, refField, useFetchGroup);
                         fetchGroupAttributes.addAll(masterAttributes);
                     }
                     continue;
@@ -124,7 +140,7 @@ public class FetchGroupManager {
 
                 if (!selfRef) {
                     if (refField.metaProperty.getRange().getCardinality().isMany()) {
-                        List<String> masterAttributes = getMasterEntityAttributes(fetchGroup, fetchGroupFields, refField);
+                        List<String> masterAttributes = getMasterEntityAttributes(fetchGroupFields, refField, useFetchGroup);
                         fetchGroupAttributes.addAll(masterAttributes);
 
                         if (refField.fetchMode == FetchMode.JOIN) {
@@ -208,32 +224,36 @@ public class FetchGroupManager {
                 if (batchField.fetchMode == FetchMode.BATCH || !singleResultExpected || batchFields.size() > 1) {
                     String attr = alias + "." + batchField.path();
                     fetchHints.put(attr, QueryHints.BATCH);
+                    hasBatches = true;
                 }
             }
         }
 
         if (log.isTraceEnabled())
-            log.trace("Fetch group for " + view + ":\n" + fetchGroupAttributes.stream().collect(Collectors.joining("\n")));
+            log.trace((useFetchGroup ? "Fetch" : "Load") + " group for " + view + ":\n" + fetchGroupAttributes.stream().collect(Collectors.joining("\n")));
         for (String attribute : fetchGroupAttributes) {
-            fetchGroup.addAttribute(attribute);
+            attrGroup.addAttribute(attribute);
         }
 
-        query.setHint(QueryHints.FETCH_GROUP, fetchGroup);
+        query.setHint(useFetchGroup ? QueryHints.FETCH_GROUP : QueryHints.LOAD_GROUP, attrGroup);
 
-        if (log.isDebugEnabled())
-            log.debug("Fetch modes for " + view + ": " +
-                    fetchHints.entrySet().stream()
-                        .map(e -> e.getKey() + "=" + (e.getValue().equals(QueryHints.LEFT_FETCH) ? "JOIN" : "BATCH"))
-                        .collect(Collectors.joining(", ")));
+        if (log.isDebugEnabled()) {
+            String fetchModes = fetchHints.entrySet().stream()
+                    .map(e -> e.getKey() + "=" + (e.getValue().equals(QueryHints.LEFT_FETCH) ? "JOIN" : "BATCH"))
+                    .collect(Collectors.joining(", "));
+            log.debug("Fetch modes for " + view + ": " + (fetchModes.equals("") ? "<none>" : fetchModes));
+        }
         for (Map.Entry<String, String> entry : fetchHints.entrySet()) {
             query.setHint(entry.getValue(), entry.getKey());
         }
 
-        query.setHint(QueryHints.BATCH_TYPE, "IN");
+        if (hasBatches) {
+            query.setHint(QueryHints.BATCH_TYPE, "IN");
+        }
     }
 
-    private List<String> getMasterEntityAttributes(FetchGroup fetchGroup, Set<FetchGroupField> fetchGroupFields,
-                                           FetchGroupField toManyField) {
+    private List<String> getMasterEntityAttributes(Set<FetchGroupField> fetchGroupFields,
+                                                   FetchGroupField toManyField, boolean useFetchGroup) {
         List<String> result = new ArrayList<>();
 
         MetaClass propMetaClass = toManyField.metaProperty.getRange().asClass();
@@ -241,38 +261,44 @@ public class FetchGroupManager {
                 .filter(mp -> mp.getRange().isClass() && toManyField.metaProperty.getInverse() == mp)
                 .findFirst()
                 .ifPresent(inverseProp -> {
-                    for (FetchGroupField fetchGroupField : fetchGroupFields) {
-                        if (fetchGroupField.metaClass.equals(toManyField.metaClass)
-                                // add only local properties
-                                && !fetchGroupField.metaProperty.getRange().isClass()
-                                // do not add properties from subclasses
-                                && fetchGroupField.metaProperty.getDomain().equals(inverseProp.getRange().asClass())) {
-                            String attribute = toManyField.path() + "." + inverseProp.getName() + "." + fetchGroupField.metaProperty.getName();
-                            result.add(attribute);
+                    if (useFetchGroup) {
+                        for (FetchGroupField fetchGroupField : fetchGroupFields) {
+                            if (fetchGroupField.metaClass.equals(toManyField.metaClass)
+                                    // add only local properties
+                                    && !fetchGroupField.metaProperty.getRange().isClass()
+                                    // do not add properties from subclasses
+                                    && fetchGroupField.metaProperty.getDomain().equals(inverseProp.getRange().asClass())) {
+                                String attribute = toManyField.path() + "." + inverseProp.getName() + "." + fetchGroupField.metaProperty.getName();
+                                result.add(attribute);
+                            }
                         }
-                    }
-                    if (result.isEmpty()) {
-                        result.add(toManyField.path() + "." + inverseProp.getName() + ".id");
+                        if (result.isEmpty()) {
+                            result.add(toManyField.path() + "." + inverseProp.getName() + ".id");
+                        }
+                    } else {
+                        result.add(toManyField.path() + "." + inverseProp.getName());
                     }
         });
 
         return result;
     }
 
-    private void processView(View view, FetchGroupField parentField, Set<FetchGroupField> fetchGroupFields) {
+    private void processView(View view, FetchGroupField parentField, Set<FetchGroupField> fetchGroupFields, boolean useFetchGroup) {
         Class<? extends Entity> entityClass = view.getEntityClass();
 
-        // Always add SoftDelete properties to support EntityManager contract
-        if (SoftDelete.class.isAssignableFrom(entityClass)) {
-            for (String property : getInterfaceProperties(SoftDelete.class)) {
-                fetchGroupFields.add(createFetchGroupField(entityClass, parentField, property));
+        if (useFetchGroup) {
+            // Always add SoftDelete properties to support EntityManager contract
+            if (SoftDelete.class.isAssignableFrom(entityClass)) {
+                for (String property : getInterfaceProperties(SoftDelete.class)) {
+                    fetchGroupFields.add(createFetchGroupField(entityClass, parentField, property));
+                }
             }
-        }
 
-        // Always add uuid property if the entity has primary key not of type UUID
-        if (!BaseUuidEntity.class.isAssignableFrom(entityClass)
-                && !EmbeddableEntity.class.isAssignableFrom(entityClass)) {
-            fetchGroupFields.add(createFetchGroupField(entityClass, parentField, "uuid"));
+            // Always add uuid property if the entity has primary key not of type UUID
+            if (!BaseUuidEntity.class.isAssignableFrom(entityClass)
+                    && !EmbeddableEntity.class.isAssignableFrom(entityClass)) {
+                fetchGroupFields.add(createFetchGroupField(entityClass, parentField, "uuid"));
+            }
         }
 
         for (ViewProperty property : view.getProperties()) {
@@ -296,23 +322,23 @@ public class FetchGroupManager {
                 continue;
             }
 
-            if (metadataTools.isPersistent(metaProperty)) {
+            if (metadataTools.isPersistent(metaProperty) && (metaProperty.getRange().isClass() || useFetchGroup)) {
                 FetchGroupField field = createFetchGroupField(entityClass, parentField, propertyName, property.getFetchMode());
                 fetchGroupFields.add(field);
                 if (property.getView() != null) {
-                    processView(property.getView(), field, fetchGroupFields);
+                    processView(property.getView(), field, fetchGroupFields, useFetchGroup);
                 }
             }
 
             List<String> relatedProperties = metadataTools.getRelatedProperties(entityClass, propertyName);
             for (String relatedProperty : relatedProperties) {
-                if (!view.containsProperty(relatedProperty)) {
+                MetaProperty relatedMetaProp = metaClass.getPropertyNN(relatedProperty);
+                if (!view.containsProperty(relatedProperty) && (relatedMetaProp.getRange().isClass() || useFetchGroup)) {
                     FetchGroupField field = createFetchGroupField(entityClass, parentField, relatedProperty);
                     fetchGroupFields.add(field);
-                    MetaProperty relatedMetaProp = metaClass.getPropertyNN(relatedProperty);
                     if (relatedMetaProp.getRange().isClass()) {
                         View relatedView = viewRepository.getView(relatedMetaProp.getRange().asClass(), View.MINIMAL);
-                        processView(relatedView, field, fetchGroupFields);
+                        processView(relatedView, field, fetchGroupFields, useFetchGroup);
                     }
                 }
             }

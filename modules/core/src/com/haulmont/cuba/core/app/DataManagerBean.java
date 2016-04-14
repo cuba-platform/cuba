@@ -38,6 +38,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.persistence.NoResultException;
 import java.lang.reflect.*;
 import java.util.*;
 
@@ -94,8 +95,7 @@ public class DataManagerBean implements DataManager {
         }
 
         E result = null;
-        Transaction tx = persistence.createTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             final EntityManager em = persistence.getEntityManager();
 
             if (!context.isSoftDeletion())
@@ -106,17 +106,15 @@ public class DataManagerBean implements DataManager {
             query.setView(createRestrictedView(context));
 
             //noinspection unchecked
-            List<E> resultList = executeQuery(query);
+            List<E> resultList = executeQuery(query, true);
             if (!resultList.isEmpty())
                 result = resultList.get(0);
 
-            if (result instanceof BaseGenericIdEntity && context.getLoadDynamicAttributes()) {
+            if (result instanceof BaseGenericIdEntity && context.isLoadDynamicAttributes()) {
                 dynamicAttributesManagerAPI.fetchDynamicAttributes(Collections.singletonList((BaseGenericIdEntity) result));
             }
 
             tx.commit();
-        } finally {
-            tx.end();
         }
 
         if (result != null && needToApplyConstraints(context) && security.applyConstraints(result)) {
@@ -148,8 +146,7 @@ public class DataManagerBean implements DataManager {
         queryResultsManager.savePreviousQueryResults(context);
 
         List<E> resultList;
-        Transaction tx = persistence.createTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
             em.setSoftDeletion(context.isSoftDeletion());
             persistence.getEntityManagerContext().setDbHints(context.getDbHints());
@@ -171,13 +168,11 @@ public class DataManagerBean implements DataManager {
             // Fetch dynamic attributes
             if (context.getView() != null
                     && BaseGenericIdEntity.class.isAssignableFrom(context.getView().getEntityClass())
-                    && context.getLoadDynamicAttributes()) {
+                    && context.isLoadDynamicAttributes()) {
                 dynamicAttributesManagerAPI.fetchDynamicAttributes((List<BaseGenericIdEntity>) resultList);
             }
 
             tx.commit();
-        } finally {
-            tx.end();
         }
 
         if (needToApplyConstraints(context)) {
@@ -211,8 +206,7 @@ public class DataManagerBean implements DataManager {
         queryResultsManager.savePreviousQueryResults(context);
 
         Number result;
-        Transaction tx = persistence.createTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
             em.setSoftDeletion(context.isSoftDeletion());
             persistence.getEntityManagerContext().setDbHints(context.getDbHints());
@@ -221,8 +215,6 @@ public class DataManagerBean implements DataManager {
             result = (Number) query.getSingleResult();
 
             tx.commit();
-        } finally {
-            tx.end();
         }
 
         return result.longValue();
@@ -271,8 +263,7 @@ public class DataManagerBean implements DataManager {
         Set<Entity> res = new HashSet<>();
         List<Entity> persisted = new ArrayList<>();
 
-        Transaction tx = persistence.createTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
             checkPermissions(context);
 
@@ -352,8 +343,6 @@ public class DataManagerBean implements DataManager {
             }
 
             tx.commit();
-        } finally {
-            tx.end();
         }
 
         if (isAuthorizationRequired() && userSessionSource.getUserSession().hasConstraints()) {
@@ -521,11 +510,15 @@ public class DataManagerBean implements DataManager {
     protected View createRestrictedView(LoadContext context) {
         View view = context.getView() != null ? context.getView() :
                 viewRepository.getView(metadata.getClassNN(context.getMetaClass()), View.LOCAL);
-        return attributeSecurity.createRestrictedView(view);
+        View copy = View.copy(attributeSecurity.createRestrictedView(view));
+        if (context.isLoadPartialEntities()) {
+            copy.setLoadPartialEntities(true);
+        }
+        return copy;
     }
 
     protected <E extends Entity> List<E> getResultList(LoadContext<E> context, Query query, boolean ensureDistinct) {
-        List<E> list = executeQuery(query);
+        List<E> list = executeQuery(query, false);
         if (!ensureDistinct || list.size() == 0)
             return list;
 
@@ -583,11 +576,21 @@ public class DataManagerBean implements DataManager {
         return result;
     }
 
-    protected <E extends Entity> List<E> executeQuery(Query query) {
+    @SuppressWarnings("unchecked")
+    protected <E extends Entity> List<E> executeQuery(Query query, boolean singleResult) {
         List<E> list;
         try {
-            //noinspection unchecked
-            list = query.getResultList();
+            if (singleResult) {
+                try {
+                    E result = (E) query.getSingleResult();
+                    list = new ArrayList<>(1);
+                    list.add(result);
+                } catch (NoResultException e) {
+                    list = Collections.emptyList();
+                }
+            } else {
+                list = query.getResultList();
+            }
         } catch (javax.persistence.PersistenceException e) {
             if (e.getCause() instanceof org.eclipse.persistence.exceptions.QueryException
                     && e.getMessage() != null

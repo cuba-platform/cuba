@@ -55,6 +55,7 @@ public class EmailerTest {
     private EmailerAPI emailer;
     private TestMailSender testMailSender;
     private TimeSource timeSource;
+    private DataManager dataManager;
 
     private EmailerConfig emailerConfig;
 
@@ -63,6 +64,7 @@ public class EmailerTest {
         emailer = AppBeans.get(EmailerAPI.NAME);
         testMailSender = AppBeans.get(CubaMailSender.NAME);
         timeSource = AppBeans.get(TimeSource.NAME);
+        dataManager = AppBeans.get(DataManager.class);
 
         emailerConfig = AppBeans.get(Configuration.class).getConfig(EmailerConfig.class);
         emailerConfig.setDelayCallCount(0);
@@ -620,15 +622,25 @@ public class EmailerTest {
         return (MimeBodyPart) textBodyPart.getBodyPart(1);
     }
 
-    private SendingMessage reload(SendingMessage sendingMessage, String... viewNames) {
-        Transaction tx = cont.persistence().createTransaction();
-        try {
-            sendingMessage = cont.persistence().getEntityManager().reload(sendingMessage, viewNames);
-            tx.commit();
-        } finally {
-            tx.end();
-        }
-        return sendingMessage;
+    private SendingMessage reload(SendingMessage sendingMessage) {
+        return reload(sendingMessage, null);
+    }
+
+    private SendingMessage reload(SendingMessage sendingMessage, String viewName) {
+        LoadContext<SendingMessage> loadContext = LoadContext.create(SendingMessage.class).setId(sendingMessage.getId());
+        if (viewName != null)
+            loadContext.setView(viewName);
+
+        return dataManager.load(loadContext);
+
+//        Transaction tx = cont.persistence().createTransaction();
+//        try {
+//            sendingMessage = cont.persistence().getEntityManager().reload(sendingMessage, viewNames);
+//            tx.commit();
+//        } finally {
+//            tx.end();
+//        }
+//        return sendingMessage;
     }
 
     private void assertByteArrayEquals(byte[] expected, byte[] actual) {

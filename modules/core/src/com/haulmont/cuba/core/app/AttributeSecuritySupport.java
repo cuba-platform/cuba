@@ -29,6 +29,7 @@ import com.haulmont.cuba.core.sys.persistence.CubaEntityFetchGroup;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -68,7 +69,7 @@ public class AttributeSecuritySupport {
         }
         Preconditions.checkNotNullArgument(view, "view is null");
 
-        View restrictedView = new View(view.getEntityClass());
+        View restrictedView = new View(view.getEntityClass(), StringUtils.isEmpty(view.getName()) ? "" : view.getName() + "_restricted");
         copyViewConsideringPermissions(view, restrictedView);
         return restrictedView;
     }
