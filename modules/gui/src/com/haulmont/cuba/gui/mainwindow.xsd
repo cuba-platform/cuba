@@ -145,6 +145,7 @@
                 <xs:extension base="baseMainElement">
 
                     <xs:attribute name="icon" type="xs:string"/>
+                    <xs:attribute name="caption" type="xs:string"/>
                     <xs:attribute name="description" type="xs:string"/>
                 </xs:extension>
             </xs:complexContent>
@@ -157,6 +158,7 @@
                 <xs:extension base="baseMainElement">
 
                     <xs:attribute name="icon" type="xs:string"/>
+                    <xs:attribute name="caption" type="xs:string"/>
                     <xs:attribute name="description" type="xs:string"/>
                 </xs:extension>
             </xs:complexContent>
