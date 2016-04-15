@@ -111,7 +111,32 @@ public interface Component {
     /** Set style name. Styles implementation is client-type-specific */
     void setStyleName(String styleName);
 
+    /**
+     * Get client specific component instance. Can be used in client module to simplify invocation of underlying API.
+     * <br/>
+     * Example:
+     * <pre>
+     * com.vaadin.ui.TextField vTextField = textField.unwrap(com.vaadin.ui.TextField.class);
+     * </pre>
+     *
+     * @param internalComponentClass class of underlying component implementation based on Vaadin or Swing
+     * @param <X> type of internal class
+     * @return internal client specific component
+     */
     <X> X unwrap(Class<X> internalComponentClass);
+
+    /**
+     * Get the outmost external container of client specific component instance. Can be used in client module to simplify invocation of underlying API.
+     * <br/>
+     * Example:
+     * <pre>
+     * com.vaadin.ui.Layout vLayout = table.unwrapComposition(com.vaadin.ui.Layout.class);
+     * </pre>
+     *
+     * @param internalCompositionClass class of underlying composition implementation based on Vaadin or Swing
+     * @param <X> type of internal class
+     * @return internal client specific component
+     */
     <X> X unwrapComposition(Class<X> internalCompositionClass);
 
     /**
