@@ -526,6 +526,16 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
     }
 
     @Override
+    public <X> X unwrap(Class<X> internalComponentClass) {
+        return (X) getComponent();
+    }
+
+    @Override
+    public <X> X unwrapComposition(Class<X> internalCompositionClass) {
+        return (X) getComponent();
+    }
+
+    @Override
     public void setSpacing(boolean enabled) {
         frame.setSpacing(enabled);
     }

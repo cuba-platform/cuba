@@ -366,6 +366,16 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
         }
 
         @Override
+        public <X> X unwrap(Class<X> internalComponentClass) {
+            return null;
+        }
+
+        @Override
+        public <X> X unwrapComposition(Class<X> internalCompositionClass) {
+            return null;
+        }
+
+        @Override
         public String getCaption() {
             return action.getCaption();
         }

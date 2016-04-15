@@ -206,6 +206,16 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     @Override
+    public <X> X unwrap(Class<X> internalComponentClass) {
+        return (X) getComponent();
+    }
+
+    @Override
+    public <X> X unwrapComposition(Class<X> internalCompositionClass) {
+        return (X) getComposition();
+    }
+
+    @Override
     public void setSpacing(boolean enabled) {
         if (getContainer() instanceof Layout.SpacingHandler) {
             ((Layout.SpacingHandler) getContainer()).setSpacing(true);

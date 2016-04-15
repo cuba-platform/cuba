@@ -1083,6 +1083,16 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     @Override
+    public <X> X unwrap(Class<X> internalComponentClass) {
+        return (X) getComponent();
+    }
+
+    @Override
+    public <X> X unwrapComposition(Class<X> internalCompositionClass) {
+        return (X) getComposition();
+    }
+
+    @Override
     public void setMargin(boolean enable) {
         layoutAdapter.setMargin(enable);
     }

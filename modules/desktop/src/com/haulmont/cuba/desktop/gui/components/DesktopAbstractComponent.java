@@ -35,8 +35,6 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.util.Locale;
 
-/**
- */
 public abstract class DesktopAbstractComponent<C extends JComponent>
         implements
             DesktopComponent, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame {
@@ -391,5 +389,15 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
             }
             return text;
         }
+    }
+
+    @Override
+    public <X> X unwrap(Class<X> internalComponentClass) {
+        return (X) getComponent();
+    }
+
+    @Override
+    public <X> X unwrapComposition(Class<X> internalCompositionClass) {
+        return (X) getComposition();
     }
 }

@@ -278,4 +278,14 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
     public void setXmlDescriptor(Element element) {
         this.element = element;
     }
+
+    @Override
+    public <X> X unwrap(Class<X> internalComponentClass) {
+        return (X) getComponent();
+    }
+
+    @Override
+    public <X> X unwrapComposition(Class<X> internalCompositionClass) {
+        return (X) getComposition();
+    }
 }

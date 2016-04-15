@@ -35,8 +35,6 @@ import javax.annotation.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- */
 public class ParamWrapper implements Component.HasValue {
 
     public static final Pattern LIKE_PATTERN = Pattern.compile("\\slike\\s+" + ParametersHelper.QUERY_PARAMETERS_RE);
@@ -259,6 +257,16 @@ public class ParamWrapper implements Component.HasValue {
 
     @Override
     public void setStyleName(String name) {
+    }
+
+    @Override
+    public <X> X unwrap(Class<X> internalComponentClass) {
+        return null;
+    }
+
+    @Override
+    public <X> X unwrapComposition(Class<X> internalCompositionClass) {
+        return null;
     }
 
     @Override

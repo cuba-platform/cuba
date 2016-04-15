@@ -111,6 +111,9 @@ public interface Component {
     /** Set style name. Styles implementation is client-type-specific */
     void setStyleName(String styleName);
 
+    <X> X unwrap(Class<X> internalComponentClass);
+    <X> X unwrapComposition(Class<X> internalCompositionClass);
+
     /**
      * Component which can contain other components
      */
