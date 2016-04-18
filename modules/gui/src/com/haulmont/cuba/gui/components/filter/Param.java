@@ -715,14 +715,9 @@ public class Param {
             initListEdit(inListParamComponent, valueProperty);
             return inListParamComponent.getComponent();
         } else {
-            Map<String, Object> options = new HashMap<>();
-            Messages messages = AppBeans.get(Messages.NAME);
-            for (Object obj : javaClass.getEnumConstants()) {
-                options.put(messages.getMessage((Enum) obj), obj);
-            }
-
             LookupField lookup = componentsFactory.createComponent(LookupField.class);
-            lookup.setOptionsMap(options);
+            List options = Arrays.asList(javaClass.getEnumConstants());
+            lookup.setOptionsList(options);
 
             lookup.addValueChangeListener(e -> _setValue(e.getValue(), valueProperty));
             lookup.setValue(_getValue(valueProperty));
