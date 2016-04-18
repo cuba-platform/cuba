@@ -313,7 +313,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                     }
                     setEditableColumns(editableColumns);
                 } else {
-                    setEditableColumns(Collections.<MetaPropertyPath>emptyList());
+                    setEditableColumns(Collections.emptyList());
 
                     Window window = ComponentsHelper.getWindowImplementation(this);
                     boolean isLookup = window instanceof Window.Lookup;
@@ -2385,9 +2385,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                     && (component.getColumnGenerator(propertyId) == null
                         || component.getColumnGenerator(propertyId) instanceof AbbreviatedColumnGenerator)) {
 
-                MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(propertyId.toString());
-                Column column = getColumn(propertyId.toString());
+                MetaPropertyPath propertyPath;
+                if (propertyId instanceof MetaPropertyPath) {
+                    propertyPath = (MetaPropertyPath) propertyId;
+                } else {
+                    propertyPath = datasource.getMetaClass().getPropertyPath(propertyId.toString());
+                }
+
                 if (propertyPath != null) {
+                    Column column = getColumn(propertyId.toString());
                     if (column != null) {
                         final String isLink = column.getXmlDescriptor() == null ?
                                 null : column.getXmlDescriptor().attributeValue("link");
