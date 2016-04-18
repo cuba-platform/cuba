@@ -716,7 +716,6 @@ public class Param {
             return inListParamComponent.getComponent();
         } else {
             LookupField lookup = componentsFactory.createComponent(LookupField.class);
-            lookup.setCaptionMode(CaptionMode.ITEM);
             List options = Arrays.asList(javaClass.getEnumConstants());
             lookup.setOptionsList(options);
 
