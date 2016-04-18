@@ -2391,8 +2391,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 } else {
                     propertyPath = datasource.getMetaClass().getPropertyPath(propertyId.toString());
                 }
-                Column column = getColumn(propertyId.toString());
+
                 if (propertyPath != null) {
+                    Column column = getColumn(propertyId.toString());
                     if (column != null) {
                         final String isLink = column.getXmlDescriptor() == null ?
                                 null : column.getXmlDescriptor().attributeValue("link");
