@@ -122,7 +122,7 @@ public class MetaClassRepresentation {
 
         public String getDescription() {
             MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-            String result = messageTools.getPropertyCaption(property);
+            String result = messageTools.getPropertyCaption(property.getDomain(), property.getName());
             return result == null ? "" : result;
         }
 

@@ -123,7 +123,7 @@ public class BulkEditorWindow extends AbstractWindow {
         int width = themeConstants.getInt("cuba.gui.BulkEditorWindow.width");
         int height = themeConstants.getInt("cuba.gui.BulkEditorWindow.height");
 
-        getDialogParams()
+        getDialogOptions()
                 .setWidth(width)
                 .setHeight(height);
 
@@ -435,7 +435,7 @@ public class BulkEditorWindow extends AbstractWindow {
         // sort Fields
         for (MetaProperty metaProperty : metaClass.getProperties()) {
             if (isManagedAttribute(metaClass, metaProperty)) {
-                String propertyCaption = messageTools.getPropertyCaption(metaProperty);
+                String propertyCaption = messageTools.getPropertyCaption(metaClass, metaProperty.getName());
                 if (!metadataTools.isEmbedded(metaProperty)) {
                     managedFields.add(new ManagedField(metaProperty.getName(), metaProperty,
                             propertyCaption, null));
@@ -458,7 +458,7 @@ public class BulkEditorWindow extends AbstractWindow {
         for (MetaProperty metaProperty : metaClass.getProperties()) {
             if (isManagedAttribute(metaClass, metaProperty)) {
                 String fqn = fqnPrefix + "." + metaProperty.getName();
-                String localeName = localePrefix + " " + messageTools.getPropertyCaption(metaProperty);
+                String localeName = localePrefix + " " + messageTools.getPropertyCaption(metaClass, metaProperty.getName());
 
                 if (!metadataTools.isEmbedded(metaProperty)) {
                     managedFields.add(new ManagedField(fqn, metaProperty, localeName, fqnPrefix));

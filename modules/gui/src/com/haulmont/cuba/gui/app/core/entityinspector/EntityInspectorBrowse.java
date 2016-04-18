@@ -199,7 +199,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
             }
 
             if (!metadata.getTools().isSystem(metaProperty)) {
-                column.setCaption(getPropertyCaption(metaProperty));
+                column.setCaption(getPropertyCaption(meta, metaProperty));
                 nonSystemPropertyColumns.add(column);
             } else {
                 column.setCaption(metaProperty.getName());
@@ -223,7 +223,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
                 .buildCollectionDatasource();
 
         entitiesDs.setLoadDynamicAttributes(true);
-        entitiesDs.setSoftDeletion(BooleanUtils.isFalse(removedRecords.<Boolean>getValue()));
+        entitiesDs.setSoftDeletion(BooleanUtils.isFalse(removedRecords.getValue()));
         entitiesDs.setQuery(String.format("select e from %s e", meta.getName()));
 
         entitiesTable.setDatasource(entitiesDs);
@@ -436,8 +436,8 @@ public class EntityInspectorBrowse extends AbstractLookup {
         }
     }
 
-    protected String getPropertyCaption(MetaProperty metaProperty) {
-        return messageTools.getPropertyCaption(metaProperty);
+    protected String getPropertyCaption(MetaClass metaClass, MetaProperty metaProperty) {
+        return messageTools.getPropertyCaption(metaClass, metaProperty.getName());
     }
 
     protected boolean readPermitted(MetaClass metaClass) {

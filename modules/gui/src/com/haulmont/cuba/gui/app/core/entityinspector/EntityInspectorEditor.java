@@ -42,7 +42,6 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import javax.inject.Inject;
-import javax.persistence.Column;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import java.util.*;
@@ -411,7 +410,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.class);
         contentPane.add(fieldGroup);
         fieldGroup.setFrame(frame);
-        fieldGroup.setCaption(getPropertyCaption(embeddedMetaProperty));
+        fieldGroup.setCaption(getPropertyCaption(fieldGroup.getDatasource().getMetaClass(), embeddedMetaProperty));
 
         MetaClass embeddableMetaClass = embeddedMetaProperty.getRange().asClass();
         Collection<FieldGroup.FieldConfig> customFields = new LinkedList<>();
@@ -563,7 +562,7 @@ public class EntityInspectorEditor extends AbstractWindow {
             return;
 
         FieldGroup.FieldConfig field = new FieldGroup.FieldConfig(metaProperty.getName());
-        String caption = getPropertyCaption(metaProperty);
+        String caption = getPropertyCaption(metaClass, metaProperty);
         field.setCaption(caption);
         field.setType(metaProperty.getJavaType());
         field.setWidth(themeConstants.get("cuba.gui.EntityInspectorEditor.field.width"));
@@ -638,7 +637,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                     MetaProperty metaProperty = datasource.getMetaClass().getPropertyNN(propertyId);
                     MetaClass propertyMeta = metaProperty.getRange().asClass();
                     PickerField field = componentsFactory.createComponent(PickerField.class);
-                    String caption = getPropertyCaption(metaProperty);
+                    String caption = getPropertyCaption(datasource.getMetaClass(), metaProperty);
                     field.setCaption(caption);
                     field.setMetaClass(propertyMeta);
 
@@ -686,8 +685,8 @@ public class EntityInspectorEditor extends AbstractWindow {
         }
     }
 
-    private String getPropertyCaption(MetaProperty metaProperty) {
-        String caption = messageTools.getPropertyCaption(metaProperty);
+    private String getPropertyCaption(MetaClass metaClass, MetaProperty metaProperty) {
+        String caption = messageTools.getPropertyCaption(metaClass, metaProperty.getName());
         if (caption.length() < CAPTION_MAX_LENGTH)
             return caption;
         else
@@ -717,7 +716,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         CollectionDatasource propertyDs = (CollectionDatasource) datasources.get(childMeta.getName());
 
         Label label = componentsFactory.createComponent(Label.class);
-        label.setValue(getPropertyCaption(childMeta));
+        label.setValue(getPropertyCaption(metaClass, childMeta));
         label.setStyleName("h2");
 
         Table table = componentsFactory.createComponent(Table.class);
@@ -731,7 +730,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                 continue; // because we use local views
             Table.Column column = new Table.Column(meta.getPropertyPath(metaProperty.getName()));
             if (!metadata.getTools().isSystem(metaProperty)) {
-                column.setCaption(getPropertyCaption(metaProperty));
+                column.setCaption(getPropertyCaption(meta, metaProperty));
                 nonSystemPropertyColumns.add(column);
             } else {
                 column.setCaption(metaProperty.getName());
@@ -1027,9 +1026,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                 editorParams.put("parentDs", entitiesDs);
 
             Window window = openWindow("entityInspector.edit", OPEN_TYPE, editorParams);
-            window.addCloseListener(actionId -> {
-                entitiesDs.refresh();
-            });
+            window.addCloseListener(actionId -> entitiesDs.refresh());
         }
     }
 

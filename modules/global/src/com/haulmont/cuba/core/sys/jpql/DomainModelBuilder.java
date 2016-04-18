@@ -60,7 +60,7 @@ public class DomainModelBuilder {
             Collection<MetaProperty> props = aClass.getProperties();
             for (MetaProperty prop : props) {
                 if (metadataTools.isPersistent(prop))
-                    addProperty(builder, prop);
+                    addProperty(builder, aClass, prop);
             }
 
             Entity entity = builder.produce();
@@ -69,9 +69,9 @@ public class DomainModelBuilder {
         return result;
     }
 
-    private void addProperty(EntityBuilder builder, MetaProperty prop) {
+    private void addProperty(EntityBuilder builder, MetaClass metaClass, MetaProperty prop) {
         String name = prop.getName();
-        String userFriendlyName = messageTools.getPropertyCaption(prop);
+        String userFriendlyName = messageTools.getPropertyCaption(metaClass, prop.getName());
         boolean isEmbedded = metadataTools.isEmbedded(prop);
         MetaProperty.Type type = prop.getType();
         Class<?> javaType = prop.getJavaType();
@@ -80,11 +80,11 @@ public class DomainModelBuilder {
             case COMPOSITION:
             case ASSOCIATION:
                 if (range.isClass()) {
-                    MetaClass metaClass = range.asClass();
+                    MetaClass rangeClass = range.asClass();
                     if (range.getCardinality().isMany()) {
-                        builder.addCollectionReferenceAttribute(name, metaClass.getName(), userFriendlyName);
+                        builder.addCollectionReferenceAttribute(name, rangeClass.getName(), userFriendlyName);
                     } else {
-                        builder.addReferenceAttribute(name, metaClass.getName(), userFriendlyName, isEmbedded);
+                        builder.addReferenceAttribute(name, rangeClass.getName(), userFriendlyName, isEmbedded);
                     }
                 } else {
                     builder.addSingleValueAttribute(javaType, name, userFriendlyName);

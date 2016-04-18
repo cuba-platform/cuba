@@ -68,7 +68,7 @@ public class RelatedAction extends AbstractAction {
         this.metaProperty = metaProperty;
 
         MessageTools tools = AppBeans.get(MessageTools.NAME);
-        setCaption(StringUtils.capitalize(tools.getPropertyCaption(metaProperty)));
+        setCaption(StringUtils.capitalize(tools.getPropertyCaption(target.getDatasource().getMetaClass(), metaProperty.getName())));
     }
 
     public String getScreen() {
@@ -143,7 +143,7 @@ public class RelatedAction extends AbstractAction {
             filterEntity.setName(filterCaption);
         } else {
             filterEntity.setName(messages.getMainMessage("actions.Related.Filter") +
-                    " " + messageTools.getPropertyCaption(metaProperty));
+                    " " + messageTools.getPropertyCaption(metaProperty.getDomain(), metaProperty.getName()));
         }
 
         MetaClass effectiveMetaClass = extendedEntities.getEffectiveMetaClass(metaProperty.getRange().asClass());
