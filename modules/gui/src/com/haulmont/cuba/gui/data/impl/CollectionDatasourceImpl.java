@@ -528,6 +528,13 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         sw.stop();
     }
 
+    /**
+     * This method is invoked by {@link #loadData(Map)} method immediately before loading entities from {@code DataSupplier}.
+     * <p>If you override this method, be sure to call {@code super()}.
+     *
+     * @param params    datasource parameters, as described in {@link CollectionDatasource#refresh(java.util.Map)}
+     * @return          LoadContext which will be used to load data
+     */
     protected LoadContext beforeLoadData(Map<String, Object> params) {
         final LoadContext context = new LoadContext(metaClass);
 
@@ -558,6 +565,15 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         return context;
     }
 
+    /**
+     * This method is invoked by {@link #loadData(Map)} method immediately after loading entities from {@code DataSupplier}.
+     * <p>If you override this method, be sure to call {@code super()}. If you process the loaded entities somehow,
+     * call {@code super()} after processing.
+     *
+     * @param params        datasource parameters, as described in {@link CollectionDatasource#refresh(java.util.Map)}
+     * @param context       {@code LoadContext} which was used for loading data
+     * @param entities      loaded entities
+     */
     protected void afterLoadData(@SuppressWarnings("unused") Map<String, Object> params, LoadContext context, Collection<T> entities) {
         detachListener(data.values());
         data.clear();
