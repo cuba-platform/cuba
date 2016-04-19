@@ -306,22 +306,6 @@ public class FetchGroupManager {
             MetaClass metaClass = metadata.getClassNN(entityClass);
             MetaProperty metaProperty = metaClass.getPropertyNN(propertyName);
 
-            if (parentField != null && property.getView() == null
-                    && metaProperty.getRange().isClass()
-                    && metaProperty.getRange().asClass().equals(parentField.metaProperty.getDomain())) {
-                // do not add immediate back references without a view
-                if (metaProperty.getRange().getCardinality().equals(Range.Cardinality.ONE_TO_ONE)) {
-                    // For ONE_TO_ONE, add the back reference. This leads to additional useless SELECTs but
-                    // saves from "Cannot get unfetched attribute" exception.
-                    FetchGroupField field = createFetchGroupField(entityClass, parentField, propertyName, property.getFetchMode());
-                    fetchGroupFields.add(field);
-                    //noinspection unchecked
-                    Class<Entity> javaClass = metaProperty.getRange().asClass().getJavaClass();
-                    fetchGroupFields.add(createFetchGroupField(javaClass, field, "id"));
-                }
-                continue;
-            }
-
             if (metadataTools.isPersistent(metaProperty) && (metaProperty.getRange().isClass() || useFetchGroup)) {
                 FetchGroupField field = createFetchGroupField(entityClass, parentField, propertyName, property.getFetchMode());
                 fetchGroupFields.add(field);
