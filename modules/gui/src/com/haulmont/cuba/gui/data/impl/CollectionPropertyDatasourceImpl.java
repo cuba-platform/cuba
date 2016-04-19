@@ -765,14 +765,16 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         if (collection == null)
             return;
 
-        final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
-        final boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
-
-        @SuppressWarnings({"unchecked"})
         List<T> list = new LinkedList<>(collection);
-        Collections.sort(list, new EntityComparator<>(propertyPath, asc));
+        Collections.sort(list, createEntityComparator());
         collection.clear();
         collection.addAll(list);
+    }
+
+    protected EntityComparator<T> createEntityComparator() {
+        MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
+        boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
+        return new EntityComparator<>(propertyPath, asc);
     }
 
     @Override
