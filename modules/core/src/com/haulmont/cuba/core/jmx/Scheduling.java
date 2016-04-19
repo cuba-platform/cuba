@@ -57,6 +57,7 @@ public class Scheduling implements SchedulingMBean {
     }
 
     @Override
+    @Authenticated
     public void setActive(boolean value) {
         scheduling.setActive(value);
     }
