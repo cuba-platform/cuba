@@ -21,7 +21,7 @@ import com.haulmont.cuba.core.app.ConfigStorageService;
 import com.haulmont.cuba.core.config.AppPropertiesLocator;
 import com.haulmont.cuba.core.config.AppPropertyEntity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.data.impl.HierarchicalDatasourceImpl;
+import com.haulmont.cuba.gui.data.impl.CustomHierarchicalDatasource;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
@@ -30,18 +30,11 @@ import java.util.stream.Collectors;
 /**
  * Custom datasource used in the {@code appproperties-browse.xml} screen
  */
-public class AppPropertiesDatasource extends HierarchicalDatasourceImpl<AppPropertyEntity, UUID> {
+public class AppPropertiesDatasource extends CustomHierarchicalDatasource<AppPropertyEntity, UUID> {
 
     @Override
-    protected void loadData(Map<String, Object> params) {
-        detachListener(data.values());
-        data.clear();
-
-        ConfigStorageService configStorageService = AppBeans.get(ConfigStorageService.class);
-        List<AppPropertyEntity> entities = configStorageService.getAppProperties();
-
-        AppPropertiesLocator appPropertiesLocator = AppBeans.get(AppPropertiesLocator.class);
-        entities.addAll(appPropertiesLocator.getAppProperties());
+    protected Collection<AppPropertyEntity> getEntities(Map<String, Object> params) {
+        List<AppPropertyEntity> entities = loadAppPropertyEntities();
 
         String name = (String) params.get("name");
         if (StringUtils.isNotEmpty(name)) {
@@ -50,11 +43,16 @@ public class AppPropertiesDatasource extends HierarchicalDatasourceImpl<AppPrope
                     .collect(Collectors.toList());
         }
 
-        List<AppPropertyEntity> tree = createEntitiesTree(entities);
-        for (AppPropertyEntity entity : tree) {
-            data.put(entity.getId(), entity);
-            attachListener(entity);
-        }
+        return createEntitiesTree(entities);
+    }
+
+    public List<AppPropertyEntity> loadAppPropertyEntities() {
+        ConfigStorageService configStorageService = AppBeans.get(ConfigStorageService.class);
+        List<AppPropertyEntity> entities = configStorageService.getAppProperties();
+
+        AppPropertiesLocator appPropertiesLocator = AppBeans.get(AppPropertiesLocator.class);
+        entities.addAll(appPropertiesLocator.getAppProperties());
+        return entities;
     }
 
     List<AppPropertyEntity> createEntitiesTree(List<AppPropertyEntity> entities) {
