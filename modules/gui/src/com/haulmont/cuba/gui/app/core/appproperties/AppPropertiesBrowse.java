@@ -96,7 +96,13 @@ public class AppPropertiesBrowse extends AbstractWindow {
         AppPropertiesEdit editor = (AppPropertiesEdit) openWindow(
                 "appPropertyEditor", WindowManager.OpenType.DIALOG, ParamsMap.of("item", paramsDs.getItem()));
         editor.addCloseWithCommitListener(() -> {
-            refreshAction.actionPerform(null);
+            List<AppPropertyEntity> entities = paramsDs.loadAppPropertyEntities();
+            for (AppPropertyEntity entity : entities) {
+                if (entity.getName().equals(paramsDs.getItem().getName())) {
+                    paramsDs.getItem().setCurrentValue(entity.getCurrentValue());
+                    break;
+                }
+            }
         });
     }
 
