@@ -79,6 +79,10 @@
             <vbox id="tabSheetBox" margin="false,false,false,true" height="100%">
                 <tabSheet id="tabsheet" height="100%" width="100%">
                     <tab id="usersTab" caption="msg://tabsheet.users" margin="true" expand="usersTable">
+                        <filter datasource="usersDs" margin="false,false,true,false" applyTo="usersTable"
+                                collapsed="true">
+                            <properties include=".*"/>
+                        </filter>
                         <table id="usersTable" multiselect="true" width="100%">
                             <buttonsPanel>
                                 <button action="usersTable.create"/>
