@@ -281,28 +281,6 @@ public class View implements Serializable {
     }
 
     /**
-     * If true, the view affects loading of local attributes. If false, only reference attributes are affected and
-     * local are always loaded.
-     *
-     * @see #setLoadPartialEntities(boolean)
-     */
-    public boolean loadPartialEntities() {
-        return loadPartialEntities;
-    }
-
-    /**
-     * Specifies whether the view affects loading of local attributes. By default only reference attributes are affected and
-     * local are always loaded.
-     *
-     * @param loadPartialEntities true to affect loading of local attributes
-     * @return this view instance for chaining
-     */
-    public View setLoadPartialEntities(boolean loadPartialEntities) {
-        this.loadPartialEntities = loadPartialEntities;
-        return this;
-    }
-
-    /**
      * DEPRECATED since v.6
      */
     @Deprecated
