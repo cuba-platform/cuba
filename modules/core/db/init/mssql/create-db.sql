@@ -646,6 +646,8 @@ create index IDX_SYS_SENDING_MESSAGE_STATUS on SYS_SENDING_MESSAGE (STATUS)^
 
 create index IDX_SYS_SENDING_MESSAGE_DATE_SENT on SYS_SENDING_MESSAGE (DATE_SENT)^
 
+create index IDX_SYS_SENDING_MESSAGE_UPDATE_TS on SYS_SENDING_MESSAGE (UPDATE_TS)^
+
 create clustered index IDX_SYS_SENDING_MESSAGE_CREATE_TS on SYS_SENDING_MESSAGE (CREATE_TS)^
 
  ------------------------------------------------------------------------------------------------------------
