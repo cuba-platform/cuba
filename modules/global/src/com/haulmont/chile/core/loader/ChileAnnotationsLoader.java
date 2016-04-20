@@ -326,6 +326,9 @@ public class ChileAnnotationsLoader implements MetaClassLoader {
         map.put("mandatory", mandatory);
         Datatype datatype = getDatatype(field);
         map.put("datatype", datatype);
+        String inverseField = getInverseField(field);
+        if (inverseField != null)
+            map.put("inverseField", inverseField);
 
         Class<?> type;
         Class typeOverride = getTypeOverride(field);
@@ -340,6 +343,7 @@ public class ChileAnnotationsLoader implements MetaClassLoader {
             ((AbstractRange) range).setCardinality(cardinality);
             property.setRange(range);
             assignPropertyType(field, property, range);
+            assignInverse(property, range, inverseField);
         }
         property.setMandatory(mandatory);
         property.setReadOnly(!setterExists(field));

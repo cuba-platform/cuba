@@ -177,6 +177,10 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader {
         if (manyToManyAnnotation != null)
             return isBlank(manyToManyAnnotation.mappedBy()) ? null : manyToManyAnnotation.mappedBy();
 
+        OneToOne oneToOneAnnotation = field.getAnnotation(OneToOne.class);
+        if (oneToOneAnnotation != null)
+            return isBlank(oneToOneAnnotation.mappedBy()) ? null : oneToOneAnnotation.mappedBy();
+
         return null;
     }
 
