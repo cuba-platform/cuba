@@ -342,25 +342,32 @@ public class DeletePolicyProcessor {
     }
 
     protected void unlink(String entityName, MetaProperty property) {
-        String template = property.getRange().getCardinality().isMany() ?
-                "select e from %s e join e.%s c where c." + primaryKeyName + " = ?1" :
-                "select e from %s e where e.%s." + primaryKeyName + " = ?1";
-        String qstr = String.format(template, entityName, property.getName());
-        Query query = entityManager.createQuery(qstr);
-        query.setParameter(1, entity.getId());
-        List<BaseEntity> list = query.getResultList();
-        for (BaseEntity e : list) {
-            if (property.getRange().getCardinality().isMany()) {
-                Collection collection = e.getValue(property.getName());
-                if (collection != null) {
-                    for (Iterator it = collection.iterator(); it.hasNext(); ) {
-                        if (entity.equals(it.next())) {
-                            it.remove();
+        if (metadata.getTools().isOwningSide(property)) {
+            String template = property.getRange().getCardinality().isMany() ?
+                    "select e from %s e join e.%s c where c." + primaryKeyName + " = ?1" :
+                    "select e from %s e where e.%s." + primaryKeyName + " = ?1";
+            String qstr = String.format(template, entityName, property.getName());
+            Query query = entityManager.createQuery(qstr);
+            query.setParameter(1, entity.getId());
+            List<BaseEntity> list = query.getResultList();
+            for (BaseEntity e : list) {
+                if (property.getRange().getCardinality().isMany()) {
+                    Collection collection = e.getValue(property.getName());
+                    if (collection != null) {
+                        for (Iterator it = collection.iterator(); it.hasNext(); ) {
+                            if (entity.equals(it.next())) {
+                                it.remove();
+                            }
                         }
                     }
+                } else {
+                    setReferenceNull(e, property);
                 }
-            } else {
-                setReferenceNull(e, property);
+            }
+        } else {
+            MetaProperty inverseProp = property.getInverse();
+            if (inverseProp != null && inverseProp.getDomain().equals(metaClass)) {
+                setReferenceNull(entity, inverseProp);
             }
         }
     }
