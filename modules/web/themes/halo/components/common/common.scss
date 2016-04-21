@@ -42,6 +42,13 @@
     padding-left: 0;
     padding-bottom: 0;
   }
+
+  .v-ios.v-touch &,
+  .v-android.v-touch & {
+    .v-tooltip {
+        display: none !important;
+    }
+  }
 }
 
 @mixin box-defaults {

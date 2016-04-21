@@ -67,6 +67,13 @@
   ::-ms-clear {
     display: none;
   }
+
+  .v-ios.v-touch &,
+  .v-android.v-touch & {
+    .v-tooltip {
+      display: none !important;
+    }
+  }
 }
 
 @mixin box-defaults {
