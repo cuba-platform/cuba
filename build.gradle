@@ -85,8 +85,8 @@ def clientTestsModule = project(':cuba-client-tests')
 
 apply from: "$rootProject.projectDir/lib.gradle"
 
-def springVersion = '4.2.0.RELEASE'
-def springSecurityVersion = '4.0.2.RELEASE'
+def springVersion = '4.2.5.RELEASE'
+def springSecurityVersion = '4.0.4.RELEASE'
 
 def servletApi = 'org.apache.tomcat:tomcat-servlet-api:8.0.26'
 def groovyArtifact = 'org.codehaus.groovy:groovy-all:2.4.4'
