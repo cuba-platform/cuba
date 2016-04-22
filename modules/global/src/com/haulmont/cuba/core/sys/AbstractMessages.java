@@ -249,7 +249,9 @@ public abstract class AbstractMessages implements Messages {
         checkNotNullArgument(key, "Message key is null");
 
         String compositeKey = packs + "/" + key;
-        String msg = internalGetMessage(mainMessagePack, compositeKey, locale, null, false);
+        String[] split = mainMessagePack.split(" ");
+        String lastMainMessagePack = split[split.length - 1];
+        String msg = internalGetMessage(lastMainMessagePack, compositeKey, locale, null, false);
         if (msg != null)
             return msg;
 
@@ -266,7 +268,9 @@ public abstract class AbstractMessages implements Messages {
             locale = getUserLocale();
 
         String compositeKey = packs + "/" + key;
-        String msg = internalGetMessage(mainMessagePack, compositeKey, locale, null, false);
+        String[] split = mainMessagePack.split(" ");
+        String lastMainMessagePack = split[split.length - 1];
+        String msg = internalGetMessage(lastMainMessagePack, compositeKey, locale, null, false);
         if (msg != null)
             return msg;
 
