@@ -55,8 +55,16 @@
     <xs:complexType name="entityType">
         <xs:sequence>
             <xs:element type="annotationType" name="annotation" maxOccurs="unbounded" minOccurs="1"/>
+            <xs:element type="propertyType" name="property" maxOccurs="unbounded" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute type="xs:string" name="class" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="propertyType">
+        <xs:sequence>
+            <xs:element type="annotationType" name="annotation" maxOccurs="unbounded" minOccurs="1"/>
+        </xs:sequence>
+        <xs:attribute type="xs:string" name="name" use="required"/>
     </xs:complexType>
 
     <xs:complexType name="annotationType">

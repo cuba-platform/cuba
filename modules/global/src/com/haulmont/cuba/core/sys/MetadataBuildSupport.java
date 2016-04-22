@@ -142,8 +142,8 @@ public class MetadataBuildSupport {
         }
     }
 
-    public Map<String, Map<String, String>> getEntityAnnotations() {
-        Map<String, Map<String, String>> result = new HashMap<>();
+    public List<XmlAnnotations> getEntityAnnotations() {
+        List<XmlAnnotations> result = new ArrayList<>();
 
         String config = getMetadataConfig();
         StrTokenizer tokenizer = new StrTokenizer(config);
@@ -154,7 +154,7 @@ public class MetadataBuildSupport {
         return result;
     }
 
-    protected void processMetadataXmlFile(Map<String, Map<String, String>> annotations, String path) {
+    protected void processMetadataXmlFile(List<XmlAnnotations> annotations, String path) {
         Element root = readXml(path);
 
         for (Element element : Dom4j.elements(root, "include")) {
@@ -168,11 +168,18 @@ public class MetadataBuildSupport {
         if (annotationsEl != null) {
             for (Element entityEl : Dom4j.elements(annotationsEl, "entity")) {
                 String className = entityEl.attributeValue("class");
-                Map<String, String> ann = new HashMap<>();
+                XmlAnnotations entityAnnotations = new XmlAnnotations(className);
                 for (Element annotEl : Dom4j.elements(entityEl, "annotation")) {
-                    ann.put(annotEl.attributeValue("name"), annotEl.attributeValue("value"));
+                    entityAnnotations.annotations.put(annotEl.attributeValue("name"), annotEl.attributeValue("value"));
                 }
-                annotations.put(className, ann);
+                for (Element propEl : Dom4j.elements(entityEl, "property")) {
+                    XmlAnnotations attributeAnnotations = new XmlAnnotations(propEl.attributeValue("name"));
+                    for (Element annotEl : Dom4j.elements(propEl, "annotation")) {
+                        attributeAnnotations.annotations.put(annotEl.attributeValue("name"), annotEl.attributeValue("value"));
+                    }
+                    entityAnnotations.attributeAnnotations.add(attributeAnnotations);
+                }
+                annotations.add(entityAnnotations);
             }
         }
     }
@@ -193,4 +200,16 @@ public class MetadataBuildSupport {
         return result;
     }
 
+    public static class XmlAnnotations {
+
+        public final String name;
+
+        public final Map<String, String> annotations = new HashMap<>();
+
+        public final List<XmlAnnotations> attributeAnnotations = new ArrayList<>();
+
+        public XmlAnnotations(String name) {
+            this.name = name;
+        }
+    }
 }

@@ -32,6 +32,7 @@ import com.haulmont.cuba.core.entity.BaseLongIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.*;
 import com.haulmont.cuba.core.global.*;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.perf4j.StopWatch;
@@ -190,7 +191,7 @@ public class MetadataImpl implements Metadata {
 
         initExtensionMetaAnnotations(session);
 
-        Map<String, Map<String, String>> xmlAnnotations = metadataBuildSupport.getEntityAnnotations();
+        List<MetadataBuildSupport.XmlAnnotations> xmlAnnotations = metadataBuildSupport.getEntityAnnotations();
         for (MetaClass metaClass : session.getClasses()) {
             initMetaAnnotations(session, metaClass);
             addMetaAnnotationsFromXml(xmlAnnotations, metaClass);
@@ -368,11 +369,19 @@ public class MetadataImpl implements Metadata {
      * @param xmlAnnotations map of class name to annotations map
      * @param metaClass      MetaClass instance to assign annotations
      */
-    protected void addMetaAnnotationsFromXml(Map<String, Map<String, String>> xmlAnnotations, MetaClass metaClass) {
-        Map<String, String> classAnnotations = xmlAnnotations.get(metaClass.getJavaClass().getName());
-        if (classAnnotations != null) {
-            for (Map.Entry<String, String> annEntry : classAnnotations.entrySet()) {
-                metaClass.getAnnotations().put(annEntry.getKey(), inferMetaAnnotationType(annEntry.getValue()));
+    protected void addMetaAnnotationsFromXml(List<MetadataBuildSupport.XmlAnnotations> xmlAnnotations, MetaClass metaClass) {
+        for (MetadataBuildSupport.XmlAnnotations xmlAnnotation : xmlAnnotations) {
+            if (xmlAnnotation.name.equals(metaClass.getJavaClass().getName())) {
+                for (Map.Entry<String, String> annEntry : xmlAnnotation.annotations.entrySet()) {
+                    metaClass.getAnnotations().put(annEntry.getKey(), inferMetaAnnotationType(annEntry.getValue()));
+                }
+                for (MetadataBuildSupport.XmlAnnotations attributeAnnotation : xmlAnnotation.attributeAnnotations) {
+                    MetaProperty property = metaClass.getPropertyNN(attributeAnnotation.name);
+                    for (Map.Entry<String, String> entry : attributeAnnotation.annotations.entrySet()) {
+                        property.getAnnotations().put(entry.getKey(), inferMetaAnnotationType(entry.getValue()));
+                    }
+                }
+                break;
             }
         }
     }
@@ -387,6 +396,8 @@ public class MetadataImpl implements Metadata {
             } catch (ClassNotFoundException e) {
                 val = str;
             }
+        } else if (!"".equals(str) && StringUtils.isNumeric(str)) {
+            val = Integer.valueOf(str);
         } else
             val = str;
         return val;
