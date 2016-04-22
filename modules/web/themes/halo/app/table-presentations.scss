@@ -49,6 +49,12 @@
     @include transition-delay(100ms);
   }
 
+  .v-ios.v-touch & .cuba-table-presentations-icon,
+  .v-android.v-touch & .cuba-table-presentations-icon {
+    @include opacity(1);
+    @include transition(none);
+  }
+
   .collapsing-allowed .cuba-table-presentations-icon {
     right: 2 * round($v-unit-size/2);
   }
@@ -70,7 +76,7 @@
     border: 0;
     height: auto;
     background: transparent;
-    border-radius: 0px;
+    border-radius: 0;
     box-shadow: none;
   }
 

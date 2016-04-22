@@ -167,4 +167,10 @@
   .cuba-table-view-textcut {
     @include valo-selection-overlay-style;
   }
+
+  .v-ios.v-touch & .#{$primary-stylename}-column-selector,
+  .v-android.v-touch & .#{$primary-stylename}-column-selector {
+    @include opacity(1);
+    @include transition(none);
+  }
 }
