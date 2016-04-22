@@ -38,9 +38,9 @@ import org.dom4j.DocumentHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- */
 public class PresentationEditor extends CubaWindow {
+
+    protected Logger log = LoggerFactory.getLogger(PresentationEditor.class);
 
     protected Presentation presentation;
 
@@ -53,8 +53,6 @@ public class PresentationEditor extends CubaWindow {
 
     protected boolean isNew;
     protected boolean allowGlobalPresentations;
-
-    protected Logger log = LoggerFactory.getLogger(getClass());
 
     protected Messages messages;
     protected UserSessionSource sessionSource;
@@ -72,11 +70,11 @@ public class PresentationEditor extends CubaWindow {
 
         initLayout();
 
-        ThemeConstants theme = App.getInstance().getThemeConstants();
-        setWidth(theme.get("cuba.web.PresentationEditor.width"));
+        setWidthUndefined();
 
-        String key = isNew ? "PresentationsEditor.new" : "PresentationsEditor.edit";
-        setCaption(getMessage(key));
+        String titleMessageKey = isNew ? "PresentationsEditor.new" : "PresentationsEditor.edit";
+        setCaption(getMessage(titleMessageKey));
+
         setModal(true);
         setResizable(false);
     }
@@ -85,6 +83,7 @@ public class PresentationEditor extends CubaWindow {
         ThemeConstants theme = App.getInstance().getThemeConstants();
 
         VerticalLayout root = new VerticalLayout();
+        root.setWidthUndefined();
         root.setSpacing(true);
         setContent(root);
 
@@ -112,7 +111,7 @@ public class PresentationEditor extends CubaWindow {
 
         HorizontalLayout buttons = new HorizontalLayout();
         buttons.setSpacing(true);
-        buttons.setWidth("-1px");
+        buttons.setWidthUndefined();
         root.addComponent(buttons);
         root.setComponentAlignment(buttons, Alignment.MIDDLE_LEFT);
 
