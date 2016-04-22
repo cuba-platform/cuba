@@ -42,8 +42,6 @@ import static com.haulmont.cuba.web.toolkit.ui.client.Tools.isAnyModifierKeyPres
 import static com.haulmont.cuba.web.toolkit.ui.client.table.CubaScrollTableWidget.CUBA_TABLE_CLICKABLE_CELL_STYLE;
 import static com.haulmont.cuba.web.toolkit.ui.client.table.CubaScrollTableWidget.CUBA_TABLE_CLICKABLE_TEXT_STYLE;
 
-/**
- */
 public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHandler.ShortcutActionHandlerOwner, HasEnabled {
 
     protected static final String WIDGET_CELL_CLASSNAME = "widget-container";
@@ -133,8 +131,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
     @Override
     public boolean isUseSimpleModeForTouchDevice() {
-        // CAUTION Do not use multiselect mode SIMPLE for touch devices, it may be laptop with touch screen
-        return false;
+        return Tools.isUseSimpleMultiselectForTouchDevice();
     }
 
     @Override

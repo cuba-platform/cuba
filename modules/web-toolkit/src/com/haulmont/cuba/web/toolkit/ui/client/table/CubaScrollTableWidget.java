@@ -40,8 +40,6 @@ import java.util.Set;
 
 import static com.haulmont.cuba.web.toolkit.ui.client.Tools.isAnyModifierKeyPressed;
 
-/**
- */
 public class CubaScrollTableWidget extends VScrollTable implements ShortcutActionHandler.ShortcutActionHandlerOwner, HasEnabled {
 
     public static final String CUBA_TABLE_CLICKABLE_CELL_STYLE = "cuba-table-clickable-cell";
@@ -199,8 +197,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
     @Override
     public boolean isUseSimpleModeForTouchDevice() {
-        // CAUTION Do not use multiselect mode SIMPLE for touch devices, it may be laptop with touch screen
-        return false;
+        return Tools.isUseSimpleMultiselectForTouchDevice();
     }
 
     @Override

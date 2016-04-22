@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.toolkit.ui.client.tree;
 
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
+import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.vaadin.client.*;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.ShortcutActionHandler;
@@ -29,8 +30,6 @@ import com.vaadin.shared.ui.Connect;
 import java.util.Collections;
 import java.util.List;
 
-/**
- */
 @Connect(CubaTree.class)
 public class CubaTreeConnector extends TreeConnector implements HasComponentsConnector {
 
@@ -143,7 +142,6 @@ public class CubaTreeConnector extends TreeConnector implements HasComponentsCon
 
     @Override
     public boolean isUseSimpleModeForTouchDevice() {
-        // CAUTION Do not use multiselect mode SIMPLE for touch devices, it may be laptop with touch screen
-        return false;
+        return Tools.isUseSimpleMultiselectForTouchDevice();
     }
 }

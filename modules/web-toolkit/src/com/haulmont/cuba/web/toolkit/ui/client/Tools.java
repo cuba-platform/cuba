@@ -37,8 +37,6 @@ import com.vaadin.client.ui.VVerticalLayout;
 import com.vaadin.client.ui.orderedlayout.Slot;
 import com.vaadin.client.ui.orderedlayout.VAbstractOrderedLayout;
 
-/**
- */
 public class Tools {
 
     public static final String SELECTED_ITEM_STYLE = "cuba-context-menu-button-selected";
@@ -294,6 +292,12 @@ public class Tools {
         }
 
         return false;
+    }
+
+    // CAUTION Do not use multiselect mode SIMPLE for touch devices, it may be laptop with touch screen
+    public static boolean isUseSimpleMultiselectForTouchDevice() {
+        return BrowserInfo.get().isAndroid()
+                || BrowserInfo.get().isIOS();
     }
 
     public static class TableOverlay extends VOverlay {
