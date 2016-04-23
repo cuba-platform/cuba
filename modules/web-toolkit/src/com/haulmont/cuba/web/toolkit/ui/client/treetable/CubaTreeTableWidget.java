@@ -135,6 +135,11 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
     }
 
     @Override
+    protected boolean isAllowSingleSelectToggle() {
+        return BrowserInfo.get().isTouchDevice() && Tools.isUseSimpleMultiselectForTouchDevice();
+    }
+
+    @Override
     public void onFocus(FocusEvent event) {
         super.onFocus(event);
 

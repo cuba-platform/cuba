@@ -31,13 +31,12 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
+import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.ConnectorMap;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VOverlay;
 import com.vaadin.client.ui.VTree;
 
-/**
- */
 public class CubaTreeWidget extends VTree implements ShortcutActionHandler.ShortcutActionHandlerOwner {
 
     protected ShortcutActionHandler shortcutHandler;
@@ -267,5 +266,10 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
         });
 
         Tools.showPopup(customContextMenuPopup, left, top);
+    }
+
+    @Override
+    protected boolean isAllowSingleSelectToggle() {
+        return BrowserInfo.get().isTouchDevice()&& Tools.isUseSimpleMultiselectForTouchDevice();
     }
 }

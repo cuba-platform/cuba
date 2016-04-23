@@ -622,7 +622,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                                 && !event.getAltKey() && !event.getShiftKey()) {
                             handleRowCtrlClick(event);
                         } else {
-                            if (event.getEventTarget().cast() != expander) {
+                            if (event.getEventTarget().cast() != expander || isSingleSelectMode()) {
                                 deselectAll();
                                 sendSelectedRows(false);
                             }

@@ -201,6 +201,11 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     }
 
     @Override
+    protected boolean isAllowSingleSelectToggle() {
+        return BrowserInfo.get().isTouchDevice() && Tools.isUseSimpleMultiselectForTouchDevice();
+    }
+
+    @Override
     protected void setColWidth(int colIndex, int w, boolean isDefinedWidth) {
         super.setColWidth(colIndex, w, isDefinedWidth);
 
