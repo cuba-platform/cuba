@@ -44,8 +44,6 @@ import java.io.IOException;
 import java.lang.reflect.*;
 import java.util.*;
 
-/**
- */
 public class ChileAnnotationsLoader implements MetaClassLoader {
 
     private Logger log = LoggerFactory.getLogger(ChileAnnotationsLoader.class);
@@ -107,19 +105,19 @@ public class ChileAnnotationsLoader implements MetaClassLoader {
 
         for (Resource resource : resources) {
             if (resource.isReadable()) {
+                MetadataReader metadataReader;
                 try {
-                    MetadataReader metadataReader = metadataReaderFactory.getMetadataReader(resource);
-                    AnnotationMetadata annotationMetadata = metadataReader.getAnnotationMetadata();
-                    if (annotationMetadata.isAnnotated(com.haulmont.chile.core.annotations.MetaClass.class.getName())) {
-                        ClassMetadata classMetadata = metadataReader.getClassMetadata();
-                        Class c = ReflectionHelper.getClass(classMetadata.getClassName());
-                        annotated.add(c);
-                    }
-
+                    metadataReader = metadataReaderFactory.getMetadataReader(resource);
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException("Unable to read metadata resource", e);
                 }
 
+                AnnotationMetadata annotationMetadata = metadataReader.getAnnotationMetadata();
+                if (annotationMetadata.isAnnotated(com.haulmont.chile.core.annotations.MetaClass.class.getName())) {
+                    ClassMetadata classMetadata = metadataReader.getClassMetadata();
+                    Class c = ReflectionHelper.getClass(classMetadata.getClassName());
+                    annotated.add(c);
+                }
             }
         }
 

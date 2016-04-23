@@ -22,6 +22,7 @@ import com.haulmont.chile.core.loader.ChileAnnotationsLoader;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.Session;
+import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.chile.core.model.impl.MetaClassImpl;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -39,8 +40,6 @@ import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
-/**
- */
 public class JPAAnnotationsLoader extends ChileAnnotationsLoader {
 
     private Logger log = LoggerFactory.getLogger(JPAMetadataLoader.class);
@@ -55,41 +54,44 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader {
 
         for (Resource resource : resources) {
             if (resource.isReadable()) {
+                MetadataReader metadataReader;
                 try {
-                    MetadataReader metadataReader = metadataReaderFactory.getMetadataReader(resource);
-                    AnnotationMetadata annotationMetadata = metadataReader.getAnnotationMetadata();
-
-                    boolean isEntity = annotationMetadata.isAnnotated(MappedSuperclass.class.getName()) ||
-                            annotationMetadata.isAnnotated(Entity.class.getName());
-
-                    boolean isEmbeddable = annotationMetadata.isAnnotated(Embeddable.class.getName()) &&
-                            annotationMetadata.isAnnotated(MetaClass.class.getName());
-
-                    boolean isAnnotated = isEntity || isEmbeddable;
-
-                    if (isAnnotated) {
-                        ClassMetadata classMetadata = metadataReader.getClassMetadata();
-                        Class c = ReflectionHelper.getClass(classMetadata.getClassName());
-                        result.add(c);
-                    }
-
+                    metadataReader = metadataReaderFactory.getMetadataReader(resource);
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException("Unable to read metadata resource", e);
                 }
 
+                AnnotationMetadata annotationMetadata = metadataReader.getAnnotationMetadata();
+
+                boolean isAnnotated = isEntityClass(annotationMetadata) || isEmbeddableClass(annotationMetadata);
+                if (isAnnotated) {
+                    ClassMetadata classMetadata = metadataReader.getClassMetadata();
+                    Class c = ReflectionHelper.getClass(classMetadata.getClassName());
+                    result.add(c);
+                }
             }
         }
 
         return result;
     }
 
+    protected boolean isEmbeddableClass(AnnotationMetadata annotationMetadata) {
+        return annotationMetadata.isAnnotated(Embeddable.class.getName()) &&
+                annotationMetadata.isAnnotated(MetaClass.class.getName());
+    }
+
+    protected boolean isEntityClass(AnnotationMetadata annotationMetadata) {
+        return annotationMetadata.isAnnotated(MappedSuperclass.class.getName()) ||
+                annotationMetadata.isAnnotated(Entity.class.getName());
+    }
+
     @Override
     protected boolean isMetaPropertyField(Field field) {
         return field.isAnnotationPresent(Column.class)
-                || field.isAnnotationPresent(OneToOne.class)
-                || field.isAnnotationPresent(OneToMany.class)
                 || field.isAnnotationPresent(ManyToOne.class)
+                || field.isAnnotationPresent(OneToMany.class)
                 || field.isAnnotationPresent(ManyToMany.class)
+                || field.isAnnotationPresent(OneToOne.class)
                 || field.isAnnotationPresent(Embedded.class)
                 || super.isMetaPropertyField(field);
     }
@@ -186,16 +188,19 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader {
 
     @Override
     protected MetaClassImpl createClass(Class<?> clazz, String packageName) {
-        if (Object.class.equals(clazz)) return null;
+        if (AbstractInstance.class.equals(clazz)
+                || Object.class.equals(clazz)) {
+            return null;
+        }
 
         Entity entityAnnotation = clazz.getAnnotation(Entity.class);
         MappedSuperclass mappedSuperclassAnnotation = clazz.getAnnotation(MappedSuperclass.class);
 
-        MetaClass metaClassAnntotation = clazz.getAnnotation(MetaClass.class);
+        MetaClass metaClassAnnotation = clazz.getAnnotation(MetaClass.class);
         Embeddable embeddableAnnotation = clazz.getAnnotation(Embeddable.class);
 
         if ((entityAnnotation == null && mappedSuperclassAnnotation == null) &&
-                (embeddableAnnotation == null) && (metaClassAnntotation == null)) {
+                (embeddableAnnotation == null) && (metaClassAnnotation == null)) {
             log.trace(String.format("Class '%s' isn't annotated as metadata entity, ignore it", clazz.getName()));
             return null;
         }
@@ -203,8 +208,8 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader {
         String className = null;
         if (entityAnnotation != null) {
             className = entityAnnotation.name();
-        } else if (metaClassAnntotation != null) {
-            className = metaClassAnntotation.name();
+        } else if (metaClassAnnotation != null) {
+            className = metaClassAnnotation.name();
         }
 
         if (StringUtils.isEmpty(className)) {
@@ -218,21 +223,21 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader {
     protected void onPropertyLoaded(MetaProperty metaProperty, Field field) {
         super.onPropertyLoaded(metaProperty, field);
 
-        if (isPersistent(field))
+        if (isPersistent(field)) {
             metaProperty.getAnnotations().put("persistent", true);
 
-        if (isPrimaryKey(field)) {
-            metaProperty.getAnnotations().put("primaryKey", true);
-            metaProperty.getDomain().getAnnotations().put("primaryKey", metaProperty.getName());
-        }
+            if (isPrimaryKey(field)) {
+                metaProperty.getAnnotations().put("primaryKey", true);
+                metaProperty.getDomain().getAnnotations().put("primaryKey", metaProperty.getName());
+            } else if (isEmbedded(field)) {
+                metaProperty.getAnnotations().put("embedded", true);
+            }
 
-        if (isEmbedded(field))
-            metaProperty.getAnnotations().put("embedded", true);
-
-        Column column = field.getAnnotation(Column.class);
-        Lob lob = field.getAnnotation(Lob.class);
-        if (column != null && column.length() != 0 && lob == null) {
-            metaProperty.getAnnotations().put("length", column.length());
+            Column column = field.getAnnotation(Column.class);
+            Lob lob = field.getAnnotation(Lob.class);
+            if (column != null && column.length() != 0 && lob == null) {
+                metaProperty.getAnnotations().put("length", column.length());
+            }
         }
 
         Temporal temporal = field.getAnnotation(Temporal.class);
@@ -250,11 +255,11 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader {
     }
 
     protected boolean isPersistent(Field field) {
-        return  field.isAnnotationPresent(Column.class)
-                || field.isAnnotationPresent(OneToOne.class)
-                || field.isAnnotationPresent(OneToMany.class)
+        return field.isAnnotationPresent(Column.class)
                 || field.isAnnotationPresent(ManyToOne.class)
+                || field.isAnnotationPresent(OneToMany.class)
                 || field.isAnnotationPresent(ManyToMany.class)
+                || field.isAnnotationPresent(OneToOne.class)
                 || field.isAnnotationPresent(Embedded.class);
     }
 }
