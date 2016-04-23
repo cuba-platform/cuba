@@ -23,7 +23,6 @@ import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.IllegalEntityStateException;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import java.util.ArrayList;
@@ -83,7 +82,7 @@ public class EntityCopyUtils {
                     if (cause == null)
                         cause = e;
                     // ignore exception on copy for not loaded fields
-                    if (!(cause instanceof IllegalEntityStateException))
+                    if (!(cause instanceof IllegalStateException))
                         throw e;
                 }
             }
@@ -120,7 +119,7 @@ public class EntityCopyUtils {
                     if (cause == null)
                         cause = e;
                     // ignore exception on copy for not loaded fields
-                    if (!(cause instanceof IllegalEntityStateException))
+                    if (!(cause instanceof IllegalStateException))
                         throw e;
                 }
             }

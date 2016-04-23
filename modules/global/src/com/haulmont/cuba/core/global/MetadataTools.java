@@ -707,7 +707,7 @@ public class MetadataTools {
                     if (cause == null)
                         cause = e;
                     // ignore exception on copy for not loaded fields
-                    if (!(cause instanceof IllegalEntityStateException))
+                    if (!(cause instanceof IllegalStateException))
                         throw e;
                 }
             }
