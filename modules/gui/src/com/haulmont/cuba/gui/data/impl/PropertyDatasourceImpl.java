@@ -30,9 +30,7 @@ import com.haulmont.cuba.gui.data.*;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  */
@@ -153,6 +151,7 @@ public class PropertyDatasourceImpl<T extends Entity>
         return masterDs.getDataSupplier();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void commit() {
         if (!allowCommit) {
@@ -177,15 +176,15 @@ public class PropertyDatasourceImpl<T extends Entity>
                 }
                 // after repeated edit of new items the parent datasource can contain items-to-create which are deleted
                 // in this datasource, so we need to delete them
-                for (Iterator it = ((DatasourceImplementation) parentCollectionDs).getItemsToCreate().iterator(); it.hasNext(); ) {
-                    Entity item = (Entity) it.next();
-                    if (!itemsToCreate.contains(item)) {
+                Collection<Entity> parentItemsToCreate = ((DatasourceImplementation) parentCollectionDs).getItemsToCreate();
+                for (Entity createdItem : new ArrayList<Entity>(parentItemsToCreate)) {
+                    if (!this.itemsToCreate.contains(createdItem)) {
                         MetaProperty inverseProp = metaProperty.getInverse();
                         // delete only if they have the same master item
                         if (inverseProp != null
-                                && PersistenceHelper.isLoaded(item, inverseProp.getName())
-                                && Objects.equals(item.getValue(inverseProp.getName()), masterDs.getItem())) {
-                            it.remove();
+                                && PersistenceHelper.isLoaded(createdItem, inverseProp.getName())
+                                && Objects.equals(createdItem.getValue(inverseProp.getName()), masterDs.getItem())) {
+                            parentCollectionDs.removeItem(createdItem);
                         }
                     }
                 }
