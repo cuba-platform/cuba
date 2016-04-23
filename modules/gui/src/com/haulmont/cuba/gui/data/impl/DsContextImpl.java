@@ -296,7 +296,9 @@ public class DsContextImpl implements DsContextImplementation {
         MetaClass contextEntityMetaClass = metadata.getClassNN(contextEntity.getClass());
 
         for (MetaProperty property : metaClass.getProperties()) {
-            if (!property.getRange().isClass() || !property.getRange().asClass().equals(contextEntityMetaClass))
+            if (!property.getRange().isClass()
+                    || !property.getRange().asClass().equals(contextEntityMetaClass)
+                    || !PersistenceHelper.isLoaded(entity, property.getName()))
                 continue;
 
             Object value = entity.getValue(property.getName());
