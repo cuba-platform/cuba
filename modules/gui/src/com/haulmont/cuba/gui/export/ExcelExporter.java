@@ -24,6 +24,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.DatatypeFormatter;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.GroupTable;
@@ -407,7 +408,9 @@ public class ExcelExporter {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         } else if (cellValue instanceof Date) {
-            cell.setCellValue(((Date) cellValue));
+            DatatypeFormatter datatypeFormatter = AppBeans.get(DatatypeFormatter.NAME);
+            String formattedDate = datatypeFormatter.formatDateTime(((Date) cellValue));
+            cell.setCellValue(formattedDate);
 
             if (isFull)
                 cell.setCellStyle(timeFormatCellStyle);
@@ -415,8 +418,7 @@ public class ExcelExporter {
                 cell.setCellStyle(dateFormatCellStyle);
 
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
-                String str = Datatypes.getNN(Date.class).format(cellValue);
-                sizers[sizersIndex].notifyCellValue(str, stdFont);
+                sizers[sizersIndex].notifyCellValue(formattedDate, stdFont);
             }
         } else if (cellValue instanceof Boolean) {
             String str = "";
