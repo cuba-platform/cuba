@@ -95,7 +95,13 @@ public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> i
         this.inputPrompt = inputPrompt;
 
         if (StringUtils.isNotBlank(inputPrompt)) {
+            // Save old tooltipText value to use it later
+            String toolTipText = this.impl.getToolTipText();
+
             PromptSupport.setPrompt(inputPrompt, impl);
+
+            // Use old tooltipText value because it was overwritten in org.jdesktop.swingx.prompt.PromptSupport.setPrompt()
+            this.impl.setToolTipText(toolTipText);
         } else {
             PromptSupport.setPrompt(null, impl);
         }
