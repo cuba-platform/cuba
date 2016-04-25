@@ -24,9 +24,9 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.DatatypeFormatter;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.TimeZones;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TreeTable;
@@ -34,6 +34,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
@@ -48,6 +49,7 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Use this class to export {@link com.haulmont.cuba.gui.components.Table} into Excel format
@@ -408,9 +410,12 @@ public class ExcelExporter {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         } else if (cellValue instanceof Date) {
-            DatatypeFormatter datatypeFormatter = AppBeans.get(DatatypeFormatter.NAME);
-            String formattedDate = datatypeFormatter.formatDateTime(((Date) cellValue));
-            cell.setCellValue(formattedDate);
+            UserSession userSession = AppBeans.get(UserSession.class);
+            TimeZone userTimeZone = userSession.getTimeZone();
+            TimeZones timeZones = AppBeans.get(TimeZones.NAME);
+            Date convertedDate = timeZones.convert((Date) cellValue, TimeZone.getDefault(), userTimeZone);
+
+            cell.setCellValue(convertedDate);
 
             if (isFull)
                 cell.setCellStyle(timeFormatCellStyle);
@@ -418,7 +423,8 @@ public class ExcelExporter {
                 cell.setCellStyle(dateFormatCellStyle);
 
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
-                sizers[sizersIndex].notifyCellValue(formattedDate, stdFont);
+                String str = Datatypes.getNN(Date.class).format(convertedDate);
+                sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         } else if (cellValue instanceof Boolean) {
             String str = "";
