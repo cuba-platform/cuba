@@ -23,10 +23,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.DatatypeFormatter;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TreeTable;
@@ -48,6 +45,7 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Use this class to export {@link com.haulmont.cuba.gui.components.Table} into Excel format
@@ -84,6 +82,10 @@ public class ExcelExporter {
 
     private final Messages messages;
 
+    private final UserSessionSource userSessionSource;
+
+    private final TimeZones timeZones;
+
     public enum ExportMode {
         SELECTED_ROWS,
         ALL_ROWS
@@ -91,6 +93,8 @@ public class ExcelExporter {
 
     public ExcelExporter() {
         messages = AppBeans.get(Messages.NAME);
+        userSessionSource = AppBeans.get(UserSessionSource.NAME);
+        timeZones = AppBeans.get(TimeZones.NAME);
 
         trueStr = messages.getMessage(getClass(), "excelExporter.true");
         falseStr = messages.getMessage(getClass(), "excelExporter.false");
@@ -408,9 +412,15 @@ public class ExcelExporter {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         } else if (cellValue instanceof Date) {
-            DatatypeFormatter datatypeFormatter = AppBeans.get(DatatypeFormatter.NAME);
-            String formattedDate = datatypeFormatter.formatDateTime(((Date) cellValue));
-            cell.setCellValue(formattedDate);
+            TimeZone userTimeZone = userSessionSource.getUserSession().getTimeZone();
+            Date date;
+            if (userTimeZone != null) {
+                date = timeZones.convert((Date) cellValue, TimeZone.getDefault(), userTimeZone);
+            } else {
+                date = (Date) cellValue;
+            }
+
+            cell.setCellValue(date);
 
             if (isFull)
                 cell.setCellStyle(timeFormatCellStyle);
@@ -418,7 +428,8 @@ public class ExcelExporter {
                 cell.setCellStyle(dateFormatCellStyle);
 
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
-                sizers[sizersIndex].notifyCellValue(formattedDate, stdFont);
+                String str = Datatypes.getNN(Date.class).format(date);
+                sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         } else if (cellValue instanceof Boolean) {
             String str = "";
