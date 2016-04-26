@@ -86,6 +86,10 @@ public class ExcelExporter {
 
     private final Messages messages;
 
+    private final UserSession userSession;
+
+    private final TimeZones timeZones;
+
     public enum ExportMode {
         SELECTED_ROWS,
         ALL_ROWS
@@ -93,6 +97,8 @@ public class ExcelExporter {
 
     public ExcelExporter() {
         messages = AppBeans.get(Messages.NAME);
+        userSession = AppBeans.get(UserSession.class);
+        timeZones = AppBeans.get(TimeZones.NAME);
 
         trueStr = messages.getMessage(getClass(), "excelExporter.true");
         falseStr = messages.getMessage(getClass(), "excelExporter.false");
@@ -410,12 +416,15 @@ public class ExcelExporter {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         } else if (cellValue instanceof Date) {
-            UserSession userSession = AppBeans.get(UserSession.class);
             TimeZone userTimeZone = userSession.getTimeZone();
-            TimeZones timeZones = AppBeans.get(TimeZones.NAME);
-            Date convertedDate = timeZones.convert((Date) cellValue, TimeZone.getDefault(), userTimeZone);
+            Date date;
+            if (userTimeZone != null) {
+                date = timeZones.convert((Date) cellValue, TimeZone.getDefault(), userTimeZone);
+            } else {
+                date = (Date) cellValue;
+            }
 
-            cell.setCellValue(convertedDate);
+            cell.setCellValue(date);
 
             if (isFull)
                 cell.setCellStyle(timeFormatCellStyle);
@@ -423,7 +432,7 @@ public class ExcelExporter {
                 cell.setCellStyle(dateFormatCellStyle);
 
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
-                String str = Datatypes.getNN(Date.class).format(convertedDate);
+                String str = Datatypes.getNN(Date.class).format(date);
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         } else if (cellValue instanceof Boolean) {
