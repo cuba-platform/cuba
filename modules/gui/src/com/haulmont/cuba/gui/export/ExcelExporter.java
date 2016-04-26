@@ -23,10 +23,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.TimeZones;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TreeTable;
@@ -34,7 +31,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
-import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
@@ -86,7 +82,7 @@ public class ExcelExporter {
 
     private final Messages messages;
 
-    private final UserSession userSession;
+    private final UserSessionSource userSessionSource;
 
     private final TimeZones timeZones;
 
@@ -97,7 +93,7 @@ public class ExcelExporter {
 
     public ExcelExporter() {
         messages = AppBeans.get(Messages.NAME);
-        userSession = AppBeans.get(UserSession.class);
+        userSessionSource = AppBeans.get(UserSessionSource.NAME);
         timeZones = AppBeans.get(TimeZones.NAME);
 
         trueStr = messages.getMessage(getClass(), "excelExporter.true");
@@ -416,7 +412,7 @@ public class ExcelExporter {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         } else if (cellValue instanceof Date) {
-            TimeZone userTimeZone = userSession.getTimeZone();
+            TimeZone userTimeZone = userSessionSource.getUserSession().getTimeZone();
             Date date;
             if (userTimeZone != null) {
                 date = timeZones.convert((Date) cellValue, TimeZone.getDefault(), userTimeZone);
