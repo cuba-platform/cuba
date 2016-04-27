@@ -51,8 +51,14 @@ public class FilterParser {
 
     protected Condition createCondition(Element conditionElement) {
         Condition condition;
+        String conditionName;
 
-        String conditionName = conditionElement.attributeValue("name");
+        if (conditionElement.attributeValue("locCaption") == null) {
+            conditionName = conditionElement.attributeValue("name");
+        } else {
+            conditionName = conditionElement.attributeValue("locCaption");
+        }
+
         if ("c".equals(conditionElement.getName())) {
             condition = new Clause(conditionName, conditionElement.getText(),
                     getJoinValue(conditionElement),
