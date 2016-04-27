@@ -21,6 +21,8 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.core.model.impl.MetaClassImpl;
+import com.haulmont.chile.core.model.impl.MetaPropertyImpl;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesMetaProperty;
 import org.apache.commons.collections.CollectionUtils;
 
 import java.util.Collection;
@@ -91,6 +93,11 @@ public class ChileMetadataLoader implements MetadataLoader {
     }
 
     protected void initMetaProperty(MetaClass metaClass, MetaProperty metaProperty) {
+        // init inverse properties
+        MetaProperty inverseProp = metaProperty.getInverse();
+        if (inverseProp != null && inverseProp.getInverse() == null) {
+            ((MetaPropertyImpl) inverseProp).setInverse(metaProperty);
+        }
     }
 
     @Override

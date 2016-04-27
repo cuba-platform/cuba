@@ -29,6 +29,8 @@ import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.queries.FetchGroup;
+import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +57,9 @@ public class PersistenceImplSupport {
     protected EntityLogAPI entityLog;
 
     protected volatile FtsSender ftsSender;
+
+    @Inject
+    protected OrmCacheSupport ormCacheSupport;
 
     private static Logger log = LoggerFactory.getLogger(PersistenceImplSupport.class.getName());
 
@@ -210,6 +215,14 @@ public class PersistenceImplSupport {
             Collection<Object> instances = container.getAllInstances();
             for (Object instance : instances) {
                 if (instance instanceof BaseEntity) {
+                    // if cache is enabled, the entity can have EntityFetchGroup instead of CubaEntityFetchGroup
+                    if (instance instanceof FetchGroupTracker) {
+                        FetchGroupTracker entity = (FetchGroupTracker) instance;
+                        FetchGroup fetchGroup = entity._persistence_getFetchGroup();
+                        if (fetchGroup != null && !(fetchGroup instanceof CubaEntityFetchGroup))
+                            entity._persistence_setFetchGroup(new CubaEntityFetchGroup(fetchGroup));
+                    }
+
                     entityListenerManager.fireListener((BaseEntity) instance, EntityListenerType.BEFORE_DETACH);
                 }
             }
@@ -245,6 +258,7 @@ public class PersistenceImplSupport {
                 entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_INSERT);
                 entityLog.registerCreate(entity, true);
                 enqueueForFts(entity, FtsChangeType.INSERT);
+                ormCacheSupport.evictMasterEntity(entity, null);
                 return true;
             }
 
@@ -259,12 +273,14 @@ public class PersistenceImplSupport {
                 if ((entity instanceof SoftDelete))
                     processDeletePolicy(entity);
                 enqueueForFts(entity, FtsChangeType.DELETE);
+                ormCacheSupport.evictMasterEntity(entity, null);
                 return true;
 
             } else if (changeListener.hasChanges()) {
                 entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_UPDATE);
                 entityLog.registerModify(entity, true);
                 enqueueForFts(entity, FtsChangeType.UPDATE);
+                ormCacheSupport.evictMasterEntity(entity, changeListener.getObjectChangeSet().getChanges());
                 return true;
             }
 

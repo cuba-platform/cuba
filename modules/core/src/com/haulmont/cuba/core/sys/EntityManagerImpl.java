@@ -46,7 +46,6 @@ public class EntityManagerImpl implements EntityManager {
 
     private UserSession userSession;
     private Metadata metadata;
-    private FetchGroupManager fetchGroupMgr;
     private EntityListenerManager entityListenerMgr;
     private PersistenceImplSupport support;
 
@@ -54,15 +53,12 @@ public class EntityManagerImpl implements EntityManager {
 
     private Logger log = LoggerFactory.getLogger(EntityManagerImpl.class);
 
-    EntityManagerImpl(javax.persistence.EntityManager jpaEntityManager, UserSession userSession, Metadata metadata,
-                      FetchGroupManager fetchGroupMgr, EntityListenerManager entityListenerMgr,
-                      PersistenceImplSupport support) {
+    EntityManagerImpl(javax.persistence.EntityManager jpaEntityManager, UserSession userSession) {
         this.delegate = jpaEntityManager;
         this.userSession = userSession;
-        this.metadata = metadata;
-        this.fetchGroupMgr = fetchGroupMgr;
-        this.entityListenerMgr = entityListenerMgr;
-        this.support = support;
+        this.metadata = AppBeans.get(Metadata.NAME);
+        this.entityListenerMgr = AppBeans.get(EntityListenerManager.NAME);
+        this.support = AppBeans.get(PersistenceImplSupport.NAME);
     }
 
     @Override
@@ -204,31 +200,31 @@ public class EntityManagerImpl implements EntityManager {
 
     @Override
     public Query createQuery() {
-        return new QueryImpl(this, false, null, metadata, fetchGroupMgr);
+        return new QueryImpl(this, false, null);
     }
 
     @Override
     public Query createQuery(String qlStr) {
-        QueryImpl query = new QueryImpl(this, false, null, metadata, fetchGroupMgr);
+        QueryImpl query = new QueryImpl(this, false, null);
         query.setQueryString(qlStr);
         return query;
     }
 
     @Override
     public <T> TypedQuery<T> createQuery(String qlString, Class<T> resultClass) {
-        QueryImpl<T> query = new QueryImpl<>(this, false, resultClass, metadata, fetchGroupMgr);
+        QueryImpl<T> query = new QueryImpl<>(this, false, resultClass);
         query.setQueryString(qlString);
         return query;
     }
 
     @Override
     public Query createNativeQuery() {
-        return new QueryImpl(this, true, null, metadata, fetchGroupMgr);
+        return new QueryImpl(this, true, null);
     }
 
     @Override
     public Query createNativeQuery(String sql) {
-        QueryImpl query = new QueryImpl(this, true, null, metadata, fetchGroupMgr);
+        QueryImpl query = new QueryImpl(this, true, null);
         query.setQueryString(sql);
         return query;
     }
@@ -236,7 +232,7 @@ public class EntityManagerImpl implements EntityManager {
     @SuppressWarnings("unchecked")
     @Override
     public <T> TypedQuery<T> createNativeQuery(String sql, Class<T> resultClass) {
-        QueryImpl query = new QueryImpl(this, true, resultClass, metadata, fetchGroupMgr);
+        QueryImpl query = new QueryImpl(this, true, resultClass);
         query.setQueryString(sql);
         return query;
     }

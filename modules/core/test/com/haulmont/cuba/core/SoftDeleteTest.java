@@ -465,4 +465,35 @@ public class SoftDeleteTest {
             tx.end();
         }
     }
+
+    @Test
+    public void testSoftDeletionIsolation() throws Exception {
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            User u = cont.entityManager().find(User.class, userId);
+            cont.entityManager().remove(u);
+            tx.commit();
+        }
+
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            cont.persistence().getEntityManager().setSoftDeletion(false);
+            User u = cont.entityManager().find(User.class, userId);
+            assertNotNull(u);
+
+            Thread thread = new Thread(this::loadDeletedUser);
+            thread.start();
+            thread.join();
+
+            tx.commit();
+        }
+
+        loadDeletedUser();
+    }
+
+    private void loadDeletedUser() {
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            User u = cont.entityManager().find(User.class, userId);
+            assertNull(u);
+            tx.commit();
+        }
+    }
 }

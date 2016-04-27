@@ -42,8 +42,10 @@ import java.util.stream.Collectors;
 
 /**
  */
-@Component("cuba_FetchGroupManager")
+@Component(FetchGroupManager.NAME)
 public class FetchGroupManager {
+
+    public static final String NAME = "cuba_FetchGroupManager";
 
     private Logger log = LoggerFactory.getLogger(FetchGroupManager.class);
 
@@ -112,8 +114,8 @@ public class FetchGroupManager {
 
         boolean hasBatches = false;
 
+        MetaClass metaClass = metadata.getClassNN(view.getEntityClass());
         if (!refFields.isEmpty()) {
-            MetaClass metaClass = metadata.getClassNN(view.getEntityClass());
             String alias = QueryTransformerFactory.createParser(queryString).getEntityAlias();
 
             List<FetchGroupField> batchFields = new ArrayList<>();
@@ -235,7 +237,9 @@ public class FetchGroupManager {
             attrGroup.addAttribute(attribute);
         }
 
-        query.setHint(useFetchGroup ? QueryHints.FETCH_GROUP : QueryHints.LOAD_GROUP, attrGroup);
+        if (!metadataTools.isCacheable(metaClass)) {
+            query.setHint(useFetchGroup ? QueryHints.FETCH_GROUP : QueryHints.LOAD_GROUP, attrGroup);
+        }
 
         if (log.isDebugEnabled()) {
             String fetchModes = fetchHints.entrySet().stream()
@@ -368,7 +372,12 @@ public class FetchGroupManager {
                                                   FetchGroupField parentField,
                                                   String property,
                                                   FetchMode fetchMode) {
-        return new FetchGroupField(getRealClass(entityClass, property), parentField, property, fetchMode);
+        MetaClass metaClass = getRealClass(entityClass, property);
+        return new FetchGroupField(metaClass, parentField, property, getFetchMode(metaClass, fetchMode));
+    }
+
+    private FetchMode getFetchMode(MetaClass metaClass, FetchMode fetchMode) {
+        return metadataTools.isCacheable(metaClass) ? FetchMode.UNDEFINED : fetchMode;
     }
 
     private MetaClass getRealClass(Class<? extends Entity> entityClass, String property) {

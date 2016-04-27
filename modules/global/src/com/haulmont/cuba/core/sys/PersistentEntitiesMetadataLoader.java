@@ -47,6 +47,8 @@ public class PersistentEntitiesMetadataLoader extends JPAMetadataLoader {
 
     @Override
     protected void initMetaProperty(MetaClass metaClass, MetaProperty metaProperty) {
+        super.initMetaProperty(metaClass, metaProperty);
+
         if (metaProperty.getRange() == null || !metaProperty.getRange().isClass())
             return;
 

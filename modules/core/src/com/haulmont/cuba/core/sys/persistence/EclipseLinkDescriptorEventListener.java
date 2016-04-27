@@ -89,6 +89,17 @@ public class EclipseLinkDescriptorEventListener implements DescriptorEventListen
 
     @Override
     public void postClone(DescriptorEvent event) {
+        // in shared cache mode, postBuild event is missed, so we repeat it here
+        if (event.getObject() instanceof BaseGenericIdEntity) {
+            BaseEntityInternalAccess.setNew((BaseGenericIdEntity) event.getObject(), false);
+        }
+        if (event.getObject() instanceof FetchGroupTracker) {
+            FetchGroupTracker entity = (FetchGroupTracker) event.getObject();
+            FetchGroup fetchGroup = entity._persistence_getFetchGroup();
+            if (fetchGroup != null && !(fetchGroup instanceof CubaEntityFetchGroup))
+                entity._persistence_setFetchGroup(new CubaEntityFetchGroup(fetchGroup));
+        }
+
         support.registerInstance(event.getObject(), event.getSession());
     }
 

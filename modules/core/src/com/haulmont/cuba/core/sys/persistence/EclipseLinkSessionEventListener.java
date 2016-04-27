@@ -25,6 +25,8 @@ import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.sys.UuidConverter;
+import org.eclipse.persistence.annotations.CacheCoordinationType;
+import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEventListener;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -59,6 +61,8 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
         for (Map.Entry<Class, ClassDescriptor> entry : descriptorMap.entrySet()) {
             MetaClass metaClass = metadata.getSession().getClassNN(entry.getKey());
             ClassDescriptor desc = entry.getValue();
+
+            setCacheable(metaClass, desc, session);
 
             if (BaseEntity.class.isAssignableFrom(desc.getJavaClass())) {
                 desc.getEventManager().addListener(descriptorEventListener);
@@ -95,6 +99,18 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
                         ((AggregateObjectMapping) mapping).setIsNullAllowed(false);
                 }
             }
+        }
+    }
+
+    private void setCacheable(MetaClass metaClass, ClassDescriptor desc, Session session) {
+        String property = (String) session.getProperty("eclipselink.cache.shared.default");
+        boolean defaultCache = property == null || Boolean.valueOf(property);
+
+        if ((defaultCache && !desc.isIsolated())
+                || desc.getCacheIsolation() == CacheIsolationType.SHARED
+                || desc.getCacheIsolation() == CacheIsolationType.PROTECTED) {
+            metaClass.getAnnotations().put("cacheable", true);
+            desc.getCachePolicy().setCacheCoordinationType(CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS);
         }
     }
 

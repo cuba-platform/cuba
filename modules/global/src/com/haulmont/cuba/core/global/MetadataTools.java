@@ -18,12 +18,14 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.chile.core.annotations.NamePattern;
+import com.haulmont.chile.core.annotations.*;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.*;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.entity.Entity;
@@ -382,6 +384,10 @@ public class MetadataTools {
         }
 
         return javaClass.isAnnotationPresent(javax.persistence.Embeddable.class);
+    }
+
+    public boolean isCacheable(MetaClass metaClass) {
+        return Boolean.TRUE.equals(metaClass.getAnnotations().get("cacheable"));
     }
 
     /**

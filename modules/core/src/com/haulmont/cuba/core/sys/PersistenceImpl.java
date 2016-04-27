@@ -19,12 +19,9 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
-import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
 import com.haulmont.cuba.security.global.UserSession;
 import org.springframework.core.Ordered;
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
@@ -57,15 +54,6 @@ public class PersistenceImpl implements Persistence {
     @Inject
     private PersistenceTools tools;
 
-    @Inject
-    private Metadata metadata;
-
-    @Inject
-    private FetchGroupManager fetchGroupMgr;
-
-    @Inject
-    private EntityListenerManager entityListenerMgr;
-
     private EntityManagerFactory jpaEmf;
 
     @Inject
@@ -73,9 +61,6 @@ public class PersistenceImpl implements Persistence {
 
     @Inject
     private UserSessionSource userSessionSource;
-
-    @Inject
-    private PersistenceImplSupport support;
 
     @Inject
     public void setFactory(LocalContainerEntityManagerFactoryBean factoryBean) {
@@ -131,8 +116,7 @@ public class PersistenceImpl implements Persistence {
 
         UserSession userSession = userSessionSource.checkCurrentUserSession() ? userSessionSource.getUserSession() : null;
 
-        EntityManagerImpl impl = new EntityManagerImpl(
-                jpaEm, userSession, metadata, fetchGroupMgr, entityListenerMgr, support);
+        EntityManagerImpl impl = new EntityManagerImpl(jpaEm, userSession);
 
         EntityManagerContext ctx = contextHolder.get();
         if (ctx != null) {

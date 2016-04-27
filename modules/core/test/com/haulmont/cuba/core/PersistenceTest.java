@@ -225,4 +225,14 @@ public class PersistenceTest {
         }
 
     }
+
+    @Test
+    public void testFind() throws Exception {
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            User user = cont.entityManager().find(User.class, userId);
+            assertNotNull(user);
+
+            tx.commit();
+        }
+    }
 }

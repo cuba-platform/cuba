@@ -214,6 +214,9 @@ public class AttributeSecuritySupport {
             MetaClass metaClass = metadata.getClassNN(entity.getClass());
             if (!security.isEntityAttrReadPermitted(metaClass, property.getName())) {
                 addInaccessibleAttribute((BaseGenericIdEntity) entity, property.getName());
+                if (!metadataTools.isSystem(property) && !property.isReadOnly()) {
+                    entity.setValue(property.getName(), null);
+                }
             }
         }
     }

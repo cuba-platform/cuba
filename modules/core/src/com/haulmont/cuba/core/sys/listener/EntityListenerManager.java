@@ -40,8 +40,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * e.g. to an entity from a base project.
  *
  */
-@Component("cuba_EntityListenerManager")
+@Component(EntityListenerManager.NAME)
 public class EntityListenerManager {
+
+    public static final String NAME = "cuba_EntityListenerManager";
 
     protected static class Key {
         private final Class entityClass;
