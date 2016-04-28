@@ -187,4 +187,14 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
 
         return getClass().getSimpleName();
     }
+
+    @Override
+    public boolean isFocusable() {
+        return impl.isFocusable();
+    }
+
+    @Override
+    public void setFocusable(boolean focusable) {
+        impl.setFocusable(focusable);
+    }
 }

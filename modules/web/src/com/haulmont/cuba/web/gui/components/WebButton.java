@@ -177,4 +177,14 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
 
         return getClass().getSimpleName();
     }
+
+    @Override
+    public boolean isFocusable() {
+        return __isFocusable();
+    }
+
+    @Override
+    public void setFocusable(boolean focusable) {
+        __setFocusable(focusable);
+    }
 }

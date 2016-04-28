@@ -236,6 +236,16 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
     }
 
     @Override
+    public boolean isFocusable() {
+        return impl.isFocusable();
+    }
+
+    @Override
+    public void setFocusable(boolean focusable) {
+        impl.setFocusable(focusable);
+    }
+
+    @Override
     public void addAction(Action action, int index) {
         super.addAction(action, index);
         action.addOwner(new ButtonStub(action));
@@ -400,6 +410,15 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
 
         @Override
         public void setIcon(String icon) {
+        }
+
+        @Override
+        public boolean isFocusable() {
+            return DesktopPopupButton.this.isFocusable();
+        }
+
+        @Override
+        public void setFocusable(boolean focusable) {
         }
     }
 }
