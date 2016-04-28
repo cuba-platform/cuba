@@ -376,6 +376,21 @@ public interface Component {
     }
 
     /**
+     * Component supporting "focusable" state.
+     * Focusable means that component can be focused by TAB button.
+     */
+    interface Focusable extends Component {
+        /**
+         * Is component focusable?
+         */
+        boolean isFocusable();
+        /**
+         * Set component focusability
+         */
+        void setFocusable(boolean focusable);
+    }
+
+    /**
      * Object supporting save/restore of user settings.
      * @see com.haulmont.cuba.security.app.UserSettingService
      */

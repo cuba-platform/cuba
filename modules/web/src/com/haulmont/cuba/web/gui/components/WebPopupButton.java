@@ -122,6 +122,16 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         }
     }
 
+    @Override
+    public boolean isFocusable() {
+        return __isFocusable();
+    }
+
+    @Override
+    public void setFocusable(boolean focusable) {
+        __setFocusable(focusable);
+    }
+
     public void setPopupComponent(Component component) {
         this.popupComponent = component;
         vPopupComponent = WebComponentsHelper.unwrap(popupComponent);
