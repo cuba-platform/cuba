@@ -222,7 +222,7 @@ public class DeletePolicyProcessor {
             }
             list.add(() -> {
                 QueryRunner queryRunner = new QueryRunner();
-                MetaClass entityMetaClass = metadata.getClassNN(entity.getClass());
+                MetaClass entityMetaClass = property.getDomain();
                 MetadataTools metadataTools = metadata.getTools();
                 String sql = "update " + metadataTools.getDatabaseTable(entityMetaClass)
                         + " set " + metadataTools.getDatabaseColumn(property) + " = null where "
