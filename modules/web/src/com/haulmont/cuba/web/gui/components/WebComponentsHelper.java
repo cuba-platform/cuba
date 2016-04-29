@@ -34,10 +34,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.server.ClassResource;
-import com.vaadin.server.FileResource;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Resource;
+import com.vaadin.server.*;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
@@ -56,6 +53,13 @@ import java.util.*;
 /**
  */
 public class WebComponentsHelper {
+
+    protected static Map<String, Class<? extends FontIcon>> fontIcons = new HashMap<>();
+
+    static {
+        registerFontIcon("font-icon", FontAwesome.class);
+        registerFontIcon("font-awesome-icon", FontAwesome.class);
+    }
 
     public static Resource getResource(String resURL) {
         if (StringUtils.isEmpty(resURL)) return null;
@@ -77,29 +81,23 @@ public class WebComponentsHelper {
                 String iconKey = "cuba.web." + StringUtils.replace(resourceId, "/", ".");
                 fontIcon = themeConstants.get(iconKey);
 
-                if (StringUtils.isNotEmpty(fontIcon)) {
-                    try {
-                        Field fontIconField = FontAwesome.class.getDeclaredField(fontIcon);
-                        return (Resource) fontIconField.get(null);
-                    } catch (NoSuchFieldException | IllegalAccessException e) {
-                        LogFactory.getLog(WebComponentsHelper.class).warn("Unable to use font icon " + fontIcon);
-                    }
-                }
-            }
-
-            return new VersionedThemeResource(resourceId);
-        } else if (resURL.startsWith("font-icon:")) {
-            String fontIcon = resURL.substring("font-icon:".length());
-
-            if (StringUtils.isNotEmpty(fontIcon)) {
                 try {
-                    Field fontIconField = FontAwesome.class.getDeclaredField(fontIcon);
-                    return (Resource) fontIconField.get(null);
+                    Resource resource = getFontIconResource(fontIcon);
+                    if (resource != null) {
+                        return resource;
+                    }
                 } catch (NoSuchFieldException | IllegalAccessException e) {
                     LogFactory.getLog(WebComponentsHelper.class).warn("Unable to use font icon " + fontIcon);
                 }
             }
 
+            return new VersionedThemeResource(resourceId);
+        } else if (resURL.contains("icon:")) {
+            try {
+                return getFontIconResource(resURL);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                LogFactory.getLog(WebComponentsHelper.class).warn("Unable to use font icon " + resURL);
+            }
             return null;
         } else {
             return new VersionedThemeResource(resURL);
@@ -473,24 +471,56 @@ public class WebComponentsHelper {
         if (webConfig.getUseFontIcons()) {
             String fontIcon;
 
-            if (StringUtils.startsWith(iconName, "font-icon:")) {
-                fontIcon = StringUtils.substring(iconName, "font-icon:".length());
+            if (StringUtils.contains(iconName, ":")) {
+                fontIcon = iconName;
             } else {
                 ThemeConstants themeConstants = App.getInstance().getThemeConstants();
                 String iconKey = "cuba.web." + StringUtils.replace(iconName, "/", ".");
                 fontIcon = themeConstants.get(iconKey);
             }
 
-            if (StringUtils.isNotEmpty(fontIcon)) {
-                try {
-                    Field fontIconField = FontAwesome.class.getDeclaredField(fontIcon);
-                    return (Resource) fontIconField.get(null);
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    LogFactory.getLog(WebComponentsHelper.class).warn("Unable to use font icon " + fontIcon);
+            try {
+                Resource resource = getFontIconResource(fontIcon);
+                if (resource != null) {
+                    return resource;
                 }
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                LogFactory.getLog(WebComponentsHelper.class).warn("Unable to use font icon " + fontIcon);
             }
         }
         return new VersionedThemeResource(iconName);
+    }
+
+    @Nullable
+    public static Resource getFontIconResource(String fontIcon)
+            throws NoSuchFieldException, IllegalAccessException {
+        if (StringUtils.isNotEmpty(fontIcon)) {
+            String fontIconName = "font-awesome-icon";
+            String fontIconField;
+            if (fontIcon.contains(":")) {
+                fontIconName = StringUtils.substring(fontIcon, 0, fontIcon.indexOf(":"));
+                fontIconField = StringUtils.substring(fontIcon, fontIcon.indexOf(":") + 1);
+            } else {
+                fontIconField = fontIcon;
+            }
+            return getFontIconResource(fontIconName, fontIconField);
+        }
+        return null;
+    }
+
+    @Nullable
+    public static Resource getFontIconResource(String fontIconName, String fontIconField)
+            throws NoSuchFieldException, IllegalAccessException {
+        final Class<? extends FontIcon> fontIcon = fontIcons.get(fontIconName);
+        if (fontIcon != null) {
+            Field field = fontIcon.getDeclaredField(fontIconField);
+            return (Resource) field.get(null);
+        }
+        return null;
+    }
+
+    public static void registerFontIcon(String name, Class<? extends FontIcon> font) {
+        fontIcons.put(name, font);
     }
 
     public static void addEnterShortcut(TextField textField, final Runnable runnable) {
