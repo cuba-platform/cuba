@@ -25,7 +25,9 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import javax.mail.Session;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  */
@@ -88,17 +90,37 @@ public class CubaMailSender extends JavaMailSenderImpl {
     @Override
     public synchronized Session getSession() {
         if (!propertiesInitialized) {
-            long connectionTimeoutMillis = config.getSmtpConnectionTimeoutSec() * 1000;
-            long timeoutMillis = config.getSmtpTimeoutSec() * 1000;
-
-            Properties properties = new Properties();
-            properties.setProperty("mail.smtp.auth", String.valueOf(config.getSmtpAuthRequired()));
-            properties.setProperty("mail.smtp.starttls.enable", String.valueOf(config.getSmtpStarttlsEnable()));
-            properties.setProperty("mail.smtp.connectiontimeout", String.valueOf(connectionTimeoutMillis));
-            properties.setProperty("mail.smtp.timeout", String.valueOf(timeoutMillis));
+            Properties properties = createJavaMailProperties();
             setJavaMailProperties(properties);
             propertiesInitialized = true;
         }
         return super.getSession();
+    }
+
+    protected Properties createJavaMailProperties() {
+        long connectionTimeoutMillis = config.getSmtpConnectionTimeoutSec() * 1000;
+        long timeoutMillis = config.getSmtpTimeoutSec() * 1000;
+
+        Properties properties = new Properties();
+        properties.setProperty("mail.smtp.auth", String.valueOf(config.getSmtpAuthRequired()));
+        properties.setProperty("mail.smtp.starttls.enable", String.valueOf(config.getSmtpStarttlsEnable()));
+        properties.setProperty("mail.smtp.connectiontimeout", String.valueOf(connectionTimeoutMillis));
+        properties.setProperty("mail.smtp.timeout", String.valueOf(timeoutMillis));
+        properties.setProperty("mail.smtp.ssl.enable", String.valueOf(config.getSmtpSslEnabled()));
+
+        Set excludedProperties = new HashSet<>(properties.keySet());
+        for (String name : AppContext.getPropertyNames()) {
+            if (includeJavaMailProperty(name, excludedProperties)) {
+                String value = AppContext.getProperty(name);
+                if (value != null) {
+                    properties.put(name, value);
+                }
+            }
+        }
+        return properties;
+    }
+
+    protected boolean includeJavaMailProperty(String name, Set excludedProperties) {
+        return name.startsWith("mail.") && !excludedProperties.contains(name);
     }
 }

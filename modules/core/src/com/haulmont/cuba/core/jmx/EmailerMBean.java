@@ -40,6 +40,8 @@ public interface EmailerMBean {
 
     boolean getStarttlsEnable();
 
+    boolean getSmtpSslEnabled();
+
     int getSmtpTimeoutSec();
 
     int getSmtpConnectionTimeoutSec();

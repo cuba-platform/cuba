@@ -96,6 +96,10 @@ public class Emailer implements EmailerMBean {
         return config.getSmtpStarttlsEnable();
     }
 
+    public boolean getSmtpSslEnabled() {
+        return config.getSmtpSslEnabled();
+    }
+
     @Override
     public int getSmtpTimeoutSec() {
         return config.getSmtpTimeoutSec();
