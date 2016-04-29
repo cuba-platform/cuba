@@ -64,7 +64,7 @@ public class LogControlImpl implements LogControl {
         if (logDir.isDirectory()) {
             File[] files = logDir.listFiles();
             if (files != null) {
-                Arrays.sort(files, (a, b) -> Long.compare(a.lastModified(), b.lastModified()));
+                Arrays.sort(files, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
                 for (File f : files) {
                     if (f.isFile())
                         filenames.add(f.getName());
