@@ -88,6 +88,14 @@ public interface EmailerConfig extends Config {
     int getSmtpConnectionTimeoutSec();
 
     /**
+     * If set to true, use SSL to connect
+     *
+     */
+    @Property("cuba.email.smtpSslEnabled")
+    @DefaultBoolean(false)
+    boolean getSmtpSslEnabled();
+
+     /**
      * SMTP I/O timeout value in seconds.
      */
     @Property("cuba.email.smtpTimeoutSec")
