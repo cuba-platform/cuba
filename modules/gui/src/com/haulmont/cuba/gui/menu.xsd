@@ -44,6 +44,7 @@
         <xs:attribute type="xs:string" name="id" use="optional"/>
         <xs:attribute type="xs:string" name="insertBefore" use="optional"/>
         <xs:attribute type="xs:string" name="insertAfter" use="optional"/>
+        <xs:attribute type="xs:string" name="stylename" use="optional"/>
     </xs:complexType>
 
     <xs:complexType name="itemType">
@@ -55,6 +56,7 @@
         <xs:attribute type="openTypeType" name="openType" use="optional"/>
         <xs:attribute type="xs:boolean" name="resizable" use="optional"/>
         <xs:attribute type="xs:string" name="shortcut" use="optional"/>
+        <xs:attribute type="xs:string" name="stylename" use="optional"/>
         <xs:attribute type="xs:string" name="insertBefore" use="optional"/>
         <xs:attribute type="xs:string" name="insertAfter" use="optional"/>
     </xs:complexType>

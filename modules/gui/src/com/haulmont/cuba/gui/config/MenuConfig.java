@@ -171,6 +171,7 @@ public class MenuConfig {
                 menuItem.setDescriptor(element);
 
                 loadShortcut(menuItem, element);
+                loadStylename(element, menuItem);
                 loadMenuItems(element, menuItem);
 
 //                if (menuItem.getChildren().isEmpty()) {
@@ -183,6 +184,7 @@ public class MenuConfig {
                     menuItem = new MenuItem(currentParentItem, id);
                     menuItem.setDescriptor(element);
                     loadShortcut(menuItem, element);
+                    loadStylename(element, menuItem);
                 }
             } else if ("separator".equals(element.getName())) {
                 String id = element.attributeValue("id");
@@ -202,6 +204,13 @@ public class MenuConfig {
             } else {
                 addItem(rootItems, menuItem, nextToItem, before);
             }
+        }
+    }
+
+    protected void loadStylename(Element element, MenuItem menuItem) {
+        String stylename = element.attributeValue("stylename");
+        if (StringUtils.isNotBlank(stylename)) {
+            menuItem.setStylename(stylename);
         }
     }
 

@@ -107,6 +107,7 @@ public class MenuBuilder {
             assignShortcut(menuItem, item);
             createSubMenu(menuItem, item, session);
             assignTestId(menuItem, item);
+            assignStyleName(menuItem, item);
             if (isMenuItemEmpty(menuItem)) {
                 menuBar.removeItem(menuItem);
             }
@@ -195,6 +196,12 @@ public class MenuBuilder {
 
             menuBar.setTestId(menuItem, testId);
             menuBar.setCubaId(menuItem, conf.getId());
+        }
+    }
+
+    protected void assignStyleName(MenuBar.MenuItem menuItem, MenuItem conf) {
+        if (conf.getStylename() != null) {
+            menuItem.setStyleName("ms " + conf.getStylename());
         }
     }
 }

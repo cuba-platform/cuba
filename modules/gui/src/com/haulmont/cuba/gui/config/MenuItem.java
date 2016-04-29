@@ -36,6 +36,7 @@ public class MenuItem {
     private List<MenuItem> children = new ArrayList<>();
 
     private String id;
+    private String stylename;
     private Element descriptor;
     private boolean separator = false;
 
@@ -74,6 +75,14 @@ public class MenuItem {
 
     public Element getDescriptor() {
         return descriptor;
+    }
+
+    public String getStylename() {
+        return stylename;
+    }
+
+    public void setStylename(String stylename) {
+        this.stylename = stylename;
     }
 
     public void setDescriptor(Element descriptor) {
