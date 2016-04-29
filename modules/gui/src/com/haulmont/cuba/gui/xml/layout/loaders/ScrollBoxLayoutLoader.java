@@ -85,6 +85,11 @@ public class ScrollBoxLayoutLoader extends ContainerLoader<ScrollBoxLayout> {
         loadSpacing(resultComponent, element);
         loadMargin(resultComponent, element);
 
+        loadHeight(resultComponent, element);
+        loadWidth(resultComponent, element);
+
+        loadSubComponents();
+
         for (Component child : resultComponent.getOwnComponents()) {
             if (resultComponent.getOrientation() == ScrollBoxLayout.Orientation.VERTICAL && ComponentsHelper.hasFullHeight(child)) {
                 child.setHeight("-1px");
@@ -97,10 +102,5 @@ public class ScrollBoxLayoutLoader extends ContainerLoader<ScrollBoxLayout> {
                         + " inside horizontal scrollBox replaced with -1px width");
             }
         }
-
-        loadHeight(resultComponent, element);
-        loadWidth(resultComponent, element);
-
-        loadSubComponents();
     }
 }
