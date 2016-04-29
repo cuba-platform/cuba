@@ -162,7 +162,8 @@ public class DbUpdaterEngine implements DbUpdater {
         try {
             connection = getDataSource().getConnection();
             DatabaseMetaData dbMetaData = connection.getMetaData();
-            ResultSet tables = dbMetaData.getTables(null, null, null, null);
+            DbProperties dbProperties = new DbProperties(getConnectionUrl(connection));
+            ResultSet tables = dbMetaData.getTables(null, dbProperties.getCurrentSchemaProperty(), null, null);
             boolean found = false;
             while (tables.next()) {
                 String tableName = tables.getString("TABLE_NAME");
@@ -248,30 +249,57 @@ public class DbUpdaterEngine implements DbUpdater {
             String reqTable = requiredTables.get(moduleName);
             if (reqTable != null) {
                 log.trace("Looking for table {}", reqTable);
-                try {
-                    executeSql("select * from " + reqTable + " where 0=1");
-                } catch (SQLException e) {
-                    String mark = dbmsType.equals("oracle") ? "ora-00942" : reqTable.toLowerCase();
-                    if (e.getMessage() != null && e.getMessage().toLowerCase().contains(mark)) {
-                        // probably the required table does not exist
-                        log.info("Required table for " + moduleName + " does not exist, running init scripts");
-                        List<ScriptResource> initScripts = getInitScripts(dirName);
-                        try {
-                            for (ScriptResource file : initScripts) {
-                                executeScript(file);
-                                markScript(getScriptName(file), true);
-                            }
-                        } finally {
-                            List<ScriptResource> updateFiles = getUpdateScripts(dirName);
-                            for (ScriptResource file : updateFiles)
-                                markScript(getScriptName(file), true);
+                if (!tableExists(reqTable)) {
+                    log.info("Required table for " + moduleName + " does not exist, running init scripts");
+                    List<ScriptResource> initScripts = getInitScripts(dirName);
+                    try {
+                        for (ScriptResource file : initScripts) {
+                            executeScript(file);
+                            markScript(getScriptName(file), true);
                         }
-                    } else {
-                        throw new RuntimeException("An error occurred while checking required tables", e);
+                    } finally {
+                        List<ScriptResource> updateFiles = getUpdateScripts(dirName);
+                        for (ScriptResource file : updateFiles)
+                            markScript(getScriptName(file), true);
                     }
                 }
             }
         }
+    }
+
+    protected boolean tableExists(String tableName) {
+        Connection connection = null;
+        try {
+            connection = getDataSource().getConnection();
+            DbProperties dbProperties = new DbProperties(getConnectionUrl(connection));
+            String currentSchema = dbProperties.getCurrentSchemaProperty();
+            if (StringUtils.isNotEmpty(currentSchema)) {
+                DatabaseMetaData dbMetaData = connection.getMetaData();
+                ResultSet tables = dbMetaData.getTables(null, currentSchema, null, null);
+                while (tables.next()) {
+                    String tableNameFromDb = tables.getString("TABLE_NAME");
+                    if (tableName.equalsIgnoreCase(tableNameFromDb)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("An error occurred while checking required tables", e);
+        } finally {
+            DbUtils.closeQuietly(connection);
+        }
+        try {
+            executeSql("select * from " + tableName + " where 0=1");
+        } catch (SQLException e) {
+            String mark = dbmsType.equals("oracle") ? "ora-00942" : tableName.toLowerCase();
+            if (e.getMessage() != null && e.getMessage().toLowerCase().contains(mark)) {
+                return false;
+            } else {
+                throw new RuntimeException("An error occurred while checking required tables", e);
+            }
+        }
+        return true;
     }
 
     /**
@@ -430,6 +458,18 @@ public class DbUpdaterEngine implements DbUpdater {
     protected List<ScriptResource> getUpdateScripts(@Nullable String oneModuleDir) {
         return getScripts(ScriptType.UPDATE, oneModuleDir);
     }
+
+
+    protected String getConnectionUrl(Connection connection) {
+        try {
+            DatabaseMetaData databaseMetaData = connection.getMetaData();
+            return databaseMetaData.getURL();
+        } catch (Throwable e) {
+            log.warn("Unable to get connection url");
+            return null;
+        }
+    }
+
 
     // File extension handler
     public interface FileHandler {
