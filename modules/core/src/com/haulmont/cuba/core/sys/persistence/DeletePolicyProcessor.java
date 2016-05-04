@@ -221,12 +221,22 @@ public class DeletePolicyProcessor {
                 persistence.getEntityManagerContext().setAttribute(PersistenceImpl.RUN_BEFORE_COMMIT_ATTR, list);
             }
             list.add(() -> {
-                QueryRunner queryRunner = new QueryRunner();
-                MetaClass entityMetaClass = property.getDomain();
                 MetadataTools metadataTools = metadata.getTools();
+                MetaClass entityMetaClass = metadata.getClassNN(entity.getClass());
+                while (!entityMetaClass.equals(property.getDomain())) {
+                    MetaClass ancestor = entityMetaClass.getAncestor();
+                    if (ancestor == null)
+                        throw new IllegalStateException("Cannot determine a persistent entity for property " + property);
+                    if (metadataTools.isPersistent(ancestor)) {
+                        entityMetaClass = ancestor;
+                    } else {
+                        break;
+                    }
+                }
                 String sql = "update " + metadataTools.getDatabaseTable(entityMetaClass)
                         + " set " + metadataTools.getDatabaseColumn(property) + " = null where "
                         + metadataTools.getPrimaryKeyName(entityMetaClass) + " = ?";
+                QueryRunner queryRunner = new QueryRunner();
                 try {
                     log.debug("Set reference to null: " + sql + ", bind: [" + entity.getId() + "]");
                     queryRunner.update(entityManager.getConnection(), sql, persistence.getDbTypeConverter().getSqlObject(entity.getId()));
