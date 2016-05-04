@@ -49,12 +49,13 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  */
 public class WebComponentsHelper {
 
-    protected static Map<String, Class<? extends FontIcon>> fontIcons = new HashMap<>();
+    protected static Map<String, Class<? extends FontIcon>> fontIcons = new ConcurrentHashMap<>();
 
     static {
         registerFontIcon("font-icon", FontAwesome.class);
