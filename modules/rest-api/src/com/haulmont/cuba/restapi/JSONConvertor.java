@@ -283,7 +283,11 @@ public class JSONConvertor implements Convertor {
                     setField(entity, propertyName, property.getRange().asDatatype().parse(value));
                     break;
                 case ENUM:
-                    setField(entity, propertyName, property.getRange().asEnumeration().parse(json.getString(propertyName)));
+                    if (!json.isNull(propertyName)) {
+                        setField(entity, propertyName, property.getRange().asEnumeration().parse(json.getString(propertyName)));
+                    } else {
+                        setField(entity, propertyName, null);
+                    }
                     break;
                 case COMPOSITION:
                 case ASSOCIATION:
@@ -483,7 +487,11 @@ public class JSONConvertor implements Convertor {
                         setField(instance, key, property.getRange().asDatatype().parse(value));
                         break;
                     case ENUM:
-                        setField(instance, key, property.getRange().asEnumeration().parse(json.getString(key)));
+                        if (!json.isNull(key)) {
+                            setField(instance, key, property.getRange().asEnumeration().parse(json.getString(key)));
+                        } else {
+                            setField(instance, key, null);
+                        }
                         break;
                     case COMPOSITION:
                     case ASSOCIATION:
