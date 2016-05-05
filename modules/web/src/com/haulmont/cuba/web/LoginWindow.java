@@ -451,6 +451,10 @@ public class LoginWindow extends UIView {
             } else {
                 login(login, passwordEncryption.getPlainHash(password), locale);
             }
+            // locale could be set on the server
+            if (connection.getSession() != null) {
+                app.setLocale(connection.getSession().getLocale());
+            }
         } catch (LoginException e) {
             log.info("Login failed: " + e.toString());
             showLoginException(e);
