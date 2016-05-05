@@ -19,11 +19,12 @@ package com.haulmont.cuba.core.sys.jpql.tree;
 
 import com.haulmont.cuba.core.sys.jpql.ErrorRec;
 import com.haulmont.cuba.core.sys.jpql.QueryBuilder;
+import com.haulmont.cuba.core.sys.jpql.TreeToQuery;
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
-import org.apache.commons.lang.StringUtils;
+import org.antlr.runtime.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -32,16 +33,14 @@ import java.util.List;
  */
 public class JoinVariableNode extends BaseJoinNode {
     private String joinSpec;
-    private String joinCondition;
 
-    public JoinVariableNode(Token token, String joinSpec, String variableName, String joinCondition) {
+    public JoinVariableNode(Token token, String joinSpec, String variableName) {
         super(token, variableName);
         this.joinSpec = joinSpec;
-        this.joinCondition = joinCondition;
     }
 
-    public JoinVariableNode(int type, String joinSpec, String variableName, String joinCondition) {
-        this(new CommonToken(type, ""), joinSpec, variableName, joinCondition);
+    public JoinVariableNode(int type, String joinSpec, String variableName) {
+        this(new CommonToken(type, ""), joinSpec, variableName);
     }
 
     @Override
@@ -51,32 +50,35 @@ public class JoinVariableNode extends BaseJoinNode {
 
     @Override
     public Tree dupNode() {
-        JoinVariableNode result = new JoinVariableNode(token, joinSpec, variableName, joinCondition);
+        JoinVariableNode result = new JoinVariableNode(token, joinSpec, variableName);
         dupChildren(result);
         return result;
     }
 
     @Override
     public CommonTree treeToQueryPre(QueryBuilder sb, List<ErrorRec> invalidNodes) {
+        int childCount = getChildCount();
+        if (childCount == 0) {
+            invalidNodes.add(new ErrorRec(this, "No children found"));
+            return null;
+        }
+        if (childCount > 2) {
+            invalidNodes.add(new ErrorRec(this, "Number of children more than 2"));
+            return null;
+        }
         sb.appendSpace();
         sb.appendString(joinSpec);
         sb.appendSpace();
-        return this;
-    }
-
-    @Override
-    public CommonTree treeToQueryPost(QueryBuilder sb, List<ErrorRec> invalidNodes) {
-        // должно появится после определения сущности, из которой выбирают, поэтому в post
+        sb.appendString(toQuery(getChild(0)));
         sb.appendSpace();
         sb.appendString(variableName);
-        if (StringUtils.isNotBlank(joinCondition)) {
+        if (childCount == 2) {
             sb.appendSpace();
             sb.appendString("on");
             sb.appendSpace();
-            sb.appendString(joinCondition);
+            sb.appendString(toQuery(getChild(1)));
         }
-
-        return this;
+        return null;
     }
 
     @Nullable
@@ -86,7 +88,6 @@ public class JoinVariableNode extends BaseJoinNode {
                 return (PathNode) child;
             }
         }
-
         return null;
     }
 
@@ -94,7 +95,10 @@ public class JoinVariableNode extends BaseJoinNode {
         return joinSpec;
     }
 
-    public String getJoinCondition() {
-        return joinCondition;
+    protected String toQuery(Tree tree) {
+        TreeVisitor visitor = new TreeVisitor();
+        TreeToQuery treeToQuery = new TreeToQuery();
+        visitor.visit(tree, treeToQuery);
+        return treeToQuery.getQueryString().trim();
     }
 }

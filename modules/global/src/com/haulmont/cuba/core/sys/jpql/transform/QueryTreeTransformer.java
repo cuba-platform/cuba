@@ -179,7 +179,7 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
                 orderByField.addChild(orderingNode);
 
                 if (!addedJoinVariables.contains(variableName)) {
-                    JoinVariableNode joinNode = new JoinVariableNode(JPA2Lexer.T_JOIN_VAR, "left join", variableName, null);
+                    JoinVariableNode joinNode = new JoinVariableNode(JPA2Lexer.T_JOIN_VAR, "left join", variableName);
                     joinNode.addChild(pathNode);
 
                     CommonTree from = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);

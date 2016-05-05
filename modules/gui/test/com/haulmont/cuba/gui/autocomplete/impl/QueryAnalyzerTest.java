@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.autocomplete.impl;
 
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.Parser;
+import com.haulmont.cuba.core.sys.jpql.TreeToQuery;
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
@@ -29,6 +30,7 @@ import com.haulmont.cuba.core.sys.jpql.tree.*;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
+import org.antlr.runtime.tree.TreeVisitor;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -106,8 +108,11 @@ public class QueryAnalyzerTest {
         assertTrue(sourceNode.getChild(0) instanceof IdentificationVariableNode);
         assertTrue(sourceNode.getChild(1) instanceof JoinVariableNode);
         JoinVariableNode joinNode = (JoinVariableNode) sourceNode.getChild(1);
+        TreeVisitor visitor = new TreeVisitor();
+        TreeToQuery treeToQuery = new TreeToQuery();
+        visitor.visit(joinNode, treeToQuery);
         assertEquals("d", joinNode.getVariableName());
-        assertEquals("d.car.id = c.id", joinNode.getJoinCondition());
+        assertEquals("join Driver d on d.car.id = c.id", treeToQuery.getQueryString().trim());
     }
 
     @Test

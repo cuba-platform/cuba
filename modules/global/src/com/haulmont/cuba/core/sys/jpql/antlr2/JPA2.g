@@ -106,7 +106,7 @@ range_variable_declaration
      -> ^(T_ID_VAR<IdentificationVariableNode>[$identification_variable.text] entity_name);
 join
      : join_spec join_association_path_expression ('AS')? identification_variable ('ON' conditional_expression)?
-     -> ^(T_JOIN_VAR<JoinVariableNode>[$join_spec.text, $identification_variable.text, $conditional_expression.text] join_association_path_expression);
+     -> ^(T_JOIN_VAR<JoinVariableNode>[$join_spec.text, $identification_variable.text] join_association_path_expression conditional_expression?);
 fetch_join
      : join_spec 'FETCH' join_association_path_expression;
 join_spec
