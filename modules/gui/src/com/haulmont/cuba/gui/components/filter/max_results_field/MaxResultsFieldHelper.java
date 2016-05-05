@@ -16,15 +16,63 @@
 
 package com.haulmont.cuba.gui.components.filter.max_results_field;
 
+import com.google.common.base.Splitter;
+import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.LookupField;
+import com.haulmont.cuba.gui.components.filter.FilterHelper;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
-/**
- * It help to adjust the lookup field which represents max size of query result
- */
-public interface MaxResultsFieldHelper {
-    String NAME = "cuba_MaxResultsFieldHelper";
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
-    LookupField setUpMaxResultsLookupField(LookupField maxResultsLookupField);
+@org.springframework.stereotype.Component(MaxResultsFieldHelper.NAME)
+public class MaxResultsFieldHelper {
+    public static final String NAME = "cuba_MaxResultsFieldHelper";
 
-    LookupField createMaxResultsLookupField();
+    @Inject
+    protected ComponentsFactory componentsFactory;
+    @Inject
+    protected FilterHelper filterHelper;
+    @Inject
+    protected ThemeConstantsManager themeConstantsManager;
+    @Inject
+    protected ClientConfig clientConfig;
+
+    public LookupField createMaxResultsLookupField() {
+        LookupField maxResultsLookupField = componentsFactory.createComponent(LookupField.class);
+        setUpMaxResultsLookupField(maxResultsLookupField);
+
+        return maxResultsLookupField;
+    }
+
+    public LookupField setUpMaxResultsLookupField(LookupField maxResultsLookupField) {
+        ThemeConstants theme = themeConstantsManager.getConstants();
+
+        maxResultsLookupField.setAlignment(Component.Alignment.MIDDLE_RIGHT);
+        maxResultsLookupField.setWidth(theme.get("cuba.gui.Filter.maxResults.lookup.width"));
+        filterHelper.setLookupTextInputAllowed(maxResultsLookupField, false);
+        filterHelper.setLookupNullSelectionAllowed(maxResultsLookupField, false);
+
+        List<Integer> maxResultOptions = new ArrayList<>();
+        String maxResultOptionsStr = clientConfig.getGenericFilterMaxResultsOptions();
+        Iterable<String> split = Splitter.on(",").trimResults().split(maxResultOptionsStr);
+        for (String option : split) {
+            if ("NULL".equals(option)) {
+                filterHelper.setLookupNullSelectionAllowed(maxResultsLookupField, true);
+            } else {
+                try {
+                    Integer value = Integer.valueOf(option);
+                    maxResultOptions.add(value);
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        }
+        maxResultsLookupField.setOptionsList(maxResultOptions);
+
+        return maxResultsLookupField;
+    }
 }

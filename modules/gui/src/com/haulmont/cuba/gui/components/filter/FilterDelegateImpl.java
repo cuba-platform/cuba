@@ -48,6 +48,7 @@ import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
 import com.haulmont.cuba.gui.components.filter.edit.FilterEditor;
 import com.haulmont.cuba.gui.components.filter.filterselect.FilterSelectWindow;
+import com.haulmont.cuba.gui.components.filter.max_results_field.MaxResultsFieldHelper;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -112,6 +113,8 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected FilterHelper filterHelper;
     @Inject
     protected FilterParser filterParser;
+    @Inject
+    protected MaxResultsFieldHelper maxResultsFieldHelper;
 
     protected FtsFilterHelper ftsFilterHelper;
     protected DataService dataService;
@@ -428,27 +431,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         maxResultsTextField.setWidth(theme.get("cuba.gui.Filter.maxResults.width"));
         maxResultsTextField.setDatatype(Datatypes.get("int"));
 
-        maxResultsLookupField = componentsFactory.createComponent(LookupField.class);
-        maxResultsLookupField.setAlignment(Component.Alignment.MIDDLE_RIGHT);
-        maxResultsLookupField.setWidth(theme.get("cuba.gui.Filter.maxResults.lookup.width"));
-        filterHelper.setLookupTextInputAllowed(maxResultsLookupField, false);
-        filterHelper.setLookupNullSelectionAllowed(maxResultsLookupField, false);
-
-        List<Integer> maxResultOptions = new ArrayList<>();
-        String maxResultOptionsStr = clientConfig.getGenericFilterMaxResultsOptions();
-        Iterable<String> split = Splitter.on(",").trimResults().split(maxResultOptionsStr);
-        for (String option : split) {
-            if ("NULL".equals(option)) {
-                filterHelper.setLookupNullSelectionAllowed(maxResultsLookupField, true);
-            }
-            else {
-                try {
-                    Integer value = Integer.valueOf(option);
-                    maxResultOptions.add(value);
-                } catch (NumberFormatException ignored) {}
-            }
-        }
-        maxResultsLookupField.setOptionsList(maxResultOptions);
+        maxResultsLookupField = maxResultsFieldHelper.createMaxResultsLookupField();
 
         maxResultsField = textMaxResults ? maxResultsTextField : maxResultsLookupField;
         maxResultsLayout.add(maxResultsField);
