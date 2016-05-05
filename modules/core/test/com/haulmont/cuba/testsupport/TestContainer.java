@@ -57,10 +57,10 @@ import java.util.*;
  * Container for integration tests.
  * <p>Usage of the common instance (time saving):</p>
  * <pre>
- *     {@literal@}ClassRule
+ *    {@literal @}ClassRule
  *     public static TestContainer cont = TestContainer.Common.INSTANCE;
  *
- *     {@literal@}Test
+ *    {@literal @}Test
  *     public void testSomething() {
  *         try (Transaction tx = cont.persistence().createTransaction()) { ... }
  *     }
@@ -68,11 +68,11 @@ import java.util.*;
  *
  * <p>Usage of a specific instance:</p>
  * <pre>
- *     {@literal@}ClassRule
+ *    {@literal @}ClassRule
  *     public static TestContainer cont = new TestContainer()
  *              .setAppPropertiesFiles(Arrays.asList("cuba-app.properties", "com/company/sample/core/my-test-app.properties"));
  *
- *     {@literal@}Test
+ *    {@literal @}Test
  *     public void testSomething() {
  *         try (Transaction tx = cont.persistence().createTransaction()) { ... }
  *     }
