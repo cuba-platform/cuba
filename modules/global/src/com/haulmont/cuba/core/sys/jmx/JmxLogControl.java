@@ -113,10 +113,6 @@ public class JmxLogControl implements JmxLogControlMBean {
 
     @Override
     public void setLoggerLevel(String loggerName, String level) throws LogControlException {
-        List<String> loggers = logControl.getLoggers();
-        if (!loggers.contains(loggerName))
-            throw new LoggerNotFoundException(loggerName);
-
         Level logLevel = LoggingHelper.getLevelFromString(level);
         if (logLevel == null)
             throw new UnrecognizedLogLevelException(level);
