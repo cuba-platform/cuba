@@ -188,6 +188,7 @@ public class PersistenceManager implements PersistenceManagerMBean {
         }
     }
 
+    @Authenticated
     @Override
     public String jpqlLoadList(String queryString) {
         try {
