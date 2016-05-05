@@ -20,6 +20,7 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
+import com.haulmont.cuba.core.sys.jpql.transform.QueryTransformerAstBased;
 import org.junit.Test;
 
 import java.util.Set;
@@ -78,6 +79,11 @@ public class QueryParserAstBasedTest {
         assertTrue(paramNames.contains("par2"));
         assertTrue(paramNames.contains("par3"));
 
+        parser = new QueryParserAstBased(prepareDomainModel(),
+                "select c from sec$Constraint c join sec$Group g on g.name = :par");
+        paramNames = parser.getParamNames();
+        assertEquals(1, paramNames.size());
+        assertTrue(paramNames.contains("par"));
     }
 
     @Test

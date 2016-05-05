@@ -1467,7 +1467,7 @@ public class JPAParser extends Parser {
                 // JPA.g:120:10: ^( T_JOIN_VAR[$join_spec.text, $identification_variable.text] join_association_path_expression )
                 {
                 Object root_1 = (Object)adaptor.nil();
-                root_1 = (Object)adaptor.becomeRoot(new JoinVariableNode(T_JOIN_VAR, (join_spec27!=null?input.toString(join_spec27.start,join_spec27.stop):null), (identification_variable30!=null?input.toString(identification_variable30.start,identification_variable30.stop):null), null), root_1);
+                root_1 = (Object)adaptor.becomeRoot(new JoinVariableNode(T_JOIN_VAR, (join_spec27!=null?input.toString(join_spec27.start,join_spec27.stop):null), (identification_variable30!=null?input.toString(identification_variable30.start,identification_variable30.stop):null)), root_1);
 
                 adaptor.addChild(root_1, stream_join_association_path_expression.nextTree());
 

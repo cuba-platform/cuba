@@ -61,13 +61,13 @@ public class BaseJoinNode extends BaseCustomNode {
         }
 
         List children = getChildren();
-        if (children == null) {
+        if (children == null || children.size() == 0) {
             invalidNodes.add(new ErrorRec(this, "No children found"));
             return;
         }
 
-        if (children.size() != 1) {
-            invalidNodes.add(new ErrorRec(this, "Number of children not equals 1"));
+        if (children.size() > 2) {
+            invalidNodes.add(new ErrorRec(this, "Number of children more than 2"));
             return;
         }
 
