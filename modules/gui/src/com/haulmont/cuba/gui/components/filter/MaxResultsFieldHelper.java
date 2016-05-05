@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components.filter.max_results_field;
+package com.haulmont.cuba.gui.components.filter;
 
 import com.google.common.base.Splitter;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.LookupField;
-import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
