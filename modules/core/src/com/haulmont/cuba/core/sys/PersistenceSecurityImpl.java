@@ -27,7 +27,7 @@ import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.jpql.QueryErrorsFoundException;
+import com.haulmont.cuba.core.sys.jpql.JpqlSyntaxException;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.global.ConstraintData;
 import com.haulmont.cuba.security.global.UserSession;
@@ -185,7 +185,7 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
             } else {
                 transformer.addJoinAndWhere(join, where);
             }
-        } catch (QueryErrorsFoundException e) {
+        } catch (JpqlSyntaxException e) {
             log.error(String.format("Syntax errors found in constraint's JPQL expressions. Entity [%s]. Constraint ID [%s].",
                     entityName, constraint.getId()), e);
             throw new RowLevelSecurityException(

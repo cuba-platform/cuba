@@ -18,13 +18,12 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
-import com.haulmont.cuba.core.sys.jpql.QueryErrorsFoundException;
+import com.haulmont.cuba.core.sys.jpql.JpqlSyntaxException;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
 import com.haulmont.cuba.core.sys.jpql.model.EntityImpl;
 import com.haulmont.cuba.core.sys.jpql.transform.QueryTransformerAstBased;
 import org.antlr.runtime.RecognitionException;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -672,7 +671,7 @@ public class QueryTransformerAstBasedTest {
 //            new QueryTransformerAstBased(model,
 //                    "select h from sec$GroupHierarchy h join h.parent.constraints c group by c.level order by c.level having c.level > 0");
 //            fail("Incorrectly placed 'having' passed");
-//        } catch (QueryErrorsFoundException e) {
+//        } catch (JpqlSyntaxException e) {
 //            //expected
 //        }
 //    }
@@ -682,10 +681,11 @@ public class QueryTransformerAstBasedTest {
         DomainModel model = prepareDomainModel();
 
         try {
-            new QueryTransformerAstBased(model,
+            QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
                     "select h from sec$GroupHierarchy h join h.parent.constraints");
+            transformer.getResult();
             fail("Not named join variable passed");
-        } catch (QueryErrorsFoundException e) {
+        } catch (JpqlSyntaxException e) {
             //expected
         }
     }
@@ -1131,7 +1131,7 @@ public class QueryTransformerAstBasedTest {
             QueryTransformerAstBased transformer = new QueryTransformerAstBased(model, "select c from sec$Constraint c");
             transformer.addWhere("{E}.group.id == :group");
             fail();
-        } catch (QueryErrorsFoundException e) {
+        } catch (JpqlSyntaxException e) {
             //expected
         }
     }

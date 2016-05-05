@@ -23,7 +23,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.GroovyGenerator;
 import com.haulmont.cuba.core.global.filter.SecurityJpqlGenerator;
 import com.haulmont.cuba.core.sys.jpql.ErrorRec;
-import com.haulmont.cuba.core.sys.jpql.QueryErrorsFoundException;
+import com.haulmont.cuba.core.sys.jpql.JpqlSyntaxException;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.*;
@@ -306,7 +306,7 @@ public class ConstraintEditor extends AbstractEditor {
                 datasource.refresh();
 
                 showNotification(getMessage("notification.success"), NotificationType.HUMANIZED);
-            } catch (QueryErrorsFoundException e) {
+            } catch (JpqlSyntaxException e) {
                 StringBuilder stringBuilder = new StringBuilder();
                 for (ErrorRec rec : e.getErrorRecs()) {
                     stringBuilder.append(rec.toString()).append("<br>");

@@ -25,6 +25,7 @@ import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.TokenStream;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.TreeVisitor;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,7 +37,7 @@ public class Parser {
         JPA2Parser.ql_statement_return aReturn = parser.ql_statement();
         CommonTree tree = (CommonTree) aReturn.getTree();
         if (failOnErrors) {
-            checkTreeForExceptions(tree);
+            checkTreeForExceptions(input, tree);
         }
         return tree;
     }
@@ -45,7 +46,7 @@ public class Parser {
         JPA2Parser parser = createParser(input);
         JPA2Parser.where_clause_return aReturn = parser.where_clause();
         CommonTree tree = (CommonTree) aReturn.getTree();
-        checkTreeForExceptions(tree);
+        checkTreeForExceptions(input, tree);
         return tree;
     }
 
@@ -54,14 +55,14 @@ public class Parser {
         JPA2Parser.join_section_return aReturn = parser.join_section();
         CommonTree tree = (CommonTree) aReturn.getTree();
         if (tree instanceof JoinVariableNode) {
-            checkTreeForExceptions(tree);
+            checkTreeForExceptions(join, tree);
             return Collections.singletonList((JoinVariableNode) tree);
         } else {
             List<JoinVariableNode> joins = tree.getChildren().stream()
                     .filter(node -> node instanceof JoinVariableNode)
                     .map(JoinVariableNode.class::cast)
                     .collect(Collectors.toList());
-            joins.stream().forEach(node -> checkTreeForExceptions(tree));
+            joins.stream().forEach(node -> checkTreeForExceptions(join, tree));
             return joins;
         }
     }
@@ -71,7 +72,7 @@ public class Parser {
         JPA2Parser.identification_variable_declaration_or_collection_member_declaration_return aReturn =
                 parser.identification_variable_declaration_or_collection_member_declaration();
         CommonTree tree = (CommonTree) aReturn.getTree();
-        checkTreeForExceptions(tree);
+        checkTreeForExceptions(input, tree);
         return tree;
     }
 
@@ -85,7 +86,7 @@ public class Parser {
         return new JPA2Parser(tstream);
     }
 
-    private static void checkTreeForExceptions(CommonTree tree) {
+    private static void checkTreeForExceptions(String input, CommonTree tree) {
         TreeVisitor visitor = new TreeVisitor();
         ErrorNodesFinder errorNodesFinder = new ErrorNodesFinder();
         visitor.visit(tree, errorNodesFinder);
@@ -95,7 +96,7 @@ public class Parser {
                 .collect(Collectors.toList());
 
         if (!errors.isEmpty()) {
-            throw new QueryErrorsFoundException("Errors found", errors);
+            throw new JpqlSyntaxException(String.format("Errors found for input jpql:[%s]", StringUtils.strip(input)), errors);
         }
     }
 }

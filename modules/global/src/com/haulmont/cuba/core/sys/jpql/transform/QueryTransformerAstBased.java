@@ -45,41 +45,56 @@ public class QueryTransformerAstBased implements QueryTransformer {
     private String returnedEntityName;
     private String mainEntityName;
 
-    public QueryTransformerAstBased(DomainModel model, String query) throws RecognitionException {
+    public QueryTransformerAstBased(DomainModel model, String query) {
         this.model = model;
         this.query = query;
-        initQueryAnalyzer(model, query);
-
-        String returnedVariableName = queryTreeTransformer.getFirstReturnedVariableName();
-        Entity entity = queryTreeTransformer.getRootQueryVariableContext().getEntityByVariableName(returnedVariableName);
-        if (entity != null) {
-            returnedEntityName = entity.getName();
-        }
-
-        IdentificationVariableNode mainEntityIdentification = queryTreeTransformer.getMainEntityIdentification();
-        if (mainEntityIdentification != null) {
-            try {
-                Entity entityByName = model.getEntityByName(mainEntityIdentification.getEntityNameFromQuery());
-                mainEntityName = entityByName.getName();
-            } catch (UnknownEntityNameException e) {
-                throw new RuntimeException("Could not resolve entity for name " + mainEntityIdentification.getEntityNameFromQuery());
-            }
-        }
     }
 
-    private void initQueryAnalyzer(DomainModel model, String query) throws RecognitionException {
-        queryTreeTransformer = new QueryTreeTransformer();
-        queryTreeTransformer.prepare(model, query);
-        List<ErrorRec> errors = new ArrayList<>(queryTreeTransformer.getInvalidIdVarNodes());
-        if (!errors.isEmpty()) {
-            throw new QueryErrorsFoundException("Errors found", errors);
+    private QueryTreeTransformer getQueryTransformer() {
+        if (queryTreeTransformer == null) {
+            queryTreeTransformer = new QueryTreeTransformer();
+            try {
+                queryTreeTransformer.prepare(model, query);
+            } catch (RecognitionException e) {
+                throw new RuntimeException("Internal error while init queryTreeTransformer",e);
+            }
+            List<ErrorRec> errors = new ArrayList<>(queryTreeTransformer.getInvalidIdVarNodes());
+            if (!errors.isEmpty()) {
+                throw new JpqlSyntaxException(String.format("Errors found for input jpql:[%s]", StringUtils.strip(query)), errors);
+            }
         }
+        return queryTreeTransformer;
+    }
 
+    private String getReturnedEntityName() {
+        if (returnedEntityName == null) {
+            String returnedVariableName = getQueryTransformer().getFirstReturnedVariableName();
+            Entity entity = getQueryTransformer().getRootQueryVariableContext().getEntityByVariableName(returnedVariableName);
+            if (entity != null) {
+                returnedEntityName = entity.getName();
+            }
+        }
+        return returnedEntityName;
+    }
+
+    private String getMainEntityName() {
+        if (mainEntityName == null) {
+            IdentificationVariableNode mainEntityIdentification = getQueryTransformer().getMainEntityIdentification();
+            if (mainEntityIdentification != null) {
+                try {
+                    Entity entityByName = model.getEntityByName(mainEntityIdentification.getEntityNameFromQuery());
+                    mainEntityName = entityByName.getName();
+                } catch (UnknownEntityNameException e) {
+                    throw new RuntimeException("Could not resolve entity for name " + mainEntityIdentification.getEntityNameFromQuery());
+                }
+            }
+        }
+        return mainEntityName;
     }
 
     @Override
     public String getResult() {
-        CommonTree tree = queryTreeTransformer.getTree();
+        CommonTree tree = getQueryTransformer().getTree();
         TreeVisitor visitor = new TreeVisitor();
 
         TreeToQuery treeToQuery = new TreeToQuery();
@@ -95,7 +110,7 @@ public class QueryTransformerAstBased implements QueryTransformer {
 
     @Override
     public void handleCaseInsensitiveParam(String paramName) {
-        queryTreeTransformer.handleCaseInsensitiveParam(paramName);
+        getQueryTransformer().handleCaseInsensitiveParam(paramName);
     }
 
     /**
@@ -104,8 +119,8 @@ public class QueryTransformerAstBased implements QueryTransformer {
      */
     @Override
     public void addWhere(String where) {
-        EntityReferenceInferer inferrer = new EntityReferenceInferer(mainEntityName);
-        EntityReference ref = inferrer.infer(queryTreeTransformer);
+        EntityReferenceInferer inferrer = new EntityReferenceInferer(getMainEntityName());
+        EntityReference ref = inferrer.infer(getQueryTransformer());
         boolean doReplaceVariableName = true;
         if (where.contains("{E}")) {
             doReplaceVariableName = false;
@@ -136,8 +151,8 @@ public class QueryTransformerAstBased implements QueryTransformer {
      */
     @Override
     public void mergeWhere(String statement) {
-        EntityReferenceInferer inferer = new EntityReferenceInferer(mainEntityName);
-        EntityReference ref = inferer.infer(queryTreeTransformer);
+        EntityReferenceInferer inferer = new EntityReferenceInferer(getMainEntityName());
+        EntityReference ref = inferer.infer(getQueryTransformer());
         try {
             CommonTree statementTree = Parser.parse(statement, true);
             CommonTree whereClause = (CommonTree) statementTree.getFirstChildWithType(JPA2Lexer.T_CONDITION);
@@ -149,8 +164,8 @@ public class QueryTransformerAstBased implements QueryTransformer {
 
     @Override
     public void addJoinAndWhere(String join, String where) {
-        EntityReferenceInferer inferer = new EntityReferenceInferer(mainEntityName);
-        EntityReference ref = inferer.infer(queryTreeTransformer);
+        EntityReferenceInferer inferer = new EntityReferenceInferer(getMainEntityName());
+        EntityReference ref = inferer.infer(getQueryTransformer());
         if (where.contains("{E}")) {
             where = ref.replaceEntries(where, "\\{E\\}");
         }
@@ -163,12 +178,12 @@ public class QueryTransformerAstBased implements QueryTransformer {
             if (StringUtils.isNotBlank(join)) {
                 List<JoinVariableNode> joinVariableNodes = Parser.parseJoinClause(join);
                 for (JoinVariableNode joinVariableNode : joinVariableNodes) {
-                    queryTreeTransformer.mixinJoinIntoTree(joinVariableNode, ref, true);
+                    getQueryTransformer().mixinJoinIntoTree(joinVariableNode, ref, true);
                 }
             }
             for (int i = 1; i < strings.length; i++) {
                 CommonTree selectionSource = Parser.parseSelectionSource(strings[i]);
-                queryTreeTransformer.addSelectionSource(selectionSource);
+                getQueryTransformer().addSelectionSource(selectionSource);
             }
             CommonTree whereTree = Parser.parseWhereClause("where " + where);
             addWhere(whereTree, ref, false);
@@ -184,11 +199,11 @@ public class QueryTransformerAstBased implements QueryTransformer {
         try {
             List<JoinVariableNode> joinVariableNodes = Parser.parseJoinClause(join);
             for (JoinVariableNode joinVariableNode : joinVariableNodes) {
-                queryTreeTransformer.mixinJoinIntoTree(joinVariableNode, new EntityNameEntityReference(mainEntityName), false);
+                getQueryTransformer().mixinJoinIntoTree(joinVariableNode, new EntityNameEntityReference(getMainEntityName()), false);
             }
             for (int i = 1; i < strings.length; i++) {
                 CommonTree selectionSource = Parser.parseSelectionSource(strings[i]);
-                queryTreeTransformer.addSelectionSource(selectionSource);
+                getQueryTransformer().addSelectionSource(selectionSource);
             }
         } catch (RecognitionException e) {
             throw new RuntimeException(e);
@@ -198,7 +213,7 @@ public class QueryTransformerAstBased implements QueryTransformer {
     @Override
     public void addFirstSelectionSource(String selection) {
         try {
-            queryTreeTransformer.addFirstSelectionSource(Parser.parseSelectionSource(selection));
+            getQueryTransformer().addFirstSelectionSource(Parser.parseSelectionSource(selection));
         } catch (RecognitionException e) {
             throw new RuntimeException(e);
         }
@@ -206,57 +221,53 @@ public class QueryTransformerAstBased implements QueryTransformer {
 
     @Override
     public void replaceWithCount() {
-        EntityReferenceInferer inferer = new EntityReferenceInferer(returnedEntityName);
-        EntityReference ref = inferer.infer(queryTreeTransformer);
-        queryTreeTransformer.replaceWithCount(ref);
+        EntityReferenceInferer inferer = new EntityReferenceInferer(getReturnedEntityName());
+        EntityReference ref = inferer.infer(getQueryTransformer());
+        getQueryTransformer().replaceWithCount(ref);
     }
 
     @Override
     public void replaceWithSelectId() {
-        queryTreeTransformer.replaceWithSelectId();
+        getQueryTransformer().replaceWithSelectId();
     }
 
     @Override
     public void replaceWithSelectEntityVariable(String selectEntityVariable) {
-        queryTreeTransformer.replaceWithSelectEntityVariable(selectEntityVariable);
+        getQueryTransformer().replaceWithSelectEntityVariable(selectEntityVariable);
     }
 
     @Override
     public boolean removeDistinct() {
-        return queryTreeTransformer.removeDistinct();
+        return getQueryTransformer().removeDistinct();
     }
 
     @Override
     public void replaceOrderBy(boolean desc, String... properties) {
-        EntityReferenceInferer inferer = new EntityReferenceInferer(returnedEntityName);
-        EntityReference ref = inferer.infer(queryTreeTransformer);
+        EntityReferenceInferer inferer = new EntityReferenceInferer(getReturnedEntityName());
+        EntityReference ref = inferer.infer(getQueryTransformer());
         PathEntityReference[] paths = Arrays.stream(properties)
                 .map(ref::addFieldPath).toArray(PathEntityReference[]::new);
-        queryTreeTransformer.replaceOrderBy(desc, paths);
+        getQueryTransformer().replaceOrderBy(desc, paths);
     }
 
     @Override
     public void removeOrderBy() {
-        queryTreeTransformer.removeOrderBy();
+        getQueryTransformer().removeOrderBy();
     }
 
     @Override
     public void replaceEntityName(String newName) {
-        queryTreeTransformer.replaceEntityName(newName);
+        getQueryTransformer().replaceEntityName(newName);
     }
 
     @Override
     public void reset() {
-        try {
-            initQueryAnalyzer(model, query);
-        } catch (RecognitionException e) {
-            throw new RuntimeException(e);
-        }
+        queryTreeTransformer = null;
         addedParams.clear();
     }
 
     public void replaceInCondition(String paramName) {
-        queryTreeTransformer.replaceInCondition(paramName);
+        getQueryTransformer().replaceInCondition(paramName);
     }
 
     private void addWhere(CommonTree whereTree, EntityReference ref, boolean replaceVariableName) {
@@ -277,6 +288,6 @@ public class QueryTransformerAstBased implements QueryTransformer {
         visitor.visit(whereTree, parameterCounter);
         addedParams.addAll(parameterCounter.getParameterNames());
 
-        queryTreeTransformer.mixinWhereConditionsIntoTree(whereTree);
+        getQueryTransformer().mixinWhereConditionsIntoTree(whereTree);
     }
 }
