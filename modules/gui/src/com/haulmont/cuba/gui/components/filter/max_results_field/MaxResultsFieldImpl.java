@@ -14,41 +14,42 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components.filter;
+package com.haulmont.cuba.gui.components.filter.max_results_field;
 
 import com.google.common.base.Splitter;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.LookupField;
+import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author stepanov
- * @version $Id$
- */
-public class MaxResultsLayoutHelper {
+@org.springframework.stereotype.Component(MaxResultsFieldHelper.NAME)
+public class MaxResultsFieldImpl implements MaxResultsFieldHelper {
 
-    public static LookupField createMaxResultsLookupField() {
-        ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.NAME);
+    @Inject
+    protected ComponentsFactory componentsFactory;
+    @Inject
+    protected FilterHelper filterHelper;
+    @Inject
+    protected ThemeConstantsManager themeConstantsManager;
+    @Inject
+    ClientConfig clientConfig;
 
+    public LookupField createMaxResultsLookupField() {
         LookupField maxResultsLookupField = componentsFactory.createComponent(LookupField.class);
         setUpMaxResultsLookupField(maxResultsLookupField);
 
         return maxResultsLookupField;
     }
 
-    public static LookupField setUpMaxResultsLookupField(LookupField maxResultsLookupField) {
-        FilterHelper filterHelper = AppBeans.get(FilterHelper.NAME);
-        ThemeConstantsManager themeConstantsManager = AppBeans.get(ThemeConstantsManager.NAME);
+    public LookupField setUpMaxResultsLookupField(LookupField maxResultsLookupField) {
         ThemeConstants theme = themeConstantsManager.getConstants();
-        ClientConfig clientConfig = ((Configuration) AppBeans.get(Configuration.NAME)).getConfig(ClientConfig.class);
 
         maxResultsLookupField.setAlignment(Component.Alignment.MIDDLE_RIGHT);
         maxResultsLookupField.setWidth(theme.get("cuba.gui.Filter.maxResults.lookup.width"));
