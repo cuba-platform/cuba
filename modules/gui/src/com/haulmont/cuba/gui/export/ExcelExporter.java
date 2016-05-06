@@ -24,6 +24,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TreeTable;
@@ -42,10 +43,7 @@ import javax.persistence.TemporalType;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * Use this class to export {@link com.haulmont.cuba.gui.components.Table} into Excel format
@@ -205,16 +203,25 @@ public class ExcelExporter {
             if (table instanceof TreeTable) {
                 TreeTable treeTable = (TreeTable) table;
                 HierarchicalDatasource ds = treeTable.getDatasource();
+                if (table.isAggregatable()) {
+                    r = createAggregatableRow(table, columns, ++r, 1, datasource);
+                }
                 for (Object itemId : ds.getRootItemIds()) {
                     r = createHierarhicalRow(treeTable, columns, exportExpanded, r, itemId);
                 }
             } else if (table instanceof GroupTable && datasource instanceof GroupDatasource
                     && ((GroupDatasource) datasource).hasGroups()) {
                 GroupDatasource ds = (GroupDatasource) datasource;
+                if (table.isAggregatable()) {
+                    r = createAggregatableRow(table, columns, ++r, 1, datasource);
+                }
                 for (Object item : ds.rootGroups()) {
                     r = createGroupRow((GroupTable) table, columns, ++r, (GroupInfo) item, 0);
                 }
             } else {
+                if (table.isAggregatable()) {
+                    r = createAggregatableRow(table, columns, ++r, 1, datasource);
+                }
                 for (Object itemId : datasource.getItemIds()) {
                     createRow(table, columns, 0, ++r, itemId);
                 }
@@ -274,6 +281,25 @@ public class ExcelExporter {
         return rowNumber;
     }
 
+    protected int createAggregatableRow(Table table, List<Table.Column> columns, int rowNumber, int aggregatableRow, CollectionDatasource datasource) {
+        HSSFRow row = sheet.createRow(rowNumber);
+        Map<Object, Object> results = table.getAggregationResults();
+
+        int i = 0;
+        for (Table.Column column : columns) {
+            AggregationInfo agr = column.getAggregation();
+            if (agr != null) {
+                Object agregationResult = results.get(agr.getPropertyPath());
+                if (agregationResult != null) {
+                    HSSFCell cell = row.createCell(i);
+                    formatValueCell(cell, agregationResult, i, rowNumber, 0, false, null);
+                }
+            }
+            i++;
+        }
+        return rowNumber++;
+    }
+
     protected int createGroupRow(GroupTable table, List<Table.Column> columns, int rowNumber, GroupInfo groupInfo, int groupNumber) {
         GroupDatasource ds = table.getDatasource();
 
@@ -283,6 +309,11 @@ public class ExcelExporter {
 
         if (val == null) {
             val = messages.getMessage(getClass(), "excelExporter.empty");
+        }
+
+        Integer groupChildCount = null;
+        if (table.isShowItemsCountForGroup()) {
+            groupChildCount = ds.getGroupItemIds(groupInfo).size();
         }
 
         MetaPropertyPath propertyPath = (MetaPropertyPath) groupInfo.getProperty();
@@ -298,9 +329,9 @@ public class ExcelExporter {
             Object itemId = children.iterator().next();
             Instance item = table.getDatasource().getItem(itemId);
             Object captionValue = item.getValueEx(captionProperty);
-            formatValueCell(cell, captionValue, groupNumber++, rowNumber, 0, true);
+            formatValueCell(cell, captionValue, groupNumber++, rowNumber, 0, true, groupChildCount);
         } else {
-            formatValueCell(cell, val, groupNumber++, rowNumber, 0, true);
+            formatValueCell(cell, val, groupNumber++, rowNumber, 0, true, groupChildCount);
         }
 
         int oldRowNumber = rowNumber;
@@ -362,7 +393,7 @@ public class ExcelExporter {
                 }
             }
 
-            formatValueCell(cell, cellValue, c, rowNumber, level, isFull);
+            formatValueCell(cell, cellValue, c, rowNumber, level, isFull, null);
         }
     }
 
@@ -379,9 +410,14 @@ public class ExcelExporter {
     }
 
     protected void formatValueCell(HSSFCell cell, @Nullable Object cellValue,
-                                   int sizersIndex, int notificationReqiured, int level, boolean isFull) {
+                                   int sizersIndex, int notificationReqiured, int level, boolean isFull, @Nullable Integer groupChildCount) {
         if (cellValue == null)
             return;
+
+        String childCountValue = "";
+        if (groupChildCount != null){
+            childCountValue = " (" + groupChildCount + ")";
+        }
 
         if (cellValue instanceof Number) {
             Number n = (Number) cellValue;
@@ -446,7 +482,7 @@ public class ExcelExporter {
             final String message = sizersIndex == 0 ? createSpaceString(level) + messages.getMessage(cellValue.getClass(), nameKey)
                     : messages.getMessage(cellValue.getClass(), nameKey);
 
-            cell.setCellValue(message);
+            cell.setCellValue(message + childCountValue);
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
                 sizers[sizersIndex].notifyCellValue(message, stdFont);
             }
@@ -454,6 +490,7 @@ public class ExcelExporter {
             Entity entityVal = (Entity) cellValue;
             String instanceName = entityVal.getInstanceName();
             String str = sizersIndex == 0 ? createSpaceString(level) + instanceName : instanceName;
+            str = str + childCountValue;
             cell.setCellValue(new HSSFRichTextString(str));
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
@@ -466,6 +503,7 @@ public class ExcelExporter {
             }
         } else {
             String str = sizersIndex == 0 ? createSpaceString(level) + cellValue.toString() : cellValue.toString();
+            str = str + childCountValue;
             cell.setCellValue(new HSSFRichTextString(str));
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);

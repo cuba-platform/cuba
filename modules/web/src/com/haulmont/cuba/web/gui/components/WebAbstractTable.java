@@ -439,6 +439,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
+    public Map<Object, Object> getAggregationResults() {
+        CollectionDatasource ds = WebAbstractTable.this.getDatasource();
+        return component.aggregate(new AggregationContainer.Context(ds.getItemIds()));
+    }
+
+    @Override
     public void setAggregationStyle(AggregationStyle aggregationStyle) {
         component.setAggregationStyle(aggregationStyle);
     }

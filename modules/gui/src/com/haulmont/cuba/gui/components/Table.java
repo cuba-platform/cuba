@@ -25,6 +25,7 @@ import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
 
 /**
  */
@@ -48,6 +49,8 @@ public interface Table<E extends Entity>
     void addColumn(Column column);
 
     void removeColumn(Column column);
+
+    Map<Object, Object> getAggregationResults();
 
     void setDatasource(CollectionDatasource datasource);
 

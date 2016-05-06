@@ -96,6 +96,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     protected CollectionDatasource datasource;
     protected ButtonsPanel buttonsPanel;
     protected RowsCount rowsCount;
+    protected Map<Object, Object> aggregationResult;
     protected Map<Object, Column> columns = new HashMap<>();
     protected List<Table.Column> columnsOrder = new ArrayList<>();
     protected boolean sortable = true;
@@ -1192,6 +1193,11 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
 
     @Override
     public void setAggregatable(boolean aggregatable) {
+    }
+
+    @Override
+    public Map<Object, Object> getAggregationResults() {
+        return Collections.emptyMap();
     }
 
     @Override
