@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 
 /**
  */
-public interface RelatedEntities extends Component, Component.HasCaption, Component.BelongToFrame {
+public interface RelatedEntities extends Component, Component.HasCaption, Component.BelongToFrame, Component.Focusable {
 
     String NAME = "relatedEntities";
 

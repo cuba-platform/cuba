@@ -100,5 +100,7 @@ public class RelatedEntitiesLoader extends AbstractComponentLoader<RelatedEntiti
                 resultComponent.setListComponent((ListComponent) bindComponent);
             }
         });
+
+        loadFocusable(resultComponent, element);
     }
 }

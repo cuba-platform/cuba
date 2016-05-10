@@ -75,5 +75,7 @@ public class ButtonLoader extends AbstractComponentLoader<Button> {
         loadAlign(resultComponent, element);
 
         loadInvoke(resultComponent, enabled, visible, element);
+
+        loadFocusable(resultComponent, element);
     }
 }

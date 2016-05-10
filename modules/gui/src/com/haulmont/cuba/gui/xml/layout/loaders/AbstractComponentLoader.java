@@ -606,4 +606,11 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
             component.setInputPrompt(loadResourceString(inputPrompt));
         }
     }
+
+    protected void loadFocusable(Component.Focusable component, Element element) {
+        String focusable = element.attributeValue("focusable");
+        if (StringUtils.isNotBlank(focusable)) {
+            component.setFocusable(Boolean.valueOf(focusable));
+        }
+    }
 }

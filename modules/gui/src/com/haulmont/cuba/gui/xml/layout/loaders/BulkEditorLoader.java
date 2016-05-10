@@ -120,5 +120,7 @@ public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
         });
 
         loadValidators(resultComponent, element);
+
+        loadFocusable(resultComponent, element);
     }
 }

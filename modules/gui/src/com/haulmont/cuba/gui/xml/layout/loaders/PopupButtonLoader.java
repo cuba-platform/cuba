@@ -53,6 +53,8 @@ public class PopupButtonLoader extends AbstractComponentLoader<PopupButton> {
         if (!StringUtils.isEmpty(menuWidth)) {
             resultComponent.setMenuWidth(menuWidth);
         }
+
+        loadFocusable(resultComponent, element);
     }
 
     protected void loadShowActionIcons(PopupButton component, Element element) {

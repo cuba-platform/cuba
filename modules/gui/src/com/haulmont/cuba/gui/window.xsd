@@ -967,6 +967,8 @@
         <xs:attribute name="action" type="xs:string"/>
 
         <xs:attribute name="invoke" type="xs:string"/>
+
+        <xs:attribute name="focusable" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- PopupButton -->
@@ -995,6 +997,8 @@
         <xs:attributeGroup ref="hasIcon"/>
 
         <xs:attribute name="showActionIcons" type="xs:boolean"/>
+
+        <xs:attribute name="focusable" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- ButtonsPanel -->
@@ -1595,6 +1599,7 @@
         <xs:attribute name="openType" type="openType"/>
         <xs:attribute name="for" type="xs:string" use="required"/>
         <xs:attribute name="exclude" type="xs:string"/>
+        <xs:attribute name="focusable" type="xs:boolean"/>
     </xs:complexType>
 
     <xs:complexType name="bulkEditorComponent">
@@ -1623,6 +1628,7 @@
         <xs:attribute name="openType" type="openType"/>
         <xs:attribute name="for" type="xs:string" use="required"/>
         <xs:attribute name="exclude" type="xs:string"/>
+        <xs:attribute name="focusable" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- Datasources -->
