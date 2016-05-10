@@ -93,7 +93,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
             linksLayout.setCubaId("breadCrumbs");
 
             if (closeBtn != null) {
-                closeBtn.setId(testIdManager.reserveId("closeBtn"));
+                closeBtn.setId(testIdManager.getTestId("closeBtn"));
                 closeBtn.setCubaId("closeBtn");
             }
         }
