@@ -44,7 +44,7 @@ public class DbProperties {
         if (StringUtils.isNotEmpty(connectionParams)) {
             Map<String, String> result = new HashMap<>();
             if (connectionParams.startsWith("?")) {
-                connectionParams = connectionParams.replace("?", StringUtils.EMPTY);
+                connectionParams = connectionParams.substring(1);
             }
             for (String param : connectionParams.split("[&,;]")) {
                 int index = param.indexOf("=");
