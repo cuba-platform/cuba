@@ -91,6 +91,10 @@ public class UserBrowser extends AbstractLookup {
     @Inject
     protected ComponentsFactory componentsFactory;
 
+    public interface Companion {
+        void refreshUserSubstitutions();
+    }
+
     @Override
     public void init(Map<String, Object> params) {
         MetaClass userMetaClass = metadata.getClassNN(User.class);
@@ -132,7 +136,7 @@ public class UserBrowser extends AbstractLookup {
             }
         });
 
-        usersTable.addAction(new RemoveAction(usersTable) {
+        RemoveAction removeAction = new RemoveAction(usersTable) {
             @Override
             public boolean isApplicable() {
                 if (target != null) {
@@ -145,7 +149,14 @@ public class UserBrowser extends AbstractLookup {
 
                 return false;
             }
+        };
+        removeAction.setAfterRemoveHandler(removedItems -> {
+            UserBrowser.Companion companion = getCompanion();
+            if (companion != null) {
+                companion.refreshUserSubstitutions();
+            }
         });
+        usersTable.addAction(removeAction);
 
         additionalActionsBtn.addAction(copySettingsAction);
         additionalActionsBtn.addAction(changePasswAction);
