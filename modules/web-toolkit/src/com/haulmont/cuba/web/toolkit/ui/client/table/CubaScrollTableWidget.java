@@ -743,6 +743,15 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
             public boolean isSelectable() {
                 return selectable;
             }
+
+            @Override
+            protected boolean hasContextMenuActions() {
+                if (contextMenuEnabled && customContextMenu != null) {
+                    return true;
+                }
+
+                return super.hasContextMenuActions();
+            }
         }
     }
 

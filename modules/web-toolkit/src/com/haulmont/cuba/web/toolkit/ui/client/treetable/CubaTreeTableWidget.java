@@ -710,6 +710,15 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
                     container.addClassName(WIDGET_CELL_CLASSNAME);
                 }
             }
+
+            @Override
+            protected boolean hasContextMenuActions() {
+                if (contextMenuEnabled && customContextMenu != null) {
+                    return true;
+                }
+
+                return super.hasContextMenuActions();
+            }
         }
     }
 

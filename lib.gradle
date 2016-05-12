@@ -15,7 +15,7 @@
  *
  */
 
-project.ext.vaadinVersion = '7.6.5.cuba.2'
+project.ext.vaadinVersion = '7.6.5.cuba.3'
 
 project.ext.vaadinShared = [group: 'com.vaadin', name: 'vaadin-shared', version: vaadinVersion]
 project.ext.vaadinServer = [group: 'com.vaadin', name: 'vaadin-server', version: vaadinVersion]
