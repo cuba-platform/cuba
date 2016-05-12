@@ -135,8 +135,9 @@ public class DbUpdaterEngine implements DbUpdater {
         String timeStampType = DbmsSpecificFactory.getDbmsFeatures().getTimeStampType();
         QueryRunner runner = new QueryRunner(getDataSource());
         try {
+            int pkLength = "mysql".equals(dbmsType) ? 255 : 300;
             runner.update("create table SYS_DB_CHANGELOG(" +
-                    "SCRIPT_NAME varchar(300) not null primary key, " +
+                    "SCRIPT_NAME varchar(" + pkLength + ") not null primary key, " +
                     "CREATE_TS " + timeStampType + " default current_timestamp, " +
                     "IS_INIT integer default 0)");
         } catch (SQLException e) {
