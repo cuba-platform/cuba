@@ -24,9 +24,12 @@ import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.config.*;
 import com.haulmont.cuba.gui.config.MenuItem;
+import com.haulmont.cuba.gui.logging.UserActionsLogger;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
@@ -41,6 +44,8 @@ import java.util.List;
 /**
  */
 public class MenuBuilder {
+
+    private Logger userActionsLog = LoggerFactory.getLogger(UserActionsLogger.class);
 
     private UserSession userSession;
     private JMenuBar menuBar;
@@ -109,6 +114,10 @@ public class MenuBuilder {
             @Override
             public void actionPerformedAfterValidation(ActionEvent e) {
                 command.execute();
+
+                StringBuilder menuPath = new StringBuilder();
+                formatMenuPath(item, menuPath);
+                userActionsLog.trace("Window {} was opened using menu item {}", windowInfo.getId(), menuPath.toString());
             }
         });
     }
@@ -213,5 +222,14 @@ public class MenuBuilder {
             KeyCombination combo = new KeyCombination(key, modifiers);
             jMenuItem.setAccelerator(DesktopComponentsHelper.convertKeyCombination(combo));
         }
+    }
+
+    private void formatMenuPath(MenuItem menuItem, StringBuilder stringBuilder) {
+        if (menuItem.getParent() != null) {
+            formatMenuPath(menuItem.getParent(), stringBuilder);
+        }
+
+        stringBuilder.append(menuItem.getId());
+        stringBuilder.append("->");
     }
 }

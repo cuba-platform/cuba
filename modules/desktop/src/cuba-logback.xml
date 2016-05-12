@@ -51,6 +51,21 @@
         </encoder>
     </appender>
 
+    <appender name="UserActions" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logDir}/user-actions.log</file>
+        <append>false</append>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logDir}/user-actions.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level [%thread] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
     <root>
         <appender-ref ref="Console"/>
         <appender-ref ref="File"/>
@@ -62,6 +77,9 @@
 
     <logger name="com.haulmont.cuba.core.sys" level="INFO"/>
 
+    <logger name="com.haulmont.cuba.gui.logging.UserActionsLogger" level="TRACE">
+        <appender-ref ref="UserActions"/>
+    </logger>
     <!-- End CUBA -->
 
     <logger name="org.springframework" level="INFO"/>

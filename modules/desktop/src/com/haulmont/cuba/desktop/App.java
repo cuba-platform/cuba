@@ -36,6 +36,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.logging.UserActionsLogger;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.entity.User;
@@ -68,6 +69,7 @@ public class App implements ConnectionListener {
     protected static App app;
 
     private Logger log;
+    private Logger userActionsLog = LoggerFactory.getLogger(UserActionsLogger.class);
 
     protected TopLevelFrame mainFrame;
 
@@ -311,6 +313,7 @@ public class App implements ConnectionListener {
 
     protected void exit() {
         try {
+            userActionsLog.trace("Closing application...");
             if (connection.isConnected()) {
                 recursiveClosingFrames(topLevelFrames.iterator(), new Runnable() {
                     @Override
@@ -342,6 +345,7 @@ public class App implements ConnectionListener {
         try {
             createMainWindowProperties().save();
             AppContext.stopContext();
+            userActionsLog.trace("Application was closed");
         } finally {
             System.exit(0);
         }

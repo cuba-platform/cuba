@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
@@ -46,7 +47,9 @@ import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Frame.MessageMode;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.executors.*;
+import com.haulmont.cuba.gui.logging.UserActionsLogger;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import net.miginfocom.layout.LC;
@@ -81,6 +84,7 @@ import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 public class DesktopWindowManager extends WindowManager {
 
     private static final Logger log = LoggerFactory.getLogger(DesktopWindowManager.class);
+    private Logger userActionsLog = LoggerFactory.getLogger(UserActionsLogger.class);
 
     protected static final float NEW_WINDOW_SCALE = 0.7f;
 
@@ -1280,6 +1284,13 @@ public class DesktopWindowManager extends WindowManager {
 
             final DialogActionHandler dialogActionHandler = new DialogActionHandler(dialog, action);
             button.addActionListener(dialogActionHandler);
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JButton b = (JButton) e.getSource();
+                    userActionsLog.trace("Button (name = {}, text = {}) was clicked in dialog", b.getName(), b.getText());
+                }
+            });
             if (actions.length == 1) {
                 dialog.addWindowListener(new WindowAdapter() {
                     @Override
@@ -1497,6 +1508,34 @@ public class DesktopWindowManager extends WindowManager {
         }
 
         dialog.setVisible(true);
+    }
+
+    @Override
+    public Window openWindow(WindowInfo windowInfo, OpenType openType, Map<String, Object> params) {
+        Window window = super.openWindow(windowInfo, openType, params);
+        userActionsLog.trace("Window {} was opened", windowInfo.getId());
+        return window;
+    }
+
+    @Override
+    public Window.Lookup openLookup(WindowInfo windowInfo, Window.Lookup.Handler handler, OpenType openType, Map<String, Object> params) {
+        Window.Lookup lookup = super.openLookup(windowInfo, handler, openType, params);
+        userActionsLog.trace("Lookup {} was opened", windowInfo.getId());
+        return lookup;
+    }
+
+    @Override
+    public Window.Editor openEditor(WindowInfo windowInfo, Entity item, OpenType openType, Map<String, Object> params, Datasource parentDs) {
+        Window.Editor editor = super.openEditor(windowInfo, item, openType, params, parentDs);
+        userActionsLog.trace("Editor {} was opened", windowInfo.getId());
+        return editor;
+    }
+
+    @Override
+    public Frame openFrame(Frame parentFrame, Component parent, @Nullable String id, WindowInfo windowInfo, Map<String, Object> params) {
+        Frame frame = super.openFrame(parentFrame, parent, id, windowInfo, params);
+        userActionsLog.trace("Frame {} was opened", windowInfo.getId());
+        return frame;
     }
 
     /**

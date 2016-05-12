@@ -22,7 +22,10 @@ import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.validation.ValidationAwareActionListener;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.logging.UserActionsLogger;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -32,6 +35,8 @@ import java.beans.PropertyChangeListener;
 /**
  */
 public class DesktopButton extends DesktopAbstractComponent<JButton> implements Button {
+
+    protected Logger userActionsLog = LoggerFactory.getLogger(UserActionsLogger.class);
 
     protected Action action;
     protected String caption;
@@ -57,6 +62,9 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
                     }
 
                     try {
+                        userActionsLog.trace("Button (id = {}, caption = {}) on frame {} was clicked", id, caption,
+                                frame == null ? " NULL " : frame.getId());
+
                         action.actionPerform(DesktopButton.this);
                     } finally {
                         responseEndTs = System.currentTimeMillis();

@@ -49,6 +49,7 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.logging.UserActionsLogger;
 import com.haulmont.cuba.gui.settings.Settings;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
@@ -79,6 +80,7 @@ public class DesktopWindow implements Window, Component.Disposable,
         Component.Wrapper, Component.HasXmlDescriptor, Component.SecuredActionsHolder, WrappedWindow, DesktopContainer {
 
     protected Logger log = LoggerFactory.getLogger(getClass());
+    protected Logger userActionsLog = LoggerFactory.getLogger(UserActionsLogger.class);
 
     protected boolean disposed = false;
 
@@ -390,6 +392,8 @@ public class DesktopWindow implements Window, Component.Disposable,
         }
 
         stopTimers();
+
+        userActionsLog.trace("Window {} was closed", getId());
 
         return res;
     }
