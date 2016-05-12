@@ -203,6 +203,11 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
     }
 
     @Override
+    public void addFirstSelectionSource(String selection) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void mergeWhere(String query) {
         int startPos = 0;
         Matcher whereMatcher = WHERE_PATTERN.matcher(query);
@@ -247,6 +252,11 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         if (orderMatcher.find()) {
             buffer.delete(orderMatcher.start(), buffer.length());
         }
+    }
+
+    @Override
+    public void replaceWithSelectEntityVariable(String selectEntityVariable) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

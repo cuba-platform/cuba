@@ -104,6 +104,12 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
         from.freshenParentAndChildIndexes();
     }
 
+    public void addFirstSelectionSource(CommonTree selectionSource) {
+        CommonTree from = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
+        from.insertChild(0, selectionSource);
+        from.freshenParentAndChildIndexes();
+    }
+
     public void replaceWithCount(EntityReference entityRef) {
         Tree selectedItems = tree.getFirstChildWithType(JPA2Lexer.T_SELECTED_ITEMS);
         boolean isDistinct = "DISTINCT".equalsIgnoreCase(selectedItems.getChild(0).getText());
@@ -231,6 +237,16 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
         PathNode returnedPathNode = getFirstReturnedPathNode();
         if (returnedPathNode != null) {
             returnedPathNode.addChild(new CommonTree(new CommonToken(JPA2Lexer.WORD, "id")));
+        }
+    }
+
+    public void replaceWithSelectEntityVariable(String selectEntityVariable) {
+        PathNode returnedPathNode = getFirstReturnedPathNode();
+        if (returnedPathNode != null) {
+            returnedPathNode.renameVariableTo(selectEntityVariable);
+            for (int i = 0; i < returnedPathNode.getChildCount(); i++) {
+                returnedPathNode.deleteChild(i);
+            }
         }
     }
 

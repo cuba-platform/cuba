@@ -198,6 +198,15 @@ public class QueryTransformerAstBased implements QueryTransformer {
     }
 
     @Override
+    public void addFirstSelectionSource(String selection) {
+        try {
+            queryTreeTransformer.addFirstSelectionSource(Parser.parseSelectionSource(selection));
+        } catch (RecognitionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public void replaceWithCount() {
         EntityReferenceInferer inferer = new EntityReferenceInferer(returnedEntityName);
         EntityReference ref = inferer.infer(queryTreeTransformer);
@@ -207,6 +216,11 @@ public class QueryTransformerAstBased implements QueryTransformer {
     @Override
     public void replaceWithSelectId() {
         queryTreeTransformer.replaceWithSelectId();
+    }
+
+    @Override
+    public void replaceWithSelectEntityVariable(String selectEntityVariable) {
+        queryTreeTransformer.replaceWithSelectEntityVariable(selectEntityVariable);
     }
 
     @Override

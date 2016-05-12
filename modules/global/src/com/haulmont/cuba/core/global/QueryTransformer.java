@@ -40,6 +40,9 @@ public interface QueryTransformer {
     /** Adds 'join' and 'where' clauses. Replaces alias in 'join' but doesn't replace it in 'where'*/
     void addJoinAndWhere(String join, String where);
 
+    /* Adds 'selection' to from clause. It will be inserted as first selection after FROM keyword*/
+    void addFirstSelectionSource(String selection);
+
     /** Adds 'where' clause from the query provided. Replaces entity alias */
     void mergeWhere(String query);
 
@@ -48,6 +51,9 @@ public interface QueryTransformer {
 
     /** Replaces <code>select e from ...</code> clause with <code>select e.id from ...</code> */
     void replaceWithSelectId();
+
+    /** Replaces <code>select e from ...</code> clause with <code>select 'selectEntityVariable' from ...</code> */
+    void replaceWithSelectEntityVariable(String selectEntityVariable);
 
     /**
      * Replaces 'select distinct' with 'select'.

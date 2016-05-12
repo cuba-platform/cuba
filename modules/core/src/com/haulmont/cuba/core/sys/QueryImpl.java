@@ -164,12 +164,13 @@ public class QueryImpl<T> implements TypedQuery<T> {
         }
 
         String nestedEntityName = parser.getEntityNameIfSecondaryReturnedInsteadOfMain();
+        String nestedEntityPath = parser.getEntityPathIfSecondaryReturnedInsteadOfMain();
         if (nestedEntityName != null) {
             QueryTransformer transformer = QueryTransformerFactory.createTransformer(result);
-            transformer.replaceWithSelectId();
-            transformer.removeOrderBy();
-            result = String.format("select tempEntityAlias from %s tempEntityAlias where tempEntityAlias.id in (%s)",
-                    nestedEntityName, transformer.getResult());
+            transformer.replaceWithSelectEntityVariable("tempEntityAlias");
+            transformer.addFirstSelectionSource(String.format("%s tempEntityAlias", nestedEntityName));
+            transformer.addWhereAsIs(String.format("tempEntityAlias = %s", nestedEntityPath));
+            result = transformer.getResult();
         }
 
         return result;

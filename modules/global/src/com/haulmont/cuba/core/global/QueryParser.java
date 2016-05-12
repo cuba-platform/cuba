@@ -50,4 +50,12 @@ public interface QueryParser {
      */
     @Nullable
     String getEntityNameIfSecondaryReturnedInsteadOfMain();
+
+    /**
+     * @return Entity path if not main entity name is returned, otherwise null
+     * Example: select u.group from sec$User u -> u.group
+     * Example: select g from sec$User u join u.group g -> g
+     */
+    @Nullable
+    String getEntityPathIfSecondaryReturnedInsteadOfMain();
 }

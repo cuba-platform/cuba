@@ -46,6 +46,17 @@ public class QueryParserAstBased implements QueryParser {
     protected String query;
     protected QueryTreeAnalyzer queryTreeAnalyzer;
 
+    protected class EntityNameAndPath {
+
+        String entityName;
+        String entityPath;
+
+        public EntityNameAndPath(String entityName, String entityPath) {
+            this.entityName = entityName;
+            this.entityPath = entityPath;
+        }
+    }
+
     public QueryParserAstBased(DomainModel model, String query) throws RecognitionException {
         this.model = model;
         this.query = query;
@@ -126,6 +137,17 @@ public class QueryParserAstBased implements QueryParser {
 
     @Override
     public String getEntityNameIfSecondaryReturnedInsteadOfMain() {
+        EntityNameAndPath entityNameAndAlias = getEntityNameAndPathIfSecondaryReturnedInsteadOfMain();
+        return entityNameAndAlias != null ? entityNameAndAlias.entityName : null;
+    }
+
+    @Override
+    public String getEntityPathIfSecondaryReturnedInsteadOfMain() {
+        EntityNameAndPath entityNameAndAlias = getEntityNameAndPathIfSecondaryReturnedInsteadOfMain();
+        return entityNameAndAlias != null ? entityNameAndAlias.entityPath : null;
+    }
+
+    protected EntityNameAndPath getEntityNameAndPathIfSecondaryReturnedInsteadOfMain() {
         List<PathNode> returnedPathNodes = queryTreeAnalyzer.getReturnedPathNodes();
         if (CollectionUtils.isEmpty(returnedPathNodes) || returnedPathNodes.size() > 1) {
             return null;
@@ -136,7 +158,7 @@ public class QueryParserAstBased implements QueryParser {
         if (pathNode.getChildren() == null) {
             Entity entity = rootQueryVariableContext.getEntityByVariableName(pathNode.getEntityVariableName());
             if (!entity.getName().equals(getEntityName())) {
-                return entity.getName();
+                return new EntityNameAndPath(entity.getName(), pathNode.getEntityVariableName());
             }
 
             //fix for scary Eclipselink which consider "select p from sec$GroupHierarchy h join h.parent p"
@@ -145,7 +167,7 @@ public class QueryParserAstBased implements QueryParser {
             IdentificationVariableNode mainEntityIdentification = queryTreeAnalyzer.getMainEntityIdentification();
             if (mainEntityIdentification != null
                     && !pathNode.getEntityVariableName().equals(mainEntityIdentification.getVariableName())) {
-                return entity.getName();
+                return entity.getName() != null ? new EntityNameAndPath(entity.getName(), pathNode.getEntityVariableName()) : null;
             }
 
             return null;
@@ -153,9 +175,10 @@ public class QueryParserAstBased implements QueryParser {
 
         String entityName = getEntityName();
         Entity entity;
+        String entityPath;
         try {
             entity = model.getEntityByName(entityName);
-
+            entityPath = pathNode.asPathString();
             for (int i = 0; i < pathNode.getChildCount(); i++) {
                 String fieldName = pathNode.getChild(i).toString();
                 Attribute entityAttribute = entity.getAttributeByName(fieldName);
@@ -170,6 +193,6 @@ public class QueryParserAstBased implements QueryParser {
             throw new RuntimeException("Could not find entity by name " + entityName, e);
         }
 
-        return entity != null ? entity.getName() : null;
+        return entity != null && entity.getName() != null ? new EntityNameAndPath(entity.getName(), entityPath) : null;
     }
 }

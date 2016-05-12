@@ -18,6 +18,7 @@ package com.haulmont.cuba.core.global;
 
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -130,6 +131,11 @@ public class QueryParserRegex implements QueryParser {
 
     @Override
     public String getEntityNameIfSecondaryReturnedInsteadOfMain() {
+        return null;
+    }
+
+    @Override
+    public String getEntityPathIfSecondaryReturnedInsteadOfMain() {
         return null;
     }
 }
