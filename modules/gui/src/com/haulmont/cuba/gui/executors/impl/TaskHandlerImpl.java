@@ -72,7 +72,9 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
         taskExecutor.setFinalizer(new Runnable() {
             @Override
             public void run() {
+                log.trace("Start task finalizer");
                 disposeResources();
+                log.trace("Finish task finalizer");
             }
         });
     }
@@ -124,8 +126,17 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
                 } finally {
                     disposeResources();
                 }
+
+                UUID userId = getUserSession().getId();
+                Frame ownerFrame = getTask().getOwnerFrame();
+                String windowClass = ownerFrame.getClass().getCanonicalName();
+
+                log.trace("Task was cancelled. User: %s Frame: %s", userId.toString(), windowClass);
+            } else {
+                log.trace("Task wasn't cancelled. Execution is already cancelled");
             }
         }
+
         return canceled;
     }
 
@@ -134,7 +145,17 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
         Frame ownerFrame = getTask().getOwnerFrame();
         if (ownerFrame != null) {
             Window ownerWindow = ComponentsHelper.getWindowImplementation(ownerFrame);
-            ownerWindow.removeCloseListener(closeListener);
+            if (ownerWindow != null) {
+                ownerWindow.removeCloseListener(closeListener);
+
+                String windowClass = ownerFrame.getClass().getCanonicalName();
+
+                log.trace("Resources were disposed. Frame: %s", windowClass);
+            } else {
+                log.trace("Empty ownerWindow. Resources were not disposed");
+            }
+        } else {
+            log.trace("Empty ownerFrame. Resources were not disposed");
         }
         closeListener = null;
     }
@@ -177,6 +198,14 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
      * Cancel with timeout exceeded event
      */
     public final void timeoutExceeded() {
+        Frame ownerFrame = getTask().getOwnerFrame();
+        if (ownerFrame != null) {
+            String windowClass = ownerFrame.getClass().getCanonicalName();
+            log.trace("Task timeout happened. Frame: %s", windowClass);
+        } else {
+            log.trace("Task timeout happened");
+        }
+
         checkState(started, "Task is not running");
 
         if (isAlive()) {
@@ -187,6 +216,13 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
                 disposeResources();
             }
+        }
+
+        if (ownerFrame != null) {
+            String windowClass = ownerFrame.getClass().getCanonicalName();
+            log.trace("Timeout was processed. Frame: %s", windowClass);
+        } else {
+            log.trace("Timeout was processed");
         }
     }
 
