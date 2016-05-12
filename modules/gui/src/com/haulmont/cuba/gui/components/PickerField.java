@@ -20,10 +20,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.DevelopmentException;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
@@ -154,6 +151,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
         protected OpenType lookupScreenOpenType = OpenType.THIS_TAB;
         protected DialogParams lookupScreenDialogParams;
         protected Map<String, Object> lookupScreenParams;
+        protected View itemView;
 
         protected Runnable beforeActionPerformedHandler;
         protected Runnable afterActionPerformedHandler;
@@ -266,7 +264,11 @@ public interface PickerField extends Field, Component.ActionsHolder {
                             @Override
                             public void handleLookup(Collection items) {
                                 if (!items.isEmpty()) {
-                                    final Entity item = (Entity) items.iterator().next();
+                                    Entity item = (Entity) items.iterator().next();
+                                    if (getItemView() != null) {
+                                        DataSupplier supplier = pickerField.getFrame().getDsContext().getDataSupplier();
+                                        item = supplier.reload(item, getItemView());
+                                    }
                                     Object oldValue = pickerField.getValue();
 
                                     if (pickerField instanceof LookupField) {
@@ -358,6 +360,18 @@ public interface PickerField extends Field, Component.ActionsHolder {
         @Override
         public void setAfterActionPerformedHandler(Runnable handler) {
             this.afterActionPerformedHandler = handler;
+        }
+
+        public void setItemViewName(String viewName) {
+            itemView = AppBeans.get(Metadata.class).getViewRepository().getView(pickerField.getMetaClass(), viewName);
+        }
+
+        public void setItemView(View itemView) {
+            this.itemView = itemView;
+        }
+
+        public View getItemView() {
+            return itemView;
         }
     }
 
