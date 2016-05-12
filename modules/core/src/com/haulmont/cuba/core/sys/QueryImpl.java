@@ -169,7 +169,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
             QueryTransformer transformer = QueryTransformerFactory.createTransformer(result);
             transformer.replaceWithSelectEntityVariable("tempEntityAlias");
             transformer.addFirstSelectionSource(String.format("%s tempEntityAlias", nestedEntityName));
-            transformer.addWhereAsIs(String.format("tempEntityAlias = %s", nestedEntityPath));
+            transformer.addWhereAsIs(String.format("tempEntityAlias.id = %s.id", nestedEntityPath));
             result = transformer.getResult();
         }
 
