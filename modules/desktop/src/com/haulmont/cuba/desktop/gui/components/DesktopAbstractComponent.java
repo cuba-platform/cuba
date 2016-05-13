@@ -37,7 +37,7 @@ import java.util.Locale;
 
 public abstract class DesktopAbstractComponent<C extends JComponent>
         implements
-            DesktopComponent, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame {
+            DesktopComponent, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.HasIcon {
 
     public static final String SWING_PROPERTY_CLASS = "cubaClass";
     public static final String SWING_PROPERTY_ID = "cubaId";
@@ -399,5 +399,15 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     @Override
     public <X> X unwrapComposition(Class<X> internalCompositionClass) {
         return (X) getComposition();
+    }
+
+    @Override
+    public String getIcon() {
+        return null;
+    }
+
+    @Override
+    public void setIcon(String icon) {
+        // do nothing
     }
 }

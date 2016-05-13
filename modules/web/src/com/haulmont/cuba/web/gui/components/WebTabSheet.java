@@ -29,6 +29,7 @@ import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.vaadin.ui.Layout;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
@@ -116,6 +117,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         private String name;
         private Component tabComponent;
         private TabCloseHandler closeHandler;
+        private String icon;
 
         public Tab(String name, Component tabComponent) {
             this.name = name;
@@ -208,6 +210,21 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         @Override
         public String getStyleName() {
             return getVaadinTab().getStyleName();
+        }
+
+        @Override
+        public String getIcon() {
+            return icon;
+        }
+
+        @Override
+        public void setIcon(String icon) {
+            this.icon = icon;
+            if (!StringUtils.isEmpty(icon)) {
+                getVaadinTab().setIcon(WebComponentsHelper.getIcon(icon));
+            } else {
+                getVaadinTab().setIcon(null);
+            }
         }
     }
 

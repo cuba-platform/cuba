@@ -670,6 +670,16 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
         public boolean isLazy(){
             return lazy;
         }
+
+        @Override
+        public String getIcon() {
+            return null;
+        }
+
+        @Override
+        public void setIcon(String icon) {
+            // do nothing
+        }
     }
 
     protected static class LazyTabInfo {

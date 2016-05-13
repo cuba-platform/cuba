@@ -38,15 +38,19 @@ import java.util.List;
  */
 public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
         implements
-        Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame {
+        Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.HasIcon {
 
     public static final List<Sizeable.Unit> UNIT_SYMBOLS = Collections.unmodifiableList(Arrays.asList(
             Sizeable.Unit.PIXELS, Sizeable.Unit.POINTS, Sizeable.Unit.PICAS,
             Sizeable.Unit.EM, Sizeable.Unit.EX, Sizeable.Unit.MM,
             Sizeable.Unit.CM, Sizeable.Unit.INCH, Sizeable.Unit.PERCENTAGE));
 
+    public static final String ICON_STYLE = "icon";
+
     protected String id;
     protected T component;
+
+    protected String icon;
 
     protected Element element;
     protected Frame frame;
@@ -183,6 +187,23 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
     @Override
     public void setVisible(boolean visible) {
         getComposition().setVisible(visible);
+    }
+
+    @Override
+    public String getIcon() {
+        return icon;
+    }
+
+    @Override
+    public void setIcon(String icon) {
+        this.icon = icon;
+        if (!StringUtils.isEmpty(icon)) {
+            getComposition().setIcon(WebComponentsHelper.getIcon(icon));
+            getComposition().addStyleName(ICON_STYLE);
+        } else {
+            getComposition().setIcon(null);
+            getComposition().removeStyleName(ICON_STYLE);
+        }
     }
 
     /**

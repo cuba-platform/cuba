@@ -581,6 +581,7 @@
         </xs:sequence>
 
         <xs:attributeGroup ref="hasId"/>
+        <xs:attributeGroup ref="hasIcon"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasAlign"/>
@@ -615,6 +616,7 @@
         <xs:attributeGroup ref="hasEditable"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasCaption"/>
+        <xs:attributeGroup ref="hasIcon"/>
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasAlign"/>
         <xs:attributeGroup ref="hasSize"/>
@@ -627,6 +629,7 @@
         <xs:attributeGroup ref="hasId"/>
 
         <xs:attributeGroup ref="hasCaption"/>
+        <xs:attributeGroup ref="hasIcon"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasVisibility"/>
@@ -750,7 +753,6 @@
     <!-- Progress bar -->
     <xs:complexType name="progressBarComponent">
         <xs:attributeGroup ref="hasId"/>
-        <!--<xs:attributeGroup ref="hasCaption"/>-->
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasVisibility"/>
@@ -1276,6 +1278,7 @@
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasCaption"/>
+        <xs:attributeGroup ref="hasIcon"/>
         <xs:attributeGroup ref="hasStyle"/>
 
         <xs:attributeGroup ref="hasEditState"/>
@@ -1317,6 +1320,7 @@
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasCaption"/>
+        <xs:attributeGroup ref="hasIcon"/>
         <xs:attributeGroup ref="hasEditState"/>
         <xs:attributeGroup ref="hasVisibility"/>
 
@@ -1423,6 +1427,7 @@
 
                     <xs:attributeGroup ref="requiresId"/>
                     <xs:attributeGroup ref="hasCaption"/>
+                    <xs:attributeGroup ref="hasIcon"/>
                     <xs:attributeGroup ref="hasSpacingMargin"/>
                     <xs:attributeGroup ref="hasVisibility"/>
                     <xs:attributeGroup ref="hasEnableProp"/>
@@ -1452,6 +1457,7 @@
 
                     <xs:attributeGroup ref="requiresId"/>
                     <xs:attributeGroup ref="hasCaption"/>
+                    <xs:attributeGroup ref="hasIcon"/>
                     <xs:attributeGroup ref="hasSpacingMargin"/>
                     <xs:attributeGroup ref="hasVisibility"/>
                     <xs:attributeGroup ref="hasEnableProp"/>
@@ -1589,6 +1595,7 @@
         <xs:attributeGroup ref="hasId"/>
 
         <xs:attributeGroup ref="hasCaption"/>
+        <xs:attributeGroup ref="hasIcon"/>
         <xs:attributeGroup ref="hasWidthProp"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasStyle"/>

@@ -79,6 +79,8 @@ public class TabSheetLoader extends ContainerLoader<TabSheet> {
         for (Element tabElement : tabElements) {
             TabSheet.Tab tab = pendingLoadTabs.remove(tabElement);
             if (tab != null) {
+                loadIcon(tab, tabElement);
+
                 String detachable = tabElement.attributeValue("detachable");
                 if (StringUtils.isNotEmpty(detachable)) {
                     tab.setDetachable(Boolean.parseBoolean(detachable));

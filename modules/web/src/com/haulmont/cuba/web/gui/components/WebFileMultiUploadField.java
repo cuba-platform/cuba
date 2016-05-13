@@ -55,7 +55,6 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<UploadCo
     protected final Map<UUID, String> files = new HashMap<>();
     protected FileUploadingAPI fileUploading;
     protected UUID tempFileId;
-    protected String icon;
     protected String accept;
 
     protected List<FileUploadStartListener> fileUploadStartListeners;         // lazily initialized list
@@ -403,11 +402,6 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<UploadCo
     @Override
     public void clearUploads() {
         files.clear();
-    }
-
-    @Override
-    public String getIcon() {
-        return icon;
     }
 
     @Override

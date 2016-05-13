@@ -79,6 +79,8 @@ public class AccordionLoader extends ContainerLoader<Accordion> {
         for (Element tabElement : tabElements) {
             Accordion.Tab tab = pendingLoadTabs.remove(tabElement);
             if (tab != null) {
+                loadIcon(tab, tabElement);
+
                 String caption = tabElement.attributeValue("caption");
                 if (!StringUtils.isEmpty(caption)) {
                     caption = loadResourceString(caption);

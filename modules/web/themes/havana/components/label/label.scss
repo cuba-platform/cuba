@@ -4,6 +4,11 @@
  */
 
 @mixin havana-label($primary-stylename: v-label) {
+
+  .v-caption-cuba-label-caption-on-left {
+    line-height: 18px;
+  }
+
   .#{$primary-stylename} {
     line-height: 18px;
     word-wrap: break-word;
@@ -37,5 +42,16 @@
   .#{$primary-stylename} pre {
     margin: 0;
     font-family: verdana, tahoma, sans-serif;
+  }
+
+  .v-has-caption>.v-caption-cuba-label-caption-on-left {
+    display: inline-block;
+    + div:empty {
+      margin-left: 0;
+    }
+  }
+
+  .#{$primary-stylename}-cuba-label-caption-on-left {
+    margin-left: 3px;
   }
 }

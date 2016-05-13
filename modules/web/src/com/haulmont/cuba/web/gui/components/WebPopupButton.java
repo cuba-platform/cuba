@@ -46,7 +46,6 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
 
     protected Component popupComponent;
     protected com.vaadin.ui.Component vPopupComponent;
-    protected String icon;
     protected boolean showActionIcons;
 
     protected List<Action> actionOrder = new LinkedList<>();
@@ -103,23 +102,6 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
     @Override
     public void setDescription(String description) {
         component.setDescription(description);
-    }
-
-    @Override
-    public String getIcon() {
-        return icon;
-    }
-
-    @Override
-    public void setIcon(String icon) {
-        this.icon = icon;
-        if (!StringUtils.isEmpty(icon)) {
-            component.setIcon(WebComponentsHelper.getIcon(icon));
-            component.addStyleName(WebButton.ICON_STYLE);
-        } else {
-            component.setIcon(null);
-            component.removeStyleName(WebButton.ICON_STYLE);
-        }
     }
 
     @Override

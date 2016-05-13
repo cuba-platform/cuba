@@ -41,6 +41,7 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
         loadStyleName(resultComponent, element);
 
         loadCaption(resultComponent, element);
+        loadIcon(resultComponent, element);
         loadDescription(resultComponent, element);
 
         loadValidators(resultComponent, element);

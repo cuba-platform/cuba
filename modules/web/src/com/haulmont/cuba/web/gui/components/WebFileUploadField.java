@@ -62,8 +62,6 @@ public class WebFileUploadField extends WebAbstractUploadComponent<UploadCompone
 
     protected UUID tempFileId;
 
-    protected String icon;
-
     protected List<FileUploadStartListener> fileUploadStartListeners;     // lazily initialized list
     protected List<FileUploadFinishListener> fileUploadFinishListeners;   // lazily initialized list
     protected List<FileUploadErrorListener> fileUploadErrorListeners;     // lazily initialized list
@@ -318,11 +316,6 @@ public class WebFileUploadField extends WebAbstractUploadComponent<UploadCompone
         } else {
             return null;
         }
-    }
-
-    @Override
-    public String getIcon() {
-        return icon;
     }
 
     @Override

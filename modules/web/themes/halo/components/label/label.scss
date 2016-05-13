@@ -4,6 +4,7 @@
  */
 
 @mixin halo-label($primary-stylename: v-label) {
+  .v-caption-cuba-label-caption-on-left,
   .#{$primary-stylename} {
     font-size: $v-font-size;
   }
@@ -77,5 +78,16 @@
   .#{$primary-stylename} pre {
     margin: 0;
     font-family: $v-font-family;
+  }
+
+  .v-caption-cuba-label-caption-on-left {
+    display: inline-block;
+    + div:empty {
+      margin-left: 0;
+    }
+  }
+
+  .#{$primary-stylename}-cuba-label-caption-on-left {
+    margin-left: ceil($v-font-size/2.4);
   }
 }

@@ -21,7 +21,7 @@ package com.haulmont.cuba.gui.components;
  *
  */
 public interface Field extends DatasourceComponent, Component.HasCaption, Component.HasValue, Component.Editable,
-                               Component.BelongToFrame, Component.Validatable {
+                               Component.BelongToFrame, Component.Validatable, Component.HasIcon {
     /**
      * @return whether the field must contain a non-null value
      */

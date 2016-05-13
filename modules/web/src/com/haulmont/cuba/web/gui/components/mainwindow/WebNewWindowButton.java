@@ -37,8 +37,6 @@ public class WebNewWindowButton extends WebAbstractComponent<CubaButton> impleme
 
     public static final String NEWWINDOW_BUTTON_STYLENAME = "cuba-newwindow-button";
 
-    protected String icon;
-
     public WebNewWindowButton() {
         component = new CubaButton();
         component.addStyleName(NEWWINDOW_BUTTON_STYLENAME);
@@ -84,22 +82,5 @@ public class WebNewWindowButton extends WebAbstractComponent<CubaButton> impleme
     @Override
     public String getDescription() {
         return component.getDescription();
-    }
-
-    @Override
-    public String getIcon() {
-        return icon;
-    }
-
-    @Override
-    public void setIcon(String icon) {
-        this.icon = icon;
-        if (!StringUtils.isEmpty(icon)) {
-            component.setIcon(WebComponentsHelper.getIcon(icon));
-            component.addStyleName(WebButton.ICON_STYLE);
-        } else {
-            component.setIcon(null);
-            component.removeStyleName(WebButton.ICON_STYLE);
-        }
     }
 }

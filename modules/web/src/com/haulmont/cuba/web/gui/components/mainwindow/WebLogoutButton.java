@@ -34,7 +34,6 @@ import org.apache.commons.lang.StringUtils;
 public class WebLogoutButton extends WebAbstractComponent<CubaButton> implements LogoutButton {
 
     public static final String LOGOUT_BUTTON_STYLENAME = "cuba-logout-button";
-    protected String icon;
 
     public WebLogoutButton() {
         component = new CubaButton();
@@ -91,22 +90,5 @@ public class WebLogoutButton extends WebAbstractComponent<CubaButton> implements
     @Override
     public void setDescription(String description) {
         component.setDescription(description);
-    }
-
-    @Override
-    public String getIcon() {
-        return icon;
-    }
-
-    @Override
-    public void setIcon(String icon) {
-        this.icon = icon;
-        if (!StringUtils.isEmpty(icon)) {
-            component.setIcon(WebComponentsHelper.getIcon(icon));
-            component.addStyleName(WebButton.ICON_STYLE);
-        } else {
-            component.setIcon(null);
-            component.removeStyleName(WebButton.ICON_STYLE);
-        }
     }
 }

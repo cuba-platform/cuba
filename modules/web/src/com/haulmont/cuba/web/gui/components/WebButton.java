@@ -28,10 +28,7 @@ import java.beans.PropertyChangeListener;
  */
 public class WebButton extends WebAbstractComponent<CubaButton> implements Button {
 
-    public static final String ICON_STYLE = "icon";
-
     protected Action action;
-    protected String icon;
     protected PropertyChangeListener actionPropertyChangeListener;
 
     public WebButton() {
@@ -143,27 +140,10 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
     }
 
     @Override
-    public String getIcon() {
-        return icon;
-    }
-
-    @Override
     public void setStyleName(String name) {
         super.setStyleName(name);
         if (getIcon() != null)
             component.addStyleName(ICON_STYLE);
-    }
-
-    @Override
-    public void setIcon(String icon) {
-        this.icon = icon;
-        if (!StringUtils.isEmpty(icon)) {
-            component.setIcon(WebComponentsHelper.getIcon(icon));
-            component.addStyleName(ICON_STYLE);
-        } else {
-            component.setIcon(null);
-            component.removeStyleName(ICON_STYLE);
-        }
     }
 
     @Override

@@ -96,7 +96,7 @@ public interface Accordion extends Component.Container, Component.BelongToFrame 
     /**
      * Tab interface.
      */
-    interface Tab {
+    interface Tab extends Component.HasIcon {
         /**
          * Get tab id.
          */

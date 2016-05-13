@@ -36,6 +36,7 @@ import com.haulmont.cuba.web.toolkit.ui.converters.StringToDatatypeConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToEnumConverter;
 import com.vaadin.shared.ui.label.ContentMode;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,6 +46,8 @@ import java.util.List;
 /**
  */
 public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implements Label {
+
+    public static final String CAPTION_STYLE = "cuba-label-caption-on-left";
 
     protected List<ValueChangeListener> listeners = new ArrayList<>(); // todo lazy initialization
 
@@ -248,5 +251,15 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
     @Override
     public void setDescription(String description) {
         component.setDescription(description);
+    }
+
+    @Override
+    public void setIcon(String icon) {
+        super.setIcon(icon);
+        if (!StringUtils.isEmpty(icon)) {
+            getComposition().addStyleName(CAPTION_STYLE);
+        } else {
+            getComposition().removeStyleName(CAPTION_STYLE);
+        }
     }
 }

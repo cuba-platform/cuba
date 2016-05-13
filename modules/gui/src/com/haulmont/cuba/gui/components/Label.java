@@ -18,7 +18,8 @@ package com.haulmont.cuba.gui.components;
 
 /**
  */
-public interface Label extends DatasourceComponent, Component.HasFormatter, Component.HasCaption {
+public interface Label
+        extends DatasourceComponent, Component.HasFormatter, Component.HasCaption, Component.HasIcon {
 
     String NAME = "label";
 

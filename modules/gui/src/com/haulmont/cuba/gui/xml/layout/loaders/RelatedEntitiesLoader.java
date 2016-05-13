@@ -42,6 +42,7 @@ public class RelatedEntitiesLoader extends AbstractComponentLoader<RelatedEntiti
         assignFrame(resultComponent);
 
         loadCaption(resultComponent, element);
+        loadIcon(resultComponent, element);
         loadWidth(resultComponent, element);
 
         loadStyleName(resultComponent, element);
