@@ -20,7 +20,7 @@
         caption="msg://editorCaption"
         datasource="lockDescriptorDs"
         messagesPack="com.haulmont.cuba.gui.app.core.locking"
-        focusComponent="nameLookupField">
+        focusComponent="fieldGroup">
 
     <dsContext>
         <datasource id="lockDescriptorDs"
@@ -29,22 +29,17 @@
         </datasource>
     </dsContext>
 
-    <assign name="fieldWidth" value="theme://cuba.gui.lock-edit.field.width"/>
+    <dialogMode width="AUTO"/>
 
     <layout spacing="true">
-        <grid spacing="true">
-            <columns count="2"/>
-            <rows>
-                <row>
-                    <label value="msg://name" align="MIDDLE_LEFT"/>
-                    <lookupField width="${fieldWidth}" datasource="lockDescriptorDs" id="nameLookupField" property="name"/>
-                </row>
-                <row>
-                    <label value="msg://timeout" align="MIDDLE_LEFT"/>
-                    <textField id="timeoutField" width="${fieldWidth}" datasource="lockDescriptorDs" property="timeoutSec"/>
-                </row>
-            </rows>
-        </grid>
+        <optionsGroup id="nameTypeOptionsGroup" align="MIDDLE_CENTER" orientation="horizontal"/>
+        <fieldGroup id="fieldGroup" datasource="lockDescriptorDs">
+            <column width="theme://cuba.gui.lock-edit.field.width">
+                <field id="name"/>
+                <field id="entity" custom="true"/>
+                <field id="timeoutSec"/>
+            </column>
+        </fieldGroup>
         <frame id="windowActions" screen="editWindowActions" width="AUTO"/>
     </layout>
 </window>

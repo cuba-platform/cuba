@@ -19,12 +19,15 @@ package com.haulmont.cuba.gui.app.core.locking;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.LockDescriptor;
+import com.haulmont.cuba.core.entity.LockDescriptorNameType;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.components.LookupField;
-import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.gui.WindowParams;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -36,15 +39,25 @@ public class LockEditor extends AbstractEditor {
     protected Metadata metadata;
 
     @Inject
-    protected LookupField nameLookupField;
+    protected ComponentsFactory componentsFactory;
 
     @Inject
-    protected TextField timeoutField;
+    protected Datasource<LockDescriptor> lockDescriptorDs;
+
+    @Inject
+    protected OptionsGroup nameTypeOptionsGroup;
+
+    @Inject
+    protected FieldGroup fieldGroup;
+
+    @Named("fieldGroup.name")
+    protected TextField nameField;
+
+    @Named("fieldGroup.timeoutSec")
+    protected TextField timeoutSecField;
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams().setWidthAuto();
-
         Map<String, Object> options = new TreeMap<>();
         for (MetaClass metaClass : metadata.getTools().getAllPersistentMetaClasses()) {
             if (metadata.getExtendedEntities().getExtendedClass(metaClass) == null) {
@@ -53,10 +66,36 @@ public class LockEditor extends AbstractEditor {
                 options.put(messages.getTools().getEntityCaption(metaClass) + " (" + metaClass.getName() + ")", originalName);
             }
         }
-        nameLookupField.setOptionsMap(options);
-        if (((LockDescriptor) params.get("item".toUpperCase())).getName() != null) {
-            nameLookupField.setEditable(false);
-            timeoutField.requestFocus();
+
+        fieldGroup.addCustomField("entity", (datasource, propertyId) -> {
+            LookupField nameLookupField = componentsFactory.createComponent(LookupField.class);
+            nameLookupField.setDatasource(lockDescriptorDs, "name");
+            nameLookupField.setOptionsMap(options);
+
+            return nameLookupField;
+        });
+        fieldGroup.setFieldCaption("entity", messages.getMessage(LockDescriptor.class, "LockDescriptor.name"));
+
+        if (((LockDescriptor) WindowParams.ITEM.getEntity(params)).getName() != null) {
+            nameTypeOptionsGroup.setVisible(false);
+            fieldGroup.setVisible("entity", false);
+            nameField.setEditable(false);
+            timeoutSecField.requestFocus();
+        } else {
+            nameTypeOptionsGroup.setOptionsEnum(LockDescriptorNameType.class);
+            nameTypeOptionsGroup.addValueChangeListener(e -> {
+                if (LockDescriptorNameType.ENTITY.equals(e.getValue())) {
+                    nameField.setVisible(false);
+                    fieldGroup.setVisible("entity", true);
+                    fieldGroup.getFieldComponent("entity").requestFocus();
+                } else {
+                    nameField.setVisible(true);
+                    nameField.requestFocus();
+                    fieldGroup.setVisible("entity", false);
+                }
+            });
+
+            nameTypeOptionsGroup.setValue(LockDescriptorNameType.ENTITY);
         }
     }
 }
