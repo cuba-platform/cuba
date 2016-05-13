@@ -34,12 +34,13 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 /**
  * Single window / page of web application. Root component of Vaadin layout.
- *
  */
 @PreserveOnRefresh
 public class AppUI extends UI implements ErrorHandler {
@@ -60,6 +61,10 @@ public class AppUI extends UI implements ErrorHandler {
     protected TestIdManager testIdManager = new TestIdManager();
 
     protected boolean testMode = false;
+
+    protected String profilerMarker;
+
+    protected Map<String, String> profiledScreens;
 
     public AppUI() {
         log.trace("Creating UI " + this);
@@ -298,5 +303,30 @@ public class AppUI extends UI implements ErrorHandler {
      */
     public void discardAccumulatedEvents() {
         getRpcProxy(AppUIClientRpc.class).discardAccumulatedEvents();
+    }
+
+    public String getProfilerMarker() {
+        return profilerMarker;
+    }
+
+    public void setProfilerMarker(String profilerMarker) {
+        this.profilerMarker = profilerMarker;
+    }
+
+    public void setProfiledScreen(String profilerMarker, String screen) {
+        if (profiledScreens == null) {
+            profiledScreens = new HashMap<>();
+        }
+        profiledScreens.put(profilerMarker, screen);
+    }
+
+    public String getProfiledScreen(String profilerMarker) {
+        return profiledScreens.get(profilerMarker);
+    }
+
+    public void clearProfiledScreens(List<String> profilerMarkers) {
+        for (String profilerMarker : profilerMarkers) {
+            profiledScreens.remove(profilerMarker);
+        }
     }
 }

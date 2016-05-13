@@ -97,6 +97,7 @@
                 <entry key="cuba_EntityRestoreService" value="com.haulmont.cuba.core.app.EntityRestoreService"/>
                 <entry key="cuba_LocalFileExchangeService" value="com.haulmont.cuba.core.sys.remoting.LocalFileExchangeService"/>
                 <entry key="cuba_EntityImportExportService" value="com.haulmont.cuba.core.app.importexport.EntityImportExportService"/>
+                <entry key="cuba_ScreenProfilerService" value="com.haulmont.cuba.core.app.ScreenProfilerService"/>
             </map>
         </property>
     </bean>

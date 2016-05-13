@@ -1,0 +1,80 @@
+<!--
+  ~ Copyright (c) 2008-2016 Haulmont.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+        class="com.haulmont.cuba.gui.app.core.screenprofiler.ScreenProfilerWindow"
+        messagesPack="com.haulmont.cuba.gui.app.core.screenprofiler"
+        caption="msg://screenProfiler.window.caption">
+    <dsContext>
+        <collectionDatasource id="allUsersDs" class="com.haulmont.cuba.security.entity.User" view="_minimal">
+            <query>select u from sec$User u order by u.name</query>
+        </collectionDatasource>
+        <collectionDatasource id="usersDs" class="com.haulmont.cuba.security.entity.User" view="_minimal"
+                              refreshMode="NEVER" allowCommit="false"/>
+        <collectionDatasource id="profilerEventsDs" class="com.haulmont.cuba.core.entity.ScreenProfilerEvent"
+                              datasourceClass="com.haulmont.cuba.gui.app.core.screenprofiler.ScreenProfilerDatasourse"/>
+    </dsContext>
+
+    <timers>
+        <timer id="refreshEventsTimer" delay="10000" repeating="true" onTimer="refreshEvents"/>
+    </timers>
+
+    <layout expand="table" spacing="true">
+        <groupBox orientation="vertical" height="AUTO">
+            <grid id="grid" spacing="true" width="AUTO" height="AUTO">
+                <columns count="2"/>
+                <rows>
+                    <row>
+                        <label value="msg://timeThreshold" align="MIDDLE_LEFT"/>
+                        <textField id="timeThreshold" datatype="long"/>
+                    </row>
+                    <row>
+                        <label value="msg://users"/>
+                        <tokenList datasource="usersDs" inline="true" width="350px" height="100px">
+                            <lookup optionsDatasource="allUsersDs"/>
+                        </tokenList>
+                    </row>
+                </rows>
+            </grid>
+        </groupBox>
+        <table id="table" width="100%">
+            <actions>
+                <action id="refresh"/>
+                <action id="excel"/>
+            </actions>
+            <buttonsPanel>
+                <button id="refresh" action="table.refresh"/>
+                <button id="clearResultsButton" caption="msg://clearResults" invoke="clearResults"/>
+                <button id="excel" action="table.excel"/>
+                <button id="profilingButton" caption="msg://activateProfiling" invoke="activateProfiling"/>
+                <checkBox id="refreshEventsCheck" caption="msg://refreshEvents" align="MIDDLE_LEFT"/>
+            </buttonsPanel>
+            <columns>
+                <column id="eventTs">
+                    <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter" type="DATETIME"/>
+                </column>
+                <column id="user"/>
+                <column id="screen"/>
+                <column id="serverTimeSec"/>
+                <column id="clientTimeSec"/>
+                <column id="networkTimeSec"/>
+                <column id="totalTimeSec"/>
+            </columns>
+            <rowsCount/>
+            <rows datasource="profilerEventsDs"/>
+        </table>
+    </layout>
+</window>

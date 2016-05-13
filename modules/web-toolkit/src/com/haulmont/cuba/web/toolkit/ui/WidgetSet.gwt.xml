@@ -36,6 +36,14 @@
         <when-type-is class="com.vaadin.client.ui.ui.UIConnector"/>
     </replace-with>
 
+    <replace-with class="com.haulmont.cuba.web.toolkit.ui.client.communication.CubaMessageHandler">
+        <when-type-is class="com.vaadin.client.communication.MessageHandler"/>
+    </replace-with>
+
+    <replace-with class="com.haulmont.cuba.web.toolkit.ui.client.communication.CubaXhrConnection">
+        <when-type-is class="com.vaadin.client.communication.XhrConnection"/>
+    </replace-with>
+
     <!-- Text selection enable functions deffered binding -->
 
     <define-property name="ie11orHigher" values="no,yes"/>

@@ -37,7 +37,10 @@ import com.haulmont.cuba.web.toolkit.ui.*;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.server.Extension;
 import com.vaadin.shared.MouseEventDetails;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.Field;
+import com.vaadin.ui.VerticalLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.peter.contextmenu.ContextMenu;
@@ -69,6 +72,8 @@ public class AppWindow extends UIView implements CubaHistoryControl.HistoryBackH
     protected CubaHistoryControl historyControl;
 
     protected CubaTimer workerTimer;
+
+    protected ScreenClientProfilerAgent clientProfiler;
 
     protected WebConfig webConfig;
 
@@ -194,6 +199,9 @@ public class AppWindow extends UIView implements CubaHistoryControl.HistoryBackH
 
         fileDownloader = new CubaFileDownloader();
         fileDownloader.extend(this);
+
+        clientProfiler = new ScreenClientProfilerAgent();
+        clientProfiler.extend(this);
 
         if (webConfig.getAllowHandleBrowserHistoryBack()) {
             historyControl = new CubaHistoryControl();

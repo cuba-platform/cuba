@@ -202,4 +202,7 @@
     <screen id="commonLookup"
             template="com/haulmont/cuba/gui/commonlookup/common-lookup.xml"/>
 
+    <screen id="screenProfiler"
+            template="com/haulmont/cuba/gui/app/core/screenprofiler/screen-profiler-window.xml"/>
+
 </screen-config>
