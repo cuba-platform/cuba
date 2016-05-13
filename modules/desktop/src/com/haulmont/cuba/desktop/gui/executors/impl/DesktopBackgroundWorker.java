@@ -212,7 +212,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
                 result = get();
                 this.done();
             } catch (InterruptedException | ExecutionException e) {
-                log.error("", e);
+                log.error("Interrupted or execution exception in background task", e);
                 return null;
             }
             return result;
