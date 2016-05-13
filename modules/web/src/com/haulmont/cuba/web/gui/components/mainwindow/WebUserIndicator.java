@@ -87,7 +87,7 @@ public class WebUserIndicator extends WebAbstractComponent<HorizontalLayout> imp
             userComboBox.setImmediate(true);
             if (ui.isTestMode()) {
                 userComboBox.setCubaId("substitutedUserSelect");
-                userComboBox.setId(ui.getTestIdManager().reserveId("substitutedUserSelect"));
+                userComboBox.setId(ui.getTestIdManager().getTestId("substitutedUserSelect"));
             }
 
             userComboBox.setStyleName("cuba-user-select-combobox");
