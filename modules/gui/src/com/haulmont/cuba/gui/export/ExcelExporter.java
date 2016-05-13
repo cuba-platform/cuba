@@ -23,6 +23,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.components.GroupTable;
@@ -67,6 +68,8 @@ public class ExcelExporter {
     private HSSFCellStyle timeFormatCellStyle;
 
     private HSSFCellStyle dateFormatCellStyle;
+
+    private HSSFCellStyle dateTimeFormatCellStyle;
 
     private HSSFCellStyle integerFormatCellStyle;
 
@@ -248,10 +251,13 @@ public class ExcelExporter {
 
     protected void createFormats() {
         timeFormatCellStyle = wb.createCellStyle();
-        timeFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("m/d/yy h:mm"));
+        timeFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("h:mm"));
 
         dateFormatCellStyle = wb.createCellStyle();
         dateFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("m/d/yy"));
+
+        dateTimeFormatCellStyle = wb.createCellStyle();
+        dateTimeFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("m/d/yy h:mm"));
 
         integerFormatCellStyle = wb.createCellStyle();
         integerFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("#,##0"));
@@ -292,7 +298,7 @@ public class ExcelExporter {
                 Object agregationResult = results.get(agr.getPropertyPath());
                 if (agregationResult != null) {
                     HSSFCell cell = row.createCell(i);
-                    formatValueCell(cell, agregationResult, i, rowNumber, 0, false, null);
+                    formatValueCell(cell, agregationResult, null, i, rowNumber, 0, null);
                 }
             }
             i++;
@@ -329,9 +335,9 @@ public class ExcelExporter {
             Object itemId = children.iterator().next();
             Instance item = table.getDatasource().getItem(itemId);
             Object captionValue = item.getValueEx(captionProperty);
-            formatValueCell(cell, captionValue, groupNumber++, rowNumber, 0, true, groupChildCount);
+            formatValueCell(cell, captionValue, ((MetaPropertyPath) column.getId()), groupNumber++, rowNumber, 0, groupChildCount);
         } else {
-            formatValueCell(cell, val, groupNumber++, rowNumber, 0, true, groupChildCount);
+            formatValueCell(cell, val, ((MetaPropertyPath) column.getId()), groupNumber++, rowNumber, 0, groupChildCount);
         }
 
         int oldRowNumber = rowNumber;
@@ -366,7 +372,6 @@ public class ExcelExporter {
 
             Table.Column column = columns.get(c);
             Object cellValue = null;
-            boolean isFull = true;
 
             if (column.getId() instanceof MetaPropertyPath) {
                 Table.Printable printable = table.getPrintable(column);
@@ -382,9 +387,6 @@ public class ExcelExporter {
                     }
                     if (column.getFormatter() != null)
                         cellValue = column.getFormatter().format(cellValue);
-                    TemporalType tt = (TemporalType) ((MetaPropertyPath) column.getId()).getMetaProperty().getAnnotations().get("temporal");
-                    if (tt != null && tt == TemporalType.DATE)
-                        isFull = false;
                 }
             } else {
                 Table.Printable printable = table.getPrintable(column);
@@ -393,7 +395,7 @@ public class ExcelExporter {
                 }
             }
 
-            formatValueCell(cell, cellValue, c, rowNumber, level, isFull, null);
+            formatValueCell(cell, cellValue, ((MetaPropertyPath) column.getId()), c, rowNumber, level, null);
         }
     }
 
@@ -409,8 +411,8 @@ public class ExcelExporter {
         return sb.toString();
     }
 
-    protected void formatValueCell(HSSFCell cell, @Nullable Object cellValue,
-                                   int sizersIndex, int notificationReqiured, int level, boolean isFull, @Nullable Integer groupChildCount) {
+    protected void formatValueCell(HSSFCell cell, @Nullable Object cellValue, @Nullable MetaPropertyPath metaPropertyPath,
+                                   int sizersIndex, int notificationReqiured, int level, @Nullable Integer groupChildCount) {
         if (cellValue == null)
             return;
 
@@ -448,9 +450,19 @@ public class ExcelExporter {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         } else if (cellValue instanceof Date) {
+            TemporalType temporalType = null;
+            Boolean ignoreUserTimeZone = null;
+
+            if (metaPropertyPath != null) {
+                Map<String, Object> annotations = metaPropertyPath.getMetaProperty().getAnnotations();
+                temporalType = (TemporalType) annotations.get("temporal");
+                ignoreUserTimeZone = (Boolean) annotations.get(IgnoreUserTimeZone.class.getName());
+            }
+
             TimeZone userTimeZone = userSessionSource.getUserSession().getTimeZone();
             Date date;
-            if (userTimeZone != null) {
+            if (userTimeZone != null && temporalType != null && temporalType == TemporalType.TIMESTAMP
+                    && (ignoreUserTimeZone == null || Boolean.FALSE.equals(ignoreUserTimeZone))) {
                 date = timeZones.convert((Date) cellValue, TimeZone.getDefault(), userTimeZone);
             } else {
                 date = (Date) cellValue;
@@ -458,10 +470,18 @@ public class ExcelExporter {
 
             cell.setCellValue(date);
 
-            if (isFull)
-                cell.setCellStyle(timeFormatCellStyle);
-            else
-                cell.setCellStyle(dateFormatCellStyle);
+            if (temporalType != null) {
+                switch (temporalType) {
+                    case DATE:
+                        cell.setCellStyle(dateFormatCellStyle);
+                        break;
+                    case TIME:
+                        cell.setCellStyle(timeFormatCellStyle);
+                        break;
+                    case TIMESTAMP:
+                        cell.setCellStyle(dateTimeFormatCellStyle);
+                }
+            }
 
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
                 String str = Datatypes.getNN(Date.class).format(date);
