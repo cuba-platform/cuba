@@ -53,61 +53,60 @@ public class MenuCommand {
 
     public void execute() {
         StopWatch sw = new Log4JStopWatch("MenuItem." + windowInfo.getId());
-        try {
-            Element descriptor = item.getDescriptor();
-            Map<String, Object> params = loadParams(descriptor);
 
-            OpenType openType = OpenType.NEW_TAB;
-            String openTypeStr = descriptor.attributeValue("openType");
-            if (StringUtils.isNotEmpty(openTypeStr)) {
-                openType = OpenType.valueOf(openTypeStr);
-            }
+        Element descriptor = item.getDescriptor();
+        Map<String, Object> params = loadParams(descriptor);
 
-            WindowManagerProvider wmProvider = AppBeans.get(WindowManagerProvider.NAME);
-            WindowManager wm = wmProvider.get();
-
-            if (openType.getOpenMode() == OpenMode.DIALOG) {
-                String resizable = descriptor.attributeValue("resizable");
-                if (StringUtils.isNotEmpty(resizable)) {
-                    wm.getDialogParams().setResizable(Boolean.parseBoolean(resizable));
-                }
-            }
-
-            final String id = windowInfo.getId();
-            if (id.endsWith(Window.CREATE_WINDOW_SUFFIX) || id.endsWith(Window.EDITOR_WINDOW_SUFFIX)) {
-                Entity entityItem;
-                if (params.containsKey("item")) {
-                    entityItem = (Entity) params.get("item");
-                } else {
-                    final String[] strings = id.split("[.]");
-                    String metaClassName;
-                    if (strings.length == 2) {
-                        metaClassName = strings[0];
-                    } else if (strings.length == 3) {
-                        metaClassName = strings[1];
-                    } else {
-                        throw new UnsupportedOperationException();
-                    }
-
-                    Metadata metadata = AppBeans.get(Metadata.NAME);
-                    entityItem = metadata.create(metaClassName);
-                }
-                wm.openEditor(
-                        windowInfo,
-                        entityItem,
-                        openType,
-                        params
-                );
-            } else {
-                wm.openWindow(
-                        windowInfo,
-                        openType,
-                        params
-                );
-            }
-        } finally {
-            sw.stop();
+        OpenType openType = OpenType.NEW_TAB;
+        String openTypeStr = descriptor.attributeValue("openType");
+        if (StringUtils.isNotEmpty(openTypeStr)) {
+            openType = OpenType.valueOf(openTypeStr);
         }
+
+        WindowManagerProvider wmProvider = AppBeans.get(WindowManagerProvider.NAME);
+        WindowManager wm = wmProvider.get();
+
+        if (openType.getOpenMode() == OpenMode.DIALOG) {
+            String resizable = descriptor.attributeValue("resizable");
+            if (StringUtils.isNotEmpty(resizable)) {
+                wm.getDialogParams().setResizable(Boolean.parseBoolean(resizable));
+            }
+        }
+
+        final String id = windowInfo.getId();
+        if (id.endsWith(Window.CREATE_WINDOW_SUFFIX) || id.endsWith(Window.EDITOR_WINDOW_SUFFIX)) {
+            Entity entityItem;
+            if (params.containsKey("item")) {
+                entityItem = (Entity) params.get("item");
+            } else {
+                final String[] strings = id.split("[.]");
+                String metaClassName;
+                if (strings.length == 2) {
+                    metaClassName = strings[0];
+                } else if (strings.length == 3) {
+                    metaClassName = strings[1];
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+
+                Metadata metadata = AppBeans.get(Metadata.NAME);
+                entityItem = metadata.create(metaClassName);
+            }
+            wm.openEditor(
+                    windowInfo,
+                    entityItem,
+                    openType,
+                    params
+            );
+        } else {
+            wm.openWindow(
+                    windowInfo,
+                    openType,
+                    params
+            );
+        }
+
+        sw.stop();
     }
 
     private Map<String, Object> loadParams(Element descriptor) {

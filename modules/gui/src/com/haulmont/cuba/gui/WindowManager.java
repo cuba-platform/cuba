@@ -30,6 +30,7 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.data.impl.GenericDataSupplier;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
+import com.haulmont.cuba.gui.logging.UserActionsLogger;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
@@ -48,6 +49,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -61,6 +63,8 @@ import java.util.concurrent.Callable;
  * GenericUI class intended for creation and opening application screens.
  */
 public abstract class WindowManager {
+
+    private org.slf4j.Logger userActionsLog = LoggerFactory.getLogger(UserActionsLogger.class);
 
     /**
      * Constant that is passed to {@link Window#close(String)} and {@link Window#close(String, boolean)} methods when
@@ -582,6 +586,7 @@ public abstract class WindowManager {
                 putToWindowMap(window, hashCode);
             }
             showWindow(window, caption, description, openType, windowInfo.getMultipleOpen());
+            userActionsLog.trace("Window {} was opened", windowInfo.getId());
             return window;
         } else {
             Class screenClass = windowInfo.getScreenClass();
@@ -590,6 +595,7 @@ public abstract class WindowManager {
                 if (openType.getOpenMode() == OpenMode.NEW_TAB) {
                     putToWindowMap(window, hashCode);
                 }
+                userActionsLog.trace("Window {} was opened", windowInfo.getId());
                 return window;
             } else
                 return null;
@@ -711,6 +717,8 @@ public abstract class WindowManager {
         String description = loadDescription(window, params);
         showWindow(window, caption, description, openType, false);
 
+        userActionsLog.trace("Editor {} was opened", windowInfo.getId());
+
         return (Window.Editor) window;
     }
 
@@ -755,6 +763,8 @@ public abstract class WindowManager {
         String description = loadDescription(window, params);
 
         showWindow(window, caption, description, openType, false);
+
+        userActionsLog.trace("Lookup {} was opened", windowInfo.getId());
 
         return (Window.Lookup) window;
     }
@@ -828,6 +838,8 @@ public abstract class WindowManager {
         loadDescriptorWatch.stop();
 
         initDebugIds(component);
+
+        userActionsLog.trace("Frame {} was opened", windowInfo.getId());
 
         return component;
     }
