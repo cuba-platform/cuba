@@ -126,14 +126,13 @@
                                 </rows>
                             </grid>
 
-                            <vbox id="panelSpacer"/>
-
-                            <hbox id="applyPermissionPane" width="100%" expand="horizontalSpacer" margin="true"
+                            <hbox id="applyPermissionPane" width="100%" margin="true"
                                   visible="false">
-                                <label id="horizontalSpacer"/>
                                 <button id="applyPermissionMaskBtn" caption="msg://actions.Apply" icon="icons/ok.png"
-                                        invoke="applyPermissionMask"/>
+                                        align="MIDDLE_RIGHT" invoke="applyPermissionMask"/>
                             </hbox>
+
+                            <vbox id="panelSpacer"/>
                         </vbox>
                     </groupBox>
                 </vbox>
