@@ -273,7 +273,7 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
         setRequired(metaProperty.isMandatory());
         if (StringUtils.isEmpty(getRequiredMessage())) {
             MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-            setRequiredMessage(messageTools.getDefaultRequiredMessage(metaProperty));
+            setRequiredMessage(messageTools.getDefaultRequiredMessage(metaClass, property));
         }
     }
 

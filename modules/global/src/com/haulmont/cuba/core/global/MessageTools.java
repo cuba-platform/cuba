@@ -204,11 +204,24 @@ public class MessageTools {
     }
 
     /**
+     * @deprecated Use {@link #getDefaultRequiredMessage(MetaClass, String)}
      * @return default required message for specified property.
      */
+    @Deprecated
     public String getDefaultRequiredMessage(MetaProperty metaProperty) {
         return messages.formatMessage(messages.getMainMessagePack(),
                 "validation.required.defaultMsg", getPropertyCaption(metaProperty));
+    }
+
+    /**
+     * Get default required message for specified property of MetaClass.
+     * @param metaClass     MetaClass containing the property
+     * @param propertyName  property's name
+     * @return              default required message for specified property of MetaClass
+     */
+    public String getDefaultRequiredMessage(MetaClass metaClass, String propertyName) {
+        return messages.formatMessage(messages.getMainMessagePack(),
+                "validation.required.defaultMsg", getPropertyCaption(metaClass, propertyName));
     }
 
     /**

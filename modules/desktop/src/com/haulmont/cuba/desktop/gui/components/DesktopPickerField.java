@@ -315,7 +315,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
         setRequired(metaProperty.isMandatory());
         if (StringUtils.isEmpty(getRequiredMessage())) {
             MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-            setRequiredMessage(messageTools.getDefaultRequiredMessage(metaProperty));
+            setRequiredMessage(messageTools.getDefaultRequiredMessage(datasource.getMetaClass(), property));
         }
 
         if (metaProperty.isReadOnly()) {

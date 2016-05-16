@@ -88,7 +88,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends We
         setRequired(metaProperty.isMandatory());
         if (StringUtils.isEmpty(getRequiredMessage())) {
             MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-            setRequiredMessage(messageTools.getDefaultRequiredMessage(metaProperty));
+            setRequiredMessage(messageTools.getDefaultRequiredMessage(metaClass, property));
         }
 
         if (metaProperty.isReadOnly()) {
