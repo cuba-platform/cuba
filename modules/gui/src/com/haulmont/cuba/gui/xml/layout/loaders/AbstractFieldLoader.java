@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.components.Field;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -61,7 +62,9 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
         if (requiredMessage != null) {
             component.setRequiredMessage(loadResourceString(requiredMessage));
         } else if (component.isRequired() && component.getDatasource() != null) {
-            component.setRequiredMessage(messageTools.getDefaultRequiredMessage(component.getMetaProperty()));
+            MetaPropertyPath propertyPath = component.getMetaPropertyPath();
+            component.setRequiredMessage(messageTools.getDefaultRequiredMessage(
+                    propertyPath.getMetaClass(), propertyPath.getMetaProperty().getName()));
         }
     }
 

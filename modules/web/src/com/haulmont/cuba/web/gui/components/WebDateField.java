@@ -340,7 +340,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         setRequired(metaProperty.isMandatory());
         if (StringUtils.isEmpty(getRequiredMessage())) {
             MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-            setRequiredMessage(messageTools.getDefaultRequiredMessage(metaProperty));
+            setRequiredMessage(messageTools.getDefaultRequiredMessage(metaClass, property));
         }
 
         if (metaProperty.isReadOnly()) {

@@ -585,7 +585,7 @@ public class EntityInspectorEditor extends AbstractWindow {
 
         if (required) {
             MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-            field.setRequiredError(messageTools.getDefaultRequiredMessage(metaProperty));
+            field.setRequiredError(messageTools.getDefaultRequiredMessage(metaClass, metaProperty.getName()));
         }
         fieldGroup.addField(field);
         if (custom)
