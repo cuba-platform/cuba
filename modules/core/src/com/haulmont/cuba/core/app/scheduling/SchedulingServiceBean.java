@@ -49,15 +49,14 @@ public class SchedulingServiceBean implements SchedulingService {
 
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    protected List<String> beansToIgnore = Arrays.asList("cubaDataSource", "entityManagerFactory", "hibernateSessionFactory",
-            "mailSendTaskExecutor", "scheduler", "sqlSession", "sqlSessionFactory", "transactionManager",
-            "cuba_ServerInfoService", "cuba_LoginService", "cuba_LocalizedMessageService");
-
     @Inject
     protected Persistence persistence;
 
     @Inject
     private SchedulingAPI scheduling;
+
+    @Inject
+    protected SchedulingBeansMetadata schedulingBeansMetadata;
 
     private ClusterManagerAPI clusterManager;
 
@@ -74,76 +73,7 @@ public class SchedulingServiceBean implements SchedulingService {
 
     @Override
     public Map<String, List<MethodInfo>> getAvailableBeans() {
-        Map<String, List<MethodInfo>> result = new TreeMap<>();
-
-        String[] beanNames = AppContext.getApplicationContext().getBeanDefinitionNames();
-        for (String name : beanNames) {
-            if (AppContext.getApplicationContext().isSingleton(name)
-                    && !name.startsWith("org.springframework.")
-                    && !beansToIgnore.contains(name)) {
-                List<MethodInfo> availableMethods = getAvailableMethods(name);
-                if (!availableMethods.isEmpty())
-                    result.put(name, availableMethods);
-            }
-        }
-
-        return result;
-    }
-
-    protected List<MethodInfo> getAvailableMethods(String beanName) {
-        List<MethodInfo> methods = new ArrayList<>();
-        try {
-            AutowireCapableBeanFactory beanFactory = AppContext.getApplicationContext().getAutowireCapableBeanFactory();
-            if (beanFactory instanceof CubaDefaultListableBeanFactory) {
-                BeanDefinition beanDefinition = ((CubaDefaultListableBeanFactory) beanFactory).getBeanDefinition(beanName);
-                if (beanDefinition.isAbstract())
-                    return methods;
-            }
-
-            Object bean = AppBeans.get(beanName);
-
-            List<Class> classes = ClassUtils.getAllInterfaces(bean.getClass());
-            for (Class aClass : classes) {
-                if (aClass.getName().startsWith("org.springframework."))
-                    continue;
-
-                Class<?> targetClass = bean instanceof TargetClassAware ? ((TargetClassAware) bean).getTargetClass() : bean.getClass();
-
-                Service serviceAnn = targetClass.getAnnotation(Service.class);
-                if (serviceAnn != null)
-                    return methods;
-
-                for (Method method : aClass.getMethods()) {
-                    if (isMethodAvailable(method)) {
-                        Method targetClassMethod = targetClass.getMethod(method.getName(), method.getParameterTypes());
-                        List<MethodParameterInfo> methodParameters = getMethodParameters(targetClassMethod);
-                        MethodInfo methodInfo = new MethodInfo(method.getName(), methodParameters);
-                        addMethod(methods, methodInfo);
-                    }
-                }
-
-                if (methods.isEmpty()) {
-                    for (Method method : bean.getClass().getMethods()) {
-                        if (!method.getDeclaringClass().equals(Object.class) && isMethodAvailable(method)) {
-                            List<MethodParameterInfo> methodParameters = getMethodParameters(method);
-                            MethodInfo methodInfo = new MethodInfo(method.getName(), methodParameters);
-                            addMethod(methods, methodInfo);
-                        }
-                    }
-                }
-            }
-        } catch (Throwable t) {
-            log.debug(t.getMessage());
-        }
-        return methods;
-    }
-
-    private void addMethod(List<MethodInfo> methods, MethodInfo methodInfo) {
-        for (MethodInfo mi : methods) {
-            if (mi.definitionEquals(methodInfo))
-                return;
-        }
-        methods.add(methodInfo);
+        return schedulingBeansMetadata.getAvailableBeans();
     }
 
     @Override
@@ -185,32 +115,6 @@ public class SchedulingServiceBean implements SchedulingService {
         } finally {
             tx.end();
         }
-    }
-
-    private boolean isMethodAvailable(Method method) {
-        for (Class<?> aClass : method.getParameterTypes()) {
-            if (!aClass.equals(String.class))
-                return false;
-        }
-        return true;
-    }
-
-    private List<MethodParameterInfo> getMethodParameters(Method method) {
-        ArrayList<MethodParameterInfo> params = new ArrayList<>();
-
-        Class<?>[] parameterTypes = method.getParameterTypes();
-
-        LocalVariableTableParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
-        String[] parameterNames = parameterNameDiscoverer.getParameterNames(method);
-
-        if (parameterTypes != null) {
-            for (int i = 0; i < parameterTypes.length; i++) {
-                String parameterName = parameterNames != null ? parameterNames[i] : "arg" + i;
-                MethodParameterInfo parameterInfo = new MethodParameterInfo(parameterTypes[i], parameterName, null);
-                params.add(parameterInfo);
-            }
-        }
-        return params;
     }
 
     public static class SetSchedulingActiveMsg implements Serializable {

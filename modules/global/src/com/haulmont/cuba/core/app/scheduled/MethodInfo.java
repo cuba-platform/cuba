@@ -91,7 +91,7 @@ public class MethodInfo implements Serializable {
         for (int i = 0; i < this.parameters.size(); i++) {
             MethodParameterInfo param1 = this.parameters.get(i);
             MethodParameterInfo param2 = methodInfo.getParameters().get(i);
-            if (!param1.getType().equals(param2.getType()))
+            if (!param1.getTypeName().equals(param2.getTypeName()))
                 return false;
         }
 
