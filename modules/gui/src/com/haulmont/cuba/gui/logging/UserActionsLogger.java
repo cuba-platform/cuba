@@ -17,7 +17,8 @@
 package com.haulmont.cuba.gui.logging;
 
 /**
- * To log user actions such as opening of window, closing of window, click on button, select menu item and other
+ * To log user actions such as opening of window, closing of window, click on button, select menu item and other.
+ * It has no implementation: it is used only for creation of a logger
  */
 public interface UserActionsLogger {
 }
