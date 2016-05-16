@@ -1178,8 +1178,9 @@
 
         <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasEditState"/>
-        <xs:attributeGroup ref="hasWidthProp"/>
         <xs:attributeGroup ref="hasVisibility"/>
+
+        <xs:attribute name="width" type="componentSize"/>
 
         <xs:attribute name="requiredMessage" type="resourceString"/>
         <xs:attribute name="custom" type="xs:boolean"/>
