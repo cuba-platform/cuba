@@ -202,10 +202,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
         field.setFormatter(loadFormatter(element));
 
-        String width = loadThemeString(element.attributeValue("width"));
-        if (!StringUtils.isEmpty(width)) {
-            field.setWidth(width);
-        }
+        loadWidth(field, element);
 
         field.setCustom(customField);
 
@@ -221,6 +218,15 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
         }
 
         return field;
+    }
+
+    protected void loadWidth(FieldGroup.FieldConfig field, Element element) {
+        final String width = element.attributeValue("width");
+        if ("auto".equalsIgnoreCase(width)) {
+            field.setWidth(Component.AUTO_SIZE);
+        } else if (StringUtils.isNotBlank(width)) {
+            field.setWidth(loadThemeString(width));
+        }
     }
 
     protected void loadValidators(FieldGroup resultComponent, FieldGroup.FieldConfig field) {
