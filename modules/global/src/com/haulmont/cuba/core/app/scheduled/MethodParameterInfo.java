@@ -17,6 +17,8 @@
 
 package com.haulmont.cuba.core.app.scheduled;
 
+import com.haulmont.bali.util.ReflectionHelper;
+
 import java.io.Serializable;
 
 /**
@@ -25,10 +27,11 @@ public class MethodParameterInfo implements Serializable {
 
     private Class type;
     private String name;
+    private String typeName;
     private Object value;
 
-    public MethodParameterInfo(Class type, String name, Object value) {
-        this.type = type;
+    public MethodParameterInfo(String typeName, String name, Object value) {
+        this.typeName = typeName;
         this.name = name;
         this.value = value;
     }
@@ -42,11 +45,19 @@ public class MethodParameterInfo implements Serializable {
     }
 
     public Class getType() {
-        return type;
+        return type == null ? ReflectionHelper.getClass(typeName) : type;
     }
 
     public void setType(Class type) {
         this.type = type;
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
     }
 
     public Object getValue() {
