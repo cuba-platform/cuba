@@ -733,7 +733,8 @@ configure(portalModule) {
         compile(group: 'org.springframework', name: 'spring-tx', version: springVersion)
         compile(group: 'org.springframework', name: 'spring-jdbc', version: springVersion)
 
-        compile(group: 'org.thymeleaf', name: 'thymeleaf', version: '2.0.11')
+        compile(group: 'org.thymeleaf', name: 'thymeleaf', version: '3.0.0.RELEASE')
+        compile(group: 'org.thymeleaf', name: 'thymeleaf-spring4', version: '3.0.0.RELEASE')
 
         testCompile(clientModule.sourceSets.test.output)
     }
