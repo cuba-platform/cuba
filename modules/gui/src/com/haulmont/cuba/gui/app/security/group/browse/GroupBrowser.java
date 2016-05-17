@@ -23,7 +23,6 @@ import com.haulmont.cuba.core.app.importexport.EntityImportView;
 import com.haulmont.cuba.core.app.importexport.ReferenceImportBehaviour;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
@@ -137,7 +136,6 @@ public class GroupBrowser extends AbstractWindow {
             }
         };
         groupEditAction.setOpenType(OpenType.DIALOG);
-        groupEditAction.setWindowParams(ParamsMap.of("edit", true));
         groupsTree.addAction(groupEditAction);
 
         groupCreateButton.addAction(createAction);
