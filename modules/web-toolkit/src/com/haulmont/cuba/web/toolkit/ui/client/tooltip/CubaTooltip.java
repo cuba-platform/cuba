@@ -22,8 +22,7 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.DomEvent;
-import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -39,8 +38,6 @@ import com.vaadin.client.ui.orderedlayout.Slot;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 public class CubaTooltip extends VTooltip {
 
     public static final String REQUIRED_INDICATOR = "v-required-field-indicator";
@@ -78,6 +75,20 @@ public class CubaTooltip extends VTooltip {
 
     public static void checkRequiredInicatorMode() {
         requiredIndicatorVisible = null;
+    }
+
+    @Override
+    public void connectHandlersToWidget(Widget widget) {
+        Profiler.enter("VTooltip.connectHandlersToWidget");
+        widget.addDomHandler(tooltipEventHandler, MouseDownEvent.getType());
+        widget.addDomHandler(tooltipEventHandler, KeyDownEvent.getType());
+
+        if (!BrowserInfo.get().isIOS()) {
+            widget.addDomHandler(tooltipEventHandler, MouseMoveEvent.getType());
+            widget.addDomHandler(tooltipEventHandler, FocusEvent.getType());
+            widget.addDomHandler(tooltipEventHandler, BlurEvent.getType());
+        }
+        Profiler.leave("VTooltip.connectHandlersToWidget");
     }
 
     public class CubaTooltipEventHandler extends TooltipEventHandler {
