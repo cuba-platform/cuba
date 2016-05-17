@@ -19,10 +19,13 @@ package com.haulmont.cuba.core.sys.serialization;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoException;
+import com.esotericsoftware.kryo.Registration;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.CollectionSerializer;
 import com.esotericsoftware.kryo.serializers.JavaSerializer;
+import com.esotericsoftware.kryo.util.DefaultClassResolver;
+import com.esotericsoftware.kryo.util.MapReferenceResolver;
 import com.esotericsoftware.kryo.util.ObjectMap;
 import com.esotericsoftware.kryo.util.Util;
 import com.esotericsoftware.reflectasm.ConstructorAccess;
@@ -77,7 +80,7 @@ public class KryoSerialization implements Serialization {
     };
 
     protected Kryo newKryoInstance() {
-        Kryo kryo = new Kryo();
+        Kryo kryo = new Kryo(new CubaClassResolver(), new MapReferenceResolver());
         kryo.setInstantiatorStrategy(new CubaInstantiatorStrategy());
 
         //To work properly must itself be loaded by the application classloader (i.e. by classloader capable of loading
@@ -276,6 +279,18 @@ public class KryoSerialization implements Serialization {
             } catch (Exception ignored) {
             }
             return fallbackStrategy.newInstantiatorOf(type);
+        }
+    }
+
+    public static class CubaClassResolver extends DefaultClassResolver {
+        @Override
+        public Registration registerImplicit(Class type) {
+            if (type == null || Serializable.class.isAssignableFrom(type) || Externalizable.class.isAssignableFrom(type)) {
+                return super.registerImplicit(type);
+            } else {
+                throw new IllegalArgumentException("Class is not registered: " + Util.className(type)
+                        + "\nNote: To register this class use: kryo.register(" + Util.className(type) + ".class);");
+            }
         }
     }
 }
