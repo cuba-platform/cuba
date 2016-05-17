@@ -33,7 +33,6 @@ public class GroupEditor extends AbstractEditor {
 
     @Override
     protected void postInit() {
-        super.postInit();
         if (!PersistenceHelper.isNew(getItem())) {
             parentField.setVisible(true);
             PickerField.LookupAction lookupAction = new PickerField.LookupAction(parentField);
