@@ -22,4 +22,74 @@
       padding-right: ceil($v-unit-size/6) + ceil($v-border-radius/3);
     }
   }
+
+  .v-ios.v-touch &,
+  .v-android.v-touch & {
+    .#{$primary-stylename}-suggestpopup {
+      div[class*="next"] span,
+      div[class*="prev"] span {
+          display: none;
+      }
+
+      div[class*="next"],
+      div[class*="prev"] {
+        @include box-shadow(valo-bevel-and-shadow($bevel: null, $shadow: $v-overlay-shadow));
+        @include box-sizing(border-box);
+        opacity: 1;
+        display: block;
+        height: $v-unit-size;
+        line-height: $v-unit-size;
+        width: 100%;
+        margin: 0 auto 0 auto;
+        overflow: hidden;
+        position: relative;
+        background-color: $v-overlay-background-color;
+      }
+
+      div[class*="next"]:before,
+      div[class*="prev"]:before {
+        font-size: 1.5em;
+      }
+
+      div[class*="prev"] {
+        z-index: 1;
+      }
+
+      div[class*="suggestmenu"] {
+        border-radius: 0;
+        z-index: 2;
+        @include box-shadow(valo-bevel-and-shadow($bevel: null, $shadow: $v-overlay-shadow));
+      }
+
+      div[class*="next"] {
+        z-index: 3;
+      }
+
+      div[class*="next"]:hover,
+      div[class*="prev"]:hover {
+        background-color: $v-overlay-background-color;
+      }
+
+      div[class*="next"] {
+        border-radius: 0 0 $v-border-radius $v-border-radius;
+      }
+
+      div[class*="prev"] {
+        border-radius: $v-border-radius $v-border-radius 0 0;
+      }
+
+      div[class*="page-off"] {
+        cursor: default;
+      }
+
+      div[class*="page-off"]:before {
+        opacity: 0.2;
+      }
+
+      div[class*="page"] {
+        @include transition(none);
+        @include transform(none);
+      }
+    }
+  }
 }
