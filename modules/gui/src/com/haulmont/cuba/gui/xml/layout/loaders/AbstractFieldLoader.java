@@ -65,7 +65,7 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
         } else if (component.isRequired() && component.getDatasource() != null) {
             MetaPropertyPath propertyPath = component.getMetaPropertyPath();
             component.setRequiredMessage(messageTools.getDefaultRequiredMessage(
-                    propertyPath.getMetaClass(), propertyPath.getMetaProperty().getName()));
+                    propertyPath.getMetaClass(), propertyPath.toString()));
         }
     }
 
