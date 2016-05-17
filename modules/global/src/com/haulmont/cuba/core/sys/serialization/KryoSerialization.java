@@ -24,6 +24,8 @@ import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.CollectionSerializer;
 import com.esotericsoftware.kryo.serializers.JavaSerializer;
 import com.esotericsoftware.kryo.util.ObjectMap;
+import com.esotericsoftware.kryo.util.Util;
+import com.esotericsoftware.reflectasm.ConstructorAccess;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.haulmont.chile.core.model.impl.MetaClassImpl;
@@ -48,10 +50,14 @@ import org.eclipse.persistence.internal.indirection.jdk8.IndirectMap;
 import org.eclipse.persistence.internal.indirection.jdk8.IndirectSet;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.jpa.jpql.parser.DateTime;
+import org.objenesis.instantiator.ObjectInstantiator;
+import org.objenesis.strategy.InstantiatorStrategy;
 import org.objenesis.strategy.StdInstantiatorStrategy;
 
 import java.io.*;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Modifier;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -72,7 +78,7 @@ public class KryoSerialization implements Serialization {
 
     protected Kryo newKryoInstance() {
         Kryo kryo = new Kryo();
-        kryo.setInstantiatorStrategy(new Kryo.DefaultInstantiatorStrategy(new StdInstantiatorStrategy()));
+        kryo.setInstantiatorStrategy(new CubaInstantiatorStrategy());
 
         //To work properly must itself be loaded by the application classloader (i.e. by classloader capable of loading
         //all the other application classes). For web application it means placing this class inside webapp folder.
@@ -218,6 +224,58 @@ public class KryoSerialization implements Serialization {
             } catch (Exception ex) {
                 throw new KryoException("Error during Java deserialization.", ex);
             }
+        }
+    }
+
+    /**
+     * Strategy first tries to find and use a no-arg constructor and if it fails to do so, it should try to use
+     * {@link StdInstantiatorStrategy} as a fallback, because this one does not invoke any constructor at all.
+     * Strategy is a copy {@link Kryo.DefaultInstantiatorStrategy}, but if instantiation fails, use fallback to create object
+     */
+    public static class CubaInstantiatorStrategy implements org.objenesis.strategy.InstantiatorStrategy {
+        private final InstantiatorStrategy fallbackStrategy = new StdInstantiatorStrategy();
+
+        @Override
+        public ObjectInstantiator newInstantiatorOf(Class type) {
+            if (!Util.isAndroid) {
+                // Use ReflectASM if the class is not a non-static member class.
+                Class enclosingType = type.getEnclosingClass();
+                boolean isNonStaticMemberClass = enclosingType != null && type.isMemberClass()
+                        && !Modifier.isStatic(type.getModifiers());
+                if (!isNonStaticMemberClass) {
+                    try {
+                        final ConstructorAccess access = ConstructorAccess.get(type);
+                        return () -> {
+                            try {
+                                return access.newInstance();
+                            } catch (Exception ex) {
+                                return fallbackStrategy.newInstantiatorOf(type).newInstance();
+                            }
+                        };
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+            // Reflection.
+            try {
+                Constructor ctor;
+                try {
+                    ctor = type.getConstructor((Class[]) null);
+                } catch (Exception ex) {
+                    ctor = type.getDeclaredConstructor((Class[]) null);
+                    ctor.setAccessible(true);
+                }
+                final Constructor constructor = ctor;
+                return () -> {
+                    try {
+                        return constructor.newInstance();
+                    } catch (Exception ex) {
+                        return fallbackStrategy.newInstantiatorOf(type).newInstance();
+                    }
+                };
+            } catch (Exception ignored) {
+            }
+            return fallbackStrategy.newInstantiatorOf(type);
         }
     }
 }
