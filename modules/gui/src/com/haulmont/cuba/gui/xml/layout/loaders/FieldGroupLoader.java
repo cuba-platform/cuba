@@ -295,8 +295,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
                 checkNotNullArgument(propertyPath, "Could not resolve property path '%s' in '%s'", field.getId(), metaClass);
 
-                MetaProperty metaProperty = propertyPath.getMetaProperty();
-                requiredMsg = messageTools.getDefaultRequiredMessage(metaClass, metaProperty.getName());
+                requiredMsg = messageTools.getDefaultRequiredMessage(metaClass, propertyPath.toString());
             }
 
             String requiredError = loadResourceString(requiredMsg);
