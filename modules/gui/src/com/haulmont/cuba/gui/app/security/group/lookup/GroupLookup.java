@@ -19,7 +19,6 @@ package com.haulmont.cuba.gui.app.security.group.lookup;
 import com.haulmont.cuba.gui.components.AbstractLookup;
 import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
-import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.Group;
 
 import javax.inject.Inject;
@@ -43,7 +42,7 @@ public class GroupLookup extends AbstractLookup {
         groups.expandTree();
 
         if (params.containsKey("exclude")) {
-            groupsDs.excludeItem((Group) params.get("exclude"));
+            excludeItem((Group) params.get("exclude"));
         }
 
         Collection<UUID> rootItemIds = groupsDs.getRootItemIds();
@@ -52,5 +51,13 @@ public class GroupLookup extends AbstractLookup {
             Group item = groupsDs.getItem(firstId);
             groups.setSelected(item);
         }
+    }
+
+    protected void excludeItem(Group group) {
+        for (UUID childId : groupsDs.getChildren(group.getId())) {
+            excludeItem(groupsDs.getItem(childId));
+        }
+
+        groupsDs.excludeItem(group);
     }
 }
