@@ -15,6 +15,12 @@
  *
  */
 
+$cuba-sourcecodeeditor-background-color: if(is-dark-color($v-app-background-color), darken($v-app-background-color, 4%), lighten($v-app-background-color, 8%)) !default;
+
+$cuba-sourcecodeeditor-gutter-background-color: if(is-dark-color($v-app-background-color), lighten($v-app-background-color, 8%), darken($v-app-background-color, 4%)) !default;
+
+$cuba-sourcecodeeditor-gutter-active-line-background-color: if(is-dark-color($v-app-background-color), lighten($v-app-background-color, 4%), darken($v-app-background-color, 16%)) !default;
+
 @mixin halo-sourcecodeeditor($primary-stylename : AceEditorWidget) {
   .#{$primary-stylename} {
     $padding-width: ceil($v-unit-size/6);
@@ -24,12 +30,29 @@
     .ace_cursor {
       visibility: hidden;
       border-left-width: 1px;
+      color: $v-font-color;
     }
 
     .ace_text-input,
     .ace_editor {
       font-size: $v-font-size;
       color: $v-font-color;
+    }
+
+    .ace_gutter {
+      background: $cuba-sourcecodeeditor-gutter-background-color;
+
+      .ace_gutter-active-line {
+        background: $cuba-sourcecodeeditor-gutter-active-line-background-color;
+      }
+    }
+
+    .ace_selection {
+      background: rgb(51,153,255) !important;
+    }
+
+    .ace_content {
+      background-color: $cuba-sourcecodeeditor-background-color;
     }
   }
 
