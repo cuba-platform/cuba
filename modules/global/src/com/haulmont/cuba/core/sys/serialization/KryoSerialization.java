@@ -54,6 +54,8 @@ import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.objenesis.instantiator.ObjectInstantiator;
 import org.objenesis.strategy.InstantiatorStrategy;
 import org.objenesis.strategy.StdInstantiatorStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.lang.reflect.Constructor;
@@ -70,6 +72,8 @@ import java.util.GregorianCalendar;
  * The serialization implementation using Kryo serialization
  */
 public class KryoSerialization implements Serialization {
+
+    protected static final Logger log = LoggerFactory.getLogger(KryoSerialization.class);
 
     protected boolean onlySerializable = true;
     protected final ThreadLocal<Kryo> kryos = new ThreadLocal<Kryo>() {
@@ -247,23 +251,24 @@ public class KryoSerialization implements Serialization {
 
         @Override
         public ObjectInstantiator newInstantiatorOf(Class type) {
-            if (!Util.isAndroid) {
-                // Use ReflectASM if the class is not a non-static member class.
-                Class enclosingType = type.getEnclosingClass();
-                boolean isNonStaticMemberClass = enclosingType != null && type.isMemberClass()
-                        && !Modifier.isStatic(type.getModifiers());
-                if (!isNonStaticMemberClass) {
-                    try {
-                        final ConstructorAccess access = ConstructorAccess.get(type);
-                        return () -> {
-                            try {
-                                return access.newInstance();
-                            } catch (Exception ex) {
-                                return fallbackStrategy.newInstantiatorOf(type).newInstance();
+            // Use ReflectASM if the class is not a non-static member class.
+            Class enclosingType = type.getEnclosingClass();
+            boolean isNonStaticMemberClass = enclosingType != null && type.isMemberClass()
+                    && !Modifier.isStatic(type.getModifiers());
+            if (!isNonStaticMemberClass) {
+                try {
+                    final ConstructorAccess access = ConstructorAccess.get(type);
+                    return () -> {
+                        try {
+                            return access.newInstance();
+                        } catch (Exception ex) {
+                            if (log.isTraceEnabled()) {
+                                log.trace("Unable instantiate " + Util.className(type), ex);
                             }
-                        };
-                    } catch (Exception ignored) {
-                    }
+                            return fallbackStrategy.newInstantiatorOf(type).newInstance();
+                        }
+                    };
+                } catch (Exception ignored) {
                 }
             }
             // Reflection.
@@ -280,6 +285,9 @@ public class KryoSerialization implements Serialization {
                     try {
                         return constructor.newInstance();
                     } catch (Exception ex) {
+                        if (log.isTraceEnabled()) {
+                            log.trace("Unable instantiate " + Util.className(type), ex);
+                        }
                         return fallbackStrategy.newInstantiatorOf(type).newInstance();
                     }
                 };
