@@ -263,7 +263,7 @@ public class KryoSerialization implements Serialization {
                             return access.newInstance();
                         } catch (Exception ex) {
                             if (log.isTraceEnabled()) {
-                                log.trace("Unable instantiate " + Util.className(type), ex);
+                                log.trace("Unable instantiate class {}", Util.className(type), ex);
                             }
                             return fallbackStrategy.newInstantiatorOf(type).newInstance();
                         }
@@ -286,7 +286,7 @@ public class KryoSerialization implements Serialization {
                         return constructor.newInstance();
                     } catch (Exception ex) {
                         if (log.isTraceEnabled()) {
-                            log.trace("Unable instantiate " + Util.className(type), ex);
+                            log.trace("Unable instantiate class {}", Util.className(type), ex);
                         }
                         return fallbackStrategy.newInstantiatorOf(type).newInstance();
                     }
