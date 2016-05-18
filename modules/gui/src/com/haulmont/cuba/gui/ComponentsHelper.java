@@ -33,7 +33,6 @@ import java.util.*;
 
 /**
  * Utility class working with GenericUI components.
- *
  */
 public abstract class ComponentsHelper {
     public static final String[] UNIT_SYMBOLS = { "px", "pt", "pc", "em", "ex", "mm", "cm", "in", "%" };
@@ -49,7 +48,8 @@ public abstract class ComponentsHelper {
 
         fillChildComponents(container, res);
 
-        return res;
+        // do not return LinkedHashSet, it uses much more memory than ArrayList
+        return new ArrayList<>(res);
     }
 
     @Nullable
@@ -150,11 +150,12 @@ public abstract class ComponentsHelper {
     @Nullable
     private static Component getComponentByIteration(Component.Container container, String id) {
         for (Component component : container.getOwnComponents()) {
-            if (id.equals(component.getId()))
+            if (id.equals(component.getId())) {
                 return component;
-            else {
-                if (component instanceof Component.Container) {
-                    return getComponentByIteration((Component.Container) component, id);
+            } else if (component instanceof Component.Container) {
+                Component innerComponent = getComponentByIteration((Component.Container) component, id);
+                if (innerComponent != null) {
+                    return innerComponent;
                 }
             }
         }
