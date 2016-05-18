@@ -159,4 +159,29 @@ public interface ServerConfig extends Config {
     @Source(type = SourceType.DATABASE)
     @DefaultBoolean(false)
     boolean getDataManagerChecksSecurityOnMiddleware();
+
+    /**
+     * Whether the brute-force protection on user login is enabled.
+     */
+    @Property("cuba.bruteForceProtection.enabled")
+    @Source(type = SourceType.DATABASE)
+    @DefaultBoolean(false)
+    boolean getBruteForceProtectionEnabled();
+
+    /**
+     * @return a maximum number of unsuccessful login attempts
+     */
+    @Property("cuba.bruteForceProtection.maxLoginAttemptsNumber")
+    @Source(type = SourceType.DATABASE)
+    @DefaultInt(5)
+    int getMaxLoginAttemptsNumber();
+
+    /**
+     * @return a time interval in seconds for which a user is blocked after a series of
+     * unsuccessful login attempts
+     */
+    @Property("cuba.bruteForceProtection.blockIntervalSec")
+    @Source(type = SourceType.DATABASE)
+    @DefaultInt(60)
+    int getBruteForceBlockIntervalSec();
 }

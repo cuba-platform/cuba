@@ -21,9 +21,13 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.portal.Connection;
 import com.haulmont.cuba.portal.sys.security.RoleGrantedAuthority;
+import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.LoginException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -41,16 +45,31 @@ import java.util.List;
  */
 public class PortalAuthenticationProvider implements AuthenticationProvider, Serializable {
 
+    protected Logger log = LoggerFactory.getLogger(getClass());
+
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         if (authentication instanceof UsernamePasswordAuthenticationToken) {
             UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) authentication;
 
+            LoginService loginService = AppBeans.get(LoginService.class);
             PortalSession session;
 
+            String login = null;
+            String ipAddress = null;
             try {
                 ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
                 HttpServletRequest request = attributes.getRequest();
+
+                login = (String) token.getPrincipal();
+                ipAddress = request.getRemoteAddr();
+
+                if (loginService.isBruteForceProtectionEnabled()) {
+                    if (loginService.loginAttemptsLeft(login, ipAddress) <= 0) {
+                        log.info("Blocked user login attempt: login={}, ip={}", login, ipAddress);
+                        throw new LockedException("User temporarily blocked");
+                    }
+                }
 
                 HttpSession httpSession = request.getSession();
                 Connection connection = (Connection) httpSession.getAttribute(Connection.NAME);
@@ -60,14 +79,17 @@ public class PortalAuthenticationProvider implements AuthenticationProvider, Ser
 
                 PasswordEncryption passwordEncryption = AppBeans.get(PasswordEncryption.NAME);
 
-                connection.login((String) token.getPrincipal(),
+                connection.login(login,
                         passwordEncryption.getPlainHash((String) token.getCredentials()),
-                        request.getLocale(), request.getRemoteAddr(), request.getHeader("User-Agent"));
+                        request.getLocale(), ipAddress, request.getHeader("User-Agent"));
 
                 httpSession.setAttribute(Connection.NAME, connection);
 
                 session = connection.getSession();
             } catch (LoginException e) {
+                if (loginService.isBruteForceProtectionEnabled()) {
+                    loginService.registerUnsuccessfulLogin(login, ipAddress);
+                }
                 throw new BadCredentialsException("error.login.User");
             }
 

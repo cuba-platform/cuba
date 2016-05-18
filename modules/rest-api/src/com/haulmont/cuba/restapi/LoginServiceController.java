@@ -141,8 +141,15 @@ public class LoginServiceController {
                            HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException {
         Locale locale = localeFromString(localeStr);
 
+        LoginService loginService = AppBeans.get(LoginService.NAME);
         try {
-            LoginService loginService = AppBeans.get(LoginService.NAME);
+            if (loginService.isBruteForceProtectionEnabled()) {
+                if (loginService.loginAttemptsLeft(username, request.getRemoteAddr()) <= 0) {
+                    log.info("Blocked user login attempt: login={}, ip={}", username, request.getRemoteAddr());
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                    return;
+                }
+            }
 
             UserSession userSession = loginService.login(username, passwordEncryption.getPlainHash(password), locale);
 
@@ -172,6 +179,9 @@ public class LoginServiceController {
 
             log.debug(String.format("User %s logged in with REST-API, session id: %s", username, userSession.getId()));
         } catch (LoginException e) {
+            if (loginService.isBruteForceProtectionEnabled()) {
+                loginService.registerUnsuccessfulLogin(username, request.getRemoteAddr());
+            }
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
     }

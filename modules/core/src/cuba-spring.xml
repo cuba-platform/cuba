@@ -167,6 +167,8 @@
                        value-ref="cuba_ClassLoaderManager"/>
                 <entry key="${cuba.webContextName}.cuba:type=StatisticsCounter"
                        value-ref="cuba_StatisticsCounterMBean"/>
+                <entry key="${cuba.webContextName}.cuba:type=BruteForceProtection"
+                       value-ref="cuba_BruteForceProtectionMBean"/>
             </map>
         </property>
     </bean>
