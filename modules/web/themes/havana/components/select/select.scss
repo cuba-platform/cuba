@@ -191,4 +191,10 @@
   .#{$primary-stylename}-prevpage-off span {
     background-image: url(sprites/popup-up-disabled.png);  /** sprite-ref: components-large; */
   }
+
+  .#{$primary-stylename}.cuba-disabled-or-readonly.cuba-empty-value {
+    input {
+      color: transparent;
+    }
+  }
 }

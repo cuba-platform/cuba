@@ -27,4 +27,8 @@
   .v-ui input.#{$primary-stylename}-prompt {
     color: #999;
   }
+
+  .#{$primary-stylename}.cuba-disabled-or-readonly.cuba-empty-value {
+    color: transparent;
+  }
 }

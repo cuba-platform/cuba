@@ -70,6 +70,43 @@ public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> i
     }
 
     @Override
+    public void updateEnabled() {
+        super.updateEnabled();
+
+        refreshInputPrompt();
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+
+        refreshInputPrompt();
+    }
+
+    @Override
+    public void setEditable(boolean editable) {
+        super.setEditable(editable);
+
+        refreshInputPrompt();
+    }
+
+    private void refreshInputPrompt() {
+        if (StringUtils.isNotBlank(inputPrompt)) {
+            if (isEnabledWithParent() && isEditable()) {
+                // Save old tooltipText value to use it later
+                String toolTipText = this.impl.getToolTipText();
+
+                PromptSupport.setPrompt(inputPrompt, impl);
+
+                // Use old tooltipText value because it was overwritten in org.jdesktop.swingx.prompt.PromptSupport.setPrompt()
+                this.impl.setToolTipText(toolTipText);
+            } else {
+                PromptSupport.setPrompt(null, impl);
+            }
+        }
+    }
+
+    @Override
     public void setDatatype(Datatype datatype) {
         this.datatype = datatype;
         this.valueFormatter.setDatatype(datatype);
@@ -93,6 +130,10 @@ public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> i
     @Override
     public void setInputPrompt(String inputPrompt) {
         this.inputPrompt = inputPrompt;
+
+        if ((!this.impl.isEditable() || !this.impl.isEnabled()) && StringUtils.isNotBlank(inputPrompt)) {
+            return;
+        }
 
         if (StringUtils.isNotBlank(inputPrompt)) {
             // Save old tooltipText value to use it later

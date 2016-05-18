@@ -21,6 +21,7 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VFilterSelect;
@@ -30,9 +31,16 @@ import java.util.LinkedList;
 
 /**
  */
-public class CubaComboBoxWidget extends VFilterSelect implements ShortcutActionHandler.ShortcutActionHandlerOwner {
+public class CubaComboBoxWidget extends VFilterSelect implements ShortcutActionHandler.ShortcutActionHandlerOwner, HasEnabled {
+
+    private static final String READONLY_STYLE = "readonly";
+    private static final String PROMPT_STYLE = "prompt";
+    private static final String CUBA_DISABLED_OR_READONLY = "cuba-disabled-or-readonly";
+    private static final String CUBA_EMPTY_VALUE = "cuba-empty-value";
 
     protected ShortcutActionHandler shortcutHandler;
+
+    protected boolean enabled = true;
 
     public CubaComboBoxWidget() {
         // handle shortcuts
@@ -82,6 +90,17 @@ public class CubaComboBoxWidget extends VFilterSelect implements ShortcutActionH
         }
     }
 
+    @Override
+    public void setPromptingOff(String text) {
+        // copied from com.vaadin.client.ui.VFilterSelect.setPromptingOff
+        // condition operator and calling method were s
+        if (prompting) {
+            prompting = false;
+            removeStyleDependentName(PROMPT_STYLE);
+        }
+        setTextboxText(text);
+    }
+
     public void setShortcutActionHandler(ShortcutActionHandler handler) {
         this.shortcutHandler = handler;
     }
@@ -96,6 +115,21 @@ public class CubaComboBoxWidget extends VFilterSelect implements ShortcutActionH
     }
 
     @Override
+    public void setTextboxText(String text) {
+        super.setTextboxText(text);
+
+        if ("".equals(text) || text == null) {
+            addStyleName(CUBA_EMPTY_VALUE);
+        } else {
+            if (getStyleName().contains(PROMPT_STYLE)) {
+                addStyleName(CUBA_EMPTY_VALUE);
+            } else {
+                removeStyleName(CUBA_EMPTY_VALUE);
+            }
+        }
+    }
+
+    @Override
     public void clear() {
     }
 
@@ -107,5 +141,33 @@ public class CubaComboBoxWidget extends VFilterSelect implements ShortcutActionH
     @Override
     public boolean remove(Widget w) {
         return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+
+        refreshEnabledOrReadonly();
+
+        if (getStyleName().contains(CUBA_EMPTY_VALUE)) {
+            setPromptingOn();
+        }
+    }
+
+    protected boolean isReadonly() {
+        return getStyleName().contains(READONLY_STYLE);
+    }
+
+    protected void refreshEnabledOrReadonly() {
+        if (!isEnabled() || isReadonly()) {
+            addStyleName(CUBA_DISABLED_OR_READONLY);
+        } else {
+            removeStyleName(CUBA_DISABLED_OR_READONLY);
+        }
     }
 }

@@ -30,6 +30,10 @@ import java.util.LinkedList;
  */
 public class CubaTextFieldWidget extends VTextField implements ShortcutActionHandler.ShortcutActionHandlerOwner {
 
+    private static final String PROMPT_STYLE = "prompt";
+    private static final String CUBA_DISABLED_OR_READONLY = "cuba-disabled-or-readonly";
+    private static final String CUBA_EMPTY_VALUE = "cuba-empty-value";
+
     protected ShortcutActionHandler shortcutHandler;
 
     protected boolean readOnlyFocusable = false;
@@ -95,6 +99,8 @@ public class CubaTextFieldWidget extends VTextField implements ShortcutActionHan
                 removeStyleDependentName(readOnlyStyle);
             }
         }
+
+        refreshEnabledOrReadonly();
     }
 
     public boolean isReadOnlyFocusable() {
@@ -103,5 +109,35 @@ public class CubaTextFieldWidget extends VTextField implements ShortcutActionHan
 
     public void setReadOnlyFocusable(boolean readOnlyFocusable) {
         this.readOnlyFocusable = readOnlyFocusable;
+    }
+
+    @Override
+    public void setText(String text) {
+        super.setText(text);
+
+        if ("".equals(text) || text == null) {
+            addStyleName(CUBA_EMPTY_VALUE);
+        } else {
+            if (getStyleName().contains(PROMPT_STYLE)) {
+                addStyleName(CUBA_EMPTY_VALUE);
+            } else {
+                removeStyleName(CUBA_EMPTY_VALUE);
+            }
+        }
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+
+        refreshEnabledOrReadonly();
+    }
+
+    protected void refreshEnabledOrReadonly() {
+        if (!isEnabled() || isReadOnly()) {
+            addStyleName(CUBA_DISABLED_OR_READONLY);
+        } else {
+            removeStyleName(CUBA_DISABLED_OR_READONLY);
+        }
     }
 }

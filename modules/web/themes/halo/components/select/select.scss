@@ -23,6 +23,12 @@
     }
   }
 
+  .#{$primary-stylename}.cuba-disabled-or-readonly.cuba-empty-value {
+      input {
+        color: transparent;
+      }
+    }
+
   .v-ios.v-touch &,
   .v-android.v-touch & {
     .#{$primary-stylename}-suggestpopup {

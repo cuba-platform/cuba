@@ -35,6 +35,7 @@
 @import "components/checkbox/checkbox";
 @import "components/groupbox/groupbox";
 @import "components/tabsheet/tabsheet";
+@import "components/textfield/textfield";
 @import "components/textarea/textarea";
 @import "components/tokenlist/tokenlist";
 @import "components/datefield/datefield";
@@ -112,6 +113,7 @@
 
   @include halo-cuba-groupbox;
   @include halo-cuba-tokenlist;
+  @include halo-cuba-textfield;
   @include halo-cuba-grouptable;
   @include halo-cuba-fileupload;
   @include halo-cuba-flowlayout;
