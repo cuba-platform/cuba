@@ -1471,6 +1471,8 @@
                     <xs:sequence>
                         <xs:element name="column" minOccurs="0" maxOccurs="unbounded">
                             <xs:complexType>
+                                <xs:attributeGroup ref="hasId"/>
+
                                 <xs:attribute name="flex" type="xs:float"/>
                             </xs:complexType>
                         </xs:element>
