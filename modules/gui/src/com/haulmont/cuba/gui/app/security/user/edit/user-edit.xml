@@ -39,8 +39,8 @@
         <groupBox id="propertiesBox">
             <grid id="propertiesGrid" width="100%" spacing="true">
                 <columns>
-                    <column flex="1"/>
-                    <column flex="3"/>
+                    <column id="fieldGroupLeftColumn" flex="1"/>
+                    <column id="fieldGroupRightColumn" flex="3"/>
                 </columns>
                 <rows>
                     <row id="propertiesRow">
