@@ -147,4 +147,31 @@ public interface LoginService {
      * @return true if remember me token exists in db
      */
     boolean checkRememberMe(String login, String rememberMeToken);
+
+    /**
+     * @return true if the brute-force protection is enabled
+     */
+    boolean isBruteForceProtectionEnabled();
+
+    /**
+     * @return a time interval in seconds for which a user is blocked after a series of
+     * unsuccessful login attempts
+     */
+    int getBruteForceBlockIntervalSec();
+
+    /**
+     * Returns a number of login attempts left for the specified pair of login and IP-address
+     * @param login user login
+     * @param ipAddress user IP-address
+     * @return number of login attempts left
+     */
+    int loginAttemptsLeft(String login, String ipAddress);
+
+    /**
+     * Registers unsuccessful login attempt
+     * @param login user login
+     * @param ipAddress user IP-address
+     * @return a number of login attempts left for the specified pair of login and IP-address
+     */
+    int registerUnsuccessfulLogin(String login, String ipAddress);
 }

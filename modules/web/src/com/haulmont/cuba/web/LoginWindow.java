@@ -21,13 +21,14 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
+import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.auth.ExternallyAuthenticatedConnection;
 import com.haulmont.cuba.web.auth.CubaAuthProvider;
 import com.haulmont.cuba.web.auth.DomainAliasesResolver;
+import com.haulmont.cuba.web.auth.ExternallyAuthenticatedConnection;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
@@ -94,6 +95,8 @@ public class LoginWindow extends UIView {
     protected Messages messages = AppBeans.get(Messages.NAME);
 
     protected Configuration configuration = AppBeans.get(Configuration.NAME);
+
+    protected LoginService loginService = AppBeans.get(LoginService.class);
 
     public LoginWindow(AppUI ui) {
         log.trace("Creating " + this);
@@ -430,6 +433,20 @@ public class LoginWindow extends UIView {
             return;
         }
 
+        if (loginService.isBruteForceProtectionEnabled()) {
+            if (loginService.loginAttemptsLeft(login, app.getClientAddress()) <= 0) {
+                String title = messages.getMainMessage("loginWindow.loginFailed", resolvedLocale);
+                String message = messages.formatMessage(messages.getMainMessagePack(),
+                        "loginWindow.loginAttemptsNumberExceeded",
+                        resolvedLocale,
+                        loginService.getBruteForceBlockIntervalSec());
+
+                new Notification(title, message, Type.ERROR_MESSAGE, true).show(ui.getPage());
+                log.info("Blocked user login attempt: login={}, ip={}", login, app.getClientAddress());
+                return;
+            }
+        }
+
         try {
             Locale locale = getUserLocale();
             app.setLocale(locale);
@@ -457,16 +474,30 @@ public class LoginWindow extends UIView {
             }
         } catch (LoginException e) {
             log.info("Login failed: " + e.toString());
-            showLoginException(e);
+            String message = StringUtils.abbreviate(e.getMessage(), 1000);
+            if (loginService.isBruteForceProtectionEnabled()) {
+                int loginAttemptsLeft = loginService.registerUnsuccessfulLogin(login, app.getClientAddress());
+                if (loginAttemptsLeft > 0) {
+                    message = messages.formatMessage(messages.getMainMessagePack(),
+                            "loginWindow.loginFailedAttemptsLeft",
+                            resolvedLocale,
+                            loginAttemptsLeft);
+                } else {
+                    message = messages.formatMessage(messages.getMainMessagePack(),
+                            "loginWindow.loginAttemptsNumberExceeded",
+                            resolvedLocale,
+                            loginService.getBruteForceBlockIntervalSec());
+                }
+            }
+            showLoginException(message);
         } catch (Exception e) {
             log.warn("Unable to login", e);
             showException(e);
         }
     }
 
-    protected void showLoginException(LoginException e){
+    protected void showLoginException(String message){
         String title = messages.getMainMessage("loginWindow.loginFailed", resolvedLocale);
-        String message = StringUtils.abbreviate(e.getMessage(), 1000);
         new Notification(title, message, Type.ERROR_MESSAGE, true).show(ui.getPage());
 
         if (loginByRememberMe) {
