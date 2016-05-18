@@ -22,4 +22,10 @@
       padding-right: ceil($v-unit-size/6) + ceil($v-border-radius/3);
     }
   }
+
+  .#{$primary-stylename}.cuba-disabled-or-readonly.cuba-empty-value {
+    input {
+      color: transparent;
+    }
+  }
 }
