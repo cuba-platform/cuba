@@ -19,17 +19,18 @@ package com.haulmont.cuba.core.sys.serialization;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoException;
+import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.CollectionSerializer;
 import com.esotericsoftware.kryo.serializers.JavaSerializer;
 import com.esotericsoftware.kryo.util.ObjectMap;
+import com.esotericsoftware.kryo.util.Util;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.haulmont.chile.core.model.impl.MetaClassImpl;
 import com.haulmont.chile.core.model.impl.MetaPropertyImpl;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.global.LoadContext;
 import de.javakaffee.kryoserializers.*;
 import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
 import de.javakaffee.kryoserializers.guava.ImmutableListSerializer;
@@ -64,14 +65,23 @@ import java.util.GregorianCalendar;
  * The serialization implementation using Kryo serialization
  */
 public class KryoSerialization implements Serialization {
+
+    protected boolean onlySerializable = true;
     protected final ThreadLocal<Kryo> kryos = new ThreadLocal<Kryo>() {
         protected Kryo initialValue() {
             return newKryoInstance();
         }
     };
 
+    public KryoSerialization() {
+    }
+
+    public KryoSerialization(boolean onlySerializable) {
+        this.onlySerializable = onlySerializable;
+    }
+
     protected Kryo newKryoInstance() {
-        Kryo kryo = new Kryo();
+        Kryo kryo = new CubaKryo(onlySerializable);
         kryo.setInstantiatorStrategy(new Kryo.DefaultInstantiatorStrategy(new StdInstantiatorStrategy()));
 
         //To work properly must itself be loaded by the application classloader (i.e. by classloader capable of loading
@@ -212,6 +222,28 @@ public class KryoSerialization implements Serialization {
                 return objectStream.readObject();
             } catch (Exception ex) {
                 throw new KryoException("Error during Java deserialization.", ex);
+            }
+        }
+    }
+
+    public static class CubaKryo extends Kryo {
+        protected boolean onlySerializable = true;
+
+        public CubaKryo(boolean onlySerializable) {
+            super();
+            this.onlySerializable = onlySerializable;
+        }
+
+        @Override
+        protected Serializer newDefaultSerializer(Class type) {
+            if (!onlySerializable) {
+                return super.newDefaultSerializer(type);
+            }
+            if (type == null || Serializable.class.isAssignableFrom(type) || Externalizable.class.isAssignableFrom(type)) {
+                return super.newDefaultSerializer(type);
+            } else {
+                throw new IllegalArgumentException("Class is not registered: " + Util.className(type)
+                        + "\nNote: To register this class use: kryo.register(" + Util.className(type) + ".class);");
             }
         }
     }
