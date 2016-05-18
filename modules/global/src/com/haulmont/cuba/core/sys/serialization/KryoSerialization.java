@@ -19,13 +19,11 @@ package com.haulmont.cuba.core.sys.serialization;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoException;
-import com.esotericsoftware.kryo.Registration;
+import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.CollectionSerializer;
 import com.esotericsoftware.kryo.serializers.JavaSerializer;
-import com.esotericsoftware.kryo.util.DefaultClassResolver;
-import com.esotericsoftware.kryo.util.MapReferenceResolver;
 import com.esotericsoftware.kryo.util.ObjectMap;
 import com.esotericsoftware.kryo.util.Util;
 import com.esotericsoftware.reflectasm.ConstructorAccess;
@@ -72,6 +70,8 @@ import java.util.GregorianCalendar;
  * The serialization implementation using Kryo serialization
  */
 public class KryoSerialization implements Serialization {
+
+    protected boolean onlySerializable = true;
     protected final ThreadLocal<Kryo> kryos = new ThreadLocal<Kryo>() {
         @Override
         protected Kryo initialValue() {
@@ -79,8 +79,15 @@ public class KryoSerialization implements Serialization {
         }
     };
 
+    public KryoSerialization() {
+    }
+
+    public KryoSerialization(boolean onlySerializable) {
+        this.onlySerializable = onlySerializable;
+    }
+
     protected Kryo newKryoInstance() {
-        Kryo kryo = new Kryo(new CubaClassResolver(), new MapReferenceResolver());
+        Kryo kryo = new CubaKryo(onlySerializable);
         kryo.setInstantiatorStrategy(new CubaInstantiatorStrategy());
 
         //To work properly must itself be loaded by the application classloader (i.e. by classloader capable of loading
@@ -282,11 +289,21 @@ public class KryoSerialization implements Serialization {
         }
     }
 
-    public static class CubaClassResolver extends DefaultClassResolver {
+    public static class CubaKryo extends Kryo {
+        protected boolean onlySerializable = true;
+
+        public CubaKryo(boolean onlySerializable) {
+            super();
+            this.onlySerializable = onlySerializable;
+        }
+
         @Override
-        public Registration registerImplicit(Class type) {
+        protected Serializer newDefaultSerializer(Class type) {
+            if (!onlySerializable) {
+                return super.newDefaultSerializer(type);
+            }
             if (type == null || Serializable.class.isAssignableFrom(type) || Externalizable.class.isAssignableFrom(type)) {
-                return super.registerImplicit(type);
+                return super.newDefaultSerializer(type);
             } else {
                 throw new IllegalArgumentException("Class is not registered: " + Util.className(type)
                         + "\nNote: To register this class use: kryo.register(" + Util.className(type) + ".class);");
