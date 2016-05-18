@@ -222,6 +222,10 @@ public class GroupBrowser extends AbstractWindow {
                 constraintCreateAction.setEnabled(e.getItem() != null);
             }
             groupCopyAction.setEnabled(hasPermissionsToCreateGroup && e.getItem() != null);
+            CollectionDatasource ds = usersTable.getDatasource();
+            if (ds instanceof CollectionDatasource.SupportsPaging) {
+                ((CollectionDatasource.SupportsPaging) ds).setFirstResult(0);
+            }
         });
 
         groupsDs.refresh();
