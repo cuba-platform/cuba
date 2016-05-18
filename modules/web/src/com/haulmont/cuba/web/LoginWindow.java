@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.TestIdManager;
@@ -433,6 +434,8 @@ public class LoginWindow extends UIView {
             return;
         }
 
+        if (!bruteForceProtectionCheck(login, app.getClientAddress())) return;
+
         if (loginService.isBruteForceProtectionEnabled()) {
             if (loginService.loginAttemptsLeft(login, app.getClientAddress()) <= 0) {
                 String title = messages.getMainMessage("loginWindow.loginFailed", resolvedLocale);
@@ -475,25 +478,50 @@ public class LoginWindow extends UIView {
         } catch (LoginException e) {
             log.info("Login failed: " + e.toString());
             String message = StringUtils.abbreviate(e.getMessage(), 1000);
-            if (loginService.isBruteForceProtectionEnabled()) {
-                int loginAttemptsLeft = loginService.registerUnsuccessfulLogin(login, app.getClientAddress());
-                if (loginAttemptsLeft > 0) {
-                    message = messages.formatMessage(messages.getMainMessagePack(),
-                            "loginWindow.loginFailedAttemptsLeft",
-                            resolvedLocale,
-                            loginAttemptsLeft);
-                } else {
-                    message = messages.formatMessage(messages.getMainMessagePack(),
-                            "loginWindow.loginAttemptsNumberExceeded",
-                            resolvedLocale,
-                            loginService.getBruteForceBlockIntervalSec());
-                }
-            }
+            String bruteForceMsg = registerUnsuccessfulLoginAttempt(login, app.getClientAddress());
+            if (!Strings.isNullOrEmpty(bruteForceMsg)) message = bruteForceMsg;
             showLoginException(message);
         } catch (Exception e) {
             log.warn("Unable to login", e);
             showException(e);
         }
+    }
+
+    protected boolean bruteForceProtectionCheck(String login, String ipAddress) {
+        if (loginService.isBruteForceProtectionEnabled()) {
+            if (loginService.loginAttemptsLeft(login, ipAddress) <= 0) {
+                String title = messages.getMainMessage("loginWindow.loginFailed", resolvedLocale);
+                String message = messages.formatMessage(messages.getMainMessagePack(),
+                        "loginWindow.loginAttemptsNumberExceeded",
+                        resolvedLocale,
+                        loginService.getBruteForceBlockIntervalSec());
+
+                new Notification(title, message, Type.ERROR_MESSAGE, true).show(ui.getPage());
+                log.info("Blocked user login attempt: login={}, ip={}", login, ipAddress);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Nullable
+    protected String registerUnsuccessfulLoginAttempt(String login, String ipAddress) {
+        String message = null;
+        if (loginService.isBruteForceProtectionEnabled()) {
+            int loginAttemptsLeft = loginService.registerUnsuccessfulLogin(login, ipAddress);
+            if (loginAttemptsLeft > 0) {
+                message = messages.formatMessage(messages.getMainMessagePack(),
+                        "loginWindow.loginFailedAttemptsLeft",
+                        resolvedLocale,
+                        loginAttemptsLeft);
+            } else {
+                message = messages.formatMessage(messages.getMainMessagePack(),
+                        "loginWindow.loginAttemptsNumberExceeded",
+                        resolvedLocale,
+                        loginService.getBruteForceBlockIntervalSec());
+            }
+        }
+        return message;
     }
 
     protected void showLoginException(String message){
