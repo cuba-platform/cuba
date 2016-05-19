@@ -20,6 +20,7 @@ import com.google.gwt.user.client.Timer;
 import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
 import com.vaadin.client.ServerConnector;
 import com.vaadin.client.communication.RpcProxy;
+import com.vaadin.client.communication.ServerRpcQueue;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.extensions.AbstractExtensionConnector;
 import com.vaadin.shared.ui.Connect;
@@ -66,7 +67,9 @@ public class CubaTimerConnector extends AbstractExtensionConnector {
     public void onTimer() {
         if (running) {
             if (getState().listeners) {
-                if (getConnection().getServerRpcQueue().isEmpty()) {
+                ServerRpcQueue rpcQueue = getConnection().getServerRpcQueue();
+
+                if (rpcQueue.isEmpty() || !rpcQueue.isFlushPending()) {
                     // if application stopped we will not schedule new timer event
                     if (getConnection().isApplicationRunning()) {
                         rpc.onTimer();
