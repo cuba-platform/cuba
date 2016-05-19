@@ -41,9 +41,11 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
     protected CollectionDatasource datasource;
     protected boolean refreshing;
     protected State state;
+    protected State lastState;
     protected int start;
     protected int size;
     protected ListComponent owner;
+    protected boolean samePage;
 
     public DesktopRowsCount() {
         impl = new RowsCountComponent();
@@ -59,7 +61,10 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
         this.datasource = datasource;
         if (datasource != null) {
             //noinspection unchecked
-            this.datasource.addCollectionChangeListener(e -> onCollectionChanged());
+            this.datasource.addCollectionChangeListener(e -> {
+                samePage = !CollectionDatasource.Operation.REFRESH.equals(e.getOperation());
+                onCollectionChanged();
+            });
 
             impl.getCountButton().addActionListener(e -> onLinkClick());
 
@@ -94,21 +99,30 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
 
         if (datasource instanceof CollectionDatasource.SupportsPaging) {
             CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
-            if ((size == 0 || size < ds.getMaxResults()) && ds.getFirstResult() == 0) {
+            if (samePage) {
+                state = lastState;
+                start = ds.getFirstResult();
+            } else if ((size == 0 || size < ds.getMaxResults()) && ds.getFirstResult() == 0) {
                 state = State.FIRST_COMPLETE;
+                lastState = state;
             } else if (size == ds.getMaxResults() && ds.getFirstResult() == 0) {
                 state = State.FIRST_INCOMPLETE;
+                lastState = state;
             } else if (size == ds.getMaxResults() && ds.getFirstResult() > 0) {
                 state = State.MIDDLE;
                 start = ds.getFirstResult();
+                lastState = state;
             } else if (size < ds.getMaxResults() && ds.getFirstResult() > 0) {
                 state = State.LAST;
                 start = ds.getFirstResult();
+                lastState = state;
             } else {
                 state = State.FIRST_COMPLETE;
+                lastState = state;
             }
         } else {
             state = State.FIRST_COMPLETE;
+            lastState = state;
         }
 
         String countValue;
@@ -144,7 +158,7 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
                 impl.getFirstButton().setVisible(false);
                 impl.getLastButton().setVisible(true);
                 msgKey = "table.rowsCount.msg1";
-                countValue = "1-" + size;
+                countValue = countValue(start, size);
                 break;
             case MIDDLE:
                 impl.getCountButton().setVisible(true);
@@ -153,7 +167,7 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
                 impl.getFirstButton().setVisible(true);
                 impl.getLastButton().setVisible(true);
                 msgKey = "table.rowsCount.msg1";
-                countValue = (start + 1) + "-" + (start + size);
+                countValue = countValue(start, size);
                 break;
             case LAST:
                 impl.getCountButton().setVisible(false);
@@ -162,7 +176,7 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
                 impl.getFirstButton().setVisible(true);
                 impl.getLastButton().setVisible(false);
                 msgKey = "table.rowsCount.msg2Plural2";
-                countValue = (start + 1) + "-" + (start + size);
+                countValue = countValue(start, size);
                 break;
             default:
                 throw new UnsupportedOperationException();
@@ -177,6 +191,14 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
         }
         impl.repaint();
         impl.revalidate();
+    }
+
+    protected String countValue(int start, int size) {
+        if (size == 0) {
+            return String.valueOf(size);
+        } else {
+            return (start + 1) + "-" + (start + size);
+        }
     }
 
     private void onLinkClick() {
