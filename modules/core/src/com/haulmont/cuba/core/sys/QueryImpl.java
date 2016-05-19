@@ -51,7 +51,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
     private JpaQuery query;
     private boolean isNative;
     private String queryString;
-    private Class<? extends Entity> resultClass;
+    private Class resultClass;
     private FetchGroupManager fetchGroupMgr;
     private EntityFetcher entityFetcher;
     private Set<Param> params = new HashSet<>();
@@ -81,6 +81,10 @@ public class QueryImpl<T> implements TypedQuery<T> {
                 if (resultClass == null)
                     query = (JpaQuery) emDelegate.createNativeQuery(queryString);
                 else {
+                    if (!Entity.class.isAssignableFrom(resultClass)) {
+                        throw new IllegalArgumentException("Non-entity result class for native query is not supported" +
+                                " by EclipseLink: " + resultClass);
+                    }
                     Class effectiveClass = metadata.getExtendedEntities().getEffectiveClass(resultClass);
                     query = (JpaQuery) emDelegate.createNativeQuery(queryString, effectiveClass);
                 }
@@ -88,8 +92,9 @@ public class QueryImpl<T> implements TypedQuery<T> {
                 log.trace("Creating JPQL query: " + queryString);
                 String s = transformQueryString();
                 log.trace("Transformed JPQL query: " + s);
-                if (resultClass != null) {
-                    Class effectiveClass = metadata.getExtendedEntities().getEffectiveClass(resultClass);
+
+                Class effectiveClass = getEffectiveResultClass();
+                if (effectiveClass != null) {
                     query = (JpaQuery) emDelegate.createQuery(s, effectiveClass);
                 } else {
                     query = (JpaQuery) emDelegate.createQuery(s);
@@ -138,6 +143,17 @@ public class QueryImpl<T> implements TypedQuery<T> {
         }
         //noinspection unchecked
         return query;
+    }
+
+    @Nullable
+    private Class getEffectiveResultClass() {
+        if (resultClass == null) {
+            return null;
+        }
+        if (Entity.class.isAssignableFrom(resultClass)) {
+            return metadata.getExtendedEntities().getEffectiveClass(resultClass);
+        }
+        return resultClass;
     }
 
     private void checkState() {
