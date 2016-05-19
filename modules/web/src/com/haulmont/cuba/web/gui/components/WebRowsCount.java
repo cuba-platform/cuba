@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.RowsCount;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.CollectionDatasource.Operation;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.toolkit.ui.CubaRowsCount;
 
@@ -31,9 +32,11 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     protected CollectionDatasource datasource;
     protected boolean refreshing;
     protected State state;
+    protected State lastState;
     protected int start;
     protected int size;
     protected ListComponent owner;
+    protected boolean samePage;
 
     public WebRowsCount() {
         component = new CubaRowsCount();
@@ -50,7 +53,10 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         this.datasource = datasource;
         if (datasource != null) {
             //noinspection unchecked
-            this.datasource.addCollectionChangeListener(e -> onCollectionChanged());
+            this.datasource.addCollectionChangeListener(e -> {
+                samePage = !Operation.REFRESH.equals(e.getOperation());
+                onCollectionChanged();
+            });
 
             component.getCountButton().addClickListener(event -> onLinkClick());
             component.getPrevButton().addClickListener(event -> onPrevClick());
@@ -175,21 +181,30 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
         if (datasource instanceof CollectionDatasource.SupportsPaging) {
             CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
-            if ((size == 0 || size < ds.getMaxResults()) && ds.getFirstResult() == 0) {
+            if (samePage) {
+                state = lastState;
+                start = ds.getFirstResult();
+            } else if ((size == 0 || size < ds.getMaxResults()) && ds.getFirstResult() == 0) {
                 state = State.FIRST_COMPLETE;
+                lastState = state;
             } else if (size == ds.getMaxResults() && ds.getFirstResult() == 0) {
                 state = State.FIRST_INCOMPLETE;
+                lastState = state;
             } else if (size == ds.getMaxResults() && ds.getFirstResult() > 0) {
                 state = State.MIDDLE;
                 start = ds.getFirstResult();
+                lastState = state;
             } else if (size < ds.getMaxResults() && ds.getFirstResult() > 0) {
                 state = State.LAST;
                 start = ds.getFirstResult();
+                lastState = state;
             } else {
                 state = State.FIRST_COMPLETE;
+                lastState = state;
             }
         } else {
             state = State.FIRST_COMPLETE;
+            lastState = state;
         }
 
         String countValue;
@@ -225,7 +240,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
                 component.getFirstButton().setVisible(false);
                 component.getLastButton().setVisible(true);
                 msgKey = "table.rowsCount.msg1";
-                countValue = "1-" + size;
+                countValue = countValue(start, size);
                 break;
             case MIDDLE:
                 component.getCountButton().setVisible(true);
@@ -234,7 +249,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
                 component.getFirstButton().setVisible(true);
                 component.getLastButton().setVisible(true);
                 msgKey = "table.rowsCount.msg1";
-                countValue = (start + 1) + "-" + (start + size);
+                countValue = countValue(start, size);
                 break;
             case LAST:
                 component.getCountButton().setVisible(false);
@@ -243,7 +258,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
                 component.getFirstButton().setVisible(true);
                 component.getLastButton().setVisible(false);
                 msgKey = "table.rowsCount.msg2Plural2";
-                countValue = (start + 1) + "-" + (start + size);
+                countValue = countValue(start, size);
                 break;
             default:
                 throw new UnsupportedOperationException();
@@ -255,6 +270,14 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         if (component.getCountButton().isVisible() && !refreshing) {
             component.getCountButton().setCaption(messages.getMainMessage("table.rowsCount.msg3"));
             component.getCountButton().removeStyleName("cuba-paging-count-number");
+        }
+    }
+
+    protected String countValue(int start, int size) {
+        if (size == 0) {
+            return String.valueOf(size);
+        } else {
+            return (start + 1) + "-" + (start + size);
         }
     }
 }
