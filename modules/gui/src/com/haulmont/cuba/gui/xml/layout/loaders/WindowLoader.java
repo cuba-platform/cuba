@@ -22,7 +22,6 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -86,21 +85,31 @@ public class WindowLoader extends FrameLoader<Window> {
         if (dialogModeElement != null) {
             DialogOptions dialogOptions = resultComponent.getDialogOptions();
 
-            String width = dialogModeElement.attributeValue("width");
-            if (StringUtils.isNotEmpty(width)) {
-                if ("auto".equalsIgnoreCase(width)) {
+            String xmlWidthValue = dialogModeElement.attributeValue("width");
+            if (StringUtils.isNotEmpty(xmlWidthValue)) {
+                if ("auto".equalsIgnoreCase(xmlWidthValue)) {
                     dialogOptions.setWidth(Component.AUTO_SIZE_PX);
-                } else if (!StringUtils.isBlank(width)) {
-                    dialogOptions.setWidth(loadThemeInt(width));
+                } else if (!StringUtils.isBlank(xmlWidthValue)) {
+                    String themeWidthValue = loadThemeString(xmlWidthValue);
+                    if (themeWidthValue.contains("px")) {
+                        themeWidthValue = themeWidthValue.replace("px", "");
+                    }
+
+                    dialogOptions.setWidth(Integer.parseInt(themeWidthValue));
                 }
             }
 
-            String height = dialogModeElement.attributeValue("height");
-            if (StringUtils.isNotEmpty(height)) {
-                if ("auto".equalsIgnoreCase(height)) {
+            String xmlHeightValue = dialogModeElement.attributeValue("height");
+            if (StringUtils.isNotEmpty(xmlHeightValue)) {
+                if ("auto".equalsIgnoreCase(xmlHeightValue)) {
                     dialogOptions.setHeight(Component.AUTO_SIZE_PX);
-                } else if (!StringUtils.isBlank(height)) {
-                    dialogOptions.setHeight(loadThemeInt(height));
+                } else if (!StringUtils.isBlank(xmlHeightValue)) {
+                    String themeHeightValue = loadThemeString(xmlHeightValue);
+                    if (themeHeightValue.contains("px")) {
+                        themeHeightValue = themeHeightValue.replace("px", "");
+                    }
+
+                    dialogOptions.setHeight(Integer.parseInt(themeHeightValue));
                 }
             }
 
