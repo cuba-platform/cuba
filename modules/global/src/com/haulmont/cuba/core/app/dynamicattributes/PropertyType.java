@@ -17,10 +17,6 @@
 
 package com.haulmont.cuba.core.app.dynamicattributes;
 
-/**
-* @author degtyarjov
-* @version $Id$
-*/
 public enum PropertyType {
     STRING, INTEGER, DOUBLE, DATE, BOOLEAN, ENTITY, ENUMERATION
 }

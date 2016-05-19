@@ -32,10 +32,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-/**
-* @author devyatkin
-* @version $Id$
-*/
 public class UserSetHelper {
     public static String generateSetFilter(Set ids, String entityClass, String componentId, String entityAlias) {
         Document document = DocumentHelper.createDocument();

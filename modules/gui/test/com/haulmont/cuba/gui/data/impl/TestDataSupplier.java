@@ -32,10 +32,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
-* @author krivopustov
-* @version $Id$
-*/
 public class TestDataSupplier implements DataSupplier {
 
     public interface CommitValidator {

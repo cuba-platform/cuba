@@ -30,10 +30,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-/**
-* @author krivopustov
-* @version $Id$
-*/
 public class TestListener implements
         AfterInsertEntityListener<Server>,
         AfterUpdateEntityListener<Server>,

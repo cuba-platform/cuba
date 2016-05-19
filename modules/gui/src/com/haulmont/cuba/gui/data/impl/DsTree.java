@@ -26,10 +26,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
-* @author krivopustov
-* @version $Id$
-*/
 public class DsTree extends Tree<Datasource> {
 
     public DsTree(List<Datasource> datasources) {

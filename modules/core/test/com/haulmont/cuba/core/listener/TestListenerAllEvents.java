@@ -30,10 +30,6 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-/**
-* @author krivopustov
-* @version $Id$
-*/
 public class TestListenerAllEvents implements
         BeforeInsertEntityListener<Server>,
         BeforeUpdateEntityListener<Server>,

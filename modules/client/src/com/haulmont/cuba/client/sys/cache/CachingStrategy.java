@@ -21,9 +21,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 
 /**
  * Describes cache storage and invalidation policy
- *
-* @author degtyarjov
-* @version $Id$
 */
 public interface CachingStrategy {
     /**

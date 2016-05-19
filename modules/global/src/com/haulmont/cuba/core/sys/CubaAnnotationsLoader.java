@@ -30,10 +30,6 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
-/**
-* @author krivopustov
-* @version $Id$
-*/
 public class CubaAnnotationsLoader extends JPAAnnotationsLoader {
 
     private static final List<Class> SYSTEM_INTERFACES = Arrays.<Class>asList(

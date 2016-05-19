@@ -17,12 +17,10 @@
 
 package com.haulmont.cuba.core.sys.dbupdate;
 
-/**
-* @author degtyarjov
-* @version $Id$
-*/
 public enum ScriptType {
-    INIT, UPDATE;
+
+    INIT,
+    UPDATE;
 
     @Override
     public String toString() {

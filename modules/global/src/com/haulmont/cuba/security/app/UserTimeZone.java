@@ -21,9 +21,6 @@ import java.io.Serializable;
 
 /**
  * DTO for managing user's own time zone.
- *
-* @author krivopustov
-* @version $Id$
 */
 public class UserTimeZone implements Serializable {
 

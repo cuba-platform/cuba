@@ -26,10 +26,6 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-/**
-* @author krivopustov
-* @version $Id$
-*/
 public class TestAppender extends AppenderBase<ILoggingEvent> {
 
     private List<String> messages = Collections.synchronizedList(new ArrayList<>());
