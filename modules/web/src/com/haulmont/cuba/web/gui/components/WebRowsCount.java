@@ -162,6 +162,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         int count = ((CollectionDatasource.SupportsPaging) datasource).getCount();
         component.getCountButton().setCaption(String.valueOf(count));
         component.getCountButton().addStyleName("cuba-paging-count-number");
+        component.getCountButton().setEnabled(false);
     }
 
     protected void onCollectionChanged() {
@@ -255,6 +256,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         if (component.getCountButton().isVisible() && !refreshing) {
             component.getCountButton().setCaption(messages.getMainMessage("table.rowsCount.msg3"));
             component.getCountButton().removeStyleName("cuba-paging-count-number");
+            component.getCountButton().setEnabled(true);
         }
     }
 }
