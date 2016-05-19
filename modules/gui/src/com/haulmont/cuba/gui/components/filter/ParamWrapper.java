@@ -37,7 +37,8 @@ import java.util.regex.Pattern;
 
 public class ParamWrapper implements Component.HasValue {
 
-    public static final Pattern LIKE_PATTERN = Pattern.compile("\\slike\\s+" + ParametersHelper.QUERY_PARAMETERS_RE);
+    public static final Pattern LIKE_PATTERN = Pattern.compile("\\slike\\s+" + ParametersHelper.QUERY_PARAMETERS_RE + "\\s+(escape '(\\S+)')?",
+            Pattern.CASE_INSENSITIVE);
 
     protected final AbstractCondition condition;
     protected final Param param;
@@ -70,12 +71,20 @@ public class ParamWrapper implements Component.HasValue {
                 Op op = condition.getOperator();
                 Matcher matcher = LIKE_PATTERN.matcher(where);
                 if (matcher.find()) {
+                    String stringValue = value.toString();
+                    boolean escape = StringUtils.isNotEmpty(matcher.group(3));
+                    if (escape) {
+                        String escapeChar = matcher.group(4);
+                        if (StringUtils.isNotEmpty(escapeChar)) {
+                            stringValue = QueryUtils.escapeForLike(stringValue, escapeChar);
+                        }
+                    }
                     if (Op.STARTS_WITH.equals(op)) {
-                        value = wrapValueForLike(QueryUtils.escapeForLike(value.toString()), false, true);
+                        value = wrapValueForLike(stringValue, false, true);
                     } else if (Op.ENDS_WITH.equals(op)) {
-                        value = wrapValueForLike(QueryUtils.escapeForLike(value.toString()), true, false);
+                        value = wrapValueForLike(stringValue, true, false);
                     } else {
-                        value = wrapValueForLike(QueryUtils.escapeForLike(value.toString()));
+                        value = wrapValueForLike(stringValue);
                     }
                 }
             } else if (value instanceof EnumClass) {
