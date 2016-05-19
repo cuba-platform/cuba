@@ -32,4 +32,7 @@
     <!-- Supports LastModified interface for MVC controllers classes -->
     <bean class="com.haulmont.cuba.web.controllers.CachedAnnotationMethodHandlerAdapter"/>
 
+    <!-- Log all exceptions that occur in controllers-->
+    <bean id="cuba_LoggingHandlerExceptionResolver" class="com.haulmont.cuba.web.sys.LoggingHandlerExceptionResolver"/>
+
 </beans>
