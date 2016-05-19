@@ -473,6 +473,31 @@ public class QueryTransformerAstBasedTest {
     }
 
     @Test
+    public void getResult_noChangesMade_update() throws RecognitionException {
+        EntityBuilder builder = new EntityBuilder();
+        builder.startNewEntity("sec$Car");
+        builder.addStringAttribute("model");
+        builder.addStringAttribute("vin");
+        Entity car = builder.produce();
+        DomainModel model = new DomainModel(car);
+
+        QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
+                "update sec$Car c set c.model = :model, c.vin = :vin"
+        );
+        assertEquals(
+                "update sec$Car c set c.model=:model,c.vin=:vin",
+                transformer.getResult());
+
+        transformer = new QueryTransformerAstBased(model,
+                "update sec$Car c set c.model = :model, c.vin = :vin where c.vin = :oldVin"
+        );
+        assertEquals(
+                "update sec$Car c set c.model=:model,c.vin=:vin where c.vin = :oldVin",
+                transformer.getResult());
+    }
+
+
+    @Test
     public void addJoinAsId() throws RecognitionException {
         DomainModel model = prepareDomainModel();
 

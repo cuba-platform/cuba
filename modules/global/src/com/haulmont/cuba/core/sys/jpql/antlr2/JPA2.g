@@ -45,6 +45,7 @@ tokens {
     ORDER = 'ORDER';
     GROUP = 'GROUP';
     BY = 'BY';
+    SET = 'SET';
 }
 
 
@@ -67,6 +68,7 @@ import com.haulmont.cuba.core.sys.jpql.tree.OrderByNode;
 import com.haulmont.cuba.core.sys.jpql.tree.OrderByFieldNode;
 import com.haulmont.cuba.core.sys.jpql.tree.AggregateExpressionNode;
 import com.haulmont.cuba.core.sys.jpql.tree.SelectedItemsNode;
+import com.haulmont.cuba.core.sys.jpql.tree.UpdateSetNode;
 }
 
 @lexer::header {
@@ -144,8 +146,8 @@ general_identification_variable
 
 //todo eude implement separate node instead of SelectionSourceNode for update and delete?
 update_clause
-    : identification_variable_declaration 'SET' update_item (',' update_item)*
-    -> ^(T_SOURCES<SelectionSourceNode> identification_variable_declaration);
+    : identification_variable_declaration SET update_item (',' update_item)*
+    -> ^(T_SOURCES<SelectionSourceNode> identification_variable_declaration SET<UpdateSetNode> update_item (',' update_item)*);
 update_item
     : path_expression '=' new_value;
 new_value
