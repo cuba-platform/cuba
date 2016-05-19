@@ -31,12 +31,11 @@
 
   .v-button.v-button-link.cuba-paging-count-number {
     text-decoration: none;
-    cursor: default;
+    opacity: inherit;
 
     .v-button-wrap .v-button-caption {
       text-decoration: none;
       color: $v-font-color;
-      cursor: default;
     }
   }
 }
