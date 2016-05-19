@@ -123,6 +123,9 @@ public class FileStorage implements FileStorageAPI {
             os.flush();
             writeLog(file, false);
         } catch (IOException e) {
+            IOUtils.closeQuietly(os);
+            FileUtils.deleteQuietly(file);
+
             throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, file.getAbsolutePath(), e);
         } finally {
             IOUtils.closeQuietly(os);
