@@ -34,19 +34,26 @@ public class DomainModelBuilder {
     protected MetadataTools metadataTools;
     protected MessageTools messageTools;
     protected ExtendedEntities extendedEntities;
+    protected boolean loadCaptions;
 
     public DomainModelBuilder() {
-        this.metadata = AppBeans.get(Metadata.NAME);
-        this.messageTools = AppBeans.get(MessageTools.NAME);
-        this.extendedEntities = AppBeans.get(ExtendedEntities.NAME);
-        this.metadataTools = metadata.getTools();
+        this(AppBeans.get(Metadata.NAME), AppBeans.get(MessageTools.NAME), AppBeans.get(ExtendedEntities.NAME));
+    }
+
+    public DomainModelBuilder(boolean loadCaptions) {
+        this(AppBeans.get(Metadata.NAME), AppBeans.get(MessageTools.NAME), AppBeans.get(ExtendedEntities.NAME), loadCaptions);
     }
 
     public DomainModelBuilder(Metadata metadata, MessageTools messageTools, @Nullable ExtendedEntities extendedEntities) {
+        this(metadata, messageTools, extendedEntities, true);
+    }
+
+    private DomainModelBuilder(Metadata metadata, MessageTools messageTools, @Nullable ExtendedEntities extendedEntities, boolean loadCaptions) {
         this.metadata = metadata;
+        this.metadataTools = metadata.getTools();
         this.messageTools = messageTools;
         this.extendedEntities = extendedEntities;
-        this.metadataTools = metadata.getTools();
+        this.loadCaptions = loadCaptions;
     }
 
     public DomainModel produce() {
@@ -71,7 +78,10 @@ public class DomainModelBuilder {
 
     private void addProperty(EntityBuilder builder, MetaClass metaClass, MetaProperty prop) {
         String name = prop.getName();
-        String userFriendlyName = messageTools.getPropertyCaption(metaClass, prop.getName());
+        String userFriendlyName = null;
+        if (loadCaptions) {
+            userFriendlyName = messageTools.getPropertyCaption(metaClass, prop.getName());
+        }
         boolean isEmbedded = metadataTools.isEmbedded(prop);
         MetaProperty.Type type = prop.getType();
         Class<?> javaType = prop.getJavaType();

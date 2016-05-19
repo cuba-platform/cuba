@@ -33,7 +33,7 @@ public class QueryTransformerFactory {
     public static QueryTransformer createTransformer(String query) {
         if (useAst) {
             if (domainModel == null) {
-                DomainModelBuilder builder = new DomainModelBuilder();
+                DomainModelBuilder builder = new DomainModelBuilder(false);
                 domainModel = builder.produce();
             }
             return AppBeans.getPrototype(QueryTransformer.NAME, domainModel, query);
@@ -45,7 +45,7 @@ public class QueryTransformerFactory {
     public static QueryParser createParser(String query) {
         if (useAst) {
             if (domainModel == null) {
-                DomainModelBuilder builder = new DomainModelBuilder();
+                DomainModelBuilder builder = new DomainModelBuilder(false);
                 domainModel = builder.produce();
             }
             return AppBeans.getPrototype(QueryParser.NAME, domainModel, query);
