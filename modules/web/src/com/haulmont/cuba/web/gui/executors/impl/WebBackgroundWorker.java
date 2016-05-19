@@ -44,10 +44,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Web implementation of {@link BackgroundWorker}
- *
  */
 @Component(BackgroundWorker.NAME)
 public class WebBackgroundWorker implements BackgroundWorker {
+
     private Logger log = LoggerFactory.getLogger(WebBackgroundWorker.class);
 
     private WatchDog watchDog;
@@ -211,21 +211,18 @@ public class WebBackgroundWorker implements BackgroundWorker {
             this.app = app;
             this.session = app.getAppUI().getSession();
 
-            //noinspection unchecked
-            this.params = runnableTask.getParams();
-            if (this.params != null)
-                this.params = Collections.unmodifiableMap(this.params);
-            else
-                this.params = Collections.emptyMap();
+            this.params = runnableTask.getParams() != null ?
+                    Collections.unmodifiableMap(runnableTask.getParams()) :
+                    Collections.emptyMap();
 
             // copy security context
-            securityContext = new SecurityContext(AppContext.getSecurityContext().getSession());
-            userId = userSessionSource.getUserSession().getId();
+            this.securityContext = new SecurityContext(AppContext.getSecurityContext().getSession());
+            this.userId = userSessionSource.getUserSession().getId();
         }
 
         @Override
         public final void run() {
-            Thread.currentThread().setName("BackgroundTaskThread");
+            Thread.currentThread().setName("BackgroundTaskThread-" + userId);
             // Set security permissions
             AppContext.setSecurityContext(securityContext);
 
@@ -234,7 +231,6 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 if (!isInterrupted()) {
                     // do not run any activity if canceled before start
                     result = runnableTask.run(new TaskLifeCycle<T>() {
-
                         @SafeVarargs
                         @Override
                         public final void publish(T... changes) {
@@ -254,8 +250,9 @@ public class WebBackgroundWorker implements BackgroundWorker {
                     });
                 }
             } catch (Exception ex) {
-                if (!(ex instanceof InterruptedException) && !canceled)
+                if (!(ex instanceof InterruptedException) && !canceled) {
                     this.taskException = ex;
+                }
             } finally {
                 // Set null security permissions
                 securityContext = null;
@@ -284,38 +281,39 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
         @Override
         public final boolean cancelExecution() {
-            boolean canceled = false;
-
-            if (!closed) {
-                log.debug("Cancel task. User: " + userId);
-
-                // Interrupt
-                interrupt();
-
-                Runnable removeTaskRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        // Remove task from execution
-                        app.removeBackgroundTask(WebTaskExecutor.this);
-
-                        WebTaskExecutor.this.canceled = true;
-                        WebTaskExecutor.this.closed = true;
-
-                        stopTimer();
-                    }
-                };
-
-                if (VaadinSession.getCurrent() != session) {
-                    // access to vaadin session asynchronously
-                    // to prevent deadlock with com.haulmont.cuba.gui.executors.impl.TasksWatchDog
-                    session.access(removeTaskRunnable);
-                } else {
-                    removeTaskRunnable.run();
-                }
-
-                canceled = true;
+            if (closed) {
+                return false;
             }
-            return canceled;
+
+            if (log.isTraceEnabled()) {
+                log.debug("Cancel task. User: " + userId);
+            }
+
+            // Interrupt
+            interrupt();
+
+            Runnable removeTaskRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    // Remove task from execution
+                    app.removeBackgroundTask(WebTaskExecutor.this);
+
+                    WebTaskExecutor.this.canceled = true;
+                    WebTaskExecutor.this.closed = true;
+
+                    stopTimer();
+                }
+            };
+
+            if (VaadinSession.getCurrent() != session) {
+                // access to vaadin session asynchronously
+                // to prevent deadlock with com.haulmont.cuba.gui.executors.impl.TasksWatchDog
+                session.access(removeTaskRunnable);
+            } else {
+                removeTaskRunnable.run();
+            }
+
+            return true;
         }
 
         private void stopTimer() {
@@ -355,8 +353,9 @@ public class WebBackgroundWorker implements BackgroundWorker {
             WebConfig webConfig = configuration.getConfig(WebConfig.class);
             int activeTasksCount = watchDog.getActiveTasksCount();
 
-            if (activeTasksCount >= webConfig.getMaxActiveBackgroundTasksCount())
+            if (activeTasksCount >= webConfig.getMaxActiveBackgroundTasksCount()) {
                 throw new ActiveBackgroundTasksLimitException("Maximum active background tasks limit exceeded");
+            }
 
             // Run timer listener
             webTimerListener.startListen();
@@ -408,8 +407,9 @@ public class WebBackgroundWorker implements BackgroundWorker {
         }
 
         public final void handleDone() {
-            if (this.closed)
+            if (this.closed) {
                 return;
+            }
 
             // task cancel here not available
             this.closed = true;
