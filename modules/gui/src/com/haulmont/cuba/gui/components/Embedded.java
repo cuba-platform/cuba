@@ -41,6 +41,8 @@ public interface Embedded extends Component, Component.BelongToFrame {
     void setSource(String fileName, @Nullable InputStream src);
     void setSource(String fileName, @Nullable ExportDataProvider dataProvider);
 
+    void setRelativeSource(@Nullable String src);
+
     void resetSource();
 
     void addParameter(String name, String value);

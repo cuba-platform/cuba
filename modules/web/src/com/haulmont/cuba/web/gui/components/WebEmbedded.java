@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.components.Embedded;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.WebConfig;
+import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.server.*;
 import org.apache.commons.io.IOUtils;
@@ -136,6 +137,22 @@ public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> im
                 }
             }, fileName);
             component.setSource(resource);
+        } else {
+            resetSource();
+        }
+    }
+
+    @Override
+    public void setRelativeSource(String src) {
+        if (src != null) {
+            try {
+                URL context = new URL(ControllerUtils.getLocationWithoutParams());
+                resource = new ExternalResource(new URL(context, src));
+                component.setSource(resource);
+                setType(Type.BROWSER);
+            } catch (MalformedURLException e) {
+                throw new RuntimeException("Unable to get external resource for given relative source");
+            }
         } else {
             resetSource();
         }

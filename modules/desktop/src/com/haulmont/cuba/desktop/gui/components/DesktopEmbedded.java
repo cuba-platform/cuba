@@ -125,6 +125,11 @@ public class DesktopEmbedded extends DesktopAbstractComponent<JPanel> implements
     }
 
     @Override
+    public void setRelativeSource(String src) {
+        throw new UnsupportedOperationException("setRelativeSource is not implemented for DesktopEmbedded");
+    }
+
+    @Override
     public void resetSource() {
         setContents(null, null);
     }
