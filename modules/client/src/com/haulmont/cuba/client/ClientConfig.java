@@ -33,7 +33,6 @@ import java.util.regex.Pattern;
 
 /**
  * Configuration parameters interface used by the WEB and DESKTOP layers.
- *
  */
 @Source(type = SourceType.APP)
 public interface ClientConfig extends Config {
@@ -329,4 +328,10 @@ public interface ClientConfig extends Config {
     @Source(type = SourceType.DATABASE)
     @DefaultBoolean(false)
     boolean getShowIconsForPopupMenuActions();
+
+    @Property("cuba.gui.lookupFieldPageLength")
+    @Source(type = SourceType.DATABASE)
+    @DefaultInt(10)
+    int getLookupFieldPageLength();
+    void setLookupFieldPageLength(int pageLength);
 }

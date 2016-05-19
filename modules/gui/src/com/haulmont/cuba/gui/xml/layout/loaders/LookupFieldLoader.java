@@ -31,8 +31,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-/**
- */
 public class LookupFieldLoader extends AbstractFieldLoader<LookupField> {
 
     @Override
@@ -54,6 +52,11 @@ public class LookupFieldLoader extends AbstractFieldLoader<LookupField> {
         String nullName = element.attributeValue("nullName");
         if (StringUtils.isNotEmpty(nullName)) {
             resultComponent.setNullOption(loadResourceString(nullName));
+        }
+
+        String pageLength = element.attributeValue("pageLength");
+        if (StringUtils.isNotEmpty(pageLength)) {
+            resultComponent.setPageLength(Integer.parseInt(pageLength));
         }
 
         loadTextInputAllowed();

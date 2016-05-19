@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.gui.components;
 
-/**
- */
 public interface LookupField extends OptionsField, Component.HasInputPrompt {
 
     String NAME = "lookupField";
@@ -60,10 +58,22 @@ public interface LookupField extends OptionsField, Component.HasInputPrompt {
      */
     void setNewOptionHandler(NewOptionHandler newOptionHandler);
 
+    /**
+     * @return the page length of the suggestion popup.
+     */
+    int getPageLength();
+    /**
+     * Sets the page length for the suggestion popup. Setting the page length to
+     * 0 will disable suggestion popup paging (all items visible).
+     *
+     * @param pageLength the pageLength to set
+     */
+    void setPageLength(int pageLength);
+
     enum FilterMode {
-            NO,
-            STARTS_WITH,
-            CONTAINS
+        NO,
+        STARTS_WITH,
+        CONTAINS
     }
 
     /**

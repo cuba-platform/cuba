@@ -19,9 +19,11 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -44,8 +46,6 @@ import static com.vaadin.event.ShortcutAction.KeyCode;
 import static com.vaadin.event.ShortcutAction.ModifierKey;
 import static com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 
-/**
- */
 public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implements LookupField {
 
     protected Object nullOption;
@@ -68,6 +68,9 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
         component.setItemCaptionMode(ItemCaptionMode.ITEM);
         component.setInvalidAllowed(false);
         component.setInvalidCommitted(true);
+
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        setPageLength(configuration.getConfig(ClientConfig.class).getLookupFieldPageLength());
 
         setFilterMode(FilterMode.CONTAINS);
 
@@ -327,6 +330,16 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
     @Override
     public void setNewOptionHandler(NewOptionHandler newItemHandler) {
         this.newOptionHandler = newItemHandler;
+    }
+
+    @Override
+    public int getPageLength() {
+        return component.getPageLength();
+    }
+
+    @Override
+    public void setPageLength(int pageLength) {
+        component.setPageLength(pageLength);
     }
 
     @Override

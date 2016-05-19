@@ -47,8 +47,6 @@ import java.util.Map;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
-/**
- */
 public class DesktopSuggestionField extends DesktopAbstractOptionsField<JComponent> implements SuggestionField {
 
     protected static final FilterMode DEFAULT_FILTER_MODE = FilterMode.CONTAINS;
@@ -521,6 +519,16 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
 
     @Override
     public void setNewOptionHandler(NewOptionHandler newOptionHandler) {
+    }
+
+    @Override
+    public int getPageLength() {
+        return 0;
+    }
+
+    @Override
+    public void setPageLength(int pageLength) {
+        // do nothing
     }
 
     @Override

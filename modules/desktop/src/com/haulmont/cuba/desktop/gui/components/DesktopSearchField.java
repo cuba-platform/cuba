@@ -44,8 +44,6 @@ import java.awt.event.*;
 import java.util.Collections;
 import java.util.Map;
 
-/**
- */
 public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> implements SearchField {
 
     protected static final FilterMode DEFAULT_FILTER_MODE = FilterMode.CONTAINS;
@@ -439,6 +437,16 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
 
     @Override
     public void setNewOptionHandler(NewOptionHandler newOptionHandler) {
+    }
+
+    @Override
+    public int getPageLength() {
+        return 0;
+    }
+
+    @Override
+    public void setPageLength(int pageLength) {
+        // do nothing
     }
 
     @Override

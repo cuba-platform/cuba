@@ -406,6 +406,16 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
     }
 
     @Override
+    public int getPageLength() {
+        return 0;
+    }
+
+    @Override
+    public void setPageLength(int pageLength) {
+        // do nothing
+    }
+
+    @Override
     public String getInputPrompt() {
         return inputPrompt;
     }
