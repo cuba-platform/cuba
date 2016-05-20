@@ -189,6 +189,7 @@ public abstract class AbstractScripting implements Scripting {
     @Override
     public <T> T evaluateGroovy(String text, Binding binding) {
         Script script = null;
+        boolean invalidated = false;
         try {
             script = getPool().borrowObject(text);
             script.setBinding(binding);
@@ -196,6 +197,7 @@ public abstract class AbstractScripting implements Scripting {
         } catch (Exception e) {
             try {
                 getPool().invalidateObject(text, script);
+                invalidated = true;
             } catch (Exception e1) {
                 log.warn("Error invalidating object in the pool", e1);
             }
@@ -204,7 +206,7 @@ public abstract class AbstractScripting implements Scripting {
             else
                 throw new RuntimeException("Error evaluating Groovy expression", e);
         } finally {
-            if (script != null)
+            if (script != null && !invalidated)
                 try {
                     script.setBinding(null); // free memory
                     getPool().returnObject(text, script);
