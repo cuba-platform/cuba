@@ -178,6 +178,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         @Override
         public final boolean cancelExecution() {
             if (isClosed) {
+                log.trace("Cancel will not be processed because it is already closed");
                 return false;
             }
 
