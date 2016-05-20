@@ -41,6 +41,17 @@ public interface Embedded extends Component, Component.BelongToFrame {
     void setSource(String fileName, @Nullable InputStream src);
     void setSource(String fileName, @Nullable ExportDataProvider dataProvider);
 
+    /**
+     * Allows to use relative source for Embedded.
+     * <p>Example:
+     * <p>Put the file <code>hello.html</code> with some content into <code>${catalina.home}/webapps/yourAppName/VAADIN/</code>.
+     *
+     * <pre><code>
+     * embedded.setRelativeSource("VAADIN/hello.html");
+     * </code></pre>
+     *
+     * @param src relative source of content to display
+     */
     void setRelativeSource(@Nullable String src);
 
     void resetSource();
