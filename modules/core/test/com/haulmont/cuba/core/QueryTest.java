@@ -418,4 +418,25 @@ public class QueryTest {
             tx.end();
         }
     }
+
+    @Test
+    public void testSingleBooleanResult() {
+        // works
+        Object[] activeAndName = cont.persistence().callInTransaction((em) -> {
+            return (Object[]) em.createQuery("select u.active, u.name from sec$User u where u.login = :login")
+                    .setParameter("login", "testLogin")
+                    .getFirstResult();
+        });
+        assertTrue((Boolean) activeAndName[0]);
+        assertEquals("testUser", activeAndName[1]);
+
+        //returns null
+        Boolean active = cont.persistence().callInTransaction((em) -> {
+            return em.createQuery("select u.active from sec$User u where u.login = :login", Boolean.class)
+                    .setParameter("login", "testLogin")
+                    .getFirstResult();
+        });
+        assertNotNull(active);
+        assertTrue(active);
+    }
 }
