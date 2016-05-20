@@ -583,8 +583,10 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
         updateClickableColumnKeys();
         updateColumnDescriptions();
 
-        if (Table.AggregationStyle.BOTTOM.equals(getAggregationStyle())) {
-            updateFooterAggregation();
+        if (isAggregatable()) {
+            if (Table.AggregationStyle.BOTTOM.equals(getAggregationStyle())) {
+                updateFooterAggregation();
+            }
         }
     }
 
