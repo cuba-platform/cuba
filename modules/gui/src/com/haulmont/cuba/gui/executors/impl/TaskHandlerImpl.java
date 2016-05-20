@@ -124,9 +124,8 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
         boolean canceled = taskExecutor.cancelExecution();
         if (canceled) {
             BackgroundTask<T, V> task = taskExecutor.getTask();
-            task.canceled();
-
             try {
+                task.canceled();
                 // Notify listeners
                 for (BackgroundTask.ProgressListener listener : task.getProgressListeners()) {
                     listener.onCancel();

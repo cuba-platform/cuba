@@ -147,6 +147,10 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
                 return;
             }
 
+            if (log.isDebugEnabled()) {
+                log.debug("Done task. User: " + userId);
+            }
+
             try {
                 if (this.taskException == null) {
                     runnableTask.done(result);
@@ -196,7 +200,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
                 }
             }
 
-            this.isClosed = true;
+            this.isClosed = isCanceledNow;
 
             return isCanceledNow;
         }
