@@ -97,11 +97,14 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
         size = datasource.size();
         start = 0;
 
+        boolean refreshSizeButton = false;
         if (datasource instanceof CollectionDatasource.SupportsPaging) {
             CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
             if (samePage) {
                 state = lastState;
                 start = ds.getFirstResult();
+                samePage = false;
+                refreshSizeButton = State.LAST.equals(state);
             } else if ((size == 0 || size < ds.getMaxResults()) && ds.getFirstResult() == 0) {
                 state = State.FIRST_COMPLETE;
                 lastState = state;
@@ -186,7 +189,7 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
         Messages messages = AppBeans.get(Messages.NAME);
         impl.getLabel().setText(messages.formatMessage(messagesPack, msgKey, countValue));
 
-        if (impl.getCountButton().isVisible() && !refreshing) {
+        if (impl.getCountButton().isVisible() && !refreshing || refreshSizeButton) {
             impl.getCountButton().setText(messages.getMessage(messagesPack, "table.rowsCount.msg3"));
         }
         impl.repaint();
