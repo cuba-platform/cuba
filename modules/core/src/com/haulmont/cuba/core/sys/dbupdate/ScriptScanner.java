@@ -121,7 +121,7 @@ public class ScriptScanner {
                         try {
                             String decodedUrl = URLDecoder.decode(resource.getURL().toString(), "UTF-8");
                             String resourcePath = decodedUrl.replaceFirst(".+?:", "");
-                            Matcher matcher = Pattern.compile(".*" + Pattern.quote(dbDirPath) + "/{1}(.+?)/.*").matcher(resourcePath);
+                            Matcher matcher = Pattern.compile(".*" + Pattern.quote(dbDirPath) + "/?(.+?)/.*").matcher(resourcePath);
                             return matcher.find() ? matcher.group(1) : null;
                         } catch (IOException e) {
                             throw new RuntimeException("An error occurred while detecting modules", e);
