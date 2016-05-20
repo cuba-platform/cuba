@@ -69,7 +69,7 @@ public class App implements ConnectionListener {
     protected static App app;
 
     private Logger log;
-    private Logger userActionsLog = LoggerFactory.getLogger(UserActionsLogger.class);
+    private Logger userActionsLog;
 
     protected TopLevelFrame mainFrame;
 
@@ -241,6 +241,7 @@ public class App implements ConnectionListener {
             System.setProperty("logback.configurationFile", getDefaultLogConfig());
         }
         log = LoggerFactory.getLogger(App.class);
+        userActionsLog = LoggerFactory.getLogger(UserActionsLogger.class);
     }
 
     protected void initTestMode() {
