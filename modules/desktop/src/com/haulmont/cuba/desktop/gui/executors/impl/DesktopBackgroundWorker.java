@@ -182,7 +182,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
                 return false;
             }
 
-            if (log.isTraceEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("Cancel task. User: " + userId);
             }
 
