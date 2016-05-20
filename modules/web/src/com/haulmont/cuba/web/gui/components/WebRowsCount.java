@@ -180,11 +180,14 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         size = datasource.size();
         start = 0;
 
+        boolean refreshSizeButton = false;
         if (datasource instanceof CollectionDatasource.SupportsPaging) {
             CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
             if (samePage) {
                 state = lastState;
                 start = ds.getFirstResult();
+                samePage = false;
+                refreshSizeButton = State.LAST.equals(state);
             } else if ((size == 0 || size < ds.getMaxResults()) && ds.getFirstResult() == 0) {
                 state = State.FIRST_COMPLETE;
                 lastState = state;
@@ -268,7 +271,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
         component.getLabel().setValue(messages.formatMainMessage(msgKey, countValue));
 
-        if (component.getCountButton().isVisible() && !refreshing) {
+        if (component.getCountButton().isVisible() && !refreshing || refreshSizeButton) {
             component.getCountButton().setCaption(messages.getMainMessage("table.rowsCount.msg3"));
             component.getCountButton().removeStyleName("cuba-paging-count-number");
             component.getCountButton().setEnabled(true);
