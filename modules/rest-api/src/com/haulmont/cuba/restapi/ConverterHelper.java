@@ -32,7 +32,7 @@ import java.util.*;
 
 /**
  */
-public class ConvertorHelper {
+public class ConverterHelper {
     public static final Comparator<MetaProperty> PROPERTY_COMPARATOR = new Comparator<MetaProperty>() {
         public int compare(MetaProperty p1, MetaProperty p2) {
             return p1.getName().compareTo(p2.getName());

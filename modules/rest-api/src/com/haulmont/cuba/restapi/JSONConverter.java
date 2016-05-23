@@ -49,7 +49,7 @@ import java.util.*;
 /**
  */
 @Component
-public class JSONConvertor implements Convertor {
+public class JSONConverter implements Converter {
     public static final String MIME_STR = "application/json;charset=UTF-8";
     public static final String TYPE_JSON = "json";
     public static final MimeType MIME_TYPE_JSON;
@@ -265,7 +265,7 @@ public class JSONConvertor implements Convertor {
             if (entity instanceof BaseGenericIdEntity
                     && DynamicAttributesUtils.isDynamicAttribute(propertyName)
                     && ((BaseGenericIdEntity) entity).getDynamicAttributes() == null) {
-                ConvertorHelper.fetchDynamicAttributes(entity);
+                ConverterHelper.fetchDynamicAttributes(entity);
             }
 
             if (json.get(propertyName) == null) {
@@ -622,7 +622,7 @@ public class JSONConvertor implements Convertor {
         }
 
         MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
-        List<MetaProperty> properties = ConvertorHelper.getActualMetaProperties(metaClass, entity);
+        List<MetaProperty> properties = ConverterHelper.getActualMetaProperties(metaClass, entity);
 
         for (MetaProperty property : properties) {
             if (metadataTools.isPersistent(property) && !PersistenceHelper.isLoaded(entity, property.getName())) {

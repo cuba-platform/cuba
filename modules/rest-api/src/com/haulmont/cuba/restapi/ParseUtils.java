@@ -100,10 +100,10 @@ public final class ParseUtils {
      *
      * @param clazz     needed required class
      * @param value     value to parse
-     * @param convertor which convertor calls this method
+     * @param converter which converter calls this method
      * @return parsed object
      */
-    public static Object toObject(Class clazz, String value, Convertor convertor) throws ParseException {
+    public static Object toObject(Class clazz, String value, Converter converter) throws ParseException {
         if (String.class == clazz) {
             return value;
         }
@@ -140,10 +140,10 @@ public final class ParseUtils {
             return UUID.fromString(value);
         }
         if (Entity.class.isAssignableFrom(clazz)) {
-            return convertor.parseEntity(value);
+            return converter.parseEntity(value);
         }
         if (Collection.class.isAssignableFrom(clazz)) {
-            return convertor.parseEntitiesCollection(value, clazz);
+            return converter.parseEntitiesCollection(value, clazz);
         }
         throw new IllegalArgumentException("Parameters of type " + clazz.getName() + " are not supported");
     }

@@ -118,9 +118,9 @@ public class DataServiceController {
             if (entity == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             } else {
-                Convertor convertor = conversionFactory.getConvertor(type);
-                String result = convertor.process(entity, metaClass, loadCtx.getView());
-                writeResponse(response, result, convertor.getMimeType());
+                Converter converter = conversionFactory.getConverter(type);
+                String result = converter.process(entity, metaClass, loadCtx.getView());
+                writeResponse(response, result, converter.getMimeType());
             }
         } catch (Throwable e) {
             sendError(request, response, e);
@@ -195,9 +195,9 @@ public class DataServiceController {
                 loadCtx.setView(viewName);
             }
             List<Entity> entities = dataService.loadList(loadCtx);
-            Convertor convertor = conversionFactory.getConvertor(type);
-            String result = convertor.process(entities, metaClass, loadCtx.getView());
-            writeResponse(response, result, convertor.getMimeType());
+            Converter converter = conversionFactory.getConverter(type);
+            String result = converter.process(entities, metaClass, loadCtx.getView());
+            writeResponse(response, result, converter.getMimeType());
         } catch (Throwable e) {
             sendError(request, response, e);
         } finally {
@@ -219,9 +219,9 @@ public class DataServiceController {
         try {
             response.addHeader("Access-Control-Allow-Origin", "*");
 
-            Convertor convertor = conversionFactory.getConvertor(contentType);
+            Converter converter = conversionFactory.getConverter(contentType);
 
-            QueryRequest queryRequest = convertor.parseQueryRequest(requestContent);
+            QueryRequest queryRequest = converter.parseQueryRequest(requestContent);
 
             MetaClass metaClass = metadata.getClass(queryRequest.getEntity());
             if (metaClass == null) {
@@ -255,8 +255,8 @@ public class DataServiceController {
                 loadCtx.setView(queryRequest.getViewName());
             }
             List<Entity> entities = dataService.loadList(loadCtx);
-            String result = convertor.process(entities, metaClass, loadCtx.getView());
-            writeResponse(response, result, convertor.getMimeType());
+            String result = converter.process(entities, metaClass, loadCtx.getView());
+            writeResponse(response, result, converter.getMimeType());
         } catch (RowLevelSecurityException e) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "The operation with entity " + e.getEntity() + " is denied");
         } catch (Throwable e) {
@@ -279,9 +279,9 @@ public class DataServiceController {
         try {
             response.addHeader("Access-Control-Allow-Origin", "*");
 
-            Convertor convertor = conversionFactory.getConvertor(contentType);
+            Converter converter = conversionFactory.getConverter(contentType);
 
-            CommitRequest commitRequest = convertor.parseCommitRequest(requestContent);
+            CommitRequest commitRequest = converter.parseCommitRequest(requestContent);
 
             Collection commitInstances = commitRequest.getCommitInstances();
             Set<String> newInstanceIds = commitRequest.getNewInstanceIds();
@@ -308,8 +308,8 @@ public class DataServiceController {
             commitContext.setNewInstanceIds(newInstanceIds);
             Set<Entity> result = dataService.commit(commitContext);
 
-            String converted = convertor.process(result);
-            writeResponse(response, converted, convertor.getMimeType());
+            String converted = converter.process(result);
+            writeResponse(response, converted, converter.getMimeType());
         } catch (RowLevelSecurityException e) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "The operation with entity " + e.getEntity() + " is denied");
         } catch (Throwable e) {
@@ -420,15 +420,15 @@ public class DataServiceController {
                 idx++;
             }
 
-            Convertor convertor = conversionFactory.getConvertor(type);
-            ServiceRequest serviceRequest = new ServiceRequest(serviceName, methodName, convertor);
+            Converter converter = conversionFactory.getConverter(type);
+            ServiceRequest serviceRequest = new ServiceRequest(serviceName, methodName, converter);
             serviceRequest.setParamTypes(paramTypes);
             serviceRequest.setParamValuesString(paramValuesString);
 
             Object result = serviceRequest.invokeMethod();
 
-            String converted = convertor.processServiceMethodResult(result, serviceRequest.getMethodReturnType());
-            writeResponse(response, converted, convertor.getMimeType());
+            String converted = converter.processServiceMethodResult(result, serviceRequest.getMethodReturnType());
+            writeResponse(response, converted, converter.getMimeType());
         } catch (Throwable e) {
             sendError(request, response, e);
         } finally {
@@ -448,8 +448,8 @@ public class DataServiceController {
         try {
             response.addHeader("Access-Control-Allow-Origin", "*");
 
-            Convertor convertor = conversionFactory.getConvertor(contentType);
-            ServiceRequest serviceRequest = convertor.parseServiceRequest(requestContent);
+            Converter converter = conversionFactory.getConverter(contentType);
+            ServiceRequest serviceRequest = converter.parseServiceRequest(requestContent);
 
             if (!restServicePermissions.isPermitted(serviceRequest.getServiceName(), serviceRequest.getMethodName())) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -457,8 +457,8 @@ public class DataServiceController {
             }
 
             Object result = serviceRequest.invokeMethod();
-            String converted = convertor.processServiceMethodResult(result, serviceRequest.getMethodReturnType());
-            writeResponse(response, converted, convertor.getMimeType());
+            String converted = converter.processServiceMethodResult(result, serviceRequest.getMethodReturnType());
+            writeResponse(response, converted, converter.getMimeType());
         } catch (RestServiceException e) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
             log.error("Error processing request: " + request.getRequestURI() + "?" + request.getQueryString(), e);

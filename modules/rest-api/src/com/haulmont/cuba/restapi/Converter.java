@@ -29,32 +29,32 @@ import java.util.Set;
 
 /**
  */
-public interface Convertor {
+public interface Converter {
     MimeType getMimeType();
 
     String getType();
 
     /**
      * Converts an entity to string representation of search result
-     * in a format of current {@code convertor} (xml, json, etc.)
+     * in a format of current {@code converter} (xml, json, etc.)
      */
     String process(Entity entity, MetaClass metaclass, View view) throws Exception;
 
     /**
      * Converts an collection of entities to string representation of search result
-     * in a format of current {@code convertor} (xml, json, etc.)
+     * in a format of current {@code converter} (xml, json, etc.)
      */
     String process(List<Entity> entities, MetaClass metaClass, View view) throws Exception;
 
     /**
      * Converts an collection of entities to string representation of commit result
-     * in a format of current {@code convertor} (xml, json, etc.)
+     * in a format of current {@code converter} (xml, json, etc.)
      */
     String process(Set<Entity> entities) throws Exception;
 
     /**
      * Converts an object (simple datatype, entity or collection of entities) to string representation
-     * of method invocation result in a format of current {@code convertor} (xml, json, etc.)
+     * of method invocation result in a format of current {@code converter} (xml, json, etc.)
      */
     String processServiceMethodResult(Object result, Class resultType) throws Exception;
 
@@ -86,7 +86,7 @@ public interface Convertor {
     Collection<? extends Entity> parseEntitiesCollection(String content, Class<? extends Collection> collectionClass);
 
     /**
-     * @return list of rest api versions this convertor can work with
+     * @return list of rest api versions this converter can work with
      */
     List<Integer> getApiVersions();
 }

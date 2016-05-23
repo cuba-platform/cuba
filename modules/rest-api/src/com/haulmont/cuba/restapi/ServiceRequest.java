@@ -35,14 +35,14 @@ public class ServiceRequest {
     protected String methodName;
     protected List<String> paramValuesString = new ArrayList<>();
     protected List<Class> paramTypes = new ArrayList<>();
-    protected Convertor convertor;
+    protected Converter converter;
     protected DatatypeFormatter datatypeFormatter;
     protected Class methodReturnType;
 
-    public ServiceRequest(String serviceName, String methodName, Convertor convertor) {
+    public ServiceRequest(String serviceName, String methodName, Converter converter) {
         this.serviceName = serviceName;
         this.methodName = methodName;
-        this.convertor = convertor;
+        this.converter = converter;
         this.datatypeFormatter = AppBeans.get(DatatypeFormatter.class);
     }
 
@@ -55,7 +55,7 @@ public class ServiceRequest {
         Class<?>[] types = serviceMethod.getParameterTypes();
         for (int i = 0; i < types.length; i++) {
             Class<?> aClass = types[i];
-            paramValues.add(ParseUtils.toObject(aClass, paramValuesString.get(i), convertor));
+            paramValues.add(ParseUtils.toObject(aClass, paramValuesString.get(i), converter));
         }
 
         return serviceMethod.invoke(service, paramValues.toArray());

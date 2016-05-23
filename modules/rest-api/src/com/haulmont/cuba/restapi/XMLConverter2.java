@@ -48,11 +48,11 @@ import java.text.ParseException;
 import java.util.*;
 
 /**
- * XML Convertor that works with new xml schema defined in platform v5.4
+ * XML Converter that works with new xml schema defined in platform v5.4
  *
  */
 @Component
-public class XMLConvertor2 implements Convertor {
+public class XMLConverter2 implements Converter {
 
     public static final MimeType MIME_TYPE_XML;
     public static final String MIME_STR = "text/xml;charset=UTF-8";
@@ -474,7 +474,7 @@ public class XMLConvertor2 implements Convertor {
                 if (entity instanceof BaseGenericIdEntity
                         && DynamicAttributesUtils.isDynamicAttribute(propertyName)
                         && ((BaseGenericIdEntity) entity).getDynamicAttributes() == null) {
-                    ConvertorHelper.fetchDynamicAttributes(entity);
+                    ConverterHelper.fetchDynamicAttributes(entity);
                 }
 
                 String stringValue = propertyEl.getText();
@@ -589,7 +589,7 @@ public class XMLConvertor2 implements Convertor {
         }
 
         MetaClass metaClass = entity.getMetaClass();
-        List<MetaProperty> orderedProperties = ConvertorHelper.getActualMetaProperties(metaClass, entity);
+        List<MetaProperty> orderedProperties = ConverterHelper.getActualMetaProperties(metaClass, entity);
         for (MetaProperty property : orderedProperties) {
             if (metadataTools.isPersistent(property) && !PersistenceHelper.isLoaded(entity, property.getName())) {
                 continue;

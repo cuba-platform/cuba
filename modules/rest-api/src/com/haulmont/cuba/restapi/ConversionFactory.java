@@ -30,7 +30,7 @@ import java.util.List;
  */
 @Component
 public class ConversionFactory {
-    private List<Convertor> convertors = new ArrayList<>();
+    private List<Converter> converters = new ArrayList<>();
 
     protected int restApiVersion;
 
@@ -38,42 +38,42 @@ public class ConversionFactory {
     protected Configuration configuration;
 
     @Inject
-    protected JSONConvertor jsonConvertor;
+    protected JSONConverter jsonConverter;
 
     @Inject
-    protected XMLConvertor xmlConvertor;
+    protected XMLConverter xmlConverter;
 
     @Inject
-    protected XMLConvertor2 xmlConvertor2;
+    protected XMLConverter2 xmlConverter2;
 
     @PostConstruct
     private int init() {
-        convertors.add(jsonConvertor);
-        convertors.add(xmlConvertor);
-        convertors.add(xmlConvertor2);
+        converters.add(jsonConverter);
+        converters.add(xmlConverter);
+        converters.add(xmlConverter2);
 
         RestConfig restConfig = configuration.getConfig(RestConfig.class);
         restApiVersion = restConfig.getRestApiVersion();
         return restApiVersion;
     }
 
-    public Convertor getConvertor(MimeType requestedForm) {
+    public Converter getConverter(MimeType requestedForm) {
         if (requestedForm != null) {
-            for (Convertor convertor : getConvertors()) {
-                if (requestedForm.match(convertor.getMimeType()) && convertor.getApiVersions().contains(restApiVersion))
-                    return convertor;
+            for (Converter converter : getConverters()) {
+                if (requestedForm.match(converter.getMimeType()) && converter.getApiVersions().contains(restApiVersion))
+                    return converter;
             }
         }
-        throw new RuntimeException("Convertor not found");
+        throw new RuntimeException("Converter not found");
     }
 
-    private List<Convertor> getConvertors() {return convertors;}
+    private List<Converter> getConverters() {return converters;}
 
-    public Convertor getConvertor(String type) {
-        for (Convertor convertor : getConvertors()) {
-            if (convertor.getType().equals(type) && convertor.getApiVersions().contains(restApiVersion))
-                return convertor;
+    public Converter getConverter(String type) {
+        for (Converter converter : getConverters()) {
+            if (converter.getType().equals(type) && converter.getApiVersions().contains(restApiVersion))
+                return converter;
         }
-        throw new RuntimeException("Convertor not found");
+        throw new RuntimeException("Converter not found");
     }
 }

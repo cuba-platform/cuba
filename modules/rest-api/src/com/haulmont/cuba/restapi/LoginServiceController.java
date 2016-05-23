@@ -86,7 +86,7 @@ public class LoginServiceController {
         String username;
         String password;
         String localeStr;
-        if (contentType.match(JSONConvertor.MIME_TYPE_JSON)) {
+        if (contentType.match(JSONConverter.MIME_TYPE_JSON)) {
             try {
                 JSONObject json = new JSONObject(requestBody);
                 username = json.getString("username");
@@ -201,7 +201,7 @@ public class LoginServiceController {
                              HttpServletResponse response) throws IOException, JSONException {
 
         String sessionUUID;
-        if (contentType.match(JSONConvertor.MIME_TYPE_JSON)) {
+        if (contentType.match(JSONConverter.MIME_TYPE_JSON)) {
             try {
                 JSONObject json = new JSONObject(requestBody);
                 sessionUUID = json.getString("session");

@@ -67,7 +67,7 @@ import java.util.*;
  */
 @Deprecated
 @Component
-public class XMLConvertor implements Convertor {
+public class XMLConverter implements Converter {
     public static final MimeType MIME_TYPE_XML;
     public static final String MIME_STR = "text/xml;charset=UTF-8";
     public static final String TYPE_XML = "xml";
@@ -460,7 +460,7 @@ public class XMLConvertor implements Convertor {
         root.setAttribute(ATTR_ID, ior(entity));
 
         MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
-        List<MetaProperty> properties = ConvertorHelper.getOrderedProperties(metaClass);
+        List<MetaProperty> properties = ConverterHelper.getOrderedProperties(metaClass);
         for (MetaProperty property : properties) {
             Element child;
 
