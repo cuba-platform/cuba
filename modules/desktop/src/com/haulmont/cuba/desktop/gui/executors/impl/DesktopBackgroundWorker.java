@@ -79,6 +79,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         private UUID userId;
 
         private volatile boolean isClosed = false;
+        private volatile boolean doneHandled = false;
 
         private Map<String, Object> params;
         private TaskHandlerImpl<T, V> taskHandler;
@@ -171,6 +172,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
                 }
 
                 isClosed = true;
+                doneHandled = true;
             }
         }
 
@@ -201,6 +203,12 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
             }
 
             this.isClosed = isCanceledNow;
+            if (!doneHandled) {
+                log.trace("Done was not handled. Return 'true' as canceled status. User: " + userId);
+
+                this.isClosed = true;
+                return true;
+            }
 
             return isCanceledNow;
         }
