@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -33,7 +34,6 @@ import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.security.entity.EntityOp;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -105,17 +105,13 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
         return null;
     }
 
-    protected List<FieldGroup.FieldConfig> loadFields(FieldGroup resultComponent, Element element, Datasource ds, boolean addDynamicAttributes) {
+    protected List<FieldGroup.FieldConfig> loadFields(FieldGroup resultComponent, Element element, Datasource ds) {
         @SuppressWarnings("unchecked")
         List<Element> fieldElements = element.elements("field");
         if (!fieldElements.isEmpty()) {
-            List<FieldGroup.FieldConfig> fields = loadFields(resultComponent, fieldElements, ds);
-            if (addDynamicAttributes) {
-                fields.addAll(loadDynamicAttributeFields(ds));
-            }
-            return fields;
+            return loadFields(resultComponent, fieldElements, ds);
         }
-        return addDynamicAttributes ? loadDynamicAttributeFields(ds) : Collections.emptyList();
+        return Collections.emptyList();
     }
 
     protected List<FieldGroup.FieldConfig> loadFields(FieldGroup resultComponent, List<Element> elements, Datasource ds) {
@@ -415,11 +411,18 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
         assignXmlDescriptor(resultComponent, element);
 
         loadVisible(resultComponent, element);
+        loadWidth(resultComponent, element);
 
         Datasource ds = loadDatasource(element);
         if (element.elements("column").isEmpty()) {
-            List<FieldGroup.FieldConfig> rootFields = loadFields(resultComponent, element, ds, true);
-            for (FieldGroup.FieldConfig field : rootFields) {
+            Iterable<FieldGroup.FieldConfig> rootFields = loadFields(resultComponent, element, ds);
+            Iterable<FieldGroup.FieldConfig> dynamicAttributeFields = loadDynamicAttributeFields(ds);
+            for (FieldGroup.FieldConfig field : dynamicAttributeFields) {
+                if (resultComponent.getWidth() > 0 && field.getWidth() == null) {
+                    field.setWidth("100%");
+                }
+            }
+            for (FieldGroup.FieldConfig field : Iterables.concat(rootFields, dynamicAttributeFields)) {
                 resultComponent.addField(field);
             }
         } else {
@@ -446,7 +449,10 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
                 String width = loadThemeString(columnElement.attributeValue("width"));
 
-                List<FieldGroup.FieldConfig> columnFields = loadFields(resultComponent, columnElement, ds, colIndex == 0);
+                Iterable<FieldGroup.FieldConfig> columnFields = loadFields(resultComponent, columnElement, ds);
+                if (colIndex == 0) {
+                     columnFields = Iterables.concat(columnFields, loadDynamicAttributeFields(ds));
+                }
                 for (FieldGroup.FieldConfig field : columnFields) {
                     resultComponent.addField(field, colIndex);
                     if (StringUtils.isNotEmpty(width) && field.getWidth() == null) {
@@ -480,7 +486,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
         loadCaption(resultComponent, element);
 
         loadHeight(resultComponent, element);
-        loadWidth(resultComponent, element);
+
         loadAlign(resultComponent, element);
 
         loadBorder(resultComponent, element);
