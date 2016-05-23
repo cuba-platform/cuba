@@ -36,13 +36,16 @@ public class MethodsCache {
             String name = method.getName();
             if (name.startsWith("get") && method.getParameterTypes().length == 0) {
                 name = StringUtils.uncapitalize(name.substring(3));
+                method.setAccessible(true);
                 getters.put(name, method);
             }
             if (name.startsWith("is") && method.getParameterTypes().length == 0) {
                 name = StringUtils.uncapitalize(name.substring(2));
+                method.setAccessible(true);
                 getters.put(name, method);
             } else if (name.startsWith("set") && method.getParameterTypes().length == 1) {
                 name = StringUtils.uncapitalize(name.substring(3));
+                method.setAccessible(true);
                 setters.put(name, method);
             }
         }
