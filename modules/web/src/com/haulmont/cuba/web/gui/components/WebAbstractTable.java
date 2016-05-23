@@ -834,10 +834,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             }
         }
 
-        if (aggregationCells != null) {
-            //noinspection unchecked
-            datasource.addItemPropertyChangeListener(createAggregationDatasourceListener());
-        }
+        datasource.addItemPropertyChangeListener(createAggregationDatasourceListener());
 
         createStubsForGeneratedColumns();
 
@@ -1484,6 +1481,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     @Override
     public void addAggregationProperty(Column column, AggregationInfo.Type type) {
         component.addContainerPropertyAggregation(column.getId(), WebComponentsHelper.convertAggregationType(type));
+
+        if (column.getAggregation() != null) {
+            addAggregationCell(column);
+        }
     }
 
     @Override
@@ -2051,11 +2052,13 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
         @Override
         public void itemPropertyChanged(Datasource.ItemPropertyChangeEvent<Entity> e) {
-            final CollectionDatasource ds = WebAbstractTable.this.getDatasource();
-            component.aggregate(new AggregationContainer.Context(ds.getItemIds()));
+            if (aggregationCells != null) {
+                final CollectionDatasource ds = WebAbstractTable.this.getDatasource();
+                component.aggregate(new AggregationContainer.Context(ds.getItemIds()));
 
-            // trigger aggregation repaint
-            component.markAsDirty();
+                // trigger aggregation repaint
+                component.markAsDirty();
+            }
         }
     }
 
