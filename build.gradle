@@ -121,7 +121,7 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
         compile('org.slf4j:log4j-over-slf4j:1.7.12')
         compile(group: 'org.perf4j', name: 'perf4j', version: '0.9.16')
         compile('com.google.code.findbugs:jsr305:3.0.0')
-        compile(group: 'com.haulmont.thirdparty', name: 'javaee-api', version: '6.0.20091228')
+        compile('javax:javaee-api:7.0')
         compile(groovyArtifact)
         compile(group: 'antlr', name: 'antlr', version: '2.7.7')
         compile(group: 'org.antlr', name: 'antlr-runtime', version: '3.5.2')
