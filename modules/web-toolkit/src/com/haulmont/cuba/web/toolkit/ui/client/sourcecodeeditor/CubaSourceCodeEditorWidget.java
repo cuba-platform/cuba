@@ -105,6 +105,11 @@ public class CubaSourceCodeEditorWidget extends AceEditorWidget {
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
         super.setReadOnly(!this.enabled || readOnly);
+        if (readOnly) {
+            getTextAreaElement().setTabIndex(-1);
+        } else {
+            getTextAreaElement().removeAttribute("tabindex");
+        }
     }
 
     public void setHandleTabKey(boolean handleTabKey) {
