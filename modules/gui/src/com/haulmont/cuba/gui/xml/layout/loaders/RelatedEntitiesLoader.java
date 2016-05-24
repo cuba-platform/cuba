@@ -86,7 +86,7 @@ public class RelatedEntitiesLoader extends AbstractComponentLoader<RelatedEntiti
 
         String listComponent = element.attributeValue("for");
         if (StringUtils.isEmpty(listComponent)) {
-            throw new GuiDevelopmentException("for' attribute of related entities is not specified",
+            throw new GuiDevelopmentException("'for' attribute of related entities is not specified",
                     context.getFullFrameId(), "componentId", resultComponent.getId());
         }
 
