@@ -352,7 +352,7 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
         condition.setJoin(joinField.<String>getValue());
 
         ConditionParamBuilder paramBuilder = AppBeans.get(ConditionParamBuilder.class);
-        String paramName = paramBuilder.createParamName(condition);
+        String paramName = condition.getParam() != null ? condition.getParam().getName() : paramBuilder.createParamName(condition);
         String where = whereField.getValue();
         if (where != null) {
             where = where.replace("?", ":" + paramName);
