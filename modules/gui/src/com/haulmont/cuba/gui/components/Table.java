@@ -214,7 +214,6 @@ public interface Table<E extends Entity>
          * @param property column identifier if getting a style for a cell, or null if getting the style for a row
          * @return style name or null to apply the default
          */
-        @Nullable
         String getStyleName(E entity, @Nullable String property);
     }
 
