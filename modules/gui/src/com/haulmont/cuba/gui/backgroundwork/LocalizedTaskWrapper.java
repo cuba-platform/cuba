@@ -22,14 +22,17 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
+import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-/**
- */
 public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
+
+    protected Logger log = LoggerFactory.getLogger(BackgroundWorker.class);
 
     protected BackgroundTask<T, V> wrappedTask;
     protected Window window;
@@ -57,12 +60,10 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
         if (!handled) {
             final Frame ownerFrame = wrappedTask.getOwnerFrame();
             if (ownerFrame != null) {
-                window.closeAndRun("close", new Runnable() {
-                    @Override
-                    public void run() {
-                        showExecutionError(ex);
-                    }
-                });
+                window.closeAndRun("close", () -> showExecutionError(ex));
+
+                log.error("Exception occurred in background task", ex);
+
                 handled = true;
             } else {
                 window.close("", true);

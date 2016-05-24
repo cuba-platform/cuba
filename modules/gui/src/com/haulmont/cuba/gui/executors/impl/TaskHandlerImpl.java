@@ -36,9 +36,6 @@ import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkState;
 
-/**
- * Task handler
- */
 public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
     private Logger log = LoggerFactory.getLogger(BackgroundWorker.class);

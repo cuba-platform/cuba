@@ -71,6 +71,7 @@
             <param-value>com.haulmont.cuba.web.toolkit.ui.WidgetSet</param-value>
         </init-param>
         <load-on-startup>0</load-on-startup>
+        <async-supported>true</async-supported>
     </servlet>
 
     <servlet>

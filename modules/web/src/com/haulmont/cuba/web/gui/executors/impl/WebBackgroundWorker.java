@@ -17,28 +17,28 @@
 
 package com.haulmont.cuba.web.gui.executors.impl;
 
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.gui.executors.*;
 import com.haulmont.cuba.gui.executors.impl.TaskExecutor;
 import com.haulmont.cuba.gui.executors.impl.TaskHandlerImpl;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
-import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -50,48 +50,52 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
     private Logger log = LoggerFactory.getLogger(WebBackgroundWorker.class);
 
+    @Inject
     private WatchDog watchDog;
 
     @Inject
     private UserSessionSource userSessionSource;
 
-    @Inject
     private Configuration configuration;
 
+    private ExecutorService executorService;
+
     @Inject
-    public WebBackgroundWorker(WatchDog watchDog) {
-        this.watchDog = watchDog;
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
+
+        createThreadPoolExecutor();
     }
 
-    /**
-     * Simple wrapper for {@link com.haulmont.cuba.gui.components.Timer.ActionListener}
-     */
-    private static class WebTimerListener {
-
-        private CubaTimer timer;
-
-        private CubaTimer.ActionListener timerListener;
-
-        private WebTimerListener(CubaTimer timer) {
-            this.timer = timer;
+    protected void createThreadPoolExecutor() {
+        if (executorService != null) {
+            return;
         }
 
-        public CubaTimer.ActionListener getTimerListener() {
-            return timerListener;
-        }
+        WebConfig webConfig = configuration.getConfig(WebConfig.class);
+        ThreadFactory threadFactory = new ThreadFactory() {
+            final ThreadFactory defaultFactory = Executors.defaultThreadFactory();
 
-        public void setTimerListener(CubaTimer.ActionListener timerListener) {
-            this.timerListener = timerListener;
-        }
+            @Override
+            public Thread newThread(@Nonnull final Runnable r) {
+                Thread thread = defaultFactory.newThread(r);
+                thread.setName("BackgroundTaskThread-" + thread.getName());
+                thread.setDaemon(true);
+                return thread;
+            }
+        };
 
-        public void startListen() {
-            if (timerListener != null)
-                timer.addActionListener(timerListener);
-        }
+        this.executorService = new ThreadPoolExecutor(
+                webConfig.getMinBackgroundThreadsCount(),
+                webConfig.getMaxActiveBackgroundTasksCount(),
+                10L, TimeUnit.MINUTES,
+                new LinkedBlockingQueue<>(),
+                threadFactory);
+    }
 
-        public void stopListen() {
-            timer.removeActionListener(timerListener);
-        }
+    @PreDestroy
+    public void destroy() {
+        executorService.shutdownNow();
     }
 
     @Override
@@ -106,110 +110,80 @@ public class WebBackgroundWorker implements BackgroundWorker {
             throw ex;
         }
 
-        // UI timer
-        AppWindow appWindow = appInstance.getAppWindow();
-        CubaTimer pingTimer = appWindow.getWorkerTimer();
-
-        final WebTimerListener webTimerListener = new WebTimerListener(pingTimer);
-
         // create task executor
-        final WebTaskExecutor<T, V> taskExecutor = new WebTaskExecutor<>(appInstance, task, webTimerListener);
+        AppWindow appWindow = appInstance.getAppWindow();
+        final WebTaskExecutor<T, V> taskExecutor = new WebTaskExecutor<>(appWindow, task);
 
         // add thread to taskSet
-        appInstance.addBackgroundTask(taskExecutor);
+        appInstance.addBackgroundTask(taskExecutor.getFuture());
 
         // create task handler
-        final TaskHandlerImpl<T, V> taskHandler = new TaskHandlerImpl<>(taskExecutor, watchDog);
-
+        TaskHandlerImpl<T, V> taskHandler = new TaskHandlerImpl<>(taskExecutor, watchDog);
         taskExecutor.setTaskHandler(taskHandler);
-
-        // add timer to AppWindow for UI ping
-        CubaTimer.ActionListener timerListener = new CubaTimer.ActionListener() {
-            private long intentVersion = 0;
-
-            @Override
-            public void timerAction(CubaTimer timer) {
-                UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
-                if (sessionSource.getUserSession() == null) {
-                    log.debug("Null UserSession in background task");
-                    return;
-                }
-
-                // handle intents
-                if (!taskExecutor.isCancelled()) {
-                    long newIntent = taskExecutor.getIntentVersion();
-                    if (intentVersion != newIntent) {
-                        intentVersion = newIntent;
-                        taskExecutor.handleIntents();
-                    }
-                }
-
-                // if completed
-                if (taskExecutor.isDone()) {
-                    taskExecutor.handleDone();
-                } else {
-                    if (!taskExecutor.isCancelled()) {
-                        TimeSource timeSource = AppBeans.get(TimeSource.NAME);
-                        long actualTimeMs = timeSource.currentTimestamp().getTime();
-                        long timeout = taskHandler.getTimeoutMs();
-
-                        if (timeout > 0 && (actualTimeMs - taskHandler.getStartTimeStamp()) > timeout) {
-                            taskHandler.timeoutExceeded();
-                        }
-                    }
-                }
-
-                if (!taskExecutor.isAlive()) {
-                    webTimerListener.stopListen();
-                }
-            }
-        };
-
-        // Start listen only if task started
-        webTimerListener.setTimerListener(timerListener);
 
         return taskHandler;
     }
 
-    /*
-     * Task runner
-    */
-    private class WebTaskExecutor<T, V> extends Thread implements TaskExecutor<T, V> {
+    @Override
+    public UIAccessor getUIAccessor() {
+        return new WebUIAccessor(UI.getCurrent());
+    }
 
-        private VaadinSession session;
+    protected static void withUserSessionAsync(UI ui, Runnable handler) {
+        ui.access(() -> {
+            SecurityContext oldSecurityContext = AppContext.getSecurityContext();
+            try {
+                UserSession userSession = ui.getSession().getAttribute(UserSession.class);
+                if (userSession != null) {
+                    AppContext.setSecurityContext(new SecurityContext(userSession));
+                }
+
+                handler.run();
+            } finally {
+                AppContext.setSecurityContext(oldSecurityContext);
+            }
+        });
+    }
+
+    protected static void withUserSessionInvoke(UI ui, Runnable handler) {
+        ui.accessSynchronously(() -> {
+            SecurityContext oldSecurityContext = AppContext.getSecurityContext();
+            try {
+                UserSession userSession = ui.getSession().getAttribute(UserSession.class);
+                if (userSession != null) {
+                    AppContext.setSecurityContext(new SecurityContext(userSession));
+                }
+
+                handler.run();
+            } finally {
+                AppContext.setSecurityContext(oldSecurityContext);
+            }
+        });
+    }
+
+    private class WebTaskExecutor<T, V> implements TaskExecutor<T, V>, Callable<V> {
+
         private App app;
+        private AppWindow appWindow;
+
+        private FutureTask<V> future;
 
         private BackgroundTask<T, V> runnableTask;
-        private WebTimerListener webTimerListener;
         private Runnable finalizer;
 
-        // canceled
-        private volatile boolean canceled = false;
-
-        // task body completed
-        private volatile boolean done = false;
-
-        // handleDone completed or canceled
-        private volatile boolean closed = false;
-
-        private volatile AtomicLong intentVersion = new AtomicLong(0);
-        private final List<T> intents = Collections.synchronizedList(new LinkedList<>());
+        private volatile boolean isClosed = false;
+        private volatile boolean doneHandled = false;
 
         private SecurityContext securityContext;
         private UUID userId;
 
-        private volatile V result = null;
-        private volatile Exception taskException = null;
-
         private Map<String, Object> params;
         private TaskHandlerImpl<T, V> taskHandler;
 
-        private WebTaskExecutor(App app, BackgroundTask<T, V> runnableTask,
-                                WebTimerListener webTimerListener) {
+        private WebTaskExecutor(AppWindow appWindow, BackgroundTask<T, V> runnableTask) {
             this.runnableTask = runnableTask;
-            this.webTimerListener = webTimerListener;
-            this.app = app;
-            this.session = app.getAppUI().getSession();
+            this.appWindow = appWindow;
+            this.app = appWindow.getAppUI().getApp();
 
             this.params = runnableTask.getParams() != null ?
                     Collections.unmodifiableMap(runnableTask.getParams()) :
@@ -218,126 +192,156 @@ public class WebBackgroundWorker implements BackgroundWorker {
             // copy security context
             this.securityContext = new SecurityContext(AppContext.getSecurityContext().getSession());
             this.userId = userSessionSource.getUserSession().getId();
+
+            this.future = new FutureTask<V>(this) {
+                @Override
+                protected void done() {
+                    withUserSessionAsync(() ->
+                            handleDone()
+                    );
+                }
+            };
         }
 
         @Override
-        public final void run() {
-            Thread.currentThread().setName("BackgroundTaskThread-" + userId);
+        public final V call() throws Exception {
+            Thread.currentThread().setName(String.format("BackgroundTaskThread-%s-%s",
+                    System.identityHashCode(Thread.currentThread()), userId));
+
             // Set security permissions
             AppContext.setSecurityContext(securityContext);
-
-            V result = null;
             try {
-                if (!isInterrupted()) {
-                    // do not run any activity if canceled before start
-                    result = runnableTask.run(new TaskLifeCycle<T>() {
-                        @SafeVarargs
-                        @Override
-                        public final void publish(T... changes) {
-                            handleProgress(changes);
-                        }
+                // do not run any activity if canceled before start
+                return runnableTask.run(new TaskLifeCycle<T>() {
+                    @SafeVarargs
+                    @Override
+                    public final void publish(T... changes) {
+                        handleProgress(changes);
+                    }
 
-                        @Override
-                        public boolean isInterrupted() {
-                            return WebTaskExecutor.this.isInterrupted();
-                        }
+                    @Override
+                    public boolean isInterrupted() {
+                        return Thread.currentThread().isInterrupted();
+                    }
 
-                        @Override
-                        @Nonnull
-                        public Map<String, Object> getParams() {
-                            return params;
-                        }
-                    });
-                }
-            } catch (Exception ex) {
-                if (!(ex instanceof InterruptedException) && !canceled) {
-                    this.taskException = ex;
-                }
+                    @Override
+                    @Nonnull
+                    public Map<String, Object> getParams() {
+                        return params;
+                    }
+                });
             } finally {
                 // Set null security permissions
-                securityContext = null;
                 AppContext.setSecurityContext(null);
-                // Save result
-                this.result = result;
-                // Is done
-                if (!isInterrupted()) {
-                    done = true;
-                }
-                // Remove from executions
-                app.removeBackgroundTask(this);
-
-                watchDog.removeTask(taskHandler);
             }
         }
 
         @SafeVarargs
         @Override
         public final void handleProgress(T... changes) {
-            synchronized (intents) {
-                intentVersion.incrementAndGet();
-                intents.addAll(Arrays.asList(changes));
+            if (changes != null) {
+                withUserSessionAsync(() ->
+                        process(Arrays.asList(changes))
+                );
             }
         }
 
+        @ExecutedOnUIThread
+        protected final void process(List<T> chunks) {
+            runnableTask.progress(chunks);
+            // Notify listeners
+            for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
+                listener.onProgress(chunks);
+            }
+        }
+
+        @ExecutedOnUIThread
+        protected final void handleDone() {
+            if (isClosed) {
+                log.trace("Done statement is not processed because it is already closed");
+                return;
+            }
+
+            if (log.isDebugEnabled()) {
+                log.debug("Done task. User: " + userId);
+            }
+
+            app.removeBackgroundTask(future);
+            watchDog.removeTask(taskHandler);
+
+            try {
+                V result = future.get();
+
+                runnableTask.done(result);
+                // Notify listeners
+                for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
+                    listener.onDone(result);
+                }
+            } catch (InterruptedException e) {
+                log.debug("Exception in background task", e);
+            } catch (ExecutionException e) {
+                // do not call log.error, exception may be handled later
+                log.debug("Exception in background task", e);
+                if (!future.isCancelled()) {
+                    boolean handled = false;
+
+                    if (e.getCause() instanceof Exception) {
+                        handled = runnableTask.handleException((Exception) e.getCause());
+                    }
+
+                    if (!handled) {
+                        log.error("Unhandled exception in background task", e);
+                    }
+                }
+            } finally {
+                if (finalizer != null) {
+                    finalizer.run();
+                    finalizer = null;
+                }
+
+                isClosed = true;
+                doneHandled = true;
+            }
+        }
+
+        @ExecutedOnUIThread
         @Override
         public final boolean cancelExecution() {
-            if (closed) {
+            if (isClosed) {
                 return false;
             }
 
-            if (log.isTraceEnabled()) {
-                log.debug("Cancel task. User: " + userId);
-            }
+            log.debug("Cancel task. User: {}", userId);
 
-            // Interrupt
-            interrupt();
-
-            Runnable removeTaskRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    // Remove task from execution
-                    app.removeBackgroundTask(WebTaskExecutor.this);
-
-                    WebTaskExecutor.this.canceled = true;
-                    WebTaskExecutor.this.closed = true;
-
-                    stopTimer();
-                }
-            };
-
-            if (VaadinSession.getCurrent() != session) {
-                // access to vaadin session asynchronously
-                // to prevent deadlock with com.haulmont.cuba.gui.executors.impl.TasksWatchDog
-                session.access(removeTaskRunnable);
+            boolean isCanceledNow = future.cancel(true);
+            if (isCanceledNow) {
+                log.trace("Task was cancelled. User: {}", userId);
             } else {
-                removeTaskRunnable.run();
+                log.trace("Cancellation of task isn't processed. User: {}", userId);
             }
 
-            return true;
-        }
+            if (!doneHandled) {
+                log.trace("Done was not handled. Return 'true' as canceled status. User: {}", userId);
 
-        private void stopTimer() {
-            if (webTimerListener != null) {
-                webTimerListener.stopListen();
+                this.isClosed = true;
+                return true;
             }
+
+            return isCanceledNow;
         }
 
+        @ExecutedOnUIThread
         @Override
         public final V getResult() {
+            V result;
             try {
-                if (!this.closed) {
-                    this.join();
-                    this.stopTimer();
-
-                    if (!isCancelled()) {
-                        handleIntents();
-                    }
-
-                    if (isDone()) {
-                        handleDone();
-                    }
-                }
+                result = future.get();
+                this.handleDone();
             } catch (InterruptedException e) {
+                log.debug("Interrupted exception in background task", e);
+                return null;
+            } catch (ExecutionException e) {
+                log.debug("Execution exception in background task", e);
                 return null;
             }
             return result;
@@ -348,37 +352,29 @@ public class WebBackgroundWorker implements BackgroundWorker {
             return runnableTask;
         }
 
+        @ExecutedOnUIThread
         @Override
         public final void startExecution() {
-            WebConfig webConfig = configuration.getConfig(WebConfig.class);
-            int activeTasksCount = watchDog.getActiveTasksCount();
-
-            if (activeTasksCount >= webConfig.getMaxActiveBackgroundTasksCount()) {
-                throw new ActiveBackgroundTasksLimitException("Maximum active background tasks limit exceeded");
-            }
-
-            // Run timer listener
-            webTimerListener.startListen();
-
             // Start thread
-            start();
+            executorService.execute(() -> future.run());
         }
 
         @Override
         public final boolean isCancelled() {
-            return canceled;
+            return future.isCancelled();
         }
 
         @Override
         public final boolean isDone() {
-            return done;
+            return future.isDone();
         }
 
         @Override
         public final boolean inProgress() {
-            return !closed;
+            return !isClosed;
         }
 
+        @ExecutedOnUIThread
         @Override
         public final void setFinalizer(Runnable finalizer) {
             this.finalizer = finalizer;
@@ -389,54 +385,36 @@ public class WebBackgroundWorker implements BackgroundWorker {
             return finalizer;
         }
 
-        public final long getIntentVersion() {
-            return intentVersion.get();
-        }
-
-        public final void handleIntents() {
-            synchronized (intents) {
-                if (intents.size() > 0) {
-                    runnableTask.progress(intents);
-                    // notify listeners
-                    for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
-                        listener.onProgress(intents);
-                    }
-                    intents.clear();
-                }
-            }
-        }
-
-        public final void handleDone() {
-            if (this.closed) {
-                return;
-            }
-
-            // task cancel here not available
-            this.closed = true;
-
-            try {
-                if (taskException == null) {
-                    runnableTask.done(result);
-                    // notify listeners
-                    for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
-                        listener.onDone(result);
-                    }
-                } else {
-                    boolean handled = runnableTask.handleException(taskException);
-                    if (!handled) {
-                        log.error("Unhandled exception in background task", taskException);
-                    }
-                }
-            } finally {
-                if (finalizer != null) {
-                    finalizer.run();
-                    finalizer = null;
-                }
-            }
-        }
-
         public void setTaskHandler(TaskHandlerImpl<T,V> taskHandler) {
             this.taskHandler = taskHandler;
+        }
+
+        public FutureTask<V> getFuture() {
+            return future;
+        }
+
+        protected final void withUserSessionAsync(Runnable handler) {
+            AppUI ui = appWindow.getAppUI();
+
+            WebBackgroundWorker.withUserSessionAsync(ui, handler);
+        }
+    }
+
+    private static class WebUIAccessor implements UIAccessor {
+        private UI ui;
+
+        public WebUIAccessor(UI ui) {
+            this.ui = ui;
+        }
+
+        @Override
+        public void access(Runnable runnable) {
+            WebBackgroundWorker.withUserSessionAsync(ui, runnable);
+        }
+
+        @Override
+        public void accessSynchronously(Runnable runnable) {
+            WebBackgroundWorker.withUserSessionInvoke(ui, runnable);
         }
     }
 }

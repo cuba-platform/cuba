@@ -47,7 +47,6 @@ import java.util.Properties;
 
 /**
  * Main CUBA web-application servlet
- *
  */
 public class CubaApplicationServlet extends VaadinServlet {
 
@@ -91,7 +90,7 @@ public class CubaApplicationServlet extends VaadinServlet {
             resources = AppBeans.get(Resources.class);
 
             if (configuration.getConfig(GlobalConfig.class).getTestMode()) {
-                System.setProperty(getPackageName() + "." + "disable-xsrf-protection",
+                System.setProperty(getPackageName() + ".disable-xsrf-protection",
                         "true");
             }
 

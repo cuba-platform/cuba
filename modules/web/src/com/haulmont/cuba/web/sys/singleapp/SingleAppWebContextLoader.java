@@ -38,8 +38,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-/**
- */
 public class SingleAppWebContextLoader extends WebAppContextLoader {
     /**
      * Here we create servlets and filters manually, to make sure the classes would be loaded using necessary classloader.
@@ -58,6 +56,7 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
         }
         ServletRegistration.Dynamic cubaServletReg = servletContext.addServlet("app_servlet", cubaServlet);
         cubaServletReg.setLoadOnStartup(0);
+        cubaServletReg.setAsyncSupported(true);
         cubaServletReg.addMapping("/*");
 
         CubaDispatcherServlet cubaDispatcherServlet = new CubaDispatcherServlet();

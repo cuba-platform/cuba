@@ -19,7 +19,6 @@ package com.haulmont.cuba.gui.executors;
 
 /**
  * Entry point to {@link BackgroundTask} execution functionality.
- *
  */
 public interface BackgroundWorker {
 
@@ -33,5 +32,9 @@ public interface BackgroundWorker {
      * @param task background task instance
      * @return task handler
      */
+    @ExecutedOnUIThread
     <T, V> BackgroundTaskHandler<V> handle(BackgroundTask<T, V> task);
+
+    @ExecutedOnUIThread
+    UIAccessor getUIAccessor();
 }

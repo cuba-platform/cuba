@@ -63,7 +63,7 @@ public abstract class BackgroundTask<T, V> {
      *
      * @param timeout     timeout
      * @param timeUnit    timeout time unit
-     * @param ownerFrame
+     * @param ownerFrame  owner frame
      */
     protected BackgroundTask(long timeout, TimeUnit timeUnit, Frame ownerFrame) {
         this.ownerFrame = ownerFrame;

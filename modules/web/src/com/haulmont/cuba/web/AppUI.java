@@ -27,7 +27,9 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.sys.LinkHandler;
 import com.haulmont.cuba.web.toolkit.ui.client.appui.AppUIClientRpc;
 import com.vaadin.annotations.PreserveOnRefresh;
+import com.vaadin.annotations.Push;
 import com.vaadin.server.*;
+import com.vaadin.shared.ui.ui.Transport;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -42,6 +44,7 @@ import java.util.Map;
 /**
  * Single window / page of web application. Root component of Vaadin layout.
  */
+@Push(transport = Transport.WEBSOCKET_XHR)
 @PreserveOnRefresh
 public class AppUI extends UI implements ErrorHandler {
 
@@ -52,7 +55,6 @@ public class AppUI extends UI implements ErrorHandler {
     public static final String LAST_REQUEST_PARAMS_ATTR = "lastRequestParams";
 
     private final static Logger log = LoggerFactory.getLogger(AppUI.class);
-
 
     protected final App app;
 

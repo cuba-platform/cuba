@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.swing.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +64,11 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         taskExecutor.setTaskHandler(taskHandler);
 
         return taskHandler;
+    }
+
+    @Override
+    public UIAccessor getUIAccessor() {
+        return new DesktopUIAccessor();
     }
 
     /**
@@ -121,7 +127,8 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
                     });
                 }
             } catch (Exception ex) {
-                log.error("Exception occurred in background task", ex);
+                // do not call log.error, exception may be handled later
+                log.debug("Exception in background task", ex);
                 if (!(ex instanceof InterruptedException) && !isCancelled()) {
                     taskException = ex;
                 }
@@ -202,7 +209,6 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
                 }
             }
 
-            this.isClosed = isCanceledNow;
             if (!doneHandled) {
                 log.trace("Done was not handled. Return 'true' as canceled status. User: " + userId);
 
@@ -219,8 +225,11 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
             try {
                 result = get();
                 this.done();
-            } catch (InterruptedException | ExecutionException e) {
-                log.error("Interrupted or execution exception in background task", e);
+            } catch (InterruptedException e) {
+                log.debug("Interrupted exception in background task", e);
+                return null;
+            } catch (ExecutionException e) {
+                log.debug("Execution exception in background task", e);
                 return null;
             }
             return result;
@@ -254,6 +263,22 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
         public void setTaskHandler(TaskHandlerImpl<T,V> taskHandler) {
             this.taskHandler = taskHandler;
+        }
+    }
+
+    private static class DesktopUIAccessor implements UIAccessor {
+        @Override
+        public void access(Runnable runnable) {
+            SwingUtilities.invokeLater(runnable);
+        }
+
+        @Override
+        public void accessSynchronously(Runnable runnable) {
+            try {
+                SwingUtilities.invokeAndWait(runnable);
+            } catch (InterruptedException | InvocationTargetException e) {
+                throw new RuntimeException("Exception on access to UI from background thread", e);
+            }
         }
     }
 }

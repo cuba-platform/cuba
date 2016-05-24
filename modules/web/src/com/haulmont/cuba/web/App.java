@@ -49,13 +49,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.Future;
 
 /**
  * Central class of the web application. An instance of this class is created for each client's session and is bound
  * to {@link VaadinSession}.
  * <p/>
  * Use {@link #getInstance()} static method to obtain the reference to the current App instance.
- *
  */
 public abstract class App {
 
@@ -247,7 +247,7 @@ public abstract class App {
             } catch (NoUserSessionException ignored) {
                 // ignore no user session exception
             } catch (Exception e) {
-                log.warn("Exception while ping session", e);
+                log.warn("Exception while session ping", e);
             }
         }
     }
@@ -380,11 +380,11 @@ public abstract class App {
         return backgroundTaskManager;
     }
 
-    public void addBackgroundTask(Thread task) {
+    public void addBackgroundTask(Future task) {
         backgroundTaskManager.addTask(task);
     }
 
-    public void removeBackgroundTask(Thread task) {
+    public void removeBackgroundTask(Future task) {
         backgroundTaskManager.removeTask(task);
     }
 
@@ -396,19 +396,16 @@ public abstract class App {
         log.debug("Closing all windows");
         try {
             for (final AppUI ui : getAppUIs()) {
-                ui.accessSynchronously(new Runnable() {
-                    @Override
-                    public void run() {
-                        AppWindow appWindow = ui.getAppWindow();
-                        if (appWindow != null) {
-                            WebWindowManager webWindowManager = appWindow.getWindowManager();
-                            webWindowManager.disableSavingScreenHistory = true;
-                            webWindowManager.closeAll();
-                        }
+                ui.accessSynchronously(() -> {
+                    AppWindow appWindow = ui.getAppWindow();
+                    if (appWindow != null) {
+                        WebWindowManager webWindowManager = appWindow.getWindowManager();
+                        webWindowManager.disableSavingScreenHistory = true;
+                        webWindowManager.closeAll();
+                    }
 
-                        for (com.vaadin.ui.Window win : new ArrayList<>(ui.getWindows())) {
-                            ui.removeWindow(win);
-                        }
+                    for (com.vaadin.ui.Window win : new ArrayList<>(ui.getWindows())) {
+                        ui.removeWindow(win);
                     }
                 });
             }

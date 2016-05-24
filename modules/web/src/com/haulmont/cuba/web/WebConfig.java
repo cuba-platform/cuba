@@ -28,7 +28,6 @@ import java.util.List;
 
 /**
  * Web Client configuration parameters interface.
- *
  */
 @Source(type = SourceType.APP)
 public interface WebConfig extends Config {
@@ -179,7 +178,14 @@ public interface WebConfig extends Config {
     Integer getUiCheckInterval();
 
     /**
-     * @return Maximum number of active background tasks
+     * @return minimum number of background task threads.
+     */
+    @Property("cuba.backgroundWorker.minBackgroundThreadsCount")
+    @DefaultInteger(4)
+    Integer getMinBackgroundThreadsCount();
+
+    /**
+     * @return maximum number of active background tasks.
      */
     @Property("cuba.backgroundWorker.maxActiveTasksCount")
     @DefaultInteger(100)

@@ -19,7 +19,6 @@ package com.haulmont.cuba.gui.executors;
 
 /**
  * Task handler for {@link BackgroundTask}.
- *
  */
 public interface BackgroundTaskHandler<V> {
 
@@ -27,6 +26,7 @@ public interface BackgroundTaskHandler<V> {
      * Execute the {@link BackgroundTask}.
      * <p/> This method must be called only once for a handler instance.
      */
+    @ExecutedOnUIThread
     void execute();
 
     /**
@@ -34,6 +34,7 @@ public interface BackgroundTaskHandler<V> {
      *
      * @return true if canceled, false if the task was not started or is already stopped
      */
+    @ExecutedOnUIThread
     boolean cancel();
 
     /**
@@ -41,6 +42,7 @@ public interface BackgroundTaskHandler<V> {
      *
      * @return task's result returned from {@link BackgroundTask#run(TaskLifeCycle)} method
      */
+    @ExecutedOnUIThread
     V getResult();
 
     /**

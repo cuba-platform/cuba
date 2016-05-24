@@ -23,14 +23,12 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.concurrent.Future;
 
-/**
- */
 public class BackgroundTaskManager {
-
     private static Logger log = LoggerFactory.getLogger(BackgroundTaskManager.class);
 
-    private transient Set<Thread> taskSet;
+    private transient Set<Future> taskSet;
 
     public BackgroundTaskManager() {
         taskSet = Collections.synchronizedSet(new LinkedHashSet<>());
@@ -38,9 +36,10 @@ public class BackgroundTaskManager {
 
     /**
      * Add task to task set
+     *
      * @param task Task
      */
-    public void addTask(Thread task) {
+    public void addTask(Future task) {
         taskSet.add(task);
     }
 
@@ -48,7 +47,7 @@ public class BackgroundTaskManager {
      * Stop manage of stopped task
      * @param task Task
      */
-    public void removeTask(Thread task) {
+    public void removeTask(Future task) {
         taskSet.remove(task);
     }
 
@@ -58,11 +57,11 @@ public class BackgroundTaskManager {
     public void cleanupTasks() {
         int count = 0;
         // Stop threads
-        for (Thread taskThread : taskSet) {
-            if (taskThread.isAlive())   {
-                taskThread.interrupt();
-                count++;
+        for (Future taskThread : taskSet) {
+            if (!taskThread.isDone()) {
+                taskThread.cancel(true);
             }
+            count++;
         }
         // Clean task set
         taskSet.clear();

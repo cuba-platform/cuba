@@ -18,17 +18,16 @@
 package com.haulmont.cuba.gui.executors.impl;
 
 import com.haulmont.cuba.gui.executors.BackgroundTask;
+import com.haulmont.cuba.gui.executors.ExecutedOnUIThread;
 
-/**
- * Task runner
- */
-@SuppressWarnings("unused")
 public interface TaskExecutor<T, V> {
-
+    @ExecutedOnUIThread
     void startExecution();
 
+    @ExecutedOnUIThread
     boolean cancelExecution();
 
+    @ExecutedOnUIThread
     V getResult();
 
     BackgroundTask<T, V> getTask();
