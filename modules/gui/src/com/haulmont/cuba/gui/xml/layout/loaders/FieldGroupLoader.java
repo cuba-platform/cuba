@@ -72,9 +72,9 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                             attribute.getName()));
                     fields.add(field);
                 }
+                dynamicAttributesGuiTools.listenDynamicAttributesChanges(ds);
                 return fields;
             }
-            dynamicAttributesGuiTools.listenDynamicAttributesChanges(ds);
         }
         return Collections.emptyList();
     }
