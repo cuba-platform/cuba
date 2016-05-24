@@ -1490,6 +1490,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     @Override
     public void removeAggregationProperty(String columnId) {
         component.removeContainerPropertyAggregation(getColumn(columnId).getId());
+        removeAggregationCell(getColumn(columnId));
     }
 
     @Override
@@ -2034,6 +2035,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         @Override
         public void valueChange(Property.ValueChangeEvent event) {
             WebComponentsHelper.setLabelText(component, event.getProperty().getValue(), formatter);
+        }
+    }
+
+    protected void removeAggregationCell(Table.Column column) {
+        if (aggregationCells != null) {
+            aggregationCells.remove(column);
         }
     }
 
