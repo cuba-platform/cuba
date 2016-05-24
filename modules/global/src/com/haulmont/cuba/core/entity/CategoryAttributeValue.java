@@ -18,11 +18,9 @@
 package com.haulmont.cuba.core.entity;
 
 import com.google.common.base.Preconditions;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.DataManager;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.*;
@@ -182,10 +180,21 @@ public class CategoryAttributeValue extends StandardEntity {
                     "because categoryAttribute is not loaded for attribute value " + id);
             Preconditions.checkState(StringUtils.isNotBlank(categoryAttribute.getEntityClass()),
                     "Could not resolve class by empty dataType. Attribute value " + id);
-            return AppBeans.get(DataManager.NAME, DataManager.class)
-                    .load(LoadContext.create(categoryAttribute.getJavaClassForEntity())
-                            .setView(View.MINIMAL)
-                            .setSoftDeletion(false).setId(entityValue));
+            Class javaClass = categoryAttribute.getJavaClassForEntity();
+            Preconditions.checkState(javaClass != null,
+                    "Could not resolve java class. Attribute value " + id);
+            LoadContext loadContext =  LoadContext.create(javaClass)
+                    .setView(View.MINIMAL)
+                    .setSoftDeletion(false);
+            if (BaseUuidEntity.class.isAssignableFrom(javaClass)) {
+                loadContext.setId(entityValue);
+            } else {
+                Metadata metadata = AppBeans.get(Metadata.class);
+                MetaClass metaClass = metadata.getClassNN(javaClass);
+                loadContext.setQueryString(String.format("select e from %s e where e.uuid = :entityId", metaClass.getName()))
+                        .setParameter("entityId", entityValue);
+            }
+            return AppBeans.get(DataManager.class).load(loadContext);
         }
 
         return null;
