@@ -17,7 +17,13 @@
 
 package com.haulmont.cuba.web.app.mainwindow;
 
+import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.FtsConfigHelper;
+import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.app.core.dev.LayoutAnalyzer;
+import com.haulmont.cuba.gui.app.core.dev.LayoutTip;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
@@ -26,10 +32,13 @@ import com.haulmont.cuba.gui.components.mainwindow.FtsField;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalSplitPanel;
+import com.vaadin.server.AbstractClientConnector;
 import com.vaadin.server.Sizeable;
 import org.apache.commons.lang.StringUtils;
+import org.vaadin.peter.contextmenu.ContextMenu;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -60,6 +69,9 @@ public class AppMainWindow extends AbstractMainWindow {
     @Inject
     protected WebConfig webConfig;
 
+    @Inject
+    protected Configuration configuration;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
@@ -69,6 +81,28 @@ public class AppMainWindow extends AbstractMainWindow {
         String logoImagePath = messages.getMainMessage("application.logoImage");
         if (StringUtils.isNotBlank(logoImagePath) && !"application.logoImage".equals(logoImagePath)) {
             logoImage.setSource("theme://" + logoImagePath);
+        }
+
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+        if (clientConfig.getLayoutAnalyzerEnabled()) {
+            ContextMenu contextMenu = new ContextMenu();
+            contextMenu.setOpenAutomatically(true);
+            contextMenu.setAsContextMenuOf((AbstractClientConnector) WebComponentsHelper.unwrap(logoImage));
+            ContextMenu.ContextMenuItem analyzeLayout = contextMenu.addItem(messages.getMainMessage("actions.analyzeLayout"));
+            analyzeLayout.addItemClickListener(new ContextMenu.ContextMenuItemClickListener() {
+                @Override
+                public void contextMenuItemClicked(ContextMenu.ContextMenuItemClickEvent event) {
+                    Window window = AppMainWindow.this;
+                    LayoutAnalyzer analyzer = new LayoutAnalyzer();
+                    List<LayoutTip> tipsList = analyzer.analyze(window);
+
+                    if (tipsList.isEmpty()) {
+                        window.showNotification("No layout problems found", Frame.NotificationType.HUMANIZED);
+                    } else {
+                        window.openWindow("layoutAnalyzer", WindowManager.OpenType.DIALOG, ParamsMap.of("tipsList", tipsList));
+                    }
+                }
+            });
         }
 
         if (webConfig.getUseInverseHeader()) {
