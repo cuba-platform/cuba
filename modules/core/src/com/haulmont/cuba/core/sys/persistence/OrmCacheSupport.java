@@ -22,13 +22,11 @@ import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.global.Metadata;
 import org.eclipse.persistence.jpa.JpaCache;
-import org.eclipse.persistence.sessions.changesets.ChangeRecord;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
-import java.util.List;
 
 @Component(OrmCacheSupport.NAME)
 public class OrmCacheSupport {
@@ -47,7 +45,7 @@ public class OrmCacheSupport {
      * @param entity    which is being updated and can potentially be an element of a collection
      * @param changes   changes in the entity. Null when creating and removing the entity.
      */
-    public void evictMasterEntity(BaseGenericIdEntity entity, @Nullable List<ChangeRecord> changes) {
+    public void evictMasterEntity(BaseGenericIdEntity entity, @Nullable EntityAttributeChanges changes) {
         MetaClass metaClass = metadata.getClassNN(entity.getClass());
         for (MetaProperty property : metaClass.getProperties()) {
             if (!property.getRange().isClass() || property.getRange().getCardinality().isMany())
@@ -58,9 +56,9 @@ public class OrmCacheSupport {
             // the inverse property is a collection
             if (metadata.getTools().isCacheable(property.getRange().asClass())) {
                 if (changes != null) {
-                    for (ChangeRecord change : changes) {
-                        if (property.getName().equals(change.getAttribute())) {
-                            evictEntity(change.getOldValue());
+                    for (String attributeName : changes.getAttributes()) {
+                        if (property.getName().equals(attributeName)) {
+                            evictEntity(changes.getOldValue(attributeName));
                             break;
                         }
                     }

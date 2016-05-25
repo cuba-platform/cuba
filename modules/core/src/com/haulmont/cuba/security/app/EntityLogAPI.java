@@ -17,6 +17,9 @@
 package com.haulmont.cuba.security.app;
 
 import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.sys.persistence.EntityAttributeChanges;
+
+import javax.annotation.Nullable;
 
 /**
  * Allows to log entity lifecycle events: create, modify, delete.
@@ -54,6 +57,14 @@ public interface EntityLogAPI {
      * (depending on the {@code auto} parameter).
      */
     void registerModify(BaseEntity entity, boolean auto);
+
+
+    /**
+     * Logs modification of an entity which is configured for auto or manual logging
+     * (depending on the {@code auto} parameter).
+     * @param changes attribute changes provided by caller
+     */
+    void registerModify(BaseEntity entity, boolean auto, @Nullable EntityAttributeChanges changes);
 
     /**
      * Logs deletion of an entity which is configured for manual logging (LoggedEntity.auto == false).

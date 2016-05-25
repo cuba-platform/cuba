@@ -28,12 +28,14 @@ import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.persistence.EntityAttributeChanges;
 import com.haulmont.cuba.security.entity.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -247,6 +249,11 @@ public class EntityLog implements EntityLogAPI {
 
     @Override
     public void registerModify(BaseEntity entity, boolean auto) {
+        registerModify(entity, auto, null);
+    }
+
+    @Override
+    public void registerModify(BaseEntity entity, boolean auto, @Nullable EntityAttributeChanges changes) {
         if (doNotRegister(entity))
             return;
 
@@ -261,7 +268,13 @@ public class EntityLog implements EntityLogAPI {
             }
             Date ts = timeSource.currentTimestamp();
             EntityManager em = persistence.getEntityManager();
-            Set<String> dirty = persistence.getTools().getDirtyFields(entity);
+
+            Set<String> dirty;
+            if (changes == null) {
+                dirty = persistence.getTools().getDirtyFields(entity);
+            } else {
+                dirty = changes.getAttributes();
+            }
 
             Properties properties = new Properties();
             for (String attr : attributes) {

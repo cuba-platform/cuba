@@ -277,10 +277,17 @@ public class PersistenceImplSupport {
                 return true;
 
             } else if (changeListener.hasChanges()) {
+                EntityAttributeChanges changes = new EntityAttributeChanges();
+                // add changes before listener
+                changes.addChanges(changeListener.getObjectChangeSet());
+
                 entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_UPDATE);
-                entityLog.registerModify(entity, true);
+                // add changes after listener
+                changes.addChanges(changeListener.getObjectChangeSet());
+
+                entityLog.registerModify(entity, true, changes);
                 enqueueForFts(entity, FtsChangeType.UPDATE);
-                ormCacheSupport.evictMasterEntity(entity, changeListener.getObjectChangeSet().getChanges());
+                ormCacheSupport.evictMasterEntity(entity, changes);
                 return true;
             }
 
