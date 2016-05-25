@@ -278,7 +278,8 @@ public class UserSessionManager implements UserSessionFinder {
         for (User user : users) {
             if (PersistenceHelper.isDetached(user) && user.getUserRoles() != null) {
                 for (UserRole userRole : user.getUserRoles()) {
-                    if (userRole.getRole() != null) {
+                    Role role = userRole.getRole();
+                    if (userRole.getRole() != null && PersistenceHelper.isLoaded(role, "permissions")) {
                         userRole.getRole().setPermissions(null);
                     }
                 }
