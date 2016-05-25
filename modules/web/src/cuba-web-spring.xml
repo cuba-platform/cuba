@@ -125,6 +125,7 @@
     <task:scheduled-tasks scheduler="scheduler">
         <task:scheduled ref="cuba_TriggerFilesProcessor" method="process" fixed-delay="${cuba.triggerFilesCheckInterval?:5000}"/>
         <task:scheduled ref="cuba_WebStatisticsAccumulator" method="gatherParameters" fixed-rate="5000"/>
+        <task:scheduled ref="cuba_FileUploading" method="clearTempDirectory" cron="0 0 0 * * 2,4,6"/>
     </task:scheduled-tasks>
 
     <!-- Background Tasks -->
