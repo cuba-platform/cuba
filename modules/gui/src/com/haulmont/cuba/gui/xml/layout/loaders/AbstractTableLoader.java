@@ -299,6 +299,11 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                 }
             }
         } else if (column.isEditable()) {
+            if (!(column.getId() instanceof MetaPropertyPath)) {
+                throw new GuiDevelopmentException(String.format("Column '%s' has editable=true, but there is no " +
+                        "property of an entity with this id", column.getId()), context.getCurrentFrameId());
+            }
+
             MetaPropertyPath propertyPath = (MetaPropertyPath) column.getId();
             Field.Validator validator = getDefaultValidator(propertyPath.getMetaProperty());
             if (validator != null) {
