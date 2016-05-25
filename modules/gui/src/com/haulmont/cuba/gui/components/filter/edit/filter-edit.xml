@@ -18,7 +18,7 @@
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
         class="com.haulmont.cuba.gui.components.filter.edit.FilterEditor"
         caption="mainMsg://filter.editor.caption"
-        focusComponent="conditionsTree">
+        focusComponent="filterName">
 
     <companions>
         <web class="com.haulmont.cuba.web.gui.components.filter.edit.WebFilterEditorCompanion"/>
