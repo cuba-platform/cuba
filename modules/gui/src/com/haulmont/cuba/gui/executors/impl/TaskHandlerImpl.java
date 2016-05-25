@@ -20,14 +20,10 @@ package com.haulmont.cuba.gui.executors.impl;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.executors.BackgroundTask;
-import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
-import com.haulmont.cuba.gui.executors.BackgroundWorker;
-import com.haulmont.cuba.gui.executors.WatchDog;
+import com.haulmont.cuba.gui.executors.*;
 import com.haulmont.cuba.security.global.UserSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +36,7 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
     private Logger log = LoggerFactory.getLogger(BackgroundWorker.class);
 
+    private UIAccessor uiAccessor;
     private final TaskExecutor<T, V> taskExecutor;
     private final WatchDog watchDog;
 
@@ -49,7 +46,8 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
     private UserSession userSession;
     private Window.CloseListener closeListener;
 
-    public TaskHandlerImpl(TaskExecutor<T, V> taskExecutor, WatchDog watchDog) {
+    public TaskHandlerImpl(UIAccessor uiAccessor, TaskExecutor<T, V> taskExecutor, WatchDog watchDog) {
+        this.uiAccessor = uiAccessor;
         this.taskExecutor = taskExecutor;
         this.watchDog = watchDog;
 
@@ -61,6 +59,7 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
             Frame ownerFrame = task.getOwnerFrame();
             if (ownerFrame.getFrame() != null) {
                 closeListener = actionId -> ownerWindowClosed();
+
                 Window ownerWindow = ComponentsHelper.getWindowImplementation(ownerFrame);
 
                 if (ownerWindow != null) {
@@ -72,15 +71,12 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
         }
 
         // remove close listener on done
-        taskExecutor.setFinalizer(new Runnable() {
-            @Override
-            public void run() {
-                log.trace("Start task finalizer");
+        taskExecutor.setFinalizer(() -> {
+            log.trace("Start task finalizer");
 
-                disposeResources();
+            detachCloseListener();
 
-                log.trace("Finish task finalizer");
-            }
+            log.trace("Finish task finalizer");
         });
     }
 
@@ -120,15 +116,14 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
         boolean canceled = taskExecutor.cancelExecution();
         if (canceled) {
+            detachCloseListener();
+
             BackgroundTask<T, V> task = taskExecutor.getTask();
-            try {
-                task.canceled();
-                // Notify listeners
-                for (BackgroundTask.ProgressListener listener : task.getProgressListeners()) {
-                    listener.onCancel();
-                }
-            } finally {
-                disposeResources();
+            task.canceled();
+
+            // Notify listeners
+            for (BackgroundTask.ProgressListener listener : task.getProgressListeners()) {
+                listener.onCancel();
             }
 
             if (log.isTraceEnabled()) {
@@ -145,7 +140,7 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
         return canceled;
     }
 
-    private void disposeResources() {
+    private void detachCloseListener() {
         // force remove close listener
         Frame ownerFrame = getTask().getOwnerFrame();
         if (ownerFrame != null) {
@@ -182,60 +177,54 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
     /**
      * Cancel without events for tasks
      */
-    public final void close() {
-        if (AppContext.isStarted()) {
+    public final void kill() {
+        uiAccessor.access(() -> {
             UUID userId = getUserSession().getId();
             Frame ownerFrame = getTask().getOwnerFrame();
 
-            disposeResources();
+            detachCloseListener();
 
-            if (log.isTraceEnabled()) {
-                if (ownerFrame != null) {
-                    String windowClass = ownerFrame.getClass().getCanonicalName();
-                    log.trace("Task killed. User: " + userId + " Frame: " + windowClass);
-                } else {
-                    log.trace("Task killed. User: " + userId);
-                }
+            if (ownerFrame != null) {
+                String windowClass = ownerFrame.getClass().getCanonicalName();
+                log.trace("Task killed. User: {} Frame: {}", userId, windowClass);
+            } else {
+                log.trace("Task killed. User: {}", userId);
             }
-        }
 
-        taskExecutor.cancelExecution();
+            taskExecutor.cancelExecution();
+        });
     }
 
     /**
      * Cancel with timeout exceeded event
      */
     public final void timeoutExceeded() {
-        Frame ownerFrame = getTask().getOwnerFrame();
-        if (log.isTraceEnabled()) {
+        uiAccessor.access(() -> {
+            Frame ownerFrame = getTask().getOwnerFrame();
             if (ownerFrame != null) {
                 String windowClass = ownerFrame.getClass().getCanonicalName();
-                log.trace("Task timeout happened. Frame: " + windowClass);
+                log.trace("Task timeout exceeded. Frame: {}", windowClass);
             } else {
-                log.trace("Task timeout happened");
+                log.trace("Task timeout exceeded");
             }
-        }
 
-        checkState(started, "Task is not running");
+            checkState(started, "Task is not running");
 
-        boolean canceled = taskExecutor.cancelExecution();
-        if (canceled) {
-            try {
+            boolean canceled = taskExecutor.cancelExecution();
+            if (canceled) {
+                detachCloseListener();
+
                 BackgroundTask<T, V> task = taskExecutor.getTask();
                 task.handleTimeoutException();
-            } finally {
-                disposeResources();
             }
-        }
 
-        if (log.isTraceEnabled()) {
             if (ownerFrame != null) {
                 String windowClass = ownerFrame.getClass().getCanonicalName();
-                log.trace("Timeout was processed. Frame: " + windowClass);
+                log.trace("Timeout was processed. Frame: {}", windowClass);
             } else {
                 log.trace("Timeout was processed");
             }
-        }
+        });
     }
 
     @Override

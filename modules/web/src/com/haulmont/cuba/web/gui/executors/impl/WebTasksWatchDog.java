@@ -21,13 +21,11 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.executors.impl.TaskHandlerImpl;
 import com.haulmont.cuba.gui.executors.impl.TasksWatchDog;
 import com.haulmont.cuba.web.WebConfig;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.util.concurrent.TimeUnit;
 
-/**
- */
 @Component(TasksWatchDog.NAME)
 public class WebTasksWatchDog extends TasksWatchDog {
 
@@ -35,13 +33,20 @@ public class WebTasksWatchDog extends TasksWatchDog {
     protected Configuration configuration;
 
     @Override
-    protected boolean checkHangup(long actualTimeMs, TaskHandlerImpl taskHandler) {
+    protected ExecutionStatus getExecutionStatus(long actualTimeMs, TaskHandlerImpl taskHandler) {
         WebConfig webConfig = configuration.getConfig(WebConfig.class);
 
         long timeout = taskHandler.getTimeoutMs();
-        long latencyMs = TimeUnit.SECONDS.toMillis(webConfig.getClientBackgroundTasksLatencySeconds());
+        if (timeout > 0 && (actualTimeMs - taskHandler.getStartTimeStamp()) > timeout) {
+            return ExecutionStatus.TIMEOUT_EXCEEDED;
+        }
 
         // kill tasks, which do not update status for latency milliseconds
-        return timeout > 0 && (actualTimeMs - taskHandler.getStartTimeStamp()) > timeout + latencyMs;
+        long latencyMs = TimeUnit.SECONDS.toMillis(webConfig.getClientBackgroundTasksLatencySeconds());
+        if (timeout > 0 && (actualTimeMs - taskHandler.getStartTimeStamp()) > timeout + latencyMs) {
+            return ExecutionStatus.SHOULD_BE_KILLED;
+        }
+
+        return ExecutionStatus.NORMAL;
     }
 }

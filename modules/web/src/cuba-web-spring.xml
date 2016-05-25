@@ -127,4 +127,14 @@
         <task:scheduled ref="cuba_WebStatisticsAccumulator" method="gatherParameters" fixed-rate="5000"/>
     </task:scheduled-tasks>
 
+    <!-- Background Tasks -->
+
+    <bean id="backgroundWorkerScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
+        <property name="daemon" value="true"/>
+        <property name="poolSize" value="1"/>
+    </bean>
+
+    <task:scheduled-tasks scheduler="backgroundWorkerScheduler">
+        <task:scheduled ref="cuba_BackgroundWorker_WatchDog" method="cleanupTasks" fixed-delay="2000"/>
+    </task:scheduled-tasks>
 </beans>

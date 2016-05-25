@@ -59,7 +59,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
         // create task handler
         DesktopTaskExecutor<T, V> taskExecutor = new DesktopTaskExecutor<>(task);
-        TaskHandlerImpl<T, V> taskHandler = new TaskHandlerImpl<>(taskExecutor, watchDog);
+        TaskHandlerImpl<T, V> taskHandler = new TaskHandlerImpl<>(getUIAccessor(), taskExecutor, watchDog);
 
         taskExecutor.setTaskHandler(taskHandler);
 

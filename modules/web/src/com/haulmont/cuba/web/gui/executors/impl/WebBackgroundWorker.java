@@ -118,7 +118,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
         appInstance.addBackgroundTask(taskExecutor.getFuture());
 
         // create task handler
-        TaskHandlerImpl<T, V> taskHandler = new TaskHandlerImpl<>(taskExecutor, watchDog);
+        TaskHandlerImpl<T, V> taskHandler = new TaskHandlerImpl<>(getUIAccessor(), taskExecutor, watchDog);
         taskExecutor.setTaskHandler(taskHandler);
 
         return taskHandler;

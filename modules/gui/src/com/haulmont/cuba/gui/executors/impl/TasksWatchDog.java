@@ -19,7 +19,6 @@ package com.haulmont.cuba.gui.executors.impl;
 
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.WatchDog;
 
 import javax.annotation.concurrent.ThreadSafe;
@@ -31,10 +30,15 @@ import java.util.Set;
 
 /**
  * WatchDog for {@link com.haulmont.cuba.gui.executors.BackgroundWorker}.
- *
  */
 @ThreadSafe
 public abstract class TasksWatchDog implements WatchDog {
+
+    public enum ExecutionStatus {
+        NORMAL,
+        TIMEOUT_EXCEEDED,
+        SHOULD_BE_KILLED
+    }
 
     @Inject
     protected TimeSource timeSource;
@@ -45,13 +49,11 @@ public abstract class TasksWatchDog implements WatchDog {
         watches = new LinkedHashSet<>();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public synchronized void cleanupTasks() {
-        if (!AppContext.isStarted())
+        if (!AppContext.isStarted()) {
             return;
+        }
 
         long actual = timeSource.currentTimestamp().getTime();
 
@@ -59,27 +61,39 @@ public abstract class TasksWatchDog implements WatchDog {
         for (TaskHandlerImpl task : watches) {
             if (task.isCancelled() || task.isDone()) {
                 forRemove.add(task);
-            } else if (checkHangup(actual, task)) {
-                task.close();
-                forRemove.add(task);
+            } else {
+                ExecutionStatus status = getExecutionStatus(actual, task);
+
+                switch (status) {
+                    case TIMEOUT_EXCEEDED:
+                        task.timeoutExceeded();
+                        forRemove.add(task);
+                        break;
+
+                    case SHOULD_BE_KILLED:
+                        task.kill();
+                        forRemove.add(task);
+                        break;
+
+                    default:
+                        break;
+                }
             }
         }
 
         watches.removeAll(forRemove);
     }
 
-    protected abstract boolean checkHangup(long actualTimeMs, TaskHandlerImpl taskHandler);
+    protected abstract ExecutionStatus getExecutionStatus(long actualTimeMs, TaskHandlerImpl taskHandler);
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public synchronized void stopTasks() {
-        if (!AppContext.isStarted())
+        if (!AppContext.isStarted()) {
             return;
+        }
 
         for (TaskHandlerImpl task : watches) {
-            task.close();
+            task.kill();
         }
         watches.clear();
     }
