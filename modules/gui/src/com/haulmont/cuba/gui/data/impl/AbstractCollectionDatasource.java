@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.data.impl;
 
+import com.google.common.base.Joiner;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
@@ -592,31 +593,21 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         String[] sortProperties = null;
 
         if (metadata.getTools().isPersistent(propertyPath)) {
-            if (!propertyPath.getMetaProperty().getRange().isClass()) {
-                // a scalar persistent attribute
-                sortProperties = new String[1];
-                sortProperties[0] = propertyPath.toString();
-            } else {
-                // a reference attribute
-                MetaClass metaClass = propertyPath.getMetaProperty().getRange().asClass();
-                if (!propertyPath.getMetaProperty().getRange().getCardinality().isMany()) {
-                    InstanceUtils.NamePatternRec rec = InstanceUtils.parseNamePattern(metaClass);
-                    if (rec != null) {
-                        sortProperties = new String[rec.fields.length];
-                        for (int i = 0; i < rec.fields.length; i++) {
-                            sortProperties[i] = propertyPath.toString() + "." + rec.fields[i];
-                        }
-                    } else {
-                        sortProperties = new String[1];
-                        sortProperties[0] = propertyPath.toString();
-                    }
-                }
-            }
+            sortProperties = getSortPropertiesForPersistentAttribute(propertyPath);
         } else {
             // a non-persistent attribute
-            List<String> list = metadata.getTools().getRelatedProperties(propertyPath.getMetaProperty());
-            if (!list.isEmpty()) {
-                sortProperties = list.toArray(new String[list.size()]);
+            List<String> relProperties = metadata.getTools().getRelatedProperties(propertyPath.getMetaProperty());
+            if (!relProperties.isEmpty()) {
+                List<String> sortPropertiesList = new ArrayList<>(relProperties.size());
+                for (String relProp : relProperties) {
+                    String[] ppCopy = Arrays.copyOf(propertyPath.getPath(), propertyPath.getPath().length);
+                    ppCopy[ppCopy.length - 1] = relProp;
+
+                    MetaPropertyPath relPropertyPath = propertyPath.getMetaProperties()[0].getDomain().getPropertyPath(Joiner.on(".").join(ppCopy));
+                    String[] sortPropertiesForRelProperty = getSortPropertiesForPersistentAttribute(relPropertyPath);
+                    Collections.addAll(sortPropertiesList, sortPropertiesForRelProperty);
+                }
+                sortProperties = sortPropertiesList.toArray(new String[sortPropertiesList.size()]);
             }
         }
 
@@ -626,6 +617,31 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
             String jpqlQuery = transformer.getResult();
             q.setQueryString(jpqlQuery);
         }
+    }
+
+    protected String[] getSortPropertiesForPersistentAttribute(MetaPropertyPath propertyPath) {
+        String[] sortProperties = null;
+        if (!propertyPath.getMetaProperty().getRange().isClass()) {
+            // a scalar persistent attribute
+            sortProperties = new String[1];
+            sortProperties[0] = propertyPath.toString();
+        } else {
+            // a reference attribute
+            MetaClass metaClass = propertyPath.getMetaProperty().getRange().asClass();
+            if (!propertyPath.getMetaProperty().getRange().getCardinality().isMany()) {
+                InstanceUtils.NamePatternRec rec = InstanceUtils.parseNamePattern(metaClass);
+                if (rec != null) {
+                    sortProperties = new String[rec.fields.length];
+                    for (int i = 0; i < rec.fields.length; i++) {
+                        sortProperties[i] = propertyPath.toString() + "." + rec.fields[i];
+                    }
+                } else {
+                    sortProperties = new String[1];
+                    sortProperties[0] = propertyPath.toString();
+                }
+            }
+        }
+        return sortProperties;
     }
 
     @Override
