@@ -266,6 +266,9 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 log.debug("Done task. User: " + userId);
             }
 
+            // do not allow to cancel task from done listeners and exception handler
+            isClosed = true;
+
             app.removeBackgroundTask(future);
             watchDog.removeTask(taskHandler);
 
@@ -299,7 +302,6 @@ public class WebBackgroundWorker implements BackgroundWorker {
                     finalizer = null;
                 }
 
-                isClosed = true;
                 doneHandled = true;
             }
         }
