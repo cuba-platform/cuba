@@ -84,4 +84,8 @@ $v-window-nonmodal-shadow: 0 0 20px rgba(0,0,0,0.5) !default;
       @include animation(none);
     }
   }
+
+  .#{$primary-stylename}-modalitycurtain {
+    background-image: none;
+  }
 }
