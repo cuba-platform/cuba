@@ -201,6 +201,20 @@ public interface EntityManager {
     <T extends Entity> T reload(T entity, String... viewNames);
 
     /**
+     * Reload an entity from DB according to a combined view defined by the given array of views.
+     * <p/> Ensures all combined view attributes are loaded.
+     * <p/> If the given entity is in managed state, the method returns the same object instance. If the entity is
+     * detached, the method returns a new object instance.
+     *
+     * @param entity        entity instance to reload
+     * @param viewNames     array of view names
+     * @return              reloaded entity instance
+     * @throws javax.persistence.EntityNotFoundException if the entity has been deleted
+     */
+    @Nullable
+    <T extends Entity> T reloadNN(T entity, String... viewNames);
+
+    /**
      * Synchronize the persistence context to the underlying database.
      */
     void flush();

@@ -36,6 +36,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.List;
@@ -245,7 +246,13 @@ public class PersistenceImpl implements Persistence {
                 ctx.setSoftDeletion((Boolean) args[0]);
                 contextHolder.set(ctx);
             }
-            return method.invoke(impl, args);
+            try {
+                return method.invoke(impl, args);
+            } catch (IllegalAccessException | IllegalArgumentException e) {
+                throw e;
+            } catch (InvocationTargetException e) {
+                throw e.getTargetException();
+            }
         }
     }
 }

@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import javax.persistence.EntityNotFoundException;
 import java.sql.Connection;
 import java.util.Arrays;
 import java.util.Collection;
@@ -260,6 +261,15 @@ public class EntityManagerImpl implements EntityManager {
 
         Entity resultEntity = find(entity.getClass(), entity.getId(), viewNames);
         return (T) resultEntity;
+    }
+
+    @Nullable
+    @Override
+    public <T extends Entity> T reloadNN(T entity, String... viewNames) {
+        T reloaded = reload(entity, viewNames);
+        if (reloaded == null)
+            throw new EntityNotFoundException("Entity " + entity + " has been deleted");
+        return reloaded;
     }
 
     @Override

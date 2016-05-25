@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.UUID;
 
 import static com.haulmont.cuba.testsupport.TestSupport.reserialize;
@@ -306,5 +307,25 @@ public class EntityManagerTest {
         assertNotNull(reloadedUser);
         assertNotNull(reloadedUser.getLogin());
         assertTrue(PersistenceHelper.isLoaded(reloadedUser, "userRoles"));
+    }
+
+    @Test
+    public void testReloadNN() throws Exception {
+        cont.persistence().runInTransaction(em -> {
+            User user = em.find(User.class, userId);
+            user = em.reloadNN(user, "user.edit");
+        });
+
+        cont.persistence().runInTransaction(em -> {
+            User user = em.find(User.class, userId);
+            em.remove(user);
+            try {
+                em.reloadNN(user, "user.edit");
+                fail();
+            } catch (EntityNotFoundException e) {
+                System.out.println(e);
+                // ok
+            }
+        });
     }
 }
