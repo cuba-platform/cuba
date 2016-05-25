@@ -348,7 +348,7 @@ public class UserEditor extends AbstractEditor<User> {
 
             List<UserRole> modifiedRoles = new ArrayList<>(rolesDsImpl.getItemsToCreate());
             modifiedRoles.addAll(rolesDsImpl.getItemsToUpdate());
-            rolesDsImpl.committed(Collections.<Entity>emptySet());
+            rolesDsImpl.committed(Collections.emptySet());
             for (UserRole userRole : modifiedRoles) {
                 rolesDsImpl.modified(userRole);
             }
@@ -411,7 +411,7 @@ public class UserEditor extends AbstractEditor<User> {
 
         @Override
         public void actionPerform(Component component) {
-            Map<String, Object> lookupParams = Collections.<String, Object>singletonMap("windowOpener", "sec$User.edit");
+            Map<String, Object> lookupParams = Collections.singletonMap("windowOpener", "sec$User.edit");
             Lookup roleLookupWindow = openLookup("sec$Role.lookup", new Lookup.Handler() {
                 @Override
                 public void handleLookup(Collection items) {
@@ -580,7 +580,7 @@ public class UserEditor extends AbstractEditor<User> {
 
         @Override
         public void actionPerform(Component component) {
-            getDialogParams().setWidth(themeConstants.getInt("cuba.gui.UserEditor.substitutionEditor.width"));
+            getDialogOptions().setWidth(themeConstants.getInt("cuba.gui.UserEditor.substitutionEditor.width"));
 
             if (substitutionsDs.getItem() != null) {
                 Window substitutionEditor = openEditor("sec$UserSubstitution.edit", substitutionsDs.getItem(),

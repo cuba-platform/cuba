@@ -40,7 +40,7 @@ public class UserSubstitutionEditor extends AbstractEditor<UserSubstitution> {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        getDialogParams().setWidthAuto();
+        getDialogOptions().setWidthAuto();
     }
 
     @Override

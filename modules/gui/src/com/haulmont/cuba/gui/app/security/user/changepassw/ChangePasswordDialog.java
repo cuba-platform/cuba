@@ -71,7 +71,7 @@ public class ChangePasswordDialog extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        getDialogParams().setWidthAuto();
+        getDialogOptions().setWidthAuto();
 
         Boolean cancelEnabled = (Boolean) params.get("cancelEnabled");
         if (Boolean.FALSE.equals(cancelEnabled)) {
@@ -158,7 +158,7 @@ public class ChangePasswordDialog extends AbstractWindow {
                 targetUserId = user.getId();
             }
 
-            String passwordHash = passwordEncryption.getPasswordHash(targetUserId, passwField.<String>getValue());
+            String passwordHash = passwordEncryption.getPasswordHash(targetUserId, passwField.getValue());
             userManagementService.changeUserPassword(targetUserId, passwordHash);
 
             showNotification(getMessage("passwordChanged"), NotificationType.HUMANIZED);

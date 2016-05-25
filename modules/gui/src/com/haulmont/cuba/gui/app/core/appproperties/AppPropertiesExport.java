@@ -43,7 +43,7 @@ public class AppPropertiesExport extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams().setHeight(400);
+        getDialogOptions().setHeight(400);
 
         StringBuilder sb = new StringBuilder();
         for (AppPropertyEntity entity : exported) {

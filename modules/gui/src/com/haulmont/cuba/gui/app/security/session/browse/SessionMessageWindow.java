@@ -55,7 +55,7 @@ public class SessionMessageWindow extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams().setWidth(themeConstants.getInt("cuba.gui.SessionMessageWindow.width"));
+        getDialogOptions().setWidth(themeConstants.getInt("cuba.gui.SessionMessageWindow.width"));
 
         TO_ALL = messages.getMessage(getClass(), "messageWindow.toAll");
         TO_SELECTED = messages.getMessage(getClass(), "messageWindow.toSelected");

@@ -46,7 +46,7 @@ public class AttributeEditWindow extends AbstractEditor<ManagedBeanAttribute> {
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
-        getDialogParams().setWidth(themeConstants.getInt("cuba.web.AttributeEditWindow.width"));
+        getDialogOptions().setWidth(themeConstants.getInt("cuba.web.AttributeEditWindow.width"));
     }
 
     @Override
@@ -84,7 +84,7 @@ public class AttributeEditWindow extends AbstractEditor<ManagedBeanAttribute> {
                 return true;
             }
         } catch (Exception e) {
-            getDialogParams().setWidth(themeConstants.getInt("cuba.web.AttributeEditWindow.messageDialog.width"));
+            getDialogOptions().setWidth(themeConstants.getInt("cuba.web.AttributeEditWindow.messageDialog.width"));
 
             showMessageDialog(String.format(getMessage("editAttribute.exception"), mba.getName()),
                     e.getClass().getCanonicalName() + " " + e.getMessage() + "\n",

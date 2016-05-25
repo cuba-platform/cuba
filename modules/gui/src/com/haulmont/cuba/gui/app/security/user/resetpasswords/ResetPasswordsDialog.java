@@ -46,7 +46,7 @@ public class ResetPasswordsDialog extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        getDialogParams()
+        getDialogOptions()
                 .setWidth(theme.getInt("cuba.gui.ResetPasswordsDialog.width"))
                 .setResizable(false);
 

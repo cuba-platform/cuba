@@ -56,7 +56,7 @@ public class ControlLoggerWindow extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams()
+        getDialogOptions()
                 .setWidth(themeConstants.getInt("cuba.web.ControlLoggerWindow.width"))
                 .setHeight(themeConstants.getInt("cuba.web.ControlLoggerWindow.height"))
                 .setResizable(true);

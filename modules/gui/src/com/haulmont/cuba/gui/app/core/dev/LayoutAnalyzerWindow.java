@@ -48,7 +48,7 @@ public class LayoutAnalyzerWindow extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        getDialogParams()
+        getDialogOptions()
                 .setResizable(true)
                 .setWidth(themeConstants.getInt("cuba.gui.LayoutAnalyzerWindow.width"))
                 .setHeight(themeConstants.getInt("cuba.gui.LayoutAnalyzerWindow.height"));

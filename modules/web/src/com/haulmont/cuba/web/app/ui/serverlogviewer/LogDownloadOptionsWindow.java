@@ -64,7 +64,7 @@ public class LogDownloadOptionsWindow extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        getDialogParams().setWidthAuto();
+        getDialogOptions().setWidthAuto();
 
         if (remoteContextList == null || remoteContextList.isEmpty()) {
             remoteContextBox.setVisible(false);
@@ -107,8 +107,7 @@ public class LogDownloadOptionsWindow extends AbstractWindow {
     public void downloadTail() {
         LogDataProvider logDataProvider;
         if (remoteContextBox.isVisible()) {
-            logDataProvider = new LogDataProvider(connection, logFileName,
-                    (String) remoteContextField.getValue(), false);
+            logDataProvider = new LogDataProvider(connection, logFileName, remoteContextField.getValue(), false);
         } else {
             logDataProvider = new LogDataProvider(connection, logFileName, false);
         }
@@ -121,8 +120,7 @@ public class LogDownloadOptionsWindow extends AbstractWindow {
     public void downloadFull() {
         LogDataProvider logDataProvider;
         if (remoteContextBox.isVisible()) {
-            logDataProvider = new LogDataProvider(connection, logFileName,
-                    (String) remoteContextField.getValue(), true);
+            logDataProvider = new LogDataProvider(connection, logFileName, remoteContextField.getValue(), true);
         } else {
             logDataProvider = new LogDataProvider(connection, logFileName, true);
         }

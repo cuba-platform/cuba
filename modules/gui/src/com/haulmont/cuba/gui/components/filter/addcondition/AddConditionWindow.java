@@ -71,7 +71,7 @@ public class AddConditionWindow extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
         ThemeConstants theme = themeConstantsManager.getConstants();
-        getDialogParams()
+        getDialogOptions()
                 .setHeight(Integer.valueOf(theme.get("cuba.gui.addFilterCondition.dialog.height")))
                 .setWidth(Integer.valueOf(theme.get("cuba.gui.addFilterCondition.dialog.width")))
                 .setResizable(true);

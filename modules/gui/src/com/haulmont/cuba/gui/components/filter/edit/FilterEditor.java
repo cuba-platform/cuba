@@ -132,7 +132,7 @@ public class FilterEditor extends AbstractWindow {
             setCaption(messages.getMainMessage("filter.editor.captionShortForm"));
         }
 
-        getDialogParams()
+        getDialogOptions()
                 .setWidth(theme.getInt("cuba.gui.filterEditor.dialog.width"))
                 .setHeight(theme.getInt("cuba.gui.filterEditor.dialog.height"))
                 .setResizable(true);
@@ -337,7 +337,7 @@ public class FilterEditor extends AbstractWindow {
     }
 
     protected void refreshConditionsDs() {
-        conditionsDs.refresh(Collections.<String, Object>singletonMap("conditions", conditions));
+        conditionsDs.refresh(Collections.singletonMap("conditions", conditions));
     }
 
     public void addAndGroup() {

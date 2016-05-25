@@ -49,7 +49,7 @@ public class ScreenHistoryBrowse extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams()
+        getDialogOptions()
                 .setHeight(themeConstants.getInt("cuba.web.ScreenHistoryBrowse.height"))
                 .setWidth(themeConstants.getInt("cuba.web.ScreenHistoryBrowse.width"))
                 .setResizable(false);

@@ -63,7 +63,7 @@ public class FilterSelectWindow extends AbstractWindow {
     @Override
     public void init(Map<String, Object> params) {
         ThemeConstants theme = themeConstantsManager.getConstants();
-        getDialogParams()
+        getDialogOptions()
                 .setHeight(Integer.valueOf(theme.get("cuba.gui.filterSelect.dialog.height")))
                 .setWidth(Integer.valueOf(theme.get("cuba.gui.filterSelect.dialog.width")))
                 .setResizable(true);

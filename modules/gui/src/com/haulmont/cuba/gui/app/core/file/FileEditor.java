@@ -71,7 +71,7 @@ public class FileEditor extends AbstractEditor<FileDescriptor> {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        getDialogParams().setWidthAuto();
+        getDialogOptions().setWidthAuto();
     }
 
     @Override

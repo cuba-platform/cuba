@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.gui.components.filter;
 
-import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
@@ -64,7 +63,7 @@ public class InListParamEditor extends AbstractWindow {
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
-        getDialogParams()
+        getDialogOptions()
             .setWidth(theme.getInt("cuba.gui.filter.FilterListParamEditor.dialog.width"))
             .setHeight(theme.getInt("cuba.gui.filter.FilterListParamEditor.dialog.height"))
             .setResizable(true);

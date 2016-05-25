@@ -48,7 +48,7 @@ public class OperationResultWindow extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        getDialogParams()
+        getDialogOptions()
                 .setResizable(true)
                 .setWidth(themeConstants.getInt("cuba.web.jmx.OperationResultWindow.width"))
                 .setHeight(themeConstants.getInt("cuba.web.jmx.OperationResultWindow.height"));

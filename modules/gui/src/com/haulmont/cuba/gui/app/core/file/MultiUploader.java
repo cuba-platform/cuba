@@ -55,7 +55,7 @@ public class MultiUploader extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        getDialogParams()
+        getDialogOptions()
                 .setHeight(themeConstants.getInt("cuba.gui.multiupload.height"))
                 .setResizable(true);
 

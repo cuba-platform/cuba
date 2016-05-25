@@ -51,7 +51,7 @@ public class NewPasswordsList extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        getDialogParams()
+        getDialogOptions()
                 .setResizable(true)
                 .setHeight(themeConstants.getInt("cuba.gui.NewPasswordsList.height"));
 

@@ -19,7 +19,6 @@ package com.haulmont.cuba.gui.app.security.constraint.edit;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.GroovyGenerator;
 import com.haulmont.cuba.core.global.filter.SecurityJpqlGenerator;
@@ -220,22 +219,28 @@ public class ConstraintEditor extends AbstractEditor {
     }
 
     public void getJoinClauseHelp() {
-        getDialogParams().setModal(false).setWidth(600);
+        getDialogOptions()
+                .setModal(false)
+                .setWidth(600);
         showMessageDialog(getMessage("joinClause"), getMessage("joinClauseHelp"), MessageType.CONFIRMATION_HTML);
     }
 
     public void getWhereClauseHelp() {
-        getDialogParams().setModal(false).setWidth(600);
+        getDialogOptions()
+                .setModal(false)
+                .setWidth(600);
         showMessageDialog(getMessage("whereClause"), getMessage("whereClauseHelp"), MessageType.CONFIRMATION_HTML);
     }
 
     public void getGroovyScriptHelp() {
-        getDialogParams().setModal(false).setWidth(600);
+        getDialogOptions()
+                .setModal(false)
+                .setWidth(600);
         showMessageDialog(getMessage("groovyScript"), getMessage("groovyScriptHelp"), MessageType.CONFIRMATION_HTML);
     }
 
     public void openWizard() {
-        String entityNameValue = entityName.<String>getValue();
+        String entityNameValue = entityName.getValue();
         if (StringUtils.isBlank(entityNameValue)) {
             showNotification(getMessage("notification.entityIsEmpty"), NotificationType.HUMANIZED);
             entityName.requestFocus();

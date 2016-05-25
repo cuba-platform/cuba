@@ -29,8 +29,9 @@ public class SendingMessageAttachments extends AbstractLookup {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        getDialogParams().setWidth(800);
-        getDialogParams().setHeight(500);
-        getDialogParams().setResizable(true);
+        getDialogOptions()
+                .setWidth(800)
+                .setHeight(500)
+                .setResizable(true);
     }
 }

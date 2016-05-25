@@ -53,7 +53,7 @@ public class CopySettings extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        getDialogParams().setWidthAuto();
+        getDialogOptions().setWidthAuto();
 
         copyBtn.setAction(new AbstractAction("deployBtn") {
             @Override
