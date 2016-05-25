@@ -2412,11 +2412,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                                 null : column.getXmlDescriptor().attributeValue("link");
 
                         if (propertyPath.getRange().isClass()) {
-                            if (StringUtils.isNotEmpty(isLink)) {
+                            if (StringUtils.isNotEmpty(isLink) && Boolean.valueOf(isLink)) {
                                 style = "cuba-table-cell-link";
                             }
                         } else if (propertyPath.getRange().isDatatype()) {
-                            if (!StringUtils.isEmpty(isLink)) {
+                            if (StringUtils.isNotEmpty(isLink) && Boolean.valueOf(isLink)) {
                                 style = "cuba-table-cell-link";
                             } else if (column.getMaxTextLength() != null) {
                                 Entity item = getDatasource().getItemNN(itemId);
