@@ -461,6 +461,9 @@ configure(webModule) {
         compile(commonsUpload)
         compile(group: 'org.springframework', name: 'spring-webmvc', version: springVersion)
 
+        compile(vaadinPush) {
+            exclude(group: 'com.vaadin.external.google', module: 'guava')
+        }
         compile(vaadinShared) {
             exclude(group: 'com.vaadin.external.google', module: 'guava')
         }
