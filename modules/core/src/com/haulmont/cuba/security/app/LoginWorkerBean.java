@@ -142,6 +142,7 @@ public class LoginWorkerBean implements LoginWorker {
 
             tx.commit();
 
+            userSessionManager.clearPermissionsOnUser(session);
             Boolean sync = (Boolean) params.get(ServerConfig.SYNC_NEW_USER_SESSION_REPLICATION_PROP);
             if (sync != null && sync) {
                 boolean saved = clusterManager.getSyncSendingForCurrentThread();
@@ -180,6 +181,7 @@ public class LoginWorkerBean implements LoginWorker {
 
             tx.commit();
 
+            userSessionManager.clearPermissionsOnUser(session);
             userSessionManager.storeSession(session);
 
             return session;
@@ -227,6 +229,7 @@ public class LoginWorkerBean implements LoginWorker {
 
             tx.commit();
 
+            userSessionManager.clearPermissionsOnUser(session);
             userSessionManager.storeSession(session);
 
             return session;
@@ -268,6 +271,7 @@ public class LoginWorkerBean implements LoginWorker {
 
             tx.commit();
 
+            userSessionManager.clearPermissionsOnUser(session);
             userSessionManager.storeSession(session);
 
             return session;
@@ -322,6 +326,7 @@ public class LoginWorkerBean implements LoginWorker {
             tx.commit();
 
             userSessionManager.removeSession(currentSession);
+            userSessionManager.clearPermissionsOnUser(session);
             userSessionManager.storeSession(session);
 
             return session;

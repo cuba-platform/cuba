@@ -21,6 +21,7 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.global.UuidSource;
 import com.haulmont.cuba.core.sys.DefaultPermissionValuesConfig;
@@ -263,5 +264,25 @@ public class UserSessionManager implements UserSessionFinder {
             tx.end();
         }
         return result; 
+    }
+
+    /**
+     * INTERNAL
+     */
+    public void clearPermissionsOnUser(UserSession session) {
+        List<User> users = new ArrayList<>();
+        users.add(session.getUser());
+        if (session.getSubstitutedUser() != null) {
+            users.add(session.getSubstitutedUser());
+        }
+        for (User user : users) {
+            if (PersistenceHelper.isDetached(user) && user.getUserRoles() != null) {
+                for (UserRole userRole : user.getUserRoles()) {
+                    if (userRole.getRole() != null) {
+                        userRole.getRole().setPermissions(null);
+                    }
+                }
+            }
+        }
     }
 }
