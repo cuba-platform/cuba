@@ -352,7 +352,7 @@ public class Scheduling implements SchedulingAPI {
 
     protected UserSession getUserSession(ScheduledTask task) throws LoginException {
         if (StringUtils.isBlank(task.getUserName())) {
-            return userSessionManager.findSession(AppContext.getSecurityContext().getSessionId());
+            return userSessionManager.findSession(AppContext.getSecurityContextNN().getSessionId());
         } else {
             return null;
         }

@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.portal.config.PortalConfig;
 import freemarker.template.*;
 import org.slf4j.Logger;
@@ -52,8 +53,9 @@ public class FreeMarkerView extends org.springframework.web.servlet.view.freemar
         PortalConfig config = AppBeans.get(Configuration.class).getConfig(PortalConfig.class);
 
         SimpleHash context = super.buildTemplateModel(model, request, response);
-        if (AppContext.getSecurityContext() != null)
-            context.put("userSession", AppContext.getSecurityContext().getSession());
+        SecurityContext securityContext = AppContext.getSecurityContext();
+        if (securityContext != null)
+            context.put("userSession", securityContext.getSession());
         context.put("messages", messages);
         context.put("message", new MessageMethod());
         context.put("theme", config.getTheme());

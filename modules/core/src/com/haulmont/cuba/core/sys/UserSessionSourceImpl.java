@@ -20,8 +20,8 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 
 /**
@@ -40,10 +40,7 @@ public class UserSessionSourceImpl extends AbstractUserSessionSource {
 
     @Override
     public UserSession getUserSession() {
-        SecurityContext securityContext = AppContext.getSecurityContext();
-        if (securityContext == null)
-            throw new SecurityException("No security context bound to the current thread");
-
+        SecurityContext securityContext = AppContext.getSecurityContextNN();
         return userSessionManager.getSession(securityContext.getSessionId());
     }
 }

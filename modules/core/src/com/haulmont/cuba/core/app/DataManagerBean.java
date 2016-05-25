@@ -39,7 +39,10 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
-import java.lang.reflect.*;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.*;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
@@ -666,7 +669,7 @@ public class DataManagerBean implements DataManager {
 
     protected boolean isAuthorizationRequired() {
         return serverConfig.getDataManagerChecksSecurityOnMiddleware()
-                || AppContext.getSecurityContext().isAuthorizationRequired();
+                || AppContext.getSecurityContextNN().isAuthorizationRequired();
     }
 
     /**
@@ -776,14 +779,14 @@ public class DataManagerBean implements DataManager {
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            boolean authorizationRequired = AppContext.getSecurityContext().isAuthorizationRequired();
-            AppContext.getSecurityContext().setAuthorizationRequired(true);
+            boolean authorizationRequired = AppContext.getSecurityContextNN().isAuthorizationRequired();
+            AppContext.getSecurityContextNN().setAuthorizationRequired(true);
             try {
                 return method.invoke(impl, args);
             } catch (InvocationTargetException e) {
                 throw e.getTargetException();
             } finally {
-                AppContext.getSecurityContext().setAuthorizationRequired(authorizationRequired);
+                AppContext.getSecurityContextNN().setAuthorizationRequired(authorizationRequired);
             }
         }
     }

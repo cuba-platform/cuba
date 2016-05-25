@@ -181,13 +181,26 @@ public class AppContext {
     }
 
     /**
-     * @return  current thread's {@link SecurityContext}
+     * @return  current thread's {@link SecurityContext} or null if there is no context bound
      */
+    @Nullable
     public static SecurityContext getSecurityContext() {
         if (started)
             return securityContextHolder.get();
         else
             return NO_USER_CONTEXT;
+    }
+
+    /**
+     * @return  current thread's {@link SecurityContext}
+     * @throws SecurityException if there is no context bound to the current thread
+     */
+    public static SecurityContext getSecurityContextNN() {
+        SecurityContext securityContext = getSecurityContext();
+        if (securityContext == null)
+            throw new SecurityException("No security context bound to the current thread");
+
+        return securityContext;
     }
 
     /**

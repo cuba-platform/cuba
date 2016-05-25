@@ -25,8 +25,8 @@ import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.Connection;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 
 /**
@@ -68,11 +68,7 @@ public class WebUserSessionSource extends AbstractUserSessionSource {
         if (App.isBound()) {
             session = App.getInstance().getConnection().getSession();
         } else {
-            SecurityContext securityContext = AppContext.getSecurityContext();
-            if (securityContext == null) {
-                throw new IllegalStateException("No security context bound to the current thread");
-            }
-
+            SecurityContext securityContext = AppContext.getSecurityContextNN();
             if (securityContext.getSession() != null) {
                 session = securityContext.getSession();
             } else {

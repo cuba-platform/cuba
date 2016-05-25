@@ -85,9 +85,7 @@ public class ServiceInterceptor {
     }
 
     private UserSession getUserSession(ProceedingJoinPoint ctx) {
-        SecurityContext securityContext = AppContext.getSecurityContext();
-        if (securityContext == null)
-            throw new SecurityException("No security context bound to the current thread");
+        SecurityContext securityContext = AppContext.getSecurityContextNN();
 
         // Using UserSessionsAPI directly to make sure the session's "last used" timestamp is propagated to the cluster
         UserSession userSession = userSessions.get(securityContext.getSessionId(), true);

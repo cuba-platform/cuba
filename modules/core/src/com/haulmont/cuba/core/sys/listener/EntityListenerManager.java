@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.listener.*;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import org.apache.commons.lang.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -181,9 +182,10 @@ public class EntityListenerManager {
         List listeners = getListener(entity.getClass(), type);
 
         boolean saved = false;
-        if (AppContext.getSecurityContext() != null) { // can be null before login when detaching entities
-            saved = AppContext.getSecurityContext().isAuthorizationRequired();
-            AppContext.getSecurityContext().setAuthorizationRequired(false);
+        SecurityContext securityContext = AppContext.getSecurityContext();
+        if (securityContext != null) { // can be null before login when detaching entities
+            saved = securityContext.isAuthorizationRequired();
+            securityContext.setAuthorizationRequired(false);
         }
         try {
             for (Object listener : listeners) {
@@ -225,8 +227,9 @@ public class EntityListenerManager {
                 }
             }
         } finally {
-            if (AppContext.getSecurityContext() != null) {
-                AppContext.getSecurityContext().setAuthorizationRequired(saved);
+            SecurityContext sc = AppContext.getSecurityContext();
+            if (sc != null) {
+                sc.setAuthorizationRequired(saved);
             }
         }
     }

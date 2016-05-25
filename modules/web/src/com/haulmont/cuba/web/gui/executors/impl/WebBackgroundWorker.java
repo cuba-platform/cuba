@@ -190,7 +190,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
                     Collections.emptyMap();
 
             // copy security context
-            this.securityContext = new SecurityContext(AppContext.getSecurityContext().getSession());
+            this.securityContext = new SecurityContext(AppContext.getSecurityContextNN().getSession());
             this.userId = userSessionSource.getUserSession().getId();
 
             this.future = new FutureTask<V>(this) {

@@ -93,8 +93,9 @@ public class DynamicAttributesCacheStrategy implements CachingStrategy {
     @Override
     public Object getObject() {
         needToValidateCache = true;
-        if (AppContext.getSecurityContext() != null) {
-            lastRequestedSessionId.set(AppContext.getSecurityContext().getSessionId());
+        SecurityContext securityContext = AppContext.getSecurityContext();
+        if (securityContext != null) {
+            lastRequestedSessionId.set(securityContext.getSessionId());
         }
         return dynamicAttributesCache;
     }
