@@ -105,8 +105,13 @@ public class DataManagerBean implements DataManager {
             com.haulmont.cuba.core.Query query = createQuery(em, context);
             query.setView(createRestrictedView(context));
 
+            // If maxResults=1 and the query is not by ID we should not use getSingleResult() for backward compatibility
+            boolean singleResult = !(context.getQuery() != null
+                    && context.getQuery().getMaxResults() == 1
+                    && context.getQuery().getQueryString() != null);
+
             //noinspection unchecked
-            List<E> resultList = executeQuery(query, true);
+            List<E> resultList = executeQuery(query, singleResult);
             if (!resultList.isEmpty())
                 result = resultList.get(0);
 

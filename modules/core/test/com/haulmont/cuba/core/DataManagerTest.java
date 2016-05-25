@@ -230,6 +230,26 @@ public class DataManagerTest {
         assertNull(server.getDynamicAttributes());
     }
 
+    @Test
+    public void testDataManagerLoadOneRecord() {
+        Server server1 = new Server();
+        server1.setName("app1");
+        server1.setRunning(false);
+
+        Server server2 = new Server();
+        server2.setName("app2");
+        server2.setRunning(false);
+
+        dataManager.commit(new CommitContext(server1, server2));
+
+        LoadContext<Server> lc = new LoadContext<>(Server.class);
+        lc.setQueryString("select s from sys$Server s order by s.name")
+                .setMaxResults(1);
+
+        Server latest = dataManager.load(lc);
+        assertEquals(server1, latest);
+    }
+
     public static class MyLoadContext<E extends Entity> extends LoadContext<E> {
 
         private String info;
