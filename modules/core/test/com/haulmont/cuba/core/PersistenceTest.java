@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import javax.annotation.Nullable;
 import java.util.Set;
 import java.util.UUID;
 
@@ -234,5 +235,73 @@ public class PersistenceTest {
 
             tx.commit();
         }
+    }
+
+    @Test
+    public void testRepeatingReloadNoView() throws Exception {
+        cont.persistence().runInTransaction((em) -> {
+            User u = loadUserByName(em, null);
+
+            u.setLanguage("ru");
+
+            u = loadUserByName(em, null);
+
+            assertEquals("ru", u.getLanguage());
+        });
+
+        User changedUser = cont.persistence().callInTransaction((em) -> em.find(User.class, userId));
+        assertEquals("ru", changedUser.getLanguage());
+    }
+
+    @Test
+    public void testLostChangeOnReloadWithView1() throws Exception {
+        cont.persistence().runInTransaction((em) -> {
+            User u = loadUserByName(em, View.LOCAL);
+
+            u.setLanguage("en");
+
+            u = loadUserByName(em, View.LOCAL);
+
+            assertEquals("en", u.getLanguage());
+        });
+    }
+
+    @Test
+    public void testLostChangeOnReloadWithView2() throws Exception {
+        cont.persistence().runInTransaction((em) -> {
+            User u = loadUserByName(em, View.LOCAL);
+
+            u.setLanguage("fr");
+
+            u = loadUserByName(em, View.LOCAL);
+        });
+
+        User changedUser = cont.persistence().callInTransaction((em) -> em.find(User.class, userId));
+        assertEquals("fr", changedUser.getLanguage());
+    }
+
+    @Test
+    public void testLostChangesOnEmReload() throws Exception {
+        User user = cont.persistence().callInTransaction((em) -> em.find(User.class, userId));
+
+        cont.persistence().runInTransaction((em) -> {
+            User u = em.merge(user);
+            u.setEmail("abc@example.com");
+
+            u = em.reload(u, View.LOCAL);
+        });
+
+        User changedUser = cont.persistence().callInTransaction((em) -> em.find(User.class, userId));
+        assertEquals("abc@example.com", changedUser.getEmail());
+    }
+
+    private User loadUserByName(EntityManager em, @Nullable String viewName) {
+        TypedQuery<User> q = em.createQuery("select u from sec$User u where u.name = :name", User.class)
+                .setParameter("name", "testUser");
+
+        if (viewName != null) {
+            q.setViewName(viewName);
+        }
+        return q.getFirstResult();
     }
 }

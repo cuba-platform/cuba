@@ -76,6 +76,8 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
     private JpaQuery<T> getQuery() {
         if (query == null) {
+            View view = views.isEmpty() ? null : views.get(0);
+
             if (isNative) {
                 log.trace("Creating SQL query: " + queryString);
                 if (resultClass == null)
@@ -99,17 +101,19 @@ public class QueryImpl<T> implements TypedQuery<T> {
                 } else {
                     query = (JpaQuery) emDelegate.createQuery(s);
                 }
-                if (!views.isEmpty()) {
-                    if (views.get(0) != null) {
-                        MetaClass metaClass = metadata.getClassNN(views.get(0).getEntityClass());
-                        if (!metadata.getTools().isCacheable(metaClass) || !singleResultExpected) {
-                            query.setHint(QueryHints.REFRESH, HintValues.TRUE);
-                            query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
-                        }
+                if (view != null) {
+                    MetaClass metaClass = metadata.getClassNN(view.getEntityClass());
+                    if (!metadata.getTools().isCacheable(metaClass) || !singleResultExpected) {
+                        query.setHint(QueryHints.REFRESH, HintValues.TRUE);
+                        query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
                     }
                 }
             }
-            query.setFlushMode(FlushModeType.COMMIT);
+            if (view != null && !view.loadPartialEntities()) {
+                query.setFlushMode(FlushModeType.AUTO);
+            } else {
+                query.setFlushMode(FlushModeType.COMMIT);
+            }
 
             boolean nullParam = false;
             for (Param param : params) {
