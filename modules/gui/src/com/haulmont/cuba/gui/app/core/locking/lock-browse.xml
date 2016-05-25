@@ -35,9 +35,13 @@
         <tabSheet id="tabSheet" width="100%" height="100%">
             <tab margin="true" id="viewTab" caption="msg://view">
                 <table id="locks" editable="false" width="100%" height="100%">
+                    <actions>
+                        <action id="refresh" invoke="refresh" caption="msg://refresh"/>
+                        <action id="unlock" invoke="unlock" trackSelection="true" caption="msg://unlock"/>
+                    </actions>
                     <buttonsPanel>
-                        <button invoke="refresh" caption="msg://refresh"/>
-                        <button invoke="unlock" caption="msg://unlock"/>
+                        <button action="locks.refresh"/>
+                        <button action="locks.unlock"/>
                     </buttonsPanel>
                     <columns>
                         <column id="entityName" caption="msg://entityName">
