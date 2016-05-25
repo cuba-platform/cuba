@@ -31,6 +31,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import javax.persistence.Basic;
+import javax.persistence.FetchType;
+import java.lang.reflect.AnnotatedElement;
 import java.util.*;
 
 /**
@@ -71,7 +74,7 @@ public class EntityFetcher {
         MetaClass metaClass = metadata.getClassNN(entity.getClass());
         for (ViewProperty property : view.getProperties()) {
             MetaProperty metaProperty = metaClass.getPropertyNN(property.getName());
-            if (!metaProperty.getRange().isClass())
+            if (!metaProperty.getRange().isClass() && !isLazyFetchedLocalAttribute(metaProperty))
                 continue;
 
             if (log.isTraceEnabled()) log.trace("Fetching property " + property.getName());
@@ -101,5 +104,11 @@ public class EntityFetcher {
                 }
             }
         }
+    }
+
+    private boolean isLazyFetchedLocalAttribute(MetaProperty metaProperty) {
+        AnnotatedElement annotatedElement = metaProperty.getAnnotatedElement();
+        Basic annotation = annotatedElement.getAnnotation(Basic.class);
+        return annotation != null && annotation.fetch() == FetchType.LAZY;
     }
 }
