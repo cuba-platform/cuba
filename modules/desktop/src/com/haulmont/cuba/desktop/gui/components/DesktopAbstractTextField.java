@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.validation.ValidationAlertHolder;
 import com.haulmont.cuba.gui.AppConfig;
@@ -45,8 +46,6 @@ import java.awt.event.KeyListener;
 import java.text.ParseException;
 import java.util.Locale;
 
-/**
- */
 public abstract class DesktopAbstractTextField<T extends JTextComponent> extends DesktopAbstractField<T> {
 
     protected Document doc;
@@ -169,6 +168,8 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
 
     @Override
     public void setValue(Object value) {
+        DesktopBackgroundWorker.checkSwingUIAccess();
+
         if (!ObjectUtils.equals(prevValue, value)) {
             updateInstance(value);
             updateComponent(value);

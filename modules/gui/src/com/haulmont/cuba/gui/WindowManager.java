@@ -29,6 +29,7 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.data.impl.GenericDataSupplier;
+import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import com.haulmont.cuba.gui.logging.UserActionsLogger;
 import com.haulmont.cuba.gui.settings.Settings;
@@ -63,7 +64,6 @@ import java.util.concurrent.Callable;
  * GenericUI class intended for creation and opening application screens.
  */
 public abstract class WindowManager {
-
     private org.slf4j.Logger userActionsLog = LoggerFactory.getLogger(UserActionsLogger.class);
 
     /**
@@ -311,6 +311,8 @@ public abstract class WindowManager {
     protected Resources resources = AppBeans.get(Resources.NAME);
 
     protected Security security = AppBeans.get(Security.NAME);
+
+    protected BackgroundWorker backgroundWorker = AppBeans.get(BackgroundWorker.NAME);
 
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 

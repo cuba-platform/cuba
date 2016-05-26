@@ -21,7 +21,6 @@ package com.haulmont.cuba.gui.executors;
  * Entry point to {@link BackgroundTask} execution functionality.
  */
 public interface BackgroundWorker {
-
     String NAME = "cuba_BackgroundWorker";
 
     /**
@@ -35,6 +34,14 @@ public interface BackgroundWorker {
     @ExecutedOnUIThread
     <T, V> BackgroundTaskHandler<V> handle(BackgroundTask<T, V> task);
 
+    /**
+     * @return ui accessor object that allows to read/write state of UI
+     */
     @ExecutedOnUIThread
     UIAccessor getUIAccessor();
+
+    /**
+     * @throws IllegalConcurrentAccessException in case of call from non UI thread
+     */
+    void checkUIAccess();
 }

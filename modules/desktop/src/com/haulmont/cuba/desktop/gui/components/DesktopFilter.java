@@ -18,6 +18,7 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Filter;
@@ -248,6 +249,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     @Override
     public void setEnabled(boolean enabled) {
+        DesktopBackgroundWorker.checkSwingUIAccess();
+
         enableComponents(impl, enabled);
     }
 

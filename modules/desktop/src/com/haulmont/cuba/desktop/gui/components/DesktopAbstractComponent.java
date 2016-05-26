@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.ComponentSize;
+import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
@@ -171,6 +172,8 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     @Override
     public void setEnabled(boolean enabled) {
+        DesktopBackgroundWorker.checkSwingUIAccess();
+
         this.enabled = enabled;
 
         updateEnabled();
@@ -197,6 +200,8 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     @Override
     public void setVisible(boolean visible) {
+        DesktopBackgroundWorker.checkSwingUIAccess();
+
         if (this.visible != visible) {
             this.visible = visible;
 
@@ -212,12 +217,9 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     @Override
     public void requestFocus() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                impl.requestFocus();
-            }
-        });
+        SwingUtilities.invokeLater(() ->
+                impl.requestFocus()
+        );
     }
 
     @Override

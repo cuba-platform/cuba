@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Formatter;
@@ -41,8 +42,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/**
- */
 public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements Label {
 
     protected Datasource<Entity> datasource;
@@ -156,6 +155,8 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
 
     @Override
     public void setValue(Object value) {
+        DesktopBackgroundWorker.checkSwingUIAccess();
+
         if (!ObjectUtils.equals(prevValue, value)) {
             updateInstance(value);
             updateComponent(value);

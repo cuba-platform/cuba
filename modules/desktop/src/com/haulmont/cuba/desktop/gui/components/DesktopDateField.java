@@ -30,6 +30,7 @@ import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.TimeZones;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigBoxLayoutAdapter;
@@ -224,6 +225,8 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
     @Override
     public void setValue(Object value) {
+        DesktopBackgroundWorker.checkSwingUIAccess();
+
         if (!ObjectUtils.equals(prevValue, value)) {
             Date targetDate = (Date) value;
 

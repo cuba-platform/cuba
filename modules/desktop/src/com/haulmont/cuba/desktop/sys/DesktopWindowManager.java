@@ -77,8 +77,6 @@ import static com.haulmont.cuba.gui.components.Frame.MessageType;
 import static com.haulmont.cuba.gui.components.Frame.NotificationType;
 import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
-/**
- */
 public class DesktopWindowManager extends WindowManager {
 
     private static final Logger log = LoggerFactory.getLogger(DesktopWindowManager.class);
@@ -1162,6 +1160,8 @@ public class DesktopWindowManager extends WindowManager {
 
     @Override
     public void showNotification(String caption, String description, NotificationType type) {
+        backgroundWorker.checkUIAccess();
+
         Configuration configuration = AppBeans.get(Configuration.NAME);
         DesktopConfig config = configuration.getConfig(DesktopConfig.class);
 
@@ -1595,6 +1595,8 @@ public class DesktopWindowManager extends WindowManager {
 
     @Override
     public void showOptionDialog(String title, String message, MessageType messageType, final Action[] actions) {
+        backgroundWorker.checkUIAccess();
+
         showOptionDialog(title, message, messageType, true, actions, "optionDialog");
     }
 

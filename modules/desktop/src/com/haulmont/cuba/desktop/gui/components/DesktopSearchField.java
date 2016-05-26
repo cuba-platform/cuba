@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.QueryUtils;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.SearchAutoCompleteSupport;
 import com.haulmont.cuba.desktop.sys.vcl.SearchComboBox;
@@ -599,6 +600,8 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
 
     @Override
     public void setValue(Object value) {
+        DesktopBackgroundWorker.checkSwingUIAccess();
+
         settingValue = true;
         try {
             if (value == nullOption) {

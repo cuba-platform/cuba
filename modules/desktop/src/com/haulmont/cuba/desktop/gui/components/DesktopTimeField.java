@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
 import com.haulmont.cuba.gui.AppConfig;
@@ -46,8 +47,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- */
 public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> implements TimeField {
 
     private boolean showSeconds;
@@ -289,6 +288,8 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
 
     @Override
     public void setValue(Object value) {
+        DesktopBackgroundWorker.checkSwingUIAccess();
+
         if (!ObjectUtils.equals(prevValue, value)) {
             updateInstance(value);
             updateComponent(value);

@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.DesktopConfig;
+import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.SearchAutoCompleteSupport;
 import com.haulmont.cuba.desktop.sys.vcl.SearchComboBox;
@@ -686,6 +687,8 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
 
     @Override
     public void setValue(Object value) {
+        DesktopBackgroundWorker.checkSwingUIAccess();
+
         settingValue = true;
         try {
             if (value == nullOption) {

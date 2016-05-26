@@ -17,10 +17,10 @@
 package com.haulmont.cuba.web.filestorage;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.FileTypesHelper;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.export.*;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
@@ -31,15 +31,21 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.io.InputStream;
 
 /**
- * Allows to show exported data in web browser or download it
- *
+ * Allows to show exported data in web browser or download it.
  */
 @Component(ExportDisplay.NAME)
 @Scope("prototype")
 public class WebExportDisplay implements ExportDisplay {
+
+    @Inject
+    protected BackgroundWorker backgroundWorker;
+
+    @Inject
+    protected Configuration configuration;
 
     protected boolean newWindow;
 
@@ -73,6 +79,8 @@ public class WebExportDisplay implements ExportDisplay {
      */
     @Override
     public void show(ExportDataProvider dataProvider, String resourceName, final ExportFormat exportFormat) {
+        backgroundWorker.checkUIAccess();
+
         if (useViewList) {
             String fileExt;
 
@@ -82,7 +90,6 @@ public class WebExportDisplay implements ExportDisplay {
                 fileExt = FilenameUtils.getExtension(resourceName);
             }
 
-            Configuration configuration = AppBeans.get(Configuration.NAME);
             WebConfig webConfig = configuration.getConfig(WebConfig.class);
             newWindow = webConfig.getViewFileExtensions().contains(StringUtils.lowerCase(fileExt));
         }

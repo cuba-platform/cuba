@@ -20,6 +20,7 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -28,8 +29,6 @@ import org.apache.commons.lang.ObjectUtils;
 
 import javax.swing.*;
 
-/**
- */
 public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements CheckBox {
     protected Datasource datasource;
     protected boolean updatingInstance;
@@ -53,6 +52,8 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
 
     @Override
     public void setValue(Object value) {
+        DesktopBackgroundWorker.checkSwingUIAccess();
+
         if (value == null) {
             value = false;
         }

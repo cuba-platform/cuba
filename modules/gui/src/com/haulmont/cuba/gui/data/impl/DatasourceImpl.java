@@ -81,6 +81,8 @@ public class DatasourceImpl<T extends Entity> extends AbstractDatasource<T> impl
 
     @Override
     public void commit() {
+        backgroundWorker.checkUIAccess();
+
         if (!allowCommit) {
             return;
         }
@@ -137,17 +139,23 @@ public class DatasourceImpl<T extends Entity> extends AbstractDatasource<T> impl
 
     @Override
     public T getItem() {
+        backgroundWorker.checkUIAccess();
+
         return state == State.VALID ? item : null;
     }
 
     @Nullable
     @Override
     public T getItemIfValid() {
+        backgroundWorker.checkUIAccess();
+
         return state == State.VALID ? item : null;
     }
 
     @Override
     public void refresh() {
+        backgroundWorker.checkUIAccess();
+
         State prevState = state;
         if (!prevState.equals(State.VALID)) {
             state = State.VALID;
@@ -163,6 +171,8 @@ public class DatasourceImpl<T extends Entity> extends AbstractDatasource<T> impl
 
     @Override
     public void setItem(T item) {
+        backgroundWorker.checkUIAccess();
+
         if (this.state == State.NOT_INITIALIZED) {
             __setItem(item);
         } else {

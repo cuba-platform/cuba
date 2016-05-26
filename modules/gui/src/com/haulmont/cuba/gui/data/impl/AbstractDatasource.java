@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleDatasourceListenerWrapper;
+import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +36,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-/**
- */
 public abstract class AbstractDatasource<T extends Entity> implements Datasource<T>, DatasourceImplementation<T> {
 
     protected Logger log = LoggerFactory.getLogger(getClass());
@@ -47,6 +46,8 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
     protected CommitMode commitMode = CommitMode.DATASTORE;
     protected Datasource parentDs;
     protected Metadata metadata = AppBeans.get(Metadata.NAME);
+
+    protected BackgroundWorker backgroundWorker = AppBeans.get(BackgroundWorker.NAME);
 
     protected List<ItemChangeListener<T>> itemChangeListeners; // lazily initialized list
     protected List<ItemPropertyChangeListener<T>> itemPropertyChangeListeners; // lazily initialized list

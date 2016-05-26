@@ -70,8 +70,6 @@ import static com.haulmont.cuba.gui.components.Frame.NotificationType;
 import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertNotificationType;
 import static com.vaadin.server.Sizeable.Unit;
 
-/**
- */
 public class WebWindowManager extends WindowManager {
 
     public static final int HUMANIZED_NOTIFICATION_DELAY_MSEC = 3000;
@@ -992,6 +990,8 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     public void showNotification(String caption, String description, Frame.NotificationType type) {
+        backgroundWorker.checkUIAccess();
+
         Notification notification = new Notification(caption, description, convertNotificationType(type));
         notification.setHtmlContentAllowed(NotificationType.isHTML(type));
         setNotificationDelayMsec(notification, type);
@@ -1013,6 +1013,8 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     public void showMessageDialog(String title, String message, MessageType messageType) {
+        backgroundWorker.checkUIAccess();
+
         final com.vaadin.ui.Window vWindow = new CubaWindow(title);
 
         if (ui.isTestMode()) {
@@ -1112,6 +1114,8 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     public void showOptionDialog(String title, String message, MessageType messageType, Action[] actions) {
+        backgroundWorker.checkUIAccess();
+
         final com.vaadin.ui.Window window = new CubaWindow(title);
 
         if (ui.isTestMode()) {

@@ -40,8 +40,6 @@ import javax.annotation.Nullable;
 import javax.persistence.ManyToMany;
 import java.util.*;
 
-/**
- */
 public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         extends
             PropertyDatasourceImpl<T>
@@ -138,6 +136,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public T getItem(K id) {
+        backgroundWorker.checkUIAccess();
+
         if (id instanceof Entity) {
             return (T) id;
         } else {
@@ -155,6 +155,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public T getItemNN(K id) {
+        backgroundWorker.checkUIAccess();
+
         T it = getItem(id);
         if (it != null) {
             return it;
@@ -165,6 +167,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public Collection<K> getItemIds() {
+        backgroundWorker.checkUIAccess();
+
         if (State.NOT_INITIALIZED.equals(masterDs.getState())) {
             return Collections.emptyList();
         } else {
@@ -183,6 +187,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public Collection<T> getItems() {
+        backgroundWorker.checkUIAccess();
+
         if (State.NOT_INITIALIZED.equals(masterDs.getState())) {
             return Collections.emptyList();
         } else {
@@ -198,11 +204,15 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public T getItem() {
+        backgroundWorker.checkUIAccess();
+
         return State.VALID.equals(getState()) ? item : null;
     }
 
     @Override
     public void setItem(T item) {
+        backgroundWorker.checkUIAccess();
+
         if (getState() == State.VALID) {
             Object prevItem = this.item;
 
@@ -224,11 +234,15 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void refresh() {
+        backgroundWorker.checkUIAccess();
+
         fireCollectionChanged(Operation.REFRESH, Collections.emptyList());
     }
 
     @Override
     public int size() {
+        backgroundWorker.checkUIAccess();
+
         if (State.NOT_INITIALIZED.equals(masterDs.getState())) {
             return 0;
         } else {
@@ -268,6 +282,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void addItem(T item) {
+        backgroundWorker.checkUIAccess();
+
         checkState();
         checkPermission();
 
@@ -383,6 +399,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void excludeItem(T item) {
+        backgroundWorker.checkUIAccess();
+
         checkState();
         checkPermission();
 
@@ -412,6 +430,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void includeItem(T item) {
+        backgroundWorker.checkUIAccess();
+
         checkState();
         checkPermission();
 
@@ -440,6 +460,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void clear() {
+        backgroundWorker.checkUIAccess();
+
         checkState();
         Collection<T> collection = __getCollection();
         if (collection != null) {
@@ -500,6 +522,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void updateItem(T item) {
+        backgroundWorker.checkUIAccess();
+
         Collection<T> collection = __getCollection();
         if (collection != null) {
             // this method must not change the "modified" state by contract

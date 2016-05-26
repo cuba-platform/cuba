@@ -71,6 +71,19 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         return new DesktopUIAccessor();
     }
 
+    @Override
+    public void checkUIAccess() {
+        if (!SwingUtilities.isEventDispatchThread()) {
+            throw new IllegalConcurrentAccessException();
+        }
+    }
+
+    public static void checkSwingUIAccess() {
+        if (!SwingUtilities.isEventDispatchThread()) {
+            throw new IllegalConcurrentAccessException();
+        }
+    }
+
     /**
      * Task runner
      */

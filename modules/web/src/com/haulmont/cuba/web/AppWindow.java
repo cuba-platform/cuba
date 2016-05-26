@@ -37,7 +37,6 @@ import java.util.*;
  * Standard main application window.
  * <p/>
  * To use a specific implementation override {@link App#createAppWindow(AppUI)} method.
- *
  */
 public class AppWindow extends UIView implements CubaHistoryControl.HistoryBackHandler {
 

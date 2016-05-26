@@ -29,6 +29,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebConfig;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,6 +102,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
     @Override
     public <T, V> BackgroundTaskHandler<V> handle(final BackgroundTask<T, V> task) {
         checkNotNull(task);
+        checkUIAccess();
 
         App appInstance;
         try {
@@ -127,6 +129,15 @@ public class WebBackgroundWorker implements BackgroundWorker {
     @Override
     public UIAccessor getUIAccessor() {
         return new WebUIAccessor(UI.getCurrent());
+    }
+
+    @Override
+    public void checkUIAccess() {
+        VaadinSession vaadinSession = VaadinSession.getCurrent();
+
+        if (vaadinSession == null || !vaadinSession.hasLock()) {
+            throw new IllegalConcurrentAccessException();
+        }
     }
 
     protected static void withUserSessionAsync(UI ui, Runnable handler) {

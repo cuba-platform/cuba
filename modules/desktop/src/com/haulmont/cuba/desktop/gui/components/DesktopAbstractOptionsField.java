@@ -31,6 +31,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.OptionsField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -45,8 +46,6 @@ import java.util.Map;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
 
-/**
- */
 public abstract class DesktopAbstractOptionsField<C extends JComponent>
         extends
             DesktopAbstractField<C>
@@ -286,6 +285,8 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
 
     @Override
     public void setValue(Object value) {
+        DesktopBackgroundWorker.checkSwingUIAccess();
+
         if (!ObjectUtils.equals(prevValue, value)) {
             updateInstance(value);
             updateComponent(value);

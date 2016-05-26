@@ -146,6 +146,8 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
 
     @Override
     public void clear() {
+        backgroundWorker.checkUIAccess();
+
         // replaced refresh call with state initialization
         if (state != State.VALID) {
             invalidate();

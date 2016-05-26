@@ -115,6 +115,8 @@ public class RuntimePropsDatasourceImpl
 
     @Override
     public DynamicAttributesEntity getItem() {
+        backgroundWorker.checkUIAccess();
+
         if (State.VALID.equals(state))
             return item;
         else
@@ -124,6 +126,8 @@ public class RuntimePropsDatasourceImpl
     @Nullable
     @Override
     public DynamicAttributesEntity getItemIfValid() {
+        backgroundWorker.checkUIAccess();
+
         return getState() == State.VALID ? getItem() : null;
     }
 

@@ -18,7 +18,6 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.TopLevelFrame;
@@ -26,6 +25,7 @@ import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.export.ExportFormat;
@@ -35,6 +35,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.Scope;
 
+import javax.inject.Inject;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -43,20 +44,21 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Allows to show exported data in external desktop app or download it
- *
+ * Allows to show exported data in external desktop app or download it.
  */
 @org.springframework.stereotype.Component(ExportDisplay.NAME)
 @Scope("prototype")
-@SuppressWarnings({"UnusedDeclaration"})
 public class DesktopExportDisplay implements ExportDisplay {
+
+    @Inject
+    protected BackgroundWorker backgroundWorker;
+
+    @Inject
+    protected Messages messages;
 
     protected Frame frame;
 
-    protected Messages messages;
-
     public DesktopExportDisplay() {
-        messages = AppBeans.get(Messages.NAME);
     }
 
     /**
@@ -70,6 +72,7 @@ public class DesktopExportDisplay implements ExportDisplay {
      */
     @Override
     public void show(final ExportDataProvider dataProvider, String resourceName, ExportFormat format) {
+        backgroundWorker.checkUIAccess();
 
         String fileName = resourceName;
         if (format != null) {

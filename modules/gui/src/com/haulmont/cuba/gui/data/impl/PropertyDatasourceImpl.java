@@ -32,8 +32,6 @@ import org.apache.commons.lang.ObjectUtils;
 import javax.annotation.Nullable;
 import java.util.*;
 
-/**
- */
 public class PropertyDatasourceImpl<T extends Entity>
         extends AbstractDatasource<T>
         implements Datasource<T>, DatasourceImplementation<T>, PropertyDatasource<T> {
@@ -90,6 +88,8 @@ public class PropertyDatasourceImpl<T extends Entity>
     @Override
     @Nullable
     public T getItemIfValid() {
+        backgroundWorker.checkUIAccess();
+
         return getState() == State.VALID ? getItem() : null;
     }
 

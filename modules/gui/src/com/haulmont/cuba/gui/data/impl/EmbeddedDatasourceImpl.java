@@ -35,8 +35,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 
-/**
- */
 public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
         extends AbstractDatasource<T>
         implements Datasource<T>, DatasourceImplementation<T>, EmbeddedDatasource<T> {
@@ -108,6 +106,8 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
 
     @Override
     public T getItem() {
+        backgroundWorker.checkUIAccess();
+
         final Instance item = masterDs.getItem();
         return getItem(item);
     }
@@ -115,6 +115,8 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
     @Nullable
     @Override
     public T getItemIfValid() {
+        backgroundWorker.checkUIAccess();
+
         return getState() == State.VALID ? getItem() : null;
     }
 
@@ -124,6 +126,8 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
 
     @Override
     public void setItem(T item) {
+        backgroundWorker.checkUIAccess();
+
         if (getItem() != null) {
             metadata.getTools().copy(item, getItem());
             itemsToUpdate.add(item);

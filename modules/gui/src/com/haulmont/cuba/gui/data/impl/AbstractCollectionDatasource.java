@@ -47,7 +47,6 @@ import java.util.regex.Pattern;
 /**
  * @param <T> type of entity
  * @param <K> type of entity ID
- *
  */
 public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         extends DatasourceImpl<T>
@@ -83,6 +82,8 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
     @Override
     public void setItem(T item) {
+        backgroundWorker.checkUIAccess();
+
         if (State.VALID.equals(state)) {
             T prevItem = this.item;
 
@@ -435,6 +436,8 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
     @Override
     public void commit() {
+        backgroundWorker.checkUIAccess();
+
         if (!allowCommit) {
             return;
         }

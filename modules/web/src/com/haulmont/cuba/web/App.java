@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.executors.IllegalConcurrentAccessException;
 import com.haulmont.cuba.gui.settings.SettingsClient;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
@@ -35,6 +36,7 @@ import com.haulmont.cuba.web.settings.WebSettingsClient;
 import com.haulmont.cuba.web.sys.AppCookies;
 import com.haulmont.cuba.web.sys.BackgroundTaskManager;
 import com.haulmont.cuba.web.sys.LinkHandler;
+import com.vaadin.server.AbstractClientConnector;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
@@ -58,12 +60,17 @@ import java.util.concurrent.Future;
  * Use {@link #getInstance()} static method to obtain the reference to the current App instance.
  */
 public abstract class App {
-
     public static final String USER_SESSION_ATTR = "userSessionId";
 
     public static final String APP_THEME_COOKIE_PREFIX = "APP_THEME_NAME_";
 
     private static Logger log = LoggerFactory.getLogger(App.class);
+
+    static {
+        AbstractClientConnector.setIncorrectConcurrentAccessHandler(() -> {
+            throw new IllegalConcurrentAccessException();
+        });
+    }
 
     protected AppLog appLog;
 

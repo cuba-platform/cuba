@@ -29,6 +29,7 @@ import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
 import com.haulmont.cuba.desktop.sys.vcl.UserSelectionHandler;
@@ -46,8 +47,6 @@ import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 
-/**
- */
 public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> implements LookupField, UserSelectionHandler {
 
     protected static final FilterMode DEFAULT_FILTER_MODE = FilterMode.CONTAINS;
@@ -585,6 +584,8 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
 
     @Override
     public void setValue(Object value) {
+        DesktopBackgroundWorker.checkSwingUIAccess();
+
         settingValue = true;
         try {
             if (value == nullOption) {

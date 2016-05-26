@@ -47,7 +47,6 @@ import java.util.*;
  *
  * @param <T> type of entity
  * @param <K> type of entity ID
- *
  */
 public class CollectionDatasourceImpl<T extends Entity<K>, K>
         extends
@@ -110,6 +109,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void refresh(Map<String, Object> parameters) {
+        backgroundWorker.checkUIAccess();
+
         if (inRefresh)
             return;
 
@@ -187,6 +188,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public T getItem(K id) {
+        backgroundWorker.checkUIAccess();
+
         if (state == State.NOT_INITIALIZED) {
             throw new IllegalStateException("Invalid datasource state " + state);
         } else {
@@ -197,6 +200,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public Collection<K> getItemIds() {
+        backgroundWorker.checkUIAccess();
+
         if (state == State.NOT_INITIALIZED) {
             return Collections.emptyList();
         } else {
@@ -206,6 +211,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public Collection<T> getItems() {
+        backgroundWorker.checkUIAccess();
+
         if (state == State.NOT_INITIALIZED) {
             return Collections.emptyList();
         } else {
@@ -221,6 +228,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public int size() {
+        backgroundWorker.checkUIAccess();
+
         if ((state == State.NOT_INITIALIZED) || suspended) {
             return 0;
         } else {
@@ -317,6 +326,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void addItem(T item) {
+        backgroundWorker.checkUIAccess();
+
         checkStateBeforeAdd();
 
         data.put(item.getId(), item);
@@ -332,6 +343,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void removeItem(T item) {
+        backgroundWorker.checkUIAccess();
+
         checkState();
 
         if (this.item != null && this.item.equals(item)) {
@@ -348,6 +361,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void includeItem(T item) {
+        backgroundWorker.checkUIAccess();
+
         checkStateBeforeAdd();
 
         data.put(item.getId(), item);
@@ -358,6 +373,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void excludeItem(T item) {
+        backgroundWorker.checkUIAccess();
+
         checkState();
 
         if (this.item != null && this.item.equals(item)) {
@@ -372,6 +389,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void clear() {
+        backgroundWorker.checkUIAccess();
+
         // replaced refresh call with state initialization
         if (state != State.VALID) {
             invalidate();
@@ -423,6 +442,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void updateItem(T item) {
+        backgroundWorker.checkUIAccess();
+
         checkState();
 
         if (this.item != null && this.item.equals(item)) {

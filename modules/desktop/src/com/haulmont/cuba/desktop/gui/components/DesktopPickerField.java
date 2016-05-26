@@ -26,6 +26,7 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.Picker;
 import com.haulmont.cuba.gui.components.Action;
@@ -46,8 +47,6 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
 
-/**
- */
 public class DesktopPickerField extends DesktopAbstractField<Picker>
         implements PickerField, Component.SecuredActionsHolder {
 
@@ -204,6 +203,8 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
 
     @Override
     public void setValue(Object value) {
+        DesktopBackgroundWorker.checkSwingUIAccess();
+
         if (datasource == null && metaClass == null) {
             throw new IllegalStateException("Datasource or metaclass must be set for field");
         }
