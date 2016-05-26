@@ -986,23 +986,12 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup>
         protected CollectionDatasource getOptionsDatasource(Datasource datasource, String property) {
             FieldConfig field = fields.get(property);
 
-            Datasource ds = datasource;
-
-            DsContext dsContext;
-            if (ds == null) {
-                ds = field.getDatasource();
-                if (ds == null) {
-                    throw new IllegalStateException("FieldGroup datasource is null");
-                }
-            }
-
-            dsContext = ds.getDsContext();
-
             Element descriptor = field.getXmlDescriptor();
             String optDsName = descriptor == null ? null : descriptor.attributeValue("optionsDatasource");
 
             if (StringUtils.isNotBlank(optDsName)) {
-                CollectionDatasource optDs = (CollectionDatasource) dsContext.get(optDsName);
+                DsContext dsContext = WebFieldGroup.this.getFrame().getDsContext();
+                CollectionDatasource optDs = findDatasourceRecursively(dsContext, optDsName);
                 if (optDs == null) {
                     throw new IllegalStateException("Options datasource not found: " + optDsName);
                 }
@@ -1010,6 +999,23 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup>
             }
 
             return null;
+        }
+
+        private CollectionDatasource findDatasourceRecursively(DsContext dsContext, String dsName) {
+            if (dsContext == null) {
+                return null;
+            }
+
+            Datasource datasource = dsContext.get(dsName);
+            if (datasource != null && datasource instanceof CollectionDatasource) {
+                return (CollectionDatasource) datasource;
+            } else {
+                if (dsContext.getParent() != null) {
+                    return findDatasourceRecursively(dsContext.getParent(), dsName);
+                } else {
+                    return null;
+                }
+            }
         }
     }
 
