@@ -45,4 +45,10 @@ public interface ClusterConfig extends Config {
     @DefaultInt(100)
     int getClusterMessageSendingThreadPoolSize();
 
+    /**
+     * @return Maximum queue capacity which is used  by executor to store messages to the cluster members. By default is unbounded
+     */
+    @Property("cuba.cluster.messageSendingQueueCapacity")
+    @DefaultInt(Integer.MAX_VALUE)
+    int getClusterMessageSendingQueueCapacity();
 }

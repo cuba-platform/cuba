@@ -36,8 +36,7 @@ import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 /**
  * Standard implementation of middleware clustering based on JGroups.
@@ -54,13 +53,10 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
 
     protected View currentView;
 
-    protected ExecutorService executor;
+    protected ThreadPoolExecutor executor;
 
     @Inject
     protected Resources resources;
-
-    @Inject
-    protected ServerConfig serverConfig;
 
     @Inject
     protected GlobalConfig globalConfig;
@@ -78,7 +74,16 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
 
     @PostConstruct
     public void init() {
-        executor = Executors.newFixedThreadPool(clusterConfig.getClusterMessageSendingThreadPoolSize());
+        int nThreads = clusterConfig.getClusterMessageSendingThreadPoolSize();
+        executor = new ThreadPoolExecutor(nThreads, nThreads,
+                0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(clusterConfig.getClusterMessageSendingQueueCapacity()),
+                new RejectedExecutionHandler() {
+                    @Override
+                    public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+                        SendMessageRunnable sendMessageRunnable = (SendMessageRunnable) r;
+                        log.info("Queue capacity is exceeded. Message {}, {}", sendMessageRunnable.message, sendMessageRunnable.message.getClass());
+                    }
+                });
     }
 
     @Override
@@ -90,13 +95,8 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
         if (sync != null && sync) {
             internalSend(message, true);
         } else {
-            log.trace("Submitting message " + message + " to send asynchronously");
-            executor.submit(new Runnable() {
-                @Override
-                public void run() {
-                    internalSend(message, false);
-                }
-            });
+            log.trace("Submitting message {}, {} to send asynchronously", message, message.getClass());
+            executor.execute(new SendMessageRunnable(message));
         }
     }
 
@@ -208,6 +208,15 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
 
     protected String getMBeanDomain() {
         return globalConfig.getWebContextName() + ".jgroups";
+    }
+
+    public int getActiveThreadsCount() {
+        return executor.getActiveCount();
+    }
+
+    @Override
+    public int getMessagesCount() {
+        return executor.getQueue().size();
     }
 
     @Override
@@ -344,6 +353,19 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
 
         @Override
         public void unblock() {
+        }
+    }
+
+    protected class SendMessageRunnable implements Runnable {
+        protected Serializable message;
+
+        public SendMessageRunnable(Serializable message) {
+            this.message = message;
+        }
+
+        @Override
+        public void run() {
+            internalSend(message, false);
         }
     }
 }

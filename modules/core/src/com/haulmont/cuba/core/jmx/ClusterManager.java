@@ -62,6 +62,8 @@ public class ClusterManager implements ClusterManagerMBean {
         return clusterManager.isStarted();
     }
 
+
+
     @Override
     public boolean isMaster() {
         return clusterManager.isMaster();
@@ -70,5 +72,15 @@ public class ClusterManager implements ClusterManagerMBean {
     @Override
     public String getCurrentView() {
         return clusterManager.getCurrentView();
+    }
+
+    @Override
+    public int getActiveThreadsCount() {
+        return clusterManager.getActiveThreadsCount();
+    }
+
+    @Override
+    public int getMessagesCount() {
+        return clusterManager.getMessagesCount();
     }
 }

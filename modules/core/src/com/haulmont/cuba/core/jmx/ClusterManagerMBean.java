@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.core.jmx;
 
+import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
@@ -48,4 +49,16 @@ public interface ClusterManagerMBean {
      * @see     com.haulmont.cuba.core.app.ClusterManagerAPI#getCurrentView()
      */
     String getCurrentView();
+
+    /**
+     * @return threads count that are actively sending cluster messages
+     * @see com.haulmont.cuba.core.app.ClusterManagerAPI#getActiveThreadsCount()
+     */
+    int getActiveThreadsCount();
+
+    /**
+     * @return message count queued to send
+     * @see com.haulmont.cuba.core.app.ClusterManagerAPI#getMessagesCount()
+     */
+    int getMessagesCount();
 }

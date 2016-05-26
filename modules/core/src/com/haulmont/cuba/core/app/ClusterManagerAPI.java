@@ -93,4 +93,14 @@ public interface ClusterManagerAPI {
      * @return  true if clustering is started on this node
      */
     boolean isStarted();
+
+    /**
+     * @return threads count that are actively sending cluster messages
+     */
+    int getActiveThreadsCount();
+
+    /**
+     * @return cluster messages count queued to send
+     */
+    int getMessagesCount();
 }
