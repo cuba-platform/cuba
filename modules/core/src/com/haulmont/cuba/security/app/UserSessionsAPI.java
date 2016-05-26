@@ -70,6 +70,20 @@ public interface UserSessionsAPI {
     void setExpirationTimeoutSec(int value);
 
     /**
+     * @return session send timeout in cluster
+     */
+    int getSendTimeoutSec();
+
+    /**
+     * Set user session ping timeout in cluster.
+     * If ping performed {@link com.haulmont.cuba.security.app.UserSessions#get},
+     * user session sends in cluster only after specified timeout
+     * @param timeout in seconds
+     */
+    void setSendTimeoutSec(int timeout);
+
+
+    /**
      * Evict timed out sessions from the cache.
      */
     void processEviction();

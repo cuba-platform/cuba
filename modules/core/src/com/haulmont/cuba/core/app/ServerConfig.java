@@ -69,6 +69,15 @@ public interface ServerConfig extends Config {
     void setUserSessionExpirationTimeoutSec(int timeout);
 
     /**
+     * @return User session ping timeout in cluster.
+     * If ping performed {@link com.haulmont.cuba.security.app.UserSessions#get}, user session sends in cluster only after sendTimeout
+     */
+    @Property("cuba.userSessionSendTimeoutSec")
+    @DefaultInt(10)
+    int getUserSessionSendTimeoutSec();
+    void setUserSessionSendTimeoutSec(int timeout);
+
+    /**
      * @return DB scripts directory.
      * Does not end with "/"
      */

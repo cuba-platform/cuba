@@ -43,6 +43,16 @@ public class UserSessions implements UserSessionsMBean {
     }
 
     @Override
+    public int getSendTimeoutSec() {
+        return userSessions.getSendTimeoutSec();
+    }
+
+    @Override
+    public void setSendTimeoutSec(int timeout) {
+        userSessions.setSendTimeoutSec(timeout);
+    }
+
+    @Override
     public int getCount() {
         return userSessions.getUserSessionInfo().size();
     }
