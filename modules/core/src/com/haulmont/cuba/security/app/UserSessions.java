@@ -208,8 +208,9 @@ public final class UserSessions implements UserSessionsAPI {
     public void propagate(UUID id) {
         UserSessionInfo usi = cache.get(id);
         if (usi != null) {
-            usi.lastUsedTs = timeSource.currentTimestamp().getTime();
-            usi.lastSentTs = timeSource.currentTimestamp().getTime();
+            long now = timeSource.currentTimeMillis();
+            usi.lastUsedTs = now;
+            usi.lastSentTs = now;
             clusterManager.send(usi);
         }
     }
