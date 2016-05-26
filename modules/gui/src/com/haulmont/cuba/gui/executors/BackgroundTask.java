@@ -139,7 +139,7 @@ public abstract class BackgroundTask<T, V> {
     /**
      * Called by the execution environment in UI thread if the task timeout is exceeded.
      *
-     * @return true if this method implementation actualy handles this event. Used for chaining handlers.
+     * @return true if this method implementation actually handles this event. Used for chaining handlers.
      */
     public boolean handleTimeoutException() {
         return false;
@@ -150,7 +150,7 @@ public abstract class BackgroundTask<T, V> {
      * exception.
      *
      * @param ex exception
-     * @return true if this method implementation actualy handles the exception. Used for chaining handlers.
+     * @return true if this method implementation actually handles the exception. Used for chaining handlers.
      */
     public boolean handleException(Exception ex) {
         return false;

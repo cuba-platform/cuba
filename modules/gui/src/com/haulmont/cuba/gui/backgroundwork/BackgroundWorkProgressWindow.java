@@ -235,6 +235,8 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
                 taskProgress.setValue(value);
                 showProgressText(last, value);
             }
+
+            super.progress(changes);
         }
     }
 }
