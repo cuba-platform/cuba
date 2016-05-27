@@ -35,8 +35,6 @@ import javax.inject.Inject;
 import java.io.File;
 import java.util.Map;
 
-/**
- */
 public class FileEditor extends AbstractEditor<FileDescriptor> {
 
     protected final Logger log = LoggerFactory.getLogger(getClass());

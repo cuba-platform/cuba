@@ -23,8 +23,6 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.TemporalType;
 
-/**
- */
 public class DateFieldLoader extends AbstractFieldLoader<DateField> {
     @Override
     public void createComponent() {

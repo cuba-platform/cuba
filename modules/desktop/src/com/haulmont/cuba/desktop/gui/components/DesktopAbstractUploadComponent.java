@@ -27,8 +27,6 @@ import com.haulmont.cuba.gui.components.UploadComponentSupport;
 import javax.swing.*;
 import java.util.Set;
 
-/**
- */
 public abstract class DesktopAbstractUploadComponent<T extends JComponent>
         extends DesktopAbstractComponent<T>
         implements UploadComponentSupport {

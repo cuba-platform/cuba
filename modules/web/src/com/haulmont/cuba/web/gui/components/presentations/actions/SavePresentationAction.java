@@ -23,8 +23,6 @@ import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.security.entity.Presentation;
 import org.dom4j.Element;
 
-/**
- */
 public class SavePresentationAction extends AbstractPresentationAction {
 
     public SavePresentationAction(Table table) {

@@ -41,8 +41,6 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-/**
- */
 public class DbUpdaterEngine implements DbUpdater {
     private static final String SQL_EXTENSION = "sql";
     private static final String SQL_COMMENT_PREFIX = "--";

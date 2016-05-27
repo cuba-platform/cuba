@@ -34,8 +34,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
 
-/**
- */
 public class MbeanInspectWindow extends AbstractEditor {
 
     private Logger log = LoggerFactory.getLogger(getClass());

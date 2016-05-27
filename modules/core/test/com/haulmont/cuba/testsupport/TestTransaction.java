@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.sql.SQLException;
 import java.sql.Connection;
 
-/**
- */
 public class TestTransaction implements Transaction {
 
     private int status = Status.STATUS_ACTIVE;

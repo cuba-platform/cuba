@@ -28,8 +28,6 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-/**
- */
 public class FilterLoader extends AbstractComponentLoader<Filter> {
 
     public static final String DEFAULT_FILTER_ID = "filterWithoutId";

@@ -24,8 +24,6 @@ import javax.swing.*;
 import java.util.Collections;
 import java.util.List;
 
-/**
- */
 public class RowSorterImpl extends RowSorter<AnyTableModelAdapter> {
 
     private AnyTableModelAdapter model;

@@ -44,8 +44,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- */
 public class EclipseLinkSessionEventListener extends SessionEventAdapter {
 
     private Metadata metadata = AppBeans.get(Metadata.NAME);

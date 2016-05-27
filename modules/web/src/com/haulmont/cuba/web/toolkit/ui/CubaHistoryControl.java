@@ -23,8 +23,6 @@ import com.vaadin.server.AbstractExtension;
 import com.vaadin.server.ClientConnector;
 import com.vaadin.ui.Layout;
 
-/**
- */
 public class CubaHistoryControl extends AbstractExtension {
 
     protected HistoryBackHandler handler;

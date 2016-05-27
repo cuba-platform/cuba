@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.resizabletextarea;
 
 import com.vaadin.shared.AbstractFieldState;
 
-/**
- */
 public class CubaResizableTextAreaWrapperState extends AbstractFieldState {
     {
         primaryStyleName = "cuba-resizabletextarea-wrapper";

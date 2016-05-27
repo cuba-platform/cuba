@@ -20,8 +20,6 @@ package com.haulmont.cuba.gui.components.filter;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 
-/**
- */
 public enum ParamType {
     STRING,
     DATE,

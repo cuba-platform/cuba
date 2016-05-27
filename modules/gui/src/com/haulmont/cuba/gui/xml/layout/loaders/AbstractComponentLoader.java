@@ -47,8 +47,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 
-/**
- */
 public abstract class AbstractComponentLoader<T extends Component> implements ComponentLoader<T> {
 
     protected Locale locale;

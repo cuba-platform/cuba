@@ -40,8 +40,6 @@ import java.util.Map;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-/**
- */
 public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
 
     protected String messagePack;

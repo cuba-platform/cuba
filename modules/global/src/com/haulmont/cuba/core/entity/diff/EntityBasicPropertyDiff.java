@@ -25,8 +25,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.ViewProperty;
 
-/**
- */
 @MetaClass(name = "sys$EntityBasicPropertyDiff")
 @SystemLevel
 public class EntityBasicPropertyDiff extends EntityPropertyDiff {

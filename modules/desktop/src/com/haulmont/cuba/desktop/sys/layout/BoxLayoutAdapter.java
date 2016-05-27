@@ -22,8 +22,6 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- */
 public abstract class BoxLayoutAdapter extends LayoutAdapter {
 
     public abstract Object getCaptionConstraints(com.haulmont.cuba.gui.components.Component component);

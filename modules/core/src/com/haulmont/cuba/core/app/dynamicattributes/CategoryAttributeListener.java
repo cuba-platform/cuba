@@ -23,11 +23,9 @@ import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
 
 import org.springframework.stereotype.Component;
 
-/**
- */
 @Component("report_CategoryAttributeListener")
-public class CategoryAttributeListener
-        implements BeforeInsertEntityListener<CategoryAttribute>, BeforeUpdateEntityListener<CategoryAttribute> {
+public class CategoryAttributeListener implements BeforeInsertEntityListener<CategoryAttribute>,
+                                                  BeforeUpdateEntityListener<CategoryAttribute> {
     @Override
     public void onBeforeInsert(CategoryAttribute entity) {
         setCategoryEntityType(entity);

@@ -37,8 +37,6 @@ import java.util.*;
 
 import static com.haulmont.cuba.gui.components.Component.BelongToFrame;
 
-/**
- */
 public class DesktopTableCellEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
     // Client property key for cell editor components, value of property contains table for this editor

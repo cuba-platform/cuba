@@ -24,9 +24,6 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
 import org.apache.commons.lang.StringUtils;
 
-/**
- *
- */
 public class DesktopContainerHelper {
 
     public static boolean mayHaveExternalCaption(Component component) {

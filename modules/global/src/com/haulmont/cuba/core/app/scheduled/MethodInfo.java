@@ -23,8 +23,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 public class MethodInfo implements Serializable {
 
     private String name;

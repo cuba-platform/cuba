@@ -29,8 +29,6 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-/**
- */
 @Component(CubaMailSender.NAME)
 public class CubaMailSender extends JavaMailSenderImpl {
 

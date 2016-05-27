@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.twincolselect;
 
 import com.vaadin.shared.ui.twincolselect.TwinColSelectState;
 
-/**
- */
 public class CubaTwinColSelectState extends TwinColSelectState {
 
     public boolean addAllBtnEnabled = false;

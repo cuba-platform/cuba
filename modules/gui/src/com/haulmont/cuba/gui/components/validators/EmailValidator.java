@@ -19,8 +19,6 @@ package com.haulmont.cuba.gui.components.validators;
 import com.haulmont.cuba.gui.components.ValidationException;
 import org.dom4j.Element;
 
-/**
- */
 public class EmailValidator extends PatternValidator {
 
     private static String EMAIL_NAME = "([a-zA-Z[0-9]][a-zA-Z[0-9]\u005F\u002E\u002D]*[a-z||A-Z||0-9]|[a-zA-Z[0-9]])";

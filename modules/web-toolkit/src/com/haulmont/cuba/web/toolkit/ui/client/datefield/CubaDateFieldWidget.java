@@ -23,8 +23,6 @@ import com.haulmont.cuba.web.toolkit.ui.client.textfield.CubaMaskedFieldWidget;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VPopupCalendar;
 
-/**
- */
 public class CubaDateFieldWidget extends VPopupCalendar implements ShortcutActionHandler.ShortcutActionHandlerOwner {
 
     protected ShortcutActionHandler shortcutHandler;

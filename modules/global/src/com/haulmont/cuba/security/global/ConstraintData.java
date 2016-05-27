@@ -24,8 +24,6 @@ import com.haulmont.cuba.security.entity.ConstraintCheckType;
 import java.io.Serializable;
 import java.util.UUID;
 
-/**
- */
 public class ConstraintData implements Serializable {
     protected final UUID id;
     protected final String code;

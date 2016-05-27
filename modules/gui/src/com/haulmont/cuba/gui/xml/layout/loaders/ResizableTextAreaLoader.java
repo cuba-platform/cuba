@@ -21,8 +21,6 @@ import com.haulmont.cuba.gui.components.ResizableTextArea;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
-/**
- */
 public class ResizableTextAreaLoader extends TextAreaLoader {
     @Override
     public void createComponent() {

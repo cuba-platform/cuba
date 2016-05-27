@@ -27,8 +27,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class CachingMetadataSession implements Session {
 
     private Session delegate;

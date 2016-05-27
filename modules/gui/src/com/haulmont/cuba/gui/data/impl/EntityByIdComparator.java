@@ -22,8 +22,6 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
-/**
- */
 public class EntityByIdComparator<T extends Entity<K>, K> extends AbstractComparator<K> {
     private MetaPropertyPath propertyPath;
     private MetaProperty property;

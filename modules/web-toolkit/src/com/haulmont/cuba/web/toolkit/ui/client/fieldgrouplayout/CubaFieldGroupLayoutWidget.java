@@ -21,8 +21,6 @@ import com.haulmont.cuba.web.toolkit.ui.client.gridlayout.CubaGridLayoutWidget;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ui.layout.ComponentConnectorLayoutSlot;
 
-/**
- */
 public class CubaFieldGroupLayoutWidget extends CubaGridLayoutWidget {
 
     public static final String CLASSNAME = "cuba-fieldgrouplayout";

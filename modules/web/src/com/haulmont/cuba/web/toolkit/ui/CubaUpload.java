@@ -21,8 +21,6 @@ import com.haulmont.cuba.web.toolkit.ui.client.upload.CubaUploadState;
 import com.vaadin.ui.Upload;
 import org.apache.commons.lang.StringUtils;
 
-/**
- */
 @Deprecated
 public class CubaUpload extends Upload implements UploadComponent {
 

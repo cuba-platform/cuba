@@ -26,8 +26,6 @@ import com.haulmont.cuba.security.entity.Role;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-/**
- */
 public class RoleEditor extends AbstractEditor<Role> {
 
     @Inject

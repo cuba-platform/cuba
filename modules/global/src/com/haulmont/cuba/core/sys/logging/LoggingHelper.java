@@ -22,8 +22,6 @@ import ch.qos.logback.classic.Level;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- */
 public class LoggingHelper {
 
     public static List<Level> getLevels() {

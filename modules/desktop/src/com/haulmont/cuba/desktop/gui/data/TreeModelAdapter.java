@@ -37,8 +37,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- */
 public class TreeModelAdapter implements TreeModel {
 
     protected HierarchicalDatasource<Entity<Object>, Object> datasource;

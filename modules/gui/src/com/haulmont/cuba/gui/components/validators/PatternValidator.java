@@ -24,8 +24,6 @@ import org.dom4j.Element;
 
 import java.util.regex.Pattern;
 
-/**
- */
 public class PatternValidator implements Field.Validator {
 
     protected Pattern pattern;

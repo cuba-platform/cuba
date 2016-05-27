@@ -22,8 +22,6 @@ import com.vaadin.server.CompositeErrorMessage;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.ListSelect;
 
-/**
- */
 public class CubaListSelect extends ListSelect {
 
     public CubaListSelect() {

@@ -25,8 +25,6 @@ import com.haulmont.cuba.gui.components.actions.BulkEditAction;
 
 import java.util.*;
 
-/**
- */
 public class WebBulkEditor extends WebButton implements BulkEditor {
 
     protected String exclude;

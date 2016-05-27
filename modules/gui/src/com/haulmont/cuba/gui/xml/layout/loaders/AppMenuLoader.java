@@ -19,8 +19,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
 
-/**
- */
 public class AppMenuLoader extends AbstractComponentLoader<AppMenu> {
     @Override
     public void createComponent() {

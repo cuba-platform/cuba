@@ -32,8 +32,6 @@ import com.haulmont.cuba.security.entity.Role;
 import javax.inject.Inject;
 import java.util.Map;
 
-/**
- */
 public class SystemInfoWindow extends AbstractWindow {
 
     public interface Companion {

@@ -21,8 +21,6 @@ import com.haulmont.cuba.gui.components.SourceCodeEditor;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-/**
- */
 public class SourceCodeEditorLoader extends AbstractFieldLoader<SourceCodeEditor> {
     @Override
     public void createComponent() {

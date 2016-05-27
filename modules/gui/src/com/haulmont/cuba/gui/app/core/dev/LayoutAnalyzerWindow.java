@@ -29,8 +29,6 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
 
-/**
- */
 public class LayoutAnalyzerWindow extends AbstractWindow {
 
     protected Logger log = LoggerFactory.getLogger(getClass());

@@ -28,8 +28,6 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- */
 public class ConfigPersisterClientImpl implements ConfigPersister {
 
     private Map<String, String> cache = new ConcurrentHashMap<>();

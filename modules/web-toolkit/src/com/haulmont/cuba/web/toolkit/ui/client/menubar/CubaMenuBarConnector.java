@@ -23,8 +23,6 @@ import com.vaadin.client.ui.VMenuBar;
 import com.vaadin.client.ui.menubar.MenuBarConnector;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
 @Connect(CubaMenuBar.class)
 public class CubaMenuBarConnector extends MenuBarConnector {
 

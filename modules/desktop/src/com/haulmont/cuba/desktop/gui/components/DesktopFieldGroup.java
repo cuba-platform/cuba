@@ -46,9 +46,6 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-
-/**
- */
 public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implements FieldGroup, AutoExpanding {
 
     protected MigLayout layout;

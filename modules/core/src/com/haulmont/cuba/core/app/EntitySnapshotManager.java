@@ -40,8 +40,6 @@ import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-/**
- */
 @Component(EntitySnapshotAPI.NAME)
 public class EntitySnapshotManager implements EntitySnapshotAPI {
 

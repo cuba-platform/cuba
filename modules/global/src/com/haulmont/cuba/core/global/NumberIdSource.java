@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.core.global;
 
-/**
- */
 public interface NumberIdSource {
 
     String NAME = "cuba_NumberIdSource";

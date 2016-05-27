@@ -27,8 +27,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- */
 @Component("cuba_EnumQueryMacroHandler")
 @Scope("prototype")
 public class EnumQueryMacroHandler implements QueryMacroHandler {

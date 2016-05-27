@@ -21,8 +21,6 @@ import com.haulmont.bali.util.Dom4j;
 import org.dom4j.Element;
 import org.junit.Test;
 
-/**
- */
 public class QueryFilter2Test {
     String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
             "<filter>\n" +

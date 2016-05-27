@@ -22,8 +22,6 @@ import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.splitpanel.HorizontalSplitPanelConnector;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
 @Connect(value = CubaHorizontalSplitPanel.class, loadStyle = Connect.LoadStyle.EAGER)
 public class CubaHorizontalSplitPanelConnector extends HorizontalSplitPanelConnector {
 

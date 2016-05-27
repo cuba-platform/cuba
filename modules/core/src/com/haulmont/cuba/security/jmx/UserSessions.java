@@ -24,8 +24,6 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.UUID;
 
-/**
- */
 @Component("cuba_UserSessionsMBean")
 public class UserSessions implements UserSessionsMBean {
 

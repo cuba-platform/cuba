@@ -23,8 +23,6 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
-/**
- */
 public class HierarchicalPropertyDatasourceImpl<T extends Entity<K>, K>
         extends CollectionPropertyDatasourceImpl<T, K>
         implements HierarchicalDatasource<T, K> {

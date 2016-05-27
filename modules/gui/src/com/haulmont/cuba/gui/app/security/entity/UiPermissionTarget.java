@@ -20,9 +20,6 @@ package com.haulmont.cuba.gui.app.security.entity;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
-/**
- *
- */
 @com.haulmont.chile.core.annotations.MetaClass(name = "sec$UiTarget")
 @SystemLevel
 public class UiPermissionTarget extends AbstractPermissionTarget

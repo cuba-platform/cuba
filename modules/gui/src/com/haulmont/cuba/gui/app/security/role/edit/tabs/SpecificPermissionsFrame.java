@@ -41,9 +41,6 @@ import javax.inject.Inject;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- *
- */
 public class SpecificPermissionsFrame extends AbstractFrame {
 
     protected static final String CATEGORY_PREFIX = "category:";

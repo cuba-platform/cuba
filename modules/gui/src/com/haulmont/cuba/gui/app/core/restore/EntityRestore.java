@@ -46,8 +46,6 @@ import javax.inject.Inject;
 import java.lang.reflect.AnnotatedElement;
 import java.util.*;
 
-/**
- */
 public class EntityRestore extends AbstractWindow {
 
     @Inject

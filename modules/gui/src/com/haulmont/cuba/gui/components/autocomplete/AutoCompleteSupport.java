@@ -16,8 +16,6 @@
  */
 package com.haulmont.cuba.gui.components.autocomplete;
 
-/**
- */
 public interface AutoCompleteSupport {
 
     int getCursorPosition();

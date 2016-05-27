@@ -18,8 +18,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.FlowBoxLayout;
 
-/**
- */
 public class FlowBoxLayoutLoader extends ContainerLoader<FlowBoxLayout> {
     @Override
     public void createComponent() {

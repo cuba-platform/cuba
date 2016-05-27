@@ -32,8 +32,6 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.List;
 
-/**
- */
 public class XmlInheritanceTest extends CubaClientTestCase {
 
     private Resources resources;

@@ -30,8 +30,6 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 import java.util.*;
 
-/**
- */
 @Entity(name = "sys$CategoryAttribute")
 @Table(name = "SYS_CATEGORY_ATTR")
 @NamePattern("%s|name")

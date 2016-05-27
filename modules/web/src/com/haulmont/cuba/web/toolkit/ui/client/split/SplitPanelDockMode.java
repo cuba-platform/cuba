@@ -17,12 +17,10 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.split;
 
-/**
- */
 public enum SplitPanelDockMode {
     LEFT,
     RIGHT;
 
-    private SplitPanelDockMode() {
+    SplitPanelDockMode() {
     }
 }

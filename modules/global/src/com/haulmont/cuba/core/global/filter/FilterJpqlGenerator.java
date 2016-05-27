@@ -17,9 +17,6 @@
 
 package com.haulmont.cuba.core.global.filter;
 
-
-/**
- */
 public class FilterJpqlGenerator extends AbstractJpqlGenerator {
     @Override
     protected String generateClauseText(Clause condition) {

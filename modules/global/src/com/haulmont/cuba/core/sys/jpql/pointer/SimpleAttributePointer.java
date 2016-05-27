@@ -21,8 +21,6 @@ import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.model.Attribute;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 
-/**
- */
 public class SimpleAttributePointer implements Pointer {
     private Entity entity;
     private Attribute attribute;

@@ -21,8 +21,6 @@ import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.portal.App;
 import com.haulmont.cuba.security.global.UserSession;
 
-/**
- */
 public class PortalSecurityContext extends SecurityContext {
 
     private App portalApp;

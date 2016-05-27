@@ -26,8 +26,6 @@ import com.vaadin.client.ui.VTextField;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-/**
- */
 public class CubaTextFieldWidget extends VTextField implements ShortcutActionHandler.ShortcutActionHandlerOwner {
 
     private static final String PROMPT_STYLE = "prompt";

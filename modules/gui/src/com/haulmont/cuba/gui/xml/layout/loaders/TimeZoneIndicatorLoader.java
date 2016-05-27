@@ -19,8 +19,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.mainwindow.TimeZoneIndicator;
 
-/**
- */
 public class TimeZoneIndicatorLoader extends AbstractComponentLoader<TimeZoneIndicator> {
     @Override
     public void createComponent() {

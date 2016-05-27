@@ -47,8 +47,6 @@ import java.util.*;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
-/**
- */
 @Component(DataManager.NAME)
 public class DataManagerBean implements DataManager {
 

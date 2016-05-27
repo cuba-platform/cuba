@@ -20,8 +20,6 @@ import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.OptionsGroup;
 import org.dom4j.Element;
 
-/**
- */
 public class OptionsGroupLoader extends AbstractOptionsBaseLoader<OptionsGroup> {
     @Override
     public void loadComponent() {

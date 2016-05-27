@@ -29,8 +29,6 @@ import org.dom4j.Element;
 
 import java.text.ParseException;
 
-/**
- */
 public class LongValidator implements Field.Validator {
 
     protected String message;

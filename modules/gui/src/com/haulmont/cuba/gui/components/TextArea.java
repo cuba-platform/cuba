@@ -16,8 +16,6 @@
  */
 package com.haulmont.cuba.gui.components;
 
-/**
- */
 public interface TextArea extends TextInputField,
                                   TextInputField.MaxLengthLimited,
                                   TextInputField.CursorPositionSupported,

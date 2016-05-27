@@ -21,8 +21,6 @@ import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.client.orderedactionslayout.CubaOrderedActionsLayoutConnector;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
 @Connect(value = CubaVerticalActionsLayout.class, loadStyle = Connect.LoadStyle.EAGER)
 public class CubaVerticalActionsLayoutConnector extends CubaOrderedActionsLayoutConnector {
 

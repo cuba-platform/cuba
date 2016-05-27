@@ -26,8 +26,6 @@ import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- */
 public class TimeZoneTest {
 
     @Test

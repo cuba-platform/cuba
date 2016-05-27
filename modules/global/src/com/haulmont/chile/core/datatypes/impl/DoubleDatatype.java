@@ -32,8 +32,6 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nonnull;
 
-/**
- */
 public class DoubleDatatype extends NumberDatatype implements Datatype<Double> {
 
     public final static String NAME = "double";

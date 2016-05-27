@@ -25,8 +25,6 @@ import com.haulmont.cuba.gui.components.actions.EditAction;
 import javax.inject.Named;
 import java.util.Map;
 
-/**
- */
 public class JmxInstanceBrowser extends AbstractLookup {
 
     @Named("jmxInstancesTable.create")

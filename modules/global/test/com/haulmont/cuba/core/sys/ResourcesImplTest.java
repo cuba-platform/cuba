@@ -24,8 +24,6 @@ import org.springframework.core.io.Resource;
 import java.io.File;
 import java.io.InputStream;
 
-/**
- */
 public class ResourcesImplTest extends TestCase {
 
     private ResourcesImpl resources;

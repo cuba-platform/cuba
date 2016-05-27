@@ -24,9 +24,6 @@ import org.apache.commons.lang.ObjectUtils;
 import javax.persistence.*;
 import java.util.Set;
 
-/**
- *
- */
 @Entity(name = "test$DetailEntity")
 public class TestDetailEntity extends BaseUuidEntity {
 

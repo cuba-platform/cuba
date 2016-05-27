@@ -18,8 +18,6 @@ package com.haulmont.cuba.core.global;
 
 import javax.annotation.Nullable;
 
-/**
- */
 @SupportedByClient
 public class FileStorageException extends Exception {
 

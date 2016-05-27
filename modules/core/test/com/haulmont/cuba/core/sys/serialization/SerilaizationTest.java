@@ -36,8 +36,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-/**
- */
 public class SerilaizationTest {
     @ClassRule
     public static TestContainer cont = TestContainer.Common.INSTANCE;
@@ -253,6 +251,4 @@ public class SerilaizationTest {
                         .addProperty("user", userLocalView)
                         .addProperty("role", roleLocalView));
     }
-
-
 }

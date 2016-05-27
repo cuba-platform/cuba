@@ -23,8 +23,6 @@ import com.vaadin.shared.ui.table.TableState;
 
 import java.util.Map;
 
-/**
- */
 public class CubaTableState extends TableState {
 
     @NoLayout

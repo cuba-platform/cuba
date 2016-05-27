@@ -27,8 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- */
 @org.springframework.stereotype.Component(ComponentsFactory.NAME)
 public class DesktopComponentsFactory implements ComponentsFactory {
 

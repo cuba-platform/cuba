@@ -30,8 +30,6 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 
 import java.util.Map;
 
-/**
- */
 public class PortalRemoteProxyBeanCreator extends RemoteProxyBeanCreator {
 
     private Logger log = LoggerFactory.getLogger(PortalRemoteProxyBeanCreator.class);

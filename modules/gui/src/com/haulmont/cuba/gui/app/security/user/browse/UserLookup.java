@@ -24,8 +24,6 @@ import com.haulmont.cuba.gui.components.Table;
 import javax.inject.Inject;
 import java.util.Map;
 
-/**
- */
 public class UserLookup extends AbstractLookup {
 
     @Inject

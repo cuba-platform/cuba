@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.gui.components;
 
-/**
- */
 public interface CssLayout extends Component.OrderedContainer, Component.BelongToFrame {
 
     String NAME = "cssLayout";

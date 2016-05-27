@@ -40,8 +40,6 @@ import java.util.List;
 
 import static java.awt.Component.CENTER_ALIGNMENT;
 
-/**
- */
 public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JButton> implements PopupButton {
 
     public static final String DROP_DOWN_ICON = "/components/popupbutton/open-popup.png";

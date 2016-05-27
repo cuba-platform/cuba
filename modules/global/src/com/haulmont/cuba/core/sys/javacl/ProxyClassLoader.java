@@ -19,8 +19,6 @@ package com.haulmont.cuba.core.sys.javacl;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class ProxyClassLoader extends ClassLoader {
     Map<String, TimestampClass> compiled;
     ThreadLocal<Map<String, TimestampClass>> removedFromCompilation = new ThreadLocal<>();

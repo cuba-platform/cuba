@@ -27,8 +27,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- */
 public class TreeToQuery implements TreeVisitorAction {
     private QueryBuilder sb = new QueryBuilder();
     private List<ErrorRec> invalidNodes = new ArrayList<>();

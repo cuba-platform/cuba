@@ -19,8 +19,6 @@
 
 package com.haulmont.cuba.restapi;
 
-/**
- */
 public interface MyJSON {
     /**
      * Render into a string buffer.

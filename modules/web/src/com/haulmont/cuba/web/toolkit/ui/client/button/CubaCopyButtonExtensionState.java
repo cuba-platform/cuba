@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.button;
 
-/**
- */
 public class CubaCopyButtonExtensionState extends CubaButtonState {
 
     public String copyTargetSelector;

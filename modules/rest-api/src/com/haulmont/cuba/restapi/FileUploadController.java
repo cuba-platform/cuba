@@ -54,8 +54,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.UUID;
 
-/**
- */
 @Controller
 public class FileUploadController {
 

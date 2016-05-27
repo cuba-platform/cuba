@@ -25,8 +25,6 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import javax.persistence.*;
 import java.util.List;
 
-/**
- */
 @javax.persistence.Entity(name = "sys$Category")
 @Table(name = "SYS_CATEGORY")
 @Inheritance(strategy = InheritanceType.JOINED)

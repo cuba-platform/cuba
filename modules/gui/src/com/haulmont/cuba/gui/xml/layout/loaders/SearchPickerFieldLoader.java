@@ -25,8 +25,6 @@ import com.haulmont.cuba.gui.components.SearchPickerField;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-/**
- */
 public class SearchPickerFieldLoader extends SearchFieldLoader {
     @Override
     public void createComponent() {

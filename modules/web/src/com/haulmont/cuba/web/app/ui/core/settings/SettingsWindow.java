@@ -39,8 +39,6 @@ import java.util.*;
 
 import static com.haulmont.cuba.web.auth.ExternallyAuthenticatedConnection.EXTERNAL_AUTH_USER_SESSION_ATTRIBUTE;
 
-/**
- */
 public class SettingsWindow extends AbstractWindow {
 
     protected boolean changeThemeEnabled = true;

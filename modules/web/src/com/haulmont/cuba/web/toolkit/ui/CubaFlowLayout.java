@@ -22,8 +22,6 @@ import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Layout;
 
-/**
- */
 public class CubaFlowLayout extends CssLayout implements Layout.MarginHandler, Layout.SpacingHandler {
 
     @Override

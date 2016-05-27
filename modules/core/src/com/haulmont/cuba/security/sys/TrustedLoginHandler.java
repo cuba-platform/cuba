@@ -24,8 +24,6 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.regex.Pattern;
 
-/**
- */
 @Component(TrustedLoginHandler.NAME)
 public class TrustedLoginHandler {
     public static final String NAME = "cuba_TrustedLoginHandler";

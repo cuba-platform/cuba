@@ -33,8 +33,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- */
 public class CubaPickerField extends com.vaadin.ui.CustomField implements Action.Container {
 
     protected com.vaadin.ui.AbstractField field;

@@ -24,8 +24,6 @@ import org.apache.commons.lang.StringUtils;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-/**
- */
 public class EmbeddedLoader extends AbstractComponentLoader<Embedded> {
 
     protected static final String URL_PREFIX = "url://";

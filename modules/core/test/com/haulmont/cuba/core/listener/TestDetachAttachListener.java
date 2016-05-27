@@ -24,8 +24,6 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 @Component("cuba_TestDetachAttachListener")
 public class TestDetachAttachListener implements
         BeforeDetachEntityListener<Server>, BeforeAttachEntityListener<Server> {

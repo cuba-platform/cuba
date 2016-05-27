@@ -25,8 +25,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class CubaFieldGroup extends CubaGroupBox {
 
     protected int currentX = 0;

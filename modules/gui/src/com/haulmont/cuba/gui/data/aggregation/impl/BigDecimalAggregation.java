@@ -18,8 +18,6 @@ package com.haulmont.cuba.gui.data.aggregation.impl;
 
 import java.math.BigDecimal;
 
-/**
- */
 public class BigDecimalAggregation extends BasicNumberAggregation<BigDecimal> {
 
     public BigDecimalAggregation() {

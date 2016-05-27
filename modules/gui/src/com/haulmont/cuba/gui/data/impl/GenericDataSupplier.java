@@ -26,8 +26,6 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
 
-/**
- */
 public class GenericDataSupplier implements DataSupplier {
 
     protected Metadata metadata = AppBeans.get(Metadata.NAME, Metadata.class);

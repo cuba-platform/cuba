@@ -22,8 +22,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
 
-/**
- */
 @SuppressWarnings("unchecked")
 @Deprecated
 public class CompatibleDatasourceListenerWrapper implements Datasource.ItemChangeListener,

@@ -45,8 +45,6 @@ import java.util.*;
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
 
-/**
- */
 @Component(EntitySqlGenerator.NAME)
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class EntitySqlGenerator {

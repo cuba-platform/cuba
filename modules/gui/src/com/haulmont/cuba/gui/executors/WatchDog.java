@@ -19,8 +19,6 @@ package com.haulmont.cuba.gui.executors;
 
 import com.haulmont.cuba.gui.executors.impl.TaskHandlerImpl;
 
-/**
- */
 @SuppressWarnings("unused")
 public interface WatchDog {
 

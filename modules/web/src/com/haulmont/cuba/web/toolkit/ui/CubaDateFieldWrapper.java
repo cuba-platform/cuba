@@ -30,8 +30,6 @@ import com.vaadin.ui.Layout;
 
 import java.util.Date;
 
-/**
- */
 public class CubaDateFieldWrapper extends com.vaadin.ui.CustomField {
 
     protected final Layout composition;

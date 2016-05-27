@@ -32,8 +32,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.UUID;
 
-/**
- */
 @Component("cuba_Sha1EncryptionModule")
 public class Sha1EncryptionModule implements EncryptionModule {
 

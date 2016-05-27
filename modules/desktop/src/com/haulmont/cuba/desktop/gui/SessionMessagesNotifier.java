@@ -34,8 +34,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.ExecutionException;
 
-/**
- */
 @Component(SessionMessagesNotifier.NAME)
 public class SessionMessagesNotifier {
 

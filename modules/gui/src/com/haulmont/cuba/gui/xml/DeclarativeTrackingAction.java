@@ -22,8 +22,6 @@ import com.haulmont.cuba.gui.components.Component;
 
 import javax.annotation.Nullable;
 
-/**
- */
 public class DeclarativeTrackingAction extends DeclarativeAction implements Action.HasTarget, Action.UiPermissionAware {
 
     public DeclarativeTrackingAction(String id, String caption, String description, String icon, String enable, String visible,

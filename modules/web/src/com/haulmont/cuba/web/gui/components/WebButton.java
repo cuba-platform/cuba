@@ -24,8 +24,6 @@ import org.apache.commons.lang.StringUtils;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-/**
- */
 public class WebButton extends WebAbstractComponent<CubaButton> implements Button {
 
     protected Action action;

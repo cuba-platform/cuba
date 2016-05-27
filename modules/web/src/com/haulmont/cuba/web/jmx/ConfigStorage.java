@@ -27,8 +27,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- */
 @Component("cuba_ConfigStorageMBean")
 public class ConfigStorage implements ConfigStorageMBean {
 
@@ -63,5 +61,4 @@ public class ConfigStorage implements ConfigStorageMBean {
         String trustedPassword = webAuthConfig.getTrustedClientPassword();
         return configStorageCommon.getConfigValue(classFQN, methodName, userLogin, trustedPassword);
     }
-
 }

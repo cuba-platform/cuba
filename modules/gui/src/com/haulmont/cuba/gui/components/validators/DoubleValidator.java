@@ -30,8 +30,6 @@ import org.dom4j.Element;
 import java.math.BigDecimal;
 import java.text.ParseException;
 
-/**
- */
 public class DoubleValidator implements Field.Validator {
 
     protected String message;

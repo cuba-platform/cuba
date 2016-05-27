@@ -26,8 +26,6 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import java.io.IOException;
 import java.util.Vector;
 
-/**
- */
 public class CubaIsNullExpressionOperator extends ExpressionOperator {
 
     public CubaIsNullExpressionOperator() {

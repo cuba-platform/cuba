@@ -30,8 +30,6 @@ import com.vaadin.client.ui.orderedlayout.Slot;
 import com.vaadin.client.ui.orderedlayout.VAbstractOrderedLayout;
 import org.vaadin.hene.popupbutton.widgetset.client.ui.VPopupButton;
 
-/**
- */
 public class CubaPopupButtonWidget extends VPopupButton {
 
     public static final String SELECTED_ITEM_STYLE = "cuba-context-menu-button-selected";

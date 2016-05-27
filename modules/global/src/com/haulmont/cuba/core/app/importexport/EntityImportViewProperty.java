@@ -19,8 +19,6 @@ package com.haulmont.cuba.core.app.importexport;
 
 import java.io.Serializable;
 
-/**
- */
 public class EntityImportViewProperty implements Serializable {
 
     protected String name;

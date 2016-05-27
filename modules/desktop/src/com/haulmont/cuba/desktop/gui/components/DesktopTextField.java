@@ -28,8 +28,6 @@ import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 
-/**
- */
 public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> implements TextField {
 
     protected String inputPrompt;

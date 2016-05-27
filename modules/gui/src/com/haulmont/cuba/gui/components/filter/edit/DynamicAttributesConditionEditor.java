@@ -25,9 +25,6 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import javax.inject.Inject;
 import java.util.Map;
 
-/**
- */
-
 public class DynamicAttributesConditionEditor extends AbstractWindow {
 
     @Inject

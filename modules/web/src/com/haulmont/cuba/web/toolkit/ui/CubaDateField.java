@@ -29,8 +29,6 @@ import org.apache.commons.lang.StringUtils;
 import java.util.Date;
 import java.util.Map;
 
-/**
- */
 public class CubaDateField extends com.vaadin.ui.DateField implements Action.Container {
 
     /**

@@ -19,8 +19,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.mainwindow.LogoutButton;
 
-/**
- */
 public class LogoutButtonLoader extends AbstractComponentLoader<LogoutButton> {
     @Override
     public void createComponent() {

@@ -30,8 +30,6 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 
 import java.util.Map;
 
-/**
- */
 public class WebRemoteProxyBeanCreator extends RemoteProxyBeanCreator {
 
     private Logger log = LoggerFactory.getLogger(WebRemoteProxyBeanCreator.class);

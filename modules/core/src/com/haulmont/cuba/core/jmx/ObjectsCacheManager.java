@@ -25,8 +25,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
-/**
- */
 @Component("cuba_ObjectsCacheManagerMBean")
 public class ObjectsCacheManager implements ObjectsCacheManagerMBean {
 
@@ -71,4 +69,5 @@ public class ObjectsCacheManager implements ObjectsCacheManagerMBean {
                 return String.format("Couldn't find controller for cache %s", cacheName);
         } else
             return "Empty name is not permitted";
-    }}
+    }
+}

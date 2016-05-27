@@ -27,8 +27,6 @@ import com.haulmont.cuba.security.app.EntityLogAPI;
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
-/**
- */
 @Component("cuba_CachingFacadeMBean")
 public class CachingFacade implements CachingFacadeMBean {
 
@@ -55,22 +53,27 @@ public class CachingFacade implements CachingFacadeMBean {
         return messages.getCacheSize();
     }
 
+    @Override
     public void clearGroovyCache() {
         scripting.clearCache();
     }
 
+    @Override
     public void clearMessagesCache() {
         messages.clearCache();
     }
 
+    @Override
     public void clearConfigStorageCache() {
         configStorage.clearCache();
     }
 
+    @Override
     public void clearEntityLogCache() {
         entityLog.invalidateCache();
     }
 
+    @Override
     public void clearDynamicAttributesCache() {
         dynamicAttributesManagerAPI.loadCache();
     }

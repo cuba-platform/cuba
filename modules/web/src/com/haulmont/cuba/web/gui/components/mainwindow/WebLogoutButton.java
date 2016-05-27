@@ -29,8 +29,6 @@ import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.vaadin.ui.Button;
 import org.apache.commons.lang.StringUtils;
 
-/**
- */
 public class WebLogoutButton extends WebAbstractComponent<CubaButton> implements LogoutButton {
 
     public static final String LOGOUT_BUTTON_STYLENAME = "cuba-logout-button";

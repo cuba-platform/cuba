@@ -22,8 +22,6 @@ import com.haulmont.cuba.core.sys.jpql.InferredType;
 import java.util.EnumSet;
 import java.util.Set;
 
-/**
- */
 public class MacroProcessor {
     private final static String BETWEEN_REPLACEMENT = " = :d ";
     private final static String TWO_OPERAND_REPLACEMENT = " =";

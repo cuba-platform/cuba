@@ -25,8 +25,6 @@ import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.tree.CubaTreeWidget;
 import com.vaadin.client.BrowserInfo;
 
-/**
- */
 public class CubaWidgetsTreeWidget extends CubaTreeWidget {
 
     public CubaWidgetsTreeWidget() {

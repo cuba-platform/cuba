@@ -41,8 +41,6 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.web.jmx.JmxConnectionHelper.getObjectName;
 import static com.haulmont.cuba.web.jmx.JmxConnectionHelper.withConnection;
 
-/**
- */
 @Component(JmxControlAPI.NAME)
 public class JmxControlBean implements JmxControlAPI {
 

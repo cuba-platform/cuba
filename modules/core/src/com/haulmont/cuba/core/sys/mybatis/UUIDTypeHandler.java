@@ -23,8 +23,6 @@ import org.apache.ibatis.type.TypeHandler;
 
 import java.sql.*;
 
-/**
- */
 public class UUIDTypeHandler implements TypeHandler {
 
     @Override

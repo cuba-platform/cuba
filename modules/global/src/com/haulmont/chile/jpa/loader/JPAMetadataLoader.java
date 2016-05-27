@@ -21,8 +21,6 @@ import com.haulmont.chile.core.loader.ChileMetadataLoader;
 import com.haulmont.chile.core.loader.MetaClassLoader;
 import com.haulmont.chile.core.model.Session;
 
-/**
- */
 public class JPAMetadataLoader extends ChileMetadataLoader {
 
     public JPAMetadataLoader(Session session) {

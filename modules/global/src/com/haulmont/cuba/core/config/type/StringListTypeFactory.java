@@ -22,8 +22,6 @@ import org.apache.commons.lang.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 public class StringListTypeFactory extends TypeFactory {
     @Override
     public Object build(String string) {

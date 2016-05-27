@@ -23,8 +23,6 @@ import org.apache.commons.lang.ArrayUtils;
 
 import java.util.Arrays;
 
-/**
- */
 public class AssignActionPostInitTask implements ComponentLoader.PostInitTask {
 
     protected Component.ActionOwner component;

@@ -20,8 +20,6 @@ package com.haulmont.cuba.gui.components.filter.addcondition;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor;
 
-/**
- */
 public interface ConditionDescriptorsTreeBuilderAPI {
 
     String NAME = "cuba_ConditionDescriptorsTreeBuilder";

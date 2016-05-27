@@ -27,8 +27,6 @@ import java.util.UUID;
 
 import static com.haulmont.cuba.core.global.filter.Op.*;
 
-/**
- */
 @Component(OpManager.NAME)
 public class OpManagerImpl implements OpManager {
 

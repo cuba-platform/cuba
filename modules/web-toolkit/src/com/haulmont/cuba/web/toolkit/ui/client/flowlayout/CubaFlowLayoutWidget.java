@@ -20,8 +20,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.flowlayout;
 import com.vaadin.client.ui.VCssLayout;
 import com.vaadin.shared.ui.MarginInfo;
 
-/**
- */
 public class CubaFlowLayoutWidget extends VCssLayout {
 
     public void setMargin(MarginInfo marginInfo) {

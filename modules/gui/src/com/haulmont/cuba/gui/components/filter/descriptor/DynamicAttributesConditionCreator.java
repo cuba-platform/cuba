@@ -26,8 +26,6 @@ import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.apache.commons.lang.RandomStringUtils;
 
-/**
- */
 @MetaClass(name = "sec$DynamicAttributesConditionCreator")
 @SystemLevel
 public class DynamicAttributesConditionCreator extends AbstractConditionDescriptor {

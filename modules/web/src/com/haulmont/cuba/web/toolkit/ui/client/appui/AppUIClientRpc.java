@@ -20,8 +20,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.appui;
 import com.vaadin.shared.annotations.NoLayout;
 import com.vaadin.shared.communication.ClientRpc;
 
-/**
- */
 public interface AppUIClientRpc extends ClientRpc {
 
     /**

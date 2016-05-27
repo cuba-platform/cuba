@@ -22,8 +22,6 @@ import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.textfield.TextFieldConnector;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
 @Connect(CubaMaskedTextField.class)
 public class CubaMaskedFieldConnector extends TextFieldConnector {
 

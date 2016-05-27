@@ -25,8 +25,6 @@ import com.haulmont.chile.core.model.Session;
 
 import javax.annotation.Nullable;
 
-/**
- */
 public class SessionImpl implements Session {
 
     private final Map<String, MetaModel> models = new HashMap<>();

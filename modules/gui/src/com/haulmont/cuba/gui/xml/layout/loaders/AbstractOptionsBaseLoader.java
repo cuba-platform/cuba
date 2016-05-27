@@ -26,8 +26,6 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-/**
- */
 public abstract class AbstractOptionsBaseLoader<T extends OptionsField> extends AbstractFieldLoader<T> {
     protected void loadCaptionProperty(T component, Element element) {
         String captionProperty = element.attributeValue("captionProperty");
@@ -52,6 +50,4 @@ public abstract class AbstractOptionsBaseLoader<T extends OptionsField> extends 
 
         super.loadDatasource(component, element);
     }
-
-
 }

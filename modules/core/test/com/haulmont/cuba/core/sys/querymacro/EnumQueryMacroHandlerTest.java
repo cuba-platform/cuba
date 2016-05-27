@@ -19,8 +19,6 @@ package com.haulmont.cuba.core.sys.querymacro;
 
 import junit.framework.TestCase;
 
-/**
- */
 public class EnumQueryMacroHandlerTest extends TestCase {
 
     public void testExpandMacro() throws Exception {

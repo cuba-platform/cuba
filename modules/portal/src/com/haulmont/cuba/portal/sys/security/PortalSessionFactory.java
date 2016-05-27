@@ -23,8 +23,6 @@ import com.haulmont.cuba.security.global.UserSession;
 import javax.annotation.Nullable;
 import java.util.Locale;
 
-/**
- */
 public interface PortalSessionFactory {
 
     String NAME = "cuba_PortalSessionFactory";

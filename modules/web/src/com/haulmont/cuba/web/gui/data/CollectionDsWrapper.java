@@ -32,8 +32,6 @@ import com.vaadin.ui.UI;
 
 import java.util.*;
 
-/**
- */
 public class CollectionDsWrapper implements Container, Container.ItemSetChangeNotifier {
 
     protected boolean autoRefresh;

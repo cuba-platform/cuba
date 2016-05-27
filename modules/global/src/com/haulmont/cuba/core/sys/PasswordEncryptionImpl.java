@@ -31,8 +31,6 @@ import java.util.UUID;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-/**
- */
 @Component(PasswordEncryption.NAME)
 public class PasswordEncryptionImpl implements PasswordEncryption {
 

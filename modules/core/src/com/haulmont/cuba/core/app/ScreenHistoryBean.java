@@ -27,8 +27,6 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.UUID;
 
-/**
- */
 @Component(ScreenHistory.NAME)
 public class ScreenHistoryBean implements ScreenHistory {
 

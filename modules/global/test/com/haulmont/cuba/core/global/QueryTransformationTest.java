@@ -23,8 +23,6 @@ import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
 import com.haulmont.cuba.core.sys.jpql.transform.QueryTransformerAstBased;
 import org.junit.Test;
 
-/**
- */
 public class QueryTransformationTest {
     @Test
     public void testAst() throws Exception {

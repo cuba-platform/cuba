@@ -25,8 +25,6 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Label;
 import com.vaadin.client.ui.VPanel;
 
-/**
- */
 public class CubaTokenListLabelWidget extends VPanel {
 
     public static final String CLASSNAME = "cuba-tokenlist-label";

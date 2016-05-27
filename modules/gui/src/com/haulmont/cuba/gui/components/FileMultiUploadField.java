@@ -20,8 +20,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- */
 public interface FileMultiUploadField extends UploadComponentSupport {
 
     String NAME = "multiUpload";

@@ -31,9 +31,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
-/**
- *
- */
 public class DesktopEmbedded extends DesktopAbstractComponent<JPanel> implements Embedded {
 
     private Type type; // only IMAGE currently supported, hope object and browser will never needed for desktop

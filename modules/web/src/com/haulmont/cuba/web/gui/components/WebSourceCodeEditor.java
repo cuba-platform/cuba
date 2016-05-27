@@ -31,8 +31,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- */
 public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> implements SourceCodeEditor {
 
     protected Mode mode = Mode.Text;

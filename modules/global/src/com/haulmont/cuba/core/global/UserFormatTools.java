@@ -22,8 +22,6 @@ import com.haulmont.cuba.security.entity.User;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-/**
- */
 public interface UserFormatTools {
 
     String NAME = "cuba_UserFormatTools";

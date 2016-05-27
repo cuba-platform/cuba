@@ -23,9 +23,6 @@ import com.haulmont.cuba.security.global.UserSession;
 import java.util.Locale;
 import java.util.UUID;
 
-/**
- *
- */
 public abstract class AbstractUserSessionSource implements UserSessionSource {
 
     @Override

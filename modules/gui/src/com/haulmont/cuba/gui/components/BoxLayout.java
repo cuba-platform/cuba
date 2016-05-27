@@ -16,8 +16,6 @@
  */
 package com.haulmont.cuba.gui.components;
 
-/**
- */
 public interface BoxLayout extends ExpandingLayout, Component.OrderedContainer,
                                    Component.Spacing, Component.Margin, Component.BelongToFrame {
     /**

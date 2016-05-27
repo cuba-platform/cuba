@@ -23,8 +23,6 @@ import com.vaadin.shared.ui.treetable.TreeTableState;
 
 import java.util.Map;
 
-/**
- */
 public class CubaTreeTableState extends TreeTableState {
 
     @NoLayout

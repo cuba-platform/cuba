@@ -28,8 +28,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
 
-/**
- */
 public final class DynamicAttributesUtils {
     private DynamicAttributesUtils() {
     }

@@ -41,8 +41,6 @@ import java.net.UnknownHostException;
 import java.util.Locale;
 import java.util.Map;
 
-/**
- */
 public class LoginDialog extends JDialog {
 
     protected Logger log = LoggerFactory.getLogger(getClass());

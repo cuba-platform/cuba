@@ -24,8 +24,6 @@ import org.dom4j.Element;
 import java.util.Arrays;
 import java.util.HashSet;
 
-/**
- */
 public class FileMultiUploadFieldLoader extends AbstractComponentLoader<FileMultiUploadField> {
     @Override
     public void createComponent() {

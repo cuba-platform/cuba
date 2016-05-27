@@ -19,9 +19,6 @@ package com.haulmont.cuba.desktop.theme;
 
 import java.util.Set;
 
-/**
- *
- */
 public interface ComponentDecorator {
     /*
      * Accepts cuba component, if style is applied to it,

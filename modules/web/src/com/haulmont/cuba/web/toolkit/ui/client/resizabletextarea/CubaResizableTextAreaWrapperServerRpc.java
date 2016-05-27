@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.resizabletextarea;
 
 import com.vaadin.shared.communication.ServerRpc;
 
-/**
- */
 public interface CubaResizableTextAreaWrapperServerRpc extends ServerRpc {
 
     void sizeChanged(String width, String height);

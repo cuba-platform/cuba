@@ -34,8 +34,6 @@ import com.vaadin.ui.Tree;
 
 import java.util.*;
 
-/**
- */
 public class CubaTree extends Tree implements HasComponents {
 
     public CubaTree() {

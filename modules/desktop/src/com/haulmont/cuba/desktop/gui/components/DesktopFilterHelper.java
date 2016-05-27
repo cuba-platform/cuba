@@ -35,8 +35,6 @@ import java.awt.event.KeyEvent;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- */
 @org.springframework.stereotype.Component(FilterHelper.NAME)
 public class DesktopFilterHelper implements FilterHelper {
 

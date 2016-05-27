@@ -25,8 +25,6 @@ import com.haulmont.cuba.core.global.View;
 
 import java.util.Collection;
 
-/**
- */
 public interface RuntimePropsDatasource<T extends Entity> extends Datasource<T> {
 
     Datasource getMainDs();

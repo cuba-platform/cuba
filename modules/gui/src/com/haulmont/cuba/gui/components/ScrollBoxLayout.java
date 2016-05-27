@@ -16,8 +16,6 @@
  */
 package com.haulmont.cuba.gui.components;
 
-/**
- */
 public interface ScrollBoxLayout
         extends Component.OrderedContainer, Component.BelongToFrame, Component.Margin, Component.Spacing {
 

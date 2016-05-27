@@ -26,8 +26,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class MetaModelImpl extends MetadataObjectImpl implements MetaModel {
 
     private static final long serialVersionUID = -2951212408198161458L;

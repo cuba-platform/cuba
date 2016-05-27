@@ -25,8 +25,6 @@ import com.haulmont.cuba.gui.components.LookupPickerField;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-/**
- */
 public class LookupPickerFieldLoader extends LookupFieldLoader {
 
     @Override

@@ -27,8 +27,6 @@ import com.vaadin.ui.ComboBox;
 
 import java.util.Map;
 
-/**
- */
 public class CubaComboBox extends ComboBox implements Action.Container {
 
     /**

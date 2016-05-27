@@ -25,8 +25,6 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.io.InputStream;
 
-/**
- */
 @Service(LocalFileExchangeService.NAME)
 public class LocalFileExchangeServiceBean implements LocalFileExchangeService {
     @Inject

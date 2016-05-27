@@ -21,8 +21,6 @@ import com.haulmont.cuba.core.global.DevelopmentException;
 
 import java.util.Map;
 
-/**
- */
 public class GuiDevelopmentException extends DevelopmentException {
 
     protected String frameId;

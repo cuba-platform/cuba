@@ -21,8 +21,6 @@ import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 import java.text.ParseException;
 
-/**
- */
 public class DateFactory extends TypeFactory {
     @Override
     public Object build(String string) {

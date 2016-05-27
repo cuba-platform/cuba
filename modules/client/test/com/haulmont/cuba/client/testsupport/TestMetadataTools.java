@@ -19,8 +19,6 @@ package com.haulmont.cuba.client.testsupport;
 
 import com.haulmont.cuba.core.global.*;
 
-/**
- */
 public class TestMetadataTools extends MetadataTools {
     /**
      * Constructor used in client-side tests.

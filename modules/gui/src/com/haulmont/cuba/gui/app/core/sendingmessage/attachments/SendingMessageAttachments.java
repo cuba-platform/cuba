@@ -21,8 +21,6 @@ import com.haulmont.cuba.gui.components.AbstractLookup;
 
 import java.util.Map;
 
-/**
- */
 public class SendingMessageAttachments extends AbstractLookup {
 
     @Override

@@ -19,8 +19,6 @@ package com.haulmont.chile.core.datatypes.impl;
 
 import junit.framework.TestCase;
 
-/**
- */
 public class EnumUtilsTest extends TestCase {
 
     public void testFromId() throws Exception {

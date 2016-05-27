@@ -52,8 +52,6 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.List;
 
-/**
- */
 public class DesktopDateField extends DesktopAbstractField<JPanel> implements DateField {
     protected Resolution resolution;
     protected Datasource datasource;

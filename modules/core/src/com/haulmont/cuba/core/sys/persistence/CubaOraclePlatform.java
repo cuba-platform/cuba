@@ -22,8 +22,6 @@ import org.eclipse.persistence.platform.database.oracle.Oracle10Platform;
 
 import java.util.UUID;
 
-/**
- */
 public class CubaOraclePlatform extends Oracle10Platform {
 
     @Override

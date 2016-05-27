@@ -31,8 +31,6 @@ import com.haulmont.cuba.web.gui.components.WebComponentsUtils;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- */
 public class AttributePermissionsFrameCompanion implements AttributePermissionsFrame.Companion {
 
     @Override

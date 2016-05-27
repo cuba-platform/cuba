@@ -23,8 +23,6 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import java.util.Date;
 
-/**
- */
 public class ParamEditor implements AbstractCondition.Listener {
 
     protected AbstractCondition condition;

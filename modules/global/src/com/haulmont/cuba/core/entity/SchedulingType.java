@@ -18,8 +18,6 @@ package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
-/**
- */
 public enum SchedulingType implements EnumClass<String> {
     CRON("C"),
     PERIOD("P");

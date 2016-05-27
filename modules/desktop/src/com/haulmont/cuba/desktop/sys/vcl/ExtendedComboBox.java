@@ -20,8 +20,6 @@ package com.haulmont.cuba.desktop.sys.vcl;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- */
 public class ExtendedComboBox extends JComboBox<Object> implements Flushable {
 
     private static final int MAX_LIST_WIDTH = 350;

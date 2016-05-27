@@ -20,8 +20,6 @@ import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.GroupBoxLayout;
 import org.dom4j.Element;
 
-/**
- */
 public class GroupBoxLayoutLoader extends ContainerLoader<GroupBoxLayout> {
 
     @Override

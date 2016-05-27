@@ -21,9 +21,6 @@ import com.haulmont.cuba.desktop.DesktopResources;
 
 import java.util.Set;
 
-/**
- *
- */
 public interface DesktopTheme {
 
     /**

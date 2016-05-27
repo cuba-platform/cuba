@@ -25,8 +25,6 @@ import com.vaadin.data.util.ContainerOrderedWrapper;
 import java.util.Collection;
 import java.util.Map;
 
-/**
- */
 public class GroupTableContainerWrapper extends ContainerOrderedWrapper
         implements GroupTableContainer, AggregationContainer {
     private boolean isGroupTableContainer;

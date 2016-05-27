@@ -37,8 +37,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-/**
- */
 @Component("cuba_SchedulingMBean")
 public class Scheduling implements SchedulingMBean {
 

@@ -22,10 +22,11 @@ import org.apache.commons.lang.ObjectUtils;
 
 /**
  * Area of constraint application.
- *
  */
-//todo eude probably need to join with EntityOp
 public enum ConstraintOperationType implements EnumClass<String> {
+
+    //todo degtyarjov probably need to join with EntityOp
+
     CREATE("create"),
     READ("read"),
     UPDATE("update"),
@@ -39,6 +40,7 @@ public enum ConstraintOperationType implements EnumClass<String> {
         this.id = id;
     }
 
+    @Override
     public String getId() {
         return id;
     }

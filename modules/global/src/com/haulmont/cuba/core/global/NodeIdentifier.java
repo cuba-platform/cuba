@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.core.global;
 
-/**
- */
 public interface NodeIdentifier {
 
     String NAME = "cuba_NodeIdentifier";

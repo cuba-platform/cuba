@@ -32,8 +32,6 @@ import org.apache.commons.lang.ObjectUtils;
 
 import java.util.UUID;
 
-/**
- */
 public final class PermissionUiHelper {
 
     private PermissionUiHelper() {

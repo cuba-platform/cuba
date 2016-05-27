@@ -31,8 +31,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
 
-/**
- */
 @Ignore
 public abstract class PickerFieldTest extends AbstractComponentTest {
 

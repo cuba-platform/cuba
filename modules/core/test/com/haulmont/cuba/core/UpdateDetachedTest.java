@@ -35,9 +35,6 @@ import java.util.UUID;
 import static com.haulmont.cuba.testsupport.TestSupport.reserialize;
 import static org.junit.Assert.*;
 
-
-/**
- */
 public class UpdateDetachedTest {
 
     @ClassRule

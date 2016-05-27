@@ -42,8 +42,6 @@ import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-/**
- */
 public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
     protected DynamicAttributes dynamicAttributes = AppBeans.get(DynamicAttributes.class);

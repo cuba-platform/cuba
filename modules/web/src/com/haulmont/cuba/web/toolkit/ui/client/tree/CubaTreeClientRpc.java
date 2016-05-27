@@ -20,8 +20,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.tree;
 import com.vaadin.shared.annotations.NoLayout;
 import com.vaadin.shared.communication.ClientRpc;
 
-/**
- */
 public interface CubaTreeClientRpc extends ClientRpc {
 
     @NoLayout

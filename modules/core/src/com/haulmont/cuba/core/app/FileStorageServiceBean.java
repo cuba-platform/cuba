@@ -22,8 +22,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
-/**
- */
 @Service(FileStorageService.NAME)
 public class FileStorageServiceBean implements FileStorageService {
 

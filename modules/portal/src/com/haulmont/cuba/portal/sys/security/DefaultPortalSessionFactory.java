@@ -25,8 +25,6 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Locale;
 
-/**
- */
 @Component(PortalSessionFactory.NAME)
 public class DefaultPortalSessionFactory implements PortalSessionFactory {
 

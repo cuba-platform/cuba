@@ -22,8 +22,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
-/**
- */
 @Service(ResourceService.NAME)
 public class ResourceServiceBean implements ResourceService {
 

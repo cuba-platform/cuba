@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.core.sys;
 
-/**
- */
 public class DBNotInitializedException extends Exception {
     public DBNotInitializedException() {
     }

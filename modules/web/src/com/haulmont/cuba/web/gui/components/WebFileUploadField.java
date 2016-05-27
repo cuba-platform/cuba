@@ -45,8 +45,6 @@ import java.util.UUID;
 
 import static com.haulmont.cuba.gui.components.Frame.NotificationType;
 
-/**
- */
 public class WebFileUploadField extends WebAbstractUploadComponent<UploadComponent> implements FileUploadField {
 
     protected Logger log = LoggerFactory.getLogger(getClass());

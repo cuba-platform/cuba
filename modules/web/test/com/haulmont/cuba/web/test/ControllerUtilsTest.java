@@ -22,8 +22,6 @@ import junit.framework.TestCase;
 
 import java.net.URI;
 
-/**
- */
 public class ControllerUtilsTest extends TestCase {
     public void testGetLocationWithoutParams() throws Exception {
         URI localUrl = new URI("http://localhost:8080/app?a");

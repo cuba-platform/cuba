@@ -38,8 +38,6 @@ import java.awt.font.TextAttribute;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class FontDialog extends JDialog {
 
     private Font result;

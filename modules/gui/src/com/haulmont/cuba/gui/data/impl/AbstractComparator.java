@@ -22,8 +22,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 
 import java.util.Comparator;
 
-/**
- */
 public abstract class AbstractComparator<T> implements Comparator<T> {
 
     protected boolean asc;

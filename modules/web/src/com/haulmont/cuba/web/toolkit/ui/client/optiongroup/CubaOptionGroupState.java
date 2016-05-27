@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.optiongroup;
 
 import com.vaadin.shared.ui.optiongroup.OptionGroupState;
 
-/**
- */
 public class CubaOptionGroupState extends OptionGroupState {
 
     public OptionGroupOrientation orientation = OptionGroupOrientation.VERTICAL;

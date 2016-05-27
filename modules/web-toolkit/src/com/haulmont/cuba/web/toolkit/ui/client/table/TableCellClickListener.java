@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.table;
 
-/**
- */
 public interface TableCellClickListener {
     void onClick(String columnKey, int rowKey);
 }

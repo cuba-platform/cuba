@@ -21,8 +21,6 @@ import com.haulmont.cuba.gui.components.TimeField;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-/**
- */
 public class TimeFieldLoader extends AbstractFieldLoader<TimeField> {
 
     @Override

@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.app.folders;
 
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 
-/**
- */
 public interface Folders {
     String NAME = "cuba_Folders";
 

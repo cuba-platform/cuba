@@ -20,8 +20,6 @@ import com.haulmont.cuba.gui.data.aggregation.NumberAggregationHelper;
 
 import java.util.Collection;
 
-/**
- */
 public abstract class BasicNumberAggregation<T extends Number> extends BasicAggregation <T> {
 
     protected BasicNumberAggregation(Class<T> clazz) {

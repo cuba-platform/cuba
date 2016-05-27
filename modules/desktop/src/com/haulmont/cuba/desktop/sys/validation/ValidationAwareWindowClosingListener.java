@@ -20,8 +20,6 @@ package com.haulmont.cuba.desktop.sys.validation;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-/**
- */
 public abstract class ValidationAwareWindowClosingListener extends WindowAdapter {
 
     @Override

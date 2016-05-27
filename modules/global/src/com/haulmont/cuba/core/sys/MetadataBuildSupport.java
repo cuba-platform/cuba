@@ -30,8 +30,6 @@ import javax.inject.Inject;
 import java.io.InputStream;
 import java.util.*;
 
-/**
- */
 @Component("cuba_MetadataBuildSupport")
 public class MetadataBuildSupport {
 

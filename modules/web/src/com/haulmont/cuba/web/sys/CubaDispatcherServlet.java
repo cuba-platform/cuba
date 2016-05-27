@@ -29,8 +29,6 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import java.io.File;
 
-/**
- */
 public class CubaDispatcherServlet extends DispatcherServlet {
 
     private static final long serialVersionUID = -4884517938479910144L;

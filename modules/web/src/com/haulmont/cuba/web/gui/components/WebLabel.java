@@ -43,8 +43,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-/**
- */
 public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implements Label {
 
     public static final String CAPTION_STYLE = "cuba-label-caption-on-left";

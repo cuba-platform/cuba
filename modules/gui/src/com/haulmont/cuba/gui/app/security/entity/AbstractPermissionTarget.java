@@ -28,9 +28,6 @@ import com.haulmont.cuba.core.global.UuidProvider;
 
 import java.util.UUID;
 
-/**
- *
- */
 @com.haulmont.chile.core.annotations.MetaClass(name = "sec$AbstractTarget")
 @SystemLevel
 public class AbstractPermissionTarget extends AbstractInstance

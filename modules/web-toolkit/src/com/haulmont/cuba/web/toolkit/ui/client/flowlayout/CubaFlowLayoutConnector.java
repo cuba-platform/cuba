@@ -23,8 +23,6 @@ import com.vaadin.client.ui.csslayout.CssLayoutConnector;
 import com.vaadin.shared.ui.Connect;
 import com.vaadin.shared.ui.MarginInfo;
 
-/**
- */
 @Connect(CubaFlowLayout.class)
 public class CubaFlowLayoutConnector extends CssLayoutConnector {
 

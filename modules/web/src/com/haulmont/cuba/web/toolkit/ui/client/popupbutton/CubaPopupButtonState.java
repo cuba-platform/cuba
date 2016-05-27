@@ -20,8 +20,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.popupbutton;
 import com.vaadin.shared.annotations.NoLayout;
 import org.vaadin.hene.popupbutton.widgetset.client.ui.PopupButtonState;
 
-/**
- */
 public class CubaPopupButtonState extends PopupButtonState {
 
     @NoLayout

@@ -22,8 +22,6 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 
 import java.util.Date;
 
-/**
- */
 public class LogItem {
 
     private Date timestamp;

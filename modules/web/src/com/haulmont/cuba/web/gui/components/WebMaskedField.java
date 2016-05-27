@@ -22,8 +22,6 @@ import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.MaskedField;
 import com.haulmont.cuba.web.toolkit.ui.CubaMaskedTextField;
 
-/**
- */
 public class WebMaskedField extends WebAbstractTextField<CubaMaskedTextField> implements MaskedField {
 
     protected String inputPrompt;

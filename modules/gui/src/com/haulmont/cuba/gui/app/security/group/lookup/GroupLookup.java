@@ -26,8 +26,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- */
 public class GroupLookup extends AbstractLookup {
 
     @Inject

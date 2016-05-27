@@ -24,8 +24,6 @@ import com.haulmont.cuba.web.auth.WebAuthConfig;
 
 import javax.inject.Inject;
 
-/**
- */
 public class UserEditorCompanion implements UserEditor.Companion {
 
     @Inject

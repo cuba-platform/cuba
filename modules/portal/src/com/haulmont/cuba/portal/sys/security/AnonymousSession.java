@@ -24,8 +24,6 @@ import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.Locale;
 
-/**
- */
 public class AnonymousSession extends PortalSession {
 
     public AnonymousSession(UserSession src, @Nullable Locale locale) {

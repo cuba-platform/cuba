@@ -19,8 +19,6 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.entity.Entity;
 
-/**
- */
 public interface EntitySqlGenerationService {
 
     String NAME = "cuba_EntitySqlGenerationService";

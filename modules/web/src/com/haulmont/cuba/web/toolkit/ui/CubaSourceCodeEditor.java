@@ -25,8 +25,6 @@ import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.AbstractTextField;
 import org.vaadin.aceeditor.AceEditor;
 
-/**
- */
 public class CubaSourceCodeEditor extends AceEditor implements AutoCompleteSupport {
 
     public CubaSourceCodeEditor() {

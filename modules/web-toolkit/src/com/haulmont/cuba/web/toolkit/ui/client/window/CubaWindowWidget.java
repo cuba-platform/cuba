@@ -23,8 +23,6 @@ import com.google.gwt.user.client.Event;
 import com.haulmont.cuba.web.toolkit.ui.client.appui.ValidationErrorHolder;
 import com.vaadin.client.ui.VWindow;
 
-/**
- */
 public class CubaWindowWidget extends VWindow {
 
     public static final String MODAL_WINDOW_CLASSNAME = "v-window-modal";

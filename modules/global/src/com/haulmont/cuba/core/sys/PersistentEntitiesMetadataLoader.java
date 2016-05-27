@@ -31,8 +31,6 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Map;
 
-/**
- */
 @Component("cuba_PersistentEntitiesMetadataLoader")
 public class PersistentEntitiesMetadataLoader extends JPAMetadataLoader {
 
@@ -72,5 +70,4 @@ public class PersistentEntitiesMetadataLoader extends JPAMetadataLoader {
             metaAnnotations.put(OnDeleteInverse.class.getName(), properties);
         }
     }
-
 }

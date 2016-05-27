@@ -30,8 +30,6 @@ import org.apache.commons.lang.ArrayUtils;
 import javax.management.openmbean.CompositeData;
 import java.util.*;
 
-/**
- */
 public class ThreadsDatasource extends CollectionDatasourceImpl<ThreadSnapshot, UUID> {
 
     protected JmxControlAPI jmxControlAPI;

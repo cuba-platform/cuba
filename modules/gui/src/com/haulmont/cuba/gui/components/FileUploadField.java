@@ -21,8 +21,6 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- */
 public interface FileUploadField extends UploadComponentSupport {
     String NAME = "upload";
 

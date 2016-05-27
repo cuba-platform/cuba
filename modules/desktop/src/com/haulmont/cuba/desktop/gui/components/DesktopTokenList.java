@@ -51,8 +51,6 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-/**
- */
 public class DesktopTokenList extends DesktopAbstractField<JPanel> implements TokenList {
 
     protected TokenStyleGenerator tokenStyleGenerator;

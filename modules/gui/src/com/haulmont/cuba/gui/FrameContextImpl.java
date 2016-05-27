@@ -27,8 +27,6 @@ import org.apache.commons.lang.ArrayUtils;
 import java.util.*;
 import java.util.List;
 
-/**
- */
 public class FrameContextImpl implements FrameContext {
 
     private final Frame frame;

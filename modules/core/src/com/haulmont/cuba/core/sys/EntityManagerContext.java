@@ -20,8 +20,6 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class EntityManagerContext {
 
     private boolean softDeletion = true;

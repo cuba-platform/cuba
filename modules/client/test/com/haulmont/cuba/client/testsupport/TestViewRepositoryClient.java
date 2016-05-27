@@ -22,8 +22,6 @@ import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import com.haulmont.cuba.core.sys.ResourcesImpl;
 import org.apache.commons.lang.StringUtils;
 
-/**
- */
 public class TestViewRepositoryClient extends AbstractViewRepository {
 
     private String viewsConfig;

@@ -27,8 +27,6 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.TimeZone;
 
-/**
- */
 public class WebTimeZoneIndicator extends WebAbstractComponent<Label> implements TimeZoneIndicator {
 
     protected String styleName;

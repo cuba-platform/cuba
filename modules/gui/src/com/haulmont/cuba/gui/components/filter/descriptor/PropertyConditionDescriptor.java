@@ -39,8 +39,6 @@ import java.util.EnumSet;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
-/**
- */
 @MetaClass(name = "sec$PropertyConditionDescriptor")
 @SystemLevel
 public class PropertyConditionDescriptor extends AbstractConditionDescriptor {

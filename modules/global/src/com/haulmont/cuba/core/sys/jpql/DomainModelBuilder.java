@@ -27,8 +27,6 @@ import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
 import javax.annotation.Nullable;
 import java.util.Collection;
 
-/**
- */
 public class DomainModelBuilder {
     protected Metadata metadata;
     protected MetadataTools metadataTools;

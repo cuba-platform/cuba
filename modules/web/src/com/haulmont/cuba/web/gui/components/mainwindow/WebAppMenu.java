@@ -22,8 +22,6 @@ import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.sys.MenuBuilder;
 import com.haulmont.cuba.web.toolkit.ui.CubaMenuBar;
 
-/**
- */
 public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements AppMenu {
 
     public static final String MENU_STYLENAME = "cuba-main-menu";

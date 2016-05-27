@@ -43,8 +43,6 @@ import javax.inject.Named;
 import java.lang.reflect.*;
 import java.util.*;
 
-/**
- */
 public class ControllerDependencyInjector {
 
     private Frame frame;

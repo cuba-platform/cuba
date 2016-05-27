@@ -32,8 +32,6 @@ import javax.annotation.Nullable;
 import javax.swing.*;
 import java.util.*;
 
-/**
- */
 public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implements GridLayout, DesktopContainer {
 
     protected GridLayoutAdapter layoutAdapter;

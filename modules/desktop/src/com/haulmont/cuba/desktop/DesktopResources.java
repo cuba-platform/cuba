@@ -31,8 +31,6 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.List;
 
-/**
- */
 public class DesktopResources {
 
     private Logger log = LoggerFactory.getLogger(DesktopResources.class);

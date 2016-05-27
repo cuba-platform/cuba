@@ -37,8 +37,6 @@ import com.vaadin.server.Resource;
 
 import java.util.*;
 
-/**
- */
 public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTable, E> implements TreeTable<E> {
 
     protected String hierarchyProperty;

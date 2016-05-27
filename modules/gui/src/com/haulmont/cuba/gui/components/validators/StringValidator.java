@@ -23,8 +23,6 @@ import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
 import org.dom4j.Element;
 
-/**
- */
 public class StringValidator implements Field.Validator {
 
     protected String message;

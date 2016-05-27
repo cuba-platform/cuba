@@ -24,8 +24,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- */
 public class ConfigPersisterImpl implements ConfigPersister {
     protected static final Logger log = LoggerFactory.getLogger(ConfigPersisterImpl.class);
 

@@ -28,8 +28,6 @@ import javax.annotation.Nullable;
 import javax.swing.*;
 import java.util.Collection;
 
-/**
- */
 public class DesktopSuggestionPickerField extends DesktopSuggestionField implements SuggestionPickerField {
 
     protected DesktopPickerField pickerField;

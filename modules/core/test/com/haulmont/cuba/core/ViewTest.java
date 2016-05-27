@@ -37,8 +37,6 @@ import static com.haulmont.cuba.testsupport.TestSupport.assertFail;
 import static com.haulmont.cuba.testsupport.TestSupport.reserialize;
 import static org.junit.Assert.*;
 
-/**
- */
 public class ViewTest {
 
     @ClassRule

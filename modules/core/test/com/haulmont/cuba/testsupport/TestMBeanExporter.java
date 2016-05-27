@@ -16,7 +16,5 @@
  */
 package com.haulmont.cuba.testsupport;
 
-/**
- */
 public class TestMBeanExporter {
 }

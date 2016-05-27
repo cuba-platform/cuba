@@ -24,8 +24,6 @@ import com.google.common.base.Strings;
 import java.io.PrintWriter;
 import java.util.*;
 
-/**
- */
 public class MyJSONObject implements MyJSON {
     private final String _id;
     private final boolean _ref;

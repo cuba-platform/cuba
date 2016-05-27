@@ -18,7 +18,6 @@
 package com.haulmont.cuba.core.app;
 
 import com.google.common.collect.Lists;
-import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.core.global.*;
@@ -45,8 +44,6 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 
-/**
- */
 public class EmailerTest {
 
     @ClassRule

@@ -23,8 +23,6 @@ import com.haulmont.cuba.core.global.ViewProperty;
 import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import org.apache.commons.lang.StringUtils;
 
-/**
- */
 public class ViewRepositoryInfo {
     protected final AbstractViewRepository viewRepository;
     protected final Metadata metadata;

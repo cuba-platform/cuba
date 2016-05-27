@@ -28,8 +28,6 @@ import java.util.*;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.collections.map.LinkedMap;
 
-/**
- */
 public abstract class GroupDelegate<T extends Entity<K>, K> {
 
     protected Object[] groupProperties = null;

@@ -38,8 +38,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- */
 public abstract class DesktopAbstractField<C extends JComponent> extends DesktopAbstractComponent<C> implements Field {
 
     protected List<ValueChangeListener> listeners = new ArrayList<>();

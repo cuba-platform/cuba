@@ -23,8 +23,6 @@ import com.haulmont.cuba.core.global.LockInfo;
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
-/**
- */
 @Component("cuba_LockManagerMBean")
 public class LockManager implements LockManagerMBean {
 

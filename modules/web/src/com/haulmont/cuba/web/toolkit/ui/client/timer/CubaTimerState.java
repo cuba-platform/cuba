@@ -20,8 +20,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.timer;
 import com.vaadin.shared.AbstractComponentState;
 import com.vaadin.shared.annotations.NoLayout;
 
-/**
- */
 public class CubaTimerState extends AbstractComponentState {
 
     @NoLayout

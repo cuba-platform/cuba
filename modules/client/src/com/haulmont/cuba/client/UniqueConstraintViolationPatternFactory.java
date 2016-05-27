@@ -28,8 +28,6 @@ import org.slf4j.LoggerFactory;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-/**
- */
 public class UniqueConstraintViolationPatternFactory extends TypeFactory {
 
     @Override

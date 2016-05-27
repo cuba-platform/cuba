@@ -32,8 +32,6 @@ import org.perf4j.log4j.Log4JStopWatch;
 
 import java.util.*;
 
-/**
- */
 public class ManagedBeanInfoDatasource extends AbstractTreeDatasource<ManagedBeanInfo, UUID> {
 
     private JmxInstance jmxInstance = null;

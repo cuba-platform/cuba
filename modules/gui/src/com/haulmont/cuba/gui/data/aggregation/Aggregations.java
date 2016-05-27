@@ -26,8 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- */
 public class Aggregations {
     private static final Aggregations instance;
 

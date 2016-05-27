@@ -21,8 +21,6 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 import java.util.Hashtable;
 
-/**
- */
 public class TestInitialContextFactory implements InitialContextFactory {
 
     @Override

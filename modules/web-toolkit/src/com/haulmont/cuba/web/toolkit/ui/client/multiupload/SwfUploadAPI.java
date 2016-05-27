@@ -19,8 +19,7 @@ package com.haulmont.cuba.web.toolkit.ui.client.multiupload;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- */
+@Deprecated
 public class SwfUploadAPI {
     public static native void onReady(Runnable r) /*-{
         if (!$wnd.swfUploadHelper) {

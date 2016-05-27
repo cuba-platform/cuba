@@ -26,8 +26,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class ShowInfoAction extends BaseAction {
 
     public static final String ACTION_ID = "showSystemInfo";

@@ -22,8 +22,6 @@ import com.haulmont.chile.core.datatypes.Enumeration;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.Range;
 
-/**
- */
 public class EnumerationRange extends AbstractRange implements Range {
 
     private Enumeration enumeration;

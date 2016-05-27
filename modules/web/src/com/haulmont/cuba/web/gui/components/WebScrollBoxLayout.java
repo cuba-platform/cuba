@@ -34,8 +34,6 @@ import java.util.*;
 
 import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAlignment;
 
-/**
- */
 public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements ScrollBoxLayout {
 
     public static final String CUBA_SCROLLBOX_CONTENT_STYLE = "cuba-scrollbox-content";

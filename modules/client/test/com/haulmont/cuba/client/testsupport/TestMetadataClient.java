@@ -24,8 +24,6 @@ import com.haulmont.cuba.core.sys.PersistentEntitiesMetadataLoader;
 
 import java.util.List;
 
-/**
- */
 public class TestMetadataClient extends MetadataImpl {
 
     private List<String> packages;

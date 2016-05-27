@@ -42,8 +42,6 @@ import java.io.StringWriter;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-/**
- */
 @Component(EntityLogAPI.NAME)
 public class EntityLog implements EntityLogAPI {
 

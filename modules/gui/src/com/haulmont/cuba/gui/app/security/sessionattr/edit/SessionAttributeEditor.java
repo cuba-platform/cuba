@@ -31,8 +31,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-/**
- */
 public class SessionAttributeEditor extends AbstractEditor {
 
     protected Datasource<SessionAttribute> datasource;

@@ -23,8 +23,6 @@ import com.haulmont.cuba.core.global.NumberIdSource;
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
-/**
- */
 @Component(NumberIdSource.NAME)
 public class NumberIdSourceImpl implements NumberIdSource {
 

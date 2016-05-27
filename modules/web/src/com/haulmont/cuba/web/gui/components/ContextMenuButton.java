@@ -23,8 +23,6 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.Action;
 import org.apache.commons.lang.StringUtils;
 
-/**
- */
 public abstract class ContextMenuButton extends WebButton {
 
     @Override

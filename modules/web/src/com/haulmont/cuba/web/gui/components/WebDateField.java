@@ -42,8 +42,6 @@ import org.apache.commons.lang.StringUtils;
 import java.sql.Time;
 import java.util.*;
 
-/**
- */
 public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> implements DateField {
 
     protected Resolution resolution;

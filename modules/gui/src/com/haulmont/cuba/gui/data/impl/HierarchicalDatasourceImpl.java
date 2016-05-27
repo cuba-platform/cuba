@@ -23,8 +23,6 @@ import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 
 import java.util.*;
 
-/**
- */
 public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
         extends CollectionDatasourceImpl<T, K>
         implements HierarchicalDatasource<T, K> {

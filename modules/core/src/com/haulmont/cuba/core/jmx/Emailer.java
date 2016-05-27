@@ -38,8 +38,6 @@ import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-/**
- */
 @Component("cuba_EmailerMBean")
 public class Emailer implements EmailerMBean {
 

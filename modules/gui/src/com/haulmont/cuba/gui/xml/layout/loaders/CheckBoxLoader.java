@@ -19,8 +19,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.CheckBox;
 
-/**
- */
 public class CheckBoxLoader extends AbstractFieldLoader<CheckBox> {
     @Override
     public void createComponent() {

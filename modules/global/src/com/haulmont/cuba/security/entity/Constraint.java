@@ -23,7 +23,6 @@ import javax.persistence.*;
 
 /**
  * Security constraint definition entity.
- *
  */
 @Entity(name = "sec$Constraint")
 @Table(name = "SEC_CONSTRAINT")

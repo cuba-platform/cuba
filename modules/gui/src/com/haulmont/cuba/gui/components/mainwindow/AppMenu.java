@@ -19,8 +19,6 @@ package com.haulmont.cuba.gui.components.mainwindow;
 
 import com.haulmont.cuba.gui.components.Component;
 
-/**
- */
 public interface AppMenu extends Component.BelongToFrame {
 
     String NAME = "menu";

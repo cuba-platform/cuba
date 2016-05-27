@@ -28,8 +28,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-/**
- */
 public class StatisticsAccumulator {
 
     protected Parameter heapMemoryUsage = new Parameter();

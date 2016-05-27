@@ -17,9 +17,6 @@
 
 package com.haulmont.cuba.core.sys;
 
-/**
- *
- */
 public interface SecurityContextHolder {
 
     SecurityContext get();

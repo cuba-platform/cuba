@@ -24,8 +24,6 @@ import com.haulmont.cuba.gui.components.PickerField;
 
 import javax.inject.Named;
 
-/**
- */
 public class GroupEditor extends AbstractEditor {
 
     @Named("fieldGroup.parent")

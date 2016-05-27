@@ -44,8 +44,6 @@ import org.apache.commons.lang.RandomStringUtils;
 import javax.inject.Inject;
 import java.util.*;
 
-/**
- */
 public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttributesCondition> {
 
     @Inject

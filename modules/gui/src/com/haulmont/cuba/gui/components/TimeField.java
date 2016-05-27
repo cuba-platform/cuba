@@ -16,8 +16,6 @@
  */
 package com.haulmont.cuba.gui.components;
 
-/**
- */
 public interface TimeField extends Field {
 
     String NAME = "timeField";

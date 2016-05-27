@@ -42,8 +42,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 
-/**
- */
 public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implements TimeField {
 
     protected boolean showSeconds;

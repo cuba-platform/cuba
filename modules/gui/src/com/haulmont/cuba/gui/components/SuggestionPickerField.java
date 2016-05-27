@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.gui.components;
 
-/**
- */
 public interface SuggestionPickerField extends SuggestionField, PickerField {
 
     String NAME = "suggestionPickerField";

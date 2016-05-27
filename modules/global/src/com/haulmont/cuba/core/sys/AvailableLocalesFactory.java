@@ -22,8 +22,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.LinkedHashMap;
 
-/**
- */
 public class AvailableLocalesFactory extends TypeFactory {
 
     @Override

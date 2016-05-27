@@ -23,7 +23,6 @@ import javax.persistence.*;
 
 /**
  * Configuration element of <code>EntityLog</code> bean.
- *
  */
 @Entity(name = "sec$LoggedAttribute")
 @Table(name = "SEC_LOGGED_ATTR")

@@ -21,8 +21,6 @@ import com.haulmont.cuba.core.entity.JmxInstance;
 
 import javax.management.MBeanServerConnection;
 
-/**
- */
 public interface JmxAction<T> {
 
     T perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception;

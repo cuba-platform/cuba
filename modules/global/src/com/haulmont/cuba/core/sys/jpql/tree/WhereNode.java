@@ -26,8 +26,6 @@ import org.antlr.runtime.tree.Tree;
 
 import java.util.List;
 
-/**
- */
 public class WhereNode extends BaseCustomNode {
     private Token whereT;
 

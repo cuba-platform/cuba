@@ -19,8 +19,6 @@ package com.haulmont.cuba.core.sys.logging;
 
 import com.haulmont.cuba.core.global.SupportedByClient;
 
-/**
- */
 @SupportedByClient
 public class LogFileNotFoundException extends LogControlException {
 

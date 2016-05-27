@@ -20,8 +20,6 @@ package com.haulmont.cuba.gui.components.mainwindow;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.VBoxLayout;
 
-/**
- */
 public interface AppWorkArea extends Component.BelongToFrame {
 
     String NAME = "workArea";

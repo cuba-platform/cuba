@@ -26,8 +26,6 @@ import com.haulmont.cuba.gui.components.Timer;
 import javax.inject.Inject;
 import java.util.Map;
 
-/**
- */
 public class ThreadsMonitoringWindow extends AbstractWindow {
 
     @Inject

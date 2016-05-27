@@ -43,8 +43,6 @@ import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.util.*;
 
-/**
- */
 @Component(EntitySerializationAPI.NAME)
 public class EntitySerialization implements EntitySerializationAPI {
 

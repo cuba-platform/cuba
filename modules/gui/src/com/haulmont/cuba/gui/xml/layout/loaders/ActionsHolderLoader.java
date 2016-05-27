@@ -28,8 +28,6 @@ import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-/**
- */
 public abstract class ActionsHolderLoader<T extends Component.ActionsHolder> extends AbstractComponentLoader<T> {
 
     @Override

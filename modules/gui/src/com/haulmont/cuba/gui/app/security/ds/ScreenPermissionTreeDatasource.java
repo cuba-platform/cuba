@@ -23,8 +23,6 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.app.security.entity.BasicPermissionTarget;
 
-/**
- */
 public class ScreenPermissionTreeDatasource extends BasicPermissionTreeDatasource {
 
     protected PermissionConfig permissionConfig = AppBeans.get(PermissionConfig.class);

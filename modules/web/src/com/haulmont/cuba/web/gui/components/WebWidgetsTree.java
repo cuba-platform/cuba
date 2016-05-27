@@ -25,11 +25,7 @@ import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaWidgetsTree;
 
-/**
- */
-public class WebWidgetsTree<E extends Entity>
-        extends WebAbstractTree<CubaWidgetsTree, E>
-        implements WidgetsTree<E> {
+public class WebWidgetsTree<E extends Entity> extends WebAbstractTree<CubaWidgetsTree, E> implements WidgetsTree<E> {
 
     protected String hierarchyProperty;
 

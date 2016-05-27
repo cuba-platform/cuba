@@ -46,8 +46,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 
-/**
- */
 public class WebFileMultiUploadField extends WebAbstractUploadComponent<UploadComponent> implements FileMultiUploadField {
 
     private final Logger log = LoggerFactory.getLogger(WebFileMultiUploadField.class);

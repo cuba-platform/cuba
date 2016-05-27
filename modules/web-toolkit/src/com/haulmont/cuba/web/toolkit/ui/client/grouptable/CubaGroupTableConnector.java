@@ -27,8 +27,6 @@ import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.ui.VScrollTable;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
 @Connect(CubaGroupTable.class)
 public class CubaGroupTableConnector extends CubaScrollTableConnector {
 

@@ -22,8 +22,6 @@ import org.springframework.jmx.export.annotation.ManagedOperationParameter;
 import org.springframework.jmx.export.annotation.ManagedOperationParameters;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-/**
- */
 @ManagedResource(description = "Manages configuration properties on Web Portal")
 public interface ConfigStorageMBean {
 

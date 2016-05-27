@@ -19,9 +19,6 @@ package com.haulmont.cuba.core.sys.remoting;
 
 import java.util.UUID;
 
-/**
- *
- */
 public class LocalServiceInvocation {
 
     private String methodName;

@@ -20,8 +20,6 @@ package com.haulmont.cuba.core.config.type;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.OriginalEntityLoadInfo;
 
-/**
- */
 public class EntityStringify extends TypeStringify {
 
     @Override

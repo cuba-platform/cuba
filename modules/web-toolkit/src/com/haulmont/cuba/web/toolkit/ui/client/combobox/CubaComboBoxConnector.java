@@ -24,8 +24,6 @@ import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.combobox.ComboBoxConnector;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
 @Connect(value = CubaComboBox.class, loadStyle = Connect.LoadStyle.EAGER)
 public class CubaComboBoxConnector extends ComboBoxConnector {
 

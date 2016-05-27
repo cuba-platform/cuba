@@ -32,8 +32,6 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nonnull;
 
-/**
- */
 public class LongDatatype extends NumberDatatype implements Datatype<Long> {
 
     public final static String NAME = "long";

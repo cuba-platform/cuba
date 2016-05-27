@@ -22,8 +22,6 @@ import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
 
-/**
- */
 public class DesktopGroupTable<E extends Entity>
         extends DesktopTable<E>
         implements GroupTable<E> {

@@ -32,8 +32,6 @@ import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-/**
- */
 @Service(RelatedEntitiesService.NAME)
 public class RelatedEntitiesServiceBean implements RelatedEntitiesService {
 

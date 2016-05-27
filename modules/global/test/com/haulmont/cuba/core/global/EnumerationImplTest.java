@@ -25,8 +25,6 @@ import org.junit.Test;
 
 import java.text.ParseException;
 
-/**
- */
 public class EnumerationImplTest {
     @Test
     public void testParseIntegerId() throws ParseException {

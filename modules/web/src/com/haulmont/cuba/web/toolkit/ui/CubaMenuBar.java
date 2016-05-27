@@ -25,8 +25,6 @@ import com.vaadin.server.PaintTarget;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class CubaMenuBar extends com.vaadin.ui.MenuBar {
 
     protected Map<MenuItem, String> shortcuts = null;

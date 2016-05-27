@@ -31,8 +31,6 @@ import javax.inject.Named;
 import java.util.Map;
 import java.util.TreeMap;
 
-/**
- */
 public class LockEditor extends AbstractEditor {
 
     @Inject

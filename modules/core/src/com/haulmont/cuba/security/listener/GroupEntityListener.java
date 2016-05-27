@@ -31,8 +31,6 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 @Component("cuba_GroupEntityListener")
 public class GroupEntityListener implements
         BeforeInsertEntityListener<Group>,

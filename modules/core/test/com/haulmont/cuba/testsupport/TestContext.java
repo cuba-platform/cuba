@@ -21,8 +21,6 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- */
 public class TestContext implements Context {
 
     private Map<String, Object> store = new ConcurrentHashMap<>();

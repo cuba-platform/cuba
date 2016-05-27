@@ -22,8 +22,6 @@ import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.customfield.CustomFieldConnector;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
 @Connect(CubaResizableTextAreaWrapper.class)
 public class CubaResizableTextAreaWrapperConnector extends CustomFieldConnector {
 

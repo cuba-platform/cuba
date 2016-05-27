@@ -39,8 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/**
- */
 public class PortalConnection implements Connection {
 
     protected final List<ConnectionListener> listeners = new ArrayList<>();

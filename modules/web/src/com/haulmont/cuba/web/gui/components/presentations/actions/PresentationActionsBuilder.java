@@ -30,8 +30,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-/**
- */
 public class PresentationActionsBuilder {
 
     public enum Type {

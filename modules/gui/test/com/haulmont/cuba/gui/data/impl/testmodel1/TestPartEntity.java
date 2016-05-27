@@ -22,9 +22,6 @@ import org.apache.commons.lang.ObjectUtils;
 
 import javax.persistence.*;
 
-/**
- *
- */
 @Entity(name = "test$PartEntity")
 public class TestPartEntity extends BaseUuidEntity {
 

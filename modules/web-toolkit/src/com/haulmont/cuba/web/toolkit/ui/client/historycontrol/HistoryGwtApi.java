@@ -25,8 +25,6 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.History;
 import com.vaadin.client.BrowserInfo;
 
-/**
- */
 public abstract class HistoryGwtApi {
     private static final String TOP_HISTORY_TOKEN = "!";
     private static final String PREVIOUS_HISTORY_TOKEN = "_";

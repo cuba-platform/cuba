@@ -29,8 +29,6 @@ import javax.management.ObjectName;
 import java.lang.management.ManagementFactory;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- */
 @Component(MiddlewareStatisticsAccumulator.NAME)
 public class MiddlewareStatisticsAccumulator extends StatisticsAccumulator {
 

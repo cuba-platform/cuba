@@ -21,7 +21,6 @@ import org.apache.commons.lang.ObjectUtils;
 
 /**
  * Type of constraint.
- *
  */
 public enum ConstraintCheckType implements EnumClass<String> {
     DATABASE_AND_MEMORY("db_and_memory", true, true),
@@ -38,6 +37,7 @@ public enum ConstraintCheckType implements EnumClass<String> {
         this.memory = memory;
     }
 
+    @Override
     public String getId() {
         return id;
     }

@@ -23,7 +23,6 @@ import org.apache.commons.lang.ObjectUtils;
  * Type of permission.
  * <p/>
  * {@link #id} - corresponding value stored in the database
- *
  */
 public enum PermissionType implements EnumClass<Integer> {
 

@@ -24,8 +24,6 @@ import com.vaadin.data.util.converter.Converter;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-/**
- */
 public class WebOptionsGroup extends WebAbstractOptionsBase<CubaOptionGroup> implements OptionsGroup {
 
     protected Orientation orientation = Orientation.VERTICAL;

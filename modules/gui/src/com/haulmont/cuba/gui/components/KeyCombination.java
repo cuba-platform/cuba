@@ -23,8 +23,6 @@ import com.haulmont.cuba.core.global.Messages;
 
 import java.util.Arrays;
 
-/**
- */
 public class KeyCombination {
     private static final String SHORTCUT_PREFIX = "shortcut.";
     private static final Modifier[] EMPTY_MODIFIERS = new Modifier[0];

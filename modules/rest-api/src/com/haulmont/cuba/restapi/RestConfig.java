@@ -24,8 +24,6 @@ import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
 
-/**
- */
 @Source(type = SourceType.APP)
 public interface RestConfig extends Config {
 

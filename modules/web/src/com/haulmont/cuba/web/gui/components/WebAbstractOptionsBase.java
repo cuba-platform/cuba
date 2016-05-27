@@ -30,8 +30,6 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
-/**
- */
 public class WebAbstractOptionsBase<T extends com.vaadin.ui.AbstractSelect> extends WebAbstractOptionsField<T> {
 
     @Override

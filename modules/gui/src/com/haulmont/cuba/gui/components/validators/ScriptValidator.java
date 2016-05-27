@@ -27,8 +27,6 @@ import org.dom4j.Element;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class ScriptValidator implements Field.Validator {
 
     private String script;

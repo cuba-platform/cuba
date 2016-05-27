@@ -27,8 +27,6 @@ import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 @Component(DomainAliasesResolver.NAME)
 public class DefaultDomainAliasesResolver implements DomainAliasesResolver {
 

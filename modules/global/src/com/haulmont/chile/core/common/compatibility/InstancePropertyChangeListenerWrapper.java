@@ -20,8 +20,6 @@ package com.haulmont.chile.core.common.compatibility;
 import com.haulmont.chile.core.common.ValueListener;
 import com.haulmont.chile.core.model.Instance;
 
-/**
- */
 @Deprecated
 public class InstancePropertyChangeListenerWrapper implements Instance.PropertyChangeListener {
 

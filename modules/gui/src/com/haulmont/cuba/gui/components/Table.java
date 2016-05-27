@@ -27,8 +27,6 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
-/**
- */
 public interface Table<E extends Entity>
         extends
             ListComponent<E>, Component.Editable, Component.HasSettings,

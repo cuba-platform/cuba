@@ -36,8 +36,6 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Constructor;
 import java.util.*;
 
-/**
- */
 public class WindowDelegate {
 
     public static final String LOOKUP_ITEM_CLICK_ACTION_ID = "lookupItemClickAction";

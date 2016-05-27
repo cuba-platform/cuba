@@ -25,8 +25,6 @@ import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.datefield.PopupDateFieldConnector;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
 @Connect(CubaDateField.class)
 public class CubaDateFieldConnector extends PopupDateFieldConnector {
 

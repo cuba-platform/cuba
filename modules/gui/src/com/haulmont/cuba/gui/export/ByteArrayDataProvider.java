@@ -19,8 +19,6 @@ package com.haulmont.cuba.gui.export;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-/**
- */
 public class ByteArrayDataProvider implements ExportDataProvider {
 
     private byte[] data;

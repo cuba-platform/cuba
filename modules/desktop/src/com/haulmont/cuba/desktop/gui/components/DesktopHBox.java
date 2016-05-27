@@ -20,9 +20,6 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.gui.components.HBoxLayout;
 
-/**
- *
- */
 public class DesktopHBox extends DesktopAbstractBox implements AutoExpanding, HBoxLayout {
 
     public DesktopHBox() {

@@ -22,8 +22,6 @@ import groovy.lang.Closure;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- */
 public class PostUpdateScripts {
 
     private List<Closure> updates = new LinkedList<>();

@@ -34,8 +34,6 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
 
-/**
- */
 public class IntegerDatatype extends NumberDatatype implements Datatype<Integer> {
 
     public final static String NAME = "int";

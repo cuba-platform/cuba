@@ -26,8 +26,6 @@ import com.vaadin.ui.TextField;
 
 import java.util.Map;
 
-/**
- */
 public class CubaTextField extends TextField implements Action.Container {
 
     /**
@@ -122,5 +120,4 @@ public class CubaTextField extends TextField implements Action.Container {
     public boolean isReadOnlyFocusable() {
         return getState(false).readOnlyFocusable;
     }
-
 }

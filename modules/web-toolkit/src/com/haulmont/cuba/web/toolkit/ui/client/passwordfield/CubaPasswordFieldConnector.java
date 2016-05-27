@@ -22,8 +22,6 @@ import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.passwordfield.PasswordFieldConnector;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
 @Connect(CubaPasswordField.class)
 public class CubaPasswordFieldConnector extends PasswordFieldConnector {
 

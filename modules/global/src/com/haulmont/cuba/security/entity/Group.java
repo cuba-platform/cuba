@@ -30,7 +30,6 @@ import java.util.Set;
 
 /**
  * User access group.
- *
  */
 @Entity(name = "sec$Group")
 @Table(name = "SEC_GROUP")

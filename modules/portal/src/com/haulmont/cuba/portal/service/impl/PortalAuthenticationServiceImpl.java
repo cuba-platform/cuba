@@ -31,8 +31,6 @@ import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 @Service(PortalAuthenticationService.NAME)
 public class PortalAuthenticationServiceImpl implements PortalAuthenticationService {
 

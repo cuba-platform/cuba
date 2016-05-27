@@ -31,8 +31,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-/**
- */
 public class LoginProperties {
 
     private Logger log = LoggerFactory.getLogger(LoginProperties.class);

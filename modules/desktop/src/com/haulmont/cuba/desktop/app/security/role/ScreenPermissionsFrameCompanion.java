@@ -31,8 +31,6 @@ import com.haulmont.cuba.gui.app.security.entity.PermissionVariant;
 
 import javax.swing.*;
 
-/**
- */
 public class ScreenPermissionsFrameCompanion implements ScreenPermissionsFrame.Companion {
 
     protected Messages messages = AppBeans.get(Messages.NAME);

@@ -26,7 +26,6 @@ import java.util.Date;
 
 /**
  * A screen presentation settings.
- *
  */
 @Entity(name = "sec$Presentation")
 @Table(name = "SEC_PRESENTATION")

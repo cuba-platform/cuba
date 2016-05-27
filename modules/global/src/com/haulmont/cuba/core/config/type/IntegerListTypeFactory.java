@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- */
 public class IntegerListTypeFactory extends TypeFactory {
 
     private Logger log = LoggerFactory.getLogger(IntegerListTypeFactory.class);

@@ -24,8 +24,6 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-/**
- */
 public class PasswordEncryptionTest extends TestCase {
     private static final String PASSWORD_KEY = "25tuThUw";
 

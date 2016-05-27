@@ -20,9 +20,6 @@ package com.haulmont.cuba.desktop.gui;
 import com.haulmont.cuba.gui.ComponentPalette;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 
-/**
- *
- */
 public class DesktopUIPaletteManager {
 
     public static void registerPalettes(ComponentPalette... palettes) {

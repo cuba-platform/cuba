@@ -22,9 +22,6 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
-/**
- *
- */
 @SystemLevel
 @MetaClass(name = "sys$AppPropertyEntity")
 public class AppPropertyEntity extends AbstractNotPersistentEntity implements Comparable<AppPropertyEntity> {

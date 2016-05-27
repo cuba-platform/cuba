@@ -24,8 +24,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- */
 public final class ParametersHelper {
 
     public static final String QUERY_PARAMETERS_RE = ":(\\(\\?i\\))?([\\w\\.\\$]+)";

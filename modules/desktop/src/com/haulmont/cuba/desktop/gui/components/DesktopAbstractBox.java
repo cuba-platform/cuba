@@ -31,8 +31,6 @@ import javax.annotation.Nullable;
 import javax.swing.*;
 import java.util.*;
 
-/**
- */
 public abstract class DesktopAbstractBox
         extends DesktopAbstractComponent<JPanel>
         implements com.haulmont.cuba.gui.components.BoxLayout, DesktopContainer {

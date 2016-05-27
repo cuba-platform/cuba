@@ -32,8 +32,6 @@ import java.util.UUID;
 import static com.haulmont.cuba.testsupport.TestSupport.reserialize;
 import static org.junit.Assert.assertEquals;
 
-/**
- */
 public class OrmBehaviorTest {
 
     @ClassRule

@@ -19,8 +19,6 @@ package com.haulmont.cuba.core.config.type;
 
 import com.haulmont.cuba.core.global.UuidProvider;
 
-/**
- */
 public class UuidTypeFactory extends TypeFactory {
     @Override
     public Object build(String string) {

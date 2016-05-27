@@ -31,8 +31,6 @@ import java.util.Set;
 
 import static javax.swing.KeyStroke.getKeyStroke;
 
-/**
- */
 public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> implements TextArea {
 
     protected JComponent composition;

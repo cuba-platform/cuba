@@ -21,8 +21,6 @@ import com.haulmont.cuba.core.sys.jpql.InferredType;
 
 import java.util.*;
 
-/**
- */
 public class EntityImpl implements Entity {
     private String name;
     private List<String> attributeNames = new ArrayList<>();

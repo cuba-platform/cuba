@@ -39,8 +39,6 @@ import java.awt.font.TextAttribute;
 import java.util.*;
 import java.util.List;
 
-/**
- */
 public class SwingXTableSettings implements TableSettings {
 
     protected final Logger log = LoggerFactory.getLogger(SwingXTableSettings.class);

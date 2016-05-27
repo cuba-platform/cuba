@@ -24,8 +24,6 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 
 import org.springframework.stereotype.Component;
 
-/**
- */
 @Component(NodeIdentifier.NAME)
 public class NodeIdentifierImpl implements NodeIdentifier {
     @Override

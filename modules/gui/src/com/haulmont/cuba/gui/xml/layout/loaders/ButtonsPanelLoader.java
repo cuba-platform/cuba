@@ -24,8 +24,6 @@ import org.apache.commons.lang.StringUtils;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 
-/**
- */
 public class ButtonsPanelLoader extends ContainerLoader<ButtonsPanel> {
 
     protected void applyButtonsProvider(ButtonsPanel panel, ButtonsPanel.Provider buttonsProvider)

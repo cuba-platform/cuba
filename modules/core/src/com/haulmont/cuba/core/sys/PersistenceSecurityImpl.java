@@ -42,8 +42,6 @@ import java.util.*;
 
 import static java.lang.String.format;
 
-/**
- */
 @PerformanceLog
 public class PersistenceSecurityImpl extends SecurityImpl implements PersistenceSecurity {
     protected final Logger log = LoggerFactory.getLogger(getClass());

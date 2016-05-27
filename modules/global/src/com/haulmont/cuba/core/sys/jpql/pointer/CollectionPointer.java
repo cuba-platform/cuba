@@ -20,8 +20,6 @@ package com.haulmont.cuba.core.sys.jpql.pointer;
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 
-/**
- */
 public class CollectionPointer implements com.haulmont.cuba.core.sys.jpql.pointer.Pointer {
     private Entity entity;
 

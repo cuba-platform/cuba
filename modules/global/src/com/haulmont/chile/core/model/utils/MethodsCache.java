@@ -23,8 +23,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.HashMap;
 
-/**
- */
 public class MethodsCache {
 
     private final transient Map<String, Method> getters = new HashMap<>();

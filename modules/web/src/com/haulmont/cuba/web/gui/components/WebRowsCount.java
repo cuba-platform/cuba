@@ -25,8 +25,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource.Operation;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.toolkit.ui.CubaRowsCount;
 
-/**
- */
 public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements RowsCount {
 
     protected CollectionDatasource datasource;

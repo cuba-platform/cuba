@@ -25,8 +25,6 @@ import org.junit.Ignore;
 
 import java.util.Locale;
 
-/**
- */
 @Ignore
 public abstract class AbstractDatatypeTest extends CubaClientTestCase {
 

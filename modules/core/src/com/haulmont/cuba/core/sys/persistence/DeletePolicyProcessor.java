@@ -38,8 +38,6 @@ import javax.inject.Inject;
 import java.sql.SQLException;
 import java.util.*;
 
-/**
- */
 @Component(DeletePolicyProcessor.NAME)
 @Scope("prototype")
 public class DeletePolicyProcessor {

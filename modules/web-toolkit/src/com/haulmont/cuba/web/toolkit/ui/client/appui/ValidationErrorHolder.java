@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.appui;
 
-/**
- */
 public class ValidationErrorHolder {
 
     private static final long VALIDATION_ERROR_TIME_GAP_MS = 150;

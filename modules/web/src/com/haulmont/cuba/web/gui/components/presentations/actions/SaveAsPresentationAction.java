@@ -24,8 +24,6 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.security.entity.Presentation;
 
-/**
- */
 public class SaveAsPresentationAction extends AbstractEditPresentationAction {
 
     protected Metadata metadata = AppBeans.get(Metadata.NAME);

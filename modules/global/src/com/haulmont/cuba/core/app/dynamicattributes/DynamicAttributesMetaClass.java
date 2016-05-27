@@ -30,9 +30,6 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import javax.annotation.Nullable;
 import java.util.*;
 
-/**
- */
-
 public class DynamicAttributesMetaClass extends MetadataObjectImpl implements MetaClass {
 
     private Map<String, MetaProperty> properties = new LinkedHashMap<>();

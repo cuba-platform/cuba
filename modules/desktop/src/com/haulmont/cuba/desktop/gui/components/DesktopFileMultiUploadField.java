@@ -36,8 +36,6 @@ import java.util.*;
 
 import static com.haulmont.cuba.gui.upload.FileUploadingAPI.FileInfo;
 
-/**
- */
 public class DesktopFileMultiUploadField extends DesktopAbstractUploadComponent<JButton> implements FileMultiUploadField {
 
     protected static final String DEFAULT_ICON = "/components/multiupload/multiupload-button.png";

@@ -23,8 +23,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
-/**
- */
 public abstract class ValidationAwareAction extends AbstractAction {
     @Override
     public void actionPerformed(final ActionEvent e) {

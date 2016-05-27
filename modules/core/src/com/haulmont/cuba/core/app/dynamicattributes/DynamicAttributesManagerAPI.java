@@ -27,8 +27,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-/**
- */
 public interface DynamicAttributesManagerAPI {
     String NAME = "cuba_DynamicAttributesManager";
 

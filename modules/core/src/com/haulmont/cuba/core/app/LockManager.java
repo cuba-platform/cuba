@@ -39,8 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- */
 @Component(LockManagerAPI.NAME)
 public class LockManager implements LockManagerAPI, ClusterListener<LockInfo> {
 

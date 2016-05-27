@@ -33,8 +33,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- */
 public class MultiUploader extends AbstractWindow {
 
     protected Map<FileDescriptor, UUID> tmpFileDescriptors = new HashMap<>();

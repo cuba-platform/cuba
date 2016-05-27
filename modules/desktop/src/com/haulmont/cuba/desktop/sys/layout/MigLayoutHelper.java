@@ -24,8 +24,6 @@ import net.miginfocom.layout.CC;
 import net.miginfocom.layout.UnitValue;
 import org.apache.commons.lang.StringUtils;
 
-/**
- */
 public class MigLayoutHelper {
 
     public static UnitValue[] makeInsets(boolean[] margins) {

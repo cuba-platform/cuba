@@ -16,24 +16,23 @@
  */
 package com.haulmont.cuba.core.sys.querymacro;
 
-import com.google.common.collect.ImmutableMap;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.TimeSource;
 import com.google.common.base.Strings;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Scripting;
+import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.QueryMacroHandler;
 import groovy.lang.Binding;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.context.annotation.Scope;
-
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- */
 @Component("cuba_TimeBetweenQueryMacroHandler")
 @Scope("prototype")
 public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {

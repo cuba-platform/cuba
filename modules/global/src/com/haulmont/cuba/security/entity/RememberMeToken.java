@@ -22,8 +22,6 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
 
-/**
- */
 @Entity(name = "sec$RememberMeToken")
 @Table(name = "SEC_REMEMBER_ME")
 @SystemLevel

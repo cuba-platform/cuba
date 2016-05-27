@@ -18,8 +18,6 @@ package com.haulmont.cuba.gui.components;
 
 import java.util.TimeZone;
 
-/**
- */
 public interface DateField extends Field {
 
     String NAME = "dateField";

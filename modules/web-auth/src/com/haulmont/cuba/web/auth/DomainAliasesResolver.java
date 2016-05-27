@@ -17,10 +17,7 @@
 
 package com.haulmont.cuba.web.auth;
 
-/**
- */
 public interface DomainAliasesResolver {
-
     String NAME = "cuba_DomainResolver";
 
     String getDomainName(String alias);

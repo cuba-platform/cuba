@@ -26,8 +26,6 @@ import com.haulmont.cuba.web.gui.components.presentations.PresentationEditor;
 
 import java.lang.reflect.Constructor;
 
-/**
- */
 public abstract class AbstractEditPresentationAction extends AbstractPresentationAction {
 
     protected Class<? extends PresentationEditor> editorClass;

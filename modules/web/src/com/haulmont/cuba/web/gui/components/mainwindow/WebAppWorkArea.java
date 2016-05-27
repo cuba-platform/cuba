@@ -38,8 +38,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- */
 public class WebAppWorkArea extends WebAbstractComponent<VerticalLayout> implements AppWorkArea {
 
     public static final String WORKAREA_STYLENAME = "cuba-app-workarea";

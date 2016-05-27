@@ -25,8 +25,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-/**
- */
 public class GroupDatasourceImpl<T extends Entity<K>, K>
         extends CollectionDatasourceImpl<T, K>
         implements GroupDatasource<T, K> {

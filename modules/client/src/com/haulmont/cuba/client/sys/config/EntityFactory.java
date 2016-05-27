@@ -26,8 +26,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
-/**
- */
 @Component(TypeFactory.ENTITY_FACTORY_BEAN_NAME)
 public class EntityFactory extends TypeFactory {
 

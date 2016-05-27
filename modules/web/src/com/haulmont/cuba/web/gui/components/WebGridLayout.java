@@ -29,8 +29,6 @@ import java.util.*;
 
 import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAlignment;
 
-/**
- */
 public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implements GridLayout {
 
     protected String id;

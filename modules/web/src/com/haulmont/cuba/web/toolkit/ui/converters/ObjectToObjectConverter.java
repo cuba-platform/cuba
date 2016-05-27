@@ -21,8 +21,6 @@ import com.vaadin.data.util.converter.Converter;
 
 import java.util.Locale;
 
-/**
- */
 public class ObjectToObjectConverter implements Converter<Object, Object> {
 
     @Override

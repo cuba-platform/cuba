@@ -28,8 +28,6 @@ import com.vaadin.client.ServerConnector;
 import com.vaadin.client.extensions.AbstractExtensionConnector;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
 @Connect(CubaFileDownloader.class)
 public class CubaFileDownloaderConnector extends AbstractExtensionConnector {
 

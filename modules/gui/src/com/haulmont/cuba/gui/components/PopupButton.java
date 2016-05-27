@@ -16,8 +16,6 @@
  */
 package com.haulmont.cuba.gui.components;
 
-/**
- */
 public interface PopupButton extends Component.ActionsHolder,
         Component.HasCaption, Component.BelongToFrame, Component.HasIcon, Component.Focusable {
 

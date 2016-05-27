@@ -27,8 +27,6 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-/**
- */
 public class RelatedEntitiesLoader extends AbstractComponentLoader<RelatedEntities> {
 
     @Override

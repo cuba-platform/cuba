@@ -23,8 +23,6 @@ import com.vaadin.ui.GridLayout;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class CubaFieldGroupLayout extends GridLayout {
 
     protected Map<Integer, Integer> columnFieldCaptionWidth = null;

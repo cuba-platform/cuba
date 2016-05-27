@@ -19,8 +19,6 @@ package com.haulmont.cuba.gui.components.compatibility;
 
 import com.haulmont.cuba.gui.components.Timer;
 
-/**
- */
 @Deprecated
 public class TimerListenerWrapper implements Timer.ActionListener, Timer.StopListener {
 

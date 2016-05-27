@@ -42,8 +42,6 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
-/**
- */
 public class RelatedAction extends AbstractAction {
 
     public static final String ACTION_ID = "related";

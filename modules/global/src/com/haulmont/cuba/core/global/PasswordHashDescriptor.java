@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.core.global;
 
-/**
- */
 public class PasswordHashDescriptor extends HashDescriptor {
 
     private final String accessHash;

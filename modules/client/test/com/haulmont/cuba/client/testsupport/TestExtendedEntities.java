@@ -20,8 +20,6 @@ package com.haulmont.cuba.client.testsupport;
 import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.Metadata;
 
-/**
- */
 public class TestExtendedEntities extends ExtendedEntities {
 
     public TestExtendedEntities(Metadata metadata) {

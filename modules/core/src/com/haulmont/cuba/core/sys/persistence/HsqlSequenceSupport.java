@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.core.sys.persistence;
 
-/**
- */
 public class HsqlSequenceSupport implements SequenceSupport {
 
     @Override

@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.core.sys;
 
-/**
- */
 public interface NumberIdSequence {
 
     Long createLongId(String entityName);

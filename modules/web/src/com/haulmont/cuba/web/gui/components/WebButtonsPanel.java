@@ -18,8 +18,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.ButtonsPanel;
 
-/**
- */
 public class WebButtonsPanel extends WebHBoxLayout implements ButtonsPanel {
 
     public static final String BUTTONS_PANNEL_STYLENAME = "cuba-buttons-panel";

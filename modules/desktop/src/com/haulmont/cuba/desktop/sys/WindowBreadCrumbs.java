@@ -28,8 +28,6 @@ import java.awt.event.ActionEvent;
 import java.io.Serializable;
 import java.util.*;
 
-/**
- */
 public class WindowBreadCrumbs extends JPanel {
 
     public interface Listener extends Serializable {

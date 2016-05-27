@@ -30,8 +30,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- */
 public class FileBrowser extends AbstractLookup {
 
     @Inject
@@ -75,8 +73,5 @@ public class FileBrowser extends AbstractLookup {
                 });
             }
         });
-
-//        TODO generated column with download link and formatted file size
-//        FileDownloadHelper.initGeneratedColumn(filesTable);
     }
 }

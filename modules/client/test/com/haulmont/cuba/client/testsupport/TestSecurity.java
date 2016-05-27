@@ -22,8 +22,6 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.SecurityImpl;
 
-/**
- */
 public class TestSecurity extends SecurityImpl {
 
     public TestSecurity(UserSessionSource sessionSource, Metadata metadata, ExtendedEntities extendedEntities) {

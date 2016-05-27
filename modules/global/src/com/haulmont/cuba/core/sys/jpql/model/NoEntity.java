@@ -22,8 +22,6 @@ import com.haulmont.cuba.core.sys.jpql.InferredType;
 import java.util.List;
 import java.util.Set;
 
-/**
- */
 public class NoEntity implements Entity{
     public static final NoEntity instance = new NoEntity();
 

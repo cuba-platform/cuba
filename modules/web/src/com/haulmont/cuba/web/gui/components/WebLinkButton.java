@@ -20,9 +20,6 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.components.LinkButton;
 import com.vaadin.ui.themes.BaseTheme;
 
-/**
- *
- */
 public class WebLinkButton extends WebButton implements LinkButton {
 
     public WebLinkButton() {

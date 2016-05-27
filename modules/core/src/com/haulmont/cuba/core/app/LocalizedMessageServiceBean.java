@@ -23,8 +23,6 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.Locale;
 
-/**
- */
 @Component(LocalizedMessageService.NAME)
 public class LocalizedMessageServiceBean implements LocalizedMessageService {
 

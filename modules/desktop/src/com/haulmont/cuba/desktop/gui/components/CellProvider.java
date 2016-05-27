@@ -23,8 +23,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import javax.annotation.Nullable;
 import java.awt.*;
 
-/**
- */
 public interface CellProvider<E extends Entity> {
 
     @Nullable

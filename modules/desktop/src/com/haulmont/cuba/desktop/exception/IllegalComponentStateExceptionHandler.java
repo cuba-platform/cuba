@@ -20,8 +20,6 @@ package com.haulmont.cuba.desktop.exception;
 import javax.annotation.Nullable;
 import java.awt.*;
 
-/**
- */
 public class IllegalComponentStateExceptionHandler extends AbstractExceptionHandler {
 
     public IllegalComponentStateExceptionHandler() {

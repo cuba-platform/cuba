@@ -26,8 +26,6 @@ import org.apache.commons.lang.StringUtils;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- */
 public class MigBoxLayoutAdapter extends BoxLayoutAdapter {
 
     protected MigLayout layout;

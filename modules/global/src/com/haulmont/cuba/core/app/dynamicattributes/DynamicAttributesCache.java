@@ -32,8 +32,6 @@ import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.*;
 
-/**
- */
 @Immutable
 public class DynamicAttributesCache implements Serializable {
     protected final Multimap<String, Category> categoriesCache;

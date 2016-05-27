@@ -37,13 +37,10 @@ import com.vaadin.client.ui.treetable.TreeTableConnector;
 import com.vaadin.shared.ui.Connect;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
 
 import static com.haulmont.cuba.web.toolkit.ui.client.Tools.findCurrentOrParentTd;
 
-/**
- */
 @Connect(CubaTreeTable.class)
 public class CubaTreeTableConnector extends TreeTableConnector {
 

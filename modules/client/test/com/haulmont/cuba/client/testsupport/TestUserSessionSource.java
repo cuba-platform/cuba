@@ -27,8 +27,6 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.UUID;
 
-/**
- */
 public class TestUserSessionSource extends AbstractUserSessionSource {
 
     public static final String USER_ID = "60885987-1b61-4247-94c7-dff348347f93";

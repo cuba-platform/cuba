@@ -19,8 +19,6 @@ package com.haulmont.chile.core.model.impl;
 
 import com.haulmont.chile.core.model.Range;
 
-/**
- */
 public abstract class AbstractRange implements Range {
 
     private Cardinality cardinality = Cardinality.NONE;

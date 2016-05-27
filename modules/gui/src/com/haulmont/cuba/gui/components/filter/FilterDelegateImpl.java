@@ -76,8 +76,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- */
 @org.springframework.stereotype.Component(FilterDelegate.NAME)
 @Scope("prototype")
 public class FilterDelegateImpl implements FilterDelegate {

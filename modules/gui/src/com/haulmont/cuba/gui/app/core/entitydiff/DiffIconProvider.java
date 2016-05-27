@@ -24,8 +24,6 @@ import com.haulmont.cuba.gui.components.ListComponent.IconProvider;
 
 import javax.annotation.Nullable;
 
-/**
- */
 public class DiffIconProvider implements IconProvider<EntityPropertyDiff> {
 
     @Nullable

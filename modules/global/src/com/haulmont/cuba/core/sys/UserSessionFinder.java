@@ -21,8 +21,6 @@ import com.haulmont.cuba.security.global.UserSession;
 
 import java.util.UUID;
 
-/**
- */
 public interface UserSessionFinder {
 
     UserSession findSession(UUID sessionId);

@@ -28,8 +28,6 @@ import java.util.concurrent.ConcurrentMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-/**
- */
 @Component(ObjectsCacheManagerAPI.NAME)
 public class ObjectsCacheManager implements ObjectsCacheManagerAPI {
 

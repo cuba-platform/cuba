@@ -20,9 +20,6 @@ package com.haulmont.cuba.gui.app.security.entity;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import org.apache.commons.lang.ObjectUtils;
 
-/**
- *
- */
 public enum AttributePermissionVariant implements EnumClass<Integer> {
 
     /**

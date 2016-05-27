@@ -23,8 +23,6 @@ import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
 
-/**
- */
 public class ChangeSubstUserAction extends AbstractAction {
     protected User user;
 

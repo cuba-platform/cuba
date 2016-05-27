@@ -36,8 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-/**
- */
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Component(QueryParser.NAME)
 @PerformanceLog

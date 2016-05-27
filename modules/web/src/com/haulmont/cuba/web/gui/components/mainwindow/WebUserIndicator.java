@@ -44,8 +44,6 @@ import java.util.List;
 
 import static com.vaadin.server.Sizeable.Unit;
 
-/**
- */
 public class WebUserIndicator extends WebAbstractComponent<HorizontalLayout> implements UserIndicator {
 
     protected UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);

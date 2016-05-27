@@ -27,8 +27,6 @@ import com.vaadin.client.ui.gridlayout.GridLayoutConnector;
 import com.vaadin.client.ui.layout.VLayoutSlot;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
 @Connect(CubaGridLayout.class)
 public class CubaGridLayoutConnector extends GridLayoutConnector {
 

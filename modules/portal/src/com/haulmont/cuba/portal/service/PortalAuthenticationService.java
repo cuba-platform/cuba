@@ -21,8 +21,6 @@ import com.haulmont.cuba.portal.security.PortalSession;
 
 import javax.servlet.http.HttpSession;
 
-/**
- */
 public interface PortalAuthenticationService {
 
     String NAME = "cuba_PortalAuthenticationService";
@@ -41,5 +39,4 @@ public interface PortalAuthenticationService {
      * @param session HttpSession
      */
     void logout(HttpSession session);
-
 }

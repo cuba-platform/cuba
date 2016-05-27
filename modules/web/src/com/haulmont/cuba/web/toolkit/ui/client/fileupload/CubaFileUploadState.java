@@ -22,8 +22,6 @@ import com.vaadin.shared.ui.TabIndexState;
 
 import java.util.Set;
 
-/**
- */
 public class CubaFileUploadState extends TabIndexState {
 
     {

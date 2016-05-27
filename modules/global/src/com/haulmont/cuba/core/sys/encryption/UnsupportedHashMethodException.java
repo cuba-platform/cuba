@@ -19,8 +19,6 @@ package com.haulmont.cuba.core.sys.encryption;
 
 import com.haulmont.cuba.core.global.SupportedByClient;
 
-/**
- */
 @SupportedByClient
 public class UnsupportedHashMethodException extends RuntimeException {
 }

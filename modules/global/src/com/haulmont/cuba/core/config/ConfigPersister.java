@@ -16,10 +16,7 @@
  */
 package com.haulmont.cuba.core.config;
 
-/**
- */
 public interface ConfigPersister {
-
     String getProperty(SourceType sourceType, String name);
 
     void setProperty(SourceType sourceType, String name, String value);

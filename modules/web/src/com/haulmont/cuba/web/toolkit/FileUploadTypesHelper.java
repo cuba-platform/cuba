@@ -20,8 +20,6 @@ package com.haulmont.cuba.web.toolkit;
 import com.haulmont.cuba.core.global.FileTypesHelper;
 import org.apache.commons.lang.StringUtils;
 
-/**
- */
 public final class FileUploadTypesHelper {
 
     public static final String TYPES_SPLITTER = ",";

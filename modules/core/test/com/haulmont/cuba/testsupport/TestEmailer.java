@@ -19,8 +19,6 @@ package com.haulmont.cuba.testsupport;
 
 import com.haulmont.cuba.core.app.Emailer;
 
-/**
- */
 public class TestEmailer extends Emailer {
     @Override
     protected boolean applicationNotStartedYet() {

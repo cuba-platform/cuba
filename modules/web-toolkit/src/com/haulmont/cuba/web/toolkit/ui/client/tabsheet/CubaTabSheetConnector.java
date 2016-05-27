@@ -28,8 +28,6 @@ import com.vaadin.client.ui.Action;
 import com.vaadin.shared.ui.Connect;
 import fi.jasoft.dragdroplayouts.client.ui.tabsheet.DDTabsheetConnector;
 
-/**
- */
 @Connect(CubaTabSheet.class)
 public class CubaTabSheetConnector extends DDTabsheetConnector {
 

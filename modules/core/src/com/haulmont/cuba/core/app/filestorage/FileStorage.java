@@ -42,8 +42,6 @@ import java.util.concurrent.Executors;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-/**
- */
 @Component(FileStorageAPI.NAME)
 public class FileStorage implements FileStorageAPI {
 

@@ -23,8 +23,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 public class NumberAggregationHelper {
 
     private final List<Double> items;

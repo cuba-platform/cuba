@@ -22,8 +22,6 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.util.Map;
 
-/**
- */
 @Service(ObjectsCacheManagerService.NAME)
 public class ObjectsCacheManagerServiceBean implements ObjectsCacheManagerService {
 

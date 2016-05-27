@@ -20,8 +20,6 @@ package com.haulmont.cuba.core.sys.jpql;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 public class QueryErrorsFoundException extends RuntimeException {
 
     private List<ErrorRec> errorRecs;

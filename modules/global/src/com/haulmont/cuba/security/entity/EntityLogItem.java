@@ -30,7 +30,6 @@ import java.util.UUID;
 /**
  * Record containing information about entity lifecycle event.
  * Created by <code>EntityLog</code> bean.
- *
  */
 @Entity(name = "sec$EntityLog")
 @Table(name = "SEC_ENTITY_LOG")

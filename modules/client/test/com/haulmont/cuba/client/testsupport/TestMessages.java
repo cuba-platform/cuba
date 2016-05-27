@@ -20,8 +20,6 @@ package com.haulmont.cuba.client.testsupport;
 import com.haulmont.cuba.client.sys.MessagesClientImpl;
 import com.haulmont.cuba.core.global.*;
 
-/**
- */
 public class TestMessages extends MessagesClientImpl {
 
     public TestMessages(UserSessionSource userSessionSource, Configuration configuration,

@@ -22,8 +22,6 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
-/**
- */
 @MetaClass(name = "stat$ThreadSnapshot")
 @SystemLevel
 public class ThreadSnapshot extends AbstractNotPersistentEntity {

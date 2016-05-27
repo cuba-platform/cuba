@@ -22,8 +22,6 @@ import com.haulmont.cuba.gui.components.LookupField;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.ComboBox;
 
-/**
- */
 public class WebComponentsUtils {
 
     public static void allowHtmlContent(Label label) {

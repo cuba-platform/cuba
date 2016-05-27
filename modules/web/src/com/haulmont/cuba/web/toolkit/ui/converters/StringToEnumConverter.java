@@ -26,8 +26,6 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.Locale;
 
-/**
- */
 public class StringToEnumConverter implements Converter<String, Enum> {
 
     protected Class<Enum> enumClass;

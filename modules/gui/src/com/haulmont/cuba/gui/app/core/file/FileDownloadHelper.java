@@ -28,8 +28,6 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import java.text.NumberFormat;
 
-/**
- */
 public class FileDownloadHelper {
 
     public static String makeLink(FileDescriptor fd, boolean newWindow, boolean attachment) {

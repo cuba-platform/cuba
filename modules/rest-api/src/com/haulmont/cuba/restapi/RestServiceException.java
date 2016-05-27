@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.restapi;
 
-/**
- */
 public class RestServiceException extends Exception {
 
     public RestServiceException() {

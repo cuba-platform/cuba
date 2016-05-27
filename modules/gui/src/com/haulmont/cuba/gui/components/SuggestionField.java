@@ -22,8 +22,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import java.util.List;
 import java.util.Map;
 
-/**
- */
 public interface SuggestionField extends SearchField {
 
     String NAME = "suggestionField";

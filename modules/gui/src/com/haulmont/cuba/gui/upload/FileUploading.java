@@ -49,8 +49,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-/**
- */
 @Component(FileUploadingAPI.NAME)
 public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 

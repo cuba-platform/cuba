@@ -31,8 +31,6 @@ import org.junit.Test;
 
 import java.util.List;
 
-/**
- */
 public class Jpa2GrammarTest {
 
     @Test

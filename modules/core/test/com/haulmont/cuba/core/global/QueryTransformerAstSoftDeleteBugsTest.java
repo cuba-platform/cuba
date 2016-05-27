@@ -24,8 +24,6 @@ import com.haulmont.cuba.core.sys.jpql.transform.QueryTransformerAstBased;
 import junit.framework.TestCase;
 import org.antlr.runtime.RecognitionException;
 
-/**
- */
 public class QueryTransformerAstSoftDeleteBugsTest extends TestCase {
 
     // #PL-1998 (fixed)

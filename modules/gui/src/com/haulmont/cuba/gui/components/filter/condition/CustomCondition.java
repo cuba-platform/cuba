@@ -32,9 +32,6 @@ import org.dom4j.Element;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
-/**
- */
-
 @MetaClass(name = "sec$CustomCondition")
 @SystemLevel
 public class CustomCondition extends AbstractCondition {

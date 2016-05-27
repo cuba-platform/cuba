@@ -24,8 +24,6 @@ import org.antlr.runtime.tree.Tree;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 public class PathEntityReference implements EntityReference {
     private PathNode pathNode;
     private String pathStartingEntityName;

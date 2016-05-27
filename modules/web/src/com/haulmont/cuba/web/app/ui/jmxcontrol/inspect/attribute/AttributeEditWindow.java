@@ -28,8 +28,6 @@ import org.apache.commons.lang.ObjectUtils;
 import javax.inject.Inject;
 import java.util.Map;
 
-/**
- */
 public class AttributeEditWindow extends AbstractEditor<ManagedBeanAttribute> {
 
     protected AttributeEditor valueHolder;

@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.web.app.ui.statistics;
 
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.global.*;
@@ -36,8 +35,6 @@ import javax.management.ReflectionException;
 import javax.management.openmbean.CompositeData;
 import java.util.*;
 
-/**
- */
 public class StatisticsDatasource extends GroupDatasourceImpl<PerformanceParameter, UUID> {
 
     private Logger log = LoggerFactory.getLogger(StatisticsDatasource.class);

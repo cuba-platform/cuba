@@ -34,8 +34,6 @@ import org.perf4j.log4j.Log4JStopWatch;
 
 import java.io.InputStream;
 
-/**
- */
 public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
 
     private static final String DEFAULT_DESCRIPTOR = "/com/haulmont/cuba/gui/app/core/dynamicattributes/runtime-properties-frame.xml";

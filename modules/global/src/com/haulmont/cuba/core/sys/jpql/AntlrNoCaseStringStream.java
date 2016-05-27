@@ -25,9 +25,6 @@ import org.antlr.runtime.CharStream;
  *
  * Created on January 25, 2008, 2:12 PM
  */
-
-/**
- */
 public class AntlrNoCaseStringStream extends ANTLRStringStream {
     public AntlrNoCaseStringStream(String str) {
         super(str);

@@ -24,8 +24,6 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import javax.annotation.Nullable;
 import java.util.Collection;
 
-/**
- */
 public interface DynamicAttributes {
     String NAME = "cuba_DynamicAttributesService";
 

@@ -33,8 +33,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- */
 @SuppressWarnings("IncorrectCreateEntity")
 public class HsqlLikeNullFailTest {
 

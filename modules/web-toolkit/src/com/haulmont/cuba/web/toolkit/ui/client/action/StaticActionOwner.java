@@ -20,8 +20,6 @@ import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.ui.Action;
 import com.vaadin.client.ui.ActionOwner;
 
-/**
- */
 public class StaticActionOwner implements ActionOwner {
 
     private Action[] actions;

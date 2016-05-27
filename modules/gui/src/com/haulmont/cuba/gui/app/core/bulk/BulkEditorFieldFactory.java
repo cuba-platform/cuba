@@ -32,8 +32,6 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class BulkEditorFieldFactory {
 
     protected ComponentsFactory componentsFactory = AppConfig.getFactory();

@@ -23,8 +23,6 @@ import com.haulmont.cuba.security.app.EntityLogAPI;
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
-/**
- */
 @Component("cuba_EntityLogMBean")
 public class EntityLog implements EntityLogMBean {
 

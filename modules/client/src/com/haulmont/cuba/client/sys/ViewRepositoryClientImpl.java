@@ -22,8 +22,6 @@ import com.haulmont.cuba.core.sys.AbstractViewRepository;
 
 import org.springframework.stereotype.Component;
 
-/**
- */
 @Component(ViewRepository.NAME)
 public class ViewRepositoryClientImpl extends AbstractViewRepository implements ViewRepository {
 }

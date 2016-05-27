@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.data;
 
 import com.vaadin.data.Container;
 
-/**
- */
 public interface TableContainer extends Container.Sortable {
 
     void resetSortOrder();

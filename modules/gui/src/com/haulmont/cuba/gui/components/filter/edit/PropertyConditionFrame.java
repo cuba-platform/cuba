@@ -27,8 +27,6 @@ import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
 import javax.inject.Inject;
 import java.util.Map;
 
-/**
- */
 public class PropertyConditionFrame extends ConditionFrame<PropertyCondition> {
 
     @Inject

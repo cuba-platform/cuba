@@ -24,8 +24,6 @@ import com.vaadin.server.AbstractExtension;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class CubaClientManager extends AbstractExtension {
 
     public void updateSystemMessagesLocale(SystemMessages msgs) {

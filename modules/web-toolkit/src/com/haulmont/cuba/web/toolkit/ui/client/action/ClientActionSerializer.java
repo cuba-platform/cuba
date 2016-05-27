@@ -23,8 +23,6 @@ import com.vaadin.client.metadata.Type;
 import elemental.json.*;
 import elemental.json.JsonValue;
 
-/**
- */
 @SuppressWarnings("UnusedDeclaration")
 public class ClientActionSerializer implements JSONSerializer<ClientAction> {
 

@@ -27,8 +27,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-/**
- */
 public class DesktopBulkEditor extends DesktopButton implements BulkEditor {
 
     protected String exclude;

@@ -25,8 +25,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-/**
- */
 @Entity(name = "sys$JmxInstance")
 @Table(name = "SYS_JMX_INSTANCE")
 @NamePattern("#getCaption|nodeName,address")

@@ -25,8 +25,6 @@ import org.antlr.runtime.tree.Tree;
 
 import java.util.List;
 
-/**
- */
 public class BaseCustomNode extends CommonTree implements TreeToQueryCapable {
     public BaseCustomNode(Token t) {
         super(t);

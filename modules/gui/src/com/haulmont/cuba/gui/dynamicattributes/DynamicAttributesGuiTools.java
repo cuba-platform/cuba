@@ -42,8 +42,6 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
-/**
- */
 @Component(DynamicAttributesGuiTools.NAME)
 public class DynamicAttributesGuiTools {
     public static final String NAME = "cuba_DynamicAttributesGuiTools";

@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.fieldgroup;
 
 import com.haulmont.cuba.web.toolkit.ui.client.groupbox.CubaGroupBoxState;
 
-/**
- */
 public class CubaFieldGroupState extends CubaGroupBoxState {
     {
         primaryStyleName = "cuba-fieldgroup";

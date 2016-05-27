@@ -20,8 +20,6 @@ package com.haulmont.cuba.core.config.type;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-/**
- */
 public class DateStringify extends TypeStringify {
 
     public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";

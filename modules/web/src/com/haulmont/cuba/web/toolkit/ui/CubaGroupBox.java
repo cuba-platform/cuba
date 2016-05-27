@@ -26,8 +26,6 @@ import com.vaadin.ui.Panel;
 
 import java.util.Iterator;
 
-/**
- */
 public class CubaGroupBox extends Panel implements ComponentContainer {
     private ExpandChangeHandler expandChangeHandler = null;
 

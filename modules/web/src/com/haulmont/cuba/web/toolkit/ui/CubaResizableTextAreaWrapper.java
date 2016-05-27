@@ -30,8 +30,6 @@ import org.apache.commons.logging.LogFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 public class CubaResizableTextAreaWrapper extends CustomField {
 
     protected List<ResizeListener> listeners = new ArrayList<>();

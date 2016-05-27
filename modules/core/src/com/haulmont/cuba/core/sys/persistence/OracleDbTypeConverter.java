@@ -21,8 +21,6 @@ import java.sql.*;
 import java.util.Date;
 import java.util.UUID;
 
-/**
- */
 public class OracleDbTypeConverter implements DbTypeConverter {
 
     @Override

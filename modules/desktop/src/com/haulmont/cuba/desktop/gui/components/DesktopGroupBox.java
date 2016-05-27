@@ -29,8 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- */
 public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayout, AutoExpanding {
 
     protected Orientation orientation = Orientation.VERTICAL;

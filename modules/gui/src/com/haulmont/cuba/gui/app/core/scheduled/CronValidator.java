@@ -15,9 +15,6 @@
  *
  */
 
-/**
- *
- */
 package com.haulmont.cuba.gui.app.core.scheduled;
 
 import com.haulmont.cuba.core.app.ServerInfoService;
@@ -27,8 +24,6 @@ import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
 import org.springframework.scheduling.support.CronSequenceGenerator;
 
-/**
- */
 public class CronValidator implements Field.Validator {
 
     @Override

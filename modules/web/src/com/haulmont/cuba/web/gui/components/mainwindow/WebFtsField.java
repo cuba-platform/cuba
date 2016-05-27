@@ -37,8 +37,6 @@ import org.apache.commons.lang.StringUtils;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class WebFtsField extends WebAbstractComponent<HorizontalLayout> implements FtsField {
 
     public static final String FTS_FIELD_STYLENAME = "cuba-fts-field-wrap";

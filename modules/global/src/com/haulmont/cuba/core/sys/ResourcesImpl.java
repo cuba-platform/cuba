@@ -30,8 +30,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-/**
- */
 @Component(Resources.NAME)
 public class ResourcesImpl extends ConfigurationResourceLoader implements Resources {
 

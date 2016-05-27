@@ -37,8 +37,6 @@ import java.util.*;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 
-/**
- */
 public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         implements PopupButton, Component.SecuredActionsHolder {
 

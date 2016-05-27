@@ -30,8 +30,6 @@ import com.vaadin.client.ui.AbstractComponentConnector;
 import com.vaadin.client.ui.Icon;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
 @Connect(CubaFileUpload.class)
 public class CubaFileUploadConnector extends AbstractComponentConnector implements Paintable {
 

@@ -30,8 +30,6 @@ import javax.inject.Named;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- */
 public class ChangePasswordDialog extends AbstractWindow {
 
     @Inject

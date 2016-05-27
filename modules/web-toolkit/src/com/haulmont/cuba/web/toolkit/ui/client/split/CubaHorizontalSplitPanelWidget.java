@@ -23,8 +23,6 @@ import com.haulmont.cuba.web.toolkit.ui.client.placeholder.CubaPlaceHolderWidget
 import com.vaadin.client.ui.VOverlay;
 import com.vaadin.client.ui.VSplitPanelHorizontal;
 
-/**
- */
 public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
 
     protected enum DockButtonState {

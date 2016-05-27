@@ -31,8 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- */
 public class WindowLoader extends FrameLoader<Window> {
 
     protected String windowId;

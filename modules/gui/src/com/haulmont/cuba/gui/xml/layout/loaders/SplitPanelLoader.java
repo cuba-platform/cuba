@@ -22,8 +22,6 @@ import com.haulmont.cuba.gui.components.SplitPanel;
 import com.haulmont.cuba.gui.components.VBoxLayout;
 import org.apache.commons.lang.StringUtils;
 
-/**
- */
 public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
 
     @Override

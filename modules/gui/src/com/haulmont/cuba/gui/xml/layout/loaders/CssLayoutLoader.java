@@ -22,8 +22,6 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-/**
- */
 public class CssLayoutLoader extends ContainerLoader<CssLayout> {
     @Override
     public void createComponent() {

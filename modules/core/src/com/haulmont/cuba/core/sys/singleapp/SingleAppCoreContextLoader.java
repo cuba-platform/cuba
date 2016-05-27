@@ -36,8 +36,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-/**
- */
 public class SingleAppCoreContextLoader extends AppContextLoader {
     /**
      * Here we create servlets and filters manually, to make sure the classes would be loaded using necessary classloader.

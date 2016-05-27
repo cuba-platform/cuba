@@ -42,8 +42,6 @@ import java.util.UUID;
 
 import static com.haulmont.cuba.gui.upload.FileUploadingAPI.FileInfo;
 
-/**
- */
 public class DesktopFileUploadField extends DesktopAbstractUploadComponent<JButton> implements FileUploadField {
 
     protected FileUploadingAPI fileUploading;

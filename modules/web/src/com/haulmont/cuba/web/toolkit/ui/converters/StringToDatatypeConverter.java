@@ -26,8 +26,6 @@ import org.apache.commons.lang.StringUtils;
 import java.text.ParseException;
 import java.util.Locale;
 
-/**
- */
 public class StringToDatatypeConverter implements Converter<String, Object> {
 
     protected Datatype datatype;

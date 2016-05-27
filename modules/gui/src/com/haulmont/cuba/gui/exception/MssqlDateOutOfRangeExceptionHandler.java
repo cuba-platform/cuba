@@ -28,8 +28,6 @@ import javax.inject.Inject;
 import java.sql.SQLException;
 import java.util.List;
 
-/**
- */
 @Component("cuba_MssqlDateOutOfRangeExceptionHandler")
 public class MssqlDateOutOfRangeExceptionHandler implements GenericExceptionHandler {
 

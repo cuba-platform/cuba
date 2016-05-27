@@ -18,8 +18,6 @@ package com.haulmont.cuba.core.sys.listener;
 
 import com.haulmont.cuba.core.listener.*;
 
-/**
- */
 public enum EntityListenerType {
 
     BEFORE_DETACH(BeforeDetachEntityListener.class),

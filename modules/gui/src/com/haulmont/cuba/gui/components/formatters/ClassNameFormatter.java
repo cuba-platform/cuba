@@ -20,8 +20,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.Formatter;
 
-/**
- */
 public class ClassNameFormatter implements Formatter {
 
     protected Messages messages = AppBeans.get(Messages.NAME);

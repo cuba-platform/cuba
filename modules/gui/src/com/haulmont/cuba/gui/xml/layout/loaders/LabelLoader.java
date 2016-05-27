@@ -20,8 +20,6 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Label;
 import org.apache.commons.lang.StringUtils;
 
-/**
- */
 public class LabelLoader extends AbstractDatasourceComponentLoader<Label> {
     @Override
     public void createComponent() {

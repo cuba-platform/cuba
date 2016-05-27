@@ -22,8 +22,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
-/**
- */
 @Service(EntityLogService.NAME)
 public class EntityLogServiceBean implements EntityLogService {
 

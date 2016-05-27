@@ -31,8 +31,6 @@ import com.haulmont.cuba.gui.components.TextField;
 import javax.swing.*;
 import java.util.Iterator;
 
-/**
- */
 public class AttributePermissionsFrameCompanion implements AttributePermissionsFrame.Companion {
     @Override
     public void initPermissionColoredColumn(final Table propertyPermissionsTable) {

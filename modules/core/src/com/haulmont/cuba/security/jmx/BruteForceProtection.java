@@ -22,8 +22,6 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
-/**
- */
 @Component("cuba_BruteForceProtectionMBean")
 public class BruteForceProtection implements BruteForceProtectionMBean {
 

@@ -22,8 +22,6 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 
-/**
- */
 public class CollectionDsActionsNotifier implements Datasource.ItemChangeListener,
                                                     Datasource.ItemPropertyChangeListener,
                                                     Datasource.StateChangeListener,

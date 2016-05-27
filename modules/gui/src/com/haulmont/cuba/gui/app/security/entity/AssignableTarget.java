@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.gui.app.security.entity;
 
-/**
- */
 public interface AssignableTarget {
     boolean isAssigned();
 

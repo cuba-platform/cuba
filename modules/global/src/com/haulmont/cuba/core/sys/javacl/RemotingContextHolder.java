@@ -19,8 +19,6 @@ package com.haulmont.cuba.core.sys.javacl;
 
 import org.springframework.context.ApplicationContext;
 
-/**
- */
 public final class RemotingContextHolder {
     private RemotingContextHolder() {
     }

@@ -33,8 +33,6 @@ import org.dom4j.Element;
 
 import java.util.*;
 
-/**
- */
 public class PresentationsImpl implements Presentations {
 
     private String name;

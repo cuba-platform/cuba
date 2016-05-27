@@ -20,8 +20,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.window;
 import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.ClientAction;
 import com.vaadin.shared.communication.ClientRpc;
 
-/**
- */
 public interface CubaWindowClientRpc extends ClientRpc {
 
     void showTabContextMenu(ClientAction[] actions);

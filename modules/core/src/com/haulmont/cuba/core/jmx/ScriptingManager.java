@@ -28,8 +28,6 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.Collections;
 
-/**
- */
 @Component("cuba_ScriptingManagerMBean")
 public class ScriptingManager implements ScriptingManagerMBean {
 

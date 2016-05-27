@@ -23,8 +23,6 @@ import com.haulmont.cuba.desktop.theme.ComponentDecorator;
 
 import java.util.Set;
 
-/**
- */
 public class CustomDecorator implements ComponentDecorator {
 
     private String className;

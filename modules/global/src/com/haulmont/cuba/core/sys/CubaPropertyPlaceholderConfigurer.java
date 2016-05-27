@@ -20,8 +20,6 @@ import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 
 import java.util.Properties;
 
-/**
- */
 public class CubaPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigurer {
 
     @Override

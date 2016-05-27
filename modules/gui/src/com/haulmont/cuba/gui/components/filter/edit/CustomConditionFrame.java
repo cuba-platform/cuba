@@ -46,8 +46,6 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.regex.Matcher;
 
-/**
- */
 public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
 
     protected static final String WHERE = " where ";

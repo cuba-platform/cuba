@@ -20,8 +20,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.downloader;
 import com.vaadin.shared.annotations.NoLayout;
 import com.vaadin.shared.communication.ClientRpc;
 
-/**
- */
 public interface CubaFileDownloaderClientRPC extends ClientRpc {
 
     @NoLayout

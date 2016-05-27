@@ -20,8 +20,6 @@ import com.haulmont.cuba.gui.components.PopupButton;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-/**
- */
 public class PopupButtonLoader extends AbstractComponentLoader<PopupButton> {
     @Override
     public void createComponent() {

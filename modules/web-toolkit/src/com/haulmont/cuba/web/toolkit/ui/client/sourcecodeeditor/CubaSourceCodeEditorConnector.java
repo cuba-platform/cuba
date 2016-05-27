@@ -25,8 +25,6 @@ import com.vaadin.shared.ui.Connect;
 import org.vaadin.aceeditor.client.AceEditorConnector;
 import org.vaadin.aceeditor.client.AceEditorWidget;
 
-/**
- */
 @Connect(CubaSourceCodeEditor.class)
 public class CubaSourceCodeEditorConnector extends AceEditorConnector {
 

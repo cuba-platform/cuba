@@ -29,8 +29,6 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.util.zip.CRC32;
 
-/**
- */
 public class LogArchiver {
 
     private static final Logger log = LoggerFactory.getLogger(LogArchiver.class);

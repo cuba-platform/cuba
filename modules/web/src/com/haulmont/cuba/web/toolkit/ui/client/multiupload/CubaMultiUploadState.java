@@ -19,8 +19,7 @@ package com.haulmont.cuba.web.toolkit.ui.client.multiupload;
 
 import com.vaadin.shared.AbstractComponentState;
 
-/**
- */
+@Deprecated
 public class CubaMultiUploadState extends AbstractComponentState {
 
     public static final String BUTTON_IMAGE_KEY = "buttonImage";

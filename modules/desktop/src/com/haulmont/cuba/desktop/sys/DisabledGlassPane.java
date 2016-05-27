@@ -26,8 +26,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseMotionAdapter;
 
-/**
- */
 public class DisabledGlassPane extends JComponent implements KeyListener {
 
     private final static Border MESSAGE_BORDER = new EmptyBorder(10, 10, 10, 10);

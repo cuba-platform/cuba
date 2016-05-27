@@ -31,8 +31,6 @@ import com.haulmont.cuba.gui.components.TextField;
 
 import javax.swing.*;
 
-/**
- */
 public class EntityPermissionsFrameCompanion implements EntityPermissionsFrame.Companion {
 
     protected Messages messages = AppBeans.get(Messages.NAME);

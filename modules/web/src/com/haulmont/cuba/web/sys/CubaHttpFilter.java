@@ -33,8 +33,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 public class CubaHttpFilter implements Filter {
     private static Logger log = LoggerFactory.getLogger(CubaHttpFilter.class);
 

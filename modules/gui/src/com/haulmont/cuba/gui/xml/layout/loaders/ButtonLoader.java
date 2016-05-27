@@ -21,8 +21,6 @@ import com.haulmont.cuba.gui.xml.DeclarativeAction;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-/**
- */
 public class ButtonLoader extends AbstractComponentLoader<Button> {
 
     protected void loadInvoke(Button component, boolean enabled, boolean visible, Element element) {

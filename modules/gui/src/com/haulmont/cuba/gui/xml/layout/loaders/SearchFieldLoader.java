@@ -22,8 +22,6 @@ import com.haulmont.cuba.gui.components.SearchField;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
-/**
- */
 public class SearchFieldLoader extends LookupFieldLoader {
     @Override
     public void createComponent() {

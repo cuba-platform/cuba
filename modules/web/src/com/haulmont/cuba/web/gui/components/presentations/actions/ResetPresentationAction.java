@@ -20,8 +20,6 @@ package com.haulmont.cuba.web.gui.components.presentations.actions;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Table;
 
-/**
- */
 public class ResetPresentationAction extends AbstractPresentationAction {
 
     public ResetPresentationAction(Table table) {

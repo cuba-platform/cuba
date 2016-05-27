@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.core.global;
 
-/**
- */
 public interface PersistentAttributesLoadChecker {
     String NAME = "cuba_PersistentAttributesLoadChecker";
 

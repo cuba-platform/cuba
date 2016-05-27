@@ -31,8 +31,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-/**
- */
 @Component(DataManager.NAME)
 public class DataManagerClientImpl implements DataManager {
 

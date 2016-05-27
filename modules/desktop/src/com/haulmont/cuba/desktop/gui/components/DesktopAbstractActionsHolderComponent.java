@@ -31,8 +31,6 @@ import java.util.*;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 
-/**
- */
 public class DesktopAbstractActionsHolderComponent<C extends JComponent> extends DesktopAbstractComponent<C>
         implements Component.SecuredActionsHolder {
 

@@ -23,8 +23,6 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- */
 public class LocalServiceDirectory {
 
     private static Map<String, LocalServiceInvoker> invokers = new ConcurrentHashMap<>();

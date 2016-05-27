@@ -40,8 +40,6 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- */
 @Component(FetchGroupManager.NAME)
 public class FetchGroupManager {
 

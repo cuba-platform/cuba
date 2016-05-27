@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.fileupload;
 
 import com.vaadin.shared.communication.ServerRpc;
 
-/**
- */
 public interface CubaFileUploadServerRpc extends ServerRpc {
 
     void fileUploaded(String fileName);

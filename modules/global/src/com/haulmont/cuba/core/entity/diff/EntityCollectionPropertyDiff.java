@@ -25,8 +25,6 @@ import com.haulmont.cuba.core.global.ViewProperty;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 @MetaClass(name = "sys$EntityCollectionPropertyDiff")
 @SystemLevel
 public class EntityCollectionPropertyDiff extends EntityPropertyDiff {

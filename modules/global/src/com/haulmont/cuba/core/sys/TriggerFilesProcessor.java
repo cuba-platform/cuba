@@ -38,8 +38,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- */
 @Component(TriggerFilesProcessor.NAME)
 public class TriggerFilesProcessor {
     public static final String NAME = "cuba_TriggerFilesProcessor";

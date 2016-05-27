@@ -24,8 +24,6 @@ import com.google.gwt.user.client.EventListener;
 import com.vaadin.client.ComputedStyle;
 import com.vaadin.client.ui.VCustomComponent;
 
-/**
- */
 public class CubaResizableTextAreaWrapperWidget extends VCustomComponent {
 
     public static final String RESIZE_ELEMENT = "cuba-resizabletextarea-resize-corner";

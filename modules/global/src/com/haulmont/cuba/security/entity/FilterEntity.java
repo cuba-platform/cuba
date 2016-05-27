@@ -26,7 +26,6 @@ import javax.persistence.*;
 
 /**
  * A filter component settings.
- *
  */
 @Entity(name = "sec$Filter")
 @Table(name = "SEC_FILTER")

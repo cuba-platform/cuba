@@ -28,8 +28,6 @@ import com.vaadin.client.ui.Action;
 import com.vaadin.client.ui.window.WindowConnector;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
 @Connect(CubaWindow.class)
 public class CubaWindowConnector extends WindowConnector {
 

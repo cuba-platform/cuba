@@ -39,8 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-/**
- */
 public class DbUpdaterUtil extends DbUpdaterEngine {
 
     private static final Logger log = LoggerFactory.getLogger(DbUpdaterUtil.class);

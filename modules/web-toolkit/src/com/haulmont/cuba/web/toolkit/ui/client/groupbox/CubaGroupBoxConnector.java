@@ -26,8 +26,6 @@ import com.vaadin.client.ui.VPanel;
 import com.vaadin.client.ui.panel.PanelConnector;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
 @Connect(CubaGroupBox.class)
 public class CubaGroupBoxConnector extends PanelConnector {
 

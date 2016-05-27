@@ -22,8 +22,6 @@ import com.haulmont.cuba.core.global.NodeIdentifier;
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
-/**
- */
 @Component("cuba_JmxNodeIdentifierMBean")
 public class JmxNodeIdentifier implements JmxNodeIdentifierMBean {
 

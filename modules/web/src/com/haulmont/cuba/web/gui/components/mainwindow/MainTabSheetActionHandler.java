@@ -39,8 +39,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 public class MainTabSheetActionHandler implements Action.Handler {
 
     protected com.vaadin.event.Action closeAllTabs;

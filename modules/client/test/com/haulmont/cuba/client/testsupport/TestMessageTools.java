@@ -19,8 +19,6 @@ package com.haulmont.cuba.client.testsupport;
 
 import com.haulmont.cuba.core.global.*;
 
-/**
- */
 public class TestMessageTools extends MessageTools {
     public TestMessageTools(Configuration configuration, Messages messages,
                             Metadata metadata, ExtendedEntities extendedEntities) {

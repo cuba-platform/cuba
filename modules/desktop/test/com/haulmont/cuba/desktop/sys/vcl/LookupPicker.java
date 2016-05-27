@@ -19,9 +19,6 @@ package com.haulmont.cuba.desktop.sys.vcl;
 
 import javax.swing.*;
 
-/**
- *
- */
 public class LookupPicker extends Picker {
 
     @Override

@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.portal.sys.exceptions;
 
-/**
- */
 public class NoMiddlewareConnectionException extends RuntimeException {
     public NoMiddlewareConnectionException(String message, Throwable cause) {
         super(message, cause);

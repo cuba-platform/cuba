@@ -19,8 +19,6 @@ package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.bali.util.Preconditions;
 
-/**
- */
 public class MysqlSequenceSupport implements SequenceSupport {
     @Override
     public String sequenceExistsSql(String sequenceName) {

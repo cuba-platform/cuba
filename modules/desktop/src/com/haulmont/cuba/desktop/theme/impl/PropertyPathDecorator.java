@@ -25,9 +25,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Set;
 
-/**
- *
- */
 public class PropertyPathDecorator implements ComponentDecorator {
 
     protected String[] properties;
@@ -106,9 +103,7 @@ public class PropertyPathDecorator implements ComponentDecorator {
 
         try {
             method.invoke(object, value);
-        } catch (InvocationTargetException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
+        } catch (InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }

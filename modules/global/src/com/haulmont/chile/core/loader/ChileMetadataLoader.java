@@ -29,8 +29,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-/**
- */
 public class ChileMetadataLoader implements MetadataLoader {
 
     protected Session session;

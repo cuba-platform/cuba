@@ -25,8 +25,6 @@ import org.dom4j.Element;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 public class GroupTableLoader extends AbstractTableLoader<GroupTable> {
     @Override
     public void createComponent() {

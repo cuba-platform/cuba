@@ -29,8 +29,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 public class DesktopTimer extends DesktopAbstractComponent<JLabel> implements com.haulmont.cuba.gui.components.Timer {
 
     private Logger log = LoggerFactory.getLogger(getClass());

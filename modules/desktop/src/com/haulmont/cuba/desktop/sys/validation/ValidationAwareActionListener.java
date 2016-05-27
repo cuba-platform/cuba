@@ -20,8 +20,6 @@ package com.haulmont.cuba.desktop.sys.validation;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-/**
- */
 public abstract class ValidationAwareActionListener implements ActionListener {
 
     @Override

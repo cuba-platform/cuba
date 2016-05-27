@@ -33,8 +33,6 @@ import javax.inject.Inject;
 import java.io.File;
 import java.util.Map;
 
-/**
- */
 public class FileFrameController extends AbstractWindow {
 
     private CollectionDatasource ds;

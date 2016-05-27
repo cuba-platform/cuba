@@ -35,8 +35,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-/**
- */
 public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements Accordion {
     protected boolean postInitTaskAdded;
     protected boolean componentTabChangeListenerInitialized;

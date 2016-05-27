@@ -32,8 +32,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
 
-/**
- */
 @Component("cuba_FileStorageMBean")
 public class FileStorage implements FileStorageMBean {
 

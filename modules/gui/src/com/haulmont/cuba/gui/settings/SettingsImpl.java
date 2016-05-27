@@ -24,8 +24,6 @@ import org.dom4j.Element;
 
 import java.util.List;
 
-/**
- */
 public class SettingsImpl implements Settings {
 
     protected final String name;

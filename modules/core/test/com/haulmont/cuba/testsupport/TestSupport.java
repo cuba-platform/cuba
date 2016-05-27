@@ -25,8 +25,6 @@ import static com.haulmont.cuba.core.sys.serialization.SerializationSupport.dese
 import static com.haulmont.cuba.core.sys.serialization.SerializationSupport.serialize;
 import java.util.UUID;
 
-/**
- */
 public class TestSupport {
 
     public static final UUID ADMIN_USER_ID = UUID.fromString("60885987-1b61-4247-94c7-dff348347f93");

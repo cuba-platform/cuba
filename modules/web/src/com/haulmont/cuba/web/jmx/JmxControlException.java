@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.web.jmx;
 
-/**
- */
 public class JmxControlException extends RuntimeException {
     private static final long serialVersionUID = -7683677050143447151L;
 

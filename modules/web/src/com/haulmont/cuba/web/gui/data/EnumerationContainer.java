@@ -29,8 +29,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- */
 public class EnumerationContainer implements com.vaadin.data.Container, Container.ItemSetChangeNotifier {
 
     protected List<Enum> values;

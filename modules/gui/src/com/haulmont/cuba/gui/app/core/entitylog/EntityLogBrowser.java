@@ -42,8 +42,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
 
-/**
- */
 public class EntityLogBrowser extends AbstractWindow {
 
     public interface Companion {

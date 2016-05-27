@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.gui.data;
 
 import com.vaadin.data.Container;
 
-/**
- */
 public class StaticItemSetChangeEvent implements Container.ItemSetChangeEvent {
 
     protected final Container container;

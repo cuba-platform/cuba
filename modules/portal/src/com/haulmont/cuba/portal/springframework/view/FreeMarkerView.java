@@ -35,8 +35,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-/**
- */
 public class FreeMarkerView extends org.springframework.web.servlet.view.freemarker.FreeMarkerView {
 
     @Inject

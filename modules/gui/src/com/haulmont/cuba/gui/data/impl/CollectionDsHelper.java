@@ -32,8 +32,6 @@ import org.apache.commons.logging.LogFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 public class CollectionDsHelper {
 
     public static List<MetaPropertyPath> createProperties(View view, MetaClass metaClass) {

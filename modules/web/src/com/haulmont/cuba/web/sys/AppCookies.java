@@ -26,8 +26,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class AppCookies implements Serializable {
 
     private static final long serialVersionUID = 5958656635050664762L;

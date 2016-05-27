@@ -21,8 +21,6 @@ import com.haulmont.bali.util.ReflectionHelper;
 
 import java.io.Serializable;
 
-/**
- */
 public class MethodParameterInfo implements Serializable {
 
     private Class type;

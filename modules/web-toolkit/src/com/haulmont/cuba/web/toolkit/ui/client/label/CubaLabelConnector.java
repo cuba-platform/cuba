@@ -26,8 +26,6 @@ import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.label.LabelConnector;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
 @Connect(value = CubaLabel.class, loadStyle = Connect.LoadStyle.EAGER)
 public class CubaLabelConnector extends LabelConnector {
 

@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.passwordfield;
 
 import com.vaadin.shared.ui.textfield.AbstractTextFieldState;
 
-/**
- */
 public class CubaPasswordFieldState extends AbstractTextFieldState {
 
     public boolean autocomplete = false;

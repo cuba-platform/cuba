@@ -31,8 +31,6 @@ import com.haulmont.cuba.security.entity.FilterEntity;
 
 import java.util.Collections;
 
-/**
- */
 public class FakeFilterSupport {
     protected Filter filter;
     protected FilterEntity filterEntity;

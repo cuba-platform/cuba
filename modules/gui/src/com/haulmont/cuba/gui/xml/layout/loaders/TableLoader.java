@@ -18,8 +18,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Table;
 
-/**
- */
 public class TableLoader extends AbstractTableLoader<Table> {
     @Override
     public void createComponent() {

@@ -23,8 +23,6 @@ import com.haulmont.cuba.security.entity.Permission;
 
 import java.util.UUID;
 
-/**
- */
 public class RestorablePermissionDatasource extends CollectionDatasourceImpl<Permission, UUID> {
 
     public Permission findRemovedEntity(Predicate<Permission> predicate) {

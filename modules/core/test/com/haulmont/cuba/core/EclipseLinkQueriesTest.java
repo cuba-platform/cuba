@@ -35,8 +35,6 @@ import static com.haulmont.cuba.testsupport.TestSupport.reserialize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-/**
- */
 public class EclipseLinkQueriesTest {
 
     @ClassRule
@@ -170,6 +168,4 @@ public class EclipseLinkQueriesTest {
         assertEquals(UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93"), ((Group) row[0]).getId());
         assertEquals("testLogin", row[1]);
     }
-
-
 }

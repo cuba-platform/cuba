@@ -22,8 +22,7 @@ import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.upload.UploadConnector;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
+@Deprecated
 @Connect(CubaUpload.class)
 public class CubaUploadConnector extends UploadConnector {
 

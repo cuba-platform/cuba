@@ -28,8 +28,6 @@ import org.apache.commons.lang.StringUtils;
 
 import java.text.ParseException;
 
-/**
- */
 public class NameBuilderListener<T extends Entity> implements Datasource.ItemPropertyChangeListener<T> {
 
     public static final String DEFAULT_NAME_PATTERN = "{FF| }{LL}";

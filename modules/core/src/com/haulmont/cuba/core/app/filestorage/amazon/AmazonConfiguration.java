@@ -23,8 +23,6 @@ import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
 
-/**
- */
 @Source(type = SourceType.DATABASE)
 public interface AmazonConfiguration extends Config {
 

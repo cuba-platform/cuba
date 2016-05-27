@@ -16,8 +16,6 @@
  */
 package com.haulmont.cuba.core.global;
 
-/**
- */
 public enum ClientType {
     WEB("W", "web"),
     PORTAL("P", "portal"),

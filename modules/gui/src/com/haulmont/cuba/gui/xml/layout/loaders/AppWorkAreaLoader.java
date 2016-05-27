@@ -22,8 +22,6 @@ import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.dom4j.Element;
 
-/**
- */
 public class AppWorkAreaLoader extends ContainerLoader<AppWorkArea> {
 
     protected ComponentLoader initialLayoutLoader;

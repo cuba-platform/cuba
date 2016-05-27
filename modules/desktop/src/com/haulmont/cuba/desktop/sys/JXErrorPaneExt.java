@@ -38,8 +38,6 @@ import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-/**
- */
 public class JXErrorPaneExt extends JXErrorPane {
 
     protected ActionListener copyToClipboardListener;

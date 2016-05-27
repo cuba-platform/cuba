@@ -20,8 +20,6 @@ package com.haulmont.cuba.web.toolkit.ui;
 import com.haulmont.cuba.web.toolkit.ui.client.popupbutton.CubaPopupButtonState;
 import org.vaadin.hene.popupbutton.PopupButton;
 
-/**
- */
 public class CubaPopupButton extends PopupButton {
 
     @Override

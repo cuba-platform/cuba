@@ -19,8 +19,6 @@ package com.haulmont.cuba.core.app;
 
 import java.util.List;
 
-/**
- */
 public interface RelatedEntitiesService {
 
     String NAME = "cuba_RelatedEntitiesService";

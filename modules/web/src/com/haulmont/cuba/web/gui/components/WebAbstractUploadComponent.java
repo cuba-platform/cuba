@@ -26,8 +26,6 @@ import com.haulmont.cuba.gui.components.UploadComponentSupport;
 
 import java.util.Set;
 
-/**
- */
 public abstract class WebAbstractUploadComponent<T extends com.vaadin.ui.Component>
         extends WebAbstractComponent<T>
         implements UploadComponentSupport {

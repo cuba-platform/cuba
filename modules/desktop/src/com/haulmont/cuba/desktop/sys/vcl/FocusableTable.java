@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.desktop.sys.vcl;
 
-/**
- */
 public interface FocusableTable {
 
     TableFocusManager getFocusManager();

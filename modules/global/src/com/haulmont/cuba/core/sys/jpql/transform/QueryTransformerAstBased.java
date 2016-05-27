@@ -34,8 +34,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-/**
- */
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Component(QueryTransformer.NAME)
 @PerformanceLog

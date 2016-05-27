@@ -36,8 +36,6 @@ import static com.haulmont.chile.core.model.MetaProperty.Type;
 import static com.haulmont.chile.core.model.MetaProperty.Type.*;
 import static com.haulmont.chile.core.model.Range.Cardinality.*;
 
-/**
- */
 @Service(EntitySqlGenerationService.NAME)
 public class EntitySqlGenerationServiceBean implements EntitySqlGenerationService {
     @Inject

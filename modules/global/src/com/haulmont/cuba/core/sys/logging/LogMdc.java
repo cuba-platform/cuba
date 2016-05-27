@@ -24,8 +24,6 @@ import com.haulmont.cuba.security.global.UserSession;
 import org.slf4j.MDC;
 import org.springframework.context.ApplicationContext;
 
-/**
- */
 public class LogMdc {
 
     public static final String USER = "cubaUser";

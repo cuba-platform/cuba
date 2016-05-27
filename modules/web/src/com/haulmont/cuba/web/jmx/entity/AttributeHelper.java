@@ -29,8 +29,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
-/**
- */
 public class AttributeHelper {
 
     public static Object convert(String type, String str) {

@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.jmx;
 
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-/**
- */
 @SuppressWarnings("unused")
 @ManagedResource(description = "Provides information about web-client requests statistics")
 public interface StatisticsCounterMBean {

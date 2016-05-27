@@ -22,8 +22,6 @@ import com.haulmont.cuba.gui.components.Component;
 
 import javax.swing.*;
 
-/**
- */
 public class DesktopButtonsPanel extends DesktopHBox implements ButtonsPanel {
 
     public DesktopButtonsPanel() {

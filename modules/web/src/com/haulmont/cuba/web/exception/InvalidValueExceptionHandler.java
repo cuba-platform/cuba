@@ -29,8 +29,6 @@ import com.vaadin.ui.Component;
 
 import javax.annotation.Nullable;
 
-/**
- */
 public class InvalidValueExceptionHandler extends AbstractExceptionHandler {
 
     public InvalidValueExceptionHandler() {

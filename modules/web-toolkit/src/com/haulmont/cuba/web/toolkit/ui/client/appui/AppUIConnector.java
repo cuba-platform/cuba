@@ -33,8 +33,6 @@ import com.vaadin.shared.ui.Connect;
 import com.vaadin.shared.ui.button.ButtonServerRpc;
 import com.vaadin.shared.ui.tabsheet.TabsheetServerRpc;
 
-/**
- */
 @Connect(AppUI.class)
 public class AppUIConnector extends UIConnector {
 

@@ -18,8 +18,6 @@ package com.haulmont.cuba.gui.data;
 
 import org.apache.commons.collections.map.LinkedMap;
 
-/**
- */
 public class GroupInfo<P> {
 
     private LinkedMap group;

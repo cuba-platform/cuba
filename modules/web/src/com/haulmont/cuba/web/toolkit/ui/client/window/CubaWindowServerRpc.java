@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.window;
 
 import com.vaadin.shared.communication.ServerRpc;
 
-/**
- */
 public interface CubaWindowServerRpc extends ServerRpc {
 
     void onWindowContextMenu();

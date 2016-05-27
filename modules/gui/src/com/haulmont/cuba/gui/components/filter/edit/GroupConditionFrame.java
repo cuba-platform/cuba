@@ -19,7 +19,5 @@ package com.haulmont.cuba.gui.components.filter.edit;
 
 import com.haulmont.cuba.gui.components.filter.condition.GroupCondition;
 
-/**
- */
 public class GroupConditionFrame extends ConditionFrame<GroupCondition> {
 }

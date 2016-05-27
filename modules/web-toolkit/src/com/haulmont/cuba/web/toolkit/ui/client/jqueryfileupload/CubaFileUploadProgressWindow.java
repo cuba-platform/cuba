@@ -41,8 +41,6 @@ import com.vaadin.client.ui.aria.AriaHelper;
 
 import static com.vaadin.client.WidgetUtil.isFocusedElementEditable;
 
-/**
- */
 public class CubaFileUploadProgressWindow extends VOverlay implements KeyDownHandler, KeyUpHandler,
                                                                       Focusable {
 

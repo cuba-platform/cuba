@@ -45,8 +45,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
-/**
- */
 public class CompanionDependencyInjector {
 
     private static final Logger log = LoggerFactory.getLogger(CompanionDependencyInjector.class);

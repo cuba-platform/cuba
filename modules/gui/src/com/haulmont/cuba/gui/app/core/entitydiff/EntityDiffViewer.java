@@ -28,8 +28,6 @@ import javax.inject.Inject;
 import java.util.Map;
 import java.util.Set;
 
-/**
- */
 public class EntityDiffViewer extends AbstractFrame {
 
     @Inject

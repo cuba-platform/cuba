@@ -22,8 +22,6 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.Entity;
 
-/**
- */
 @Entity(name = "sys$DummyIntegerIdEntity")
 @SystemLevel
 public class DummyIntegerIdEntity extends BaseIntegerIdEntity {

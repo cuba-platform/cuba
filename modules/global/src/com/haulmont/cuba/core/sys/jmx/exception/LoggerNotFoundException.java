@@ -20,8 +20,6 @@ package com.haulmont.cuba.core.sys.jmx.exception;
 import com.haulmont.cuba.core.global.SupportedByClient;
 import com.haulmont.cuba.core.sys.logging.LogControlException;
 
-/**
- */
 @SupportedByClient
 public class LoggerNotFoundException extends LogControlException {
 

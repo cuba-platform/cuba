@@ -27,8 +27,6 @@ import org.junit.*;
 import java.io.InputStream;
 import java.util.Date;
 
-/**
- */
 @Ignore
 public class AmazonS3FileStorageTest {
     public static final String FILE_CONTENT = "This text is for Amazon S3 service test. Second version.";

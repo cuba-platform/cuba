@@ -29,8 +29,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- */
 public class EclipseLinkLog extends AbstractSessionLog {
 
     protected Map<String, Logger> logsCache = new ConcurrentHashMap<>();

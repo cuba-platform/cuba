@@ -23,8 +23,6 @@ import com.haulmont.cuba.gui.data.DsContext;
 
 import java.util.Set;
 
-/**
- */
 @Deprecated
 public class DsContextCommitListenerWrapper implements DsContext.BeforeCommitListener, DsContext.AfterCommitListener {
 

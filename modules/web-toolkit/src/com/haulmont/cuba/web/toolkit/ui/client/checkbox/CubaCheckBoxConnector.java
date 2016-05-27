@@ -22,8 +22,6 @@ import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.checkbox.CheckBoxConnector;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
 @Connect(value = CubaCheckBox.class, loadStyle = Connect.LoadStyle.EAGER)
 public class CubaCheckBoxConnector extends CheckBoxConnector {
 

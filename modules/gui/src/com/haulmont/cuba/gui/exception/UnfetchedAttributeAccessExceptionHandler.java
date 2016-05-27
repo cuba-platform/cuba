@@ -26,8 +26,6 @@ import javax.annotation.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- */
 @Component("cuba_UnfetchedAttributeAccessExceptionHandler")
 public class UnfetchedAttributeAccessExceptionHandler extends AbstractGenericExceptionHandler {
 

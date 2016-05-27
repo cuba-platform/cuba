@@ -22,8 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
 
-/**
- */
 public class AuthenticationInterceptor {
 
     private Logger log = LoggerFactory.getLogger(getClass());

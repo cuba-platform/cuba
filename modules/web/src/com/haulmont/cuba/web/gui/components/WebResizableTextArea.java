@@ -30,8 +30,6 @@ import org.dom4j.Element;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 public class WebResizableTextArea extends WebAbstractTextArea<CubaTextArea> implements ResizableTextArea {
 
     protected List<ResizeListener> resizeListeners;

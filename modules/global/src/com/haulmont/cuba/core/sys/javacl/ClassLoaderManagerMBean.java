@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.core.sys.javacl;
 
-/**
- */
 public interface ClassLoaderManagerMBean {
     String reloadClass(String className) throws ClassNotFoundException;
 

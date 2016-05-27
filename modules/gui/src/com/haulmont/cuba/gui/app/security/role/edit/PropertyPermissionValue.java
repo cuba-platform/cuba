@@ -16,8 +16,6 @@
  */
 package com.haulmont.cuba.gui.app.security.role.edit;
 
-/**
- */
 public enum PropertyPermissionValue {
     MODIFY(2),
     VIEW(1),

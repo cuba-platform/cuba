@@ -21,8 +21,6 @@ import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-/**
- */
 public class WidgetsTreeLoader extends ActionsHolderLoader<WidgetsTree> {
     @Override
     public void createComponent() {

@@ -40,8 +40,6 @@ import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- */
 @Component(ScreensHelper.NAME)
 public class ScreensHelper {
     public static final String NAME = "cuba_ScreensHelper";

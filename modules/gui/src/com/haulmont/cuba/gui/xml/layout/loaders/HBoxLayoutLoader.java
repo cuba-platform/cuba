@@ -18,8 +18,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.HBoxLayout;
 
-/**
- */
 public class HBoxLayoutLoader extends AbstractBoxLoader<HBoxLayout> {
     @Override
     public void createComponent() {

@@ -16,8 +16,6 @@
  */
 package com.haulmont.cuba.gui.components;
 
-/**
- */
 public interface WrappedFrame {
 
     Frame wrapBy(Class<?> aClass);

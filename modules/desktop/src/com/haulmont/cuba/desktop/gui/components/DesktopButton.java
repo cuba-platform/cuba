@@ -32,8 +32,6 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-/**
- */
 public class DesktopButton extends DesktopAbstractComponent<JButton> implements Button {
 
     protected Logger userActionsLog = LoggerFactory.getLogger(UserActionsLogger.class);

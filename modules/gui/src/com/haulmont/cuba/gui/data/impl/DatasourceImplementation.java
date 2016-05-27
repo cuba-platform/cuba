@@ -22,8 +22,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import java.util.Collection;
 import java.util.Set;
 
-/**
- */
 public interface DatasourceImplementation<T extends Entity> extends Datasource<T> {
     void initialized();
     void valid();

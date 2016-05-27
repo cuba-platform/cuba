@@ -30,8 +30,6 @@ import com.haulmont.cuba.gui.components.filter.Param;
 
 import javax.persistence.TemporalType;
 
-/**
- */
 public class FilterConditionUtils {
 
     public static String getPropertyLocCaption(MetaClass metaClass, String propertyPath) {
@@ -65,6 +63,5 @@ public class FilterConditionUtils {
             return datatype.format(value, userSessionSource.getLocale());
         }
         return value.toString();
-
     }
 }

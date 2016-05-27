@@ -24,8 +24,6 @@ import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
 
-/**
- */
 public class CubaRowsCount extends CustomComponent {
 
     protected Button prevButton;

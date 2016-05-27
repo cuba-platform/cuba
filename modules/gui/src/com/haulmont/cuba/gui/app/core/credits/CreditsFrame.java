@@ -32,8 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-/**
- */
 public class CreditsFrame extends AbstractFrame {
 
     @Named("scroll")

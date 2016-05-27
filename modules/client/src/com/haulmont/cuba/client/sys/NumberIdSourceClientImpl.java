@@ -24,8 +24,6 @@ import com.haulmont.cuba.core.sys.NumberIdCache;
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
-/**
- */
 @Component(NumberIdSource.NAME)
 public class NumberIdSourceClientImpl implements NumberIdSource {
 

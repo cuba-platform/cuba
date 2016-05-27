@@ -30,8 +30,6 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- */
 public class ManagedBeanAttributeDatasource extends CollectionDatasourceImpl<ManagedBeanAttribute, UUID> {
 
     private Logger log = LoggerFactory.getLogger(getClass());

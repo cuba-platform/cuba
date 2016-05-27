@@ -19,8 +19,6 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
 
-/**
- */
 public interface DesktopContainer extends Component.Container {
 
     /*

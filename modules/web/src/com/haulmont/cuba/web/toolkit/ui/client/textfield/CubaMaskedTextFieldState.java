@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.textfield;
 
 import com.vaadin.shared.annotations.NoLayout;
 
-/**
- */
 public class CubaMaskedTextFieldState extends CubaTextFieldState {
     {
         primaryStyleName = "cuba-maskedfield";

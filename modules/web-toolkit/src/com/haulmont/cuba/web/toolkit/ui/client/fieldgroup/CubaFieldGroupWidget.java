@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.fieldgroup;
 
 import com.haulmont.cuba.web.toolkit.ui.client.groupbox.CubaGroupBoxWidget;
 
-/**
- */
 public class CubaFieldGroupWidget extends CubaGroupBoxWidget {
 
     protected static final String CLASSNAME = "cuba-fieldgroup";

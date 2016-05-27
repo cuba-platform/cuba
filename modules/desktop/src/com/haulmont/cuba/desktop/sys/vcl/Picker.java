@@ -26,8 +26,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- */
 public class Picker extends JComponent implements FocusableComponent {
 
     protected JPanel contentPanel;

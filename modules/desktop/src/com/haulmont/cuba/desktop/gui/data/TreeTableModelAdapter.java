@@ -31,8 +31,6 @@ import javax.swing.tree.TreePath;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 public class TreeTableModelAdapter extends AbstractTreeTableModel implements AnyTableModelAdapter {
 
     protected JXTreeTable treeTable;

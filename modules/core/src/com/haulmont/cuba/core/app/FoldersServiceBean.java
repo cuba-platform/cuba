@@ -55,8 +55,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.zip.CRC32;
 
-/**
- */
 @Service(FoldersService.NAME)
 public class FoldersServiceBean implements FoldersService {
 

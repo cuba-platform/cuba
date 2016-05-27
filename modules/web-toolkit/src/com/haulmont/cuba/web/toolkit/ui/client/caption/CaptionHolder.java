@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.caption;
 
-/**
- */
 public interface CaptionHolder {
 
     void captionUpdated(CubaCaptionWidget captionWidget);

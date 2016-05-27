@@ -21,8 +21,6 @@ import com.haulmont.cuba.gui.components.HtmlBoxLayout;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-/**
- */
 public class HtmlBoxLayoutLoader extends ContainerLoader<HtmlBoxLayout> {
 
     @Override

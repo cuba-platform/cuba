@@ -41,8 +41,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.*;
 
-/**
- */
 public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderComponent<JTree> implements Tree<E> {
 
     protected String hierarchyProperty;

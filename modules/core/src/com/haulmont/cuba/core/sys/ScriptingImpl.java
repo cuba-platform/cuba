@@ -26,8 +26,6 @@ import com.haulmont.cuba.core.sys.javacl.JavaClassLoader;
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
-/**
- */
 @Component(Scripting.NAME)
 public class ScriptingImpl extends AbstractScripting {
 

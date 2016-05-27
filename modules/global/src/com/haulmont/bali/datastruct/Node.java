@@ -20,8 +20,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 
-/**
- */
 public class Node<T> implements Serializable {
 
     private static final long serialVersionUID = -7441713052548471005L;

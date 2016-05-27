@@ -15,9 +15,6 @@
  *
  */
 
-/**
- *
- */
 package com.haulmont.cuba.core.app.scheduling;
 
 import com.haulmont.cuba.core.entity.ScheduledTask;
@@ -103,5 +100,4 @@ public class SchedulingTest {
 
         return null;
     }
-
 }

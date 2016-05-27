@@ -23,8 +23,6 @@ import com.haulmont.cuba.gui.components.PasswordField;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- */
 public class DesktopPasswordField extends DesktopAbstractTextField<JPasswordField> implements PasswordField {
 
     protected Boolean autocomplete = false;

@@ -25,8 +25,6 @@ import com.vaadin.ui.ComponentContainer;
 import java.io.Serializable;
 import java.util.*;
 
-/**
- */
 public class CubaWidgetsTree extends CubaTree implements ComponentContainer {
 
     protected WidgetBuilder widgetBuilder;

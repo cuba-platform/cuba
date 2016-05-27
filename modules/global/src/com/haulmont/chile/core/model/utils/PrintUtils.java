@@ -24,8 +24,6 @@ import com.haulmont.chile.core.model.MetaProperty;
 import java.util.Collection;
 import java.util.LinkedList;
 
-/**
- */
 public final class PrintUtils {
 
     private PrintUtils() {

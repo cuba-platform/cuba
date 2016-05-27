@@ -20,8 +20,6 @@ import com.haulmont.cuba.gui.data.aggregation.Aggregation;
 
 import java.util.Collection;
 
-/**
- */
 public class BasicAggregation<T> implements Aggregation<T> {
 
     private Class<T> clazz;

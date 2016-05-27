@@ -23,8 +23,6 @@ import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 
 import org.springframework.stereotype.Component;
 
-/**
- */
 @Component(ThemeConstantsManager.NAME)
 public class DesktopThemeConstantsManager implements ThemeConstantsManager {
     @Override

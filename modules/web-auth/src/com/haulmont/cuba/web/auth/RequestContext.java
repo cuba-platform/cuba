@@ -23,8 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Date;
 
-/**
- */
 public class RequestContext {
 
     private static ThreadLocal<RequestContext> current = new ThreadLocal<>();

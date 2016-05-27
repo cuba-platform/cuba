@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.web.gui.data;
 
-/**
- */
 public interface PropertyValueStringify {
 
     String getFormattedValue();

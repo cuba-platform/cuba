@@ -20,8 +20,6 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Link;
 import org.apache.commons.lang.StringUtils;
 
-/**
- */
 public class LinkLoader extends AbstractComponentLoader<Link> {
     @Override
     public void createComponent() {

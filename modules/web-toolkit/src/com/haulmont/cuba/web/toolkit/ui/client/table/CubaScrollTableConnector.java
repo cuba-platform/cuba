@@ -31,13 +31,10 @@ import com.vaadin.client.ui.table.TableConnector;
 import com.vaadin.shared.ui.Connect;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
 
 import static com.haulmont.cuba.web.toolkit.ui.client.Tools.findCurrentOrParentTd;
 
-/**
- */
 @Connect(value = CubaTable.class, loadStyle = Connect.LoadStyle.EAGER)
 public class CubaScrollTableConnector extends TableConnector {
 

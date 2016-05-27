@@ -25,8 +25,6 @@ import com.haulmont.cuba.core.sys.logging.LogFileNotFoundException;
 import java.io.File;
 import java.util.List;
 
-/**
- */
 public interface LogControl {
 
     String NAME = "cuba_LogControl";

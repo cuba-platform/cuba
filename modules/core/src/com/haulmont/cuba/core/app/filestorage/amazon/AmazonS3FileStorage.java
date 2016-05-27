@@ -44,8 +44,6 @@ import java.util.Map;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-/**
- */
 public class AmazonS3FileStorage implements FileStorageAPI {
     @Inject
     protected Configuration configuration;

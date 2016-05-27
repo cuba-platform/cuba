@@ -24,8 +24,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-/**
- */
 public class TransactionImpl implements Transaction {
 
     private final PlatformTransactionManager tm;

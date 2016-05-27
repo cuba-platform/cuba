@@ -21,8 +21,6 @@ import com.haulmont.cuba.core.global.filter.Op;
 
 import java.util.EnumSet;
 
-/**
- */
 public interface OpManager {
     String NAME = "cuba_OpManager";
 

@@ -24,8 +24,6 @@ import com.haulmont.cuba.gui.components.Component;
 
 import javax.swing.*;
 
-/**
- */
 public class ComponentCaption extends JPanel {
 
     private Component owner;

@@ -34,8 +34,6 @@ import org.apache.commons.lang.time.DateFormatUtils;
 
 import java.util.List;
 
-/**
- */
 public class LogWindow extends CubaWindow {
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 

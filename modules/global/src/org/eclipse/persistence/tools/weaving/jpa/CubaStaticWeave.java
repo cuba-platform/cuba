@@ -20,8 +20,6 @@ package org.eclipse.persistence.tools.weaving.jpa;
 import com.haulmont.cuba.core.sys.persistence.EclipseLinkCustomizer;
 import org.eclipse.persistence.exceptions.StaticWeaveException;
 
-/**
- */
 public class CubaStaticWeave extends StaticWeave {
 
     public CubaStaticWeave(String[] argv) {

@@ -27,8 +27,6 @@ import java.util.Locale;
 
 import static junit.framework.Assert.assertEquals;
 
-/**
- */
 public class IntegerDatatypeTest extends AbstractDatatypeTest {
 
     private Datatype<Integer> intDt;

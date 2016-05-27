@@ -22,8 +22,6 @@ import com.haulmont.cuba.gui.data.GroupInfo;
 
 import javax.annotation.Nullable;
 
-/**
- */
 public interface GroupTable<E extends Entity> extends Table<E> {
 
     String NAME = "groupTable";

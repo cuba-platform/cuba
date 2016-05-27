@@ -21,8 +21,6 @@ import com.haulmont.cuba.core.entity.Entity;
 
 import java.util.Collection;
 
-/**
- */
 public interface EntityRestoreService {
 
     String NAME = "cuba_EntityRestoreService";

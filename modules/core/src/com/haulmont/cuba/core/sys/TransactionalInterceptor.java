@@ -21,8 +21,6 @@ import com.haulmont.cuba.core.Persistence;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-/**
- */
 public class TransactionalInterceptor {
 
     private Persistence persistence;

@@ -22,8 +22,6 @@ import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.CubaEnhancedTable;
 
-/**
- */
 public abstract class AbstractPresentationAction extends AbstractAction {
 
     protected Table table;

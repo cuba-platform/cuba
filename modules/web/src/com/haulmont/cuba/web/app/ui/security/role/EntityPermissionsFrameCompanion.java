@@ -30,8 +30,6 @@ import com.haulmont.cuba.web.gui.components.WebComponentsUtils;
 
 import javax.inject.Inject;
 
-/**
- */
 public class EntityPermissionsFrameCompanion implements EntityPermissionsFrame.Companion {
 
     @Inject

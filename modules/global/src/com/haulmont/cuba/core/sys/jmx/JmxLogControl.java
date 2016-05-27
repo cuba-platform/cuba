@@ -39,8 +39,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- */
 @Component("cuba_JmxLogControlMBean")
 public class JmxLogControl implements JmxLogControlMBean {
 

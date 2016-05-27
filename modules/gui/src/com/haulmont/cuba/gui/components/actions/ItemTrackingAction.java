@@ -23,8 +23,6 @@ import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 
-/**
- */
 public abstract class ItemTrackingAction extends BaseAction {
     protected ConstraintOperationType constraintOperationType;
     protected String constraintCode;

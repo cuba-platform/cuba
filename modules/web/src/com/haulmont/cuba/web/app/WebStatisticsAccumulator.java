@@ -22,8 +22,6 @@ import com.haulmont.cuba.core.sys.StatisticsAccumulator;
 import org.springframework.stereotype.Component;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- */
 @Component(WebStatisticsAccumulator.NAME)
 public class WebStatisticsAccumulator extends StatisticsAccumulator {
 

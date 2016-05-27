@@ -33,8 +33,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-/**
- */
 public class TableModelAdapter extends AbstractTableModel implements AnyTableModelAdapter {
 
     private static final long serialVersionUID = -3892470031734710618L;

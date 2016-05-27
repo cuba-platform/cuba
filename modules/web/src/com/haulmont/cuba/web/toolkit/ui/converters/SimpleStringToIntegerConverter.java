@@ -22,8 +22,6 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.Locale;
 
-/**
- */
 public class SimpleStringToIntegerConverter implements Converter<String, Integer> {
 
     @Override

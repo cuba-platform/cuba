@@ -24,8 +24,6 @@ import javax.persistence.Column;
 import javax.persistence.Table;
 import java.util.Date;
 
-/**
- */
 @Entity(name = "sys$EntityStatistics")
 @Table(name = "SYS_ENTITY_STATISTICS")
 @SystemLevel

@@ -16,8 +16,6 @@
  */
 package com.haulmont.cuba.gui.data.aggregation.impl;
 
-/**
- */
 public class DoubleAggregation extends BasicNumberAggregation<Double> {
     public DoubleAggregation() {
         super(Double.class);

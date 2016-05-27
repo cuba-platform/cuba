@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.gui.components;
 
-/**
- */
 public interface ResizableTextArea extends TextArea, Component.HasSettings {
     String NAME = TextArea.NAME;
 

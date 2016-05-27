@@ -28,8 +28,6 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
-/**
- */
 public class WebPickerFieldActionHandler implements Action.Handler {
 
     private final int[] modifiers;

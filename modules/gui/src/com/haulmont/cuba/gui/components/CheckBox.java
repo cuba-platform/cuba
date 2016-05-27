@@ -16,8 +16,6 @@
  */
 package com.haulmont.cuba.gui.components;
 
-/**
- */
 public interface CheckBox extends Field {
 
     String NAME = "checkBox";

@@ -28,8 +28,6 @@ import java.text.SimpleDateFormat;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- */
 public class EntityParamsDatasource extends CollectionDatasourceImpl<InfoParamEntity, UUID> {
 
     protected static final String TIMESTAMP_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";

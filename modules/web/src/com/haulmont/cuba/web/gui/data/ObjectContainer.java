@@ -30,8 +30,6 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Method;
 import java.util.*;
 
-/**
- */
 public class ObjectContainer implements com.vaadin.data.Container, Container.ItemSetChangeNotifier {
 
     private Logger log = LoggerFactory.getLogger(getClass());

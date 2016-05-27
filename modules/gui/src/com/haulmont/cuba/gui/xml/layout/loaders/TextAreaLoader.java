@@ -19,8 +19,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.gui.components.TextArea;
 import org.apache.commons.lang.StringUtils;
 
-/**
- */
 public class TextAreaLoader extends AbstractTextFieldLoader<TextArea> {
 
     @Override

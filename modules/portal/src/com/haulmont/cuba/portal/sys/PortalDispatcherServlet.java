@@ -28,8 +28,6 @@ import org.springframework.web.servlet.DispatcherServlet;
 
 import java.io.File;
 
-/**
- */
 public class PortalDispatcherServlet extends DispatcherServlet {
 
     private static final long serialVersionUID = -4884517938479910144L;

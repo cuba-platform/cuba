@@ -37,8 +37,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-/**
- */
 public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements TabSheet {
 
     protected boolean postInitTaskAdded;

@@ -46,8 +46,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- */
 @Component("cuba_PersistenceManagerMBean")
 public class PersistenceManager implements PersistenceManagerMBean {
 

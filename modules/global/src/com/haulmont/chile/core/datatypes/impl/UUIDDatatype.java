@@ -28,8 +28,6 @@ import java.text.ParseException;
 import java.util.Locale;
 import java.util.UUID;
 
-/**
- */
 public class UUIDDatatype implements Datatype<UUID> {
 
     public final static String NAME = "uuid";

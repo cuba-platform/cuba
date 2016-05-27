@@ -20,8 +20,6 @@ package com.haulmont.cuba.web.toolkit.ui;
 import com.haulmont.cuba.web.toolkit.ui.client.split.CubaHorizontalSplitPanelState;
 import com.vaadin.ui.HorizontalSplitPanel;
 
-/**
- */
 public class CubaHorizontalSplitPanel extends HorizontalSplitPanel {
 
     @Override

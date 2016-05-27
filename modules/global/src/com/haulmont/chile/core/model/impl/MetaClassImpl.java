@@ -25,8 +25,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.*;
 
-/**
- */
 @SuppressWarnings({"TransientFieldNotInitialized"})
 public class MetaClassImpl extends MetadataObjectImpl implements MetaClass {
 

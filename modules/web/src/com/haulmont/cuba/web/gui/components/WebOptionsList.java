@@ -22,8 +22,6 @@ import com.haulmont.cuba.web.toolkit.ui.CubaListSelect;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 
-/**
- */
 public class WebOptionsList extends WebAbstractOptionsBase<CubaListSelect> implements OptionsList {
     public WebOptionsList() {
         component = new CubaListSelect() {

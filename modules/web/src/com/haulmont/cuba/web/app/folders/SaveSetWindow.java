@@ -26,8 +26,6 @@ import com.haulmont.cuba.web.AppUI;
 import java.util.Map;
 import java.util.Set;
 
-/**
- */
 public class SaveSetWindow extends AbstractWindow {
 
     private Set ids;

@@ -36,8 +36,6 @@ import java.util.HashMap;
 
 import static junit.framework.Assert.assertTrue;
 
-/**
- */
 public class ControllerDependencyInjectorTest extends CubaClientTestCase {
 
     private Messages messages = new MessagesClientImpl();

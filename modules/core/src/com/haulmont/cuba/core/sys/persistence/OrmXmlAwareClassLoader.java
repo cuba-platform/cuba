@@ -32,8 +32,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 
-/**
- */
 public class OrmXmlAwareClassLoader extends URLClassLoader {
 
     private final String workDir;

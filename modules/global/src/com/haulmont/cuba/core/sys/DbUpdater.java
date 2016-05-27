@@ -18,10 +18,7 @@ package com.haulmont.cuba.core.sys;
 
 import java.util.List;
 
-/**
- */
 public interface DbUpdater {
-
     String NAME = "cuba_DbUpdater";
 
     void updateDatabase();

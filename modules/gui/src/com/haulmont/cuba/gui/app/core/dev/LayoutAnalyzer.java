@@ -31,8 +31,6 @@ import static com.haulmont.cuba.gui.app.core.dev.LayoutTip.error;
 import static com.haulmont.cuba.gui.app.core.dev.LayoutTip.warn;
 import static com.haulmont.cuba.gui.components.ExpandingLayout.ExpandDirection;
 
-/**
- */
 public class LayoutAnalyzer {
 
     protected List<Inspection> inspections = new ArrayList<>();

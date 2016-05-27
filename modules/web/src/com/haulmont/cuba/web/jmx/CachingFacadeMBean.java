@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.web.jmx;
 
-/**
- */
 public interface CachingFacadeMBean {
 
     int getMessagesCacheSize();

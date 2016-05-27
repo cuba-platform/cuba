@@ -29,8 +29,6 @@ import org.antlr.runtime.tree.TreeVisitor;
 import javax.annotation.Nullable;
 import java.util.List;
 
-/**
- */
 public class JoinVariableNode extends BaseJoinNode {
     private String joinSpec;
 

@@ -17,11 +17,5 @@
 
 package com.haulmont.cuba.core.sys;
 
-/**
- *
- */
-public class ThreadLocalSecurityContextHolder
-        extends ThreadLocal<SecurityContext>
-        implements SecurityContextHolder
-{
+public class ThreadLocalSecurityContextHolder extends ThreadLocal<SecurityContext> implements SecurityContextHolder {
 }

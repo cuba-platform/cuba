@@ -38,8 +38,6 @@ import org.dom4j.Element;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- */
 @MetaClass(name = "sec$PropertyCondition")
 @SystemLevel
 public class PropertyCondition extends AbstractCondition {

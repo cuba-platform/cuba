@@ -17,15 +17,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.vaadin.event.Action;
-import com.vaadin.server.KeyMapper;
-import com.vaadin.ui.Component;
-
-import java.util.HashSet;
-import java.util.Stack;
-
-/**
- */
 public class CubaAccordion extends com.vaadin.ui.Accordion {
 
     public void setTestId(Tab tab, String testId) {

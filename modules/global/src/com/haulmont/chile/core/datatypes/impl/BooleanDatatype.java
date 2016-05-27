@@ -32,8 +32,6 @@ import org.apache.commons.lang.StringUtils;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-/**
- */
 public class BooleanDatatype implements Datatype<Boolean> {
 
     public final static String NAME = "boolean";

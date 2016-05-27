@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.vaadin.ui.Component;
 
-/**
- */
 public interface UploadComponent extends Component {
     String getAccept();
     void setAccept(String accept);

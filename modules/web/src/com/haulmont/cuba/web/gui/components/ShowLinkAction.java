@@ -24,8 +24,6 @@ import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.App;
 
-/**
- */
 public class ShowLinkAction extends BaseAction implements Action.HasBeforeAfterHandlers {
 
     public static final String ACTION_ID = "showLink";

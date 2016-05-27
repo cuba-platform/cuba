@@ -28,8 +28,6 @@ import com.haulmont.cuba.core.config.type.Factory;
 
 import java.util.List;
 
-/**
- */
 @Source(type = SourceType.APP)
 public interface WebAuthConfig extends Config {
 

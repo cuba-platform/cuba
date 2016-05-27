@@ -46,8 +46,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.RejectedExecutionException;
 
-/**
- */
 @Component(EmailerAPI.NAME)
 public class Emailer implements EmailerAPI {
 

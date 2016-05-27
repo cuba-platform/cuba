@@ -34,8 +34,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 
-/**
- */
 public class WebLookupPickerField extends WebLookupField implements LookupPickerField {
 
     protected WebPickerField pickerField;

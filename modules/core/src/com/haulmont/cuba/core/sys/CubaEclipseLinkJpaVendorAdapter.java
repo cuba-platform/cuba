@@ -21,8 +21,6 @@ import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter;
 
 import java.util.Map;
 
-/**
- */
 public class CubaEclipseLinkJpaVendorAdapter extends EclipseLinkJpaVendorAdapter {
 
     protected final EclipseLinkJpaDialect jpaDialect;

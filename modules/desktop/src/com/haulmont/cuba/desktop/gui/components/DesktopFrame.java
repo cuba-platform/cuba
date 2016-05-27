@@ -42,8 +42,6 @@ import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-/**
- */
 public class DesktopFrame
         extends DesktopVBox
         implements DetachableFrame, WrappedFrame, Component.HasXmlDescriptor {

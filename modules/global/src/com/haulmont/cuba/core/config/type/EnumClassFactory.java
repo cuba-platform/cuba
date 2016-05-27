@@ -20,8 +20,6 @@ package com.haulmont.cuba.core.config.type;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-/**
- */
 public class EnumClassFactory extends TypeFactory {
 
     private TypeFactory idFactory;

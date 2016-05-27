@@ -24,9 +24,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
 
-/**
- *
- */
 @com.haulmont.chile.core.annotations.MetaClass(name = "sec$OperationTarget")
 @SystemLevel
 public class OperationPermissionTarget extends AbstractPermissionTarget

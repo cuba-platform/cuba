@@ -24,8 +24,6 @@ import com.haulmont.cuba.core.global.filter.ParameterInfo;
 
 import java.util.Set;
 
-/**
- */
 public interface DsContextImplementation extends DsContext {
 
     void setParent(DsContext parentDsContext);

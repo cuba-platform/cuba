@@ -26,8 +26,6 @@ import com.vaadin.shared.ui.Connect;
 
 import java.util.Map;
 
-/**
- */
 @Connect(value = CubaClientManager.class, loadStyle = Connect.LoadStyle.EAGER)
 public class CubaClientManagerConnector extends AbstractExtensionConnector {
 

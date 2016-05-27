@@ -29,8 +29,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- */
 @Component("cuba_TimeTodayQueryMacroHandler")
 @Scope("prototype")
 public class TimeTodayQueryMacroHandler implements QueryMacroHandler {

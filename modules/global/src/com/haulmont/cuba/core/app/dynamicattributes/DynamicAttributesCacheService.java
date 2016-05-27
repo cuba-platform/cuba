@@ -20,8 +20,6 @@ package com.haulmont.cuba.core.app.dynamicattributes;
 import javax.annotation.Nullable;
 import java.util.Date;
 
-/**
- */
 public interface DynamicAttributesCacheService {
     String NAME = "cuba_DynamicAttributesCacheService";
 

@@ -19,8 +19,5 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.vaadin.ui.CssLayout;
 
-/**
- */
 public class CubaCssLayout extends CssLayout {
-
 }

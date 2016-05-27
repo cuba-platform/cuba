@@ -31,8 +31,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- */
 public class PortalLogoutHandler extends SimpleUrlLogoutSuccessHandler {
 
     private Logger log = LoggerFactory.getLogger(getClass());

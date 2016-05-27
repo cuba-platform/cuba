@@ -34,8 +34,6 @@ import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- */
 public class ServiceInterceptorTest {
 
     @ClassRule

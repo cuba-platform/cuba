@@ -19,8 +19,6 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import org.dom4j.Element;
 
-/**
- */
 public interface TableSettings {
 
     boolean saveSettings(Element element);

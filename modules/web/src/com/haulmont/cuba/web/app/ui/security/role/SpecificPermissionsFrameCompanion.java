@@ -28,8 +28,6 @@ import com.haulmont.cuba.web.gui.components.WebComponentsUtils;
 
 import javax.inject.Inject;
 
-/**
- */
 public class SpecificPermissionsFrameCompanion implements SpecificPermissionsFrame.Companion {
 
     @Inject

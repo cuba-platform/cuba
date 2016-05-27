@@ -34,8 +34,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- */
 public final class JmxConnectionHelper {
 
     protected final static UUID LOCAL_JMX_INSTANCE_ID = UUID.randomUUID();

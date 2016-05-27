@@ -19,8 +19,6 @@ package com.haulmont.cuba.core.global.filter;
 import java.util.List;
 import java.util.Set;
 
-/**
- */
 public abstract class Condition implements Cloneable {
     protected String name;
 

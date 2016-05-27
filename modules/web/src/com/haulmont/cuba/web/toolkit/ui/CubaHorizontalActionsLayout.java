@@ -16,7 +16,5 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-/**
- */
 public class CubaHorizontalActionsLayout extends CubaOrderedActionsLayout {
 }

@@ -43,8 +43,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.*;
 
-/**
- */
 public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> implements TabSheet, DesktopContainer, AutoExpanding {
 
     protected Map<Component, String> components = new HashMap<>();

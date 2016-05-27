@@ -25,8 +25,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertNull;
 
-/**
- */
 public class DeclarativeTransactionTest {
 
     @ClassRule

@@ -19,8 +19,6 @@ package com.haulmont.chile.core.loader;
 
 import java.util.List;
 
-/**
- */
 public interface MetaClassLoader {
 
     void loadPackage(String packageName, List<String> classNames);

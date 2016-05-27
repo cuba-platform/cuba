@@ -16,8 +16,6 @@
  */
 package com.haulmont.cuba.gui.components;
 
-/**
- */
 public interface Timer extends Component.HasXmlDescriptor, Component.BelongToFrame {
 
     boolean isRepeating();

@@ -22,8 +22,6 @@ import org.jdesktop.swingx.JXHyperlink;
 
 import javax.swing.*;
 
-/**
- */
 public class DesktopLinkButton extends DesktopButton implements LinkButton {
     @Override
     protected JButton createImplementation() {

@@ -54,8 +54,6 @@ import java.util.TreeMap;
 
 import static java.util.Arrays.asList;
 
-/**
- */
 public class ConstraintEditor extends AbstractEditor {
 
     @Inject

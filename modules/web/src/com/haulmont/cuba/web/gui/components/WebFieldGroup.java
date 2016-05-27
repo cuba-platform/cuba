@@ -39,8 +39,6 @@ import org.dom4j.Element;
 
 import java.util.*;
 
-/**
- */
 public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup>
         implements com.haulmont.cuba.gui.components.FieldGroup {
 

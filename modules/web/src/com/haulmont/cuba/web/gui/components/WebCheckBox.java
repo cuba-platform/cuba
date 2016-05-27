@@ -26,8 +26,6 @@ import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 
 import java.util.Collection;
 
-/**
- */
 public class WebCheckBox extends WebAbstractField<com.vaadin.ui.CheckBox> implements CheckBox {
 
     public WebCheckBox() {

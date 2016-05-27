@@ -22,8 +22,6 @@ import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.security.entity.Presentation;
 
-/**
- */
 public class DeletePresentationAction extends AbstractPresentationAction {
 
     public DeletePresentationAction(Table table) {

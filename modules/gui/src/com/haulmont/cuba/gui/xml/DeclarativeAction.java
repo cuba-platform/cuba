@@ -26,8 +26,6 @@ import org.apache.commons.lang.StringUtils;
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 
-/**
- */
 public class DeclarativeAction extends BaseAction {
 
     private Frame frame;

@@ -22,8 +22,6 @@ import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
 import com.vaadin.ui.Label;
 
-/**
- */
 public class WebTimer extends WebAbstractComponent<Label> implements com.haulmont.cuba.gui.components.Timer {
 
     protected CubaTimer timerImpl;

@@ -30,8 +30,6 @@ import com.haulmont.cuba.gui.app.security.entity.UiPermissionVariant;
 
 import javax.swing.*;
 
-/**
- */
 public class UiPermissionsFrameCompanion implements UiPermissionsFrame.Companion {
 
     protected Messages messages = AppBeans.get(Messages.NAME);

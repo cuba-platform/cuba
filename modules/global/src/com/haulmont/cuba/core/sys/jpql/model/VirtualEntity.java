@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.core.sys.jpql.model;
 
-/**
- */
 public class VirtualEntity extends EntityImpl {
     public static int idx = 0;
 

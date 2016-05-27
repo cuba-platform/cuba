@@ -19,8 +19,6 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 
-/**
- */
 public interface WidgetsTree<E extends Entity> extends Tree<E> {
 
     String NAME = "widgetsTree";

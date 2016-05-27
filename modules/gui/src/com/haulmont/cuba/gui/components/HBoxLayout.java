@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.gui.components;
 
-/**
- */
 public interface HBoxLayout extends BoxLayout {
     String NAME = "hbox";
 }

@@ -25,8 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- */
 public class VariableManipulator implements TreeVisitorAction {
     private List<PathNode> variableUses = new ArrayList<>();
 

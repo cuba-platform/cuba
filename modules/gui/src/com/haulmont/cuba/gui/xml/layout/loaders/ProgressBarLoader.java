@@ -22,8 +22,6 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-/**
- */
 public class ProgressBarLoader extends AbstractComponentLoader<ProgressBar> {
     @Override
     public void createComponent() {

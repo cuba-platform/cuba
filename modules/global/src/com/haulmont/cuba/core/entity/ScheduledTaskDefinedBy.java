@@ -18,8 +18,6 @@ package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
-/**
- */
 public enum ScheduledTaskDefinedBy implements EnumClass<String> {
     BEAN("B"),
     CLASS("C"),

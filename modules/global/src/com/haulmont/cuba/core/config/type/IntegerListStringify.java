@@ -20,9 +20,6 @@ package com.haulmont.cuba.core.config.type;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- *
- */
 public class IntegerListStringify extends TypeStringify {
 
     @SuppressWarnings("unchecked")

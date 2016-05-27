@@ -16,8 +16,6 @@
  */
 package com.haulmont.cuba.gui.app.security.role.edit;
 
-/**
- */
 public enum PermissionValue {
     ALLOW(1),
     DENY(0);

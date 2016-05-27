@@ -29,8 +29,6 @@ import org.dom4j.Element;
 import java.text.ParseException;
 import java.util.Date;
 
-/**
- */
 public class DateValidator implements Field.Validator {
 
     protected String message;

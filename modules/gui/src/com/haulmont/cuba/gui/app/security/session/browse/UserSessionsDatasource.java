@@ -28,8 +28,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- */
 public class UserSessionsDatasource extends GroupDatasourceImpl<UserSessionEntity, UUID> {
 
     private Date updateTs;

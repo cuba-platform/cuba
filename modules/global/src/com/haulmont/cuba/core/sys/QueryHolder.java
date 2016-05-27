@@ -22,8 +22,6 @@ import org.apache.commons.lang.ObjectUtils;
 
 import java.io.Serializable;
 
-/**
- */
 public class QueryHolder implements Serializable {
 
     private static final long serialVersionUID = -6055610488135337366L;

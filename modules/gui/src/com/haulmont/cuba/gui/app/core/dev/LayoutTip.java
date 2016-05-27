@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.gui.app.core.dev;
 
-/**
- */
 public class LayoutTip {
 
     public final LayoutTipType errorType;

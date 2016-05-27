@@ -30,8 +30,6 @@ import java.lang.management.ManagementFactory;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-/**
- */
 @Component("cuba_StatisticsCounterMBean")
 public class StatisticsCounter implements StatisticsCounterMBean {
 

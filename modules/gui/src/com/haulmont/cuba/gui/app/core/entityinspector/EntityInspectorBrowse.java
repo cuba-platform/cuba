@@ -53,8 +53,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-/**
- */
 public class EntityInspectorBrowse extends AbstractLookup {
 
     public interface Companion {

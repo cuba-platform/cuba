@@ -24,8 +24,6 @@ import org.springframework.core.io.Resource;
 import java.io.IOException;
 import java.net.URLDecoder;
 
-/**
- */
 public class ScriptResource {
     protected String dir;
     protected String name;

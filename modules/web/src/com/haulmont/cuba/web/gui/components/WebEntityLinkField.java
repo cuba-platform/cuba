@@ -51,8 +51,6 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
-/**
- */
 public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implements EntityLinkField {
 
     protected EntityLinkClickHandler clickHandler;

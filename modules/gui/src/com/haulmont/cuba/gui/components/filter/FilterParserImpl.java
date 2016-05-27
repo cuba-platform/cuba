@@ -32,12 +32,11 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 
-/**
- */
 @Component(FilterParser.NAME)
 public class FilterParserImpl implements FilterParser {
     protected static Logger log = LoggerFactory.getLogger(FilterParser.class);
 
+    @Override
     public ConditionsTree getConditions(Filter filter, String xml) {
         ConditionsTree conditions = new ConditionsTree();
         if (!StringUtils.isBlank(xml)) {
@@ -107,6 +106,7 @@ public class FilterParserImpl implements FilterParser {
      * @param valueProperty Describes what parameter value will be serialized to xml: current value or default one
      * @return filter xml
      */
+    @Override
     @Nullable
     public String getXml(ConditionsTree conditions, Param.ValueProperty valueProperty) {
         String xml = null;
@@ -136,5 +136,4 @@ public class FilterParserImpl implements FilterParser {
             condition.toXml(elem, valueProperty);
         }
     }
-
 }

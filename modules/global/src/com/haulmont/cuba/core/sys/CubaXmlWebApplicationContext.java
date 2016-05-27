@@ -22,8 +22,6 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 
-/**
- */
 public class CubaXmlWebApplicationContext extends XmlWebApplicationContext {
 
     @Override

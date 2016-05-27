@@ -23,8 +23,6 @@ import com.vaadin.data.Container;
 
 import java.util.Collection;
 
-/**
- */
 public class HierarchicalDsWrapper extends CollectionDsWrapper implements Container.Hierarchical {
 
     protected String parentPropertyName;

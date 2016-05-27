@@ -22,8 +22,6 @@ import org.eclipse.persistence.expressions.ExpressionOperator;
 
 import javax.persistence.Temporal;
 
-/**
- */
 public class EclipseLinkCustomizer {
 
     public static void initTransientCompatibleAnnotations() {

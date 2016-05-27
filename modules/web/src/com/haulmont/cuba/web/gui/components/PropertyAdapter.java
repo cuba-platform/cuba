@@ -18,8 +18,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.vaadin.data.Property;
 
-/**
- */
 public abstract class PropertyAdapter implements Property, Property.ValueChangeNotifier {
     protected final Property itemProperty;
 

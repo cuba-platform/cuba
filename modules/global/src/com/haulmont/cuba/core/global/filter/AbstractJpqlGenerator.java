@@ -20,8 +20,6 @@ package com.haulmont.cuba.core.global.filter;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- */
 public abstract class AbstractJpqlGenerator {
     public String generateJpql(Condition condition) {
         if (condition instanceof LogicalCondition) {

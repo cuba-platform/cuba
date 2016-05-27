@@ -31,8 +31,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.UUID;
 
-/**
- */
 public final class ControllerUtils {
     private static final String DISPATCHER = "dispatch";
 

@@ -30,8 +30,6 @@ import com.vaadin.data.Property;
 
 import java.util.*;
 
-/**
- */
 public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
 
     protected Map<MetaPropertyPath, PropertyWrapper> properties = new HashMap<>();

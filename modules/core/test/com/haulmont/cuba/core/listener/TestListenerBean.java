@@ -25,8 +25,6 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 @Component("cuba_TestListenerBean")
 public class TestListenerBean implements
         AfterInsertEntityListener<Server>,

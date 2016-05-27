@@ -22,8 +22,6 @@ import com.haulmont.cuba.gui.WindowManagerProvider;
 
 import org.springframework.stereotype.Component;
 
-/**
- */
 @Component(WindowManagerProvider.NAME)
 public class WebWindowManagerProvider implements WindowManagerProvider {
 

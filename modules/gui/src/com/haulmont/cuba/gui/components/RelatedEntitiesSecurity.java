@@ -25,8 +25,6 @@ import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 
-/**
- */
 public final class RelatedEntitiesSecurity {
 
     private RelatedEntitiesSecurity() {

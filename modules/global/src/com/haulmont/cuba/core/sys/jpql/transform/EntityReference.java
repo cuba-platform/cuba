@@ -21,8 +21,6 @@ import com.haulmont.cuba.core.sys.jpql.tree.IdentificationVariableNode;
 import com.haulmont.cuba.core.sys.jpql.tree.PathNode;
 import org.antlr.runtime.tree.Tree;
 
-/**
- */
 public interface EntityReference {
     String replaceEntries(String queryPart, String replaceablePart);
 

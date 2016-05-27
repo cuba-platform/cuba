@@ -39,8 +39,6 @@ import org.perf4j.log4j.Log4JStopWatch;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class MenuCommand {
 
     private MenuItem item;

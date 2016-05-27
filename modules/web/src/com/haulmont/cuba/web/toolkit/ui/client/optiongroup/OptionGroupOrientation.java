@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.optiongroup;
 
 import java.io.Serializable;
 
-/**
- */
 public enum OptionGroupOrientation implements Serializable {
     HORIZONTAL,
     VERTICAL

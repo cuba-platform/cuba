@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.gui.components;
 
-/**
- */
 public interface SearchField extends LookupField {
 
     String NAME = "searchField";

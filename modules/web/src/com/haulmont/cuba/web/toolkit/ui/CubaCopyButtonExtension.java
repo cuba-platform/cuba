@@ -27,8 +27,6 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.EventObject;
 
-/**
- */
 public class CubaCopyButtonExtension extends AbstractExtension {
 
     protected Button component;

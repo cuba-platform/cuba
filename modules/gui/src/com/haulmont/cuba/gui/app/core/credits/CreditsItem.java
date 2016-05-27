@@ -19,9 +19,6 @@ package com.haulmont.cuba.gui.app.core.credits;
 
 import javax.annotation.Nullable;
 
-/**
- *
- */
 public class CreditsItem implements Comparable<CreditsItem> {
 
     private String name;

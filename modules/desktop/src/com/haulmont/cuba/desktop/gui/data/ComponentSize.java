@@ -19,9 +19,6 @@ package com.haulmont.cuba.desktop.gui.data;
 
 import com.haulmont.cuba.gui.components.Component;
 
-/**
- *
- */
 public class ComponentSize {
 
     private static final String PIXEL = "px";

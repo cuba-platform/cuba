@@ -52,8 +52,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-/**
- */
 public class GroupBrowser extends AbstractWindow {
 
     protected static final Logger log = LoggerFactory.getLogger(GroupBrowser.class);

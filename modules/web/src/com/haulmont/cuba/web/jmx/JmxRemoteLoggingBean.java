@@ -35,8 +35,6 @@ import java.util.Map;
 
 import static com.haulmont.cuba.web.jmx.JmxConnectionHelper.withConnection;
 
-/**
- */
 @Component(JmxRemoteLoggingAPI.NAME)
 public class JmxRemoteLoggingBean implements JmxRemoteLoggingAPI {
 

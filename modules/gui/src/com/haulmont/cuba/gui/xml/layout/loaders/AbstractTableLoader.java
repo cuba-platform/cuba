@@ -34,7 +34,6 @@ import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.xml.DeclarativeColumnGenerator;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.Logger;
@@ -45,8 +44,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-/**
- */
 public abstract class AbstractTableLoader<T extends Table> extends ActionsHolderLoader<T> {
 
     private Logger log = LoggerFactory.getLogger(getClass());

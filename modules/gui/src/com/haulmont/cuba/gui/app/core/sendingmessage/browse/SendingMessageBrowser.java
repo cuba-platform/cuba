@@ -44,8 +44,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- */
 public class SendingMessageBrowser extends AbstractWindow {
 
     protected static final String CONTENT_TEXT = "contentText";

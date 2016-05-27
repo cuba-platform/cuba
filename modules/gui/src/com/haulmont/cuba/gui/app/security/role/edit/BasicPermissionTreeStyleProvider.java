@@ -22,9 +22,6 @@ import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.app.security.entity.BasicPermissionTarget;
 import com.haulmont.cuba.gui.app.security.entity.PermissionVariant;
 
-/**
- *
- */
 public class BasicPermissionTreeStyleProvider implements Table.StyleProvider {
     @Override
     public String getStyleName(Entity entity, String property) {

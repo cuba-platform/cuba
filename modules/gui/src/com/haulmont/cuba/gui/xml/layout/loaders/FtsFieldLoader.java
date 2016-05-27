@@ -19,8 +19,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.mainwindow.FtsField;
 
-/**
- */
 public class FtsFieldLoader extends AbstractComponentLoader<FtsField> {
     @Override
     public void createComponent() {

@@ -25,8 +25,6 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import java.util.List;
 
-/**
- */
 @MetaClass(name = "jmxcontrol$ManagedBeanInfo")
 @SystemLevel
 public class ManagedBeanInfo extends AbstractNotPersistentEntity {

@@ -16,8 +16,6 @@
  */
 package com.haulmont.cuba.gui.data.aggregation.impl;
 
-/**
- */
 public class LongAggregation extends BasicNumberAggregation<Long> {
     public LongAggregation() {
         super(Long.class);

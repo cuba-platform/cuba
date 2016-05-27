@@ -20,8 +20,6 @@ package com.haulmont.cuba.gui.components.autocomplete.impl;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- */
 public class AliasRemover {
     protected Pattern aliasPattern = Pattern.compile("as\\s+\"?([\\w|\\d|_|\\.]+)\"?\\s*");
 

@@ -23,8 +23,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 @SuppressWarnings({"TransientFieldNotInitialized"})
 public abstract class MetadataObjectImpl implements MetadataObject, Serializable {
 

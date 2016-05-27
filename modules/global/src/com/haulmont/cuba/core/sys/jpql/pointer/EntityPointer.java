@@ -23,8 +23,6 @@ import com.haulmont.cuba.core.sys.jpql.UnknownEntityNameException;
 import com.haulmont.cuba.core.sys.jpql.model.Attribute;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 
-/**
- */
 public class EntityPointer implements Pointer {
     private Entity entity;
 

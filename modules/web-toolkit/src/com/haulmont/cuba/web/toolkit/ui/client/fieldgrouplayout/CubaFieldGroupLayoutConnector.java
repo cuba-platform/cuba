@@ -27,8 +27,6 @@ import com.vaadin.client.UIDL;
 import com.vaadin.client.ui.VGridLayout;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
 @Connect(CubaFieldGroupLayout.class)
 public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
 

@@ -21,8 +21,6 @@ import com.haulmont.cuba.core.global.ViewProperty;
 
 import java.util.Collection;
 
-/**
- */
 public final class ViewHelper {
 
     private ViewHelper() {

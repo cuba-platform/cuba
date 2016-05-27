@@ -34,8 +34,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.UUID;
 
-/**
- */
 public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Object>, InitializingBean {
 
     private Object serviceProxy;

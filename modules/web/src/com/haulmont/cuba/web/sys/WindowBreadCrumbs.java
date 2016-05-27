@@ -33,8 +33,6 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
-/**
- */
 public class WindowBreadCrumbs extends HorizontalLayout {
 
     protected boolean visibleExplicitly = true;

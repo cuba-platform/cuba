@@ -21,8 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 
-/**
- */
 @Service(UniqueNumbersService.NAME)
 public class UniqueNumbersServiceBean implements UniqueNumbersService {
 

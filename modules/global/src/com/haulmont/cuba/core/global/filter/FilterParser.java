@@ -28,8 +28,6 @@ import org.dom4j.Element;
 
 import java.util.*;
 
-/**
- */
 public class FilterParser {
     protected final Condition root;
 

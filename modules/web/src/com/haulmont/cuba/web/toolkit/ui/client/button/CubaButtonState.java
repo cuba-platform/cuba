@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.button;
 
 import com.vaadin.shared.ui.button.ButtonState;
 
-/**
- */
 public class CubaButtonState extends ButtonState {
 
     public boolean useResponsePending = true;

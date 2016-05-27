@@ -22,10 +22,8 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import javax.persistence.*;
 import java.util.Set;
 
-
 /**
  * Configuration element of <code>EntityLog</code> bean.
- *
  */
 @Entity(name = "sec$LoggedEntity")
 @Table(name = "SEC_LOGGED_ENTITY")

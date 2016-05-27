@@ -22,8 +22,6 @@ import com.vaadin.shared.communication.ClientRpc;
 
 import java.util.Map;
 
-/**
- */
 public interface CubaClientManagerClientRpc extends ClientRpc {
 
     String COMMUNICATION_ERROR_CAPTION_KEY = "communicationErrorCaption";

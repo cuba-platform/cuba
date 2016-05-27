@@ -22,8 +22,6 @@ import com.haulmont.cuba.web.toolkit.ui.client.groupbox.CubaGroupBoxConnector;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
 @Connect(CubaFieldGroup.class)
 public class CubaFieldGroupConnector extends CubaGroupBoxConnector {
 

@@ -21,8 +21,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
-/**
- */
 @Service(NumberIdService.NAME)
 public class NumberIdServiceBean implements NumberIdService {
 

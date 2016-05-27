@@ -20,8 +20,6 @@ package com.haulmont.cuba.portal.sys.security;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.Assert;
 
-/**
- */
 public class RoleGrantedAuthority implements GrantedAuthority {
 
     private static final long serialVersionUID = -8973027786139485184L;

@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.gui.theme;
 
-/**
- */
 public interface ThemeConstantsManager {
 
     String NAME = "cuba_ThemeManager";

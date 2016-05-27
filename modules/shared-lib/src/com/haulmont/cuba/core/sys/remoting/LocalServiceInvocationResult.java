@@ -17,9 +17,6 @@
 
 package com.haulmont.cuba.core.sys.remoting;
 
-/**
- *
- */
 public class LocalServiceInvocationResult {
 
     private byte[] data;

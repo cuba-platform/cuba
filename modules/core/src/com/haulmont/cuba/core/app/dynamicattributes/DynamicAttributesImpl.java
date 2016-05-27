@@ -26,8 +26,6 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Collection;
 
-/**
- */
 @Component(DynamicAttributes.NAME)
 public class DynamicAttributesImpl implements DynamicAttributes {
     @Inject

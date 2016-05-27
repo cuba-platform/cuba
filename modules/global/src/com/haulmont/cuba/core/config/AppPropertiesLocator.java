@@ -47,9 +47,6 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- *
- */
 @Component(AppPropertiesLocator.NAME)
 public class AppPropertiesLocator {
 

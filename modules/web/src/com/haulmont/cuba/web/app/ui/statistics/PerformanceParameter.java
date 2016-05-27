@@ -23,8 +23,6 @@ import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.gui.components.Formatter;
 
-/**
- */
 @MetaClass(name = "stat$PerformanceParameter")
 @SystemLevel
 @SuppressWarnings("unused")

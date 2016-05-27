@@ -26,9 +26,6 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- *
- */
 public class MigGridLayoutAdapter extends GridLayoutAdapter {
 
     protected MigLayout layout;

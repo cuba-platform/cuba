@@ -19,8 +19,6 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.data.aggregation.AggregationStrategy;
 
-/**
- */
 public class AggregationInfo {
 
     public enum Type {

@@ -33,8 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- */
 @Service(UserSettingService.NAME)
 public class UserSettingServiceBean implements UserSettingService {
 

@@ -25,8 +25,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import java.util.UUID;
 
-/**
- */
 @Component("cuba_Md5EncryptionModule")
 public class Md5EncryptionModule implements EncryptionModule {
 

@@ -59,8 +59,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
 
-/**
- */
 public class ServerLogWindow extends AbstractWindow {
 
     private final Logger log = LoggerFactory.getLogger(getClass());

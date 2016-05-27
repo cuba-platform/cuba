@@ -25,8 +25,7 @@ import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.AbstractComponentConnector;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
+@Deprecated
 @Connect(CubaMultiUpload.class)
 public class CubaMultiUploadConnector extends AbstractComponentConnector implements Paintable {
 

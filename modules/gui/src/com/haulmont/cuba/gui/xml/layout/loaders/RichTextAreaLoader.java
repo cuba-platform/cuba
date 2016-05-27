@@ -19,8 +19,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.RichTextArea;
 
-/**
- */
 public class RichTextAreaLoader extends AbstractTextFieldLoader<RichTextArea> {
     @Override
     public void createComponent() {

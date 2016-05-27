@@ -40,8 +40,6 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.Objects;
 
-/**
- */
 @Component("cuba_PortalAnonymousSessionHolder")
 public class AnonymousSessionHolder {
 

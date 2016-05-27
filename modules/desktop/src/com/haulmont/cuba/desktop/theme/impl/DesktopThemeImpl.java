@@ -30,8 +30,6 @@ import javax.annotation.Nullable;
 import javax.swing.*;
 import java.util.*;
 
-/**
- */
 public class DesktopThemeImpl implements DesktopTheme {
 
     private String name;

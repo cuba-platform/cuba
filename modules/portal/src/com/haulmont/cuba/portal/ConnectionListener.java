@@ -19,10 +19,6 @@ package com.haulmont.cuba.portal;
 
 import com.haulmont.cuba.security.global.LoginException;
 
-/**
- *
- */
 public interface ConnectionListener {
-
     void connectionStateChanged(Connection connection) throws LoginException;
 }

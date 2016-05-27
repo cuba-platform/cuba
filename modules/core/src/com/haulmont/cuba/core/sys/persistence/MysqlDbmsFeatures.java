@@ -21,8 +21,6 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class MysqlDbmsFeatures implements DbmsFeatures {
 
     @Override
@@ -68,5 +66,4 @@ public class MysqlDbmsFeatures implements DbmsFeatures {
     public boolean isNullsLastSorting() {
         return false;
     }
-
 }

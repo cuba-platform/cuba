@@ -18,8 +18,6 @@ package com.haulmont.cuba.web.log;
 
 import com.haulmont.cuba.web.App;
 
-/**
- */
 public class LogWindowLauncher implements Runnable {
 
     @Override

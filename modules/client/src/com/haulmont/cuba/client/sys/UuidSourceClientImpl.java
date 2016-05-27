@@ -23,8 +23,6 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-/**
- */
 @Component(UuidSource.NAME)
 public class UuidSourceClientImpl implements UuidSource {
 

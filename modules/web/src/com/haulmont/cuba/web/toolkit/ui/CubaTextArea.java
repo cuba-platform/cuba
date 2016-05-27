@@ -22,8 +22,6 @@ import com.vaadin.server.CompositeErrorMessage;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.TextArea;
 
-/**
- */
 public class CubaTextArea extends TextArea {
     public CubaTextArea() {
         setValidationVisible(false);

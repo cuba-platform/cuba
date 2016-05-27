@@ -26,8 +26,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-/**
- */
 @Component("cuba_FileStorageExceptionHandler")
 public class FileStorageExceptionHandler extends AbstractGenericExceptionHandler {
 

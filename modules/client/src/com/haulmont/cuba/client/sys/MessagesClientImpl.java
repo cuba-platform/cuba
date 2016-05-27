@@ -36,8 +36,6 @@ import java.net.SocketException;
 import java.util.List;
 import java.util.Locale;
 
-/**
- */
 @Component(Messages.NAME)
 public class MessagesClientImpl extends AbstractMessages {
 

@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.fieldgrouplayout;
 
 import com.vaadin.shared.ui.gridlayout.GridLayoutState;
 
-/**
- */
 public class CubaFieldGroupLayoutState extends GridLayoutState {
     {
         primaryStyleName = "cuba-fieldgrouplayout";

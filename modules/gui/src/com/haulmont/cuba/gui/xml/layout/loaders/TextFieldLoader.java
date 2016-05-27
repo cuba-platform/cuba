@@ -21,8 +21,6 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.gui.components.TextField;
 import org.apache.commons.lang.StringUtils;
 
-/**
- */
 public class TextFieldLoader extends AbstractTextFieldLoader<TextField> {
     @Override
     public void loadComponent() {

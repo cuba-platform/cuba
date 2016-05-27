@@ -19,8 +19,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.BoxLayout;
 
-/**
- */
 public abstract class AbstractBoxLoader<T extends BoxLayout> extends ContainerLoader<T> {
     @Override
     public void loadComponent() {

@@ -27,8 +27,6 @@ import java.sql.Types;
 import java.text.ParseException;
 import java.util.Locale;
 
-/**
- */
 public class StringDatatype implements Datatype<String> {
 
 	public final static String NAME = "string";

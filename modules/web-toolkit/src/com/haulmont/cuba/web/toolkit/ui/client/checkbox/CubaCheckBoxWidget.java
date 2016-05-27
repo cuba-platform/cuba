@@ -25,8 +25,6 @@ import com.google.gwt.i18n.client.HasDirection;
 import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.ui.VCheckBox;
 
-/**
- */
 public class CubaCheckBoxWidget extends VCheckBox implements FocusHandler, BlurHandler {
 
     protected boolean captionManagedByLayout = false;

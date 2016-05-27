@@ -19,9 +19,6 @@ package com.haulmont.cuba.desktop.exception;
 
 import com.haulmont.cuba.desktop.App;
 
-/**
- *
- */
 public class AWTExceptionHandler {
 
     public void handle(Throwable throwable) {

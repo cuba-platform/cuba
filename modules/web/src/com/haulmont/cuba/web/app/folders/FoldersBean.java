@@ -42,8 +42,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 @Component(Folders.NAME)
 public class FoldersBean implements Folders {
 
@@ -114,5 +112,4 @@ public class FoldersBean implements Folders {
 
         ((DsContextImplementation) window.getDsContext()).resumeSuspended();
     }
-
 }

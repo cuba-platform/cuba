@@ -41,8 +41,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-/**
- */
 public class RoleBrowser extends AbstractLookup {
 
     protected static final String DEFAULT_ROLE_PROPERTY = "defaultRole";

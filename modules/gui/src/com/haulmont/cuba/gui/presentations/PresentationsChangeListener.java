@@ -16,8 +16,6 @@
  */
 package com.haulmont.cuba.gui.presentations;
 
-/**
- */
 public interface PresentationsChangeListener {
 
     void currentPresentationChanged(Presentations presentations, Object oldPresentationId);

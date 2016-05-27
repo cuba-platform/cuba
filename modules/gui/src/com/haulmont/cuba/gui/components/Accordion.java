@@ -22,8 +22,6 @@ import org.dom4j.Element;
 
 import java.util.Collection;
 
-/**
- */
 public interface Accordion extends Component.Container, Component.BelongToFrame {
     String NAME = "accordion";
 

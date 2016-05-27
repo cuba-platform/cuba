@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.core.sys.jpql;
 
-/**
- */
 public class UnknownEntityNameException extends Exception {
     private String entityName;
 

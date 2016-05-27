@@ -22,8 +22,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import java.util.List;
 import java.util.Map;
 
-/**
- */
 public interface OptionsField extends Field {
     boolean isMultiSelect();
     void setMultiSelect(boolean multiselect);

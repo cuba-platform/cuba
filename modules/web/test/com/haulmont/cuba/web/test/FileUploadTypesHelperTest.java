@@ -24,8 +24,6 @@ import junit.framework.TestCase;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class FileUploadTypesHelperTest extends TestCase {
 
     public void testMIMEConversion() {

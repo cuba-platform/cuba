@@ -29,8 +29,6 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.util.*;
 
-/**
- */
 @Service(DomainDescriptionService.NAME)
 public class DomainDescriptionServiceBean implements DomainDescriptionService {
 

@@ -19,8 +19,6 @@ package com.haulmont.cuba.gui.components;
 
 import java.util.HashSet;
 
-/**
- */
 public class ActionsPermissions {
 
     private Component.SecuredActionsHolder actionsHolder;

@@ -19,8 +19,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.mainwindow.NewWindowButton;
 
-/**
- */
 public class NewWindowButtonLoader extends AbstractComponentLoader<NewWindowButton> {
     @Override
     public void createComponent() {

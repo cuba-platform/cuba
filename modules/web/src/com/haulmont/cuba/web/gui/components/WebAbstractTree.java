@@ -27,8 +27,6 @@ import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- */
 public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
         extends WebAbstractList<T, E> implements Tree<E> {
 

@@ -21,8 +21,6 @@ import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Resource;
 import org.apache.commons.lang.StringUtils;
 
-/**
- */
 public class WebLink extends WebAbstractComponent<com.vaadin.ui.Link> implements Link {
 
     public WebLink() {

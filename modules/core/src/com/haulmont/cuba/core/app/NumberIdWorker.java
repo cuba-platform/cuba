@@ -42,8 +42,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- */
 @Component(NumberIdWorker.NAME)
 public class NumberIdWorker implements NumberIdSequence {
 
@@ -149,5 +147,4 @@ public class NumberIdWorker implements NumberIdSequence {
         }
         return value;
     }
-
 }

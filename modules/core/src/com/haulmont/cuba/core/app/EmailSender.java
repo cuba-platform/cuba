@@ -44,8 +44,6 @@ import javax.mail.internet.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
-/**
- */
 @Component(EmailSenderAPI.NAME)
 public class EmailSender implements EmailSenderAPI {
 
@@ -218,5 +216,4 @@ public class EmailSender implements EmailSenderAPI {
             return null;
         }
     }
-
 }

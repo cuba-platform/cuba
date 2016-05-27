@@ -19,8 +19,6 @@ package com.haulmont.cuba.core.jmx;
 
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-/**
- */
 @ManagedResource(description = "Provides various information about middleware performance statistics")
 @SuppressWarnings("unused")
 public interface StatisticsCounterMBean {

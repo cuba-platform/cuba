@@ -50,8 +50,6 @@ import org.apache.commons.lang.StringUtils;
 import java.util.Collection;
 import java.util.List;
 
-/**
- */
 public class FolderEditWindow extends CubaWindow {
 
     protected Folder folder;

@@ -26,8 +26,6 @@ import com.haulmont.cuba.security.entity.UserSubstitution;
 import javax.inject.Inject;
 import java.util.Map;
 
-/**
- */
 public class UserSubstitutionEditor extends AbstractEditor<UserSubstitution> {
 
     @Inject

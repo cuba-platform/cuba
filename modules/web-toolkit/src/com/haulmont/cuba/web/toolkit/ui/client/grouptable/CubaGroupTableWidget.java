@@ -33,8 +33,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-/**
- */
 public class CubaGroupTableWidget extends CubaScrollTableWidget {
 
     public static final String CLASSNAME = "cuba-grouptable";

@@ -18,7 +18,6 @@ package com.haulmont.cuba.security.entity;
 
 /**
  * Type of operation on entity.
- *
  */
 public enum EntityOp {
     READ("read"),

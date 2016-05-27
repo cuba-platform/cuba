@@ -24,8 +24,6 @@ import com.google.gwt.user.client.Event;
 import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.ui.VButton;
 
-/**
- */
 public class CubaButtonWidget extends VButton {
 
     public CubaButtonWidget() {

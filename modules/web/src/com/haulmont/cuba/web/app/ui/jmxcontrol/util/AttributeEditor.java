@@ -32,8 +32,6 @@ import org.apache.commons.lang.StringUtils;
 import java.lang.reflect.Array;
 import java.util.*;
 
-/**
- */
 public class AttributeEditor {
 
     protected CheckBox checkBox;

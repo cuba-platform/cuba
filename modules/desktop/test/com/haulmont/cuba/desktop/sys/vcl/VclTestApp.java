@@ -34,8 +34,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
-/**
- */
 public class VclTestApp extends JFrame {
 
     public static void main(String[] args) {

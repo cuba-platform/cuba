@@ -18,8 +18,6 @@ package com.haulmont.cuba.core.global.filter;
 
 import javax.annotation.Nullable;
 
-/**
- */
 public class ParameterInfo {
 
     public enum Type {

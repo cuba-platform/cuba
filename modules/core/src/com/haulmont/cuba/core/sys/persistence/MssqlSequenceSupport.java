@@ -22,8 +22,6 @@ import com.haulmont.cuba.core.global.TimeSource;
 
 import java.text.SimpleDateFormat;
 
-/**
- */
 public class MssqlSequenceSupport implements SequenceSupport {
 
     @Override

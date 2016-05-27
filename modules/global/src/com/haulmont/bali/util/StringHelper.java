@@ -16,8 +16,6 @@
  */
 package com.haulmont.bali.util;
 
-/**
- */
 public final class StringHelper {
 
     private StringHelper() {

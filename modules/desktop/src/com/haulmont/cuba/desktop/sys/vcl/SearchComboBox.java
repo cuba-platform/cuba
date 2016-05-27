@@ -23,8 +23,6 @@ import javax.swing.*;
 import javax.swing.plaf.synth.SynthComboBoxUI;
 import java.awt.*;
 
-/**
- */
 public class SearchComboBox extends ExtendedComboBox {
 
     public SearchComboBox() {

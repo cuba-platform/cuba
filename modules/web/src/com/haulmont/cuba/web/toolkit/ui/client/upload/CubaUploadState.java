@@ -20,8 +20,7 @@ package com.haulmont.cuba.web.toolkit.ui.client.upload;
 import com.vaadin.shared.annotations.NoLayout;
 import com.vaadin.shared.ui.upload.UploadState;
 
-/**
- */
+@Deprecated
 public class CubaUploadState extends UploadState {
 
     // permitted mime types, comma separated

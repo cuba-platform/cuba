@@ -36,8 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- */
 public class RemoteServicesBeanCreator implements BeanFactoryPostProcessor, ApplicationContextAware {
 
     private Logger log = LoggerFactory.getLogger(RemoteServicesBeanCreator.class);

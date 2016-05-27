@@ -19,8 +19,6 @@ package com.haulmont.cuba.desktop.sys.layout;
 
 import java.awt.*;
 
-/**
- */
 public abstract class LayoutAdapter
         implements
             com.haulmont.cuba.gui.components.Component.Margin,

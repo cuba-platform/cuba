@@ -38,8 +38,6 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.*;
 
-/**
- */
 @JavaScript({
         "vaadin://resources/jqueryfileupload/jquery.ui.widget-1.11.4.min.js",
         "vaadin://resources/jqueryfileupload/jquery.iframe-transport-9.12.1.min.js",

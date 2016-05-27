@@ -24,7 +24,6 @@ import javax.persistence.*;
 /**
  * Security permission record.
  * <br>The {@link #value} may be 0,1,2 for {@link PermissionType#ENTITY_ATTR} and 0,1 for others.
- *
  */
 @Entity(name = "sec$Permission")
 @Table(name = "SEC_PERMISSION")

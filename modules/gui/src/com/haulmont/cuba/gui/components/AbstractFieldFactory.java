@@ -47,8 +47,6 @@ import java.lang.reflect.Method;
 import static com.haulmont.cuba.gui.WindowManager.OpenType;
 import static com.haulmont.cuba.gui.components.EntityLinkField.EntityLinkClickHandler;
 
-/**
- */
 public abstract class AbstractFieldFactory implements FieldFactory {
 
     protected ComponentsFactory componentsFactory = AppConfig.getFactory();

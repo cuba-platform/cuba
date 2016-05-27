@@ -24,8 +24,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- */
 public class ParameterCounter implements TreeVisitorAction {
     private boolean differentNamesOnly;
     private int totalParameterCount = 0;

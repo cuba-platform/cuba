@@ -32,8 +32,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 
-/**
- */
 public class WebSearchPickerField extends WebSearchField implements SearchPickerField {
 
     protected WebPickerField pickerField;

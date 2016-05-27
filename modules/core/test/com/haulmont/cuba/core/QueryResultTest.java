@@ -39,8 +39,6 @@ import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- */
 @SuppressWarnings("IncorrectCreateEntity")
 public class QueryResultTest {
 

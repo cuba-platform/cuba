@@ -25,8 +25,6 @@ import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
 import java.sql.Types;
 import java.util.UUID;
 
-/**
- */
 public class CubaPostgreSQLPlatform extends PostgreSQLPlatform {
 
     @Override

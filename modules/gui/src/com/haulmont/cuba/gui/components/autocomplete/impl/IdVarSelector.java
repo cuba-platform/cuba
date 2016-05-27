@@ -29,8 +29,6 @@ import org.antlr.runtime.tree.TreeVisitorAction;
 
 import java.util.*;
 
-/**
- */
 public class IdVarSelector implements TreeVisitorAction {
     private QueryVariableContext root;
 

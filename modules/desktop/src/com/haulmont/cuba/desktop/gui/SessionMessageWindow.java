@@ -26,8 +26,6 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.util.Locale;
 
-/**
- */
 public class SessionMessageWindow extends JDialog {
 
     private JTextArea messageArea;

@@ -27,8 +27,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-/**
- */
 @Component(UserFormatTools.NAME)
 public class UserFormatToolsImpl implements UserFormatTools {
 

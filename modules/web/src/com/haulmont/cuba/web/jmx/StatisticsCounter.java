@@ -22,8 +22,6 @@ import com.haulmont.cuba.web.app.WebStatisticsAccumulator;
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
-/**
- */
 @Component("cuba_StatisticsCounterMBean")
 public class StatisticsCounter implements StatisticsCounterMBean {
 

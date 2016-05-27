@@ -22,8 +22,6 @@ import junit.framework.TestCase;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- */
 public class EmailValidatorTest extends TestCase {
 
     private Pattern pattern = Pattern.compile(EmailValidator.EMAIL_PATTERN);

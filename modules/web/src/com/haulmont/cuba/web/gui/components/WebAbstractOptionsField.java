@@ -40,13 +40,9 @@ import java.util.*;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
 
-/**
- */
 public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSelect>
-        extends
-        WebAbstractField<T>
-        implements
-        OptionsField {
+        extends WebAbstractField<T>
+        implements OptionsField {
 
     protected List optionsList;
     protected Map<String, Object> optionsMap;

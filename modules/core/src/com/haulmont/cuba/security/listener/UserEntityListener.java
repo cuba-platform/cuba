@@ -26,8 +26,6 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
-/**
- */
 @Component("cuba_UserEntityListener")
 public class UserEntityListener implements BeforeInsertEntityListener<User>, BeforeUpdateEntityListener<User> {
 

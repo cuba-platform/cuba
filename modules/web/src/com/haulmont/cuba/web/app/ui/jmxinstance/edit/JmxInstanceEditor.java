@@ -29,8 +29,6 @@ import org.apache.commons.lang.StringUtils;
 import javax.inject.Inject;
 import java.util.Map;
 
-/**
- */
 public class JmxInstanceEditor extends AbstractEditor<JmxInstance> {
 
     @Inject

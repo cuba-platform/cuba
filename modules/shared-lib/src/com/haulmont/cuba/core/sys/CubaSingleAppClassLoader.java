@@ -21,8 +21,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLStreamHandlerFactory;
 
-/**
- */
 public class CubaSingleAppClassLoader extends URLClassLoader {
     public CubaSingleAppClassLoader(URL[] urls, ClassLoader parent) {
         super(urls, parent);

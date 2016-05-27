@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.checkbox;
 
 import com.vaadin.shared.ui.checkbox.CheckBoxState;
 
-/**
- */
 public class CubaCheckBoxState extends CheckBoxState {
 
     public boolean captionManagedByLayout = false;

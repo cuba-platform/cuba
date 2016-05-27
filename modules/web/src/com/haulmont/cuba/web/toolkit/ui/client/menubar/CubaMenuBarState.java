@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.menubar;
 
 import com.vaadin.shared.ui.menubar.MenuBarState;
 
-/**
- */
 public class CubaMenuBarState extends MenuBarState {
 
     public boolean vertical = false;

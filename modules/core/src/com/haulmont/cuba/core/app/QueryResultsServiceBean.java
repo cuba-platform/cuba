@@ -24,8 +24,6 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.UUID;
 
-/**
- */
 @Service(QueryResultsService.NAME)
 public class QueryResultsServiceBean implements QueryResultsService {
 

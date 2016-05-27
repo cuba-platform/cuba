@@ -36,8 +36,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- */
 public class HintProvider {
     private DomainModel model;
     private static final char CARET_POSITION_SYMBOL = '~';

@@ -33,8 +33,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-/**
- */
 public class CubaEclipseLinkJpaDialect extends EclipseLinkJpaDialect {
 
     private static final long serialVersionUID = 7560990917358283944L;

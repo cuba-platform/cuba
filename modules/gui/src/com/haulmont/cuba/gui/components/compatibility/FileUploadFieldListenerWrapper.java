@@ -20,8 +20,6 @@ package com.haulmont.cuba.gui.components.compatibility;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.UploadComponentSupport;
 
-/**
- */
 @Deprecated
 public class FileUploadFieldListenerWrapper implements UploadComponentSupport.FileUploadStartListener,
                                                        UploadComponentSupport.FileUploadFinishListener,

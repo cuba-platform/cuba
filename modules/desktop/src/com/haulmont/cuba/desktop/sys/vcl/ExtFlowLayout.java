@@ -20,8 +20,6 @@ package com.haulmont.cuba.desktop.sys.vcl;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- */
 public class ExtFlowLayout extends FlowLayout {
     public ExtFlowLayout() {
         super(LEFT, 0, 0);

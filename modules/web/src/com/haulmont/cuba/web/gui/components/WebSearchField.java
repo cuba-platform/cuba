@@ -32,8 +32,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-/**
- */
 public class WebSearchField extends WebLookupField implements SearchField {
 
     protected int minSearchStringLength = 0;

@@ -24,8 +24,6 @@ import com.vaadin.client.ui.VTabsheet;
 import com.vaadin.shared.ui.tabsheet.TabState;
 import fi.jasoft.dragdroplayouts.client.ui.tabsheet.VDDTabSheet;
 
-/**
- */
 public class CubaTabSheetWidget extends VDDTabSheet {
 
     protected TabContextMenuHandler tabContextMenuHandler;

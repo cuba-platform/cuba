@@ -31,8 +31,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.MappedSuperclass;
 import java.util.*;
 
-/**
- */
 public class MetaClassRepresentation {
     private MetaClass meta;
     private List<View> views;

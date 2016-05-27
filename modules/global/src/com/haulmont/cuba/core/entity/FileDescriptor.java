@@ -27,8 +27,6 @@ import javax.persistence.Column;
 import javax.persistence.Table;
 import java.util.Date;
 
-/**
- */
 @javax.persistence.Entity(name = "sys$FileDescriptor")
 @Table(name = "SYS_FILE")
 @NamePattern("%s (%s)|name,createDate")

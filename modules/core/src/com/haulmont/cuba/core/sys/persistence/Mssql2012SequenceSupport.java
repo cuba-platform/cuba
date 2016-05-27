@@ -19,8 +19,6 @@ package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.bali.util.Preconditions;
 
-/**
- */
 @SuppressWarnings("UnusedDeclaration")
 public class Mssql2012SequenceSupport implements SequenceSupport {
 

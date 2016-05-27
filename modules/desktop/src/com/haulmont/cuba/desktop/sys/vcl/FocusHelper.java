@@ -19,8 +19,6 @@ package com.haulmont.cuba.desktop.sys.vcl;
 
 import java.awt.*;
 
-/**
- */
 public abstract class FocusHelper {
 
     public static void moveFocusToNextControl() {

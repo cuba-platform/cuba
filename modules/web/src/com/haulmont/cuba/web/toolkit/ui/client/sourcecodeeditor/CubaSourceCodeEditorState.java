@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.sourcecodeeditor;
 
 import org.vaadin.aceeditor.client.AceEditorState;
 
-/**
- */
 public class CubaSourceCodeEditorState extends AceEditorState {
 
     public boolean handleTabKey = true;

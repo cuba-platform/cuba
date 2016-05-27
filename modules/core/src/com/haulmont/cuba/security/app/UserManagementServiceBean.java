@@ -41,8 +41,6 @@ import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-/**
- */
 @Service(UserManagementService.NAME)
 public class UserManagementServiceBean implements UserManagementService {
 

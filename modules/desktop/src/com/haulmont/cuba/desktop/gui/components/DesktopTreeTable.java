@@ -39,8 +39,6 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.util.*;
 
-/**
- */
 public class DesktopTreeTable<E extends Entity> extends DesktopAbstractTable<JXTreeTableExt, E> implements TreeTable<E> {
 
     protected String hierarchyProperty;

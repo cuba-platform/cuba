@@ -19,8 +19,6 @@ package com.haulmont.cuba.core.jmx;
 
 import org.springframework.jmx.export.annotation.*;
 
-/**
- */
 @ManagedResource(description = "Generate hashes for passwords")
 public interface PasswordEncryptionSupportMBean {
 

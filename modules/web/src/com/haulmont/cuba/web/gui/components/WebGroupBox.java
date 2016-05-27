@@ -36,8 +36,6 @@ import java.util.*;
 
 import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAlignment;
 
-/**
- */
 public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements GroupBoxLayout {
 
     protected Collection<Component> ownComponents = new LinkedHashSet<>();

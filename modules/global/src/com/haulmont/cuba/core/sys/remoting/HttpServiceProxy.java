@@ -23,8 +23,6 @@ import org.springframework.remoting.support.RemoteInvocationResult;
 
 import java.lang.reflect.InvocationTargetException;
 
-/**
- */
 public class HttpServiceProxy extends HttpInvokerProxyFactoryBean {
 
     public HttpServiceProxy(ClusterInvocationSupport support) {

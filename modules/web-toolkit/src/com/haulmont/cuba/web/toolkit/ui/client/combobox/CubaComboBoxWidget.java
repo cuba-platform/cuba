@@ -29,8 +29,6 @@ import com.vaadin.client.ui.VFilterSelect;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-/**
- */
 public class CubaComboBoxWidget extends VFilterSelect implements ShortcutActionHandler.ShortcutActionHandlerOwner, HasEnabled {
 
     private static final String READONLY_STYLE = "readonly";

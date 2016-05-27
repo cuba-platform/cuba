@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.tokenlistlabel;
 
 import com.vaadin.shared.ui.panel.PanelState;
 
-/**
- */
 public class CubaTokenListLabelState extends PanelState {
 
     public String text;

@@ -29,8 +29,6 @@ import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.util.Locale;
 
-/**
- */
 public class ByteArrayDatatype implements Datatype<byte[]> {
 
     public static final String NAME = "byteArray";

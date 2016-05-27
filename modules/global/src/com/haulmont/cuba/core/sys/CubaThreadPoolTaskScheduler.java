@@ -23,8 +23,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import java.util.concurrent.*;
 
-/**
- */
 public class CubaThreadPoolTaskScheduler extends ThreadPoolTaskScheduler {
 
     private static final long serialVersionUID = -2882103892163602009L;

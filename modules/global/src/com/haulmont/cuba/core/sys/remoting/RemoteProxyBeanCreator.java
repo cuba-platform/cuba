@@ -31,8 +31,6 @@ import org.springframework.context.ApplicationContextAware;
 
 import java.util.Map;
 
-/**
- */
 public class RemoteProxyBeanCreator implements BeanFactoryPostProcessor, ApplicationContextAware {
 
     private Logger log = LoggerFactory.getLogger(RemoteProxyBeanCreator.class);

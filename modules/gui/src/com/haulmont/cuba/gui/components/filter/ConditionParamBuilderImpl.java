@@ -30,8 +30,6 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 @Component(ConditionParamBuilder.NAME)
 public class ConditionParamBuilderImpl implements ConditionParamBuilder{
 

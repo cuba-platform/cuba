@@ -20,8 +20,6 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.components.CssLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaCssLayout;
 
-/**
- */
 public class WebCssLayout extends WebAbstractOrderedLayout<CubaCssLayout> implements CssLayout {
 
     public WebCssLayout() {

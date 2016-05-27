@@ -18,7 +18,6 @@ package com.haulmont.cuba.security.entity;
 
 /**
  * Type of access to an entity attribute.
- *
  */
 public enum EntityAttrAccess {
     DENY(0),

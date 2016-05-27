@@ -45,8 +45,6 @@ import java.util.regex.Pattern;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
-/**
- */
 @MetaClass(name = "sec$DynamicAttributesCondition")
 @SystemLevel
 public class DynamicAttributesCondition extends AbstractCondition {

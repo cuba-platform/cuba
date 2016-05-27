@@ -20,8 +20,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
-/**
- */
 public class PerformanceLogInterceptor {
     @SuppressWarnings("UnusedDeclaration")
     private Object aroundInvoke(ProceedingJoinPoint ctx) throws Throwable {

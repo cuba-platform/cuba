@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.gui.components;
 
-/**
- */
 public interface RichTextArea extends TextInputField {
 
     String NAME = "richTextArea";

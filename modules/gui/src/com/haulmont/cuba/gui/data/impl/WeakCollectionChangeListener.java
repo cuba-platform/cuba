@@ -22,8 +22,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource.CollectionChangeListener;
 
 import java.lang.ref.WeakReference;
 
-/**
- */
 public class WeakCollectionChangeListener implements CollectionChangeListener {
 
     private final WeakReference<CollectionChangeListener> reference;

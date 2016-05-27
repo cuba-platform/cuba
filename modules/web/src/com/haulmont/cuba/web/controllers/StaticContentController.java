@@ -36,8 +36,6 @@ import java.net.URL;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 
-/**
- */
 @Controller
 @RequestMapping(value = "/static/**")
 public class StaticContentController implements LastModified {

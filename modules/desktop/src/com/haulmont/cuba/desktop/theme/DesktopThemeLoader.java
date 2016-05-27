@@ -17,11 +17,7 @@
 
 package com.haulmont.cuba.desktop.theme;
 
-/**
- *
- */
 public interface DesktopThemeLoader {
-
     String NAME = "cuba_DesktopThemeLoader";
 
     DesktopTheme loadTheme(String theme);

@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.core.global;
 
-/**
- */
 public class QueryUtils {
     
     public static final String ESCAPE_CHARACTER = "\\";
@@ -43,5 +41,4 @@ public class QueryUtils {
                 .replace("%", escapeCharacter + "%")
                 .replace("_", escapeCharacter + "_");
     }
-
 }

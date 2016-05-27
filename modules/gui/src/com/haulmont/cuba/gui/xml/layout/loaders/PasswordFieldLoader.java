@@ -19,8 +19,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.gui.components.PasswordField;
 import org.apache.commons.lang.StringUtils;
 
-/**
- */
 public class PasswordFieldLoader extends AbstractTextFieldLoader<PasswordField> {
     @Override
     public void createComponent() {

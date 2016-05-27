@@ -23,8 +23,6 @@ import javax.swing.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 
-/**
- */
 public class JXTableExt extends JXTable implements FocusableTable {
 
     protected TableFocusManager focusManager = new TableFocusManager(this);

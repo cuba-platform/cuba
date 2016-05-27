@@ -39,8 +39,6 @@ import javax.persistence.Entity;
 import java.util.Map;
 import java.util.Set;
 
-/**
- */
 public class EntityPermissionsFrame extends AbstractFrame {
 
     public interface Companion {

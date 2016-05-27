@@ -38,8 +38,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 
-/**
- */
 public class RemotingServlet extends DispatcherServlet {
 
     private static final long serialVersionUID = 4142366570614871805L;

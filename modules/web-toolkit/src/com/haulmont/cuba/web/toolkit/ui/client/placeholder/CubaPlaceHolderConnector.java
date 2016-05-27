@@ -21,8 +21,6 @@ import com.haulmont.cuba.web.toolkit.ui.CubaPlaceHolder;
 import com.vaadin.client.ui.AbstractComponentConnector;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
 @Connect(CubaPlaceHolder.class)
 public class CubaPlaceHolderConnector extends AbstractComponentConnector {
 

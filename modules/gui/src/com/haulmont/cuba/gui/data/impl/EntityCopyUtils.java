@@ -30,8 +30,6 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-/**
- */
 public class EntityCopyUtils {
 
     public static Entity copyCompositions(Entity source) {

@@ -25,8 +25,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
-/**
- */
 @Component("cuba_ClusterManagerMBean")
 public class ClusterManager implements ClusterManagerMBean {
 

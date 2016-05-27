@@ -24,8 +24,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-/**
- */
 @Entity(name = "sys$DummyStringIdEntity")
 @SystemLevel
 public class DummyStringIdEntity extends BaseStringIdEntity {

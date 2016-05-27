@@ -24,8 +24,6 @@ import com.vaadin.client.ui.AbstractComponentConnector;
 import com.vaadin.client.ui.VNotification;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
 @Connect(CubaHistoryControl.class)
 public class CubaHistoryControlConnector extends AbstractExtensionConnector {
 

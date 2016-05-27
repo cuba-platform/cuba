@@ -29,8 +29,6 @@ import java.util.*;
 
 import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAlignment;
 
-/**
- */
 public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrderedLayout> implements BoxLayout {
 
     protected Collection<Component> ownComponents = new LinkedHashSet<>();

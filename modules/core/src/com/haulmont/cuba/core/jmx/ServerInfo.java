@@ -22,8 +22,6 @@ import com.haulmont.cuba.core.app.ServerInfoAPI;
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
-/**
- */
 @Component("cuba_ServerInfoMBean")
 public class ServerInfo implements ServerInfoMBean {
 

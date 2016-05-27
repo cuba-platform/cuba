@@ -19,8 +19,6 @@ package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.bali.util.Preconditions;
 
-/**
- */
 public class PostgresSequenceSupport implements SequenceSupport {
 
     @Override

@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.sys;
 
 import com.google.gwt.dom.client.Element;
 
-/**
- */
 public class ToolsImplMozilla extends ToolsImpl {
 
     @Override

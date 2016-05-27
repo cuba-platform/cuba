@@ -23,8 +23,6 @@ import com.google.gwt.dom.client.Element;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 public class JQueryFileUploadOverlay {
 
     protected Element fileInput;

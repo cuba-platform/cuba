@@ -33,8 +33,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
 
-/**
- */
 public class Connection {
 
     private List<ConnectionListener> listeners = new ArrayList<>();

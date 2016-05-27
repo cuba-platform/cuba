@@ -28,8 +28,6 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
 
-/**
- */
 public class EntityNameFilter<T extends AssignableTarget> implements Predicate<T> {
 
     protected Metadata metadata;

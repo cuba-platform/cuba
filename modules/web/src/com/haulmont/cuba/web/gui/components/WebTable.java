@@ -32,8 +32,6 @@ import com.vaadin.server.Resource;
 
 import java.util.*;
 
-/**
- */
 public class WebTable<E extends Entity> extends WebAbstractTable<CubaTable, E> {
 
     public WebTable() {

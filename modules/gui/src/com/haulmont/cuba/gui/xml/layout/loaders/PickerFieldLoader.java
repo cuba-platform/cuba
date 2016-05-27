@@ -25,8 +25,6 @@ import com.haulmont.cuba.gui.components.PickerField;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-/**
- */
 public class PickerFieldLoader extends AbstractFieldLoader<PickerField> {
     @Override
     public void createComponent() {

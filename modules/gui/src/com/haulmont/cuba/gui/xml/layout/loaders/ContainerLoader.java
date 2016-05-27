@@ -28,8 +28,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-/**
- */
 public abstract class ContainerLoader<T extends Component> extends AbstractComponentLoader<T> {
 
     protected List<ComponentLoader> pendingLoadComponents = new ArrayList<>();

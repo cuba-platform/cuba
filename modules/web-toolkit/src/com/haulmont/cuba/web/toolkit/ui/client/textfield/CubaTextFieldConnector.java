@@ -25,8 +25,6 @@ import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.textfield.TextFieldConnector;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
 @Connect(value = CubaTextField.class, loadStyle = Connect.LoadStyle.EAGER)
 public class CubaTextFieldConnector extends TextFieldConnector {
 

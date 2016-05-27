@@ -19,8 +19,6 @@ package com.haulmont.cuba.core.sys;
 
 import javax.servlet.ServletContext;
 
-/**
- */
 public class ServletContextHolder {
     private static volatile ServletContext servletContext;
 

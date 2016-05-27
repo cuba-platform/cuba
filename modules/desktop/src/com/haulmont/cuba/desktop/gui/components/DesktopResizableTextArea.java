@@ -20,8 +20,6 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.gui.components.ResizableTextArea;
 import org.dom4j.Element;
 
-/**
- */
 public class DesktopResizableTextArea extends DesktopTextArea implements ResizableTextArea {
 
     protected boolean resizable = false;

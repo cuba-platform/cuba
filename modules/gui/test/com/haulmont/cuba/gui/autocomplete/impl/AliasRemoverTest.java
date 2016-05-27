@@ -25,8 +25,6 @@ import org.junit.Test;
 
 import java.util.EnumSet;
 
-/**
- */
 public class AliasRemoverTest {
 
     @Test

@@ -18,8 +18,6 @@ package com.haulmont.cuba.gui.components.autocomplete;
 
 import java.util.List;
 
-/**
- */
 public interface Suggester {
 
     List<Suggestion> getSuggestions(AutoCompleteSupport source, String text, int cursorPosition);

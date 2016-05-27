@@ -24,8 +24,6 @@ import com.haulmont.cuba.gui.data.GroupInfo;
 import java.util.Collection;
 import java.util.List;
 
-/**
- */
 public class GroupPropertyDatasourceImpl<T extends Entity<K>, K>
         extends CollectionPropertyDatasourceImpl<T, K>
         implements GroupDatasource<T, K> {

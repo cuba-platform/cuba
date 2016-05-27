@@ -31,8 +31,6 @@ import javax.inject.Inject;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Map;
 
-/**
- */
 public class OperationResultWindow extends AbstractWindow {
 
     @Inject

@@ -26,8 +26,6 @@ import com.vaadin.client.extensions.AbstractExtensionConnector;
 import com.vaadin.client.ui.VButton;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
 @Connect(CubaCopyButtonExtension.class)
 public class CubaCopyButtonExtensionConnector extends AbstractExtensionConnector {
 

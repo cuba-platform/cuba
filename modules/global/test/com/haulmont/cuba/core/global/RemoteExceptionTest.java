@@ -19,8 +19,6 @@ package com.haulmont.cuba.core.global;
 
 import junit.framework.TestCase;
 
-/**
- */
 public class RemoteExceptionTest extends TestCase {
 
     private static class MyException extends RuntimeException {

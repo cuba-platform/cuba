@@ -30,7 +30,6 @@ import java.util.List;
 
 /**
  * User
- *
  */
 @Entity(name = "sec$User")
 @Table(name = "SEC_USER")

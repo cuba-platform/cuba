@@ -23,8 +23,6 @@ import com.haulmont.cuba.web.App;
 
 import org.springframework.stereotype.Component;
 
-/**
- */
 @Component(ThemeConstantsManager.NAME)
 public class WebThemeConstantsManager implements ThemeConstantsManager {
     @Override

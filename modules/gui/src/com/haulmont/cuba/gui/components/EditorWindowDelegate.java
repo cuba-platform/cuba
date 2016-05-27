@@ -38,8 +38,6 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Date;
 
-/**
- */
 public class EditorWindowDelegate extends WindowDelegate {
 
     protected Entity item;

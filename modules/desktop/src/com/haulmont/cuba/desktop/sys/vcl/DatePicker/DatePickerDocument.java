@@ -22,9 +22,6 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
-/**
- *
- */
 public class DatePickerDocument extends PlainDocument {
     private static final int MAX_DAYS = 31;
 

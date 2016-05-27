@@ -24,8 +24,6 @@ import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
 
-/**
- */
 public class EntityInspectorBrowseCompanion implements EntityInspectorBrowse.Companion {
     @Override
     public void setHorizontalScrollEnabled(Table table, boolean enabled) {

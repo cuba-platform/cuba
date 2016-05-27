@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.verticalactionslayout;
 
 import com.haulmont.cuba.web.toolkit.ui.client.orderedactionslayout.CubaOrderedActionsLayoutWidget;
 
-/**
- */
 public class CubaVerticalActionsLayoutWidget extends CubaOrderedActionsLayoutWidget {
 
     public static final String CLASSNAME = "v-verticallayout";

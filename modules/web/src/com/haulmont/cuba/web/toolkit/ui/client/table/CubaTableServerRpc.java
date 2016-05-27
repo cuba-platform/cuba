@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.table;
 
 import com.vaadin.shared.communication.ServerRpc;
 
-/**
- */
 public interface CubaTableServerRpc extends ServerRpc {
 
     void onClick(String columnKey, String rowKey);

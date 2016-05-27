@@ -22,8 +22,6 @@ import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.optiongroup.OptionGroupConnector;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
 @Connect(CubaOptionGroup.class)
 public class CubaOptionGroupConnector extends OptionGroupConnector {
 

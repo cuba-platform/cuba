@@ -19,8 +19,6 @@ package com.haulmont.cuba.core.sys.jpql;
 
 import com.haulmont.cuba.core.sys.jpql.model.Attribute;
 
-/**
- */
 public enum InferredType {
     Collection {
         @Override

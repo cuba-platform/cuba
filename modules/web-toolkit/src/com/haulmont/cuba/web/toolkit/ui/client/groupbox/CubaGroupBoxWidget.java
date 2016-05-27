@@ -25,8 +25,6 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.vaadin.client.ui.VPanel;
 
-/**
- */
 public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
 
     public static final String CLASSNAME = "cuba-groupbox";

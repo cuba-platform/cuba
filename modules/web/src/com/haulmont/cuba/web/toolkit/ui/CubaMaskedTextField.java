@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.toolkit.ui.client.textfield.CubaMaskedTextFieldState;
 
-/**
- */
 public class CubaMaskedTextField extends CubaTextField {
 
     public CubaMaskedTextField() {

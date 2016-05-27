@@ -28,8 +28,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- */
 @com.haulmont.chile.core.annotations.MetaClass(name = "sec$MultipleTarget")
 @SystemLevel
 public class MultiplePermissionTarget extends AbstractPermissionTarget

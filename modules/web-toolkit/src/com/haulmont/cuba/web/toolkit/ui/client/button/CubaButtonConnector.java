@@ -20,14 +20,10 @@ package com.haulmont.cuba.web.toolkit.ui.client.button;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.haulmont.cuba.web.toolkit.ui.client.appui.ValidationErrorHolder;
-import com.vaadin.client.annotations.OnStateChange;
 import com.vaadin.client.communication.StateChangeEvent;
-
 import com.vaadin.client.ui.button.ButtonConnector;
 import com.vaadin.shared.ui.Connect;
 
-/**
- */
 @Connect(value = CubaButton.class, loadStyle = Connect.LoadStyle.EAGER)
 public class CubaButtonConnector extends ButtonConnector {
 

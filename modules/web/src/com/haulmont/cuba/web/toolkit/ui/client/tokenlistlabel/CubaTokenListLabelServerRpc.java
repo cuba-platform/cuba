@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.tokenlistlabel;
 
 import com.vaadin.shared.communication.ServerRpc;
 
-/**
- */
 public interface CubaTokenListLabelServerRpc extends ServerRpc {
     void removeToken();
     void itemClick();

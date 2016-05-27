@@ -23,7 +23,6 @@ import javax.persistence.*;
 
 /**
  * User access groups hierarchy.
- *
  */
 @Entity(name = "sec$GroupHierarchy")
 @Table(name = "SEC_GROUP_HIERARCHY")

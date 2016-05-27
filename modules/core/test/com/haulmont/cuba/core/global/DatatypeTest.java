@@ -26,8 +26,6 @@ import org.junit.Test;
 
 import java.util.Date;
 
-/**
- */
 public class DatatypeTest {
 
     @ClassRule
@@ -36,6 +34,5 @@ public class DatatypeTest {
     @Test
     public void test() throws Exception {
         Datatype datatype = Datatypes.get(java.sql.Date.class);
-
     }
 }

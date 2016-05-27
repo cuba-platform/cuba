@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- */
 @NotThreadSafe
 public class DomainModel {
     protected Map<String, Entity> entities = new HashMap<>();

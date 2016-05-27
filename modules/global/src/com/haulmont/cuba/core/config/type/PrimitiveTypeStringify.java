@@ -16,8 +16,6 @@
  */
 package com.haulmont.cuba.core.config.type;
 
-/**
- */
 public class PrimitiveTypeStringify extends TypeStringify {
     @Override
     public String stringify(Object value) {

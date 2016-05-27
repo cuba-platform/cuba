@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.core.sys;
 
-/**
- */
 public class SingleSecurityContextHolder implements SecurityContextHolder {
 
     private SecurityContext ctx;

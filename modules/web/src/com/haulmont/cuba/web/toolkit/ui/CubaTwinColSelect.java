@@ -23,8 +23,6 @@ import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.TwinColSelect;
 import org.apache.commons.lang.StringUtils;
 
-/**
- */
 @SuppressWarnings("serial")
 public class CubaTwinColSelect extends TwinColSelect {
 

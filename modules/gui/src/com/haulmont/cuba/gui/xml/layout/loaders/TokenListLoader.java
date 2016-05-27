@@ -26,8 +26,6 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-/**
- */
 public class TokenListLoader extends AbstractFieldLoader<TokenList> {
     @Override
     public void createComponent() {

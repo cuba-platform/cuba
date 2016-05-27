@@ -29,8 +29,6 @@ import javax.annotation.Nullable;
 import javax.swing.*;
 import java.util.Collection;
 
-/**
- */
 public class DesktopLookupPickerField extends DesktopLookupField implements LookupPickerField {
 
     protected DesktopPickerField pickerField;

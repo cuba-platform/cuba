@@ -28,8 +28,6 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
-/**
- */
 public class DesktopTable<E extends Entity> extends DesktopAbstractTable<JXTable, E> {
 
     public DesktopTable() {
@@ -122,5 +120,4 @@ public class DesktopTable<E extends Entity> extends DesktopAbstractTable<JXTable
         super.setSortable(sortable);
         impl.setSortable(sortable);
     }
-
 }

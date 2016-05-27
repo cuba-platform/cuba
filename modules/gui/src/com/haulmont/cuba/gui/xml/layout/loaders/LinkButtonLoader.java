@@ -20,8 +20,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.LinkButton;
 
-/**
- */
 public class LinkButtonLoader extends ButtonLoader {
 
     @Override

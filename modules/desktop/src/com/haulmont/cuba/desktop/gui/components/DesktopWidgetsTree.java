@@ -28,8 +28,6 @@ import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreeCellRenderer;
 import java.util.EventObject;
 
-/**
- */
 public class DesktopWidgetsTree<E extends Entity>
         extends DesktopTree<E>
         implements WidgetsTree<E> {

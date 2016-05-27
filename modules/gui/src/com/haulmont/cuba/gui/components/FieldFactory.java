@@ -20,8 +20,6 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.dom4j.Element;
 
-/**
- */
 public interface FieldFactory {
 
     Component createField(Datasource datasource, String property, Element xmlDescriptor);

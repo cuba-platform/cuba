@@ -21,8 +21,6 @@ import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.ClientAction;
 import com.vaadin.client.ui.Action;
 import com.vaadin.client.ui.ActionOwner;
 
-/**
- */
 public abstract class RemoteAction extends Action {
 
     protected String actionId;

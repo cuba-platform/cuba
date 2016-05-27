@@ -28,8 +28,6 @@ import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.Metadata;
 
-/**
- */
 public class InstanceRef {
     private EntityLoadInfo loadInfo;
     private BaseGenericIdEntity<Object> instance;

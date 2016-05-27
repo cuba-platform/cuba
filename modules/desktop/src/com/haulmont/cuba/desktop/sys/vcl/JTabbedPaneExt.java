@@ -19,8 +19,6 @@ package com.haulmont.cuba.desktop.sys.vcl;
 
 import javax.swing.*;
 
-/**
- */
 public class JTabbedPaneExt extends JTabbedPane {
 
     protected static boolean focusOnSelectionChange = true;

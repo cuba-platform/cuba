@@ -19,8 +19,6 @@ package com.haulmont.cuba.core.config.type;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
-/**
- */
 public class EnumClassStringify extends TypeStringify {
 
     private TypeStringify idStringify;

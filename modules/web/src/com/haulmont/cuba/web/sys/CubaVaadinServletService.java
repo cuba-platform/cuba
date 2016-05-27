@@ -25,7 +25,6 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.ScreenProfiler;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.auth.RequestContext;
@@ -53,8 +52,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
 
-/**
- */
 public class CubaVaadinServletService extends VaadinServletService {
 
     private final Logger log = LoggerFactory.getLogger(CubaVaadinServletService.class);

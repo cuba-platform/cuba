@@ -18,8 +18,6 @@ package com.haulmont.cuba.core.global.filter;
 
 import java.util.*;
 
-/**
- */
 public class LogicalCondition extends Condition {
     private final LogicalOp operation;
 

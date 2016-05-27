@@ -23,9 +23,6 @@ import com.haulmont.cuba.core.entity.EmbeddableEntity;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
-/**
- *
- */
 @Embeddable
 @MetaClass(name = "test$EmbeddableEntity")
 public class TestEmbeddableEntity extends EmbeddableEntity {

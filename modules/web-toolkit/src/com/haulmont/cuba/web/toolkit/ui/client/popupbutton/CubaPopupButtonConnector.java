@@ -39,8 +39,6 @@ import org.vaadin.hene.popupbutton.widgetset.client.ui.PopupButtonServerRpc;
 
 import static com.haulmont.cuba.web.toolkit.ui.client.popupbutton.CubaPopupButtonWidget.SELECTED_ITEM_STYLE;
 
-/**
- */
 @Connect(CubaPopupButton.class)
 public class CubaPopupButtonConnector extends PopupButtonConnector {
 

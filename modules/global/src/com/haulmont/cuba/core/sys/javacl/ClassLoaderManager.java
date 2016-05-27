@@ -24,8 +24,6 @@ import javax.inject.Inject;
 
 import static java.lang.String.format;
 
-/**
- */
 @Component("cuba_ClassLoaderManager")
 public class ClassLoaderManager implements ClassLoaderManagerMBean {
     @Inject

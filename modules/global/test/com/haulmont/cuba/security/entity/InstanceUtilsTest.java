@@ -19,8 +19,6 @@ package com.haulmont.cuba.security.entity;
 
 import junit.framework.TestCase;
 
-/**
- */
 public class InstanceUtilsTest extends TestCase {
 
     private User user;

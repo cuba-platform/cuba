@@ -25,8 +25,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-/**
- */
 @SuppressWarnings({"TransientFieldNotInitialized"})
 public class MetaPropertyImpl extends MetadataObjectImpl implements MetaProperty {
 

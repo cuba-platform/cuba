@@ -32,8 +32,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-/**
- */
 public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> implements SplitPanel, Component.HasSettings {
 
     protected Map<String, Component> componentByIds = new HashMap<>();

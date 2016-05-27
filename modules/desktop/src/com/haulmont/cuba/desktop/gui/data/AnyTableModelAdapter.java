@@ -24,8 +24,6 @@ import javax.swing.*;
 import javax.swing.table.TableModel;
 import java.util.List;
 
-/**
- */
 public interface AnyTableModelAdapter extends TableModel {
 
     void sort(List<? extends RowSorter.SortKey> sortKeys);

@@ -23,8 +23,6 @@ import com.vaadin.ui.Panel;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 public class CubaTokenListLabel extends Panel {
 
     private List<RemoveTokenListener> listeners;

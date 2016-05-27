@@ -19,8 +19,6 @@ package com.haulmont.cuba.core.sys.jpql.pointer;
 
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 
-/**
- */
 public class NoPointer implements Pointer {
     private static final NoPointer instance = new NoPointer();
 

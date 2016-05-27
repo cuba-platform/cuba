@@ -28,8 +28,6 @@ import com.haulmont.cuba.gui.components.AggregationInfo;
 
 import java.util.*;
 
-/**
- */
 public abstract class AggregatableDelegate<K> {
     public Map<AggregationInfo, String> aggregate(AggregationInfo[] aggregationInfos, Collection<K> itemIds) {
         if (aggregationInfos == null || aggregationInfos.length == 0) {

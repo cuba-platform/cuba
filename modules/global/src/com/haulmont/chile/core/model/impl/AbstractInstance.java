@@ -17,7 +17,7 @@
 
 package com.haulmont.chile.core.model.impl;
 
-import com.haulmont.chile.core.common.*;
+import com.haulmont.chile.core.common.ValueListener;
 import com.haulmont.chile.core.common.compatibility.InstancePropertyChangeListenerWrapper;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
@@ -25,11 +25,12 @@ import com.haulmont.chile.core.model.utils.MethodsCache;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- */
 public abstract class AbstractInstance implements Instance {
 
     protected transient Collection<WeakReference<PropertyChangeListener>> __propertyChangeListeners;

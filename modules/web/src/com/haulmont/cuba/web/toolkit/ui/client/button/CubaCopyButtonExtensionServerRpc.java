@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.button;
 
 import com.vaadin.shared.communication.ServerRpc;
 
-/**
- */
 public interface CubaCopyButtonExtensionServerRpc extends ServerRpc {
     void copied(boolean success);
 }

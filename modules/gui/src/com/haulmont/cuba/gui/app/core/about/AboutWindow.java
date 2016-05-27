@@ -19,8 +19,6 @@ package com.haulmont.cuba.gui.app.core.about;
 
 import com.haulmont.cuba.gui.components.AbstractWindow;
 
-/**
- */
 public class AboutWindow extends AbstractWindow {
 
 }

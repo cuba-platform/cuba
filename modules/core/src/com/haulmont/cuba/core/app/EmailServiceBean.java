@@ -25,18 +25,18 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.util.Date;
 
-/**
- */
 @Service(EmailService.NAME)
 public class EmailServiceBean implements EmailService {
 
     @Inject
     protected EmailerAPI emailer;
 
+    @Override
     public void sendEmail(String address, String caption, String body, EmailAttachment... attachment) throws EmailException {
         emailer.sendEmail(address, caption, body, attachment);
     }
 
+    @Override
     public void sendEmail(EmailInfo info) throws EmailException {
         emailer.sendEmail(info);
     }

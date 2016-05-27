@@ -30,15 +30,9 @@ import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.ui.VButton;
 import com.vaadin.client.ui.VNotification;
 import com.vaadin.shared.Position;
-import freemarker.template.utility.CollectionUtils;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-/**
- */
 public class CubaFileUploadWidget extends FlowPanel implements Focusable {
 
     public static final String DEFAULT_CLASSNAME = "cuba-fileupload";

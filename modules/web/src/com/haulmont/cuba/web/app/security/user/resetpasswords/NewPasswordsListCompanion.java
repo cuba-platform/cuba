@@ -22,8 +22,6 @@ import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.CubaEnhancedTable;
 
-/**
- */
 public class NewPasswordsListCompanion implements NewPasswordsList.Companion {
     @Override
     public void allowTextSelection(Table passwordsTable) {

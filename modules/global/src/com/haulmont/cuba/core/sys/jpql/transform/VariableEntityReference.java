@@ -24,8 +24,6 @@ import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 
-/**
- */
 public class VariableEntityReference implements EntityReference {
     private String entityName;
     private String entityVariableName;

@@ -19,8 +19,6 @@ package com.haulmont.cuba.gui.components.autocomplete.impl;
 
 import java.util.*;
 
-/**
- */
 public class HintResponse {
     private final List<Option> options;
     private final String errorMessage;

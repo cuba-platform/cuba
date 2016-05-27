@@ -42,9 +42,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-/**
- *
- */
 public class DatePicker extends JXDatePicker {
     protected String format;
 
@@ -177,5 +174,4 @@ public class DatePicker extends JXDatePicker {
             }
         }
     }
-
 }

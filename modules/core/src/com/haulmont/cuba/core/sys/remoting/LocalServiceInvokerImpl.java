@@ -26,8 +26,6 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-/**
- */
 public class LocalServiceInvokerImpl implements LocalServiceInvoker {
 
     private Object target;

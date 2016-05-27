@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.gui.components.autocomplete.impl;
 
-/**
- */
 public class Option {
     private String value;
     private String description;

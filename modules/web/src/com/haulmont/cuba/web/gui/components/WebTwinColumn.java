@@ -31,8 +31,6 @@ import com.vaadin.ui.AbstractSelect;
 
 import java.util.*;
 
-/**
- */
 public class WebTwinColumn extends WebAbstractOptionsField<CubaTwinColSelect> implements TwinColumn {
 
     private StyleProvider styleProvider;

@@ -37,8 +37,6 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.util.*;
 
-/**
- */
 @Service(EntityRestoreService.NAME)
 public class EntityRestoreServiceBean implements EntityRestoreService {
 

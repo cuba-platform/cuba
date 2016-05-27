@@ -20,10 +20,9 @@ package com.haulmont.cuba.testsupport;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
-/**
- */
 public class TestNamePrinter extends TestWatcher {
 
+    @Override
     protected void starting(Description description) {
         System.out.println(">>>\n>>> Starting " + description.getMethodName() + "\n>>>");
     }

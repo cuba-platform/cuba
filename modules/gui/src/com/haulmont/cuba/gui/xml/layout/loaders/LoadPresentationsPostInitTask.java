@@ -20,8 +20,6 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 
-/**
- */
 public class LoadPresentationsPostInitTask implements ComponentLoader.PostInitTask {
 
     private Component.HasPresentations component;

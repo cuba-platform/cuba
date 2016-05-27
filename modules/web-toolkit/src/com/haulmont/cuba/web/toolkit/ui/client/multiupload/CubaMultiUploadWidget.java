@@ -29,8 +29,7 @@ import com.google.gwt.user.client.ui.FormPanel;
 import com.haulmont.cuba.web.toolkit.ui.client.Properties;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 
-/**
- */
+@Deprecated
 public class CubaMultiUploadWidget extends FormPanel {
 
     public static final String CLASSNAME = "cuba-multiupload";

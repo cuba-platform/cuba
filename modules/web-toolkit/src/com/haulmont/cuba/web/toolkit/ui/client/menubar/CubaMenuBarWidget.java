@@ -28,8 +28,6 @@ import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.ui.Icon;
 import com.vaadin.client.ui.VMenuBar;
 
-/**
- */
 public class CubaMenuBarWidget extends VMenuBar implements BlurHandler {
 
     protected boolean mouseEvent = false;

@@ -27,8 +27,6 @@ import fi.jasoft.dragdroplayouts.DDTabSheet;
 
 import java.util.*;
 
-/**
- */
 public class CubaTabSheet extends DDTabSheet implements Action.Container {
 
     private static final long serialVersionUID = -2956008661221108673L;

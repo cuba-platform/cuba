@@ -26,8 +26,6 @@ import com.vaadin.data.util.ContainerHierarchicalWrapper;
 
 import java.util.*;
 
-/**
- */
 public class TreeTableContainerWrapper
         extends ContainerHierarchicalWrapper
         implements TreeTableContainer, AggregationContainer, Container.Ordered, Container.Sortable {

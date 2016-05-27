@@ -21,8 +21,6 @@ import com.haulmont.cuba.gui.data.aggregation.NumberAggregationHelper;
 import java.util.Date;
 import java.util.Collection;
 
-/**
- */
 public class DateAggregation extends BasicAggregation<Date> {
     public DateAggregation() {
         super(Date.class);

@@ -20,8 +20,6 @@ import com.haulmont.cuba.gui.components.FlowBoxLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaFlowLayout;
 import com.vaadin.shared.ui.MarginInfo;
 
-/**
- */
 public class WebFlowBoxLayout extends WebAbstractOrderedLayout<CubaFlowLayout> implements FlowBoxLayout {
 
     public WebFlowBoxLayout() {

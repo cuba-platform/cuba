@@ -28,8 +28,6 @@ import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- */
 @Component(Configuration.NAME)
 public class ConfigurationClientImpl implements ClientConfiguration {
 

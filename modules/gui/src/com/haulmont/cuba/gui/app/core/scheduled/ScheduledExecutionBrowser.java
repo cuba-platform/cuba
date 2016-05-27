@@ -26,8 +26,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import javax.inject.Inject;
 import java.util.Map;
 
-/**
- */
 public class ScheduledExecutionBrowser extends AbstractWindow {
 
     @Inject

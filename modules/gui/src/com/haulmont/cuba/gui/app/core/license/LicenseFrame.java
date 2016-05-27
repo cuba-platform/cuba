@@ -23,8 +23,6 @@ import com.haulmont.cuba.gui.components.TextArea;
 import javax.inject.Inject;
 import java.util.Map;
 
-/**
- */
 public class LicenseFrame extends AbstractFrame {
 
     @Inject

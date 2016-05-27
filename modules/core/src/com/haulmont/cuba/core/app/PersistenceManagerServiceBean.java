@@ -22,8 +22,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
-/**
- */
 @Service(PersistenceManagerService.NAME)
 public class PersistenceManagerServiceBean implements PersistenceManagerService {
 

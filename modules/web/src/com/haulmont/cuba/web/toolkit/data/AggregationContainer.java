@@ -21,8 +21,6 @@ import com.vaadin.data.Container;
 import java.util.Map;
 import java.util.Collection;
 
-/**
- */
 public interface AggregationContainer extends Container {
 
     enum Type {

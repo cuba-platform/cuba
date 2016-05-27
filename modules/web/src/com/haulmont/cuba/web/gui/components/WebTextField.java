@@ -22,8 +22,6 @@ import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.web.toolkit.ui.CubaTextField;
 
-/**
- */
 public class WebTextField extends WebAbstractTextField<CubaTextField> implements TextField {
 
     protected Datatype datatype;

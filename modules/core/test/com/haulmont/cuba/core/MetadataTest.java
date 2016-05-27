@@ -36,8 +36,6 @@ import java.util.Collection;
 
 import static org.junit.Assert.*;
 
-/**
- */
 public class MetadataTest {
 
     @ClassRule

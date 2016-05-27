@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.groupbox;
 
 import com.vaadin.shared.ui.panel.PanelState;
 
-/**
- */
 public class CubaGroupBoxState extends PanelState {
     {
         primaryStyleName = "cuba-groupbox";

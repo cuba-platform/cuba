@@ -24,8 +24,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-/**
- */
 public class TwinColumnLoader extends AbstractFieldLoader<TwinColumn> {
     @Override
     public void createComponent() {

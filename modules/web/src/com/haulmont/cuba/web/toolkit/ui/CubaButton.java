@@ -25,8 +25,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
-/**
- */
 public class CubaButton extends com.vaadin.ui.Button {
 
     public CubaButton() {

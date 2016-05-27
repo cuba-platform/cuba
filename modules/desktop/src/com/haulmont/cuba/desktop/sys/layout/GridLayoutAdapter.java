@@ -23,9 +23,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
 
-/**
- *
- */
 public abstract class GridLayoutAdapter extends LayoutAdapter {
 
     protected int rowCount;
@@ -100,6 +97,4 @@ public abstract class GridLayoutAdapter extends LayoutAdapter {
     public void setRowExpandRatio(int col, float ratio) {
         rowRatio[col] = ratio;
     }
-
-
 }

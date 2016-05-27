@@ -23,8 +23,6 @@ import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.table.TableConnector;
 
-/**
- */
 public class CubaTableShortcutActionHandler extends ShortcutActionHandler {
 
     protected TableConnector target;

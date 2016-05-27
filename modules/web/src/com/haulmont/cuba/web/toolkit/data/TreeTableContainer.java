@@ -18,8 +18,6 @@ package com.haulmont.cuba.web.toolkit.data;
 
 import com.vaadin.data.Container;
 
-/**
- */
 public interface TreeTableContainer extends TableContainer, Container.Hierarchical {
     boolean isCaption(Object itemId);
 

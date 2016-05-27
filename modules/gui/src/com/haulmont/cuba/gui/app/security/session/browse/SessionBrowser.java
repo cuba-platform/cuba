@@ -31,8 +31,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
 
-/**
- */
 public class SessionBrowser extends AbstractLookup {
 
     public interface Companion {

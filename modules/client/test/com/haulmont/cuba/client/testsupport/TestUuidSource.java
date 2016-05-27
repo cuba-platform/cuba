@@ -21,8 +21,6 @@ import com.haulmont.cuba.core.global.UuidSource;
 
 import java.util.UUID;
 
-/**
- */
 public class TestUuidSource implements UuidSource {
     @Override
     public UUID createUuid() {

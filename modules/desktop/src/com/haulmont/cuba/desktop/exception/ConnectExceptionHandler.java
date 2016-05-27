@@ -26,8 +26,6 @@ import org.springframework.remoting.RemoteAccessException;
 
 import java.util.List;
 
-/**
- */
 public class ConnectExceptionHandler implements ExceptionHandler {
 
     @Override

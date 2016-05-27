@@ -24,8 +24,6 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.Locale;
 
-/**
- */
 @Component(Messages.NAME)
 public class MessagesImpl extends AbstractMessages {
 

@@ -20,8 +20,6 @@ package com.haulmont.cuba.desktop.sys.validation;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import org.apache.commons.lang.BooleanUtils;
 
-/**
- */
 public final class ValidationAlertHolder {
 
     protected static Boolean validationAlert = null;

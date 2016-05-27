@@ -42,8 +42,6 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.*;
 
-/**
- */
 @Service(SchedulingService.NAME)
 public class SchedulingServiceBean implements SchedulingService {
 

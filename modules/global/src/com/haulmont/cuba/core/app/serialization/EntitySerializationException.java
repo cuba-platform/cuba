@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.core.app.serialization;
 
-/**
- */
 public class EntitySerializationException extends RuntimeException {
 
     public EntitySerializationException() {

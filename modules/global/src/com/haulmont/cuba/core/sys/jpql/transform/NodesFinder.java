@@ -22,8 +22,6 @@ import org.antlr.runtime.tree.TreeVisitorAction;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 public class NodesFinder<T> implements TreeVisitorAction {
     protected Class<T> nodeClassToFind;
     protected List<T> foundNodes = new ArrayList<>();

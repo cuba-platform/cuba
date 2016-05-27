@@ -22,8 +22,6 @@ import com.haulmont.cuba.core.app.UniqueNumbersAPI;
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
-/**
- */
 @Component("cuba_UniqueNumbersMBean")
 public class UniqueNumbers implements UniqueNumbersMBean {
 

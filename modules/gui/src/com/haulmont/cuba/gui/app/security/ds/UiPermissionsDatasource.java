@@ -28,8 +28,6 @@ import org.apache.commons.lang.StringUtils;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- */
 public class UiPermissionsDatasource extends GroupDatasourceImpl<UiPermissionTarget, String> {
 
     private CollectionDatasource<Permission, UUID> permissionDs;

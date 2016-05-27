@@ -28,8 +28,6 @@ import com.vaadin.shared.AbstractFieldState;
 import com.vaadin.shared.ComponentConstants;
 import com.vaadin.shared.ui.ComponentStateUtil;
 
-/**
- */
 public class CubaCaptionWidget extends VCaption {
 
     public static final String CUBA_CLASSNAME = "cuba-caption";

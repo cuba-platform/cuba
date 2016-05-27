@@ -32,8 +32,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-/**
- */
 public class DateTimeDatatype implements Datatype<Date> {
 
     public final static String NAME = "dateTime";

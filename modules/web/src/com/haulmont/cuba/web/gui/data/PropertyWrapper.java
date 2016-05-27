@@ -34,8 +34,6 @@ import com.vaadin.data.util.converter.Converter;
 
 import java.text.ParseException;
 
-/**
- */
 public class PropertyWrapper extends AbstractPropertyWrapper implements PropertyValueStringify {
 
     protected MetaPropertyPath propertyPath;

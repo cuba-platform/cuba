@@ -18,8 +18,6 @@ package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
-/**
- */
 public enum FtsChangeType implements EnumClass<String> {
     INSERT("I"),
     UPDATE("U"),

@@ -19,8 +19,7 @@ package com.haulmont.cuba.web.toolkit.ui.client.upload;
 
 import com.vaadin.client.ui.VUpload;
 
-/**
- */
+@Deprecated
 public class CubaUploadWidget extends VUpload {
 
     public void setAccept(String accept) {

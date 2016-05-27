@@ -29,8 +29,6 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
-/**
- */
 @Component(UserSessionSource.NAME)
 public class WebUserSessionSource extends AbstractUserSessionSource {
 

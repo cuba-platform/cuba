@@ -46,8 +46,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import java.util.*;
 
-/**
- */
 public class EntityInspectorEditor extends AbstractWindow {
 
     public static final int CAPTION_MAX_LENGTH = 100;

@@ -24,8 +24,6 @@ import com.haulmont.cuba.security.global.UserSession;
 
 import org.springframework.stereotype.Component;
 
-/**
- */
 @Component(UserSessionSource.NAME)
 public class DesktopUserSessionSource extends AbstractUserSessionSource {
 

@@ -35,8 +35,6 @@ import java.awt.event.WindowEvent;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- */
 public class DefaultExceptionHandler implements ExceptionHandler {
 
     @Override

@@ -24,8 +24,6 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 @SuppressWarnings("UnusedDeclaration")
 public class OracleDbmsFeatures implements DbmsFeatures {
 

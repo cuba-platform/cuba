@@ -21,8 +21,6 @@ import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ui.ManagedLayout;
 import com.vaadin.client.ui.layout.ComponentConnectorLayoutSlot;
 
-/**
- */
 public class CubaGridLayoutSlot extends ComponentConnectorLayoutSlot {
 
     public CubaGridLayoutSlot(String baseClassName, ComponentConnector child, ManagedLayout layout) {

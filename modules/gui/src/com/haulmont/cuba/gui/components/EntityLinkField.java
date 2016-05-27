@@ -26,8 +26,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-/**
- */
 public interface EntityLinkField extends Field {
 
     String NAME = "entityLinkField";

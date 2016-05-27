@@ -33,8 +33,6 @@ import com.vaadin.shared.ui.Connect;
 
 import java.util.List;
 
-/**
- */
 @Connect(value = CubaOrderedActionsLayout.class, loadStyle = Connect.LoadStyle.EAGER)
 public class CubaOrderedActionsLayoutConnector extends AbstractOrderedLayoutConnector implements Paintable {
 

@@ -24,8 +24,6 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.List;
 
-/**
- */
 @Service(LockService.NAME)
 public class LockServiceBean implements LockService {
 

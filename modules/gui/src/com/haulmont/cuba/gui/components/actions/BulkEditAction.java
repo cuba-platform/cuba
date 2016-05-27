@@ -28,8 +28,6 @@ import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import java.util.List;
 import java.util.Map;
 
-/**
- */
 public class BulkEditAction extends ItemTrackingAction implements Action.HasBeforeAfterHandlers {
 
     protected OpenType openType = OpenType.DIALOG;

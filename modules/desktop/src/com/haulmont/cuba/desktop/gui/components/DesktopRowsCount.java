@@ -33,8 +33,6 @@ import org.jdesktop.swingx.JXTable;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- */
 public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.RowsCountComponent>
         implements RowsCount {
 

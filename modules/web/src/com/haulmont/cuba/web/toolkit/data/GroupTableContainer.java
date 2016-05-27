@@ -18,8 +18,6 @@ package com.haulmont.cuba.web.toolkit.data;
 
 import java.util.Collection;
 
-/**
- */
 public interface GroupTableContainer extends TableContainer {
     void groupBy(Object[] properties);
 

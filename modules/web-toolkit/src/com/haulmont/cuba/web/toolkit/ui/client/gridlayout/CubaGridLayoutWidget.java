@@ -21,8 +21,6 @@ import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ui.VGridLayout;
 import com.vaadin.client.ui.layout.ComponentConnectorLayoutSlot;
 
-/**
- */
 public class CubaGridLayoutWidget extends VGridLayout {
 
     public VGridLayout.Cell[][] getCellMatrix() {

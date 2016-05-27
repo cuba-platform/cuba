@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.groupbox;
 
 import com.vaadin.shared.communication.ServerRpc;
 
-/**
- */
 public interface CubaGroupBoxServerRpc extends ServerRpc {
 
     void expand();

@@ -38,8 +38,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-/**
- */
 @Component(ServerInfoAPI.NAME)
 public class ServerInfo implements ServerInfoAPI, AppContext.Listener {
 

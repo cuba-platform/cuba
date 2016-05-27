@@ -19,8 +19,6 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.gui.components.MaskedField;
 
-/**
- */
 public class DesktopMaskedField extends DesktopTextField implements MaskedField {
 
     protected String mask;

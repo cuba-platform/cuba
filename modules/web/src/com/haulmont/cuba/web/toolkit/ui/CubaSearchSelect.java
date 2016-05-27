@@ -23,8 +23,6 @@ import com.vaadin.shared.ui.combobox.FilteringMode;
 import java.util.List;
 import java.util.Map;
 
-/**
- */
 public class CubaSearchSelect extends CubaComboBox {
 
     protected FilterHandler filterHandler = null;

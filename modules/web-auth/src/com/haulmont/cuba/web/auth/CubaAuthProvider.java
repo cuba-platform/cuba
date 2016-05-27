@@ -22,8 +22,6 @@ import com.haulmont.cuba.security.global.LoginException;
 import javax.servlet.Filter;
 import java.util.Locale;
 
-/**
- */
 public interface CubaAuthProvider extends Filter {
 
     String NAME = "cuba_AuthProvider";

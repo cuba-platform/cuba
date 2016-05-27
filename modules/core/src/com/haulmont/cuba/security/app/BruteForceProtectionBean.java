@@ -31,8 +31,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-/**
- */
 @Component(BruteForceProtectionAPI.NAME)
 public class BruteForceProtectionBean implements BruteForceProtectionAPI {
 

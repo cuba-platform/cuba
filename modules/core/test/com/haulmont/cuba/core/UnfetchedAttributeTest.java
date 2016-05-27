@@ -34,8 +34,6 @@ import static com.haulmont.cuba.testsupport.TestSupport.reserialize;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-/**
- */
 public class UnfetchedAttributeTest {
 
     @ClassRule

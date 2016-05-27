@@ -25,8 +25,6 @@ import org.jdesktop.swingx.plaf.basic.BasicDatePickerUI;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- */
 public class CustomDatePickerUI extends BasicDatePickerUI {
     @Override
     protected JButton createPopupButton() {

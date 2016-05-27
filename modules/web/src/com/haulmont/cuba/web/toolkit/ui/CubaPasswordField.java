@@ -23,8 +23,6 @@ import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.PasswordField;
 import com.haulmont.cuba.web.toolkit.ui.client.passwordfield.CubaPasswordFieldState;
 
-/**
- */
 public class CubaPasswordField extends PasswordField {
 
     public CubaPasswordField() {

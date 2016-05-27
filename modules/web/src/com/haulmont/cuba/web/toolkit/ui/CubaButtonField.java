@@ -23,8 +23,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.themes.BaseTheme;
 
-/**
- */
 public class CubaButtonField extends CustomField {
 
     protected Converter captionFormatter;

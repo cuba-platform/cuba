@@ -20,8 +20,6 @@ package com.haulmont.cuba.gui;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class TestIdManager {
 
     protected Map<String, Integer> ids = new HashMap<>();

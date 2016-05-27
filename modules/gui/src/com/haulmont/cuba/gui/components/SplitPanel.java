@@ -16,8 +16,6 @@
  */
 package com.haulmont.cuba.gui.components;
 
-/**
- */
 public interface SplitPanel extends Component.Container, Component.BelongToFrame {
 
     String NAME = "split";

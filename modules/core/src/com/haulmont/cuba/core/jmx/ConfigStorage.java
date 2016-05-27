@@ -16,28 +16,16 @@
  */
 package com.haulmont.cuba.core.jmx;
 
-import com.haulmont.cuba.core.config.Config;
-import com.haulmont.cuba.core.config.ConfigStorageCommon;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.security.app.Authenticated;
 import com.haulmont.cuba.core.app.ConfigStorageAPI;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.security.app.Authentication;
+import com.haulmont.cuba.core.config.ConfigStorageCommon;
+import com.haulmont.cuba.security.app.Authenticated;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.lang.text.StrBuilder;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
-/**
- */
 @Component("cuba_ConfigStorageMBean")
 public class ConfigStorage implements ConfigStorageMBean {
 

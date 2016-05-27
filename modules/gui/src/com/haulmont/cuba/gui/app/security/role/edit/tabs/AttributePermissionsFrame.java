@@ -39,8 +39,6 @@ import org.apache.commons.lang.ObjectUtils;
 import javax.inject.Inject;
 import java.util.*;
 
-/**
- */
 public class AttributePermissionsFrame extends AbstractFrame {
 
     public interface Companion {

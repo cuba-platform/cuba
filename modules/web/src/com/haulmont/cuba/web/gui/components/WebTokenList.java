@@ -44,8 +44,6 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.util.*;
 
-/**
- */
 public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> implements TokenList {
 
     protected CollectionDatasource datasource;

@@ -24,8 +24,6 @@ import javax.persistence.Table;
 import javax.persistence.Column;
 import java.util.Date;
 
-/**
- */
 @Entity(name = "sys$Server")
 @Table(name = "SYS_SERVER")
 @NamePattern("%s|name")

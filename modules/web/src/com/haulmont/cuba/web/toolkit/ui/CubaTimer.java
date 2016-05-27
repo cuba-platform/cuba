@@ -31,8 +31,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 public class CubaTimer extends AbstractExtension implements CubaTimerServerRpc {
 
     private static final Logger log = LoggerFactory.getLogger(CubaTimer.class);

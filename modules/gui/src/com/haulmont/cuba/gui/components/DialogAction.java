@@ -19,8 +19,6 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 
-/**
- */
 public class DialogAction extends AbstractAction {
 
     public enum Type {

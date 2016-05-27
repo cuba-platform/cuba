@@ -19,8 +19,6 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.sys.NumberIdSequence;
 
-/**
- */
 public interface NumberIdService extends NumberIdSequence {
 
     String NAME = "cuba_NumberIdService";

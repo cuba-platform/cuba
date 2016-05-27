@@ -27,8 +27,6 @@ import com.haulmont.cuba.web.export.LogDataProvider;
 import javax.inject.Inject;
 import java.util.*;
 
-/**
- */
 public class LogDownloadOptionsWindow extends AbstractWindow {
 
     private static final int BYTES_IN_MB = 1024 * 1024;

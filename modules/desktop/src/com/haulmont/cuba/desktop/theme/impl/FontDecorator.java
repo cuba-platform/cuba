@@ -19,9 +19,6 @@ package com.haulmont.cuba.desktop.theme.impl;
 
 import java.awt.*;
 
-/**
- *
- */
 public class FontDecorator extends PropertyPathDecorator {
 
     private String family;

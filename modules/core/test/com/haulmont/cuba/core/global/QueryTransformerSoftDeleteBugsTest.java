@@ -19,8 +19,6 @@ package com.haulmont.cuba.core.global;
 
 import junit.framework.TestCase;
 
-/**
- */
 public class QueryTransformerSoftDeleteBugsTest extends TestCase {
 
     // #PL-1998 (fixed)

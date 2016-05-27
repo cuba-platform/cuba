@@ -22,8 +22,6 @@ import com.haulmont.cuba.web.app.folders.CubaFoldersPane;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import org.apache.commons.lang.StringUtils;
 
-/**
- */
 public class WebFoldersPane extends WebAbstractComponent<CubaFoldersPane> implements FoldersPane {
 
     protected String styleName;

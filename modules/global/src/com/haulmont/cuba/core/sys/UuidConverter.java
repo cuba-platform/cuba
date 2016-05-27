@@ -26,8 +26,6 @@ import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
 import org.eclipse.persistence.platform.database.SQLServerPlatform;
 import org.eclipse.persistence.sessions.Session;
 
-/**
- */
 public class UuidConverter implements Converter {
 
     private final static UuidConverter INSTANCE = new UuidConverter();

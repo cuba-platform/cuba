@@ -21,9 +21,6 @@ import com.haulmont.cuba.desktop.theme.ComponentDecorator;
 
 import java.util.List;
 
-/**
- *
- */
 public class DesktopStyle {
 
     private String name;

@@ -21,8 +21,6 @@ import org.eclipse.persistence.platform.database.MySQLPlatform;
 
 import java.util.UUID;
 
-/**
- */
 public class CubaMySQLPlatform extends MySQLPlatform {
 
     @Override

@@ -22,8 +22,6 @@ import com.haulmont.cuba.core.sys.logging.LogControlException;
 import java.util.List;
 import java.util.Map;
 
-/**
- */
 public interface JmxLogControlMBean {
 
     /**

@@ -26,8 +26,6 @@ import org.apache.commons.lang.reflect.MethodUtils;
 
 import java.lang.reflect.Method;
 
-/**
- */
 public class DeclarativeColumnGenerator implements Table.ColumnGenerator {
 
     private final String methodName;

@@ -27,8 +27,6 @@ import org.apache.commons.lang.StringUtils;
 import javax.inject.Inject;
 import java.util.Map;
 
-/**
- */
 public class AdditionLoggerWindow extends AbstractWindow {
 
     @Inject

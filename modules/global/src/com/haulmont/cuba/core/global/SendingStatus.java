@@ -19,8 +19,6 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
-/**
- */
 public enum SendingStatus implements EnumClass<Integer> {
     QUEUE(0),
     SENDING(100),

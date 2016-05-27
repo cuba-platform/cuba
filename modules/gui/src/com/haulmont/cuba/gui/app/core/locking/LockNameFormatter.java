@@ -22,8 +22,6 @@ import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.Formatter;
 
-/**
- */
 public class LockNameFormatter implements Formatter<String> {
 
     protected Metadata metadata = AppBeans.get(Metadata.NAME);

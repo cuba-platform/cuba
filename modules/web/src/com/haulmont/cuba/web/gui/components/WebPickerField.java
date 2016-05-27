@@ -44,8 +44,6 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
 
-/**
- */
 public class WebPickerField extends WebAbstractField<CubaPickerField>
         implements PickerField, Component.SecuredActionsHolder {
 

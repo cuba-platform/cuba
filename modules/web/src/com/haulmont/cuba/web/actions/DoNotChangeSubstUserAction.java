@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.actions;
 
 import com.haulmont.cuba.gui.components.AbstractAction;
 
-/**
- */
 public class DoNotChangeSubstUserAction extends AbstractAction {
 
     protected DoNotChangeSubstUserAction() {

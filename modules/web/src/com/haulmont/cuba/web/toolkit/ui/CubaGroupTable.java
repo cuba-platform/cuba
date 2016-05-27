@@ -35,8 +35,6 @@ import org.apache.commons.lang.ObjectUtils;
 import javax.annotation.Nullable;
 import java.util.*;
 
-/**
- */
 public class CubaGroupTable extends CubaTable implements GroupTableContainer {
 
     protected KeyMapper groupIdMap = new KeyMapper();

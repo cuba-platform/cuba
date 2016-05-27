@@ -44,8 +44,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- */
 public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> implements Embedded, Component.Disposable {
 
     protected Map<String, String> parameters = null;

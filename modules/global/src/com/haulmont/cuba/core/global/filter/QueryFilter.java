@@ -25,8 +25,6 @@ import org.dom4j.Element;
 
 import java.util.*;
 
-/**
- */
 public class QueryFilter extends FilterParser {
     private final String targetEntity;
 

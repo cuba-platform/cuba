@@ -22,8 +22,6 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.util.HashSet;
 
-/**
- */
 class CompilationScope {
     final HashSet<String> compilationNeeded = new HashSet<>();
 
@@ -56,7 +54,8 @@ class CompilationScope {
             if (FileUtils.isFileNewer(srcFile, timeStampClazz.timestamp)) {
                 compilationNeeded.add(rootClassName);
             } else if (!srcFile.exists()) {
-                throw new ClassNotFoundException("Class " + rootClassName + " not found. No sources found in file system.");
+                throw new ClassNotFoundException(
+                        String.format("Class %s not found. No sources found in file system.", rootClassName));
             }
 
             for (String dependencyName : timeStampClazz.dependencies) {

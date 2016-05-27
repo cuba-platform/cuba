@@ -32,8 +32,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-/**
- */
 public class PersistenceAttributeLoadedCheckTest {
     @ClassRule
     public static final TestContainer cont = TestContainer.Common.INSTANCE;

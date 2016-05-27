@@ -28,8 +28,6 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
-/**
- */
 public class JXTreeTableExt extends JXTreeTable implements FocusableTable {
 
     protected HashSet<TreePath> expandedPaths;

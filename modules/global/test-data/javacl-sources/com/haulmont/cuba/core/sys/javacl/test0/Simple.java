@@ -5,7 +5,5 @@
 
 package com.haulmont.cuba.core.sys.javacl.test0;
 
-/**
- */
 public class Simple {
 }

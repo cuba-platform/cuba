@@ -35,8 +35,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- */
 public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
 
     protected String hierarchyProperty;

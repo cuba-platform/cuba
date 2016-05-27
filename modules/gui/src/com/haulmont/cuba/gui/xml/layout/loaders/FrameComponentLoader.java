@@ -36,8 +36,6 @@ import org.perf4j.log4j.Log4JStopWatch;
 
 import java.io.InputStream;
 
-/**
- */
 public class FrameComponentLoader extends ContainerLoader<Frame> {
 
     protected String frameId;

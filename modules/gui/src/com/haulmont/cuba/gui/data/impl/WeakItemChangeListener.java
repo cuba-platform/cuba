@@ -22,8 +22,6 @@ import com.haulmont.cuba.gui.data.Datasource.ItemChangeListener;
 
 import java.lang.ref.WeakReference;
 
-/**
- */
 public class WeakItemChangeListener implements ItemChangeListener {
 
     private final Datasource datasource;

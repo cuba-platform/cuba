@@ -20,8 +20,6 @@ package com.haulmont.cuba.gui.components;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-/**
- */
 public interface ValueProvider {
 
     @Nullable

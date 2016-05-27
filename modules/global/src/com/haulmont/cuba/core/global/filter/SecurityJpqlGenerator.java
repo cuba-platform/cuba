@@ -17,13 +17,10 @@
 
 package com.haulmont.cuba.core.global.filter;
 
-
 import com.haulmont.cuba.core.entity.Entity;
 
 import static java.lang.String.format;
 
-/**
- */
 public class SecurityJpqlGenerator extends AbstractJpqlGenerator {
     @Override
     protected String generateClauseText(Clause condition) {

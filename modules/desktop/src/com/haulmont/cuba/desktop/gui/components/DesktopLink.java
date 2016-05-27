@@ -27,8 +27,6 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.Collections;
 
-/**
- */
 public class DesktopLink extends DesktopAbstractComponent<JXHyperlink> implements Link {
 
     protected String url;

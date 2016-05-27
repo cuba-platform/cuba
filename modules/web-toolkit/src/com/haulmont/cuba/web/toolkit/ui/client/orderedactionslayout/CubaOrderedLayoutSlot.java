@@ -33,8 +33,6 @@ import com.vaadin.client.ui.orderedlayout.VAbstractOrderedLayout;
 
 import java.util.List;
 
-/**
- */
 public class CubaOrderedLayoutSlot extends Slot {
 
     public static final String TOOLTIP_CLASSNAME = "cuba-tooltip-button";

@@ -25,8 +25,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- */
 @Component("cuba_DateAfterQueryMacroHandler")
 @Scope("prototype")
 public class DateAfterMacroHandler implements QueryMacroHandler {

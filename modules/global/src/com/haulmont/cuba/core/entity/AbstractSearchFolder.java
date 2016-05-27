@@ -24,8 +24,6 @@ import com.haulmont.cuba.core.global.Messages;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
-/**
- */
 @MappedSuperclass
 @SystemLevel
 public abstract class AbstractSearchFolder extends Folder {

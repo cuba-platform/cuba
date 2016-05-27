@@ -27,9 +27,6 @@ import org.junit.Test;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 
-/**
- *
- */
 public class ParametersHelperTest extends TestCase {
 
     @Test

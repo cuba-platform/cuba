@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.historycontrol;
 
 import com.vaadin.shared.communication.ServerRpc;
 
-/**
- */
 public interface CubaHistoryControlServerRpc extends ServerRpc {
 
     void onHistoryBackPerformed();

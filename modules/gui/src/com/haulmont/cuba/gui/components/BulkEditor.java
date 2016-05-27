@@ -22,8 +22,6 @@ import com.haulmont.cuba.gui.WindowManager;
 import java.util.List;
 import java.util.Map;
 
-/**
- */
 public interface BulkEditor
         extends Component, Component.HasCaption, Component.BelongToFrame, Component.HasIcon, Component.Focusable {
 

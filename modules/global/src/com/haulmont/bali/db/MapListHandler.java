@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-/**
- */
 public class MapListHandler implements ResultSetHandler<List<Map<String, Object>>> {
     /**
      * The RowProcessor implementation to use when converting rows

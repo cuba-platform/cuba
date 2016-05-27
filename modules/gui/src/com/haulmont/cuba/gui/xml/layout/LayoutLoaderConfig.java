@@ -24,8 +24,6 @@ import com.haulmont.cuba.gui.xml.layout.loaders.*;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class LayoutLoaderConfig {
 
     private Map<String, Class<? extends ComponentLoader>> loaders = new HashMap<>();

@@ -40,8 +40,6 @@ import java.util.regex.Pattern;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-/**
- */
 public class WebRelatedEntities extends WebPopupButton implements RelatedEntities {
 
     protected ListComponent listComponent;

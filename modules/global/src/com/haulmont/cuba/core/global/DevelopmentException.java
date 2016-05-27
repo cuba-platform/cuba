@@ -20,8 +20,6 @@ package com.haulmont.cuba.core.global;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- */
 @SupportedByClient
 public class DevelopmentException extends RuntimeException {
 

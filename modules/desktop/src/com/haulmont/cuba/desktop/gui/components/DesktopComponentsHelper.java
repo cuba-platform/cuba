@@ -35,8 +35,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.util.Collections;
 
-/**
- */
 public class DesktopComponentsHelper {
 
     public static final int BUTTON_HEIGHT = 30;

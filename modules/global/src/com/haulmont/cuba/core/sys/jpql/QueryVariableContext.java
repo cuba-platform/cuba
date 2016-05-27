@@ -26,8 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- */
 public class QueryVariableContext {
     private Map<String, Entity> entityVariableName2entity = new HashMap<>();
     private QueryNode node;

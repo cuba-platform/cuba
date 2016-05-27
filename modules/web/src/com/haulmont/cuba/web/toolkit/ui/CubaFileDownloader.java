@@ -27,8 +27,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-/**
- */
 public class CubaFileDownloader extends AbstractExtension {
 
     public static final String DOWNLOAD_RESOURCE_PREFIX = "download-";

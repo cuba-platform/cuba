@@ -41,8 +41,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.List;
 
-/**
- */
 @Component(Persistence.NAME)
 public class PersistenceImpl implements Persistence {
 

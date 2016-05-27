@@ -25,8 +25,6 @@ import org.antlr.runtime.tree.Tree;
 
 import java.util.List;
 
-/**
- */
 public class QueryNode extends BaseCustomNode {
     private Token lastToken;
 

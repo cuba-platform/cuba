@@ -27,8 +27,6 @@ import org.antlr.runtime.tree.CommonTree;
 import java.util.Collections;
 import java.util.List;
 
-/**
- */
 public class PathNode extends BaseCustomNode {
     private String entityVariableName;
 

@@ -36,8 +36,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-/**
- */
 public class ScriptScanner {
     private static final String CLASSPATH_LABEL = "classpath:";
     private static final String FILE_SYSTEM_LABEL = "file:";

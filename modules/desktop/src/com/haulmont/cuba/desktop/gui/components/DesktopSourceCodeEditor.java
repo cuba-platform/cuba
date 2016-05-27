@@ -30,8 +30,6 @@ import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-/**
- */
 public class DesktopSourceCodeEditor extends DesktopAbstractTextField<RSyntaxTextArea> implements SourceCodeEditor {
 
     protected JComponent composition;
@@ -192,5 +190,4 @@ public class DesktopSourceCodeEditor extends DesktopAbstractTextField<RSyntaxTex
     public boolean isHandleTabKey() {
         return handleTabKey;
     }
-
 }

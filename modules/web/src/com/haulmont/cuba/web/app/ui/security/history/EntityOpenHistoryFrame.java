@@ -21,11 +21,5 @@ import com.haulmont.cuba.gui.components.AbstractFrame;
 
 import java.util.Map;
 
-/**
- */
 public class EntityOpenHistoryFrame extends AbstractFrame {
-
-    @Override
-    public void init(Map<String, Object> params) {
-    }
 }

@@ -23,8 +23,6 @@ import java.util.List;
 
 import static java.lang.String.format;
 
-/**
- */
 public class GroovyGenerator {
     protected final EnumSet METHOD_OPS = EnumSet.of(Op.CONTAINS, Op.STARTS_WITH, Op.ENDS_WITH, Op.DOES_NOT_CONTAIN);
     protected final EnumSet NEGATIVE_OPS = EnumSet.of(Op.DOES_NOT_CONTAIN, Op.NOT_IN);
@@ -96,5 +94,4 @@ public class GroovyGenerator {
             return format("value(%s.class, '%s')", javaClass.getCanonicalName(), value);
         }
     }
-
 }

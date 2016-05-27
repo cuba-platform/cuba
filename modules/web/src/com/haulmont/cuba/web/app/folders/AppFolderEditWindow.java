@@ -35,8 +35,6 @@ import org.apache.commons.lang.StringUtils;
 import java.lang.reflect.Constructor;
 import java.util.List;
 
-/**
- */
 public class AppFolderEditWindow extends FolderEditWindow {
 
     protected TextArea visibilityScriptField = null;

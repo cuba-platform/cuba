@@ -26,8 +26,6 @@ import com.google.gwt.user.client.DOM;
 import com.vaadin.client.ui.VFilterSelect;
 import com.vaadin.client.ui.menubar.MenuItem;
 
-/**
- */
 public class CubaSearchSelectWidget extends VFilterSelect {
 
     protected static final String CLASSNAME = "cuba-searchselect";

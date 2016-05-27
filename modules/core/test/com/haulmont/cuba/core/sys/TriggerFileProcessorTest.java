@@ -22,8 +22,6 @@ import com.haulmont.cuba.testsupport.TestContainer;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-/**
- */
 public class TriggerFileProcessorTest {
 
     @ClassRule

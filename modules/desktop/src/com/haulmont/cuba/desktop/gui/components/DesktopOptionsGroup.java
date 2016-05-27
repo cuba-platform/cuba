@@ -33,8 +33,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 
-/**
- */
 public class DesktopOptionsGroup extends DesktopAbstractOptionsField<JPanel> implements OptionsGroup {
 
     private boolean multiselect;

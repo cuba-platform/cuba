@@ -45,8 +45,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.CRC32;
 
-/**
- */
 @Component(EntityImportExportAPI.NAME)
 public class EntityImportExport implements EntityImportExportAPI {
 

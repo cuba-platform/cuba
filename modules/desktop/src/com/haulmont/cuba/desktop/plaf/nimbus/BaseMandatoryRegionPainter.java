@@ -20,8 +20,6 @@ package com.haulmont.cuba.desktop.plaf.nimbus;
 import javax.swing.plaf.nimbus.AbstractRegionPainter;
 import java.awt.*;
 
-/**
- */
 public abstract class BaseMandatoryRegionPainter extends AbstractRegionPainter {
 
     /**

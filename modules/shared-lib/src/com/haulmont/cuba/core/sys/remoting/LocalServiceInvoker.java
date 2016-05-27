@@ -17,9 +17,6 @@
 
 package com.haulmont.cuba.core.sys.remoting;
 
-/**
- *
- */
 public interface LocalServiceInvoker {
 
     LocalServiceInvocationResult invoke(LocalServiceInvocation invocation);

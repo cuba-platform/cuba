@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.tabsheet;
 
 import java.io.Serializable;
 
-/**
- */
 public class ClientAction implements Serializable {
 
     private static final long serialVersionUID = 188564361846926204L;

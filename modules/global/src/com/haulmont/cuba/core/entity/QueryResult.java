@@ -24,8 +24,6 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 import java.util.UUID;
 
-/**
- */
 @Entity(name = "sys$QueryResult")
 @Table(name = "SYS_QUERY_RESULT")
 @SystemLevel

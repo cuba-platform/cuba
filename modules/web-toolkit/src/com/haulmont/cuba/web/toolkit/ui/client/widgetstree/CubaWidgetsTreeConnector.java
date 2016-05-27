@@ -28,8 +28,6 @@ import com.vaadin.shared.ui.Connect;
 import java.util.Collections;
 import java.util.List;
 
-/**
- */
 @Connect(CubaWidgetsTree.class)
 public class CubaWidgetsTreeConnector extends CubaTreeConnector implements HasComponentsConnector {
 

@@ -29,8 +29,6 @@ import org.dom4j.Element;
 
 import java.util.*;
 
-/**
- */
 public class CreditsLoader {
 
     private Logger log = LoggerFactory.getLogger(getClass());

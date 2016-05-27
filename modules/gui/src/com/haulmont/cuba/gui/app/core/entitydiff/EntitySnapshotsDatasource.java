@@ -25,8 +25,6 @@ import com.haulmont.cuba.gui.data.impl.CustomCollectionDatasource;
 
 import java.util.*;
 
-/**
- */
 public class EntitySnapshotsDatasource extends CustomCollectionDatasource<EntitySnapshot, UUID> {
 
     protected BaseEntity entity;

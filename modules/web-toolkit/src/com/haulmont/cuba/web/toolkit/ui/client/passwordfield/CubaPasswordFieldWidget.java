@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.passwordfield;
 
 import com.vaadin.client.ui.VPasswordField;
 
-/**
- */
 public class CubaPasswordFieldWidget extends VPasswordField {
 
     public void setAutocomplete(boolean autocomplete) {
@@ -30,5 +28,4 @@ public class CubaPasswordFieldWidget extends VPasswordField {
             getElement().setAttribute("autocomplete", "off");
         }
     }
-
 }

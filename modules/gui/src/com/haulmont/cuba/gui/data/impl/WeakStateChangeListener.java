@@ -22,8 +22,6 @@ import com.haulmont.cuba.gui.data.Datasource.StateChangeListener;
 
 import java.lang.ref.WeakReference;
 
-/**
- */
 public class WeakStateChangeListener implements StateChangeListener {
 
     private final Datasource datasource;

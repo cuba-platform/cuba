@@ -20,8 +20,6 @@ import com.haulmont.cuba.gui.components.KeyCombination;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.MenuBar;
 
-/**
- */
 public class MenuShortcutAction extends ShortcutListener {
 
     private static final long serialVersionUID = -5416777300893219886L;

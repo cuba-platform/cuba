@@ -26,8 +26,6 @@ import org.antlr.runtime.tree.Tree;
 
 import java.util.List;
 
-/**
- */
 public class CollectionMemberNode extends BaseJoinNode {
 
     private CollectionMemberNode(Token token, String variableName) {
@@ -59,7 +57,6 @@ public class CollectionMemberNode extends BaseJoinNode {
 
     @Override
     public CommonTree treeToQueryPost(QueryBuilder sb, List<ErrorRec> invalidNodes) {
-        // должно появится после определения сущности, из которой выбирают, поэтому в post
         sb.appendString(")");
         sb.appendSpace();
         sb.appendString(variableName);

@@ -25,8 +25,6 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
 
-/**
- */
 @Service(ConfigStorageService.NAME)
 public class ConfigStorageServiceBean implements ConfigStorageService {
 

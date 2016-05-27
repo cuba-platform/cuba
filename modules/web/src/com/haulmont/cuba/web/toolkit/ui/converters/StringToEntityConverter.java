@@ -24,8 +24,6 @@ import com.vaadin.data.util.converter.Converter;
 
 import java.util.Locale;
 
-/**
- */
 public class StringToEntityConverter implements Converter<String, Entity> {
 
     protected Formatter formatter;

@@ -46,8 +46,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.*;
 
-/**
- */
 @Component
 public class JSONConverter implements Converter {
     public static final String MIME_STR = "application/json;charset=UTF-8";

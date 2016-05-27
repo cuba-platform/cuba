@@ -52,8 +52,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- */
 public abstract class AbstractScripting implements Scripting {
 
     private Logger log = LoggerFactory.getLogger(getClass());

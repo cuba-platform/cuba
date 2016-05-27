@@ -62,8 +62,6 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- */
 public class App implements ConnectionListener {
 
     protected static App app;

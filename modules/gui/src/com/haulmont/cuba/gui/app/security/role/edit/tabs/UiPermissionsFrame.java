@@ -42,8 +42,6 @@ import org.apache.commons.lang.StringUtils;
 import javax.inject.Inject;
 import java.util.*;
 
-/**
- */
 public class UiPermissionsFrame extends AbstractFrame {
 
     public interface Companion {

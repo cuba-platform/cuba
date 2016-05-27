@@ -21,8 +21,6 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.filter.edit.FilterEditor;
 
-/**
- */
 public class WebFilterEditorCompanion implements FilterEditor.Companion {
     @Override
     public void showComponentName(WindowManager windowManager, String title, String message) {

@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.gui.components.autocomplete;
 
-import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.DomainModelBuilder;
 import com.haulmont.cuba.gui.components.autocomplete.impl.HintProvider;
@@ -29,8 +28,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 public class JpqlSuggestionFactory {
 
     protected static Suggestion produce(AutoCompleteSupport sender, String value, String description, int senderCursorPosition, int prefixLength) {

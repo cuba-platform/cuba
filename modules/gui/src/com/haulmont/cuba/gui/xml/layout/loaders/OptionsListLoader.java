@@ -19,8 +19,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.OptionsList;
 
-/**
- */
 public class OptionsListLoader extends AbstractOptionsBaseLoader<OptionsList> {
     @Override
     public void createComponent() {

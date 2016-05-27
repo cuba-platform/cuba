@@ -33,8 +33,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-/**
- */
 public class DataManagerCommitTest {
 
     @ClassRule

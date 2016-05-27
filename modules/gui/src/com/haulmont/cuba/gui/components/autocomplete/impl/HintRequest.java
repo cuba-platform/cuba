@@ -21,8 +21,6 @@ import com.haulmont.cuba.core.sys.jpql.InferredType;
 
 import java.util.Set;
 
-/**
- */
 public class HintRequest {
     private int position;
     private String query;

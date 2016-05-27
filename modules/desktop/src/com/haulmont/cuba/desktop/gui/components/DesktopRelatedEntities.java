@@ -35,8 +35,6 @@ import java.util.regex.Pattern;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-/**
- */
 public class DesktopRelatedEntities extends DesktopPopupButton implements RelatedEntities {
 
     protected ListComponent listComponent;

@@ -20,8 +20,6 @@ package com.haulmont.cuba.core.global.filter;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 
-/**
- */
 public enum Op {
     EQUAL("=", "==", false),
     IN("in", "in", false),

@@ -47,8 +47,6 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.regex.Pattern;
 
-/**
- */
 @Component(Metadata.NAME)
 public class MetadataImpl implements Metadata {
 
