@@ -12,26 +12,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package com.haulmont.cuba.desktop.sys.config;
+package com.haulmont.cuba.web.sys.config;
 
 import com.haulmont.cuba.client.ClientConfiguration;
 import com.haulmont.cuba.client.sys.ConfigurationClientImpl;
 import com.haulmont.cuba.core.config.ConfigPersister;
 
-/**
- * Desktop specific implementation of Configuration that uses application scope cache for db properties.
- *
- * @see com.haulmont.cuba.desktop.sys.config.DesktopConfigStorageCache
- */
-public class DesktopConfigurationImpl extends ConfigurationClientImpl implements ClientConfiguration {
-
-    protected DesktopConfigStorageCache configStorageCache = new DesktopConfigStorageCache();
+public class WebConfigurationImpl extends ConfigurationClientImpl implements ClientConfiguration {
+    protected WebConfigStorageCache configStorageCache = new WebConfigStorageCache();
 
     @Override
     protected ConfigPersister createConfigPersister(boolean caching) {
-        return new DesktopConfigPersisterImpl(configStorageCache, caching);
+        return new WebConfigStoragePersisterImpl(configStorageCache, caching);
     }
 }

@@ -40,6 +40,8 @@
         <property name="encryptionModule" ref="${cuba.passwordEncryptionModule}"/>
     </bean>
 
+    <bean id="cuba_Configuration" class="com.haulmont.cuba.web.sys.config.WebConfigurationImpl"/>
+
     <!-- MBeans registration -->
 
     <bean id="cuba_web_MBeanExporter" class="com.haulmont.cuba.core.sys.jmx.MBeanExporter" lazy-init="false">

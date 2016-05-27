@@ -21,9 +21,10 @@ import com.haulmont.cuba.client.ClientConfiguration;
 import com.haulmont.cuba.client.sys.config.ConfigPersisterClientImpl;
 import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.ConfigHandler;
+import com.haulmont.cuba.core.config.ConfigPersister;
 import com.haulmont.cuba.core.global.Configuration;
-
 import org.springframework.stereotype.Component;
+
 import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,7 +38,7 @@ public class ConfigurationClientImpl implements ClientConfiguration {
     public <T extends Config> T getConfig(Class<T> configInterface) {
         ConfigHandler handler = handlersCache.get(configInterface);
         if (handler == null) {
-            handler = new ConfigHandler(new ConfigPersisterClientImpl(false), configInterface);
+            handler = new ConfigHandler(createConfigPersister(false), configInterface);
             handlersCache.put(configInterface, handler);
         }
         ClassLoader classLoader = configInterface.getClassLoader();
@@ -47,8 +48,12 @@ public class ConfigurationClientImpl implements ClientConfiguration {
 
     @Override
     public <T extends Config> T getConfigCached(Class<T> configInterface) {
-        ConfigHandler handler = new ConfigHandler(new ConfigPersisterClientImpl(true), configInterface);
+        ConfigHandler handler = new ConfigHandler(createConfigPersister(true), configInterface);
         Object proxy = Proxy.newProxyInstance(configInterface.getClassLoader(), new Class[]{configInterface}, handler);
         return configInterface.cast(proxy);
+    }
+
+    protected ConfigPersister createConfigPersister(boolean caching) {
+        return new ConfigPersisterClientImpl(caching);
     }
 }
