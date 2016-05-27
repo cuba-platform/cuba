@@ -36,11 +36,29 @@ public final class ReflectionHelper {
 
     /**
      * Load class by name.
-     * @param name  class FQN
+     * @param name  class FQN or primitive type name
      * @return      class instance
      * @throws ClassNotFoundException if not found
      */
     public static Class<?> loadClass(String name) throws ClassNotFoundException {
+        switch (name) {
+            case "int":
+                return int.class;
+            case "short":
+                return short.class;
+            case "char":
+                return char.class;
+            case "byte":
+                return byte.class;
+            case "long":
+                return long.class;
+            case "float":
+                return float.class;
+            case "double":
+                return double.class;
+            case "boolean":
+                return boolean.class;
+        }
         return Thread.currentThread().getContextClassLoader().loadClass(name);
     }
 
