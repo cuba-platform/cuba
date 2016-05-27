@@ -21,6 +21,7 @@ import com.haulmont.chile.core.model.Session;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -30,6 +31,7 @@ import com.haulmont.cuba.gui.data.impl.testmodel1.TestDetailEntity;
 import com.haulmont.cuba.gui.data.impl.testmodel1.TestEmbeddableEntity;
 import com.haulmont.cuba.gui.data.impl.testmodel1.TestMasterEntity;
 import com.haulmont.cuba.gui.data.impl.testmodel1.TestPartEntity;
+import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 import org.junit.Before;
@@ -54,8 +56,6 @@ import static org.junit.Assert.*;
  * partDsContext
  *      partDs (parent=partsDs)
  * </pre>
- *
- *
  */
 public class DsContextTest extends CubaClientTestCase {
 
@@ -79,8 +79,12 @@ public class DsContextTest extends CubaClientTestCase {
     private CollectionDatasource<TestPartEntity,UUID> partsDs;
     private Datasource<TestPartEntity> partDs;
 
-    @Mocked ClientConfig clientConfig;
-    @Mocked PersistenceHelper persistenceHelper;
+    @Mocked
+    protected ClientConfig clientConfig;
+    @Mocked
+    protected PersistenceHelper persistenceHelper;
+    @Mocked
+    protected BackgroundWorker backgroundWorker;
 
     @Before
     public void setUp() throws Exception {
@@ -95,6 +99,11 @@ public class DsContextTest extends CubaClientTestCase {
 
         new NonStrictExpectations() {
             {
+                backgroundWorker.checkUIAccess(); result = null;
+                AppBeans.get(BackgroundWorker.NAME); result = backgroundWorker;
+                AppBeans.get(BackgroundWorker.class); result = backgroundWorker;
+                AppBeans.get(BackgroundWorker.NAME, BackgroundWorker.class); result = backgroundWorker;
+
                 configuration.getConfig(ClientConfig.class); result = clientConfig;
 
                 clientConfig.getCollectionDatasourceDbSortEnabled(); result = true;
