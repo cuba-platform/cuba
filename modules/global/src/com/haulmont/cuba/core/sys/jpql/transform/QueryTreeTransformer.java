@@ -244,8 +244,8 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
         PathNode returnedPathNode = getFirstReturnedPathNode();
         if (returnedPathNode != null) {
             returnedPathNode.renameVariableTo(selectEntityVariable);
-            for (int i = 0; i < returnedPathNode.getChildCount(); i++) {
-                returnedPathNode.deleteChild(i);
+            while (returnedPathNode.getChildCount() > 0) {
+                returnedPathNode.deleteChild(0);
             }
         }
     }
