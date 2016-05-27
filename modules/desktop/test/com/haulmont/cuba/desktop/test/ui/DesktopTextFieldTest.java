@@ -20,14 +20,16 @@ package com.haulmont.cuba.desktop.test.ui;
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.gui.DesktopComponentsFactory;
+import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.gui.components.TextFieldTest;
+import mockit.Mocked;
 import mockit.NonStrictExpectations;
 
 import java.util.Locale;
 
-/**
- */
 public class DesktopTextFieldTest extends TextFieldTest {
+    @Mocked({"checkSwingUIAccess"})
+    protected DesktopBackgroundWorker desktopBackgroundWorker;
 
     public DesktopTextFieldTest() {
         factory = new DesktopComponentsFactory();

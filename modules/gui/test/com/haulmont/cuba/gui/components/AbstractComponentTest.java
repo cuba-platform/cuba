@@ -18,30 +18,42 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
-import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
+import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 import org.junit.Before;
 
-/**
- */
 public abstract class AbstractComponentTest extends CubaClientTestCase {
+
     protected ComponentsFactory factory;
+
+    @Mocked
+    protected BackgroundWorker backgroundWorker;
 
     @Before
     public void setUp() throws Exception {
         addEntityPackage("com.haulmont.cuba");
         setupInfrastructure();
+        setupGuiInfrastructure();
 
         initExpectations();
 
         messages.init();
     }
 
-    protected void initExpectations() {
+    protected void setupGuiInfrastructure() {
+        new NonStrictExpectations() {
+            {
+                backgroundWorker.checkUIAccess(); result = null;
+                AppBeans.get(BackgroundWorker.NAME); result = backgroundWorker;
+                AppBeans.get(BackgroundWorker.class); result = backgroundWorker;
+                AppBeans.get(BackgroundWorker.NAME, BackgroundWorker.class); result = backgroundWorker;
+            }
+        };
+    }
 
+    protected void initExpectations() {
     }
 }

@@ -28,11 +28,9 @@ import mockit.NonStrictExpectations;
 
 import java.util.Locale;
 
-/**
- */
 public class WebOptionsGroupTest extends OptionsGroupTest {
     @Mocked
-    VaadinSession vaadinSession;
+    protected VaadinSession vaadinSession;
 
     public WebOptionsGroupTest() {
         factory = new WebComponentsFactory();

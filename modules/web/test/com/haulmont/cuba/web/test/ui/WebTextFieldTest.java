@@ -27,11 +27,10 @@ import mockit.NonStrictExpectations;
 
 import java.util.Locale;
 
-/**
- */
 public class WebTextFieldTest extends TextFieldTest {
 
-    @Mocked VaadinSession vaadinSession;
+    @Mocked
+    protected VaadinSession vaadinSession;
 
     public WebTextFieldTest() {
         factory = new WebComponentsFactory();

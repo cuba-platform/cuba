@@ -28,12 +28,10 @@ import mockit.NonStrictExpectations;
 
 import java.util.Locale;
 
-/**
- */
 public class WebPickerFieldTest extends PickerFieldTest {
 
     @Mocked
-    VaadinSession vaadinSession;
+    protected VaadinSession vaadinSession;
 
     public WebPickerFieldTest() {
         factory = new WebComponentsFactory();

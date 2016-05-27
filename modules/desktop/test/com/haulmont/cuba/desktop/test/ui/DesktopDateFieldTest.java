@@ -20,14 +20,17 @@ package com.haulmont.cuba.desktop.test.ui;
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.gui.DesktopComponentsFactory;
+import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.gui.components.DateFieldTest;
+import mockit.Mocked;
 import mockit.NonStrictExpectations;
 
 import java.util.Locale;
 
-/**
- */
 public class DesktopDateFieldTest extends DateFieldTest {
+    @Mocked({"checkSwingUIAccess"})
+    protected DesktopBackgroundWorker desktopBackgroundWorker;
+
     public DesktopDateFieldTest() {
         factory = new DesktopComponentsFactory();
     }

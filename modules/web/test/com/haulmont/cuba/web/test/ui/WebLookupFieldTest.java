@@ -28,12 +28,10 @@ import mockit.NonStrictExpectations;
 
 import java.util.Locale;
 
-/**
- */
 public class WebLookupFieldTest extends LookupFieldTest {
 
     @Mocked
-    VaadinSession vaadinSession;
+    protected VaadinSession vaadinSession;
 
     public WebLookupFieldTest() {
         factory = new WebComponentsFactory();

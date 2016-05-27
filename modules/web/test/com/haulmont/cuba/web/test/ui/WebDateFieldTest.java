@@ -27,12 +27,10 @@ import mockit.NonStrictExpectations;
 
 import java.util.Locale;
 
-/**
- */
 public class WebDateFieldTest extends DateFieldTest {
 
     @Mocked
-    VaadinSession vaadinSession;
+    protected VaadinSession vaadinSession;
 
     public WebDateFieldTest() {
         factory = new WebComponentsFactory();

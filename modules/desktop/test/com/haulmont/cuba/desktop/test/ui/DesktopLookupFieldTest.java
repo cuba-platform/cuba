@@ -21,16 +21,18 @@ import ca.odell.glazedlists.swing.AutoCompleteSupport;
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.gui.DesktopComponentsFactory;
+import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.gui.components.LookupFieldTest;
 import mockit.Mock;
 import mockit.MockUp;
+import mockit.Mocked;
 import mockit.NonStrictExpectations;
 
 import java.util.Locale;
 
-/**
- */
 public class DesktopLookupFieldTest extends LookupFieldTest {
+    @Mocked({"checkSwingUIAccess"})
+    protected DesktopBackgroundWorker desktopBackgroundWorker;
 
     public DesktopLookupFieldTest() {
         factory = new DesktopComponentsFactory();
