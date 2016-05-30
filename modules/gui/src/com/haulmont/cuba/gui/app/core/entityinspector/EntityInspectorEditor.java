@@ -323,6 +323,7 @@ public class EntityInspectorEditor extends AbstractWindow {
     private Entity loadSingleItem(MetaClass meta, Object id, View view) {
         LoadContext ctx = new LoadContext(meta);
         ctx.setLoadDynamicAttributes(true);
+        ctx.setSoftDeletion(false);
         ctx.setView(view);
         String primaryKeyName = metadata.getTools().getPrimaryKeyName(meta);
         if (primaryKeyName == null)
