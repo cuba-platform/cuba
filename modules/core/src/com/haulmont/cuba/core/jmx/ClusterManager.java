@@ -81,4 +81,34 @@ public class ClusterManager implements ClusterManagerMBean {
     public int getMessagesCount() {
         return clusterManager.getMessagesCount();
     }
+
+    @Override
+    public String printClusterStatesStat() {
+        return clusterManager.printClusterStatesStat();
+    }
+
+    @Override
+    public String printMessagesStat() {
+        return clusterManager.printMessagesStat();
+    }
+
+    @Override
+    public long getSentMessages(String className) {
+        return clusterManager.getSentMessages(className);
+    }
+
+    @Override
+    public long getSentBytes(String className) {
+        return clusterManager.getSentBytes(className);
+    }
+
+    @Override
+    public long getReceivedMessages(String className) {
+        return clusterManager.getReceivedMessages(className);
+    }
+
+    @Override
+    public long getReceivedBytes(String className) {
+        return clusterManager.getReceivedBytes(className);
+    }
 }

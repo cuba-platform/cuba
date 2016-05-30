@@ -16,7 +16,6 @@
  */
 package com.haulmont.cuba.core.jmx;
 
-import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
@@ -61,4 +60,22 @@ public interface ClusterManagerMBean {
      * @see com.haulmont.cuba.core.app.ClusterManagerAPI#getMessagesCount()
      */
     int getMessagesCount();
+
+    @ManagedOperation(description = "Serialize cluster state and get state statistics")
+    String printClusterStatesStat();
+
+    @ManagedOperation(description = "Sent/received messages statistic")
+    String printMessagesStat();
+
+    @ManagedOperation(description = "Get sent messages count statistic for specified class")
+    long getSentMessages(String className);
+
+    @ManagedOperation(description = "Get sent bytes statistic for specified class")
+    long getSentBytes(String className);
+
+    @ManagedOperation(description = "Get received messages count statistic for specified class")
+    long getReceivedMessages(String className);
+
+    @ManagedOperation(description = "Get received bytes statistic for specified class")
+    long getReceivedBytes(String className);
 }
