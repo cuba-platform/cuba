@@ -63,6 +63,8 @@
     
     <logger name="freemarker" level="INFO"/>
 
+    <logger name="org.thymeleaf.TemplateEngine" level="INFO"/>
+
     <logger name="org.docx4j" level="WARN"/>
     
 	<logger name="org.xlsx4j" level="WARN"/>
