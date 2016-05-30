@@ -20,28 +20,45 @@ package com.haulmont.cuba.client.sys.cache;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.AppContext;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.locks.Lock;
 
 /**
  * Provides ability to cache any abstract object in client application
- *
  */
-
 @Component(ClientCacheManager.NAME)
 public class ClientCacheManager {
     public static final String NAME = "cuba_ClientCacheManager";
+
+    private static final Logger log = LoggerFactory.getLogger(ClientCacheManager.class);
 
     protected final Object initializationLock = new Object();
     protected volatile boolean initialized = false;
 
     protected ConcurrentHashMap<String, CachingStrategy> cache = new ConcurrentHashMap<>();
-    protected ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+    protected ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1, new ThreadFactory() {
+        final ThreadFactory defaultFactory = Executors.defaultThreadFactory();
+
+        @Override
+        public Thread newThread(@Nonnull Runnable r) {
+            Thread thread = defaultFactory.newThread(r);
+            thread.setName("ClientCacheManager-" + thread.getName());
+            thread.setUncaughtExceptionHandler((t, e) ->
+                    log.error("Unhandled exception", t)
+            );
+            return thread;
+        }
+    });
 
     public ClientCacheManager() {
         AppContext.addListener(new AppContext.Listener() {
