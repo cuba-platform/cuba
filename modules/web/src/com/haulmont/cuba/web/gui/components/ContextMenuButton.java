@@ -17,19 +17,23 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.Action;
 import org.apache.commons.lang.StringUtils;
 
 public abstract class ContextMenuButton extends WebButton {
 
+    protected boolean showIconsForPopupMenuActions = false;
+
+    public ContextMenuButton() {
+    }
+
+    public ContextMenuButton(boolean showIconsForPopupMenuActions) {
+        this.showIconsForPopupMenuActions = showIconsForPopupMenuActions;
+    }
+
     @Override
     public void setIcon(String icon) {
-        Configuration configuration = AppBeans.get(Configuration.NAME);
-        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
-        if (clientConfig.getShowIconsForPopupMenuActions()) {
+        if (showIconsForPopupMenuActions) {
             super.setIcon(icon);
         }
     }

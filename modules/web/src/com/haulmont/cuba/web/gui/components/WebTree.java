@@ -91,7 +91,8 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
 
     @Override
     protected ContextMenuButton createContextMenuButton() {
-        return new ContextMenuButton() {
+        //noinspection IncorrectCreateGuiComponent
+        return new ContextMenuButton(showIconsForPopupMenuActions) {
             @Override
             protected void beforeActionPerformed() {
                 WebTree.this.component.hideContextMenuPopup();

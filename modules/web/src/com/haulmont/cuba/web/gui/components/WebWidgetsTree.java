@@ -37,7 +37,8 @@ public class WebWidgetsTree<E extends Entity> extends WebAbstractTree<CubaWidget
 
     @Override
     protected ContextMenuButton createContextMenuButton() {
-        return new ContextMenuButton() {
+        //noinspection IncorrectCreateGuiComponent
+        return new ContextMenuButton(showIconsForPopupMenuActions) {
             @Override
             protected void performAction(Action action) {
                 action.actionPerform(WebWidgetsTree.this);

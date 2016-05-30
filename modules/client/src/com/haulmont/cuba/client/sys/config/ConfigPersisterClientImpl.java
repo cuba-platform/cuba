@@ -19,7 +19,6 @@ package com.haulmont.cuba.client.sys.config;
 import com.haulmont.cuba.core.app.ConfigStorageService;
 import com.haulmont.cuba.core.config.ConfigPersister;
 import com.haulmont.cuba.core.config.SourceType;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -29,16 +28,18 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConfigPersisterClientImpl implements ConfigPersister {
+    protected static final Logger log = LoggerFactory.getLogger(ConfigPersisterClientImpl.class);
 
     private Map<String, String> cache = new ConcurrentHashMap<>();
 
     private volatile boolean cacheLoaded;
+    protected boolean caching;
 
-    protected static final Logger log = LoggerFactory.getLogger(ConfigPersisterClientImpl.class);
-    private boolean caching;
+    protected ConfigStorageService configStorageService;
 
-    public ConfigPersisterClientImpl(boolean caching) {
+    public ConfigPersisterClientImpl(ConfigStorageService configStorageService, boolean caching) {
         this.caching = caching;
+        this.configStorageService = configStorageService;
     }
 
     @Override
@@ -106,6 +107,6 @@ public class ConfigPersisterClientImpl implements ConfigPersister {
     }
 
     protected ConfigStorageService getConfigStorage() {
-        return (ConfigStorageService) AppBeans.get(ConfigStorageService.NAME);
+        return configStorageService;
     }
 }

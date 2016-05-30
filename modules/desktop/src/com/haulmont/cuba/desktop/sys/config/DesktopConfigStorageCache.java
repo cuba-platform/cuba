@@ -29,7 +29,6 @@ import java.util.Map;
 /**
  * Config storage service proxy with caching for desktop client. <br/>
  * Reloads db properties only if last loading was at least 10 seconds ago.
- *
  */
 public class DesktopConfigStorageCache implements ConfigStorageService {
 

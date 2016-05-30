@@ -19,7 +19,7 @@ package com.haulmont.cuba.desktop.sys.config;
 
 import com.haulmont.cuba.client.ClientConfiguration;
 import com.haulmont.cuba.client.sys.ConfigurationClientImpl;
-import com.haulmont.cuba.core.config.ConfigPersister;
+import com.haulmont.cuba.core.app.ConfigStorageService;
 
 /**
  * Desktop specific implementation of Configuration that uses application scope cache for db properties.
@@ -27,11 +27,10 @@ import com.haulmont.cuba.core.config.ConfigPersister;
  * @see com.haulmont.cuba.desktop.sys.config.DesktopConfigStorageCache
  */
 public class DesktopConfigurationImpl extends ConfigurationClientImpl implements ClientConfiguration {
-
-    protected DesktopConfigStorageCache configStorageCache = new DesktopConfigStorageCache();
+    protected DesktopConfigStorageCache desktopConfigStorageCache = new DesktopConfigStorageCache();
 
     @Override
-    protected ConfigPersister createConfigPersister(boolean caching) {
-        return new DesktopConfigPersisterImpl(configStorageCache, caching);
+    protected ConfigStorageService getConfigStorageService() {
+        return desktopConfigStorageCache;
     }
 }

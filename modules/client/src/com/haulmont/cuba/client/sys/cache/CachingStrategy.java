@@ -27,7 +27,8 @@ public interface CachingStrategy {
      * Method for strategy initialization
      * Invoked at first login, so security context is available
      */
-    void init();
+    default void init() {
+    }
 
     /**
      * Return cached object

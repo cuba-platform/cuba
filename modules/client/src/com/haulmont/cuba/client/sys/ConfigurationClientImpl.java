@@ -18,7 +18,9 @@
 package com.haulmont.cuba.client.sys;
 
 import com.haulmont.cuba.client.ClientConfiguration;
+import com.haulmont.cuba.client.sys.cache.ConfigStorageCache;
 import com.haulmont.cuba.client.sys.config.ConfigPersisterClientImpl;
+import com.haulmont.cuba.core.app.ConfigStorageService;
 import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.ConfigHandler;
 import com.haulmont.cuba.core.config.ConfigPersister;
@@ -31,8 +33,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Component(Configuration.NAME)
 public class ConfigurationClientImpl implements ClientConfiguration {
-
     protected Map<Class, ConfigHandler> handlersCache = new ConcurrentHashMap<>();
+    protected ConfigStorageService configStorageCache = new ConfigStorageCache();
 
     @Override
     public <T extends Config> T getConfig(Class<T> configInterface) {
@@ -54,6 +56,10 @@ public class ConfigurationClientImpl implements ClientConfiguration {
     }
 
     protected ConfigPersister createConfigPersister(boolean caching) {
-        return new ConfigPersisterClientImpl(caching);
+        return new ConfigPersisterClientImpl(getConfigStorageService(), caching);
+    }
+
+    protected ConfigStorageService getConfigStorageService() {
+        return configStorageCache;
     }
 }

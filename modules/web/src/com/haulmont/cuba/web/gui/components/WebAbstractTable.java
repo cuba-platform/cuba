@@ -79,9 +79,6 @@ import java.util.stream.Collectors;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-/**
- * @param <T>
- */
 public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhancedTable, E extends Entity>
         extends WebAbstractList<T, E>
         implements Table<E> {
@@ -624,7 +621,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     protected ContextMenuButton createContextMenuButton() {
-        return new ContextMenuButton() {
+        //noinspection IncorrectCreateGuiComponent
+        return new ContextMenuButton(showIconsForPopupMenuActions) {
             @Override
             protected void beforeActionPerformed() {
                 WebAbstractTable.this.component.hideContextMenuPopup();

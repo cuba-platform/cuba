@@ -17,6 +17,9 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ActionsPermissions;
 import com.haulmont.cuba.gui.components.KeyCombination;
@@ -36,8 +39,6 @@ import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 
 /**
  * Base class for action holders with shortcuts support
- *
- * @param <T>
  */
 public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.Component & com.vaadin.event.Action.ShortcutNotifier>
         extends WebAbstractComponent<T> implements com.haulmont.cuba.gui.components.Component.SecuredActionsHolder {
@@ -50,7 +51,13 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
     protected final ShortcutsDelegate<ShortcutListener> shortcutsDelegate;
     protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
+    protected boolean showIconsForPopupMenuActions;
+
     protected WebAbstractActionsHolderComponent() {
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+        showIconsForPopupMenuActions = clientConfig.getShowIconsForPopupMenuActions();
+
         contextMenuPopup = new VerticalLayout();
         contextMenuPopup.setCubaId("cubaContextMenu");
         contextMenuPopup.setSizeUndefined();

@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.sys.config;
+package com.haulmont.cuba.client.sys.cache;
 
-import com.haulmont.cuba.client.sys.cache.ClientCacheManager;
 import com.haulmont.cuba.core.app.ConfigStorageService;
 import com.haulmont.cuba.core.config.AppPropertyEntity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.web.cache.WebConfigCacheStrategy;
 
 import java.util.List;
 import java.util.Map;
 
-public class WebConfigStorageCache implements ConfigStorageService {
+public class ConfigStorageCache implements ConfigStorageService {
     @Override
     public Map<String, String> getDbProperties() {
-        return getClientCacheManager().getCached(WebConfigCacheStrategy.NAME);
+        return getClientCacheManager().getCached(ConfigCacheStrategy.NAME);
     }
 
     @Override
@@ -40,7 +38,7 @@ public class WebConfigStorageCache implements ConfigStorageService {
     public void setDbProperty(String name, String value) {
         getService().setDbProperty(name, value);
 
-        getClientCacheManager().refreshCached(WebConfigStorageCache.NAME);
+        getClientCacheManager().refreshCached(ConfigCacheStrategy.NAME);
     }
 
     protected ConfigStorageService getService() {
