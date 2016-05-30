@@ -168,16 +168,6 @@ public interface WebConfig extends Config {
     String getResourcesRoot();
 
     /**
-     * Timeout for check changes from browser <br/>
-     * Used by BackgroundWorker for timers
-     *
-     * @return Timeout in ms
-     */
-    @Property("cuba.backgroundWorker.uiCheckInterval")
-    @DefaultInteger(2000)
-    Integer getUiCheckInterval();
-
-    /**
      * @return minimum number of background task threads.
      */
     @Property("cuba.backgroundWorker.minBackgroundThreadsCount")

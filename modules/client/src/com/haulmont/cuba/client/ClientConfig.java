@@ -21,10 +21,7 @@ import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
-import com.haulmont.cuba.core.config.defaults.Default;
-import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
-import com.haulmont.cuba.core.config.defaults.DefaultInt;
-import com.haulmont.cuba.core.config.defaults.DefaultString;
+import com.haulmont.cuba.core.config.defaults.*;
 import com.haulmont.cuba.core.config.type.CommaSeparatedStringListTypeFactory;
 import com.haulmont.cuba.core.config.type.Factory;
 
@@ -59,7 +56,6 @@ public interface ClientConfig extends Config {
     @DefaultInt(20)
     int getMaxUploadSizeMb();
     void setMaxUploadSizeMb(int value);
-
 
     @Factory(factory = UniqueConstraintViolationPatternFactory.class)
     @Source(type = SourceType.DATABASE)
@@ -334,4 +330,13 @@ public interface ClientConfig extends Config {
     @DefaultInt(10)
     int getLookupFieldPageLength();
     void setLookupFieldPageLength(int pageLength);
+
+    /**
+     * Interval for checking timeout of a BackgroundTask.
+     *
+     * @return Timeout in ms
+     */
+    @Property("cuba.backgroundWorker.timeoutCheckInterval")
+    @DefaultInteger(5000)
+    Integer getBackgroundTaskTimeoutCheckInterval();
 }

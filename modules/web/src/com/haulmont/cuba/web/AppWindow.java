@@ -56,8 +56,6 @@ public class AppWindow extends UIView implements CubaHistoryControl.HistoryBackH
 
     protected CubaHistoryControl historyControl;
 
-    protected CubaTimer workerTimer;
-
     protected ScreenClientProfilerAgent clientProfiler;
 
     protected WebConfig webConfig;
@@ -119,15 +117,6 @@ public class AppWindow extends UIView implements CubaHistoryControl.HistoryBackH
         clientManager = new CubaClientManager();
         clientManager.extend(this);
 
-        workerTimer = new CubaTimer();
-        workerTimer.setTimerId("backgroundWorkerTimer");
-
-        workerTimer.extend(this);
-
-        workerTimer.setRepeating(true);
-        workerTimer.setDelay(webConfig.getUiCheckInterval());
-        workerTimer.start();
-
         fileDownloader = new CubaFileDownloader();
         fileDownloader.extend(this);
 
@@ -188,10 +177,6 @@ public class AppWindow extends UIView implements CubaHistoryControl.HistoryBackH
 
     public CubaFileDownloader getFileDownloader() {
         return fileDownloader;
-    }
-
-    public CubaTimer getWorkerTimer() {
-        return workerTimer;
     }
 
     public List<CubaTimer> getTimers() {

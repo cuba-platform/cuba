@@ -136,6 +136,7 @@
     </bean>
 
     <task:scheduled-tasks scheduler="backgroundWorkerScheduler">
-        <task:scheduled ref="cuba_BackgroundWorker_WatchDog" method="cleanupTasks" fixed-delay="2000"/>
+        <task:scheduled ref="cuba_BackgroundWorker_WatchDog" method="cleanupTasks"
+                        fixed-delay="${cuba.backgroundWorker.timeoutCheckInterval?:5000}"/>
     </task:scheduled-tasks>
 </beans>
