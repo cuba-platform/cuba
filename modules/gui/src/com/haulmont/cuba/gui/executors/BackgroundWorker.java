@@ -30,12 +30,16 @@ public interface BackgroundWorker {
      * @param <V>  task result type
      * @param task background task instance
      * @return task handler
+     * @throws IllegalConcurrentAccessException in case of call from non UI thread
      */
     @ExecutedOnUIThread
     <T, V> BackgroundTaskHandler<V> handle(BackgroundTask<T, V> task);
 
     /**
+     * Obtain UI access for later use from background thread. Can be invoked only from UI thread.
+     *
      * @return ui accessor object that allows to read/write state of UI
+     * @throws IllegalConcurrentAccessException in case of call from non UI thread
      */
     @ExecutedOnUIThread
     UIAccessor getUIAccessor();

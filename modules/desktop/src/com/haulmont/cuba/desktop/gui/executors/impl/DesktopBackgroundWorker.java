@@ -56,6 +56,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
     @Override
     public <T, V> BackgroundTaskHandler<V> handle(BackgroundTask<T, V> task) {
         checkNotNull(task);
+        checkUIAccess();
 
         // create task handler
         DesktopTaskExecutor<T, V> taskExecutor = new DesktopTaskExecutor<>(task);
@@ -68,6 +69,8 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
     @Override
     public UIAccessor getUIAccessor() {
+        checkUIAccess();
+
         return new DesktopUIAccessor();
     }
 

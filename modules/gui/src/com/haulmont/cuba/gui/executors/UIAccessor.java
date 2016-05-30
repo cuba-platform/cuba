@@ -16,8 +16,33 @@
 
 package com.haulmont.cuba.gui.executors;
 
+/**
+ * Interface that allows to read/write state of UI from background threads.
+ *
+ * @see BackgroundWorker#getUIAccessor()
+ */
 public interface UIAccessor {
+    /**
+     * Provides exclusive access to UI state from outside a UI event handling thread.
+     *
+     * The given runnable is executed while holding the UI lock to ensure
+     * exclusive access to UI state.
+     *
+     * Please note that the runnable might be invoked on a different thread or
+     * later on the current thread, which means that custom thread locals might
+     * not have the expected values when the runnable is executed.
+     *
+     * @param runnable runnable
+     */
     void access(Runnable runnable);
 
+    /**
+     * Locks the UI and runs the provided Runnable right away.
+     *
+     * The given runnable is executed while holding the UI lock to ensure
+     * exclusive access to UI state.
+     *
+     * @param runnable runnable
+     */
     void accessSynchronously(Runnable runnable);
 }

@@ -128,6 +128,8 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
     @Override
     public UIAccessor getUIAccessor() {
+        checkUIAccess();
+
         return new WebUIAccessor(UI.getCurrent());
     }
 
