@@ -155,4 +155,12 @@ public class WebExportDisplay implements ExportDisplay {
     public void show(byte[] content, String resourceName, ExportFormat format) {
         show(new ByteArrayDataProvider(content), resourceName, format);
     }
+
+    public boolean isNewWindow() {
+        return newWindow;
+    }
+
+    public void setNewWindow(boolean newWindow) {
+        this.newWindow = newWindow;
+    }
 }

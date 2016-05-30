@@ -19,6 +19,8 @@ package com.haulmont.cuba.web.app.domain;
 
 import com.haulmont.cuba.core.app.DomainDescriptionService;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
+import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 
@@ -26,7 +28,6 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Class providing domain model description. It can be called from the main menu.
- *
  */
 public class DomainProvider implements Runnable {
 
@@ -35,7 +36,9 @@ public class DomainProvider implements Runnable {
         DomainDescriptionService service = AppBeans.get(DomainDescriptionService.NAME);
         String description = service.getDomainDescription();
 
-        WebExportDisplay exportDisplay = new WebExportDisplay(true);
-        exportDisplay.show(description.getBytes(StandardCharsets.UTF_8), "DomainDescription", ExportFormat.HTML);
+        ExportDisplay exportDisplay = AppBeans.get(ExportDisplay.class);
+        ((WebExportDisplay) exportDisplay).setNewWindow(true);
+        exportDisplay.show(new ByteArrayDataProvider(description.getBytes(StandardCharsets.UTF_8)),
+                "domain-description.html", ExportFormat.HTML);
     }
 }
