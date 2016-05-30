@@ -32,7 +32,9 @@ public class WebWidgetsTree<E extends Entity> extends WebAbstractTree<CubaWidget
     public WebWidgetsTree() {
         component = new CubaWidgetsTree();
         component.setSelectable(false);
-        component.setImmediate(true); 
+        component.setImmediate(true);
+
+        initComponent(component);
     }
 
     @Override

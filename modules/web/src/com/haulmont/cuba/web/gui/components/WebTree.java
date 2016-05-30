@@ -81,6 +81,8 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
                 }
             }
         });
+
+        initComponent(component);
     }
 
     protected void refreshActionsState() {

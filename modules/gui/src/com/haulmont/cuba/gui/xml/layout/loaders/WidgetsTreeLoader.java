@@ -16,16 +16,26 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.components.ButtonsPanel;
+import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.components.WidgetsTree;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 public class WidgetsTreeLoader extends ActionsHolderLoader<WidgetsTree> {
+
+    protected Element buttonsPanelElement;
+    protected ComponentLoader buttonsPanelLoader;
+
     @Override
     public void createComponent() {
         resultComponent = (WidgetsTree) factory.createComponent(WidgetsTree.NAME);
         loadId(resultComponent, element);
+        createButtonsPanel(resultComponent, element);
     }
 
     @Override
@@ -39,12 +49,38 @@ public class WidgetsTreeLoader extends ActionsHolderLoader<WidgetsTree> {
         loadHeight(resultComponent, element);
 
         loadStyleName(resultComponent, element);
+        loadButtonsPanel(resultComponent);
 
         Element itemsElement = element.element("items");
         String datasource = itemsElement.attributeValue("datasource");
         if (!StringUtils.isBlank(datasource)) {
             HierarchicalDatasource ds = (HierarchicalDatasource) context.getDsContext().get(datasource);
             resultComponent.setDatasource(ds);
+        }
+    }
+
+    protected void createButtonsPanel(Tree resultComponent, Element element) {
+        buttonsPanelElement = element.element("buttonsPanel");
+        if (buttonsPanelElement != null) {
+            ButtonsPanelLoader loader = (ButtonsPanelLoader) getLoader(buttonsPanelElement, ButtonsPanel.NAME);
+            loader.createComponent();
+            ButtonsPanel panel = loader.getResultComponent();
+
+            resultComponent.setButtonsPanel(panel);
+
+            buttonsPanelLoader = loader;
+        }
+    }
+
+    protected void loadButtonsPanel(Tree component) {
+        if (buttonsPanelLoader != null) {
+            //noinspection unchecked
+            buttonsPanelLoader.loadComponent();
+            ButtonsPanel panel = (ButtonsPanel) buttonsPanelLoader.getResultComponent();
+
+            Window window = ComponentsHelper.getWindowImplementation(component);
+            String alwaysVisible = buttonsPanelElement.attributeValue("alwaysVisible");
+            panel.setVisible(!(window instanceof Window.Lookup) || "true".equals(alwaysVisible));
         }
     }
 }

@@ -937,6 +937,7 @@
     <xs:complexType name="treeComponent">
         <xs:sequence>
             <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
+            <xs:element name="buttonsPanel" minOccurs="0" maxOccurs="1" type="buttonsPanelComponent"/>
             <xs:element name="treechildren" minOccurs="1" maxOccurs="1">
                 <xs:complexType>
                     <xs:attributeGroup ref="hasCaptionSource"/>
@@ -1299,6 +1300,7 @@
     <!-- WidgetsTree -->
     <xs:complexType name="widgetsTreeComponent">
         <xs:sequence>
+            <xs:element name="buttonsPanel" minOccurs="0" maxOccurs="1" type="buttonsPanelComponent"/>
             <xs:element name="items" minOccurs="1" maxOccurs="1">
                 <xs:complexType>
                     <xs:attributeGroup ref="hasDatasourceProp"/>

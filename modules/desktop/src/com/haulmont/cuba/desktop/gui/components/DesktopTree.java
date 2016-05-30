@@ -27,8 +27,11 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
+import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jdesktop.swingx.HorizontalLayout;
+import org.jdesktop.swingx.VerticalLayout;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
@@ -50,13 +53,26 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
     protected String captionProperty;
     protected TreeModelAdapter model;
 
+    protected ButtonsPanel buttonsPanel;
+    protected MigLayout layout;
+    protected JPanel panel;
+    protected JPanel topPanel;
+
     protected Action doubleClickAction;
     protected MouseAdapter itemClickListener;
     protected boolean editable = true;
 
     public DesktopTree() {
+        layout = new MigLayout("flowy, fill, insets 0", "", "[min!][fill]");
+        panel = new JPanel(layout);
+
+        topPanel = new JPanel(new BorderLayout());
+        topPanel.setVisible(false);
+        panel.add(topPanel, "growx");
+
         impl = new JTree();
         treeView = new JScrollPane(impl);
+        panel.add(treeView, "grow");
 
         impl.setRootVisible(false);
         impl.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -94,7 +110,7 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
 
     @Override
     public JComponent getComposition() {
-        return treeView;
+        return panel;
     }
 
     @Override
@@ -105,6 +121,29 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
 
         if (!model.isLeaf(model.getRoot())) {
             recursiveExpand(model.getRoot());
+        }
+    }
+
+    @Override
+    public ButtonsPanel getButtonsPanel() {
+        return buttonsPanel;
+    }
+
+    @Override
+    public void setButtonsPanel(ButtonsPanel panel) {
+        if (buttonsPanel != null && topPanel != null) {
+            topPanel.remove(DesktopComponentsHelper.unwrap(buttonsPanel));
+            buttonsPanel.setParent(null);
+        }
+        buttonsPanel = panel;
+        if (panel != null) {
+            if (panel.getParent() != null && panel.getParent() != this) {
+                throw new IllegalStateException("Component already has parent");
+            }
+
+            topPanel.add(DesktopComponentsHelper.unwrap(panel));
+            topPanel.setVisible(true);
+            panel.setParent(this);
         }
     }
 

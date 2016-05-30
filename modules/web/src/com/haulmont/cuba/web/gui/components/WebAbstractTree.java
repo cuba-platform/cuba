@@ -18,9 +18,12 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.components.ButtonsPanel;
 import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
@@ -33,6 +36,9 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
     protected List<Tree.StyleProvider> styleProviders; // lazily initialized List
     protected StyleGeneratorAdapter styleGenerator;    // lazily initialized field
 
+    protected ButtonsPanel buttonsPanel;
+    protected HorizontalLayout topPanel;
+    protected VerticalLayout componentComposition;
     protected IconProvider iconProvider;
 
     @Override
@@ -78,6 +84,51 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
     @Override
     public void setEditable(boolean editable) {
         component.setReadOnly(!editable);
+    }
+
+    @Override
+    public ButtonsPanel getButtonsPanel() {
+        return buttonsPanel;
+    }
+
+    @Override
+    public com.vaadin.ui.Component getComposition() {
+        return componentComposition;
+    }
+
+    @Override
+    public void setButtonsPanel(ButtonsPanel panel) {
+        if (buttonsPanel != null && topPanel != null) {
+            topPanel.removeComponent(WebComponentsHelper.unwrap(buttonsPanel));
+            buttonsPanel.setParent(null);
+        }
+        buttonsPanel = panel;
+        if (panel != null) {
+            if (panel.getParent() != null && panel.getParent() != this) {
+                throw new IllegalStateException("Component already has parent");
+            }
+
+            if (topPanel == null) {
+                topPanel = new HorizontalLayout();
+                topPanel.setWidth("100%");
+
+                componentComposition.addComponentAsFirst(topPanel);
+            }
+            topPanel.addComponent(WebComponentsHelper.unwrap(panel));
+            panel.setParent(this);
+        }
+    }
+
+    public void initComponent(CubaTree component) {
+        componentComposition = new VerticalLayout();
+        componentComposition.addComponent(component);
+
+        componentComposition.setSpacing(true);
+        componentComposition.setMargin(false);
+        componentComposition.setWidth("-1px");
+
+        component.setSizeFull();
+        componentComposition.setExpandRatio(component, 1);
     }
 
     @Override
