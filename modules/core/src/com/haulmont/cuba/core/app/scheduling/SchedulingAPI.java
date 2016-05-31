@@ -59,8 +59,9 @@ public interface SchedulingAPI {
      * application code.
      * @param task      task instance
      * @param running   true to mark as running, false to mark as not running
+     * @return flag indicates concurrent task execution if value is true
      */
-    void setRunning(ScheduledTask task, boolean running);
+    boolean setRunning(ScheduledTask task, boolean running);
 
     /**
      * @return a list of active task instances in detached state

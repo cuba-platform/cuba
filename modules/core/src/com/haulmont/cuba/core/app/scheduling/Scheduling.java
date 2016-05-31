@@ -43,6 +43,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Class that manages {@link ScheduledTask}s in distributed environment.
@@ -78,7 +79,7 @@ public class Scheduling implements SchedulingAPI {
     @Inject
     protected ServerInfoService serverInfoService;
 
-    protected Map<ScheduledTask, Long> runningTasks = new ConcurrentHashMap<>();
+    protected ConcurrentMap<ScheduledTask, Long> runningTasks = new ConcurrentHashMap<>();
 
     protected Map<ScheduledTask, Long> lastStartCache = new HashMap<>();
 
@@ -120,16 +121,18 @@ public class Scheduling implements SchedulingAPI {
     }
 
     @Override
-    public void setRunning(ScheduledTask task, boolean running) {
+    public boolean setRunning(ScheduledTask task, boolean running) {
         log.trace(task + ": mark running=" + running);
         if (running) {
             task.setCurrentStartTimestamp(timeSource.currentTimeMillis());
-            runningTasks.put(task, task.getCurrentStartTimestamp());
+            Long prev = runningTasks.putIfAbsent(task, task.getCurrentStartTimestamp());
+            return prev != null;
         } else {
             Long startTime = runningTasks.get(task);
             if (ObjectUtils.equals(task.getCurrentStartTimestamp(), startTime)) {
                 runningTasks.remove(task);
             }
+            return false;
         }
     }
 

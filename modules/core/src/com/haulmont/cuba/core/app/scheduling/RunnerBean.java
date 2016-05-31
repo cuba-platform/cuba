@@ -109,19 +109,24 @@ public class RunnerBean implements Runner {
             public void run() {
                 log.debug(taskCopy + ": running");
                 try {
-                    setSecurityContext(taskCopy, userSession);
-
-                    ScheduledExecution execution = registerExecutionStart(taskCopy, now);
-                    scheduling.setRunning(taskCopy, true);
-                    statisticsCounter.incCubaScheduledTasksCount();
-                    try {
-                        Object result = executeTask(taskCopy);
-                        registerExecutionFinish(taskCopy, execution, result);
-                    } catch (Throwable throwable) {
-                        registerExecutionFinish(taskCopy, execution, throwable);
-                        throw throwable;
-                    } finally {
-                        scheduling.setRunning(taskCopy, false);
+                    boolean runConcurrent = scheduling.setRunning(taskCopy, true);
+                    if (!runConcurrent) {
+                        try {
+                            setSecurityContext(taskCopy, userSession);
+                            ScheduledExecution execution = registerExecutionStart(taskCopy, now);
+                            statisticsCounter.incCubaScheduledTasksCount();
+                            try {
+                                Object result = executeTask(taskCopy);
+                                registerExecutionFinish(taskCopy, execution, result);
+                            } catch (Throwable throwable) {
+                                registerExecutionFinish(taskCopy, execution, throwable);
+                                throw throwable;
+                            }
+                        } finally {
+                            scheduling.setRunning(taskCopy, false);
+                        }
+                    } else {
+                        log.info("Detected concurrent task execution: {}, skip it", taskCopy);
                     }
                 } catch (Throwable throwable) {
                     log.error("Error running " + taskCopy, throwable);

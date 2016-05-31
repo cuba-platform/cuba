@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.app.scheduling;
 
 import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.core.entity.SchedulingType;
+import com.haulmont.cuba.core.global.TimeSource;
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -28,6 +29,8 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 
 public class SchedulingTest {
 
@@ -99,5 +102,34 @@ public class SchedulingTest {
         }
 
         return null;
+    }
+
+    @Test
+    public void testRunning() {
+        Scheduling scheduling = new Scheduling() {
+            {
+                timeSource = new TimeSource() {
+                    @Override
+                    public Date currentTimestamp() {
+                        return new Date();
+                    }
+
+                    @Override
+                    public long currentTimeMillis() {
+                        return System.currentTimeMillis();
+                    }
+                };
+            }
+
+            @Override
+            protected TimeZone getCurrentTimeZone() {
+                return TimeZone.getTimeZone("GMT-0");
+            }
+        };
+        ScheduledTask scheduledTask = new ScheduledTask();
+
+        assertFalse(scheduling.setRunning(scheduledTask, true));
+        assertTrue(scheduling.setRunning(scheduledTask, true));
+
     }
 }
