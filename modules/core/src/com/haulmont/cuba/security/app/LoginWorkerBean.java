@@ -46,7 +46,10 @@ import java.util.*;
  */
 @Component(LoginWorker.NAME)
 public class LoginWorkerBean implements LoginWorker {
+
     private Logger log = LoggerFactory.getLogger(LoginWorkerBean.class);
+
+    protected static final String MSG_PACK = "com.haulmont.cuba.security";
 
     @Inject
     protected Persistence persistence;
@@ -163,7 +166,7 @@ public class LoginWorkerBean implements LoginWorker {
     }
 
     protected String getInvalidCredentialsMessage(String login, Locale locale) {
-        return messages.formatMessage(getClass(), "LoginException.InvalidLoginOrPassword", locale, login);
+        return messages.formatMessage(MSG_PACK, "LoginException.InvalidLoginOrPassword", locale, login);
     }
 
     @Override
@@ -214,7 +217,7 @@ public class LoginWorkerBean implements LoginWorker {
             User user = loadUser(login);
 
             if (user == null) {
-                throw new LoginException(messages.formatMessage(getClass(), "LoginException.InvalidUser", locale, login));
+                throw new LoginException(messages.formatMessage(MSG_PACK, "LoginException.InvalidUser", locale, login));
             }
 
             Locale userLocale = locale;
@@ -251,7 +254,7 @@ public class LoginWorkerBean implements LoginWorker {
             User user = loadUser(login);
 
             if (user == null) {
-                throw new LoginException(messages.formatMessage(getClass(), "LoginException.InvalidUser", locale, login));
+                throw new LoginException(messages.formatMessage(MSG_PACK, "LoginException.InvalidUser", locale, login));
             }
 
             RememberMeToken loginToken = loadRememberMeToken(rememberMeToken, user);
