@@ -18,7 +18,10 @@ package com.haulmont.cuba.core;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import com.haulmont.cuba.core.sys.QueryImpl;
 import com.haulmont.cuba.security.entity.Group;
+import com.haulmont.cuba.security.entity.Role;
+import com.haulmont.cuba.security.entity.RoleType;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.junit.After;
@@ -438,5 +441,45 @@ public class QueryTest {
         });
         assertNotNull(active);
         assertTrue(active);
+    }
+
+    @Test
+    public void testEnumImplicitConversion() throws Exception {
+        // explicit enum id value
+        cont.persistence().runInTransaction(em -> {
+            TypedQuery<Role> query = em.createQuery("select r from sec$Role r where r.type = :roleType", Role.class);
+            query.setParameter("roleType", 10);
+            List<Role> roles = query.getResultList();
+            assertTrue(roles.stream().anyMatch(role -> role.getName().equals("Administrators")));
+        });
+
+        // enum as a positional parameter
+        cont.persistence().runInTransaction(em -> {
+            TypedQuery<Role> query = em.createQuery("select r from sec$Role r where r.type = ?1", Role.class);
+            query.setParameter(1, RoleType.SUPER);
+            List<Role> roles = query.getResultList();
+            assertTrue(roles.stream().anyMatch(role -> role.getName().equals("Administrators")));
+        });
+
+        // enum as a named parameter
+        cont.persistence().runInTransaction(em -> {
+            TypedQuery<Role> query = em.createQuery("select r from sec$Role r where r.type = :roleType", Role.class);
+            query.setParameter("roleType", RoleType.SUPER);
+            List<Role> roles = query.getResultList();
+            assertTrue(roles.stream().anyMatch(role -> role.getName().equals("Administrators")));
+        });
+
+        // no implicit conversions - fails
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            TypedQuery<Role> query = cont.entityManager().createQuery("select r from sec$Role r where r.type = :roleType", Role.class);
+            query.setParameter("roleType", RoleType.SUPER, false);
+            List<Role> roles = null;
+            try {
+                roles = query.getResultList();
+                fail();
+            } catch (Exception e) {
+                // ok
+            }
+        }
     }
 }

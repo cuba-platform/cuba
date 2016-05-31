@@ -17,6 +17,7 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.entity.Entity;
@@ -360,6 +361,8 @@ public class QueryImpl<T> implements TypedQuery<T> {
                 list.add(obj instanceof Entity ? ((Entity) obj).getId() : obj);
             }
             value = list;
+        } else if (value instanceof EnumClass) {
+            value = ((EnumClass) value).getId();
         }
         return value;
     }
