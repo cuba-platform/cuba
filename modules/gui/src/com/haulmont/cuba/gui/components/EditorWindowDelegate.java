@@ -241,10 +241,8 @@ public class EditorWindowDelegate extends WindowDelegate {
     public boolean isModified() {
         if (readOnly)
             return false;
-        else if (wrapper instanceof Window.Committable)
-            return ((Window.Committable) wrapper).isModified();
         else
-            return window.getDsContext() != null && window.getDsContext().isModified();
+            return super.isModified();
     }
 
     public boolean commit(boolean close) {

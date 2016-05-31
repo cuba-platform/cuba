@@ -396,8 +396,8 @@ public class DesktopWindow implements Window, Component.Disposable,
         return res;
     }
 
-    protected boolean isModified() {
-        return getDsContext() != null && getDsContext().isModified();
+    public boolean isModified() {
+        return delegate.isModified();
     }
 
     private void stopTimers() {
@@ -1496,11 +1496,6 @@ public class DesktopWindow implements Window, Component.Disposable,
 
         protected Datasource getDatasource() {
             return delegate.getDatasource();
-        }
-
-        @Override
-        public boolean isModified() {
-            return ((EditorWindowDelegate) delegate).isModified();
         }
 
         @Override

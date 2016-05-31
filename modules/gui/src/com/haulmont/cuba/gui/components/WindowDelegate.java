@@ -213,6 +213,13 @@ public class WindowDelegate {
         return true;
     }
 
+    public boolean isModified() {
+        if (wrapper instanceof Window.Committable)
+            return ((Window.Committable) wrapper).isModified();
+        else
+            return window.getDsContext() != null && window.getDsContext().isModified();
+    }
+
     public Window openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return window.getWindowManager().openWindow(windowInfo, openType, params);

@@ -1121,8 +1121,8 @@ public class WebWindow implements Window, Component.Wrapper,
         return false;
     }
 
-    protected boolean isModified() {
-        return getDsContext() != null && getDsContext().isModified();
+    public boolean isModified() {
+        return delegate.isModified();
     }
 
     @Override
@@ -1414,11 +1414,6 @@ public class WebWindow implements Window, Component.Wrapper,
             } else {
                 return (Instance) item;
             }
-        }
-
-        @Override
-        public boolean isModified() {
-            return ((EditorWindowDelegate) delegate).isModified();
         }
 
         @Override
