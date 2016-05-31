@@ -24,7 +24,6 @@ import com.haulmont.cuba.core.app.filestorage.amazon.auth.AWS4SignerForAuthoriza
 import com.haulmont.cuba.core.app.filestorage.amazon.auth.AWS4SignerForChunkedUpload;
 import com.haulmont.cuba.core.app.filestorage.amazon.util.HttpUtils;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.FileStorageException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -45,14 +44,14 @@ import java.util.Map;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 public class AmazonS3FileStorage implements FileStorageAPI {
+
     @Inject
-    protected Configuration configuration;
+    protected AmazonS3Config amazonS3Config;
 
     @Override
     public long saveStream(FileDescriptor fileDescr, InputStream inputStream) throws FileStorageException {
         Preconditions.checkNotNullArgument(fileDescr.getSize());
 
-        AmazonConfiguration amazonConfiguration = configuration.getConfig(AmazonConfiguration.class);
         URL amazonUrl = getAmazonUrl(fileDescr);
 
         // set the markers indicating we're going to send the upload as a series
@@ -70,19 +69,19 @@ public class AmazonS3FileStorage implements FileStorageAPI {
         headers.put("x-amz-decoded-content-length", "" + fileDescr.getSize());
 
         AWS4SignerForChunkedUpload signer = new AWS4SignerForChunkedUpload(
-                amazonUrl, "PUT", "s3", amazonConfiguration.getRegionName());
+                amazonUrl, "PUT", "s3", amazonS3Config.getRegionName());
 
         // how big is the overall request stream going to be once we add the signature
         // 'headers' to each chunk?
         long totalLength = AWS4SignerForChunkedUpload.calculateChunkedContentLength(
-                fileDescr.getSize(), amazonConfiguration.getChunkSize());
+                fileDescr.getSize(), amazonS3Config.getChunkSize());
         headers.put("content-length", "" + totalLength);
 
         String authorization = signer.computeSignature(headers,
                 null, // no query parameters
                 AWS4SignerForChunkedUpload.STREAMING_BODY_SHA256,
-                amazonConfiguration.getAccessKey(),
-                amazonConfiguration.getSecretAccessKey());
+                amazonS3Config.getAccessKey(),
+                amazonS3Config.getSecretAccessKey());
 
         // place the computed signature into a formatted 'Authorization' header
         // and call S3
@@ -100,7 +99,7 @@ public class AmazonS3FileStorage implements FileStorageAPI {
 
             // get the request stream and start writing the user data as chunks, as outlined
             // above;
-            byte[] buffer = new byte[amazonConfiguration.getChunkSize()];
+            byte[] buffer = new byte[amazonS3Config.getChunkSize()];
             DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
 
             int bytesRead;
@@ -231,9 +230,8 @@ public class AmazonS3FileStorage implements FileStorageAPI {
     protected URL getAmazonUrl(FileDescriptor fileDescr) {
         // the region-specific endpoint to the target object expressed in path style
         try {
-            AmazonConfiguration amazonConfiguration = configuration.getConfig(AmazonConfiguration.class);
             return new URL(String.format("https://%s.s3.amazonaws.com/%s",
-                    amazonConfiguration.getBucket(), resolveFileName(fileDescr)));
+                    amazonS3Config.getBucket(), resolveFileName(fileDescr)));
         } catch (MalformedURLException e) {
             throw new RuntimeException("Unable to parse service endpoint: " + e.getMessage());
         }
@@ -248,14 +246,13 @@ public class AmazonS3FileStorage implements FileStorageAPI {
     }
 
     protected String createAuthorizationHeader(URL endpointUrl, String method, Map<String, String> headers) {
-        AmazonConfiguration amazonConfiguration = configuration.getConfig(AmazonConfiguration.class);
         AWS4SignerForAuthorizationHeader signer = new AWS4SignerForAuthorizationHeader(
-                endpointUrl, method, "s3", amazonConfiguration.getRegionName());
+                endpointUrl, method, "s3", amazonS3Config.getRegionName());
         return signer.computeSignature(headers,
                 null, // no query parameters
                 AWS4SignerBase.EMPTY_BODY_SHA256,
-                amazonConfiguration.getAccessKey(),
-                amazonConfiguration.getSecretAccessKey());
+                amazonS3Config.getAccessKey(),
+                amazonS3Config.getSecretAccessKey());
     }
 
     protected String getInputStreamContent(HttpUtils.HttpResponse httpResponse) {
