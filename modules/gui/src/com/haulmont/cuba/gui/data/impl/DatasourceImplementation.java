@@ -19,25 +19,84 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.Datasource;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Set;
 
+/**
+ * INTERNAL.
+ * Common internal methods of datasources.
+ */
 public interface DatasourceImplementation<T extends Entity> extends Datasource<T> {
+
+    /**
+     * Moves the datasource to {@link State#INVALID}.
+     */
     void initialized();
+
+    /**
+     * Moves the datasource to {@link State#VALID}.
+     */
     void valid();
+
+    /**
+     * Sets "modified" state.
+     */
     void setModified(boolean modified);
+
+    /**
+     * Sets commit mode explicitly. Usually commit mode is defined by the presence of a parent datasource.
+     *
+     * @see #setParent(Datasource)
+     */
     void setCommitMode(Datasource.CommitMode commitMode);
 
+    /**
+     * Returns parent datasource or null.
+     * <p>
+     * If a parent datasource is set, it will receive changed data from the current datasource on commit.
+     * Otherwise, the datasource commits to the database.
+     */
+    @Nullable
     Datasource getParent();
+
+    /**
+     * Sets parent datasource.
+     * <p>
+     * If a parent datasource is set, it will receive changed data from the current datasource on commit.
+     * Otherwise, the datasource commits to the database.
+     */
     void setParent(Datasource datasource);
 
+    /**
+     * New instances to be committed.
+     */
     Collection<T> getItemsToCreate();
+
+    /**
+     * Modified instances to be committed.
+     */
     Collection<T> getItemsToUpdate();
+
+    /**
+     * Deleted instances to be committed.
+     */
     Collection<T> getItemsToDelete();
 
+    /**
+     * Invoked when the given instance is modified.
+     */
     void modified(T item);
+
+    /**
+     * Invoked when the given instance is deleted.
+     */
     void deleted(T item);
 
+    /**
+     * Invoked after commit.
+     * @param entities  committed entities returned from middleware
+     */
     void committed(Set<Entity> entities);
 
     /**
@@ -47,5 +106,8 @@ public interface DatasourceImplementation<T extends Entity> extends Datasource<T
      */
     boolean enableListeners(boolean enable);
 
+    /**
+     * Clear new, modified and deleted lists.
+     */
     void clearCommitLists();
 }
