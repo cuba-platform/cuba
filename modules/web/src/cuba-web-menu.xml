@@ -35,8 +35,8 @@
         <separator/>
         <item id="entityLog"/>
         <item id="serverLog"/>
-        <item id="performanceStatistics"/>
         <item id="screenProfiler"/>
+        <item id="performanceStatistics"/>
     </menu>
 
     <menu id="help">
