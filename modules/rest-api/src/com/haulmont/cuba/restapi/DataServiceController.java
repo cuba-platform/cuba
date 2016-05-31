@@ -99,7 +99,6 @@ public class DataServiceController {
                 return;
             }
 
-            response.addHeader("Access-Control-Allow-Origin", "*");
             Object objectId = loadInfo.getId();
 
             LoadContext loadCtx = new LoadContext(metaClass);
@@ -142,7 +141,6 @@ public class DataServiceController {
         if (!connect(sessionId, response)) return;
 
         try {
-            response.addHeader("Access-Control-Allow-Origin", "*");
             MetaClass metaClass = metadata.getClass(entityName);
             if (metaClass == null) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Persistent entity " + entityName + " does not exist");
@@ -215,8 +213,6 @@ public class DataServiceController {
         }
 
         try {
-            response.addHeader("Access-Control-Allow-Origin", "*");
-
             Converter converter = conversionFactory.getConverter(contentType);
 
             QueryRequest queryRequest = converter.parseQueryRequest(requestContent);
@@ -275,8 +271,6 @@ public class DataServiceController {
         if (!connect(sessionId, response)) return;
 
         try {
-            response.addHeader("Access-Control-Allow-Origin", "*");
-
             Converter converter = conversionFactory.getConverter(contentType);
 
             CommitRequest commitRequest = converter.parseCommitRequest(requestContent);
@@ -339,7 +333,6 @@ public class DataServiceController {
         if (!connect(sessionId, response)) return;
 
         try {
-            response.addHeader("Access-Control-Allow-Origin", "*");
             ViewRepository viewRepository = metadata.getViewRepository();
             ((AbstractViewRepository) viewRepository).deployViews(new StringReader(requestContent));
         } catch (Throwable e) {
@@ -358,7 +351,6 @@ public class DataServiceController {
         if (!connect(sessionId, response)) return;
 
         try {
-            response.addHeader("Access-Control-Allow-Origin", "*");
             response.setContentType("text/html");
             response.setCharacterEncoding(StandardCharsets.UTF_8.name());
             response.setLocale(userSessionSource.getLocale());
@@ -387,8 +379,6 @@ public class DataServiceController {
             return;
         }
         try {
-            response.addHeader("Access-Control-Allow-Origin", "*");
-
             Map<String, String[]> parameterMap = request.getParameterMap();
             List<String> paramValuesString = new ArrayList<>();
             List<Class> paramTypes = new ArrayList<>();
@@ -444,8 +434,6 @@ public class DataServiceController {
         if (!connect(sessionId, response)) return;
 
         try {
-            response.addHeader("Access-Control-Allow-Origin", "*");
-
             Converter converter = conversionFactory.getConverter(contentType);
             ServiceRequest serviceRequest = converter.parseServiceRequest(requestContent);
 

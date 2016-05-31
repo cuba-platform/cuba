@@ -79,8 +79,6 @@ public class LoginServiceController {
                             HttpServletRequest request,
                             HttpServletResponse response) throws IOException, JSONException {
 
-        response.addHeader("Access-Control-Allow-Origin", "*");
-
         String username;
         String password;
         String localeStr;
@@ -123,8 +121,6 @@ public class LoginServiceController {
                            @RequestParam(value = "l", required = false) String localeStr,
                            HttpServletRequest request,
                            HttpServletResponse response) throws IOException, JSONException {
-
-        response.addHeader("Access-Control-Allow-Origin", "*");
 
         doLogin(username, password, localeStr, request, response);
     }
