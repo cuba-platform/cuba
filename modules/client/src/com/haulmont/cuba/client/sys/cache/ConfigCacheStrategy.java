@@ -19,12 +19,15 @@ package com.haulmont.cuba.client.sys.cache;
 import com.haulmont.cuba.core.app.ConfigStorageService;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.security.global.NoUserSessionException;
+import com.haulmont.cuba.security.global.UserSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.Collections;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -35,15 +38,21 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class ConfigCacheStrategy implements CachingStrategy {
     public static final String NAME = "cuba_ConfigCacheStrategy";
 
+    protected Logger log = LoggerFactory.getLogger(ConfigCacheStrategy.class);
+
     protected volatile Map<String, String> cachedProperties = null;
 
     @Inject
     protected ConfigStorageService configStorageService;
     @Inject
     protected ClientCacheManager clientCacheManager;
+    @Inject
+    protected CacheUserSessionProvider cacheUserSessionProvider;
+
+    protected volatile long updateIntervalMs = 60 * 1000;
+    protected volatile boolean updateSynchronously = false;
 
     protected volatile long lastUsedTs = 0;
-    protected volatile long updateIntervalMs = 60 * 1000;
 
     protected volatile boolean backgroundUpdateTriggered = false;
 
@@ -56,7 +65,7 @@ public class ConfigCacheStrategy implements CachingStrategy {
 
     @Override
     public Object loadObject() {
-        if (cachedProperties == null) {
+        if (cachedProperties == null || updateSynchronously) {
             Map<String, String> cachedPropertiesFromServer = Collections.unmodifiableMap(configStorageService.getDbProperties());
 
             cachedProperties = cachedPropertiesFromServer;
@@ -65,22 +74,19 @@ public class ConfigCacheStrategy implements CachingStrategy {
             cachedProperties = cachedPropertiesFromServer;
         } else {
             if (!backgroundUpdateTriggered) {
-                SecurityContext securityContext = AppContext.getSecurityContext();
-                if (securityContext != null) {
-                    UUID clientSessionId = securityContext.getSessionId();
-                    clientCacheManager.getExecutorService().submit(() -> updateCacheInBackground(clientSessionId));
+                clientCacheManager.getExecutorService().submit(this::updateCacheInBackground);
 
-                    backgroundUpdateTriggered = true;
-                }
+                backgroundUpdateTriggered = true;
             }
         }
 
         return cachedProperties;
     }
 
-    protected void updateCacheInBackground(UUID sessionId) {
+    protected void updateCacheInBackground() {
+        UserSession userSession = cacheUserSessionProvider.getUserSession();
         try {
-            AppContext.setSecurityContext(new SecurityContext(sessionId));
+            AppContext.setSecurityContext(new SecurityContext(userSession));
 
             Map<String, String> cachedPropertiesFromServer =
                     Collections.unmodifiableMap(configStorageService.getDbProperties());
@@ -92,6 +98,10 @@ public class ConfigCacheStrategy implements CachingStrategy {
             } finally {
                 readWriteLock.writeLock().unlock();
             }
+        } catch (NoUserSessionException e) {
+            log.warn("Cache user session expired", e);
+        } catch (Exception e) {
+            log.error("Unable to update config storage cache", e);
         } finally {
             AppContext.setSecurityContext(null);
 
@@ -115,5 +125,13 @@ public class ConfigCacheStrategy implements CachingStrategy {
 
     public void setUpdateIntervalMs(long updateIntervalMs) {
         this.updateIntervalMs = updateIntervalMs;
+    }
+
+    public boolean isUpdateSynchronously() {
+        return updateSynchronously;
+    }
+
+    public void setUpdateSynchronously(boolean updateSynchronously) {
+        this.updateSynchronously = updateSynchronously;
     }
 }

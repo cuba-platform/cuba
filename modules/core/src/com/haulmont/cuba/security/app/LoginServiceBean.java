@@ -31,7 +31,6 @@ import java.util.UUID;
 
 /**
  * Service to provide methods for user login/logout to the middleware.
- *
  */
 @Component(LoginService.NAME)
 public class LoginServiceBean implements LoginService {
@@ -114,6 +113,19 @@ public class LoginServiceBean implements LoginService {
             throws LoginException {
         try {
             return loginWorker.loginByRememberMe(login, rememberMeToken, locale, params);
+        } catch (LoginException e) {
+            log.info("Login failed: " + e.toString());
+            throw e;
+        } catch (Throwable e) {
+            log.error("Login error", e);
+            throw wrapInLoginException(e);
+        }
+    }
+
+    @Override
+    public UserSession getSystemSession(String trustedClientPassword) throws LoginException {
+        try {
+            return loginWorker.getSystemSession(trustedClientPassword);
         } catch (LoginException e) {
             log.info("Login failed: " + e.toString());
             throw e;

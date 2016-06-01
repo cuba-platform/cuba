@@ -21,20 +21,17 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesCache;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesCacheService;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.NoUserSessionException;
+import com.haulmont.cuba.security.global.UserSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -42,11 +39,12 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * Each time dynamic attributes cache is used, the strategy initiate check of cache validity
  * The check is performed in separate thread
  * So applied changes in dynamic attributes structure will be visible after 10 seconds
- *
  */
 @Component(DynamicAttributesCacheStrategy.NAME)
 public class DynamicAttributesCacheStrategy implements CachingStrategy {
     public static final String NAME = "cuba_DynamicAttributesCacheStrategy";
+
+    protected Logger log = LoggerFactory.getLogger(DynamicAttributesCacheStrategy.class);
 
     @Inject
     protected ClientCacheManager clientCacheManager;
@@ -55,36 +53,27 @@ public class DynamicAttributesCacheStrategy implements CachingStrategy {
     @Inject
     protected Configuration configuration;
     @Inject
-    protected UserSessionSource userSessionSource;
+    protected CacheUserSessionProvider cacheUserSessionProvider;
 
     protected ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     protected DynamicAttributesCache dynamicAttributesCache;
 
     //there is no need for atomicity when change needToValidateCache or lastRequestedSessionId
     protected volatile boolean needToValidateCache;
-    protected volatile AtomicReference<UUID> lastRequestedSessionId = new AtomicReference<>();
-
-    protected Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
     public void init() {
-        clientCacheManager.getExecutorService().scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                UUID lastSessionId = lastRequestedSessionId.get();
-                if (needToValidateCache && lastSessionId != null) {
-                    try {
-                        AppContext.setSecurityContext(new SecurityContext(lastSessionId));
-                        if (userSessionSource.checkCurrentUserSession()) {
-                            loadObject();
-                        } else {
-                            lastRequestedSessionId.compareAndSet(lastSessionId, null);
-                        }
-                    } catch (NoUserSessionException e) {//in case of session death between check and service call
-                        lastRequestedSessionId.compareAndSet(lastSessionId, null);
-                    } catch (Exception e) {
-                        log.error("Unable to update dynamic attributes cache", e);
-                    }
+        clientCacheManager.getExecutorService().scheduleWithFixedDelay(() -> {
+            if (needToValidateCache) {
+                UserSession userSession = cacheUserSessionProvider.getUserSession();
+                try {
+                    AppContext.setSecurityContext(new SecurityContext(userSession));
+
+                    loadObject();
+                } catch (NoUserSessionException e) {
+                    log.warn("Cache user session expired", e);
+                } catch (Exception e) {
+                    log.error("Unable to update dynamic attributes cache", e);
                 }
             }
         }, 0, 10, TimeUnit.SECONDS);
@@ -93,10 +82,6 @@ public class DynamicAttributesCacheStrategy implements CachingStrategy {
     @Override
     public Object getObject() {
         needToValidateCache = true;
-        SecurityContext securityContext = AppContext.getSecurityContext();
-        if (securityContext != null) {
-            lastRequestedSessionId.set(securityContext.getSessionId());
-        }
         return dynamicAttributesCache;
     }
 

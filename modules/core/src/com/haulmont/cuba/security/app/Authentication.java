@@ -25,8 +25,9 @@ import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Map;
 import java.util.UUID;
@@ -47,7 +48,6 @@ import java.util.concurrent.ConcurrentHashMap;
  *         authentication.end();
  *     }
  * </pre>
- *
  */
 @Component(Authentication.NAME)
 public class Authentication {
@@ -75,26 +75,31 @@ public class Authentication {
      * Subsequent {@link #end()} method must be called in "finally" section.
      *
      * @param login user login. If null, a value of <code>cuba.jmxUserLogin</code> app property is used.
+     * @return new or cached instance of system user session
      */
-    public void begin(String login) {
+    public UserSession begin(@Nullable String login) {
         if (cleanupCounter.get() == null) {
             cleanupCounter.set(0);
         }
 
         // check if a current thread session exists, that is we got here from authenticated code
         SecurityContext securityContext = AppContext.getSecurityContext();
-        if (securityContext != null && userSessionManager.findSession(securityContext.getSessionId()) != null) {
-            log.trace("Already authenticated, do nothing");
-            cleanupCounter.set(cleanupCounter.get() + 1);
-            if (log.isTraceEnabled()) {
-                log.trace("New cleanup counter value: " + cleanupCounter.get());
+        if (securityContext != null) {
+            UserSession userSession = userSessionManager.findSession(securityContext.getSessionId());
+            if (userSession != null) {
+                log.trace("Already authenticated, do nothing");
+                cleanupCounter.set(cleanupCounter.get() + 1);
+                if (log.isTraceEnabled()) {
+                    log.trace("New cleanup counter value: " + cleanupCounter.get());
+                }
+                return userSession;
             }
-            return;
         }
 
         // no current thread session or it is expired - need to authenticate
-        if (StringUtils.isBlank(login))
+        if (StringUtils.isBlank(login)) {
             login = getSystemLogin();
+        }
 
         UserSession session = null;
         log.trace("Authenticating as " + login);
@@ -115,7 +120,7 @@ public class Authentication {
                         session = loginWorker.loginSystem(login);
                         session.setClientInfo("System authentication");
                     } catch (LoginException e) {
-                        throw new RuntimeException(e);
+                        throw new RuntimeException("Unable to perform system login", e);
                     }
                     sessions.put(login, session.getId());
                 }
@@ -123,6 +128,8 @@ public class Authentication {
         }
 
         AppContext.setSecurityContext(new SecurityContext(session));
+
+        return session;
     }
 
     /**
@@ -130,8 +137,8 @@ public class Authentication {
      * <p/>
      * Same as {@link #begin(String)} with null parameter
      */
-    public void begin() {
-        begin(null);
+    public UserSession begin() {
+        return begin(null);
     }
 
     /**

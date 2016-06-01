@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.remoting.RemoteClientInfo;
 import com.haulmont.cuba.security.entity.RememberMeToken;
 import com.haulmont.cuba.security.entity.User;
@@ -42,7 +43,6 @@ import java.util.*;
  * Class that encapsulates the middleware login/logout functionality.
  *
  * @see com.haulmont.cuba.security.app.LoginServiceBean
- *
  */
 @Component(LoginWorker.NAME)
 public class LoginWorkerBean implements LoginWorker {
@@ -73,6 +73,9 @@ public class LoginWorkerBean implements LoginWorker {
 
     @Inject
     protected ClusterManagerAPI clusterManager;
+
+    @Inject
+    protected Authentication authentication;
 
     @Inject
     public void setConfiguration(Configuration configuration) {
@@ -115,7 +118,7 @@ public class LoginWorkerBean implements LoginWorker {
 
     @Override
     public UserSession login(String login, String password, Locale locale) throws LoginException {
-        return login(login, password, locale, Collections.<String, Object>emptyMap());
+        return login(login, password, locale, Collections.emptyMap());
     }
 
     @Override
@@ -171,7 +174,7 @@ public class LoginWorkerBean implements LoginWorker {
 
     @Override
     public UserSession loginSystem(String login) throws LoginException {
-        Locale locale = messages.getTools().trimLocale(Locale.getDefault());
+        Locale locale = messages.getTools().trimLocale(messages.getTools().getDefaultLocale());
 
         Transaction tx = persistence.createTransaction();
         try {
@@ -194,8 +197,33 @@ public class LoginWorkerBean implements LoginWorker {
     }
 
     @Override
+    public UserSession getSystemSession(String trustedClientPassword) throws LoginException {
+        RemoteClientInfo remoteClientInfo = RemoteClientInfo.get();
+        if (remoteClientInfo != null) {
+            // reject request from not permitted client ip
+            if (!trustedLoginHandler.checkAddress(remoteClientInfo.getAddress())) {
+                log.warn("Attempt of trusted login from not permitted IP address: {}", remoteClientInfo.getAddress());
+                throw new LoginException(getInvalidCredentialsMessage(remoteClientInfo.getAddress(),
+                        messages.getTools().getDefaultLocale()));
+            }
+        } else {
+            log.debug("Unable to check trusted client IP when obtaining system session");
+        }
+
+        if (!trustedLoginHandler.checkPassword(trustedClientPassword)) {
+            throw new LoginException(getInvalidCredentialsMessage(AppContext.getProperty("cuba.jmxUserLogin"),
+                    messages.getTools().getDefaultLocale()));
+        }
+
+        UserSession userSession = authentication.begin();
+        authentication.end();
+
+        return userSession;
+    }
+
+    @Override
     public UserSession loginTrusted(String login, String password, Locale locale) throws LoginException {
-        return loginTrusted(login, password, locale, Collections.<String, Object>emptyMap());
+        return loginTrusted(login, password, locale, Collections.emptyMap());
     }
 
     @Override
@@ -204,9 +232,11 @@ public class LoginWorkerBean implements LoginWorker {
         if (remoteClientInfo != null) {
             // reject request from not permitted client ip
             if (!trustedLoginHandler.checkAddress(remoteClientInfo.getAddress())) {
-                log.warn("Attempt of trusted login from not permitted IP address: " + login + " " + remoteClientInfo.getAddress());
+                log.warn("Attempt of trusted login from not permitted IP address: {} {}", login, remoteClientInfo.getAddress());
                 throw new LoginException(getInvalidCredentialsMessage(login, locale));
             }
+        } else {
+            log.debug("Unable to check trusted client IP when obtaining system session");
         }
 
         if (!trustedLoginHandler.checkPassword(password))
@@ -243,7 +273,7 @@ public class LoginWorkerBean implements LoginWorker {
 
     @Override
     public UserSession loginByRememberMe(String login, String rememberMeToken, Locale locale) throws LoginException {
-        return loginByRememberMe(login, rememberMeToken, locale, Collections.<String, Object>emptyMap());
+        return loginByRememberMe(login, rememberMeToken, locale, Collections.emptyMap());
     }
 
     @Override

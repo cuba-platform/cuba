@@ -34,7 +34,10 @@
 
     <bean id="cuba_UserSession" factory-bean="cuba_UserSessionSource" factory-method="getUserSession" scope="prototype"/>
 
-    <bean id="cuba_Configuration" class="com.haulmont.cuba.desktop.sys.config.DesktopConfigurationImpl"/>
+    <bean id="cuba_ConfigCacheStrategy" class="com.haulmont.cuba.client.sys.cache.ConfigCacheStrategy">
+        <property name="updateIntervalMs" value="10000"/>
+        <property name="updateSynchronously" value="true"/>
+    </bean>
 
     <bean id="cuba_PasswordEncryption" class="com.haulmont.cuba.core.sys.PasswordEncryptionImpl">
         <property name="encryptionModule" ref="${cuba.passwordEncryptionModule}"/>

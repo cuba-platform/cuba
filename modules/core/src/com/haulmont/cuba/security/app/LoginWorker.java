@@ -27,7 +27,6 @@ import java.util.UUID;
 
 /**
  * Interface to {@link com.haulmont.cuba.security.app.LoginWorkerBean}
- *
  */
 public interface LoginWorker {
 
@@ -42,6 +41,11 @@ public interface LoginWorker {
      * @see LoginService#login(String, String, java.util.Locale, java.util.Map)
      */
     UserSession login(String login, String password, Locale locale, Map<String, Object> params) throws LoginException;
+
+    /**
+     * @see LoginService#getSystemSession(String)
+     */
+    UserSession getSystemSession(String trustedClientPassword) throws LoginException;
 
     /**
      * @see LoginService#loginTrusted(String, String, java.util.Locale)
