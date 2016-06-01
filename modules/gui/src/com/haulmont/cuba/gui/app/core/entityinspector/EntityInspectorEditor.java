@@ -409,7 +409,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.class);
         contentPane.add(fieldGroup);
         fieldGroup.setFrame(frame);
-        fieldGroup.setCaption(getPropertyCaption(fieldGroup.getDatasource().getMetaClass(), embeddedMetaProperty));
+        fieldGroup.setCaption(getPropertyCaption(embedDs.getMetaClass(), embeddedMetaProperty));
 
         MetaClass embeddableMetaClass = embeddedMetaProperty.getRange().asClass();
         Collection<FieldGroup.FieldConfig> customFields = new LinkedList<>();
