@@ -291,6 +291,8 @@ configure(coreModule) {
         compile(group: 'org.springframework', name: 'spring-webmvc', version: springVersion)
         compile(poi) // POI is actually not required by core, but remains here to simplify dependencies for reports project
 
+        compile('org.jsoup:jsoup:1.8.3') // simplify version management for fts
+
         provided(servletApi)
 
         jdbc(postgres)
@@ -477,6 +479,8 @@ configure(webModule) {
         compile(group: 'com.haulmont.thirdparty', name: 'aceeditor', version: '0.8.15')
         compile(group: 'org.vaadin.addons', name: 'contextmenu', version: '4.5')
         compile(group: 'org.vaadin.addons', name: 'dragdroplayouts', version: '1.2.2.cuba.2')
+
+        compile('org.jsoup:jsoup:1.8.3') // simplify version management for fts
 
         provided(servletApi)
 
