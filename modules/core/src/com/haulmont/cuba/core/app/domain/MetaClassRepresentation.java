@@ -93,7 +93,7 @@ public class MetaClassRepresentation {
                 if (!readPermitted(propertyMetaClass))
                     continue;
             }
-            MetaClassRepProperty prop = new MetaClassRepProperty(property);
+            MetaClassRepProperty prop = new MetaClassRepProperty(property, meta);
             result.add(prop);
         }
         return result;
@@ -101,8 +101,11 @@ public class MetaClassRepresentation {
 
     public static class MetaClassRepProperty {
         private MetaProperty property;
-        public MetaClassRepProperty(MetaProperty property) {
+        private MetaClass metaClass;
+
+        public MetaClassRepProperty(MetaProperty property, MetaClass metaClass) {
             this.property = property;
+            this.metaClass = metaClass;
         }
 
         public String getColumnName() {
@@ -120,7 +123,7 @@ public class MetaClassRepresentation {
 
         public String getDescription() {
             MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-            String result = messageTools.getPropertyCaption(property.getDomain(), property.getName());
+            String result = messageTools.getPropertyCaption(metaClass, property.getName());
             return result == null ? "" : result;
         }
 
