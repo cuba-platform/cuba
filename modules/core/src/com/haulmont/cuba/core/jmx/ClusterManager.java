@@ -21,8 +21,8 @@ import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 
 @Component("cuba_ClusterManagerMBean")
@@ -83,8 +83,8 @@ public class ClusterManager implements ClusterManagerMBean {
     }
 
     @Override
-    public String printClusterStatesStat() {
-        return clusterManager.printClusterStatesStat();
+    public String printSharedStateStat() {
+        return clusterManager.printSharedStateStat();
     }
 
     @Override
@@ -94,21 +94,21 @@ public class ClusterManager implements ClusterManagerMBean {
 
     @Override
     public long getSentMessages(String className) {
-        return clusterManager.getSentMessages(className);
+        return className == null ? -1 : clusterManager.getSentMessages(className);
     }
 
     @Override
     public long getSentBytes(String className) {
-        return clusterManager.getSentBytes(className);
+        return className == null ? -1 : clusterManager.getSentBytes(className);
     }
 
     @Override
     public long getReceivedMessages(String className) {
-        return clusterManager.getReceivedMessages(className);
+        return className == null ? -1 : clusterManager.getReceivedMessages(className);
     }
 
     @Override
     public long getReceivedBytes(String className) {
-        return clusterManager.getReceivedBytes(className);
+        return className == null ? -1 : clusterManager.getReceivedBytes(className);
     }
 }

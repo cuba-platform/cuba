@@ -105,37 +105,37 @@ public interface ClusterManagerAPI {
     int getMessagesCount();
 
     /**
-     * Serialize cluster state and get state statistics
-     * @return statistic
+     * Shared state statistics
+     * @return statistics
      */
-    String printClusterStatesStat();
+    String printSharedStateStat();
 
     /**
-     * Sent/received messages statistic
-     * @return statistic
+     * Sent/received messages statistics
+     * @return statistics
     */
     String printMessagesStat();
 
     /**
-     * Get sent messages count statistic for specified {@param className}
+     * Get sent messages count for specified {@param className}
      * @return messages count
      */
     long getSentMessages(String className);
 
     /**
-     * Get sent bytes statistic for specified {@param className}
+     * Get sent bytes for specified {@param className}
      * @return size in bytes
      */
     long getSentBytes(String className);
 
     /**
-     * Get received messages count statistic for specified {@param className}
+     * Get received messages count for specified {@param className}
      * @return messages count
      */
     long getReceivedMessages(String className);
 
     /**
-     * Get received bytes statistic for specified {@param className}
+     * Get received bytes for specified {@param className}
      * @return size in bytes
      */
     long getReceivedBytes(String className);

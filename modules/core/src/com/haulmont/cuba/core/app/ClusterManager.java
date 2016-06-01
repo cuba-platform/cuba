@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -276,7 +277,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
     }
 
     @Override
-    public String printClusterStatesStat() {
+    public String printSharedStateStat() {
         StringBuilder clusterStateStat = new StringBuilder();
         for (Map.Entry<String, ClusterListener> entry : listeners.entrySet()) {
             byte[] data = null;
@@ -309,6 +310,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
 
     @Override
     public long getSentMessages(String className) {
+        Preconditions.checkNotNullArgument(className, "Message class is null");
         MessageStat stat = messagesStat.get(className);
         if (stat != null) {
             return stat.getSentMessages();
@@ -318,6 +320,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
 
     @Override
     public long getSentBytes(String className) {
+        Preconditions.checkNotNullArgument(className, "Message class is null");
         MessageStat stat = messagesStat.get(className);
         if (stat != null) {
             return stat.getSentBytes();
@@ -327,6 +330,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
 
     @Override
     public long getReceivedMessages(String className) {
+        Preconditions.checkNotNullArgument(className, "Message class is null");
         MessageStat stat = messagesStat.get(className);
         if (stat != null) {
             return stat.getReceivedMessages();
@@ -336,6 +340,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
 
     @Override
     public long getReceivedBytes(String className) {
+        Preconditions.checkNotNullArgument(className, "Message class is null");
         MessageStat stat = messagesStat.get(className);
         if (stat != null) {
             return stat.getReceivedBytes();
