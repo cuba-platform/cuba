@@ -404,7 +404,7 @@ public class CubaFoldersPane extends VerticalLayout {
             if (reloadedFolders != null) {
                 childFolder = reloadedFolders.get(reloadedFolders.indexOf(childFolder));
             }
-            sumOfChildQuantity += !StringUtils.isBlank(childFolder.getQuantityScript()) ? childFolder.getQuantity() : 0;
+            sumOfChildQuantity += !StringUtils.isBlank(childFolder.getQuantityScript()) && childFolder.getQuantity() != null ? childFolder.getQuantity() : 0;
             if (childFolder.getItemStyle() != null)
                 childFoldersStyleSet.add(childFolder.getItemStyle());
         }
