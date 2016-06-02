@@ -30,17 +30,13 @@ import static com.haulmont.cuba.gui.export.ExcelExporter.ExportMode;
  * Standard table action to export the list of entities to XLS.
  * <p>
  * Action's behaviour can be customized by providing arguments to constructor or setting properties.
- *
  */
-public class ExcelAction extends BaseAction implements Action.HasBeforeAfterHandlers {
+public class ExcelAction extends BaseAction {
 
     public static final String ACTION_ID = ListActionType.EXCEL.getId();
 
     protected final Table table;
     protected final ExportDisplay display;
-
-    protected Runnable beforeActionPerformedHandler;
-    protected Runnable afterActionPerformedHandler;
 
     /**
      * The simplest constructor. The action uses default name and other parameters.
@@ -83,10 +79,6 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeAfterHand
      */
     @Override
     public void actionPerform(Component component) {
-        if (beforeActionPerformedHandler != null) {
-            beforeActionPerformedHandler.run();
-        }
-
         if (table.getSelected().size() > 0) {
             String title = messages.getMainMessage("actions.exportSelectedTitle");
             String caption = messages.getMainMessage("actions.exportSelectedCaption");
@@ -118,10 +110,6 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeAfterHand
         } else {
             export(ExportMode.ALL_ROWS);
         }
-
-        if (afterActionPerformedHandler != null) {
-            afterActionPerformedHandler.run();
-        }
     }
 
     /**
@@ -130,25 +118,5 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeAfterHand
     protected void export(ExportMode exportMode) {
         ExcelExporter exporter = new ExcelExporter();
         exporter.exportTable(table, table.getNotCollapsedColumns(), display, exportMode);
-    }
-
-    @Override
-    public Runnable getBeforeActionPerformedHandler() {
-        return beforeActionPerformedHandler;
-    }
-
-    @Override
-    public void setBeforeActionPerformedHandler(Runnable handler) {
-        this.beforeActionPerformedHandler = handler;
-    }
-
-    @Override
-    public Runnable getAfterActionPerformedHandler() {
-        return afterActionPerformedHandler;
-    }
-
-    @Override
-    public void setAfterActionPerformedHandler(Runnable handler) {
-        this.afterActionPerformedHandler = handler;
     }
 }

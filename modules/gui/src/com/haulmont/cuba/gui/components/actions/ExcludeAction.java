@@ -35,7 +35,6 @@ import java.util.Set;
 
 /**
  * The <code>RemoveAction</code> variant that excludes instances from the list, but doesn't delete them from DB.
- *
  */
 public class ExcludeAction extends RemoveAction {
 
@@ -82,11 +81,7 @@ public class ExcludeAction extends RemoveAction {
     }
 
     @Override
-    protected boolean isPermitted() {
-        if (target == null || target.getDatasource() == null) {
-            return false;
-        }
-
+    protected boolean checkRemovePermission() {
         CollectionDatasource ds = target.getDatasource();
         if (ds instanceof PropertyDatasource) {
             PropertyDatasource propertyDatasource = (PropertyDatasource) ds;
@@ -94,7 +89,10 @@ public class ExcludeAction extends RemoveAction {
             MetaClass parentMetaClass = propertyDatasource.getMaster().getMetaClass();
             MetaProperty metaProperty = propertyDatasource.getProperty();
 
-            return security.isEntityAttrPermitted(parentMetaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
+            boolean attrPermitted = security.isEntityAttrPermitted(parentMetaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
+            if (!attrPermitted) {
+                return false;
+            }
         }
 
         return true;
@@ -105,10 +103,6 @@ public class ExcludeAction extends RemoveAction {
         if (!isEnabled())
             return;
 
-        if (beforeActionPerformedHandler != null) {
-            beforeActionPerformedHandler.run();
-        }
-
         Set selected = target.getSelected();
         if (!selected.isEmpty()) {
             if (confirm) {
@@ -117,10 +111,6 @@ public class ExcludeAction extends RemoveAction {
                 doRemove(selected, autocommit);
                 afterRemove(selected);
             }
-        }
-
-        if (afterActionPerformedHandler != null) {
-            afterActionPerformedHandler.run();
         }
     }
 

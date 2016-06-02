@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.components.actions;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -29,9 +28,8 @@ import java.util.Map;
  * Standard list action to refresh a list of entities.
  * <p>
  * Action's behaviour can be customized by providing arguments to constructor or setting properties.
- *
  */
-public class RefreshAction extends BaseAction implements Action.HasBeforeAfterHandlers {
+public class RefreshAction extends BaseAction {
 
     public static final String ACTION_ID = ListActionType.REFRESH.getId();
 
@@ -39,8 +37,8 @@ public class RefreshAction extends BaseAction implements Action.HasBeforeAfterHa
 
     protected Map<String, Object> refreshParams;
 
-    protected Runnable beforeActionPerformedHandler;
-    protected Runnable afterActionPerformedHandler;
+    protected Runnable beforeRefreshHandler;
+    protected Runnable afterRefreshHandler;
 
     /**
      * The simplest constructor. The action has default name.
@@ -67,16 +65,16 @@ public class RefreshAction extends BaseAction implements Action.HasBeforeAfterHa
     /**
      * This method is invoked by action owner component. Don't override it, there are special methods to
      * customize behaviour below.
+     *
      * @param component component invoking action
      */
     @Override
     public void actionPerform(Component component) {
-        if (beforeActionPerformedHandler != null) {
-            beforeActionPerformedHandler.run();
+        if (beforeRefreshHandler != null) {
+            beforeRefreshHandler.run();
         }
 
         CollectionDatasource datasource = owner.getDatasource();
-
         Map<String, Object> params = getRefreshParams();
         if (params != null) {
             datasource.refresh(params);
@@ -84,8 +82,8 @@ public class RefreshAction extends BaseAction implements Action.HasBeforeAfterHa
             datasource.refresh();
         }
 
-        if (afterActionPerformedHandler != null) {
-            afterActionPerformedHandler.run();
+        if (afterRefreshHandler != null) {
+            afterRefreshHandler.run();
         }
     }
 
@@ -103,23 +101,19 @@ public class RefreshAction extends BaseAction implements Action.HasBeforeAfterHa
         this.refreshParams = refreshParams;
     }
 
-    @Override
-    public Runnable getBeforeActionPerformedHandler() {
-        return beforeActionPerformedHandler;
+    public Runnable getBeforeRefreshHandler() {
+        return beforeRefreshHandler;
     }
 
-    @Override
-    public void setBeforeActionPerformedHandler(Runnable handler) {
-        this.beforeActionPerformedHandler = handler;
+    public void setBeforeRefreshHandler(Runnable beforeRefreshHandler) {
+        this.beforeRefreshHandler = beforeRefreshHandler;
     }
 
-    @Override
-    public Runnable getAfterActionPerformedHandler() {
-        return afterActionPerformedHandler;
+    public Runnable getAfterRefreshHandler() {
+        return afterRefreshHandler;
     }
 
-    @Override
-    public void setAfterActionPerformedHandler(Runnable handler) {
-        this.afterActionPerformedHandler = handler;
+    public void setAfterRefreshHandler(Runnable afterRefreshHandler) {
+        this.afterRefreshHandler = afterRefreshHandler;
     }
 }

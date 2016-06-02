@@ -160,7 +160,7 @@ public class GroupBrowser extends AbstractWindow {
             }
         });
         usersTable.addAction(userCreateAction);
-        usersTable.addAction(new ItemTrackingAction("moveToGroup") {
+        ItemTrackingAction moveToGroupAction = new ItemTrackingAction("moveToGroup") {
             @Override
             public String getIcon() {
                 return "icons/move.png";
@@ -188,13 +188,10 @@ public class GroupBrowser extends AbstractWindow {
                     });
                 }
             }
-
-            @Override
-            protected boolean isPermitted() {
-                MetaClass userMetaClass = metadata.getSession().getClass(User.class);
-                return security.isEntityOpPermitted(userMetaClass, EntityOp.UPDATE);
-            }
-        });
+        };
+        MetaClass userMetaClass = metadata.getSession().getClass(User.class);
+        moveToGroupAction.setEnabled(security.isEntityOpPermitted(userMetaClass, EntityOp.UPDATE));
+        usersTable.addAction(moveToGroupAction);
 
         tabsheet.addListener(newTab -> {
             if ("constraintsTab".equals(newTab.getName())) {

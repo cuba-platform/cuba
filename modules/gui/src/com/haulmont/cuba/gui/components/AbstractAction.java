@@ -29,8 +29,7 @@ import java.beans.PropertyChangeSupport;
 import java.util.*;
 
 /**
- * Base class for GUI actions.
- *
+ * Abstract class for GUI actions.
  */
 public abstract class AbstractAction implements Action {
 
@@ -50,7 +49,7 @@ public abstract class AbstractAction implements Action {
 
     protected PropertyChangeSupport changeSupport;
 
-    protected Messages messages;
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     protected UserSession userSession;
 
@@ -60,7 +59,7 @@ public abstract class AbstractAction implements Action {
 
     protected AbstractAction(String id) {
         this.id = id;
-        messages = AppBeans.get(Messages.NAME);
+
         UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
         userSession = sessionSource.getUserSession();
     }

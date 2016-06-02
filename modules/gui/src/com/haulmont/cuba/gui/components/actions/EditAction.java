@@ -22,8 +22,6 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.Security;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
@@ -45,9 +43,8 @@ import java.util.Set;
  * <p>
  * Action's behaviour can be customized by providing arguments to constructor, setting properties, or overriding
  * methods {@link #afterCommit(com.haulmont.cuba.core.entity.Entity)}, {@link #afterWindowClosed(com.haulmont.cuba.gui.components.Window)}
- *
  */
-public class EditAction extends ItemTrackingAction implements Action.HasOpenType, Action.HasBeforeAfterHandlers {
+public class EditAction extends ItemTrackingAction implements Action.HasOpenType {
 
     public static final String ACTION_ID = ListActionType.EDIT.getId();
 
@@ -64,9 +61,6 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
     protected AfterWindowClosedHandler afterWindowClosedHandler;
 
     protected Window.CloseListener editorCloseListener;
-
-    protected Runnable beforeActionPerformedHandler;
-    protected Runnable afterActionPerformedHandler;
 
     public interface AfterCommitHandler {
         /**
@@ -132,14 +126,11 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
 
         if (target != null) {
             CollectionDatasource ds = target.getDatasource();
-
             if (ds != null && !captionInitialized) {
-                Security security = AppBeans.get(Security.NAME);
-                final String messagesPackage = AppConfig.getMessagesPack();
                 if (security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.UPDATE)) {
-                    setCaption(messages.getMessage(messagesPackage, "actions.Edit"));
+                    setCaption(messages.getMainMessage("actions.Edit"));
                 } else {
-                    setCaption(messages.getMessage(messagesPackage, "actions.View"));
+                    setCaption(messages.getMainMessage("actions.View"));
                 }
             }
         }
@@ -155,8 +146,12 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
         }
 
         CollectionDatasource ownerDatasource = target.getDatasource();
-        Security security = AppBeans.get(Security.NAME);
-        return security.isEntityOpPermitted(ownerDatasource.getMetaClass(), EntityOp.READ) && super.isPermitted();
+        boolean entityOpPermitted = security.isEntityOpPermitted(ownerDatasource.getMetaClass(), EntityOp.READ);
+        if (!entityOpPermitted) {
+            return false;
+        }
+
+        return super.isPermitted();
     }
 
     /**
@@ -167,10 +162,6 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
      */
     @Override
     public void actionPerform(Component component) {
-        if (beforeActionPerformedHandler != null) {
-            beforeActionPerformedHandler.run();
-        }
-
         final Set selected = target.getSelected();
         if (selected.size() == 1) {
             Datasource parentDs = null;
@@ -188,10 +179,6 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
             }
 
             internalOpenEditor(datasource, datasource.getItem(), parentDs, params);
-        }
-
-        if (afterActionPerformedHandler != null) {
-            afterActionPerformedHandler.run();
         }
     }
 
@@ -313,25 +300,5 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
      */
     public void setEditorCloseListener(Window.CloseListener editorCloseListener) {
         this.editorCloseListener = editorCloseListener;
-    }
-
-    @Override
-    public Runnable getBeforeActionPerformedHandler() {
-        return beforeActionPerformedHandler;
-    }
-
-    @Override
-    public void setBeforeActionPerformedHandler(Runnable handler) {
-        this.beforeActionPerformedHandler = handler;
-    }
-
-    @Override
-    public Runnable getAfterActionPerformedHandler() {
-        return afterActionPerformedHandler;
-    }
-
-    @Override
-    public void setAfterActionPerformedHandler(Runnable handler) {
-        this.afterActionPerformedHandler = handler;
     }
 }

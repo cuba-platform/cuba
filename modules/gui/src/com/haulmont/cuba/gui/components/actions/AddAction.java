@@ -40,9 +40,8 @@ import java.util.Map;
  * Standard list action adding an entity instance to list from a lookup screen.
  * <p>
  * Action's behaviour can be customized by providing arguments to constructor or setting properties.
- *
  */
-public class AddAction extends BaseAction implements Action.HasOpenType, Action.HasBeforeAfterHandlers {
+public class AddAction extends BaseAction implements Action.HasOpenType {
 
     public static final String ACTION_ID = ListActionType.ADD.getId();
 
@@ -51,9 +50,7 @@ public class AddAction extends BaseAction implements Action.HasOpenType, Action.
 
     protected String windowId;
     protected Map<String, Object> windowParams;
-
-    protected Runnable beforeActionPerformedHandler;
-    protected Runnable afterActionPerformedHandler;
+    protected Security security = AppBeans.get(Security.NAME);
 
     /**
      * The simplest constructor. The action has default name and opens the lookup screen in THIS tab.
@@ -122,11 +119,13 @@ public class AddAction extends BaseAction implements Action.HasOpenType, Action.
             MetaClass parentMetaClass = datasource.getMaster().getMetaClass();
             MetaProperty metaProperty = datasource.getProperty();
 
-            Security security = AppBeans.get(Security.NAME);
-            return security.isEntityAttrPermitted(parentMetaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
-        } else {
-            return true;
+            boolean attrPermitted = security.isEntityAttrPermitted(parentMetaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
+            if (!attrPermitted) {
+                return false;
+            }
         }
+
+        return super.isPermitted();
     }
 
     /**
@@ -136,10 +135,6 @@ public class AddAction extends BaseAction implements Action.HasOpenType, Action.
      */
     @Override
     public void actionPerform(Component component) {
-        if (beforeActionPerformedHandler != null) {
-            beforeActionPerformedHandler.run();
-        }
-
         Map<String, Object> params = getWindowParams();
         if (params == null)
             params = new HashMap<>();
@@ -152,10 +147,6 @@ public class AddAction extends BaseAction implements Action.HasOpenType, Action.
             // move focus to owner
             target.requestFocus();
         });
-
-        if (afterActionPerformedHandler != null) {
-            afterActionPerformedHandler.run();
-        }
     }
 
     /**
@@ -222,26 +213,6 @@ public class AddAction extends BaseAction implements Action.HasOpenType, Action.
      */
     public void setWindowParams(Map<String, Object> windowParams) {
         this.windowParams = windowParams;
-    }
-
-    @Override
-    public Runnable getBeforeActionPerformedHandler() {
-        return beforeActionPerformedHandler;
-    }
-
-    @Override
-    public void setBeforeActionPerformedHandler(Runnable handler) {
-        this.beforeActionPerformedHandler = handler;
-    }
-
-    @Override
-    public Runnable getAfterActionPerformedHandler() {
-        return afterActionPerformedHandler;
-    }
-
-    @Override
-    public void setAfterActionPerformedHandler(Runnable handler) {
-        this.afterActionPerformedHandler = handler;
     }
 
     /**

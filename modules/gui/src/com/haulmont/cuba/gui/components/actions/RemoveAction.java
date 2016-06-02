@@ -24,7 +24,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Security;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -41,9 +40,8 @@ import java.util.Set;
  * <p>
  * Action's behaviour can be customized by providing arguments to constructor, setting properties, or overriding
  * method {@link #afterRemove(java.util.Set)} )}
- *
  */
-public class RemoveAction extends ItemTrackingAction implements Action.HasBeforeAfterHandlers {
+public class RemoveAction extends ItemTrackingAction {
 
     public static final String ACTION_ID = ListActionType.REMOVE.getId();
 
@@ -53,9 +51,6 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
     protected String confirmationTitle;
 
     protected Security security = AppBeans.get(Security.NAME);
-
-    protected Runnable beforeActionPerformedHandler;
-    protected Runnable afterActionPerformedHandler;
 
     protected AfterRemoveHandler afterRemoveHandler;
 
@@ -113,6 +108,14 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
             return false;
         }
 
+        if (!checkRemovePermission()) {
+            return false;
+        }
+
+        return super.isPermitted();
+    }
+
+    protected boolean checkRemovePermission() {
         CollectionDatasource ds = target.getDatasource();
         if (ds instanceof PropertyDatasource) {
             PropertyDatasource propertyDatasource = (PropertyDatasource) ds;
@@ -120,15 +123,25 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
             MetaClass parentMetaClass = propertyDatasource.getMaster().getMetaClass();
             MetaProperty metaProperty = propertyDatasource.getProperty();
 
-            boolean removePermitted = security.isEntityAttrPermitted(parentMetaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
+            boolean modifyPermitted = security.isEntityAttrPermitted(parentMetaClass, metaProperty.getName(),
+                    EntityAttrAccess.MODIFY);
+            if (!modifyPermitted) {
+                return false;
+            }
 
             if (metaProperty.getRange().getCardinality() != Range.Cardinality.MANY_TO_MANY) {
-                removePermitted = removePermitted && security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.DELETE);
+                boolean deletePermitted = security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.DELETE);
+                if (!deletePermitted) {
+                    return false;
+                }
             }
-            return removePermitted && super.isPermitted();
         } else {
-            return security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.DELETE) && super.isPermitted();
+            boolean entityOpPermitted = security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.DELETE);
+            if (!entityOpPermitted) {
+                return false;
+            }
         }
+        return true;
     }
 
     /**
@@ -143,25 +156,16 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
             return;
         }
 
-        if (beforeActionPerformedHandler != null) {
-            beforeActionPerformedHandler.run();
-        }
-
         Set selected = target.getSelected();
         if (!selected.isEmpty()) {
             confirmAndRemove(selected);
         }
-
-        if (afterActionPerformedHandler != null) {
-            afterActionPerformedHandler.run();
-        }
     }
 
     protected void confirmAndRemove(final Set selected) {
-        final String messagesPackage = AppConfig.getMessagesPack();
         target.getFrame().showOptionDialog(
-                getConfirmationTitle(messagesPackage),
-                getConfirmationMessage(messagesPackage),
+                getConfirmationTitle(),
+                getConfirmationMessage(),
                 Frame.MessageType.CONFIRMATION,
                 new Action[]{
                         new DialogAction(Type.OK, Status.PRIMARY) {
@@ -205,14 +209,13 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
 
     /**
      * Provides confirmation dialog message.
-     * @param   messagesPackage   message pack containing the message
      * @return  localized message
      */
-    public String getConfirmationMessage(String messagesPackage) {
+    public String getConfirmationMessage() {
         if (confirmationMessage != null)
             return confirmationMessage;
         else
-            return messages.getMessage(messagesPackage, "dialogs.Confirmation.Remove");
+            return messages.getMainMessage("dialogs.Confirmation.Remove");
     }
 
     /**
@@ -224,14 +227,13 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
 
     /**
      * Provides confirmation dialog title.
-     * @param   messagesPackage   message pack containing the title
      * @return  localized title
      */
-    public String getConfirmationTitle(String messagesPackage) {
+    public String getConfirmationTitle() {
         if (confirmationTitle != null)
             return confirmationTitle;
         else
-            return messages.getMessage(messagesPackage, "dialogs.Confirmation");
+            return messages.getMainMessage("dialogs.Confirmation");
     }
 
     /**
@@ -269,25 +271,5 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
      */
     public void setAfterRemoveHandler(AfterRemoveHandler afterRemoveHandler) {
         this.afterRemoveHandler = afterRemoveHandler;
-    }
-
-    @Override
-    public Runnable getBeforeActionPerformedHandler() {
-        return beforeActionPerformedHandler;
-    }
-
-    @Override
-    public void setBeforeActionPerformedHandler(Runnable handler) {
-        this.beforeActionPerformedHandler = handler;
-    }
-
-    @Override
-    public Runnable getAfterActionPerformedHandler() {
-        return afterActionPerformedHandler;
-    }
-
-    @Override
-    public void setAfterActionPerformedHandler(Runnable handler) {
-        this.afterActionPerformedHandler = handler;
     }
 }

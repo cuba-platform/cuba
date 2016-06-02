@@ -512,11 +512,11 @@ public class UserEditor extends AbstractEditor<User> {
         }
 
         @Override
-        public String getConfirmationMessage(String messagesPackage) {
+        public String getConfirmationMessage() {
             if (hasDefaultRole)
                 return getMessage("dialogs.Confirmation.RemoveDefaultRole");
             else
-                return super.getConfirmationMessage(messagesPackage);
+                return super.getConfirmationMessage();
         }
 
         private boolean hasDefaultRole(Set selected) {

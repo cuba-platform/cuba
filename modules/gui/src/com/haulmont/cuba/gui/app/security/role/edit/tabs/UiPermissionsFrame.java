@@ -154,12 +154,8 @@ public class UiPermissionsFrame extends AbstractFrame {
                     markItemPermission(UiPermissionVariant.NOTSET, (UiPermissionTarget) selected.iterator().next());
                 }
             }
-
-            @Override
-            protected boolean isPermitted() {
-                return hasPermissionsToModifyPermission && super.isPermitted();
-            }
         };
+        removeAction.setEnabled(hasPermissionsToModifyPermission);
         removeAction.setIcon(null);
         removeAction.setCaption(getMessage("actions.RemoveSelected"));
 

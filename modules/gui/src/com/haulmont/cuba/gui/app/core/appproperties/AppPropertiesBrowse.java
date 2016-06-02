@@ -19,7 +19,7 @@ package com.haulmont.cuba.gui.app.core.appproperties;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.config.AppPropertyEntity;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.settings.Settings;
@@ -72,15 +72,16 @@ public class AppPropertiesBrowse extends AbstractWindow {
 
         searchField.addValueChangeListener(e -> {
             paramsDs.refresh(ParamsMap.of("name", e.getValue()));
+
             if (StringUtils.isNotEmpty((String) e.getValue())) {
                 paramsTable.expandAll();
             }
         });
 
-        refreshAction.setBeforeActionPerformedHandler(() -> {
-            lastSelected = paramsTable.getSingleSelected();
-        });
-        refreshAction.setAfterActionPerformedHandler(() -> {
+        refreshAction.setBeforeRefreshHandler(() ->
+                lastSelected = paramsTable.getSingleSelected()
+        );
+        refreshAction.setAfterRefreshHandler(() -> {
             if (lastSelected != null) {
                 for (AppPropertyEntity entity : paramsDs.getItems()) {
                     if (entity.getName().equals(lastSelected.getName())) {
@@ -93,8 +94,8 @@ public class AppPropertiesBrowse extends AbstractWindow {
     }
 
     public void editValue() {
-        AppPropertiesEdit editor = (AppPropertiesEdit) openWindow(
-                "appPropertyEditor", WindowManager.OpenType.DIALOG, ParamsMap.of("item", paramsDs.getItem()));
+        AppPropertiesEdit editor = (AppPropertiesEdit) openWindow("appPropertyEditor", OpenType.DIALOG,
+                ParamsMap.of("item", paramsDs.getItem()));
         editor.addCloseWithCommitListener(() -> {
             List<AppPropertyEntity> entities = paramsDs.loadAppPropertyEntities();
             for (AppPropertyEntity entity : entities) {
@@ -111,7 +112,7 @@ public class AppPropertiesBrowse extends AbstractWindow {
                 .filter(appPropertyEntity -> !appPropertyEntity.getCategory())
                 .collect(Collectors.toList());
         if (!exported.isEmpty()) {
-            openWindow("appPropertiesExport", WindowManager.OpenType.DIALOG, ParamsMap.of("exported", exported));
+            openWindow("appPropertiesExport", OpenType.DIALOG, ParamsMap.of("exported", exported));
         }
     }
 

@@ -17,11 +17,14 @@
 
 package com.haulmont.cuba.gui.components.actions;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ListComponent;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Action that can change its enabled and visible properties depending on the user permissions and current context.
@@ -39,7 +42,6 @@ import javax.annotation.Nullable;
  * </ul>
  * <p> Descendants may override {@link #isPermitted()} and {@link #isApplicable()} methods to define conditions in which
  * action will be enabled.
- *
  */
 public abstract class BaseAction extends AbstractAction implements Action.HasTarget, Action.UiPermissionAware {
 
@@ -48,6 +50,8 @@ public abstract class BaseAction extends AbstractAction implements Action.HasTar
 
     private boolean enabledExplicitly = true;
     private boolean visibleExplicitly = true;
+
+    private List<EnabledRule> enabledRules; // lazy initialized list
 
     protected ListComponent target;
 
@@ -72,6 +76,20 @@ public abstract class BaseAction extends AbstractAction implements Action.HasTar
      * @return true if the action is enabled for the current context, e.g. there is a selected row in a table
      */
     protected boolean isApplicable() {
+        return true;
+    }
+
+    protected boolean isEnabledByRule() {
+        if (enabledRules == null) {
+            return true;
+        }
+
+        for (EnabledRule rule : enabledRules) {
+            if (!rule.isActionEnabled()) {
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -107,8 +125,8 @@ public abstract class BaseAction extends AbstractAction implements Action.HasTar
 
         setVisibleInternal(visibleExplicitly && visibleByUiPermissions);
 
-        setEnabledInternal(enabledExplicitly && isPermitted() && isApplicable()
-                && enabledByUiPermissions && visibleByUiPermissions);
+        setEnabledInternal(enabledExplicitly && enabledByUiPermissions && visibleByUiPermissions
+                && isPermitted() && isApplicable() && isEnabledByRule());
     }
 
     @Override
@@ -151,5 +169,41 @@ public abstract class BaseAction extends AbstractAction implements Action.HasTar
 
             refreshState();
         }
+    }
+
+    /**
+     * Add new enabled rule for the action.
+     *
+     * @param enabledRule boolean rule for the action enabled state
+     */
+    public void addEnabledRule(EnabledRule enabledRule) {
+        Preconditions.checkNotNullArgument(enabledRule);
+
+        if (enabledRules == null) {
+            enabledRules = new ArrayList<>();
+        }
+        if (!enabledRules.contains(enabledRule)) {
+            enabledRules.add(enabledRule);
+        }
+    }
+
+    /**
+     * Remove enabled rule.
+     *
+     * @param enabledRule boolean rule for the action enabled state
+     */
+    public void removeEnabledRule(EnabledRule enabledRule) {
+        if (enabledRules != null) {
+            enabledRules.remove(enabledRule);
+        }
+    }
+
+    /**
+     * Callback closure which is invoked by the action to determine its enabled state.
+     *
+     * @see #addEnabledRule(EnabledRule)
+     */
+    public interface EnabledRule {
+        boolean isActionEnabled();
     }
 }

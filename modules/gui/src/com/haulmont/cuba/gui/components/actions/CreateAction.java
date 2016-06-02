@@ -39,9 +39,8 @@ import java.util.Map;
  * <p>
  * Action's behaviour can be customized by providing arguments to constructor, setting properties, or overriding
  * methods {@link #afterCommit(com.haulmont.cuba.core.entity.Entity)}, {@link #afterWindowClosed(com.haulmont.cuba.gui.components.Window)}
- *
  */
-public class CreateAction extends BaseAction implements Action.HasOpenType, Action.HasBeforeAfterHandlers {
+public class CreateAction extends BaseAction implements Action.HasOpenType {
 
     public static final String ACTION_ID = ListActionType.CREATE.getId();
 
@@ -51,16 +50,14 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
     protected Map<String, Object> windowParams;
     protected Map<String, Object> initialValues;
 
-    protected Metadata metadata;
+    protected Metadata metadata = AppBeans.get(Metadata.NAME);
+    protected Security security = AppBeans.get(Security.NAME);
 
     protected AfterCommitHandler afterCommitHandler;
 
     protected AfterWindowClosedHandler afterWindowClosedHandler;
 
     protected Window.CloseListener editorCloseListener;
-
-    protected Runnable beforeActionPerformedHandler;
-    protected Runnable afterActionPerformedHandler;
 
     public interface AfterCommitHandler {
         /**
@@ -108,7 +105,6 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
 
         ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
         this.icon = thCM.getThemeValue("actions.Create.icon");
-        this.metadata = AppBeans.get(Metadata.NAME);
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
@@ -126,19 +122,24 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
 
         CollectionDatasource ownerDatasource = target.getDatasource();
         MetaClass metaClass = ownerDatasource.getMetaClass();
-        Security security = AppBeans.get(Security.NAME);
         boolean createPermitted = security.isEntityOpPermitted(metaClass, EntityOp.CREATE);
+        if (!createPermitted) {
+            return false;
+        }
 
-        if (createPermitted && ownerDatasource instanceof PropertyDatasource) {
+        if (ownerDatasource instanceof PropertyDatasource) {
             PropertyDatasource propertyDatasource = (PropertyDatasource) ownerDatasource;
 
             MetaClass parentMetaClass = propertyDatasource.getMaster().getMetaClass();
             MetaProperty metaProperty = propertyDatasource.getProperty();
 
-            createPermitted = security.isEntityAttrPermitted(parentMetaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
+            boolean attrPermitted = security.isEntityAttrPermitted(parentMetaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
+            if (!attrPermitted) {
+                return false;
+            }
         }
 
-        return createPermitted;
+        return super.isPermitted();
     }
 
     /**
@@ -149,10 +150,6 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
      */
     @Override
     public void actionPerform(Component component) {
-        if (beforeActionPerformedHandler != null) {
-            beforeActionPerformedHandler.run();
-        }
-
         final CollectionDatasource datasource = target.getDatasource();
         final DataSupplier dataservice = datasource.getDataSupplier();
 
@@ -220,10 +217,6 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
         }
 
         internalOpenEditor(datasource, item, parentDs, params);
-
-        if (afterActionPerformedHandler != null) {
-            afterActionPerformedHandler.run();
-        }
     }
 
     protected void internalOpenEditor(CollectionDatasource datasource, Entity newItem, Datasource parentDs, Map<String, Object> params) {
@@ -359,25 +352,5 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
      */
     public void setEditorCloseListener(Window.CloseListener editorCloseListener) {
         this.editorCloseListener = editorCloseListener;
-    }
-
-    @Override
-    public Runnable getBeforeActionPerformedHandler() {
-        return beforeActionPerformedHandler;
-    }
-
-    @Override
-    public void setBeforeActionPerformedHandler(Runnable handler) {
-        this.beforeActionPerformedHandler = handler;
-    }
-
-    @Override
-    public Runnable getAfterActionPerformedHandler() {
-        return afterActionPerformedHandler;
-    }
-
-    @Override
-    public void setAfterActionPerformedHandler(Runnable handler) {
-        this.afterActionPerformedHandler = handler;
     }
 }
