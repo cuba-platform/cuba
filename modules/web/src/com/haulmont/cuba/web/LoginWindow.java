@@ -99,6 +99,8 @@ public class LoginWindow extends UIView {
 
     protected LoginService loginService = AppBeans.get(LoginService.class);
 
+    protected Boolean bruteForceProtectionEnabled;
+
     public LoginWindow(AppUI ui) {
         log.trace("Creating " + this);
         this.ui = ui;
@@ -436,7 +438,7 @@ public class LoginWindow extends UIView {
 
         if (!bruteForceProtectionCheck(login, app.getClientAddress())) return;
 
-        if (loginService.isBruteForceProtectionEnabled()) {
+        if (isBruteForceProtectionEnabled()) {
             if (loginService.loginAttemptsLeft(login, app.getClientAddress()) <= 0) {
                 String title = messages.getMainMessage("loginWindow.loginFailed", resolvedLocale);
                 String message = messages.formatMessage(messages.getMainMessagePack(),
@@ -487,8 +489,15 @@ public class LoginWindow extends UIView {
         }
     }
 
+    protected boolean isBruteForceProtectionEnabled() {
+        if (bruteForceProtectionEnabled == null) {
+            bruteForceProtectionEnabled = loginService.isBruteForceProtectionEnabled();
+        }
+        return bruteForceProtectionEnabled;
+    }
+
     protected boolean bruteForceProtectionCheck(String login, String ipAddress) {
-        if (loginService.isBruteForceProtectionEnabled()) {
+        if (isBruteForceProtectionEnabled()) {
             if (loginService.loginAttemptsLeft(login, ipAddress) <= 0) {
                 String title = messages.getMainMessage("loginWindow.loginFailed", resolvedLocale);
                 String message = messages.formatMessage(messages.getMainMessagePack(),
@@ -507,7 +516,7 @@ public class LoginWindow extends UIView {
     @Nullable
     protected String registerUnsuccessfulLoginAttempt(String login, String ipAddress) {
         String message = null;
-        if (loginService.isBruteForceProtectionEnabled()) {
+        if (isBruteForceProtectionEnabled()) {
             int loginAttemptsLeft = loginService.registerUnsuccessfulLogin(login, ipAddress);
             if (loginAttemptsLeft > 0) {
                 message = messages.formatMessage(messages.getMainMessagePack(),
