@@ -1799,7 +1799,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             }
 
             Entity entity;
-            Object value = rowItem.getValue(columnId);
+            Object value = rowItem.getValueEx(columnId);
+
             if (value instanceof Entity) {
                 entity = (Entity) value;
             } else {
