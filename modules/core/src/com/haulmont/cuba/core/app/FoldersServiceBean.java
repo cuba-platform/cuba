@@ -260,16 +260,24 @@ public class FoldersServiceBean implements FoldersService {
         byteArrayInputStream.close();
 
         if (folder != null) {
-            folder = resetAttributes(folder);
             folder.setParent(parentFolder);
             Transaction tx = persistence.createTransaction();
             try {
                 EntityManager em = persistence.getEntityManager();
-                if (PersistenceHelper.isNew(folder)) {
-                    em.persist(folder);
+
+                Folder existingFolder = em.find(Folder.class, folder.getId());
+                if (existingFolder != null) {
+                    folder.setVersion(existingFolder.getVersion());
                 } else {
-                    em.merge(folder);
+                    User user = userSessionSource.getUserSession().getUser();
+                    folder.setCreatedBy(user.getLoginLowerCase());
+                    folder.setCreateTs(new Date());
+                    folder.setUpdatedBy(null);
+                    folder.setUpdateTs(null);
+                    folder.setVersion(0);
                 }
+
+                em.merge(folder);
                 tx.commit();
             } finally {
                 tx.end();
@@ -292,16 +300,5 @@ public class FoldersServiceBean implements FoldersService {
         crc32.update(data);
         zipEntry.setCrc(crc32.getValue());
         return zipEntry;
-    }
-
-    protected Folder resetAttributes(Folder folder) {
-        User user = userSessionSource.getUserSession().getUser();
-        folder.setCreatedBy(user.getLoginLowerCase());
-        folder.setId(UUID.randomUUID());
-        folder.setCreateTs(new Date());
-        folder.setUpdatedBy(null);
-        folder.setUpdateTs(null);
-
-        return folder;
     }
 }
