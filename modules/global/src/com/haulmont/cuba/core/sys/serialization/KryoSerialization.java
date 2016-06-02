@@ -137,8 +137,9 @@ public class KryoSerialization implements Serialization {
     }
 
     @Override
+    @SuppressWarnings("finally")
     public void serialize(Object object, OutputStream os) {
-        try (Output output = new Output(os)) {
+        try (Output output = new CubaOutput(os)) {
             if (object instanceof BaseGenericIdEntity
                     && BaseEntityInternalAccess.isManaged((BaseGenericIdEntity) object)) {
                 BaseEntityInternalAccess.setDetached((BaseGenericIdEntity) object, true);
@@ -316,6 +317,22 @@ public class KryoSerialization implements Serialization {
                 throw new IllegalArgumentException("Class is not registered: " + Util.className(type)
                         + "\nNote: To register this class use: kryo.register(" + Util.className(type) + ".class);");
             }
+        }
+    }
+
+    public static class CubaOutput extends Output {
+
+        public CubaOutput(OutputStream outputStream) {
+            super(outputStream);
+        }
+
+        @Override
+        public void close() {
+            //Prevent close stream. Stream closed only by:
+            //com.haulmont.cuba.core.sys.remoting.HttpServiceExporter,
+            //com.haulmont.cuba.core.sys.remoting.ClusteredHttpInvokerRequestExecutor()
+            //Only flush buffer to output stream
+            flush();
         }
     }
 }

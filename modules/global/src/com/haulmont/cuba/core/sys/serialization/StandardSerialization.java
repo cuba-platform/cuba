@@ -18,18 +18,35 @@
 package com.haulmont.cuba.core.sys.serialization;
 
 import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.lang.SerializationUtils;
 
 import java.io.*;
 
 /**
- *
  * The serialization implementation using standard Java serialization
  */
 public class StandardSerialization implements Serialization {
     @Override
     public void serialize(Object object, OutputStream os) {
-        SerializationUtils.serialize((Serializable) object, os);
+        ObjectOutputStream out = null;
+        boolean isObjectStream = os instanceof ObjectOutputStream;
+        try {
+            out = isObjectStream ? (ObjectOutputStream)os : new ObjectOutputStream(os);
+            out.writeObject(object);
+        } catch (IOException ex) {
+            throw new IllegalStateException("Failed to deserialize object", ex);
+        } finally {
+            //Prevent close stream. Stream closed only by:
+            //com.haulmont.cuba.core.sys.remoting.HttpServiceExporter,
+            //com.haulmont.cuba.core.sys.remoting.ClusteredHttpInvokerRequestExecutor()
+            //Only flush buffer to output stream
+            if (!isObjectStream && out != null) {
+                try {
+                    out.flush();
+                } catch (IOException ex) {
+                    throw new IllegalStateException("Failed to deserialize object", ex);
+                }
+            }
+        }
     }
 
     //To work properly must itself be loaded by the application classloader (i.e. by classloader capable of loading
