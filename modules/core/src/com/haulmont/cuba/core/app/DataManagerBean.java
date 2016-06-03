@@ -307,13 +307,9 @@ public class DataManagerBean implements DataManager {
                         security.restoreFilteredData((BaseGenericIdEntity) entity);
                         checkOperationPermitted(entity, ConstraintOperationType.UPDATE);
                         attributeSecurity.beforeMerge(entity);
-                        View view = context.getViews().get(entity);
-                        if (view == null) {
-                            view = viewRepository.getView(entity.getClass(), View.LOCAL);
-                        }
-                        View restrictedView = attributeSecurity.createRestrictedView(view);
+                        View view = getViewFromContext(context, entity);
 
-                        Entity merged = em.merge(entity, restrictedView);
+                        Entity merged = em.merge(entity, view);
                         res.add(merged);
                         if (entityHasDynamicAttributes(entity)) {
                             BaseGenericIdEntity originalBaseGenericIdEntity = (BaseGenericIdEntity) entity;
@@ -332,8 +328,11 @@ public class DataManagerBean implements DataManager {
             // remove
             for (Entity entity : context.getRemoveInstances()) {
                 security.restoreFilteredData((BaseGenericIdEntity) entity);
-                Entity e = em.merge(entity);
                 checkOperationPermitted(entity, ConstraintOperationType.DELETE);
+                attributeSecurity.beforeMerge(entity);
+                View view = getViewFromContext(context, entity);
+
+                Entity e = em.merge(entity, view);
                 em.remove(e);
                 res.add(e);
 
@@ -373,6 +372,14 @@ public class DataManagerBean implements DataManager {
         updateReferences(persisted, res);
 
         return res;
+    }
+
+    protected View getViewFromContext(CommitContext context, Entity entity) {
+        View view = context.getViews().get(entity);
+        if (view == null) {
+            view = viewRepository.getView(entity.getClass(), View.LOCAL);
+        }
+        return attributeSecurity.createRestrictedView(view);
     }
 
     protected void checkOperationPermitted(Entity entity, ConstraintOperationType operationType) {
