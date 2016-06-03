@@ -49,7 +49,6 @@ import java.util.*;
  * Use this class to export {@link com.haulmont.cuba.gui.components.Table} into Excel format
  * and show using {@link ExportDisplay}.
  * <br>Just create an instance of this class and invoke one of <code>exportTable</code> methods.
- *
  */
 public class ExcelExporter {
     protected static final int COL_WIDTH_MAGIC = 48;
@@ -339,7 +338,10 @@ public class ExcelExporter {
             Table.Column column = columns.get(c);
             Object cellValue = null;
 
+            MetaPropertyPath propertyPath = null;
             if (column.getId() instanceof MetaPropertyPath) {
+                propertyPath = (MetaPropertyPath) column.getId();
+
                 Table.Printable printable = table.getPrintable(column);
                 if (printable != null) {
                     cellValue = printable.getValue((Entity) instance);
@@ -349,7 +351,7 @@ public class ExcelExporter {
                         String captionProperty = xmlDescriptor.attributeValue("captionProperty");
                         cellValue = InstanceUtils.getValueEx(instance, captionProperty);
                     } else {
-                        cellValue = InstanceUtils.getValueEx(instance, ((MetaPropertyPath) column.getId()).getPath());
+                        cellValue = InstanceUtils.getValueEx(instance, propertyPath.getPath());
                     }
                     if (column.getFormatter() != null)
                         cellValue = column.getFormatter().format(cellValue);
@@ -361,7 +363,7 @@ public class ExcelExporter {
                 }
             }
 
-            formatValueCell(cell, cellValue, ((MetaPropertyPath) column.getId()), c, rowNumber, level);
+            formatValueCell(cell, cellValue, propertyPath, c, rowNumber, level);
         }
     }
 
@@ -379,8 +381,9 @@ public class ExcelExporter {
 
     protected void formatValueCell(HSSFCell cell, @Nullable Object cellValue, @Nullable MetaPropertyPath metaPropertyPath,
                                    int sizersIndex, int notificationReqiured, int level) {
-        if (cellValue == null)
+        if (cellValue == null) {
             return;
+        }
 
         if (cellValue instanceof Number) {
             Number n = (Number) cellValue;
