@@ -54,12 +54,18 @@ public class StandardSerialization implements Serialization {
     @Override
     public Object deserialize(InputStream is) {
         try {
-            ObjectInputStream ois = new ObjectInputStream(is) {
-                @Override
-                protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
-                    return ClassUtils.getClass(StandardSerialization.class.getClassLoader(), desc.getName());
-                }
-            };
+            ObjectInputStream ois;
+            boolean isObjectStream = is instanceof ObjectInputStream;
+            if (isObjectStream) {
+                ois = (ObjectInputStream)is;
+            } else {
+                ois = new ObjectInputStream(is) {
+                    @Override
+                    protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+                        return ClassUtils.getClass(StandardSerialization.class.getClassLoader(), desc.getName());
+                    }
+                };
+            }
             return ois.readObject();
         } catch (IOException ex) {
             throw new IllegalArgumentException("Failed to deserialize object", ex);

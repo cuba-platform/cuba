@@ -76,7 +76,6 @@ public class KryoSerialization implements Serialization {
 
     protected static final Logger log = LoggerFactory.getLogger(KryoSerialization.class);
 
-    protected boolean onlySerializable = true;
     protected final ThreadLocal<Kryo> kryos = new ThreadLocal<Kryo>() {
         @Override
         protected Kryo initialValue() {
@@ -87,12 +86,8 @@ public class KryoSerialization implements Serialization {
     public KryoSerialization() {
     }
 
-    public KryoSerialization(boolean onlySerializable) {
-        this.onlySerializable = onlySerializable;
-    }
-
     protected Kryo newKryoInstance() {
-        Kryo kryo = new CubaKryo(onlySerializable);
+        Kryo kryo = new Kryo();
         kryo.setInstantiatorStrategy(new CubaInstantiatorStrategy());
 
         //To work properly must itself be loaded by the application classloader (i.e. by classloader capable of loading
@@ -296,28 +291,6 @@ public class KryoSerialization implements Serialization {
             } catch (Exception ignored) {
             }
             return fallbackStrategy.newInstantiatorOf(type);
-        }
-    }
-
-    public static class CubaKryo extends Kryo {
-        protected boolean onlySerializable = true;
-
-        public CubaKryo(boolean onlySerializable) {
-            super();
-            this.onlySerializable = onlySerializable;
-        }
-
-        @Override
-        protected Serializer newDefaultSerializer(Class type) {
-            if (!onlySerializable) {
-                return super.newDefaultSerializer(type);
-            }
-            if (type == null || Serializable.class.isAssignableFrom(type) || Externalizable.class.isAssignableFrom(type) || MetaClass.class.equals(type)) {
-                return super.newDefaultSerializer(type);
-            } else {
-                throw new IllegalArgumentException("Class is not registered: " + Util.className(type)
-                        + "\nNote: To register this class use: kryo.register(" + Util.className(type) + ".class);");
-            }
         }
     }
 

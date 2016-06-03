@@ -44,7 +44,7 @@ public class SerializationSupport {
                         format("Could not create an instance of serialization class [%s]", serializationClassStr));
             }
         } else {
-            serialization = new KryoSerialization();
+            serialization = new StandardSerialization();
         }
     }
 
