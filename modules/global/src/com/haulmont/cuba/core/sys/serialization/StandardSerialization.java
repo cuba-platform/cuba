@@ -33,7 +33,7 @@ public class StandardSerialization implements Serialization {
             out = isObjectStream ? (ObjectOutputStream)os : new ObjectOutputStream(os);
             out.writeObject(object);
         } catch (IOException ex) {
-            throw new IllegalStateException("Failed to deserialize object", ex);
+            throw new IllegalStateException("Failed to serialize object", ex);
         } finally {
             //Prevent close stream. Stream closed only by:
             //com.haulmont.cuba.core.sys.remoting.HttpServiceExporter,
@@ -43,7 +43,7 @@ public class StandardSerialization implements Serialization {
                 try {
                     out.flush();
                 } catch (IOException ex) {
-                    throw new IllegalStateException("Failed to deserialize object", ex);
+                    throw new IllegalStateException("Failed to serialize object", ex);
                 }
             }
         }
