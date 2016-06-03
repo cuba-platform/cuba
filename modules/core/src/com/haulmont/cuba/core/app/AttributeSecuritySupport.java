@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.persistence.CubaEntityFetchGroup;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
@@ -64,7 +65,7 @@ public class AttributeSecuritySupport {
      * @return      restricted view
      */
     public View createRestrictedView(View view) {
-        if (!config.getEntityAttributePermissionChecking()) {
+        if (!isAuthorizationRequired()) {
             return view;
         }
         Preconditions.checkNotNullArgument(view, "view is null");
@@ -94,7 +95,7 @@ public class AttributeSecuritySupport {
      * @param entity just loaded detached entity
      */
     public void afterLoad(Entity entity) {
-        if (!config.getEntityAttributePermissionChecking()) {
+        if (!isAuthorizationRequired()) {
             return;
         }
         if (entity != null) {
@@ -108,7 +109,7 @@ public class AttributeSecuritySupport {
      * @param entities list of just loaded detached entities
      */
     public void afterLoad(Collection<? extends Entity> entities) {
-        if (!config.getEntityAttributePermissionChecking()) {
+        if (!isAuthorizationRequired()) {
             return;
         }
         Preconditions.checkNotNullArgument(entities, "entities list is null");
@@ -124,7 +125,7 @@ public class AttributeSecuritySupport {
      * @param entity new entity
      */
     public void beforePersist(Entity entity) {
-        if (!config.getEntityAttributePermissionChecking()) {
+        if (!isAuthorizationRequired()) {
             return;
         }
         // check only immediate attributes, otherwise persisted entity can be unusable for calling code
@@ -144,7 +145,7 @@ public class AttributeSecuritySupport {
      * @param entity detached entity
      */
     public void beforeMerge(Entity entity) {
-        if (!config.getEntityAttributePermissionChecking()) {
+        if (!isAuthorizationRequired()) {
             return;
         }
         MetaClass metaClass = metadata.getClassNN(entity.getClass());
@@ -187,7 +188,7 @@ public class AttributeSecuritySupport {
      * @param entity detached entity
      */
     public void afterMerge(Entity entity, View view) {
-        if (!config.getEntityAttributePermissionChecking()) {
+        if (!isAuthorizationRequired()) {
             return;
         }
         if (entity != null) {
@@ -200,6 +201,11 @@ public class AttributeSecuritySupport {
         attributes = attributes == null ? new String[1] : Arrays.copyOf(attributes, attributes.length + 1);
         attributes[attributes.length - 1] = property;
         BaseEntityInternalAccess.setInaccessibleAttributes(entity, attributes);
+    }
+
+    protected boolean isAuthorizationRequired() {
+        return (AppContext.getSecurityContextNN().isAuthorizationRequired() || config.getDataManagerChecksSecurityOnMiddleware())
+                && config.getEntityAttributePermissionChecking();
     }
 
     private class FillingInaccessibleAttributesVisitor implements EntityAttributeVisitor {
