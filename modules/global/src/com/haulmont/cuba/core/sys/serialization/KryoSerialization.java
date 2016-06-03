@@ -29,6 +29,7 @@ import com.esotericsoftware.kryo.util.Util;
 import com.esotericsoftware.reflectasm.ConstructorAccess;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.MetaClassImpl;
 import com.haulmont.chile.core.model.impl.MetaPropertyImpl;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
@@ -311,7 +312,7 @@ public class KryoSerialization implements Serialization {
             if (!onlySerializable) {
                 return super.newDefaultSerializer(type);
             }
-            if (type == null || Serializable.class.isAssignableFrom(type) || Externalizable.class.isAssignableFrom(type)) {
+            if (type == null || Serializable.class.isAssignableFrom(type) || Externalizable.class.isAssignableFrom(type) || MetaClass.class.equals(type)) {
                 return super.newDefaultSerializer(type);
             } else {
                 throw new IllegalArgumentException("Class is not registered: " + Util.className(type)
