@@ -19,17 +19,16 @@ package com.haulmont.cuba.core.sys.serialization;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoException;
-import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.CollectionSerializer;
+import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.serializers.JavaSerializer;
 import com.esotericsoftware.kryo.util.ObjectMap;
 import com.esotericsoftware.kryo.util.Util;
 import com.esotericsoftware.reflectasm.ConstructorAccess;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.MetaClassImpl;
 import com.haulmont.chile.core.model.impl.MetaPropertyImpl;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
@@ -76,6 +75,7 @@ public class KryoSerialization implements Serialization {
 
     protected static final Logger log = LoggerFactory.getLogger(KryoSerialization.class);
 
+    protected boolean onlySerializable = true;
     protected final ThreadLocal<Kryo> kryos = new ThreadLocal<Kryo>() {
         @Override
         protected Kryo initialValue() {
@@ -86,9 +86,16 @@ public class KryoSerialization implements Serialization {
     public KryoSerialization() {
     }
 
+    public KryoSerialization(boolean onlySerializable) {
+        this.onlySerializable = onlySerializable;
+    }
+
     protected Kryo newKryoInstance() {
         Kryo kryo = new Kryo();
         kryo.setInstantiatorStrategy(new CubaInstantiatorStrategy());
+        if (onlySerializable) {
+            kryo.setDefaultSerializer(CubaFieldSerializer.class);
+        }
 
         //To work properly must itself be loaded by the application classloader (i.e. by classloader capable of loading
         //all the other application classes). For web application it means placing this class inside webapp folder.
@@ -291,6 +298,50 @@ public class KryoSerialization implements Serialization {
             } catch (Exception ignored) {
             }
             return fallbackStrategy.newInstantiatorOf(type);
+        }
+    }
+
+    public static class CubaFieldSerializer<T> extends FieldSerializer<T> {
+        public CubaFieldSerializer(Kryo kryo, Class type) {
+            super(kryo, type);
+        }
+
+        public CubaFieldSerializer(Kryo kryo, Class type, Class[] generics) {
+            super(kryo, type, generics);
+        }
+
+        @Override
+        protected T create(Kryo kryo, Input input, Class<T> type) {
+            checkIncorrectClass(type);
+            return super.create(kryo, input, type);
+        }
+
+        @Override
+        public void write(Kryo kryo, Output output, T object) {
+            checkIncorrectObject(object);
+            super.write(kryo, output, object);
+        }
+
+        @Override
+        public T read(Kryo kryo, Input input, Class<T> type) {
+            checkIncorrectClass(type);
+            return super.read(kryo, input, type);
+
+        }
+
+        protected void checkIncorrectClass(Class type) {
+            if (type != null && !Serializable.class.isAssignableFrom(type)) {
+                throw new IllegalArgumentException(String.format("Class is not registered: %s\nNote: To register this class use: kryo.register(\"%s\".class);",
+                        Util.className(type), Util.className(type)));
+            }
+        }
+
+        protected void checkIncorrectObject(T object) {
+            if (object != null && !(object instanceof Serializable)) {
+                String className = Util.className(object.getClass());
+                throw new IllegalArgumentException(String.format("Class is not registered: %s\nNote: To register this class use: kryo.register(\"%s\".class);",
+                        className, className));
+            }
         }
     }
 
