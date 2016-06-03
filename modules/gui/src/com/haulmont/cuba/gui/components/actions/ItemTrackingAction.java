@@ -63,7 +63,7 @@ public abstract class ItemTrackingAction extends BaseAction {
             } else {
                 isPermitted = security.isPermitted(singleSelected, constraintOperationType);
             }
-            if (isPermitted) {
+            if (!isPermitted) {
                 return false;
             }
         }
