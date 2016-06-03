@@ -27,23 +27,34 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.filter.Param;
+import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.TemporalType;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FilterConditionUtils {
 
     public static String getPropertyLocCaption(MetaClass metaClass, String propertyPath) {
         MessageTools messageTools = AppBeans.get(MessageTools.class);
         MetaPropertyPath mpp = metaClass.getPropertyPath(propertyPath);
-        if (mpp == null)
+        if (mpp == null) {
             return propertyPath;
-        else {
+        } else {
             MetaProperty[] metaProperties = mpp.getMetaProperties();
             StringBuilder sb = new StringBuilder();
+
+            List<String> metaPropertyNames = new ArrayList<>();
+
             for (int i = 0; i < metaProperties.length; i++) {
-                sb.append(messageTools.getPropertyCaption(metaClass, metaProperties[i].getName()));
-                if (i < metaProperties.length - 1)
+                metaPropertyNames.add(metaProperties[i].getName());
+
+                String currentMetaPropertyPath = StringUtils.join(metaPropertyNames, ".");
+
+                sb.append(messageTools.getPropertyCaption(metaClass, currentMetaPropertyPath));
+                if (i < metaProperties.length - 1) {
                     sb.append(".");
+                }
             }
             return sb.toString();
         }
