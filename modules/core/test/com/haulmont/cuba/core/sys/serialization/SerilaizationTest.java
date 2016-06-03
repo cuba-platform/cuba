@@ -76,6 +76,7 @@ public class SerilaizationTest {
     }
 
     @Test
+    @Ignore
     public void testCompareSpeedAndSize() throws Exception {
         View view = getView();
         User user;
