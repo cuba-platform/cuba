@@ -28,9 +28,10 @@ import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.toolkit.ui.CubaSourceCodeEditor;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.TextArea;
 import org.apache.commons.lang.StringUtils;
+import org.vaadin.aceeditor.AceMode;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
@@ -39,8 +40,8 @@ import java.util.List;
  */
 public class AppFolderEditWindow extends FolderEditWindow {
 
-    protected TextArea visibilityScriptField = null;
-    protected TextArea quantityScriptField = null;
+    protected CubaSourceCodeEditor visibilityScriptField = null;
+    protected CubaSourceCodeEditor quantityScriptField = null;
 
     public static FolderEditWindow create(boolean isAppFolder, boolean adding,
                                           Folder folder, Presentations presentations, Runnable commitHandler) {
@@ -71,18 +72,18 @@ public class AppFolderEditWindow extends FolderEditWindow {
 
             layout.setWidth("100%");
 
-            visibilityScriptField = new TextArea();
-            visibilityScriptField.setRows(10);
+            visibilityScriptField = new CubaSourceCodeEditor();
+            visibilityScriptField.setMode(AceMode.groovy);
             visibilityScriptField.setWidth(100, Unit.PERCENTAGE);
             visibilityScriptField.setCaption(getMessage("folders.visibilityScript"));
             String vScript = StringUtils.trimToEmpty(((AppFolder) folder).getVisibilityScript());
             visibilityScriptField.setValue(vScript);
             layout.addComponent(visibilityScriptField, 3);
 
-            quantityScriptField = new TextArea();
+            quantityScriptField = new CubaSourceCodeEditor();
             String qScript = StringUtils.trimToEmpty(((AppFolder) folder).getQuantityScript());
             quantityScriptField.setValue(qScript);
-            quantityScriptField.setRows(10);
+            quantityScriptField.setMode(AceMode.groovy);
             quantityScriptField.setWidth(100, Unit.PERCENTAGE);
             quantityScriptField.setCaption(getMessage("folders.quantityScript"));
             layout.addComponent(quantityScriptField, 4);
