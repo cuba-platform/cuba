@@ -50,7 +50,6 @@ import java.util.*;
  * Use this class to export {@link com.haulmont.cuba.gui.components.Table} into Excel format
  * and show using {@link ExportDisplay}.
  * <br>Just create an instance of this class and invoke one of <code>exportTable</code> methods.
- *
  */
 public class ExcelExporter {
     protected static final int COL_WIDTH_MAGIC = 48;
@@ -373,7 +372,10 @@ public class ExcelExporter {
             Table.Column column = columns.get(c);
             Object cellValue = null;
 
+            MetaPropertyPath propertyPath = null;
             if (column.getId() instanceof MetaPropertyPath) {
+                propertyPath = (MetaPropertyPath) column.getId();
+
                 Table.Printable printable = table.getPrintable(column);
                 if (printable != null) {
                     cellValue = printable.getValue((Entity) instance);
@@ -383,7 +385,7 @@ public class ExcelExporter {
                         String captionProperty = xmlDescriptor.attributeValue("captionProperty");
                         cellValue = InstanceUtils.getValueEx(instance, captionProperty);
                     } else {
-                        cellValue = InstanceUtils.getValueEx(instance, ((MetaPropertyPath) column.getId()).getPath());
+                        cellValue = InstanceUtils.getValueEx(instance, propertyPath.getPath());
                     }
                     if (column.getFormatter() != null)
                         cellValue = column.getFormatter().format(cellValue);
@@ -395,7 +397,7 @@ public class ExcelExporter {
                 }
             }
 
-            formatValueCell(cell, cellValue, ((MetaPropertyPath) column.getId()), c, rowNumber, level, null);
+            formatValueCell(cell, cellValue, propertyPath, c, rowNumber, level, null);
         }
     }
 
@@ -412,9 +414,10 @@ public class ExcelExporter {
     }
 
     protected void formatValueCell(HSSFCell cell, @Nullable Object cellValue, @Nullable MetaPropertyPath metaPropertyPath,
-                                   int sizersIndex, int notificationReqiured, int level, @Nullable Integer groupChildCount) {
-        if (cellValue == null)
+                                   int sizersIndex, int notificationRequired, int level, @Nullable Integer groupChildCount) {
+        if (cellValue == null) {
             return;
+        }
 
         String childCountValue = "";
         if (groupChildCount != null){
@@ -446,7 +449,7 @@ public class ExcelExporter {
                 }
                 cell.setCellType(HSSFCell.CELL_TYPE_NUMERIC);
             }
-            if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
+            if (sizers[sizersIndex].isNotificationRequired(notificationRequired)) {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         } else if (cellValue instanceof Date) {
@@ -483,7 +486,7 @@ public class ExcelExporter {
                 }
             }
 
-            if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
+            if (sizers[sizersIndex].isNotificationRequired(notificationRequired)) {
                 String str = Datatypes.getNN(Date.class).format(date);
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
@@ -494,7 +497,7 @@ public class ExcelExporter {
             }
             str += ((Boolean) cellValue) ? trueStr : falseStr;
             cell.setCellValue(new HSSFRichTextString(str));
-            if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
+            if (sizers[sizersIndex].isNotificationRequired(notificationRequired)) {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         } else if (cellValue instanceof EnumClass) {
@@ -503,7 +506,7 @@ public class ExcelExporter {
                     : messages.getMessage(cellValue.getClass(), nameKey);
 
             cell.setCellValue(message + childCountValue);
-            if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
+            if (sizers[sizersIndex].isNotificationRequired(notificationRequired)) {
                 sizers[sizersIndex].notifyCellValue(message, stdFont);
             }
         } else if (cellValue instanceof Entity) {
@@ -512,20 +515,20 @@ public class ExcelExporter {
             String str = sizersIndex == 0 ? createSpaceString(level) + instanceName : instanceName;
             str = str + childCountValue;
             cell.setCellValue(new HSSFRichTextString(str));
-            if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
+            if (sizers[sizersIndex].isNotificationRequired(notificationRequired)) {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         } else if (cellValue instanceof Collection) {
             String str = "";
             cell.setCellValue(new HSSFRichTextString(str));
-            if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
+            if (sizers[sizersIndex].isNotificationRequired(notificationRequired)) {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         } else {
             String str = sizersIndex == 0 ? createSpaceString(level) + cellValue.toString() : cellValue.toString();
             str = str + childCountValue;
             cell.setCellValue(new HSSFRichTextString(str));
-            if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
+            if (sizers[sizersIndex].isNotificationRequired(notificationRequired)) {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         }
