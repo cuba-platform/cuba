@@ -890,7 +890,7 @@ public class CubaFoldersPane extends VerticalLayout {
         public void perform(Folder folder) {
             try {
                 byte[] data = foldersService.exportFolder(folder);
-                new WebExportDisplay().show(new ByteArrayDataProvider(data), "Folders", ExportFormat.ZIP);
+                AppBeans.get(WebExportDisplay.class).show(new ByteArrayDataProvider(data), "Folders", ExportFormat.ZIP);
             } catch (IOException ignored) {
             }
         }
