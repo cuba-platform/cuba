@@ -270,6 +270,12 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
         @ExecutedOnUIThread
         protected final void handleDone() {
+            if (isCancelled()) {
+                // handle cancel from edt before execution start
+                log.trace("Done statement is not processed because it is canceled task");
+                return;
+            }
+
             if (isClosed) {
                 log.trace("Done statement is not processed because it is already closed");
                 return;
@@ -293,8 +299,10 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
                     listener.onDone(result);
                 }
+            } catch (CancellationException e) {
+                log.debug("Cancellation exception in background task", e);
             } catch (InterruptedException e) {
-                log.debug("Exception in background task", e);
+                log.debug("Interrupted exception in background task", e);
             } catch (ExecutionException e) {
                 // do not call log.error, exception may be handled later
                 log.debug("Exception in background task", e);
@@ -351,14 +359,13 @@ public class WebBackgroundWorker implements BackgroundWorker {
             V result;
             try {
                 result = future.get();
-                this.handleDone();
-            } catch (InterruptedException e) {
-                log.debug("Interrupted exception in background task", e);
-                return null;
-            } catch (ExecutionException e) {
-                log.debug("Execution exception in background task", e);
+            } catch (InterruptedException | ExecutionException | CancellationException e) {
+                log.debug("{} exception in background task", e.getClass().getName(), e);
                 return null;
             }
+
+            this.handleDone();
+
             return result;
         }
 
