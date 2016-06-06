@@ -19,7 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.multiupload;
 
 import com.vaadin.shared.communication.ServerRpc;
 
-@Deprecated
 public interface CubaMultiUploadServerRpc extends ServerRpc {
 
     void resourceLoadingFailed();
