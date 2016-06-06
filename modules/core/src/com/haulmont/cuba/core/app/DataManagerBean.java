@@ -27,6 +27,7 @@ import com.haulmont.cuba.core.app.queryresults.QueryResultsManagerAPI;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.CategoryAttributeValue;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
@@ -329,10 +330,15 @@ public class DataManagerBean implements DataManager {
             for (Entity entity : context.getRemoveInstances()) {
                 security.restoreFilteredData((BaseGenericIdEntity) entity);
                 checkOperationPermitted(entity, ConstraintOperationType.DELETE);
-                attributeSecurity.beforeMerge(entity);
-                View view = getViewFromContext(context, entity);
 
-                Entity e = em.merge(entity, view);
+                Entity e;
+                if (entity instanceof SoftDelete) {
+                    attributeSecurity.beforeMerge(entity);
+                    View view = getViewFromContext(context, entity);
+                    e = em.merge(entity, view);
+                } else {
+                    e = em.merge(entity);
+                }
                 em.remove(e);
                 res.add(e);
 
