@@ -166,6 +166,12 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
         @Override
         protected final void done() {
+            if (isCancelled()) {
+                // handle cancel from edt before execution start
+                log.trace("Done statement is not processed because it is canceled task");
+                return;
+            }
+
             if (isClosed) {
                 log.trace("Done statement is not processed because it is already closed");
                 return;
