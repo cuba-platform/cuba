@@ -174,7 +174,8 @@ public class AttributeSecuritySupport {
         } else {
             List<String> attributeNames = new ArrayList<>();
             for (MetaProperty metaProperty : metaClass.getProperties()) {
-                if (security.isEntityAttrUpdatePermitted(metaClass, metaProperty.getName())) {
+                if (metadataTools.isSystem(metaProperty)
+                        || security.isEntityAttrUpdatePermitted(metaClass, metaProperty.getName())) {
                     attributeNames.add(metaProperty.getName());
                 }
             }
