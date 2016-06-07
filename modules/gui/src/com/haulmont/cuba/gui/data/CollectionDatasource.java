@@ -215,6 +215,11 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     void refresh(Map<String, Object> parameters);
 
     /**
+     * Returns the parameters last used in {@link #refresh(Map)} method or empty map if there was no refresh with parameters
+     */
+    Map<String, Object> getLastRefreshParameters();
+
+    /**
      * Whether to refresh datasource on changing value of a component which it depends on
      * (through <code>component$</code> parameter)
      */

@@ -636,6 +636,11 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
+    public Map<String, Object> getLastRefreshParameters() {
+        return Collections.emptyMap();
+    }
+
+    @Override
     public boolean getRefreshOnComponentValueChange() {
         return false;
     }
