@@ -75,6 +75,8 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
 
     protected int minSearchStringLength = 0;
 
+    protected boolean nullOptionVisible = true;
+
     protected Frame.NotificationType defaultNotificationType = Frame.NotificationType.TRAY;
 
     protected Color searchEditBgColor = (Color) UIManager.get("cubaSearchEditBackground");
@@ -448,6 +450,16 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     @Override
     public void setPageLength(int pageLength) {
         // do nothing
+    }
+
+    @Override
+    public void setNullOptionVisible(boolean nullOptionVisible) {
+        this.nullOptionVisible = nullOptionVisible;
+    }
+
+    @Override
+    public boolean isNullOptionVisible() {
+        return nullOptionVisible;
     }
 
     @Override

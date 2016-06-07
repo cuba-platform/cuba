@@ -70,6 +70,15 @@ public interface LookupField extends OptionsField, Component.HasInputPrompt {
      */
     void setPageLength(int pageLength);
 
+    /**
+     * Sets visibility for first null element in suggestion popup.
+     */
+    void setNullOptionVisible(boolean nullOptionVisible);
+    /**
+     * @return true if first null element is visible.
+     */
+    boolean isNullOptionVisible();
+
     enum FilterMode {
         NO,
         STARTS_WITH,

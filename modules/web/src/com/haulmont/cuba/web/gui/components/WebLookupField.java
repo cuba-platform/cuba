@@ -60,6 +60,8 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
 
     protected Messages messages = AppBeans.get(Messages.NAME);
 
+    protected boolean nullOptionVisible = true;
+
     public WebLookupField() {
         createComponent();
 
@@ -175,7 +177,8 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
     @Override
     public void setRequired(boolean required) {
         super.setRequired(required);
-        component.setNullSelectionAllowed(!required);
+
+        component.setNullSelectionAllowed(!required && nullOptionVisible);
     }
 
     @Override
@@ -340,6 +343,17 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
     @Override
     public void setPageLength(int pageLength) {
         component.setPageLength(pageLength);
+    }
+
+    @Override
+    public void setNullOptionVisible(boolean nullOptionVisible) {
+        this.nullOptionVisible = nullOptionVisible;
+        component.setNullSelectionAllowed(!isRequired() && nullOptionVisible);
+    }
+
+    @Override
+    public boolean isNullOptionVisible() {
+        return nullOptionVisible;
     }
 
     @Override

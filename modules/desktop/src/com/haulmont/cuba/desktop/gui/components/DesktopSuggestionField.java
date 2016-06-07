@@ -90,6 +90,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
 
     protected String inputPrompt;
     protected String currentSearchComponentText;
+    protected boolean nullOptionVisible = true;
     private ArrowDownActionHandler arrowDownActionHandler;
 
     public DesktopSuggestionField() {
@@ -530,6 +531,16 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
     @Override
     public void setPageLength(int pageLength) {
         // do nothing
+    }
+
+    @Override
+    public void setNullOptionVisible(boolean nullOptionVisible) {
+        this.nullOptionVisible = nullOptionVisible;
+    }
+
+    @Override
+    public boolean isNullOptionVisible() {
+        return nullOptionVisible;
     }
 
     @Override
