@@ -484,6 +484,8 @@ public class ExcelExporter {
                     case TIMESTAMP:
                         cell.setCellStyle(dateTimeFormatCellStyle);
                 }
+            } else {
+                cell.setCellStyle(dateTimeFormatCellStyle);
             }
 
             if (sizers[sizersIndex].isNotificationRequired(notificationRequired)) {
