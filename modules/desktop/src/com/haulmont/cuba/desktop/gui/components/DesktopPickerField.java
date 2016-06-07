@@ -384,8 +384,12 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
 
     @Override
     public void setDescription(String description) {
-        impl.getEditor().setToolTipText(description);
-        DesktopToolTipManager.getInstance().registerTooltip(impl.getEditor());
+        if (!ObjectUtils.equals(this.getDescription(), description)) {
+            impl.getEditor().setToolTipText(description);
+            DesktopToolTipManager.getInstance().registerTooltip(impl.getEditor());
+
+            requestContainerUpdate();
+        }
     }
 
     @Override
