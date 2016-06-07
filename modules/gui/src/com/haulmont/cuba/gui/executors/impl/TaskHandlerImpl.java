@@ -46,7 +46,7 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
     private UserSession userSession;
     private Window.CloseListener closeListener;
 
-    public TaskHandlerImpl(UIAccessor uiAccessor, TaskExecutor<T, V> taskExecutor, WatchDog watchDog) {
+    public TaskHandlerImpl(UIAccessor uiAccessor, final TaskExecutor<T, V> taskExecutor, WatchDog watchDog) {
         this.uiAccessor = uiAccessor;
         this.taskExecutor = taskExecutor;
         this.watchDog = watchDog;
@@ -72,11 +72,17 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
         // remove close listener on done
         taskExecutor.setFinalizer(() -> {
-            log.trace("Start task finalizer");
+            String taskDescription = taskExecutor.getTask().toString();
+
+            if (log.isTraceEnabled()) {
+                log.trace("Start task finalizer. Task: " + taskDescription);
+            }
 
             detachCloseListener();
 
-            log.trace("Finish task finalizer");
+            if (log.isTraceEnabled()) {
+                log.trace("Finish task finalizer. Task: " + taskDescription);
+            }
         });
     }
 
@@ -93,7 +99,9 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
     @Override
     public final void execute() {
-        checkState(!started, "Task is already started");
+        String taskDescription = taskExecutor.getTask().toString();
+
+        checkState(!started, "Task is already started. Task: " + taskDescription);
 
         this.started = true;
 
@@ -102,9 +110,9 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
         this.watchDog.manageTask(this);
 
-        UUID userId = getUserSession().getId();
         if (log.isTraceEnabled()) {
-            log.trace("Run task. User: " + userId);
+            UUID userId = getUserSession().getId();
+            log.trace("Run task: {}. User: {}", taskDescription, userId);
         }
 
         taskExecutor.startExecution();
@@ -112,7 +120,9 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
     @Override
     public final boolean cancel() {
-        checkState(started, "Task is not running");
+        String taskDescription = taskExecutor.getTask().toString();
+
+        checkState(started, "Task is not running. Task: " + taskDescription);
 
         boolean canceled = taskExecutor.cancelExecution();
         if (canceled) {
@@ -131,16 +141,18 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
                 Frame ownerFrame = getTask().getOwnerFrame();
                 String windowClass = ownerFrame.getClass().getCanonicalName();
 
-                log.trace(String.format("Task was cancelled. User: %s Frame: %s", userId.toString(), windowClass));
+                log.trace("Task was cancelled. Task: {}. User: {}. Frame: {}", taskDescription, userId.toString(), windowClass);
             }
         } else {
-            log.trace("Task wasn't cancelled. Execution is already cancelled");
+            log.trace("Task wasn't cancelled. Execution is already cancelled. Task: " + taskDescription);
         }
 
         return canceled;
     }
 
     private void detachCloseListener() {
+        String taskDescription = taskExecutor.getTask().toString();
+
         // force remove close listener
         Frame ownerFrame = getTask().getOwnerFrame();
         if (ownerFrame != null) {
@@ -150,13 +162,13 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
                 if (log.isTraceEnabled()) {
                     String windowClass = ownerFrame.getClass().getCanonicalName();
-                    log.trace("Resources were disposed. Frame: " + windowClass);
+                    log.trace("Resources were disposed. Task: {}. Frame: {}", taskDescription, windowClass);
                 }
             } else {
-                log.trace("Empty ownerWindow. Resources were not disposed");
+                log.trace("Empty ownerWindow. Resources were not disposed. Task: " + taskDescription);
             }
         } else {
-            log.trace("Empty ownerFrame. Resources were not disposed");
+            log.trace("Empty ownerFrame. Resources were not disposed. Task: " + taskDescription);
         }
         closeListener = null;
     }
@@ -184,11 +196,15 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
             detachCloseListener();
 
-            if (ownerFrame != null) {
-                String windowClass = ownerFrame.getClass().getCanonicalName();
-                log.trace("Task killed. User: {} Frame: {}", userId, windowClass);
-            } else {
-                log.trace("Task killed. User: {}", userId);
+            if (log.isTraceEnabled()) {
+                String taskDescription = taskExecutor.getTask().toString();
+
+                if (ownerFrame != null) {
+                    String windowClass = ownerFrame.getClass().getCanonicalName();
+                    log.trace("Task killed. Task: {}. User: {}. Frame: {}", taskDescription, userId, windowClass);
+                } else {
+                    log.trace("Task killed. Task: {}. User: {}", taskDescription, userId);
+                }
             }
 
             taskExecutor.cancelExecution();
@@ -201,11 +217,14 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
     public final void timeoutExceeded() {
         uiAccessor.access(() -> {
             Frame ownerFrame = getTask().getOwnerFrame();
-            if (ownerFrame != null) {
-                String windowClass = ownerFrame.getClass().getCanonicalName();
-                log.trace("Task timeout exceeded. Frame: {}", windowClass);
-            } else {
-                log.trace("Task timeout exceeded");
+            if (log.isTraceEnabled()) {
+                String taskDescription = taskExecutor.getTask().toString();
+                if (ownerFrame != null) {
+                    String windowClass = ownerFrame.getClass().getCanonicalName();
+                    log.trace("Task timeout exceeded. Task: {}. Frame: {}", taskDescription, windowClass);
+                } else {
+                    log.trace("Task timeout exceeded. Task: {}", taskDescription);
+                }
             }
 
             checkState(started, "Task is not running");
@@ -218,11 +237,14 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
                 task.handleTimeoutException();
             }
 
-            if (ownerFrame != null) {
-                String windowClass = ownerFrame.getClass().getCanonicalName();
-                log.trace("Timeout was processed. Frame: {}", windowClass);
-            } else {
-                log.trace("Timeout was processed");
+            if (log.isTraceEnabled()) {
+                String taskDescription = taskExecutor.getTask().toString();
+                if (ownerFrame != null) {
+                    String windowClass = ownerFrame.getClass().getCanonicalName();
+                    log.trace("Timeout was processed. Task: {}. Frame: {}", taskDescription, windowClass);
+                } else {
+                    log.trace("Timeout was processed. Task: {}", taskDescription);
+                }
             }
         });
     }
