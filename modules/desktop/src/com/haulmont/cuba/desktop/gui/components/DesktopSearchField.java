@@ -505,8 +505,14 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
 
     @Override
     public void setDescription(String description) {
-        ((JComponent) comboBox.getEditor().getEditorComponent()).setToolTipText(description);
-        DesktopToolTipManager.getInstance().registerTooltip((JComponent) comboBox.getEditor().getEditorComponent());
+        if (!ObjectUtils.equals(this.getDescription(), description)) {
+            JComponent editorComponent = (JComponent) comboBox.getEditor().getEditorComponent();
+
+            editorComponent.setToolTipText(description);
+            DesktopToolTipManager.getInstance().registerTooltip(editorComponent);
+
+            requestContainerUpdate();
+        }
     }
 
     @Override

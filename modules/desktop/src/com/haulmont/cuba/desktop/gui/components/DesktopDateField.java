@@ -400,9 +400,13 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
     @Override
     public void setDescription(String description) {
-        datePicker.getEditor().setToolTipText(description);
-        timeField.setDescription(description);
-        DesktopToolTipManager.getInstance().registerTooltip(datePicker.getEditor());
+        if (!ObjectUtils.equals(this.getDescription(), description)) {
+            datePicker.getEditor().setToolTipText(description);
+            timeField.setDescription(description);
+            DesktopToolTipManager.getInstance().registerTooltip(datePicker.getEditor());
+
+            requestContainerUpdate();
+        }
     }
 
     protected void updateInstance() {

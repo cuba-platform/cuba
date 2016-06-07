@@ -150,8 +150,12 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
 
     @Override
     public void setDescription(String description) {
-        impl.setToolTipText(description);
-        DesktopToolTipManager.getInstance().registerTooltip(impl);
+        if (!ObjectUtils.equals(this.getDescription(), description)) {
+            impl.setToolTipText(description);
+            DesktopToolTipManager.getInstance().registerTooltip(impl);
+
+            requestContainerUpdate();
+        }
     }
 
     @Override
