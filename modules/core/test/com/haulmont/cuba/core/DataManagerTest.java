@@ -248,6 +248,27 @@ public class DataManagerTest {
         assertEquals(server1, latest);
     }
 
+    @Test
+    public void testNonEntityResults() throws Exception {
+        // fails on aggregates
+        LoadContext context = LoadContext.create(Server.class).setQuery(LoadContext.createQuery("select count(s) from sys$Server s"));
+        try {
+            dataManager.load(context);
+            fail();
+        } catch (Exception e) {
+            assertTrue(e instanceof DevelopmentException);
+        }
+
+        // fails on single attributes
+        context = LoadContext.create(Server.class).setQuery(LoadContext.createQuery("select s.name from sys$Server s"));
+        try {
+            dataManager.load(context);
+            fail();
+        } catch (Exception e) {
+            assertTrue(e instanceof DevelopmentException);
+        }
+    }
+
     public static class MyLoadContext<E extends Entity> extends LoadContext<E> {
 
         private String info;
