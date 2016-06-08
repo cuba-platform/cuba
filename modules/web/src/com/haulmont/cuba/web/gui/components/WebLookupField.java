@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
@@ -25,6 +26,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -242,13 +244,18 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
     }
 
     @Override
+    public void setCaptionProperty(String captionProperty) {
+        this.captionProperty = captionProperty;
+
+        tryToAssignCaptionProperty();
+    }
+
+    @Override
     public void setOptionsDatasource(CollectionDatasource datasource) {
         this.optionsDatasource = datasource;
         component.setContainerDataSource(new LookupOptionsDsWrapper(datasource, true));
 
-        if (captionProperty != null) {
-            component.setItemCaptionPropertyId(optionsDatasource.getMetaClass().getProperty(captionProperty));
-        }
+        tryToAssignCaptionProperty();
 
         if (nullOption != null) {
             initNullEntity();
@@ -257,6 +264,19 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
         checkMissingValue();
 
         assignAutoDebugId();
+    }
+
+    protected void tryToAssignCaptionProperty() {
+        if (optionsDatasource != null && captionProperty != null && captionMode == CaptionMode.PROPERTY) {
+            MetaPropertyPath propertyPath = optionsDatasource.getMetaClass().getPropertyPath(captionProperty);
+
+            if (propertyPath != null && component.getContainerDataSource() != null) {
+                ((LookupOptionsDsWrapper) component.getContainerDataSource()).addProperty(propertyPath);
+                component.setItemCaptionPropertyId(propertyPath);
+            } else {
+                throw new IllegalArgumentException(String.format("Can't find property for given caption property: %s", captionProperty));
+            }
+        }
     }
 
     @Override
@@ -288,7 +308,7 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
         if (datasource != null && StringUtils.isNotEmpty(datasource.getId()) && metaPropertyPath != null) {
             return getClass().getSimpleName() + "_" + datasource.getId() + "_" + metaPropertyPath.toString();
         }
-        if (optionsDatasource != null &&  StringUtils.isNotEmpty(optionsDatasource.getId())) {
+        if (optionsDatasource != null && StringUtils.isNotEmpty(optionsDatasource.getId())) {
             return getClass().getSimpleName() + "_" + optionsDatasource.getId();
         }
 
@@ -387,6 +407,12 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
 
         public LookupOptionsDsWrapper(CollectionDatasource datasource, boolean autoRefresh) {
             super(datasource, autoRefresh);
+        }
+
+        public void addProperty(MetaPropertyPath property) {
+            if (!properties.contains(property)) {
+                properties.add(property);
+            }
         }
 
         @Override

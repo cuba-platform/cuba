@@ -18,7 +18,7 @@
 package com.haulmont.cuba.desktop.gui.data;
 
 import com.google.common.collect.Iterables;
-import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
@@ -57,7 +57,9 @@ public class TreeModelAdapter implements TreeModel {
 
         this.datasource = datasource;
         this.captionMode = captionMode;
-        this.captionProperty = captionProperty;
+
+        setCaptionProperty(captionProperty);
+
         this.autoRefresh = autoRefresh;
 
         this.metadataTools = AppBeans.get(MetadataTools.NAME);
@@ -169,6 +171,12 @@ public class TreeModelAdapter implements TreeModel {
 
     public void setCaptionProperty(String captionProperty) {
         this.captionProperty = captionProperty;
+
+        if (captionProperty != null) {
+            setCaptionMode(CaptionMode.PROPERTY);
+        } else {
+            setCaptionMode(CaptionMode.ITEM);
+        }
     }
 
     public Node createNode(Entity entity) {
@@ -295,9 +303,12 @@ public class TreeModelAdapter implements TreeModel {
             if (captionMode.equals(CaptionMode.ITEM)) {
                 value = entity.getInstanceName();
             } else {
-                Object propertyValue = entity.getValue(captionProperty);
-                MetaProperty property = entity.getMetaClass().getProperty(captionProperty);
-                return metadataTools.format(propertyValue, property);
+                MetaPropertyPath propertyPath = entity.getMetaClass().getPropertyPath(captionProperty);
+                if (propertyPath != null) {
+                    return metadataTools.format(entity.getValueEx(captionProperty), propertyPath.getMetaProperty());
+                } else {
+                    throw new IllegalArgumentException(String.format("Can't find property for given caption property: %s", captionProperty));
+                }
             }
             return value;
         }

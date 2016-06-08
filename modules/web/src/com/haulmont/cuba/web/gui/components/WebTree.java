@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Security;
@@ -147,14 +148,7 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
         if (!ObjectUtils.equals(this.captionProperty, captionProperty)) {
             this.captionProperty = captionProperty;
 
-            if (datasource != null) {
-                if (captionProperty != null) {
-                    component.setItemCaptionPropertyId(datasource.getMetaClass().getProperty(captionProperty));
-                } else {
-                    component.setItemCaptionPropertyId(null);
-                    component.setItemCaptionMode(ItemCaptionMode.ITEM);
-                }
-            }
+            tryToAssignCaptionProperty();
         }
     }
 
@@ -163,17 +157,26 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
         return hierarchyProperty;
     }
 
+    protected void tryToAssignCaptionProperty() {
+        if (datasource != null && captionProperty != null && captionMode == CaptionMode.PROPERTY) {
+            MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(captionProperty);
+
+            if (propertyPath != null && component.getContainerDataSource() != null) {
+                ((HierarchicalDsWrapper) component.getContainerDataSource()).addProperty(propertyPath);
+                component.setItemCaptionPropertyId(propertyPath);
+            } else {
+                throw new IllegalArgumentException(String.format("Can't find property for given caption property: %s", captionProperty));
+            }
+        }
+    }
+
     @Override
     public void setDatasource(HierarchicalDatasource datasource) {
         this.datasource = datasource;
         this.hierarchyProperty = datasource.getHierarchyPropertyName();
+        component.setContainerDataSource(new HierarchicalDsWrapper(datasource));
 
-        HierarchicalDsWrapper wrapper = new HierarchicalDsWrapper(datasource);
-        component.setContainerDataSource(wrapper);
-
-        if (captionProperty != null) {
-            component.setItemCaptionPropertyId(datasource.getMetaClass().getProperty(captionProperty));
-        }
+        tryToAssignCaptionProperty();
 
         Security security = AppBeans.get(Security.NAME);
         if (security.isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {

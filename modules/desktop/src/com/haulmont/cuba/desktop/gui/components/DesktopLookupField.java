@@ -33,6 +33,7 @@ import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
 import com.haulmont.cuba.desktop.sys.vcl.UserSelectionHandler;
+import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.ObjectUtils;
@@ -44,8 +45,10 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> implements LookupField, UserSelectionHandler {
 
@@ -665,11 +668,22 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
         if (datasource != null && StringUtils.isNotEmpty(datasource.getId()) && metaPropertyPath != null) {
             return getClass().getSimpleName() + "_" + datasource.getId() + "_" + metaPropertyPath.toString();
         }
-        if (optionsDatasource != null &&  StringUtils.isNotEmpty(optionsDatasource.getId())) {
+        if (optionsDatasource != null && StringUtils.isNotEmpty(optionsDatasource.getId())) {
             return getClass().getSimpleName() + "_" + optionsDatasource.getId();
         }
 
         return getClass().getSimpleName();
+    }
+
+    @Override
+    public void setCaptionProperty(String captionProperty) {
+        this.captionProperty = captionProperty;
+
+        if (captionProperty != null) {
+            setCaptionMode(CaptionMode.PROPERTY);
+        } else {
+            setCaptionMode(CaptionMode.ITEM);
+        }
     }
 
     @Override
@@ -689,6 +703,25 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
         if (userSelectionListeners != null) {
             userSelectionListeners.remove(listener);
         }
+    }
+
+    @Override
+    protected String getDisplayString(Entity entity) {
+        // This code was copied from superclass
+        if (entity == null)
+            return "";
+
+        String captionValue;
+        if (captionMode.equals(CaptionMode.PROPERTY) && !StringUtils.isBlank(captionProperty)) {
+            captionValue = entity.getValueEx(captionProperty);
+        } else {
+            captionValue = entity.getInstanceName();
+        }
+
+        if (captionValue == null)
+            captionValue = "";
+
+        return captionValue;
     }
 
     protected class NullOption extends EntityWrapper {

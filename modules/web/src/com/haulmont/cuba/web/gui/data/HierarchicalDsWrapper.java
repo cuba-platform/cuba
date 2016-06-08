@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.gui.data;
 
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
 import com.vaadin.data.Container;
@@ -30,6 +31,12 @@ public class HierarchicalDsWrapper extends CollectionDsWrapper implements Contai
     public HierarchicalDsWrapper(HierarchicalDatasource datasource) {
         super(datasource, true);
         this.parentPropertyName = datasource.getHierarchyPropertyName();
+    }
+
+    public void addProperty(MetaPropertyPath property) {
+        if (!properties.contains(property)) {
+            properties.add(property);
+        }
     }
 
     @Override
