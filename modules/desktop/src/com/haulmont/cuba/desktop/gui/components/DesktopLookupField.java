@@ -76,6 +76,8 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
     protected String inputPrompt;
     protected boolean textInputAllowed = true;
 
+    protected boolean nullOptionVisible = true;
+
     protected List<UserSelectionListener> userSelectionListeners = null; // lazy initialized list
 
     public DesktopLookupField() {
@@ -300,7 +302,7 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
 
         items.clear();
 
-        if (!isRequired() && nullOption == null) {
+        if (!isRequired() && nullOption == null && nullOptionVisible) {
             items.add(new ObjectWrapper(null));
         }
 
@@ -412,6 +414,16 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
     @Override
     public void setPageLength(int pageLength) {
         // do nothing
+    }
+
+    @Override
+    public void setNullOptionVisible(boolean nullOptionVisible) {
+        this.nullOptionVisible = nullOptionVisible;
+    }
+
+    @Override
+    public boolean isNullOptionVisible() {
+        return nullOptionVisible;
     }
 
     @Override

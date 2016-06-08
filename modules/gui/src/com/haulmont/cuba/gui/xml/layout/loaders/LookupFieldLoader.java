@@ -64,6 +64,15 @@ public class LookupFieldLoader extends AbstractFieldLoader<LookupField> {
 
         loadFilterMode(resultComponent, element);
         loadNewOptionHandler(resultComponent, element);
+
+        loadNullOptionVisible(resultComponent, element);
+    }
+
+    protected void loadNullOptionVisible(LookupField resultComponent, Element element) {
+        String nullOptionVisible = element.attributeValue("nullOptionVisible");
+        if (StringUtils.isNotEmpty(nullOptionVisible)) {
+            resultComponent.setNullOptionVisible(Boolean.parseBoolean(nullOptionVisible));
+        }
     }
 
     protected void loadTextInputAllowed() {
