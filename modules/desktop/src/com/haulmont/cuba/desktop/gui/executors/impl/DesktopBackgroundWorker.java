@@ -144,9 +144,8 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
                     });
                 }
             } catch (Exception ex) {
-                String taskDescription = runnableTask.toString();
                 // do not call log.error, exception may be handled later
-                log.debug("Exception occurred in background task. Task: {}", taskDescription, ex);
+                log.debug("Exception occurred in background task. Task: {}", runnableTask, ex);
                 if (!(ex instanceof InterruptedException) && !isCancelled()) {
                     taskException = ex;
                 }
@@ -170,16 +169,16 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         protected final void done() {
             if (isCancelled()) {
                 // handle cancel from edt before execution start
-                log.trace("Done statement is not processed because it is canceled task. Task: {}", runnableTask.toString());
+                log.trace("Done statement is not processed because it is canceled task. Task: {}", runnableTask);
                 return;
             }
 
             if (isClosed) {
-                log.trace("Done statement is not processed because it is already closed. Task: {}", runnableTask.toString());
+                log.trace("Done statement is not processed because it is already closed. Task: {}", runnableTask);
                 return;
             }
 
-            log.debug("Done task: {}. User: {}", runnableTask.toString(), userId);
+            log.debug("Done task: {}. User: {}", runnableTask, userId);
 
             try {
                 if (this.taskException == null) {
@@ -191,11 +190,11 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
                 } else {
                     boolean handled = runnableTask.handleException(taskException);
                     if (!handled) {
-                        log.error("Unhandled exception in background task. Task: {}", runnableTask.toString(), taskException);
+                        log.error("Unhandled exception in background task. Task: {}", runnableTask, taskException);
                     }
                 }
 
-                log.trace("Task finished correctly. Task: {}", runnableTask.toString());
+                log.trace("Task finished correctly. Task: {}", runnableTask);
             } finally {
                 if (finalizer != null) {
                     finalizer.run();
@@ -215,24 +214,23 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         @Override
         public final boolean cancelExecution() {
             if (isClosed) {
-                log.trace("Cancel will not be processed because it is already closed. Task: {}", runnableTask.toString());
+                log.trace("Cancel will not be processed because it is already closed. Task: {}", runnableTask);
                 return false;
             }
 
-            log.debug("Cancel task. Task: {}. User: {}", runnableTask.toString(), userId);
+            log.debug("Cancel task. Task: {}. User: {}", runnableTask, userId);
 
             boolean isCanceledNow = cancel(true);
 
-            String taskDescription = runnableTask.toString();
             if (isCanceledNow) {
-                log.trace("Task was cancelled. Task: {}. User: {}", taskDescription, userId);
+                log.trace("Task was cancelled. Task: {}. User: {}", runnableTask, userId);
             } else {
-                log.trace("Cancellation of task isn't processed. Task: {}. User: {}", taskDescription, userId);
+                log.trace("Cancellation of task isn't processed. Task: {}. User: {}", runnableTask, userId);
             }
 
             if (!doneHandled) {
                 log.trace("Done was not handled. Return 'true' as canceled status. Task: {}. User: {}",
-                        runnableTask.toString(), userId);
+                        runnableTask, userId);
 
                 this.isClosed = true;
                 return true;
@@ -248,7 +246,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
                 result = get();
             } catch (InterruptedException | ExecutionException | CancellationException e) {
                 log.debug("{} exception in background task: {}", e.getClass().getName(),
-                        runnableTask.toString(), e);
+                        runnableTask, e);
                 return null;
             }
 
