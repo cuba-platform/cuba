@@ -106,4 +106,8 @@ public interface TestConfig extends Config
     @Default("aaa|bbb|ccc")
     @Factory(factory = StringListTypeFactory.class)
     List<String> getStringListProp();
+
+    @Property("cuba.test.stringNotFoundGetterProp")
+    String getStringNotFoundGetterProp();
+    void setStringNotFoundGetProp(String value);
 }
