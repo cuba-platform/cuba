@@ -216,6 +216,17 @@ public class ConfigProviderTest {
         assertEquals("new_value", value);
     }
 
+    @Test
+    public void testNotFoundGetterForProperty() {
+        try {
+            TestConfig config = AppBeans.get(Configuration.class).getConfig(TestConfig.class);
+            config.setStringNotFoundGetProp("problem");
+            fail("Exception is not thrown for property without getter");
+        } catch (Exception e) {
+            //it's OK
+        }
+    }
+
     private void cleanup() {
         Transaction tx = cont.persistence().createTransaction();
         try {

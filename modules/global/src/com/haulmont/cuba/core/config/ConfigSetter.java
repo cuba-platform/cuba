@@ -19,6 +19,7 @@
 
 package com.haulmont.cuba.core.config;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.config.type.TypeStringify;
 
 import java.lang.reflect.Method;
@@ -41,6 +42,9 @@ public class ConfigSetter extends ConfigAccessorMethod {
      */
     public ConfigSetter(Class<?> configInterface, Method method) {
         super(configInterface, method);
+        Method getMethod = ConfigUtil.getGetMethod(configInterface, method);
+        Preconditions.checkNotNullArgument(getMethod, String.format("Cannot find getter for config \"%s\" property \"%s\"",
+                configInterface.getSimpleName(), getPropertyName()));
         sourceType = ConfigUtil.getSourceType(configInterface, method);
         if (!String.class.equals(ConfigUtil.getMethodType(method)))
             stringifier = TypeStringify.getInstance(configInterface, method);
