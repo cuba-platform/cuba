@@ -448,20 +448,6 @@ public class LoginWindow extends UIView {
 
         if (!bruteForceProtectionCheck(login, app.getClientAddress())) return;
 
-        if (isBruteForceProtectionEnabled()) {
-            if (loginService.loginAttemptsLeft(login, app.getClientAddress()) <= 0) {
-                String title = messages.getMainMessage("loginWindow.loginFailed", resolvedLocale);
-                String message = messages.formatMessage(messages.getMainMessagePack(),
-                        "loginWindow.loginAttemptsNumberExceeded",
-                        resolvedLocale,
-                        loginService.getBruteForceBlockIntervalSec());
-
-                new Notification(title, message, Type.ERROR_MESSAGE, true).show(ui.getPage());
-                log.info("Blocked user login attempt: login={}, ip={}", login, app.getClientAddress());
-                return;
-            }
-        }
-
         try {
             Locale locale = getUserLocale();
             app.setLocale(locale);
