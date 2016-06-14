@@ -57,7 +57,7 @@ public class ConditionParamBuilderImpl implements ConditionParamBuilder{
     @Override
     public String createParamName(AbstractCondition condition) {
         return "component$" + condition.getFilterComponentName() + "." +
-                condition.getName().replace('.', '_') + RandomStringUtils.randomNumeric(5);
+                condition.getName().replace('.', '_').replace(" ", "_") + RandomStringUtils.randomNumeric(5);
     }
 
     protected interface Builder {
