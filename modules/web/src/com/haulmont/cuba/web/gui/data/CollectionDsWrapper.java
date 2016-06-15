@@ -193,6 +193,9 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
 
     @Override
     public boolean addContainerProperty(Object propertyId, Class type, Object defaultValue) throws UnsupportedOperationException {
+        if (propertyId instanceof MetaPropertyPath) {
+            return this.properties.add((MetaPropertyPath) propertyId);
+        }
         throw new UnsupportedOperationException();
     }
 
