@@ -111,11 +111,9 @@ public class LogDataProvider implements ExportDataProvider {
                 log.debug("Unable to download log from " + url + "\n" + httpResponse.getStatusLine());
                 throw new RuntimeException("Unable to download log from " + url + "\n" + httpResponse.getStatusLine());
             }
-        } catch (IOException ex) {
-            log.debug("Unable to download log from " + url + "\n" + ex);
-            throw new RuntimeException(ex);
-        } finally {
-            connectionManager.shutdown();
+        } catch (IOException e) {
+            log.debug("Unable to download log from " + url + "\n" + e);
+            throw new RuntimeException(e);
         }
 
         return inputStream;
