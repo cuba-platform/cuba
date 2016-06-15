@@ -120,8 +120,6 @@ public class LogDataProvider implements ExportDataProvider {
         } catch (IOException e) {
             log.debug("Unable to download log from " + url + "\n" + e);
             throw new RuntimeException(e);
-        } finally {
-            connectionManager.shutdown();
         }
 
         return inputStream;
