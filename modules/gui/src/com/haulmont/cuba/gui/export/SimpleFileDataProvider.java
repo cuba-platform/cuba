@@ -113,8 +113,6 @@ public class SimpleFileDataProvider implements ExportDataProvider {
                     throw new RuntimeException(
                             new FileStorageException(FileStorageException.Type.IO_EXCEPTION, filePath, ex)
                     );
-            } finally {
-                connectionManager.shutdown();
             }
         }
 

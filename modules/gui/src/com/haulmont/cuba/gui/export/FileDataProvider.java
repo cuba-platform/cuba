@@ -141,8 +141,6 @@ public class FileDataProvider implements ExportDataProvider {
                                     fileDescriptor.getName(), ex)
                     );
                 }
-            } finally {
-                connectionManager.shutdown();
             }
         }
     }
