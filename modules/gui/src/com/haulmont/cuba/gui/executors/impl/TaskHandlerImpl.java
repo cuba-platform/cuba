@@ -122,9 +122,11 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
             if (log.isTraceEnabled()) {
                 Frame ownerFrame = getTask().getOwnerFrame();
-                String windowClass = ownerFrame.getClass().getCanonicalName();
+                if (ownerFrame != null) {
+                    String windowClass = ownerFrame.getClass().getCanonicalName();
 
-                log.trace("Task was cancelled. Task: {}. User: {}. Frame: {}", taskExecutor.getTask(), getUserSession().getId(), windowClass);
+                    log.trace("Task was cancelled. Task: {}. User: {}. Frame: {}", taskExecutor.getTask(), getUserSession().getId(), windowClass);
+                }
             }
         } else {
             log.trace("Task wasn't cancelled. Execution is already cancelled. Task: {}", taskExecutor.getTask());
