@@ -20,6 +20,7 @@ package com.haulmont.cuba.gui.executors;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Window;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -178,6 +179,7 @@ public abstract class BackgroundTask<T, V> {
     /**
      * @return owner window
      */
+    @Nullable
     public final Frame getOwnerFrame() {
         return ownerFrame;
     }
