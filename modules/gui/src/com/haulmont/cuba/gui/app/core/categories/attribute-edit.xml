@@ -44,6 +44,14 @@
                         <field id="entityClass" custom="true" required="true" width="100%"/>
                         <field id="screen" custom="true" width="100%"/>
                         <field id="lookup"/>
+                        <field id="width" width="100%">
+                            <validator class="com.haulmont.cuba.gui.components.validators.PatternValidator"
+                                       pattern="^(\d*(\.\d+)?)(%|px)?$" message="msg://widthValidationMsg"/>
+                        </field>
+                        <field id="rowsCount" width="100%">
+                            <validator class="com.haulmont.cuba.gui.components.validators.IntegerValidator"
+                                       onlyPositive="true" message="msg://rowsCountValidationMsg"/>
+                        </field>
                         <field id="defaultEntityId" custom="true" width="100%"/>
 
                         <field id="enumeration" required="true" width="100%"/>

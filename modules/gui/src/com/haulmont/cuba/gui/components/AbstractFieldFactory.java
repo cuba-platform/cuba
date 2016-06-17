@@ -35,6 +35,7 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
+import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
@@ -184,6 +185,20 @@ public abstract class AbstractFieldFactory implements FieldFactory {
                 TextArea textArea = componentsFactory.createComponent(TextArea.class);
                 textArea.setRows(Integer.parseInt(rows));
                 textField = textArea;
+            }
+        }
+        if (DynamicAttributesUtils.isDynamicAttribute(property)) {
+            MetaClass metaClass = datasource instanceof RuntimePropsDatasource ?
+                    ((RuntimePropsDatasource) datasource).resolveCategorizedEntityClass() : datasource.getMetaClass();
+            MetaPropertyPath mpp = DynamicAttributesUtils.getMetaPropertyPath(metaClass, property);
+            if (mpp != null) {
+                CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(mpp.getMetaProperty());
+                if (categoryAttribute != null && categoryAttribute.getDataType() == PropertyType.STRING
+                        && categoryAttribute.getRowsCount() != null && categoryAttribute.getRowsCount() > 1) {
+                    TextArea textArea = componentsFactory.createComponent(TextArea.class);
+                    textArea.setRows(categoryAttribute.getRowsCount());
+                    textField = textArea;
+                }
             }
         }
 

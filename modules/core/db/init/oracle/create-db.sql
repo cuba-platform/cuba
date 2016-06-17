@@ -77,6 +77,8 @@ create table SYS_CATEGORY_ATTR (
     REQUIRED char(1),
     LOOKUP char(1),
     TARGET_SCREENS varchar2(4000),
+    WIDTH varchar2(20),
+    ROWS_COUNT integer,
     primary key(ID)
 )^
 create index IDX_SYS_CATEGORY_ATTR_CATEGORY on SYS_CATEGORY_ATTR(CATEGORY_ID)^

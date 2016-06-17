@@ -755,6 +755,8 @@ create table SYS_CATEGORY_ATTR (
     REQUIRED tinyint,
     LOOKUP tinyint,
     TARGET_SCREENS varchar(4000),
+    WIDTH varchar(20),
+    ROWS_COUNT integer,
     --
     primary key nonclustered (ID),
     constraint SYS_CATEGORY_ATTR_CATEGORY_ID foreign key (CATEGORY_ID) references SYS_CATEGORY(ID)

@@ -179,8 +179,17 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         for (DynamicAttributesMetaProperty property : metaProperties) {
             FieldGroup.FieldConfig field = new FieldGroup.FieldConfig(property.getName());
             CategoryAttribute attribute = property.getAttribute();
-            field.setCaption(attribute != null ? attribute.getName() : property.getName());
-            field.setWidth(fieldWidth);
+            if (attribute != null) {
+                field.setCaption(attribute.getName());
+                if (StringUtils.isNotBlank(attribute.getWidth())) {
+                    field.setWidth(attribute.getWidth());
+                } else {
+                    field.setWidth(fieldWidth);
+                }
+            } else {
+                field.setCaption(property.getName());
+                field.setWidth(fieldWidth);
+            }
             fields.add(field);
             Range range = property.getRange();
             if (!range.isDatatype()) {
