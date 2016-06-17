@@ -22,16 +22,14 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.TreeModelAdapter;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.jdesktop.swingx.HorizontalLayout;
-import org.jdesktop.swingx.VerticalLayout;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
@@ -111,6 +109,13 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
     @Override
     public JComponent getComposition() {
         return panel;
+    }
+
+    @Override
+    protected void updateEnabled() {
+        super.updateEnabled();
+
+        impl.setEnabled(isEnabledWithParent());
     }
 
     @Override
