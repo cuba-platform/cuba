@@ -100,6 +100,12 @@ public class CategoryAttribute extends StandardEntity {
     @Column(name = "DEFAULT_DATE_IS_CURRENT")
     private Boolean defaultDateIsCurrent;
 
+    @Column(name = "WIDTH", length = 20)
+    private String width;
+
+    @Column(name = "ROWS_COUNT")
+    private Integer rowsCount;
+
     public void setCategory(Category entityType) {
         this.category = entityType;
     }
@@ -266,6 +272,22 @@ public class CategoryAttribute extends StandardEntity {
 
     public void setCategoryEntityType(String categoryEntityType) {
         this.categoryEntityType = categoryEntityType;
+    }
+
+    public String getWidth() {
+        return width;
+    }
+
+    public void setWidth(String width) {
+        this.width = width;
+    }
+
+    public Integer getRowsCount() {
+        return rowsCount;
+    }
+
+    public void setRowsCount(Integer rowsCount) {
+        this.rowsCount = rowsCount;
     }
 
     public Set<String> targetScreensSet() {

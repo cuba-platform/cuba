@@ -68,6 +68,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                             messages.getMainMessagePack(),
                             "validation.required.defaultMsg",
                             attribute.getName()));
+                    loadWidth(field, attribute.getWidth());
                     fields.add(field);
                 }
                 dynamicAttributesGuiTools.listenDynamicAttributesChanges(ds);
@@ -192,7 +193,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
         field.setFormatter(loadFormatter(element));
 
-        loadWidth(field, element);
+        loadWidth(field, element.attributeValue("width"));
 
         field.setCustom(customField);
 
@@ -210,8 +211,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
         return field;
     }
 
-    protected void loadWidth(FieldGroup.FieldConfig field, Element element) {
-        final String width = element.attributeValue("width");
+    protected void loadWidth(FieldGroup.FieldConfig field, String width) {
         if ("auto".equalsIgnoreCase(width)) {
             field.setWidth(Component.AUTO_SIZE);
         } else if (StringUtils.isNotBlank(width)) {
