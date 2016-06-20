@@ -199,11 +199,13 @@ public class LoginWindow extends UIView {
     }
 
     protected Locale resolveLocale(App app) {
-        String lastLocale = app.getCookieValue(COOKIE_LOCALE);
-        if (lastLocale != null) {
-            for (Locale locale : locales.values()) {
-                if (locale.toLanguageTag().equals(lastLocale)) {
-                    return locale;
+        if (globalConfig.getLocaleSelectVisible()) {
+            String lastLocale = app.getCookieValue(COOKIE_LOCALE);
+            if (lastLocale != null) {
+                for (Locale locale : locales.values()) {
+                    if (locale.toLanguageTag().equals(lastLocale)) {
+                        return locale;
+                    }
                 }
             }
         }
@@ -486,7 +488,9 @@ public class LoginWindow extends UIView {
             // locale could be set on the server
             if (connection.getSession() != null) {
                 app.setLocale(connection.getSession().getLocale());
-                app.addCookie(COOKIE_LOCALE, locale.toLanguageTag());
+                if (globalConfig.getLocaleSelectVisible()) {
+                    app.addCookie(COOKIE_LOCALE, locale.toLanguageTag());
+                }
             }
         } catch (LoginException e) {
             log.info("Login failed: " + e.toString());
