@@ -24,6 +24,10 @@ $cuba-searchselect-edit-color: scale-color(lighten($v-focus-color, 35%), $satura
   .#{$primary-stylename} {
     padding-right: 0px;
 
+    .#{$primary-stylename}-input {
+      padding-right: 0px;
+    }
+
     .#{$primary-stylename}-button {
       background: none;
       display: none;
