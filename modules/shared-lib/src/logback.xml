@@ -51,6 +51,8 @@
 
     <logger name="com.haulmont.cuba.portal" level="INFO"/>
 
+    <logger name="com.haulmont.cuba.core.app.LockManager" level="INFO"/>
+
     <!-- End CUBA -->
 
     <logger name="eclipselink" level="WARN"/>
