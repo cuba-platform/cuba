@@ -17,10 +17,13 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.web.toolkit.ui.CubaTextArea;
 import com.vaadin.ui.TextArea;
 
 public class WebTextArea extends WebAbstractTextArea<TextArea> implements com.haulmont.cuba.gui.components.TextArea {
+
+    protected Datatype datatype;
 
     @Override
     protected TextArea createTextFieldImpl() {
@@ -50,5 +53,20 @@ public class WebTextArea extends WebAbstractTextArea<TextArea> implements com.ha
     @Override
     public void setWordwrap(boolean wordwrap) {
         component.setWordwrap(wordwrap);
+    }
+
+    @Override
+    public Datatype getDatatype() {
+        return datatype;
+    }
+
+    @Override
+    public void setDatatype(Datatype datatype) {
+        this.datatype = datatype;
+        if (datatype == null) {
+            initFieldConverter();
+        } else {
+            component.setConverter(new TextFieldStringToDatatypeConverter(datatype));
+        }
     }
 }

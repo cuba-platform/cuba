@@ -16,6 +16,8 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.gui.components.TextArea;
 import org.apache.commons.lang.StringUtils;
 
@@ -48,6 +50,12 @@ public class TextAreaLoader extends AbstractTextFieldLoader<TextArea> {
         String wordwrap = element.attributeValue("wordwrap");
         if (StringUtils.isNotEmpty(wordwrap)) {
             resultComponent.setWordwrap(Boolean.parseBoolean(wordwrap));
+        }
+
+        String datatypeAttribute = element.attributeValue("datatype");
+        if (StringUtils.isNotEmpty(datatypeAttribute)) {
+            Datatype datatype = Datatypes.get(datatypeAttribute);
+            resultComponent.setDatatype(datatype);
         }
     }
 }

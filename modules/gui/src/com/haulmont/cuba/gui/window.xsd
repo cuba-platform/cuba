@@ -37,17 +37,24 @@
     </xs:simpleType>
 
     <xs:simpleType name="datatypeEnum">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="decimal"/>
-            <xs:enumeration value="boolean"/>
-            <xs:enumeration value="byte array"/>
-            <xs:enumeration value="date"/>
-            <xs:enumeration value="double"/>
-            <xs:enumeration value="int"/>
-            <xs:enumeration value="long"/>
-            <xs:enumeration value="string"/>
-            <xs:enumeration value="uuid"/>
-        </xs:restriction>
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="decimal"/>
+                    <xs:enumeration value="boolean"/>
+                    <xs:enumeration value="byte array"/>
+                    <xs:enumeration value="date"/>
+                    <xs:enumeration value="double"/>
+                    <xs:enumeration value="int"/>
+                    <xs:enumeration value="long"/>
+                    <xs:enumeration value="string"/>
+                    <xs:enumeration value="uuid"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
     </xs:simpleType>
 
     <xs:simpleType name="dateFieldResolution">
@@ -675,6 +682,8 @@
             <xs:extension base="baseTextComponent">
                 <xs:attribute name="cols" type="xs:int"/>
                 <xs:attribute name="rows" type="xs:int"/>
+
+                <xs:attributeGroup ref="hasDatatype"/>
 
                 <xs:attribute name="maxLength" type="xs:int"/>
                 <xs:attribute name="resizable" type="xs:boolean"/>

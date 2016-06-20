@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.gui.components.ResizableTextArea;
 import com.haulmont.cuba.gui.components.compatibility.ResizeListenerWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaResizableTextAreaWrapper;
@@ -31,6 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WebResizableTextArea extends WebAbstractTextArea<CubaTextArea> implements ResizableTextArea {
+
+    protected Datatype datatype;
 
     protected List<ResizeListener> resizeListeners;
 
@@ -227,5 +230,20 @@ public class WebResizableTextArea extends WebAbstractTextArea<CubaTextArea> impl
     @Override
     public void setWordwrap(boolean wordwrap) {
         component.setWordwrap(wordwrap);
+    }
+
+    @Override
+    public Datatype getDatatype() {
+        return datatype;
+    }
+
+    @Override
+    public void setDatatype(Datatype datatype) {
+        this.datatype = datatype;
+        if (datatype == null) {
+            initFieldConverter();
+        } else {
+            component.setConverter(new TextFieldStringToDatatypeConverter(datatype));
+        }
     }
 }

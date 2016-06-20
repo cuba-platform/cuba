@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
 import com.haulmont.cuba.gui.components.TextArea;
 import org.apache.commons.lang.StringUtils;
@@ -231,5 +232,16 @@ public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> impleme
         public void flushValue() {
             flush();
         }
+    }
+
+    @Override
+    public void setDatatype(Datatype datatype) {
+        this.datatype = datatype;
+        this.valueFormatter.setDatatype(datatype);
+    }
+
+    @Override
+    public Datatype getDatatype() {
+        return datatype;
     }
 }

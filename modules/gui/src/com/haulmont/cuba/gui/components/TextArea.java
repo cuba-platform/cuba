@@ -16,6 +16,8 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+
 public interface TextArea extends TextInputField,
                                   TextInputField.MaxLengthLimited,
                                   TextInputField.CursorPositionSupported,
@@ -32,4 +34,7 @@ public interface TextArea extends TextInputField,
 
     boolean isWordwrap();
     void setWordwrap(boolean wordwrap);
+
+    Datatype getDatatype();
+    void setDatatype(Datatype datatype);
 }
