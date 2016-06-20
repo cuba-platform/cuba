@@ -262,7 +262,9 @@ public class ChileAnnotationsLoader implements MetaClassLoader {
                 if (property == null) {
                     MetadataObjectInfo<MetaProperty> info;
                     if (isCollection(method) || isMap(method)) {
-                        throw new UnsupportedOperationException("Method-based properties don't support collections and maps");
+                        throw new UnsupportedOperationException(String.format("Method-based property %s.%s doesn't support collections and maps", clazz.getSimpleName(), method.getName()));
+                    } else if (method.getParameterCount() != 0) {
+                        throw new UnsupportedOperationException(String.format("Method-based property %s.%s doesn't support arguments", clazz.getSimpleName(), method.getName()));
                     } else {
                         info = loadProperty(metaClass, method, name);
                         tasks.addAll(info.getTasks());
