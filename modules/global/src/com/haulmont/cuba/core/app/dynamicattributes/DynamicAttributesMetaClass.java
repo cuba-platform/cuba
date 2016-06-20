@@ -66,7 +66,7 @@ public class DynamicAttributesMetaClass extends MetadataObjectImpl implements Me
 
     @Override
     public Class getJavaClass() {
-        return getClass();
+        return Object.class;
     }
 
     @Override
