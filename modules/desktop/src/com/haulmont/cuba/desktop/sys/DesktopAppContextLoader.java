@@ -17,10 +17,9 @@
 
 package com.haulmont.cuba.desktop.sys;
 
+import com.google.common.base.Splitter;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.AbstractAppContextLoader;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.SingleSecurityContextHolder;
+import com.haulmont.cuba.core.sys.*;
 import com.haulmont.cuba.gui.AppConfig;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -37,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 /**
  * {@link AppContext} loader of the desktop client application.
@@ -46,21 +46,33 @@ public class DesktopAppContextLoader extends AbstractAppContextLoader {
 
     public static final String HOME_DIR_SYS_PROP = "cuba.desktop.home";
 
+    public static final Pattern SEPARATOR_PATTERN = Pattern.compile("\\s");
+
+    public static final String APP_COMPONENTS_SYS_PROP = "cuba.appComponents";
+
     public static final String APP_PROPERTIES_CONFIG_SYS_PROP = "cuba.appPropertiesConfig";
 
+    private String defaultAppComponents;
     private String defaultAppPropertiesConfig;
     private String[] args;
 
     private Logger log = LoggerFactory.getLogger(DesktopAppContextLoader.class);
 
-    public DesktopAppContextLoader(String defaultAppPropertiesConfig, String[] args) {
+    public DesktopAppContextLoader(String defaultAppComponents, String defaultAppPropertiesConfig, String[] args) {
+        this.defaultAppComponents = defaultAppComponents;
         this.defaultAppPropertiesConfig = defaultAppPropertiesConfig;
         this.args = args;
     }
 
-    public void load() {
-        AppContext.setSecurityContextHolder(new SingleSecurityContextHolder());
+    @Override
+    protected String getBlock() {
+        return "desktop";
+    }
 
+    public void load() {
+        AppContext.Internals.setSecurityContextHolder(new SingleSecurityContextHolder());
+
+        initAppComponents();
         initAppProperties();
         afterInitAppProperties();
 
@@ -70,7 +82,7 @@ public class DesktopAppContextLoader extends AbstractAppContextLoader {
 
         initEnvironment();
 
-        AppContext.startContext();
+        AppContext.Internals.startContext();
         log.info("AppContext initialized");
     }
 
@@ -87,6 +99,23 @@ public class DesktopAppContextLoader extends AbstractAppContextLoader {
                 throw new RuntimeException(ex);
             }
         }
+    }
+
+    private void initAppComponents() {
+        String block = getBlock();
+
+        String appComponentsProp = System.getProperty(APP_COMPONENTS_SYS_PROP);
+        if (StringUtils.isBlank(appComponentsProp))
+            appComponentsProp = defaultAppComponents;
+
+        AppComponents appComponents;
+        if (StringUtils.isEmpty(appComponentsProp)) {
+            appComponents = new AppComponents(block);
+        } else {
+            List<String> compNames = Splitter.on(SEPARATOR_PATTERN).omitEmptyStrings().splitToList(appComponentsProp);
+            appComponents = new AppComponents(compNames, block);
+        }
+        AppContext.Internals.setAppComponents(appComponents);
     }
 
     protected void initAppProperties() {

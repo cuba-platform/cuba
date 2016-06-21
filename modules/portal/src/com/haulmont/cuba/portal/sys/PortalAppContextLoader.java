@@ -28,6 +28,11 @@ import com.haulmont.cuba.core.sys.AppContext;
 public class PortalAppContextLoader extends AbstractWebAppContextLoader {
 
     @Override
+    protected String getBlock() {
+        return "portal";
+    }
+
+    @Override
     protected void beforeInitAppContext() {
         super.beforeInitAppContext();
 

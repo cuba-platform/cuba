@@ -273,7 +273,7 @@ public class TestContainer extends ExternalResource {
             AppBeans.get(Persistence.class).dispose();
             ((ConfigurableApplicationContext) AppContext.getApplicationContext()).close();
             TestContext.getInstance().unbind(AppContext.getProperty("cuba.dataSourceJndiName"));
-            AppContext.setApplicationContext(null);
+            AppContext.Internals.setApplicationContext(null);
             for (String name : AppContext.getPropertyNames()) {
                 AppContext.setProperty(name, null);
             }
@@ -361,7 +361,7 @@ public class TestContainer extends ExternalResource {
         locations.add(getSpringConfig());
 
         springAppContext = new CubaCoreApplicationContext(locations.toArray(new String[locations.size()]));
-        AppContext.setApplicationContext(springAppContext);
+        AppContext.Internals.setApplicationContext(springAppContext);
     }
 
     protected void cleanupContext() {
@@ -370,14 +370,14 @@ public class TestContainer extends ExternalResource {
         } catch (NamingException e) {
             throw new RuntimeException(e);
         }
-        AppContext.setApplicationContext(null);
+        AppContext.Internals.setApplicationContext(null);
         for (String name : AppContext.getPropertyNames()) {
             AppContext.setProperty(name, null);
         }
     }
 
     protected void setupContext() {
-        AppContext.setApplicationContext(getSpringAppContext());
+        AppContext.Internals.setApplicationContext(getSpringAppContext());
         for (Map.Entry<String, String> entry : getAppProperties().entrySet()) {
             AppContext.setProperty(entry.getKey(), entry.getValue());
         }

@@ -135,7 +135,7 @@ public class App implements ConnectionListener {
 
             initConnection();
 
-            DesktopAppContextLoader contextLoader = new DesktopAppContextLoader(getDefaultAppPropertiesConfig(), args);
+            DesktopAppContextLoader contextLoader = new DesktopAppContextLoader(getDefaultAppComponents(), getDefaultAppPropertiesConfig(), args);
             contextLoader.load();
 
             messages = AppBeans.get(Messages.NAME);
@@ -197,6 +197,10 @@ public class App implements ConnectionListener {
 
     protected String getApplicationTitle() {
         return messages.getMainMessage("application.caption");
+    }
+
+    protected String getDefaultAppComponents() {
+        return "";
     }
 
     protected String getDefaultAppPropertiesConfig() {
@@ -343,7 +347,7 @@ public class App implements ConnectionListener {
         //noinspection finally
         try {
             createMainWindowProperties().save();
-            AppContext.stopContext();
+            AppContext.Internals.stopContext();
             userActionsLog.trace("Application was closed");
         } finally {
             System.exit(0);

@@ -254,6 +254,12 @@ configure(globalModule) {
         exclude '**/entity/dummy/*'
         exclude { it.file == file("$buildDir/resources/main/cuba-persistence.xml") }
         from "$buildDir/tmp/filtered"
+
+        manifest {
+            attributes('App-Component-Descriptor': 'cuba-app-component.xml')
+            attributes('App-Component-Artifact-Group': cuba.artifact.group)
+            attributes('App-Component-Version': cubaVersion)
+        }
     }
     jar.dependsOn filterDummyEntities
 

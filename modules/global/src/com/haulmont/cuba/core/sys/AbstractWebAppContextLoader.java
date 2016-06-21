@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.sys;
 
+import com.google.common.base.Splitter;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrLookup;
@@ -36,13 +37,19 @@ import javax.servlet.ServletContextListener;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 /**
  * Base class for {@link AppContext} loaders of web applications.
  *
  */
 public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoader implements ServletContextListener {
+
+    public static final Pattern SEPARATOR_PATTERN = Pattern.compile("\\s");
+
+    public static final String APP_COMPONENTS_PARAM = "appComponents";
 
     public static final String APP_PROPS_CONFIG_PARAM = "appPropertiesConfig";
 
@@ -56,6 +63,7 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
             ServletContext sc = servletContextEvent.getServletContext();
             ServletContextHolder.setServletContext(sc);
 
+            initAppComponents(sc);
             initAppProperties(sc);
             afterInitAppProperties();
 
@@ -63,7 +71,7 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
             initAppContext();
             afterInitAppContext();
 
-            AppContext.startContext();
+            AppContext.Internals.startContext();
             log.info("AppContext initialized");
         } catch (Throwable e) {
             log.error("Error initializing application", e);
@@ -73,8 +81,22 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
 
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
-        AppContext.stopContext();
-        AppContext.setApplicationContext(null);
+        AppContext.Internals.stopContext();
+        AppContext.Internals.setApplicationContext(null);
+    }
+
+    protected void initAppComponents(ServletContext sc) {
+        String block = getBlock();
+
+        String appComponentsParam = sc.getInitParameter(APP_COMPONENTS_PARAM);
+        AppComponents appComponents;
+        if (StringUtils.isEmpty(appComponentsParam)) {
+            appComponents = new AppComponents(block);
+        } else {
+            List<String> compNames = Splitter.on(SEPARATOR_PATTERN).omitEmptyStrings().splitToList(appComponentsParam);
+            appComponents = new AppComponents(compNames, block);
+        }
+        AppContext.Internals.setAppComponents(appComponents);
     }
 
     protected void initAppProperties(ServletContext sc) {
@@ -153,12 +175,21 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
     protected void afterInitAppProperties() {
         super.afterInitAppProperties();
 
-        File file = new File(AppContext.getProperty("cuba.confDir"));
+        String property = AppContext.getProperty("cuba.confDir");
+        if (property == null)
+            throw new RuntimeException("App property cuba.confDir not defined");
+
+        File file = new File(property);
         if (!file.exists()) {
             //noinspection ResultOfMethodCallIgnored
             file.mkdirs();
         }
-        file = new File(AppContext.getProperty("cuba.tempDir"));
+
+        property = AppContext.getProperty("cuba.tempDir");
+        if (property == null)
+            throw new RuntimeException("App property cuba.tempDir not defined");
+
+        file = new File(property);
         if (!file.exists()) {
             //noinspection ResultOfMethodCallIgnored
             file.mkdirs();

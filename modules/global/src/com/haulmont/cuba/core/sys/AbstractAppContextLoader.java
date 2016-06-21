@@ -29,9 +29,11 @@ import java.io.File;
  * Base class for {@link AppContext} loaders.
  *
  */
-public class AbstractAppContextLoader {
+public abstract class AbstractAppContextLoader {
 
     public static final String SPRING_CONTEXT_CONFIG = "cuba.springContextConfig";
+
+    protected abstract String getBlock();
 
     protected void afterInitAppProperties() {
     }
@@ -51,7 +53,7 @@ public class AbstractAppContextLoader {
         replaceLocationsFromConf(locations);
 
         ClassPathXmlApplicationContext appContext = createClassPathXmlApplicationContext(locations);
-        AppContext.setApplicationContext(appContext);
+        AppContext.Internals.setApplicationContext(appContext);
     }
 
     protected void replaceLocationsFromConf(String[] locations) {

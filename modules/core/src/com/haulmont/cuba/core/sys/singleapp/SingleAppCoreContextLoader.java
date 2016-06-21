@@ -17,11 +17,11 @@
 
 package com.haulmont.cuba.core.sys.singleapp;
 
+import com.google.common.base.Splitter;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.AppContextLoader;
 import com.haulmont.cuba.core.sys.CubaCoreApplicationContext;
 import com.haulmont.cuba.core.sys.remoting.RemotingServlet;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -31,12 +31,29 @@ import javax.servlet.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
+/**
+ * {@link AppContext} loader of the middleware application block packed in a WAR together with the web block.
+ */
 public class SingleAppCoreContextLoader extends AppContextLoader {
+
+    public static final Pattern JAR_NAME_PATTERN = Pattern.compile(".*/(.+?\\.jar).*");
+
+    private Set<String> dependencyJars;
+
+    /**
+     * Invoked reflectively by {@link SingleAppCoreServletListener}.
+     * @param jarNames  JARs of the core block
+     */
+    @SuppressWarnings("unused")
+    public void setJarNames(String jarNames) {
+        dependencyJars = new HashSet<>(Splitter.on("\n").omitEmptyStrings().trimResults().splitToList(jarNames));
+    }
+
     /**
      * Here we create servlets and filters manually, to make sure the classes would be loaded using necessary classloader.
      */
@@ -69,15 +86,10 @@ public class SingleAppCoreContextLoader extends AppContextLoader {
              */
             @Override
             protected ResourcePatternResolver getResourcePatternResolver() {
-                String jarDependencies = AppContext.getProperty("JAR_DEPENDENCIES");
-                if (StringUtils.isBlank(jarDependencies)) {
-                    throw new RuntimeException("No JAR_DEPENDENCIES property found in AppContext. " +
-                            "Please check that *.dependencies file exists in WEB-INF directory.");
+                if (dependencyJars == null || dependencyJars.isEmpty()) {
+                    throw new RuntimeException("No JARs defined for the 'core' block. " +
+                            "Please check that core.dependencies file exists in WEB-INF directory.");
                 }
-
-                final Set<String> dependencyJars = Arrays.stream(jarDependencies.split("\\n"))
-                        .collect(Collectors.toSet());
-                final Pattern jarNamePattern = Pattern.compile(".*/(.+?\\.jar).*");
 
                 return new PathMatchingResourcePatternResolver(this) {
                     @Override
@@ -86,7 +98,7 @@ public class SingleAppCoreContextLoader extends AppContextLoader {
                         return Arrays.stream(resources).filter(resource -> {
                                     try {
                                         String url = resource.getURL().toString();
-                                        Matcher matcher = jarNamePattern.matcher(url);
+                                        Matcher matcher = JAR_NAME_PATTERN.matcher(url);
                                         if (matcher.find()) {
                                             String jarName = matcher.group(1);
                                             return dependencyJars.contains(jarName);

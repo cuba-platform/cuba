@@ -28,6 +28,11 @@ import com.haulmont.cuba.gui.AppConfig;
 public class WebAppContextLoader extends AbstractWebAppContextLoader {
 
     @Override
+    protected String getBlock() {
+        return "web";
+    }
+
+    @Override
     protected void beforeInitAppContext() {
         super.beforeInitAppContext();
 

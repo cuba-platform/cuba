@@ -36,6 +36,11 @@ public class AppContextLoader extends AbstractWebAppContextLoader {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
+    protected String getBlock() {
+        return "core";
+    }
+
+    @Override
     protected void beforeInitAppContext() {
         super.beforeInitAppContext();
 

@@ -32,21 +32,16 @@ import java.net.URLClassLoader;
 import java.util.Arrays;
 
 /**
- *
  * This class and its twin com.haulmont.cuba.core.sys.singleapp.SingleAppCoreServletListener separate "web" and "core" classes
  * to different classloaders when we pack application to single WAR.
- *
+ * <p>
  * We create 2 URLClassLoaders (1 for core and 1 for web), with predefined (during single WAR build) list of jars (web.dependencies).
  * So the classloaders load classes from the jars and only if class is not found they delegate loading to base WebAppClassLoader (their parent).
- *
+ * <p>
  * As a result, core classloader contains core classes, web classloder contains web classes and WebAppClassLoader contains "shared" classes.
- *
- * To make sure spring context use necessary classloader we load AppWebContextLoader reflectively, create new instance
- * and call contextInitialized() reflectively as well.
- *
- * As each classloader has its own AppContext version, we can put property with dependencies to AppContext (reflectively as well).
- * The property will be used on spring context creation, to detect which jars to scan.
- *
+ * <p>
+ * To make sure the Spring context uses the specific classloader we load {@code AppWebContextLoader} reflectively, create new instance
+ * and call its initialization methods reflectively as well.
  */
 public class SingleAppWebServletListener implements ServletContextListener {
     protected Object appContextLoader;
@@ -82,12 +77,12 @@ public class SingleAppWebServletListener implements ServletContextListener {
             Class<?> appContextLoaderClass = webClassLoader.loadClass("com.haulmont.cuba.web.sys.singleapp.SingleAppWebContextLoader");
             appContextLoader = appContextLoaderClass.newInstance();
 
-            Class<?> appContextClass = webClassLoader.loadClass("com.haulmont.cuba.core.sys.AppContext");
-            Method setProperty = ReflectionUtils.findMethod(appContextClass, "setProperty", String.class, String.class);
-            ReflectionUtils.invokeMethod(setProperty, null, "JAR_DEPENDENCIES", dependenciesFile);
+            Method setJarsNamesMethod = ReflectionUtils.findMethod(appContextLoaderClass, "setJarNames", String.class);
+            ReflectionUtils.invokeMethod(setJarsNamesMethod, appContextLoader, dependenciesFile);
 
-            Method contextInitialized = ReflectionUtils.findMethod(appContextLoader.getClass(), "contextInitialized", ServletContextEvent.class);
-            ReflectionUtils.invokeMethod(contextInitialized, appContextLoader, sce);
+            Method contextInitializedMethod = ReflectionUtils.findMethod(appContextLoaderClass, "contextInitialized", ServletContextEvent.class);
+            ReflectionUtils.invokeMethod(contextInitializedMethod, appContextLoader, sce);
+
             Thread.currentThread().setContextClassLoader(contextClassLoader);
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("An error occurred while starting single WAR application", e);

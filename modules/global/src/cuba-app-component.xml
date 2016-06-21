@@ -1,0 +1,101 @@
+<!--
+  ~ Copyright (c) 2008-2016 Haulmont.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<app-component xmlns="http://schemas.haulmont.com/cuba/app-component.xsd"
+               id="cuba">
+
+    <module name="global" blocks="*">
+        <artifact name="cuba-global" appJar="true"/>
+
+        <property name="cuba.persistenceConfig" value="cuba-persistence.xml"/>
+        <property name="cuba.metadataConfig" value="cuba-metadata.xml"/>
+        <property name="cuba.viewsConfig" value="cuba-views.xml"/>
+        <property name="cuba.creditsConfig" value="cuba-credits.xml"/>
+    </module>
+
+    <module name="core" dependsOn="global" blocks="core">
+        <artifact name="cuba-core" appJar="true"/>
+        <artifact name="cuba-core-tests" configuration="testCompile"/>
+        <artifact name="cuba-shared-lib" configuration="testCompile"/>
+        <artifact name="cuba-core" classifier="db" ext="zip" configuration="dbscripts"/>
+        
+        <property name="cuba.springContextConfig" value="cuba-spring.xml"/>
+        <property name="cuba.mainMessagePack" value="com.haulmont.cuba.core"/>
+        <property name="cuba.remotingSpringContextConfig" value="cuba-remoting-spring.xml"/>
+        <property name="cuba.defaultPermissionValuesConfig" value="cuba-default-permission-values.xml"/>
+    </module>
+
+    <module name="client" dependsOn="global" blocks="web,portal,desktop">
+        <artifact name="cuba-client" appJar="true"/>
+        <artifact name="cuba-client-tests" configuration="testCompile"/>
+    </module>
+
+    <module name="rest-api" dependsOn="client" blocks="web,portal">
+        <artifact name="cuba-rest-api" appJar="true"/>
+    </module>
+
+    <module name="gui" dependsOn="client" blocks="web,desktop">
+        <artifact name="cuba-gui" appJar="true"/>
+        <artifact name="cuba-client-tests" configuration="testCompile"/>
+
+        <property name="cuba.metadataConfig" value="cuba-gui-metadata.xml"/>
+    </module>
+
+    <module name="web-auth" dependsOn="global" blocks="web">
+        <artifact name="cuba-web-auth" appJar="true"/>
+    </module>
+
+    <module name="web" dependsOn="gui,rest-api,web-auth" blocks="web">
+        <artifact name="cuba-web" appJar="true"/>
+        <artifact name="cuba-client-tests" configuration="testCompile"/>
+        <artifact name="cuba-web" classifier="web" ext="zip" configuration="webcontent"/>
+        <artifact name="cuba-web-themes" configuration="themes"/>
+        <artifact name="cuba-web-themes" configuration="provided"/>
+        <artifact name="cuba-web-toolkit" classifier="web" ext="zip" configuration="webcontent"
+                  skipIfExists="web-toolkit"/>
+        
+        <property name="cuba.metadataConfig" value="cuba-web-metadata.xml"/>
+        <property name="cuba.springContextConfig" value="cuba-web-spring.xml"/>
+        <property name="cuba.mainMessagePack" value="com.haulmont.cuba.web"/>
+        <property name="cuba.dispatcherSpringContextConfig" value="cuba-dispatcher-spring.xml"/>
+        <property name="cuba.windowConfig" value="cuba-web-screens.xml"/>
+        <property name="cuba.menuConfig" value="cuba-web-menu.xml"/>
+        <property name="cuba.permissionConfig" value="cuba-web-permissions.xml"/>
+    </module>
+
+    <module name="web-toolkit" dependsOn="web" blocks="web">
+        <artifact name="cuba-web-toolkit"/>
+    </module>
+
+    <module name="portal" dependsOn="rest-api" blocks="portal">
+        <artifact name="cuba-portal" appJar="true"/>
+        
+        <property name="cuba.springContextConfig" value="cuba-portal-spring.xml"/>
+        <property name="cuba.mainMessagePack" value="com.haulmont.cuba.core"/>
+        <property name="cuba.dispatcherSpringContextConfig" value="cuba-portal-dispatcher-spring.xml"/>
+    </module>
+    
+    <module name="desktop" dependsOn="gui" blocks="desktop">
+        <artifact name="cuba-desktop"/>
+        
+        <property name="cuba.springContextConfig" value="cuba-desktop-spring.xml"/>
+        <property name="cuba.mainMessagePack" value="com.haulmont.cuba.desktop"/>
+        <property name="cuba.windowConfig" value="cuba-desktop-screens.xml"/>
+        <property name="cuba.menuConfig" value="cuba-desktop-menu.xml"/>
+        <property name="cuba.permissionConfig" value="cuba-desktop-permissions.xml"/>
+    </module>
+
+</app-component>
