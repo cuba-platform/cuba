@@ -31,6 +31,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -145,6 +146,12 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
 
     @Override
     public void setCaptionProperty(String captionProperty) {
+        if (StringUtils.isEmpty(captionProperty)) {
+            setCaptionMode(CaptionMode.ITEM);
+        } else {
+            setCaptionMode(CaptionMode.PROPERTY);
+        }
+
         if (!ObjectUtils.equals(this.captionProperty, captionProperty)) {
             this.captionProperty = captionProperty;
 
