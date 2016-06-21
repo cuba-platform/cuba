@@ -132,6 +132,15 @@ public class CubaTreeTableConnector extends TreeTableConnector {
         if (stateChangeEvent.hasPropertyChanged("customPopupAutoClose")) {
             getWidget().customPopupAutoClose = getState().customPopupAutoClose;
         }
+        if (stateChangeEvent.hasPropertyChanged("tableSortResetLabel")) {
+            getWidget().tableSortResetLabel = getState().tableSortResetLabel;
+        }
+        if (stateChangeEvent.hasPropertyChanged("tableSortAscendingLabel")) {
+            getWidget().tableSortAscendingLabel = getState().tableSortAscendingLabel;
+        }
+        if (stateChangeEvent.hasPropertyChanged("tableSortDescendingLabel")) {
+            getWidget().tableSortDescendingLabel = getState().tableSortDescendingLabel;
+        }
     }
 
     @Override

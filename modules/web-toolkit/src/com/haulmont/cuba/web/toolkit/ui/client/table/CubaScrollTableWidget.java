@@ -33,6 +33,8 @@ import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.AggregatableTable;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.TableAggregationRow;
 import com.haulmont.cuba.web.toolkit.ui.client.profiler.ScreenClientProfiler;
+import com.haulmont.cuba.web.toolkit.ui.client.tablesort.EnhancedCubaTableWidget;
+import com.haulmont.cuba.web.toolkit.ui.client.tablesort.TableCustomSortDelegate;
 import com.vaadin.client.*;
 import com.vaadin.client.Focusable;
 import com.vaadin.client.ui.*;
@@ -41,7 +43,7 @@ import java.util.Set;
 
 import static com.haulmont.cuba.web.toolkit.ui.client.Tools.isAnyModifierKeyPressed;
 
-public class CubaScrollTableWidget extends VScrollTable implements ShortcutActionHandler.ShortcutActionHandlerOwner, HasEnabled {
+public class CubaScrollTableWidget extends VScrollTable implements ShortcutActionHandler.ShortcutActionHandlerOwner, HasEnabled, EnhancedCubaTableWidget {
 
     public static final String CUBA_TABLE_CLICKABLE_CELL_STYLE = "cuba-table-clickable-cell";
     public static final String CUBA_TABLE_CLICKABLE_TEXT_STYLE = "cuba-table-clickable-text";
@@ -73,6 +75,11 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     protected int lastClickClientY;
     protected String profilerMarker;
 
+    protected String tableSortResetLabel;
+    protected String tableSortAscendingLabel;
+    protected String tableSortDescendingLabel;
+    protected TableCustomSortDelegate customSortDelegate;
+
     protected CubaScrollTableWidget() {
         // handle shortcuts
         DOM.sinkEvents(getElement(), Event.ONKEYDOWN);
@@ -85,6 +92,8 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
                 profilerMarker = null;
             }
         };
+
+        customSortDelegate = new TableCustomSortDelegate(this);
     }
 
     @Override
@@ -330,6 +339,41 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
         }
     }
 
+    @Override
+    public String getSortDescendingLabel() {
+        return tableSortDescendingLabel;
+    }
+
+    @Override
+    public String getSortAscendingLabel() {
+        return tableSortAscendingLabel;
+    }
+
+    @Override
+    public String getSortResetLabel() {
+        return tableSortResetLabel;
+    }
+
+    @Override
+    public ApplicationConnection getClient() {
+        return client;
+    }
+
+    @Override
+    public Widget getOwner() {
+        return CubaScrollTableWidget.this;
+    }
+
+    @Override
+    public String getPaintableId() {
+        return paintableId;
+    }
+
+    @Override
+    public RowRequestHandler getRowRequestHandler() {
+        return rowRequestHandler;
+    }
+
     protected class CubaScrollTableHead extends TableHead {
 
         protected final SimplePanel presentationsEditIcon = GWT.create(SimplePanel.class);
@@ -375,10 +419,26 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
     protected class CubaScrollTableHeaderCell extends HeaderCell {
 
+        protected Element sortIndicator;
+
         protected int sortClickCounter = 0;
 
         public CubaScrollTableHeaderCell(String colId, String headerText) {
             super(colId, headerText);
+
+            sortIndicator = td.getChild(1).cast();
+            DOM.sinkEvents(sortIndicator, Event.ONCLICK);
+        }
+
+        @Override
+        public void onBrowserEvent(Event event) {
+            super.onBrowserEvent(event);
+
+            if (isEnabled() && event.getTypeInt() == Event.ONMOUSEDOWN) {
+                if (event.getEventTarget().cast() == sortIndicator) {
+                    customSortDelegate.showSortMenu(sortIndicator, cid);
+                }
+            }
         }
 
         @Override
@@ -388,6 +448,13 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
             }
 
             super.setText(headerText);
+        }
+
+        @Override
+        protected void handleCaptionEvent(Event event) {
+            if (event.getEventTarget().cast() != sortIndicator) {
+                super.handleCaptionEvent(event);
+            }
         }
 
         @Override

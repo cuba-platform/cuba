@@ -486,6 +486,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         component.setValidationVisible(false);
         component.setShowBufferedSourceException(false);
 
+        Messages messages = AppBeans.get(Messages.NAME);
+        component.setSortAscendingLabel(messages.getMessage(WebAbstractTable.class, "tableSort.ascending"));
+        component.setSortResetLabel(messages.getMessage(WebAbstractTable.class, "tableSort.reset"));
+        component.setSortDescendingLabel(messages.getMessage(WebAbstractTable.class, "tableSort.descending"));
+
         setClientCaching(component);
 
         int defaultRowHeaderWidth = 16;

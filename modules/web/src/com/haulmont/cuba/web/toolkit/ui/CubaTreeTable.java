@@ -102,6 +102,36 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
     }
 
     @Override
+    public void setSortResetLabel(String tableSortResetLabel) {
+        getState(true).tableSortResetLabel = tableSortResetLabel;
+    }
+
+    @Override
+    public String getSortResetLabel() {
+        return getState().tableSortResetLabel;
+    }
+
+    @Override
+    public void setSortAscendingLabel(String tableSortAscendingLabel) {
+        getState(true).tableSortAscendingLabel = tableSortAscendingLabel;
+    }
+
+    @Override
+    public String getSortAscendingLabel() {
+        return getState().tableSortAscendingLabel;
+    }
+
+    @Override
+    public void setSortDescendingLabel(String tableSortDescendingLabel) {
+        getState(true).tableSortDescendingLabel = tableSortDescendingLabel;
+    }
+
+    @Override
+    public String getSortDescendingLabel() {
+        return getState().tableSortDescendingLabel;
+    }
+
+    @Override
     public TablePresentations getPresentations() {
         return (TablePresentations) getState(false).presentations;
     }

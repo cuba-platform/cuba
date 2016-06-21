@@ -38,6 +38,15 @@ public interface CubaEnhancedTable extends AggregationContainer {
     Object[] getEditableColumns();
     void setEditableColumns(Object[] editableColumns);
 
+    String getSortDescendingLabel();
+    void setSortDescendingLabel(String tableSortDescendingLabel);
+
+    String getSortAscendingLabel();
+    void setSortAscendingLabel(String tableSortAscendingLabel);
+
+    String getSortResetLabel();
+    void setSortResetLabel(String tableSortResetLabel);
+
     boolean isColumnEditable(Object columnId);
 
     void setMultiLineCells(boolean multiLineCells);

@@ -185,4 +185,39 @@
     @include opacity(1);
     @include transition(none);
   }
+
+  .#{$primary-stylename}-header-cell .#{$primary-stylename}-sort-indicator:before {
+    font-family: FontAwesome;
+    content: "\f0dc";
+  }
+
+  .#{$primary-stylename}-header-cell .#{$primary-stylename}-sort-indicator {
+    background: transparent;
+    width: round($v-unit-size/2);
+    height: $v-table-row-height;
+    line-height: $v-table-row-height;
+    margin-left: -$v-table-sort-indicator-width;
+    opacity: 0;
+  }
+
+  .#{$primary-stylename}-header-sortable:hover .#{$primary-stylename}-sort-indicator {
+    opacity: 1;
+  }
+
+  .cuba-table-contextmenu {
+    @include valo-selection-overlay-style;
+  }
+
+  .cuba-table-contextmenu .cuba-table-contextmenu-item {
+    @include valo-selection-item-style;
+    display: block; // Firefox 24 needs this to make position: relative; work
+  }
+
+  .cuba-table-contextmenu .cuba-table-contextmenu-item:hover {
+    @include valo-selection-item-selected-style;
+  }
+
+  .#{$primary-stylename} .cuba-sort-indicator-visible {
+    opacity: 1;
+  }
 }

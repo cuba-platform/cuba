@@ -33,6 +33,8 @@ import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.AggregatableTable;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.TableAggregationRow;
 import com.haulmont.cuba.web.toolkit.ui.client.profiler.ScreenClientProfiler;
+import com.haulmont.cuba.web.toolkit.ui.client.tablesort.EnhancedCubaTableWidget;
+import com.haulmont.cuba.web.toolkit.ui.client.tablesort.TableCustomSortDelegate;
 import com.haulmont.cuba.web.toolkit.ui.client.table.TableCellClickListener;
 import com.vaadin.client.*;
 import com.vaadin.client.ui.*;
@@ -43,7 +45,7 @@ import static com.haulmont.cuba.web.toolkit.ui.client.Tools.isAnyModifierKeyPres
 import static com.haulmont.cuba.web.toolkit.ui.client.table.CubaScrollTableWidget.CUBA_TABLE_CLICKABLE_CELL_STYLE;
 import static com.haulmont.cuba.web.toolkit.ui.client.table.CubaScrollTableWidget.CUBA_TABLE_CLICKABLE_TEXT_STYLE;
 
-public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHandler.ShortcutActionHandlerOwner, HasEnabled {
+public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHandler.ShortcutActionHandlerOwner, HasEnabled, EnhancedCubaTableWidget {
 
     protected static final String WIDGET_CELL_CLASSNAME = "widget-container";
 
@@ -72,6 +74,11 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
     protected int lastClickClientY;
     protected String profilerMarker;
 
+    protected String tableSortResetLabel;
+    protected String tableSortAscendingLabel;
+    protected String tableSortDescendingLabel;
+    protected TableCustomSortDelegate customSortDelegate;
+
     protected CubaTreeTableWidget() {
         // handle shortcuts
         DOM.sinkEvents(getElement(), Event.ONKEYDOWN);
@@ -84,6 +91,8 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
                 profilerMarker = null;
             }
         };
+
+        customSortDelegate = new TableCustomSortDelegate(this);
     }
 
     @Override
@@ -321,6 +330,41 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
         }
     }
 
+    @Override
+    public String getSortDescendingLabel() {
+        return tableSortDescendingLabel;
+    }
+
+    @Override
+    public String getSortAscendingLabel() {
+        return tableSortAscendingLabel;
+    }
+
+    @Override
+    public String getSortResetLabel() {
+        return tableSortResetLabel;
+    }
+
+    @Override
+    public ApplicationConnection getClient() {
+        return client;
+    }
+
+    @Override
+    public Widget getOwner() {
+        return CubaTreeTableWidget.this;
+    }
+
+    @Override
+    public String getPaintableId() {
+        return paintableId;
+    }
+
+    @Override
+    public RowRequestHandler getRowRequestHandler() {
+        return rowRequestHandler;
+    }
+
     protected class CubaTreeTableTableHead extends TableHead {
 
         protected final SimplePanel presentationsEditIcon = GWT.create(SimplePanel.class);
@@ -366,10 +410,33 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
     protected class CubaTreeTableHeaderCell extends HeaderCell {
 
+        protected Element sortIndicator;
+
         protected int sortClickCounter = 0;
 
         public CubaTreeTableHeaderCell(String colId, String headerText) {
             super(colId, headerText);
+
+            sortIndicator = td.getChild(1).cast();
+            DOM.sinkEvents(sortIndicator, Event.ONCLICK);
+        }
+
+        @Override
+        public void onBrowserEvent(Event event) {
+            super.onBrowserEvent(event);
+
+            if (isEnabled() && event.getTypeInt() == Event.ONMOUSEDOWN) {
+                if (event.getEventTarget().cast() == sortIndicator) {
+                    customSortDelegate.showSortMenu(sortIndicator, cid);
+                }
+            }
+        }
+
+        @Override
+        protected void handleCaptionEvent(Event event) {
+            if (event.getEventTarget().cast() != sortIndicator) {
+                super.handleCaptionEvent(event);
+            }
         }
 
         @Override
