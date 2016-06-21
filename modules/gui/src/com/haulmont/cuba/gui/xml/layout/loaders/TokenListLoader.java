@@ -22,7 +22,6 @@ import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.TokenList;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -61,6 +60,7 @@ public class TokenListLoader extends AbstractFieldLoader<TokenList> {
         loadLookup(resultComponent, element);
 
         loadButton(resultComponent, element);
+        loadAddButton(resultComponent, element);
 
         loadSimple(resultComponent, element);
 
@@ -102,12 +102,31 @@ public class TokenListLoader extends AbstractFieldLoader<TokenList> {
         }
     }
 
+    protected void loadAddButton(TokenList component, Element element) {
+        Element buttonElement = element.element("addButton");
+        if (buttonElement != null) {
+            String caption = buttonElement.attributeValue("caption");
+            if (caption != null) {
+                if (StringUtils.isNotEmpty(caption)) {
+                    caption = loadResourceString(caption);
+                }
+                component.setAddButtonCaption(caption);
+            }
+
+            String icon = buttonElement.attributeValue("icon");
+            if (StringUtils.isNotEmpty(icon)) {
+                component.setAddButtonIcon(loadResourceString(icon));
+            }
+        }
+    }
+
+    @Deprecated
     protected void loadButton(TokenList component, Element element) {
         Element buttonElement = element.element("button");
         if (buttonElement != null) {
             String caption = buttonElement.attributeValue("caption");
             if (caption != null) {
-                if (!StringUtils.isEmpty(caption)) {
+                if (StringUtils.isNotEmpty(caption)) {
                     caption = loadResourceString(caption);
                 }
                 component.setAddButtonCaption(caption);

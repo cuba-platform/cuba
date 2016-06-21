@@ -1274,7 +1274,7 @@
                     <xs:attribute name="multiselect" type="xs:boolean"/>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="button" minOccurs="0" maxOccurs="1">
+            <xs:element name="addButton" minOccurs="0" maxOccurs="1">
                 <xs:complexType>
                     <xs:attribute name="caption" type="resourceString"/>
 
