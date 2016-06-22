@@ -529,6 +529,10 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
         if (clearButton != null) {
             clearButton.setParentEnabled(isEnabledWithParent());
         }
+
+        if (rootPanel != null) {
+            rootPanel.refreshComponent();
+        }
     }
 
     protected String instanceCaption(Instance instance) {
@@ -554,6 +558,7 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
         private DesktopButton openButton;
 
         private boolean editable;
+        private boolean enabled;
 
         private List<RemoveTokenListener> listeners;
         private ClickListener clickListener;
@@ -639,6 +644,15 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
 
         public boolean isEditable() {
             return editable;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+            removeButton.setEnabled(enabled);
+        }
+
+        public boolean isEnabled() {
+            return enabled;
         }
 
         public void addListener(RemoveTokenListener listener) {
@@ -968,6 +982,8 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
                         itemComponents.put(item, f);
                         componentItems.put(f, item);
                     }
+
+                    f.setEnabled(DesktopTokenList.this.isEnabledWithParent());
                     f.setEditable(isEditable());
                     f.setValue(instanceCaption(item));
 
