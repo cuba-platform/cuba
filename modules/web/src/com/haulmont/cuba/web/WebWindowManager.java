@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web;
 
+import com.google.common.collect.Lists;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
@@ -175,7 +176,7 @@ public class WebWindowManager extends WindowManager {
         String formattedCaption;
 
         if (openInfo != null
-            && (openInfo.getOpenMode() == OpenMode.NEW_TAB
+                && (openInfo.getOpenMode() == OpenMode.NEW_TAB
                 || openInfo.getOpenMode() == OpenMode.THIS_TAB)) {
             formattedCaption = formatTabCaption(caption, description);
         } else {
@@ -773,7 +774,8 @@ public class WebWindowManager extends WindowManager {
 
     /**
      * Check modifications and close all screens in all main windows.
-     * @param runIfOk   a closure to run after all screens are closed
+     *
+     * @param runIfOk a closure to run after all screens are closed
      */
     public void checkModificationsAndCloseAll(Runnable runIfOk) {
         checkModificationsAndCloseAll(runIfOk, null);
@@ -781,8 +783,9 @@ public class WebWindowManager extends WindowManager {
 
     /**
      * Check modifications and close all screens in all main windows.
-     * @param runIfOk       a closure to run after all screens are closed
-     * @param runIfCancel   a closure to run if there were modifications and a user canceled the operation
+     *
+     * @param runIfOk     a closure to run after all screens are closed
+     * @param runIfCancel a closure to run if there were modifications and a user canceled the operation
      */
     public void checkModificationsAndCloseAll(final Runnable runIfOk, final @Nullable Runnable runIfCancel) {
         boolean modified = false;
@@ -834,6 +837,64 @@ public class WebWindowManager extends WindowManager {
         } else {
             closeAllWindows();
             runIfOk.run();
+        }
+    }
+
+    public void closeAllTabbedWindows() {
+        closeAllTabbedWindowsExcept(null);
+    }
+
+    public void closeAllTabbedWindowsExcept(@Nullable ComponentContainer keepOpened) {
+        boolean modified = false;
+        List<WebWindow> windowsToClose = new ArrayList<>();
+        WindowBreadCrumbs keepOpenedCrumbs = tabs.get(keepOpened);
+        Frame keepOpenedFrame = keepOpenedCrumbs != null ? keepOpenedCrumbs.getCurrentWindow().getFrame() : null;
+
+        for (Window window : getOpenWindows()) {
+            OpenMode openMode = windowOpenMode.get(window).getOpenMode();
+            WindowBreadCrumbs windowBreadCrumbs = tabs.get(windowOpenMode.get(window).getData());
+            if (window.getFrame() == keepOpenedFrame || openMode == OpenMode.DIALOG || keepOpenedCrumbs == windowBreadCrumbs)
+                continue;
+
+            if (window.getDsContext() != null && window.getDsContext().isModified()) {
+                modified = true;
+            }
+
+            windowsToClose.add((WebWindow) window);
+        }
+
+        disableSavingScreenHistory = true;
+
+        if (modified) {
+            showOptionDialog(
+                    messages.getMessage(WebWindow.class, "closeUnsaved.caption"),
+                    messages.getMessage(WebWindow.class, "discardChangesInTabs"),
+                    MessageType.WARNING,
+                    new Action[]{
+                            new AbstractAction(messages.getMessage(WebWindow.class, "closeTabs")) {
+
+                                {
+                                    ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
+                                    icon = thCM.getThemeValue("actions.dialog.Ok.icon");
+                                }
+
+                                @Override
+                                public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                                    closeTabsForce(windowsToClose);
+                                }
+                            },
+                            new DialogAction(Type.CANCEL, Status.PRIMARY)
+                    }
+            );
+        } else {
+            closeTabsForce(windowsToClose);
+        }
+    }
+
+    protected void closeTabsForce(List<WebWindow> windowsToClose) {
+        windowsToClose = Lists.reverse(windowsToClose);
+        for (WebWindow window : windowsToClose) {
+            window.close(Window.CLOSE_ACTION_ID, true);
         }
     }
 
@@ -1183,7 +1244,7 @@ public class WebWindowManager extends WindowManager {
                 button.addStyleName(WebButton.ICON_STYLE);
             }
 
-            if (action instanceof AbstractAction && ((AbstractAction)action).isPrimary()) {
+            if (action instanceof AbstractAction && ((AbstractAction) action).isPrimary()) {
                 button.addStyleName("cuba-primary-action");
                 button.focus();
 

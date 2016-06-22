@@ -16,6 +16,8 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.ClientAction;
 import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.CubaTabSheetClientRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.CubaTabSheetServerRpc;
@@ -23,6 +25,7 @@ import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.CubaTabSheetState;
 import com.vaadin.event.Action;
 import com.vaadin.server.KeyMapper;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
 import fi.jasoft.dragdroplayouts.DDTabSheet;
 
 import java.util.*;
@@ -234,17 +237,12 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container {
     }
 
     public void closeOtherTabs(Component currentTab) {
-        Set<Component> tabs = new HashSet<>(this.tabs.keySet());
-        for (final Component tab : tabs) {
-            if (tab.equals(currentTab)) continue;
-            closeTab(tab);
-        }
+        WebWindowManager windowManager = App.getInstance().getWindowManager();
+        windowManager.closeAllTabbedWindowsExcept((ComponentContainer) currentTab);
     }
 
     public void closeAllTabs() {
-        Set<Component> tabs = new HashSet<>(this.tabs.keySet());
-        for (final Component tab : tabs) {
-            closeTab(tab);
-        }
+        WebWindowManager windowManager = App.getInstance().getWindowManager();
+        windowManager.closeAllTabbedWindows();
     }
 }
