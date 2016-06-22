@@ -60,6 +60,8 @@ public class CubaMaskedFieldWidget extends VTextField {
     protected boolean shiftPressed = false;
     protected int shiftPressPos = -1;
 
+    protected boolean isTimeMask = false;
+
     public CubaMaskedFieldWidget() {
         setStylePrimaryName(CLASSNAME);
         setStyleName(CLASSNAME);
@@ -116,6 +118,10 @@ public class CubaMaskedFieldWidget extends VTextField {
 
     public void setMaskedMode(boolean maskedMode) {
         this.maskedMode = maskedMode;
+    }
+
+    public void setTimeMask(boolean isTimeMask) {
+        this.isTimeMask = isTimeMask;
     }
 
     public boolean isSendNullRepresentation() {
@@ -310,13 +316,24 @@ public class CubaMaskedFieldWidget extends VTextField {
 
             if (!prompting && newText != null
                     && !newText.equals(valueBeforeEdit)) {
+                if (isTimeMask && newText.endsWith("__") && !newText.startsWith("__")) {
+                    newText = newText.replaceAll("__", "00");
+                }
                 if (validateText(newText)) {
                     sendValueChange = immediate;
                     String value;
                     if (newText.equals(nullRepresentation)) {
                         value = isSendNullRepresentation() ? getText() : getRawText();
                     } else {
-                        value = maskedMode ? getText() : getRawText();
+                        if (maskedMode) {
+                            if (isTimeMask) {
+                                value = newText;
+                            } else {
+                                value = getText();
+                            }
+                        } else {
+                            value = getRawText();
+                        }
                     }
                     client.updateVariable(paintableId, "text", value, false);
                     valueBeforeEdit = newText;

@@ -62,6 +62,7 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
         component = new CubaMaskedTextField();
         component.setMaskedMode(true);
         component.setImmediate(true);
+        component.setTimeMask(true);
         setShowSeconds(timeFormat.contains("ss"));
 
         component.setInvalidAllowed(false);

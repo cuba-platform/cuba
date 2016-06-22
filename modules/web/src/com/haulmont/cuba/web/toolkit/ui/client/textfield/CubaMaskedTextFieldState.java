@@ -32,4 +32,7 @@ public class CubaMaskedTextFieldState extends CubaTextFieldState {
 
     @NoLayout
     public boolean sendNullRepresentation = true;
+
+    @NoLayout
+    public boolean isTimeMask = false;
 }

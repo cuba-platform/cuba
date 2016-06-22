@@ -52,6 +52,14 @@ public class CubaMaskedTextField extends CubaTextField {
         return (CubaMaskedTextFieldState) super.getState(markAsDirty);
     }
 
+    public boolean isTimeMask() {
+        return getState().isTimeMask;
+    }
+
+    public void setTimeMask(boolean isTimeMask) {
+        getState(true).isTimeMask = isTimeMask;
+    }
+
     public void setMask(String mask) {
         getState(true).mask = mask;
     }

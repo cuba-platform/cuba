@@ -40,6 +40,7 @@ public class CubaMaskedFieldConnector extends TextFieldConnector {
         super.onStateChanged(stateChangeEvent);
 
         getWidget().setMask(getState().mask);
+        getWidget().setTimeMask(getState().isTimeMask);
         getWidget().setMaskedMode(getState().maskedMode);
         getWidget().setSendNullRepresentation(getState().sendNullRepresentation);
     }
