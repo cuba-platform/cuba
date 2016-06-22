@@ -40,6 +40,8 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
+import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
@@ -142,6 +144,10 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     protected Document defaultSettings;
     protected boolean multiLineCells;
     protected boolean settingsEnabled = true;
+
+    protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
+    protected CollectionDatasource.CollectionChangeListener securityCollectionChangeListener;
+    protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
 
     protected CollectionDsActionsNotifier collectionDsActionsNotifier;
 
@@ -566,8 +572,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
 
         this.datasource = datasource;
 
-        //noinspection unchecked
-        datasource.addCollectionChangeListener(e -> {
+        collectionChangeListener = e -> {
             switch (e.getOperation()) {
                 case CLEAR:
                 case REFRESH:
@@ -581,7 +586,9 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
                     }
                     break;
             }
-        });
+        };
+        //noinspection unchecked
+        datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource, collectionChangeListener));
 
         initTableModel(datasource);
 
@@ -662,7 +669,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
             action.setDatasource(datasource);
         }
 
-        datasource.addCollectionChangeListener(e -> {
+        securityCollectionChangeListener = e -> {
             onDataChange();
             packRows();
 
@@ -690,9 +697,11 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
             } else {
                 setSelected(newSelection);
             }
-        });
+        };
+        // noinspection unchecked
+        datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource, securityCollectionChangeListener));
 
-        datasource.addItemPropertyChangeListener(e -> {
+        itemPropertyChangeListener = e -> {
             List<Column> columns1 = getColumns();
             boolean find = false;
             int i = 0;
@@ -710,7 +719,9 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
                 onDataChange();
             }
             packRows();
-        });
+        };
+        // noinspection unchecked
+        datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener));
 
         if (rowsCount != null) {
             rowsCount.setDatasource(datasource);

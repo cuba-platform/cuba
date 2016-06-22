@@ -34,7 +34,9 @@ import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
 import com.haulmont.cuba.desktop.sys.vcl.UserSelectionHandler;
 import com.haulmont.cuba.gui.components.LookupField;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -77,6 +79,8 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
     protected boolean textInputAllowed = true;
 
     protected List<UserSelectionListener> userSelectionListeners = null; // lazy initialized list
+
+    protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
 
     public DesktopLookupField() {
         composition = new JPanel();
@@ -312,12 +316,13 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
                 items.add(new EntityWrapper(optionsDatasource.getItem(id)));
             }
 
-            optionsDatasource.addCollectionChangeListener(e -> {
+            collectionChangeListener = e -> {
                 items.clear();
                 for (Entity item : optionsDatasource.getItems()) {
                     items.add(new EntityWrapper(item));
                 }
-            });
+            };
+            optionsDatasource.addCollectionChangeListener(new WeakCollectionChangeListener(optionsDatasource, collectionChangeListener));
         } else if (optionsMap != null) {
             for (String key : optionsMap.keySet()) {
                 items.add(new MapKeyWrapper(key));

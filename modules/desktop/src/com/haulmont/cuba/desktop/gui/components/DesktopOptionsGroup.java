@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.OptionsGroup;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -46,6 +47,8 @@ public class DesktopOptionsGroup extends DesktopAbstractOptionsField<JPanel> imp
     private boolean editable = true;
 
     private boolean enabled = true;
+
+    protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
 
     public DesktopOptionsGroup() {
         layout = new MigLayout();
@@ -85,7 +88,7 @@ public class DesktopOptionsGroup extends DesktopAbstractOptionsField<JPanel> imp
                 addItem(new EntityWrapper(item));
             }
 
-            optionsDatasource.addCollectionChangeListener(e -> {
+            collectionChangeListener = e -> {
                 Object value = getValue();
 
                 removeAllItems();
@@ -98,7 +101,8 @@ public class DesktopOptionsGroup extends DesktopAbstractOptionsField<JPanel> imp
 
                 impl.revalidate();
                 impl.repaint();
-            });
+            };
+            optionsDatasource.addCollectionChangeListener(new WeakCollectionChangeListener(optionsDatasource, collectionChangeListener));
 
             if ((datasource!= null) && (datasource.getState() == Datasource.State.VALID)) {
                 Entity newValue = datasource.getItem();

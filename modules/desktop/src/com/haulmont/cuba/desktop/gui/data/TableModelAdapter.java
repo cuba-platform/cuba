@@ -25,7 +25,10 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
+import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
+import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -43,6 +46,9 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
     protected List<Table.Column> generatedColumns = new ArrayList<>();
     protected boolean autoRefresh;
     protected List<DataChangeListener> changeListeners = new ArrayList<>();
+
+    protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
+    protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
 
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
@@ -63,8 +69,7 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
             }
         }
 
-        //noinspection unchecked
-        datasource.addCollectionChangeListener(e -> {
+        collectionChangeListener = e -> {
             switch (e.getOperation()) {
                 case ADD:
                     fireBeforeChangeListeners(true);
@@ -96,10 +101,11 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
                     fireAfterChangeListeners(true);
                     break;
             }
-        });
-
+        };
         //noinspection unchecked
-        datasource.addItemPropertyChangeListener(e -> {
+        datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource, collectionChangeListener));
+
+        itemPropertyChangeListener = e -> {
             int rowIndex = getRowIndex(e.getItem());
 
             if (rowIndex >= 0) {
@@ -107,7 +113,9 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
                 fireTableRowsUpdated(rowIndex, rowIndex);
                 fireAfterChangeListeners(false);
             }
-        });
+        };
+        //noinspection unchecked
+        datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener));
     }
 
     protected void fireBeforeChangeListeners(boolean structureChanged) {

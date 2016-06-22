@@ -34,6 +34,8 @@ import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
+import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
+import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -59,6 +61,9 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     protected boolean htmlEnabled = false;
 
     protected String labelText = "";
+
+    protected Datasource.ItemChangeListener itemChangeListener;
+    protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
 
     public DesktopLabel() {
         impl = new JLabel();
@@ -98,8 +103,7 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
 
         valueFormatter.setMetaProperty(metaProperty);
 
-        //noinspection unchecked
-        datasource.addItemChangeListener(e -> {
+        itemChangeListener = e -> {
             if (updatingInstance) {
                 return;
             }
@@ -107,10 +111,11 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
             Object value = InstanceUtils.getValueEx(e.getItem(), metaPropertyPath.getPath());
             updateComponent(value);
             fireChangeListeners(value);
-        });
-
+        };
         //noinspection unchecked
-        datasource.addItemPropertyChangeListener(e -> {
+        datasource.addItemChangeListener(new WeakItemChangeListener(datasource, itemChangeListener));
+
+        itemPropertyChangeListener = e -> {
             if (updatingInstance) {
                 return;
             }
@@ -119,7 +124,9 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
                 updateComponent(e.getValue());
                 fireChangeListeners(e.getValue());
             }
-        });
+        };
+        //noinspection unchecked
+        datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener));
 
         if ((datasource.getState() == Datasource.State.VALID) && (datasource.getItem() != null)) {
             Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());

@@ -33,6 +33,8 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.TextInputField;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
+import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -66,6 +68,9 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
 
     protected Locale locale = AppBeans.<UserSessionSource>get(UserSessionSource.NAME).getLocale();
     protected DefaultValueFormatter valueFormatter;
+
+    protected Datasource.ItemChangeListener itemChangeListener;
+    protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
 
     protected DesktopAbstractTextField() {
         doc = createDocument();
@@ -210,8 +215,7 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
         resolveMetaPropertyPath(datasource.getMetaClass(), property);
         valueFormatter.setMetaProperty(metaProperty);
 
-        //noinspection unchecked
-        datasource.addItemChangeListener(e -> {
+        itemChangeListener = e -> {
             if (updatingInstance) {
                 return;
             }
@@ -219,10 +223,11 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
             Object value = InstanceUtils.getValueEx(e.getItem(), metaPropertyPath.getPath());
             updateComponent(value);
             fireChangeListeners(value);
-        });
-
+        };
         //noinspection unchecked
-        datasource.addItemPropertyChangeListener(e -> {
+        datasource.addItemChangeListener(new WeakItemChangeListener(datasource, itemChangeListener));
+
+        itemPropertyChangeListener = e -> {
             if (updatingInstance) {
                 return;
             }
@@ -231,7 +236,9 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
                 updateComponent(e.getValue());
                 fireChangeListeners(e.getValue());
             }
-        });
+        };
+        //noinspection unchecked
+        datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener));
 
         setRequired(metaProperty.isMandatory());
         if (StringUtils.isEmpty(getRequiredMessage())) {

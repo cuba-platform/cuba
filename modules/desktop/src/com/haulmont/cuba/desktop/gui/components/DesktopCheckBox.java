@@ -24,6 +24,8 @@ import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
+import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -35,6 +37,10 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
     protected Object prevValue;
 
     protected boolean editable = true;
+
+    protected Datasource.ItemChangeListener itemChangeListener;
+    protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
+
 
     public DesktopCheckBox() {
         impl = new JCheckBox();
@@ -95,7 +101,7 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
         }
         resolveMetaPropertyPath(datasource.getMetaClass(), property);
 
-        datasource.addItemChangeListener(e -> {
+        itemChangeListener = e -> {
             if (updatingInstance)
                 return;
             Boolean value = InstanceUtils.getValueEx(e.getItem(), metaPropertyPath.getPath());
@@ -105,9 +111,10 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
 
             updateComponent(value);
             fireChangeListeners(value);
-        });
+        };
+        datasource.addItemChangeListener(new WeakItemChangeListener(datasource, itemChangeListener));
 
-        datasource.addItemPropertyChangeListener(e -> {
+        itemPropertyChangeListener = e -> {
             if (updatingInstance) {
                 return;
             }
@@ -121,7 +128,8 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
                 updateComponent(value);
                 fireChangeListeners(value);
             }
-        });
+        };
+        datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener));
 
         if (datasource.getItemIfValid() != null) {
             Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
