@@ -32,6 +32,8 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.TimeField;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
+import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -61,6 +63,9 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
     private boolean editable = true;
 
     protected static final int DIGIT_WIDTH = 23;
+
+    protected Datasource.ItemChangeListener itemChangeListener;
+    protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
 
     public DesktopTimeField() {
         UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
@@ -199,18 +204,18 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
 
         resolveMetaPropertyPath(datasource.getMetaClass(), property);
 
-        //noinspection unchecked
-        datasource.addItemChangeListener(e -> {
+        itemChangeListener = e -> {
             if (updatingInstance) {
                 return;
             }
             Date value = InstanceUtils.getValueEx(e.getItem(), metaPropertyPath.getPath());
             updateComponent(value);
             fireChangeListeners(value);
-        });
-
+        };
         //noinspection unchecked
-        datasource.addItemPropertyChangeListener(e -> {
+        datasource.addItemChangeListener(new WeakItemChangeListener(datasource, itemChangeListener));
+
+        itemPropertyChangeListener = e -> {
             if (updatingInstance) {
                 return;
             }
@@ -218,7 +223,9 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
                 updateComponent(e.getValue());
                 fireChangeListeners(e.getValue());
             }
-        });
+        };
+        //noinspection unchecked;
+        datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener));
 
         if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
             if (property.equals(metaPropertyPath.toString())) {

@@ -32,6 +32,8 @@ import com.haulmont.cuba.desktop.sys.vcl.Picker;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
+import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -75,6 +77,10 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
     protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
+
+    protected Datasource.ItemChangeListener itemChangeListener;
+    protected Datasource.ItemChangeListener securityItemChangeListener;
+    protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
 
     public DesktopPickerField() {
         impl = new Picker();
@@ -284,8 +290,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
 
         resolveMetaPropertyPath(datasource.getMetaClass(), property);
 
-        //noinspection unchecked
-        datasource.addItemChangeListener(e -> {
+        itemChangeListener = e -> {
             if (updatingInstance) {
                 return;
             }
@@ -293,10 +298,11 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
             Object value = InstanceUtils.getValueEx(e.getItem(), metaPropertyPath.getPath());
             updateComponent(value);
             fireChangeListeners(value);
-        });
-
+        };
         //noinspection unchecked
-        datasource.addItemPropertyChangeListener(e -> {
+        datasource.addItemChangeListener(new WeakItemChangeListener(datasource, itemChangeListener));
+
+        itemPropertyChangeListener = e -> {
             if (updatingInstance) {
                 return;
             }
@@ -305,7 +311,9 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
                 updateComponent(e.getValue());
                 fireChangeListeners(e.getValue());
             }
-        });
+        };
+        //noinspection unchecked
+        datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener));
 
         if ((datasource.getState() == Datasource.State.VALID) && (datasource.getItem() != null)) {
             Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
@@ -324,7 +332,9 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
         }
 
         handleFilteredAttributes(this, this.datasource, metaPropertyPath);
-        this.datasource.addItemChangeListener(e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath));
+        securityItemChangeListener = e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath);
+        // noinspection unchecked
+        this.datasource.addItemChangeListener(new WeakItemChangeListener(this.datasource, securityItemChangeListener));
     }
 
     protected void fireChangeListeners(Object newValue) {

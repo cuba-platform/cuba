@@ -36,6 +36,8 @@ import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.OptionsField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
+import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -69,6 +71,10 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
     protected Messages messages = AppBeans.get(Messages.NAME);
 
     protected CaptionFormatter captionFormatter;
+
+    protected Datasource.ItemChangeListener itemChangeListener;
+    protected Datasource.ItemChangeListener securityItemChangeListener;
+    protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
 
     public interface CaptionFormatter<T> {
         String formatValue(T value);
@@ -160,22 +166,26 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
         MetaClass metaClass = datasource.getMetaClass();
         resolveMetaPropertyPath(metaClass, property);
 
-        datasource.addItemChangeListener(e -> {
+        itemChangeListener = e -> {
             if (updatingInstance)
                 return;
             Object value = InstanceUtils.getValueEx(e.getItem(), metaPropertyPath.getPath());
             updateComponent(value);
             fireChangeListeners(value);
-        });
+        };
+        // noinspection unchecked
+        datasource.addItemChangeListener(new WeakItemChangeListener(datasource, itemChangeListener));
 
-        datasource.addItemPropertyChangeListener(e -> {
+        itemPropertyChangeListener = e -> {
             if (updatingInstance)
                 return;
             if (e.getProperty().equals(metaPropertyPath.toString())) {
                 updateComponent(e.getValue());
                 fireChangeListeners(e.getValue());
             }
-        });
+        };
+        // noinspection unchecked
+        datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener));
 
         setRequired(metaProperty.isMandatory());
         if (StringUtils.isEmpty(getRequiredMessage())) {
@@ -209,7 +219,9 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
         }
 
         handleFilteredAttributes(this, this.datasource, metaPropertyPath);
-        this.datasource.addItemChangeListener(e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath));
+        securityItemChangeListener = e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath);
+        // noinspection unchecked
+        this.datasource.addItemChangeListener(new WeakItemChangeListener(this.datasource, securityItemChangeListener));
     }
 
     protected void fireChangeListeners(Object newValue) {

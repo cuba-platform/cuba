@@ -24,9 +24,11 @@ import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.TreeModelAdapter;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
+import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -59,6 +61,8 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
     protected Action doubleClickAction;
     protected MouseAdapter itemClickListener;
     protected boolean editable = true;
+
+    protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
 
     protected CollectionDsActionsNotifier collectionDsActionsNotifier;
 
@@ -295,8 +299,7 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
             action.setDatasource(datasource);
         }
 
-        //noinspection unchecked
-        datasource.addCollectionChangeListener(e -> {
+        collectionChangeListener = e -> {
             // #PL-2035, reload selection from ds
             Set<E> selectedItems = getSelected();
             if (selectedItems == null) {
@@ -320,7 +323,9 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
             } else {
                 setSelected(newSelection);
             }
-        });
+        };
+        //noinspection unchecked
+        datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource, collectionChangeListener));
 
         collectionDsActionsNotifier = new CollectionDsActionsNotifier(this);
         collectionDsActionsNotifier.bind(datasource);

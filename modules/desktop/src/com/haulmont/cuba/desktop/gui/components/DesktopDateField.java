@@ -41,6 +41,8 @@ import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
+import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -72,6 +74,9 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
     protected TimeZone timeZone;
     protected UserSession userSession;
     protected TimeZones timeZones = AppBeans.get(TimeZones.NAME);
+
+    protected Datasource.ItemChangeListener itemChangeListener;
+    protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
 
     public DesktopDateField() {
         impl = new FocusableComposition();
@@ -288,18 +293,18 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
             }
         }
 
-        //noinspection unchecked
-        datasource.addItemChangeListener(e -> {
+        itemChangeListener = e -> {
             if (updatingInstance) {
                 return;
             }
             Date value = getEntityValue(e.getItem());
             updateComponent(toUserDate(value));
             fireChangeListeners(value);
-        });
-
+        };
         //noinspection unchecked
-        datasource.addItemPropertyChangeListener(e -> {
+        datasource.addItemChangeListener(new WeakItemChangeListener(datasource, itemChangeListener));
+
+        itemPropertyChangeListener = e -> {
             if (updatingInstance) {
                 return;
             }
@@ -307,7 +312,9 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
                 updateComponent(toUserDate((Date) e.getValue()));
                 fireChangeListeners(e.getValue());
             }
-        });
+        };
+        //noinspection unchecked
+        datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener));
 
         if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
             if (property.equals(metaPropertyPath.toString())) {

@@ -40,6 +40,7 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
 import org.slf4j.LoggerFactory;
@@ -96,6 +97,8 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
     protected boolean multiselect;
 
     protected PickerField.LookupAction lookupAction;
+
+    protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
 
     protected final ValueChangeListener lookupSelectListener = e -> {
         if (isEditable()) {
@@ -168,7 +171,7 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
     public void setDatasource(CollectionDatasource datasource) {
         this.datasource = datasource;
 
-        datasource.addCollectionChangeListener(e -> {
+        collectionChangeListener = e -> {
             if (lookupPickerField != null) {
                 if (isLookup()) {
                     if (getLookupScreen() != null)
@@ -183,7 +186,8 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
             }
             rootPanel.refreshComponent();
             rootPanel.refreshClickListeners(itemClickListener);
-        });
+        };
+        datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource, collectionChangeListener));
     }
 
     @Override

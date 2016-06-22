@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
+import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.swing.event.TreeModelEvent;
@@ -52,6 +53,8 @@ public class TreeModelAdapter implements TreeModel {
 
     protected MetadataTools metadataTools;
 
+    protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
+
     public TreeModelAdapter(HierarchicalDatasource datasource, CaptionMode captionMode, String captionProperty,
                             boolean autoRefresh) {
 
@@ -64,34 +67,32 @@ public class TreeModelAdapter implements TreeModel {
 
         this.metadataTools = AppBeans.get(MetadataTools.NAME);
 
-        //noinspection unchecked
-        datasource.addCollectionChangeListener(new CollectionDatasource.CollectionChangeListener() {
-            @Override
-            public void collectionChanged(CollectionDatasource.CollectionChangeEvent e) {
-                switch (e.getOperation()) {
-                    case CLEAR:
-                    case REFRESH:
-                    case ADD:
-                    case REMOVE:
-                        Object[] path = {getRoot()};
-                        for (TreeModelListener listener : treeModelListeners) {
-                            TreeModelEvent ev = new TreeModelEvent(this, path);
-                            listener.treeStructureChanged(ev);
-                        }
-                        break;
+        collectionChangeListener = e -> {
+            switch (e.getOperation()) {
+                case CLEAR:
+                case REFRESH:
+                case ADD:
+                case REMOVE:
+                    Object[] path = {getRoot()};
+                    for (TreeModelListener listener : treeModelListeners) {
+                        TreeModelEvent ev = new TreeModelEvent(this, path);
+                        listener.treeStructureChanged(ev);
+                    }
+                    break;
 
-                    case UPDATE:
-                        for (Object item : e.getItems()) {
-                            TreePath treePath = getTreePath(item);
-                            for (TreeModelListener listener : treeModelListeners) {
-                                TreeModelEvent ev = new TreeModelEvent(this, treePath.getPath());
-                                listener.treeNodesChanged(ev);
-                            }
+                case UPDATE:
+                    for (Object item : e.getItems()) {
+                        TreePath treePath = getTreePath(item);
+                        for (TreeModelListener listener : treeModelListeners) {
+                            TreeModelEvent ev = new TreeModelEvent(this, treePath.getPath());
+                            listener.treeNodesChanged(ev);
                         }
-                        break;
-                }
+                    }
+                    break;
             }
-        });
+        };
+        //noinspection unchecked
+        datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource, collectionChangeListener));
     }
 
     @Override

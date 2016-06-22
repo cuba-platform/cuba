@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.RowsCount;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 import org.jdesktop.swingx.JXHyperlink;
@@ -45,6 +46,8 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
     protected ListComponent owner;
     protected boolean samePage;
 
+    protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
+
     public DesktopRowsCount() {
         impl = new RowsCountComponent();
     }
@@ -58,11 +61,12 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
     public void setDatasource(CollectionDatasource datasource) {
         this.datasource = datasource;
         if (datasource != null) {
-            //noinspection unchecked
-            this.datasource.addCollectionChangeListener(e -> {
+            collectionChangeListener = e -> {
                 samePage = !CollectionDatasource.Operation.REFRESH.equals(e.getOperation());
                 onCollectionChanged();
-            });
+            };
+            //noinspection unchecked
+            this.datasource.addCollectionChangeListener(new WeakCollectionChangeListener(this.datasource, collectionChangeListener));
 
             impl.getCountButton().addActionListener(e -> onLinkClick());
 
