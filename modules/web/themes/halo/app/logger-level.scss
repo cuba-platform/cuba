@@ -1,0 +1,56 @@
+/*
+ * Copyright (c) 2008-2016 Haulmont.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@mixin cuba-logger-level {
+  .cuba-logger-level {
+    padding: 5px;
+    border: 1px solid #c5c5c5;
+    box-shadow: none;
+  }
+
+  .loglevel-ALL.currentlevel {
+    background: #ffffff;
+  }
+
+  .loglevel-TRACE.currentlevel {
+    background: #ab3101;
+    color: #ffffff;
+  }
+
+  .loglevel-INFO.currentlevel {
+    background: #4d7ab2;
+    color: #ffffff;
+  }
+
+  .loglevel-DEBUG.currentlevel {
+    background: #F6A854;
+    color: #ffffff;
+  }
+
+  .loglevel-WARN.currentlevel {
+    background: #5DB866;
+    color: #ffffff;
+  }
+
+  .loglevel-ERROR.currentlevel {
+    background: #007EC3;
+    color: #ffffff;
+  }
+
+  .loglevel-OFF.currentlevel {
+    background: #bbbbbb;
+  }
+}

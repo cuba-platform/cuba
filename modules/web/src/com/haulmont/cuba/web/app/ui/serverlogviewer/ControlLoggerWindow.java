@@ -20,9 +20,10 @@ package com.haulmont.cuba.web.app.ui.serverlogviewer;
 import ch.qos.logback.classic.Level;
 import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.cuba.core.sys.logging.LoggingHelper;
-import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GridLayout;
-import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -48,9 +49,14 @@ public class ControlLoggerWindow extends AbstractWindow {
     @Inject
     protected ComponentsFactory componentsFactory;
 
-    protected final Map<String, LookupField> fieldMap = new HashMap<>();
+    @Inject
+    private TextField loggerSearchField;
+
+    protected final Map<String, HBoxLayout> fieldMap = new HashMap<>();
 
     protected final Map<String, Level> levels = new HashMap<>();
+
+    protected Map<String, Level> loggersMap = new HashMap<>();
 
     @Override
     public void init(Map<String, Object> params) {
@@ -59,15 +65,23 @@ public class ControlLoggerWindow extends AbstractWindow {
                 .setHeight(themeConstants.getInt("cuba.web.ControlLoggerWindow.height"))
                 .setResizable(true);
 
-        @SuppressWarnings("unchecked")
-        Map<String, Level> loggersMap = (Map<String, Level>) params.get("loggersMap");
+        loggersMap = (Map<String, Level>) params.get("loggersMap");
+        fillLoggerGrid();
+    }
+
+    protected void fillLoggerGrid() {
+        loggersGrid.removeAll();
 
         for (Map.Entry<String, Level> levelEntry : loggersMap.entrySet()) {
             String loggerName = levelEntry.getKey();
-            Level level = levelEntry.getValue();
+            Level level;
+            if (levels.get(loggerName) != null && levelEntry.getValue() != levels.get(loggerName)) {
+                level = levels.get(loggerName);
+            } else {
+                level = levelEntry.getValue();
+            }
 
-            Pair<TextField, LookupField> editComponents = createEditComponents(loggerName, level);
-
+            Pair<TextField, HBoxLayout> editComponents = createEditComponents(loggerName, level);
             fieldMap.put(loggerName, editComponents.getSecond());
 
             loggersGrid.add(editComponents.getFirst());
@@ -76,13 +90,6 @@ public class ControlLoggerWindow extends AbstractWindow {
     }
 
     public void apply() {
-        levels.clear();
-
-        for (Map.Entry<String, LookupField> logEntry : fieldMap.entrySet()) {
-            String loggerName = logEntry.getKey();
-            Level logLevel = logEntry.getValue().getValue();
-            levels.put(loggerName, logLevel);
-        }
         close(COMMIT_ACTION_ID);
     }
 
@@ -101,30 +108,83 @@ public class ControlLoggerWindow extends AbstractWindow {
         return Collections.unmodifiableMap(levels);
     }
 
-    protected Pair<TextField, LookupField> createEditComponents(String loggerName, Level level) {
+    protected Pair<TextField, HBoxLayout> createEditComponents(String loggerName, Level level) {
         final TextField loggerNameField = componentsFactory.createComponent(TextField.class);
         loggerNameField.setValue(loggerName);
         loggerNameField.setEditable(false);
         loggerNameField.setFrame(this);
         loggerNameField.setWidth("100%");
 
-        final LookupField logLevelField = componentsFactory.createComponent(LookupField.class);
-        logLevelField.setWidth(themeConstants.get("cuba.web.ControlLoggerWindow.logLevelField.width"));
-        logLevelField.setOptionsList(LoggingHelper.getLevels());
-        logLevelField.setValue(level);
-        logLevelField.setFrame(this);
+        HBoxLayout buttonField = componentsFactory.createComponent(HBoxLayout.class);
+        buttonField.setSpacing(true);
 
-        return new Pair<>(loggerNameField, logLevelField);
+        for (Level logLevel : LoggingHelper.getLevels()) {
+            if (logLevel != Level.OFF && logLevel != Level.ALL) {
+                Button button = componentsFactory.createComponent(Button.class);
+                button.setAction(
+                        new AbstractAction("setLevel") {
+                            @Override
+                            public void actionPerform(Component component) {
+                                levels.put(loggerName, logLevel);
+                                HBoxLayout buttonPanel = (HBoxLayout) button.getParent();
+                                for (Component childButton : buttonPanel.getComponents()) {
+                                    if (childButton instanceof Button) {
+                                        childButton.setStyleName("cuba-logger-level loglevel-" + logLevel.toString());
+                                    }
+                                }
+                                button.setStyleName("cuba-logger-level loglevel-" + logLevel.toString() + " currentlevel");
+                            }
+                        });
+
+                button.setCaption(logLevel.toString());
+                if (logLevel == level) {
+                    button.setStyleName("cuba-logger-level loglevel-" + logLevel.toString() + " currentlevel");
+                } else {
+                    button.setStyleName("cuba-logger-level loglevel-" + logLevel.toString());
+                }
+                buttonField.add(button);
+            }
+        }
+
+        return new Pair<>(loggerNameField, buttonField);
     }
 
     protected void addLogger(String loggerName, Level level) {
-        Pair<TextField, LookupField> editComponents = createEditComponents(loggerName, level);
-
+        Pair<TextField, HBoxLayout> editComponents = createEditComponents(loggerName, level);
         fieldMap.put(loggerName, editComponents.getSecond());
 
         com.vaadin.ui.GridLayout vGrid = (com.vaadin.ui.GridLayout) WebComponentsHelper.unwrap(loggersGrid);
         vGrid.insertRow(1);
         loggersGrid.add(editComponents.getFirst(), 0, 1);
         loggersGrid.add(editComponents.getSecond(), 1, 1);
+    }
+
+    public void filterLogger() {
+        if (loggerSearchField.getValue() == null) {
+            fillLoggerGrid();
+        } else {
+            loggersGrid.removeAll();
+
+            for (Map.Entry<String, Level> levelEntry : loggersMap.entrySet()) {
+                String keyword = loggerSearchField.getValue().toString();
+                String loggerName = levelEntry.getKey();
+
+                if (loggerName.toLowerCase().contains(keyword.toLowerCase())) {
+                    Level level = levelEntry.getValue();
+
+                    Pair<TextField, HBoxLayout> editComponents = createEditComponents(loggerName, level);
+
+                    fieldMap.put(loggerName, editComponents.getSecond());
+
+                    loggersGrid.add(editComponents.getFirst());
+                    loggersGrid.add(editComponents.getSecond());
+                }
+            }
+        }
+    }
+
+    public void clearFilterLogger() {
+        fillLoggerGrid();
+        loggerSearchField.setValue(null);
     }
 }

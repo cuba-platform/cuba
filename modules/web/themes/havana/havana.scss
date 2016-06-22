@@ -66,6 +66,7 @@
 // Application specific
 @import "app/app-window";
 @import "app/login-window";
+@import "app/logger-level";
 @import "app/breadcrumbs";
 @import "app/generic-filter";
 @import "app/table-paging";
@@ -137,6 +138,7 @@
 
   @include cuba-login-window;
   @include cuba-application-window;
+  @include cuba-logger-level;
   @include cuba-generic-filter;
   @include cuba-table-paging;
   @include cuba-table-showlink;

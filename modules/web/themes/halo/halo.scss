@@ -67,6 +67,7 @@
 // Application specific
 @import "app/log-control";
 @import "app/login-window";
+@import "app/logger-level";
 @import "app/role-editor";
 @import "app/report-wizard";
 @import "app/breadcrumbs";
@@ -130,6 +131,7 @@
 
   @include cuba-log-control;
   @include cuba-login-window;
+  @include cuba-logger-level;
   @include cuba-role-editor;
   @include cuba-report-wizard;
   @include cuba-breadcrumbs;
