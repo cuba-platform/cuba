@@ -675,6 +675,12 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                 composition.removeComponent(editor);
             }
 
+            if (editable) {
+                removeStyleName("readonly");
+            } else {
+                addStyleName("readonly");
+            }
+
             initField();
 
             if (isEditable()) {

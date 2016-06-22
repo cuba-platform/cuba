@@ -44,6 +44,14 @@
     }
   }
 
+  .#{$primary-stylename}.v-disabled .cuba-tokenlist-label-close{
+    @include opacity($v-disabled-opacity);
+  }
+
+  .#{$primary-stylename}.readonly .cuba-tokenlist-label-close{
+    display: none;
+  }
+
   .#{$primary-stylename} .cuba-tokenlist-label-content {
     white-space: nowrap;
     outline: none;
