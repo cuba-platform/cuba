@@ -198,10 +198,17 @@
     line-height: $v-table-row-height;
     margin-left: -$v-table-sort-indicator-width;
     opacity: 0;
+    cursor: pointer;
+    @if $v-animations-enabled {
+      @include transition(opacity 200ms 1s);
+    }
   }
 
   .#{$primary-stylename}-header-sortable:hover .#{$primary-stylename}-sort-indicator {
     opacity: 1;
+    @if $v-animations-enabled {
+      @include transition(opacity 200ms 100ms);
+    }
   }
 
   .cuba-table-contextmenu {

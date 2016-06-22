@@ -22,6 +22,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.ui.*;
+import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.ComputedStyle;
 import com.vaadin.client.ui.VOverlay;
@@ -48,8 +49,8 @@ public class TableCustomSortDelegate {
         sortByAscendingButton.addStyleName("cuba-table-contextmenu-item");
         sortClearSortButton.addStyleName("cuba-table-contextmenu-item");
 
-        sortDirectionMenu.add(sortByDescendingButton);
         sortDirectionMenu.add(sortByAscendingButton);
+        sortDirectionMenu.add(sortByDescendingButton);
         sortDirectionMenu.add(sortClearSortButton);
 
         sortByDescendingButton.addClickHandler(new ClickHandler() {
@@ -101,9 +102,8 @@ public class TableCustomSortDelegate {
 
         sortDirectionPopup.setAutoHideEnabled(true);
         ComputedStyle sortIndicatorStyle = new ComputedStyle(sortIndicator);
-        sortDirectionPopup.setPopupPosition(sortIndicator.getAbsoluteLeft(), sortIndicator.getAbsoluteTop() +
+        Tools.showPopup(sortDirectionPopup, sortIndicator.getAbsoluteLeft(), sortIndicator.getAbsoluteTop() +
                 ((int) sortIndicatorStyle.getHeight()));
-        sortDirectionPopup.show();
         sortIndicator.addClassName("cuba-sort-indicator-visible");
     }
 }
