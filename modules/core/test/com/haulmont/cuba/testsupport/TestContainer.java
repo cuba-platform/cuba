@@ -27,10 +27,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.core.sys.AbstractAppContextLoader;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.AppContextLoader;
-import com.haulmont.cuba.core.sys.CubaCoreApplicationContext;
+import com.haulmont.cuba.core.sys.*;
 import com.haulmont.cuba.core.sys.persistence.EclipseLinkCustomizer;
 import com.haulmont.cuba.core.sys.persistence.PersistenceConfigProcessor;
 import org.apache.commons.io.IOUtils;
@@ -109,6 +106,7 @@ public class TestContainer extends ExternalResource {
     private Logger log;
 
     protected String springConfig;
+    protected List<String> appComponentIds;
     protected List<String> appPropertiesFiles;
     protected String dbDriver;
     protected String dbUrl;
@@ -126,6 +124,7 @@ public class TestContainer extends ExternalResource {
         log = LoggerFactory.getLogger(TestContainer.class);
 
         springConfig = "test-spring.xml";
+        appComponentIds = Collections.emptyList();
         appPropertiesFiles = Arrays.asList("cuba-app.properties", "test-app.properties");
         dbDriver = "org.hsqldb.jdbc.JDBCDriver";
         dbUrl = "jdbc:hsqldb:hsql://localhost/cubadb";
@@ -182,6 +181,10 @@ public class TestContainer extends ExternalResource {
         context.getLogger(logger).setLevel(level);
     }
 
+    public List<String> getAppComponentIds() {
+        return appComponentIds;
+    }
+
     public List<String> getAppPropertiesFiles() {
         return appPropertiesFiles;
     }
@@ -192,6 +195,11 @@ public class TestContainer extends ExternalResource {
 
     public TestContainer setSpringConfig(String springConfig) {
         this.springConfig = springConfig;
+        return this;
+    }
+
+    public TestContainer setAppComponentIds(List<String> appComponentIds) {
+        this.appComponentIds = appComponentIds;
         return this;
     }
 
@@ -256,6 +264,7 @@ public class TestContainer extends ExternalResource {
         log.info("Starting test container " + this);
         System.setProperty("cuba.unitTestMode", "true");
 
+        initAppComponents();
         initAppProperties();
         for (Map.Entry<String, String> entry : appProperties.entrySet()) {
             AppContext.setProperty(entry.getKey(), entry.getValue());
@@ -303,6 +312,10 @@ public class TestContainer extends ExternalResource {
         processor.setOutputFile(dataDir + "/persistence.xml");
 
         processor.create();
+    }
+
+    protected void initAppComponents() {
+        AppContext.Internals.setAppComponents(new AppComponents(getAppComponentIds(), "core"));
     }
 
     protected void initAppProperties() {

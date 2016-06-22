@@ -27,6 +27,7 @@ import junit.framework.TestCase;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -98,6 +99,7 @@ public abstract class CubaTestCase extends TestCase {
             if (!initialized) {
                 System.setProperty("cuba.unitTestMode", "true");
                 cont = new CommonTestContainer();
+                cont.setAppComponentIds(getTestAppComponentIds());
                 cont.setAppPropertiesFiles(getTestAppProperties());
                 cont.setSpringConfig(getTestSpringConfig());
                 ((CommonTestContainer) cont).before();
@@ -128,6 +130,10 @@ public abstract class CubaTestCase extends TestCase {
         Class.forName("org.hsqldb.jdbc.JDBCDriver");
         TestDataSource ds = new TestDataSource("jdbc:hsqldb:hsql://localhost/cubadb", "sa", "");
         TestContext.getInstance().bind(AppContext.getProperty("cuba.dataSourceJndiName"), ds);
+    }
+
+    protected List<String> getTestAppComponentIds() {
+        return Collections.emptyList();
     }
 
     protected List<String> getTestAppProperties() {
