@@ -61,10 +61,11 @@ public class CollectionDsActionsNotifier implements Datasource.ItemChangeListene
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void bind(CollectionDatasource ds) {
-        ds.addItemChangeListener(this);
-        ds.addItemPropertyChangeListener(this);
-        ds.addStateChangeListener(this);
-        ds.addCollectionChangeListener(this);
+        ds.addItemChangeListener(new WeakItemChangeListener(ds, this));
+        ds.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(ds, this));
+        ds.addStateChangeListener(new WeakStateChangeListener(ds, this));
+        ds.addCollectionChangeListener(new WeakCollectionChangeListener(ds, this));
     }
 }

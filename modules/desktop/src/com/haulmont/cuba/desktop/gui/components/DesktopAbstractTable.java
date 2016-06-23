@@ -143,6 +143,8 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     protected boolean multiLineCells;
     protected boolean settingsEnabled = true;
 
+    protected CollectionDsActionsNotifier collectionDsActionsNotifier;
+
     protected DesktopAbstractTable() {
         shortcutsDelegate.setAllowEnterShortcut(false);
     }
@@ -714,7 +716,8 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
             rowsCount.setDatasource(datasource);
         }
 
-        new CollectionDsActionsNotifier(this).bind(datasource);
+        collectionDsActionsNotifier = new CollectionDsActionsNotifier(this);
+        collectionDsActionsNotifier.bind(datasource);
 
         for (Action action : getActions()) {
             action.refreshState();

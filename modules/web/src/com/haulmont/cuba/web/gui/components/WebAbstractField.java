@@ -30,6 +30,7 @@ import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractField;
@@ -53,6 +54,8 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends We
     protected List<Field.Validator> validators; // lazily initialized list
 
     protected Object prevValue;
+
+    protected Datasource.ItemChangeListener<Entity> securityItemChangeListener;
 
     @Override
     public Datasource getDatasource() {
@@ -96,7 +99,9 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends We
         }
 
         handleFilteredAttributes(this, this.datasource, metaPropertyPath);
-        this.datasource.addItemChangeListener(e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath));
+        securityItemChangeListener = e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath);
+        //noinspection unchecked
+        this.datasource.addItemChangeListener(new WeakItemChangeListener(datasource, securityItemChangeListener));
     }
 
     protected void resolveMetaPropertyPath(MetaClass metaClass, String property) {

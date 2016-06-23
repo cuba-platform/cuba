@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.components.RowsCount;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource.Operation;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import com.haulmont.cuba.web.toolkit.ui.CubaRowsCount;
 
 public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements RowsCount {
@@ -35,6 +36,8 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     protected int size;
     protected ListComponent owner;
     protected boolean samePage;
+
+    protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
 
     public WebRowsCount() {
         component = new CubaRowsCount();
@@ -51,10 +54,12 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         this.datasource = datasource;
         if (datasource != null) {
             //noinspection unchecked
-            this.datasource.addCollectionChangeListener(e -> {
+            collectionChangeListener = e -> {
                 samePage = !Operation.REFRESH.equals(e.getOperation());
                 onCollectionChanged();
-            });
+            };
+            //noinspection unchecked
+            datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource, collectionChangeListener));
 
             component.getCountButton().addClickListener(event -> onLinkClick());
             component.getPrevButton().addClickListener(event -> onPrevClick());

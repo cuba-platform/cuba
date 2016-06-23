@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.OptionsField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.EnumerationContainer;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
@@ -58,19 +59,21 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
      */
     protected boolean optionsInitialization = false;
 
+    protected Datasource.ItemChangeListener securitytemChangeListener;
+
     @Override
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
-        final MetaClass metaClass = datasource.getMetaClass();
+        MetaClass metaClass = datasource.getMetaClass();
         resolveMetaPropertyPath(metaClass, property);
 
         if (metaProperty.getRange().getCardinality() != null) {
             setMultiSelect(metaProperty.getRange().getCardinality().isMany());
         }
 
-        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
-        final Property itemProperty = wrapper.getItemProperty(metaPropertyPath);
+        ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
+        Property itemProperty = wrapper.getItemProperty(metaPropertyPath);
 
         setRequired(metaProperty.isMandatory());
         if (StringUtils.isEmpty(getRequiredMessage())) {
@@ -100,7 +103,9 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
         }
 
         handleFilteredAttributes(this, this.datasource, metaPropertyPath);
-        this.datasource.addItemChangeListener(e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath));
+        securitytemChangeListener = e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath);
+        //noinspection unchecked
+        this.datasource.addItemChangeListener(new WeakItemChangeListener(datasource, securitytemChangeListener));
     }
 
     protected EnumerationContainer createEnumContainer(List options) {

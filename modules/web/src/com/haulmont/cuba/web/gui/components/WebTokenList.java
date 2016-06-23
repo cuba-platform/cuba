@@ -32,6 +32,7 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.ui.CubaTokenListLabel;
@@ -90,6 +91,8 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
         }
     };
 
+    protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
+
     public WebTokenList() {
         addButton = new WebButton();
         Messages messages = AppBeans.get(Messages.NAME);
@@ -114,8 +117,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
     public void setDatasource(CollectionDatasource datasource) {
         this.datasource = datasource;
 
-        //noinspection unchecked
-        datasource.addCollectionChangeListener(e -> {
+        collectionChangeListener = e -> {
             if (lookupPickerField != null) {
                 if (isLookup()) {
                     if (getLookupScreen() != null) {
@@ -131,7 +133,9 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
             }
             component.refreshComponent();
             component.refreshClickListeners(itemClickListener);
-        });
+        };
+        //noinspection unchecked
+        datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource, collectionChangeListener));
     }
 
     @Override
