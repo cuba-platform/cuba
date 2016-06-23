@@ -29,6 +29,8 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
+import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.toolkit.ui.CubaDateField;
@@ -64,6 +66,9 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     protected UserSession userSession;
 
     protected TimeZones timeZones = AppBeans.get(TimeZones.NAME);
+
+    protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
+    protected Datasource.ItemChangeListener itemChangeListener;
 
     public WebDateField() {
         innerLayout = new HorizontalLayout();
@@ -294,7 +299,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
-        final MetaClass metaClass = datasource.getMetaClass();
+        MetaClass metaClass = datasource.getMetaClass();
         resolveMetaPropertyPath(metaClass, property);
 
         if (metaProperty.getRange().isDatatype()
@@ -306,18 +311,18 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
             }
         }
 
-        //noinspection unchecked
-        datasource.addItemChangeListener(e -> {
+        itemChangeListener = e -> {
             if (updatingInstance) {
                 return;
             }
             Date value = getEntityValue(e.getItem());
             setValueToFields(toUserDate(value));
             fireValueChanged(value);
-        });
-
+        };
         //noinspection unchecked
-        datasource.addItemPropertyChangeListener(e -> {
+        datasource.addItemChangeListener(new WeakItemChangeListener(datasource, itemChangeListener));
+
+        itemPropertyChangeListener = e -> {
             if (updatingInstance) {
                 return;
             }
@@ -325,7 +330,9 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
                 setValueToFields(toUserDate((Date) e.getValue()));
                 fireValueChanged(e.getValue());
             }
-        });
+        };
+        //noinspection unchecked
+        datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener));
 
         if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
             if (property.equals(metaPropertyPath.toString())) {

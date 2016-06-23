@@ -26,6 +26,8 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
+import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaPickerField;
@@ -61,6 +63,10 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
     protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
+
+    protected Datasource.ItemChangeListener securityItemChangeListener;
+    protected Datasource.ItemChangeListener itemChangeListener;
+    protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
 
     public WebPickerField() {
         component = new Picker(this);
@@ -173,6 +179,7 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
         checkDatasourceProperty(datasource, property);
 
         this.datasource = datasource;
+
         metaPropertyPath = getResolvedMetaPropertyPath(datasource.getMetaClass(), property);
         metaProperty = metaPropertyPath.getMetaProperty();
 
@@ -181,18 +188,20 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
 
         component.setPropertyDataSource(itemProperty);
 
-        //noinspection unchecked
-        datasource.addItemChangeListener(e -> {
+        itemChangeListener = e -> {
             Object newValue = InstanceUtils.getValueEx(e.getItem(), metaPropertyPath.getPath());
             setValue(newValue);
-        });
-
+        };
         //noinspection unchecked
-        datasource.addItemPropertyChangeListener(e -> {
+        datasource.addItemChangeListener(new WeakItemChangeListener(datasource, itemChangeListener));
+
+        itemPropertyChangeListener = e -> {
             if (e.getProperty().equals(metaPropertyPath.toString())) {
                 setValue(e.getValue());
             }
-        });
+        };
+        //noinspection unchecked
+        datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener));
 
         if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
             if (property.equals(metaPropertyPath.toString())) {
@@ -212,7 +221,9 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
         }
 
         handleFilteredAttributes(this, this.datasource, metaPropertyPath);
-        this.datasource.addItemChangeListener(e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath));
+        securityItemChangeListener = e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath);
+        //noinspection unchecked
+        this.datasource.addItemChangeListener(new WeakItemChangeListener(datasource, securityItemChangeListener));
     }
 
     @Override

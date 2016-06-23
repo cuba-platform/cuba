@@ -40,6 +40,8 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
+import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaButtonField;
 import com.vaadin.data.Property;
@@ -63,6 +65,9 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
 
     protected MetaClass metaClass;
     protected ListComponent owner;
+
+    protected Datasource.ItemChangeListener itemChangeListener;
+    protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
 
     public WebEntityLinkField() {
         component = new CubaButtonField();
@@ -236,30 +241,32 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
         //noinspection unchecked
         this.datasource = datasource;
 
-        final MetaClass metaClass = datasource.getMetaClass();
+        MetaClass metaClass = datasource.getMetaClass();
         resolveMetaPropertyPath(metaClass, property);
 
         if (metaProperty.getRange().isClass()) {
             this.metaClass = metaProperty.getRange().asClass();
         }
 
-        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
-        final Property itemProperty = wrapper.getItemProperty(metaPropertyPath);
+        ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
+        Property itemProperty = wrapper.getItemProperty(metaPropertyPath);
 
         component.setPropertyDataSource(itemProperty);
 
-        //noinspection unchecked
-        datasource.addItemChangeListener(e -> {
+        itemChangeListener = e -> {
             Object newValue = InstanceUtils.getValueEx(e.getItem(), metaPropertyPath.getPath());
             setValue(newValue);
-        });
-
+        };
         //noinspection unchecked
-        datasource.addItemPropertyChangeListener(e -> {
+        datasource.addItemChangeListener(new WeakItemChangeListener(datasource, itemChangeListener));
+
+        itemPropertyChangeListener = e -> {
             if (e.getProperty().equals(metaPropertyPath.toString())) {
                 setValue(e.getValue());
             }
-        });
+        };
+        //noinspection unchecked
+        datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener));
 
         if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
             if (property.equals(metaPropertyPath.toString())) {

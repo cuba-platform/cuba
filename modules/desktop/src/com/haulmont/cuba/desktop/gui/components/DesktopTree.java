@@ -60,6 +60,8 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
     protected MouseAdapter itemClickListener;
     protected boolean editable = true;
 
+    protected CollectionDsActionsNotifier collectionDsActionsNotifier;
+
     public DesktopTree() {
         layout = new MigLayout("flowy, fill, insets 0", "", "[min!][fill]");
         panel = new JPanel(layout);
@@ -320,7 +322,8 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
             }
         });
 
-        new CollectionDsActionsNotifier(this).bind(datasource);
+        collectionDsActionsNotifier = new CollectionDsActionsNotifier(this);
+        collectionDsActionsNotifier.bind(datasource);
 
         for (Action action : getActions()) {
             action.refreshState();

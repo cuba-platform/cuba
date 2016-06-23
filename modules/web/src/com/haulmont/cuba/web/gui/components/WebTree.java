@@ -22,9 +22,11 @@ import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.ShowInfoAction;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
+import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.event.ItemClickEvent;
@@ -43,6 +45,9 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
 
     protected Action doubleClickAction;
     protected ItemClickEvent.ItemClickListener itemClickListener;
+
+    protected CollectionDatasource.CollectionChangeListener collectionChangeSelectionListener;
+    protected CollectionDsActionsNotifier collectionDsActionsNotifier;
 
     public WebTree() {
         component = new CubaTree();
@@ -185,8 +190,7 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
             action.setDatasource(datasource);
         }
 
-        //noinspection unchecked
-        datasource.addCollectionChangeListener(e -> {
+        collectionChangeSelectionListener = e -> {
             // #PL-2035, reload selection from ds
             Set<Object> selectedItemIds = getSelectedItemIds();
             if (selectedItemIds == null) {
@@ -209,9 +213,12 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
             } else {
                 setSelectedIds(newSelection);
             }
-        });
+        };
+        //noinspection unchecked
+        datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource, collectionChangeSelectionListener));
 
-        new CollectionDsActionsNotifier(this).bind(datasource);
+        collectionDsActionsNotifier = new CollectionDsActionsNotifier(this);
+        collectionDsActionsNotifier.bind(datasource);
 
         for (Action action : getActions()) {
             action.refreshState();

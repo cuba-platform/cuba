@@ -42,6 +42,8 @@ import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.aggregation.Aggregations;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
+import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -126,6 +128,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     protected Security security = AppBeans.get(Security.NAME);
     protected boolean settingsEnabled = true;
+
+    protected Datasource.ItemPropertyChangeListener aggregationDatasourceListener;
+    protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
+    protected CollectionDatasource.CollectionChangeListener collectionChangeSelectionListener;
+
+    protected CollectionDsActionsNotifier collectionDsActionsNotifier;
 
     @Override
     public java.util.List<Table.Column> getColumns() {
@@ -760,8 +768,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         this.datasource = datasource;
 
         // drop cached datasources for components before update table cells on client
-        //noinspection unchecked
-        datasource.addCollectionChangeListener(e -> {
+        collectionChangeListener = e -> {
             if (fieldDatasources != null) {
                 switch (e.getOperation()) {
                     case CLEAR:
@@ -777,7 +784,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                         break;
                 }
             }
-        });
+        };
+        //noinspection unchecked
+        datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource, collectionChangeListener));
 
         final CollectionDsWrapper containerDatasource = createContainerDatasource(datasource, getPropertyColumns());
 
@@ -833,7 +842,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             }
         }
 
-        datasource.addItemPropertyChangeListener(createAggregationDatasourceListener());
+        aggregationDatasourceListener = createAggregationDatasourceListener();
+        //noinspection unchecked
+        datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, aggregationDatasourceListener));
 
         createStubsForGeneratedColumns();
 
@@ -852,8 +863,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             rowsCount.setDatasource(datasource);
         }
 
-        //noinspection unchecked
-        datasource.addCollectionChangeListener(e -> {
+        collectionChangeSelectionListener = e -> {
             // #PL-2035, reload selection from ds
             Set<Object> selectedItemIds = getSelectedItemIds();
             if (selectedItemIds == null) {
@@ -877,10 +887,13 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             } else {
                 setSelectedIds(newSelection);
             }
-        });
+        };
+        //noinspection unchecked
+        datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource, collectionChangeSelectionListener));
 
         //noinspection unchecked
-        new CollectionDsActionsNotifier(this).bind(datasource);
+        collectionDsActionsNotifier = new CollectionDsActionsNotifier(this);
+        collectionDsActionsNotifier.bind(datasource);
 
         for (Action action : getActions()) {
             action.refreshState();
