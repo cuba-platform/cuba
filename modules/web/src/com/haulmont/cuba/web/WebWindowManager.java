@@ -226,7 +226,8 @@ public class WebWindowManager extends WindowManager {
 
     protected boolean hasModalWindow() {
         for (Map.Entry<Window, WindowOpenInfo> entry : windowOpenMode.entrySet()) {
-            if (OpenMode.DIALOG == entry.getValue().getOpenMode()) {
+            if (OpenMode.DIALOG == entry.getValue().getOpenMode()
+                    && BooleanUtils.isTrue(entry.getKey().getDialogOptions().getModal())) {
                 return true;
             }
         }

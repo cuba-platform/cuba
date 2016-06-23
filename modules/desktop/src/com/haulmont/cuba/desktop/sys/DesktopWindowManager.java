@@ -227,10 +227,11 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     protected boolean hasModalWindow() {
-        Set<Map.Entry<Window, WindowOpenInfo>> openModes = windowOpenMode.entrySet();
-        for (Map.Entry<Window, WindowOpenInfo> openMode : openModes) {
-            if (OpenMode.DIALOG.equals(openMode.getValue().getOpenMode()))
+        for (Map.Entry<Window, WindowOpenInfo> entry : windowOpenMode.entrySet()) {
+            if (OpenMode.DIALOG == entry.getValue().getOpenMode()
+                    && BooleanUtils.isTrue(entry.getKey().getDialogOptions().getModal())) {
                 return true;
+            }
         }
         return false;
     }
