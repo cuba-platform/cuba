@@ -114,7 +114,13 @@ public class DesktopExportDisplay implements ExportDisplay {
         fileChooser.setSelectedFile(new File(fileName));
         if (fileChooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
-            saveFile(dataProvider, selectedFile);
+            boolean success = saveFile(dataProvider, selectedFile);
+            TopLevelFrame mainFrame = App.getInstance().getMainFrame();
+            if (success) {
+                mainFrame.showNotification(messages.getMessage(DesktopExportDisplay.class, "export.saveSuccess"), Frame.NotificationType.TRAY);
+            } else {
+                mainFrame.showNotification(messages.getMessage(DesktopExportDisplay.class, "export.saveError"), Frame.NotificationType.ERROR);
+            }
         }
     }
 
