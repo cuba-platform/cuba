@@ -309,6 +309,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
         removeButton = componentsFactory.createComponent(Button.class);
         removeButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "remove"));
         RemoveAction removeAction = new RemoveAction(entitiesTable);
+        removeAction.setAfterRemoveHandler(removedItems -> entitiesDs.refresh());
         table.addAction(removeAction);
         removeButton.setAction(removeAction);
         removeButton.setIcon("icons/remove.png");
