@@ -26,10 +26,13 @@ import com.haulmont.cuba.core.app.importexport.EntityImportView;
 import com.haulmont.cuba.core.app.importexport.ReferenceImportBehaviour;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.actions.*;
+import com.haulmont.cuba.gui.components.actions.ExcelAction;
+import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
+import com.haulmont.cuba.gui.components.actions.RefreshAction;
+import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -57,6 +60,8 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
     public interface Companion {
         void setHorizontalScrollEnabled(Table table, boolean enabled);
+
+        void setTextSelectionEnabled(Table table, boolean enabled);
     }
 
     public static final String SCREEN_NAME = "entityInspector.browse";
@@ -96,6 +101,9 @@ public class EntityInspectorBrowse extends AbstractLookup {
     protected CheckBox removedRecords;
 
     @Inject
+    protected CheckBox textSelection;
+
+    @Inject
     protected BoxLayout filterBox;
 
     @Inject
@@ -109,6 +117,9 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
     protected Filter filter;
     protected Table entitiesTable;
+
+    @Inject
+    protected EntityInspectorBrowse.Companion companion;
 
     /**
      * Buttons
@@ -167,6 +178,14 @@ public class EntityInspectorBrowse extends AbstractLookup {
         }
     }
 
+    protected void changeTableTextSelectionEnabled() {
+        if (BooleanUtils.isTrue(textSelection.getValue())) {
+            companion.setTextSelectionEnabled(entitiesTable, true);
+        } else {
+            companion.setTextSelectionEnabled(entitiesTable, false);
+        }
+    }
+
     protected void createEntitiesTable(MetaClass meta) {
         if (entitiesTable != null)
             tableBox.remove(entitiesTable);
@@ -176,9 +195,14 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
         entitiesTable = componentsFactory.createComponent(Table.class);
         entitiesTable.setFrame(frame);
-        Companion companion = getCompanion();
         if (companion != null) {
             companion.setHorizontalScrollEnabled(entitiesTable, true);
+        }
+
+        ClientType clientType = AppConfig.getClientType();
+        if (clientType == ClientType.WEB) {
+            textSelection.setVisible(true);
+            textSelection.addValueChangeListener(e -> changeTableTextSelectionEnabled());
         }
 
         //collect properties in order to add non-system columns first
@@ -255,7 +279,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
         filter.setEditable(true);
 
         filter.setDatasource(entitiesDs);
-        ((FilterImplementation)filter).loadFiltersAndApplyDefault();
+        ((FilterImplementation) filter).loadFiltersAndApplyDefault();
         filter.apply(true);
     }
 
