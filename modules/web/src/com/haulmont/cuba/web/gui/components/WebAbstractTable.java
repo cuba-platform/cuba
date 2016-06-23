@@ -39,6 +39,7 @@ import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.aggregation.Aggregations;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.presentations.Presentations;
@@ -1633,12 +1634,26 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         }
     }
 
+    protected boolean isAggregationCorrect(AggregationInfo aggregationInfo) {
+        MetaPropertyPath propertyPath = aggregationInfo.getPropertyPath();
+        MetaProperty[] metaProperties = propertyPath.getMetaProperties();
+        Class<?> javaType = metaProperties[metaProperties.length - 1].getJavaType();
+        return Aggregations.get(javaType) != null || aggregationInfo.getType() == AggregationInfo.Type.CUSTOM;
+    }
+
     protected Map<Object, Object> __aggregate(AggregationContainer container, AggregationContainer.Context context) {
         final List<AggregationInfo> aggregationInfos = new LinkedList<>();
         for (final Object propertyId : container.getAggregationPropertyIds()) {
             final Table.Column column = columns.get(propertyId);
-            if (column.getAggregation() != null) {
-                aggregationInfos.add(column.getAggregation());
+            AggregationInfo aggregation = column.getAggregation();
+            if (aggregation != null) {
+                if (!isAggregationCorrect(aggregation)) {
+                    String msg = String.format("Unable to aggregate column \"%s\" with data type %s with default aggregation strategy: %s",
+                            column.getId(), aggregation.getPropertyPath().getRange(), aggregation.getType());
+                    throw new UnsupportedOperationException(msg);
+                }
+
+                aggregationInfos.add(aggregation);
             }
         }
         @SuppressWarnings("unchecked")
@@ -1909,7 +1924,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     protected static class AbbreviatedColumnGenerator implements SystemTableColumnGenerator,
-                                                                 CubaEnhancedTable.PlainTextGeneratedColumn {
+            CubaEnhancedTable.PlainTextGeneratedColumn {
 
         protected Table.Column column;
 
@@ -2152,7 +2167,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 throw new IllegalStateException("Table datasource is null");
 
             MetaPropertyPath metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
-                            .resolveMetaPropertyPath(datasource.getMetaClass(), propertyId);
+                    .resolveMetaPropertyPath(datasource.getMetaClass(), propertyId);
             Column columnConf = columns.get(metaPropertyPath);
             final DsContext dsContext = datasource.getDsContext();
 
@@ -2361,14 +2376,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
-    public void setColumnHeaderVisible(boolean visible){
+    public void setColumnHeaderVisible(boolean visible) {
         component.setColumnHeaderMode(visible ?
                 com.vaadin.ui.Table.ColumnHeaderMode.EXPLICIT_DEFAULTS_ID :
                 com.vaadin.ui.Table.ColumnHeaderMode.HIDDEN);
     }
 
     @Override
-    public boolean isColumnHeaderVisible(){
+    public boolean isColumnHeaderVisible() {
         if (component.getColumnHeaderMode() == com.vaadin.ui.Table.ColumnHeaderMode.HIDDEN) {
             return false;
         } else {
@@ -2378,7 +2393,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public void setShowSelection(boolean showSelection) {
-            component.setSelectable(showSelection);
+        component.setSelectable(showSelection);
     }
 
     @Override
@@ -2397,7 +2412,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             if (propertyId != null && itemId != null
                     && !component.isColumnEditable(propertyId)
                     && (component.getColumnGenerator(propertyId) == null
-                        || component.getColumnGenerator(propertyId) instanceof AbbreviatedColumnGenerator)) {
+                    || component.getColumnGenerator(propertyId) instanceof AbbreviatedColumnGenerator)) {
 
                 MetaPropertyPath propertyPath;
                 if (propertyId instanceof MetaPropertyPath) {
