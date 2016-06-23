@@ -1357,7 +1357,12 @@
         <xs:group ref="layoutOrComponent"/>
 
         <xs:attributeGroup ref="hasId"/>
-        <xs:attributeGroup ref="isLayoutComponent"/>
+        <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasAlign"/>
+        <xs:attributeGroup ref="hasStyle"/>
+
+        <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasEnableProp"/>
 
         <xs:attribute name="template" type="xs:string" use="required"/>
     </xs:complexType>
