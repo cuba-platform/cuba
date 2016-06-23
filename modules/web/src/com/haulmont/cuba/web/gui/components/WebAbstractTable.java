@@ -2069,7 +2069,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
         @Override
         public void itemPropertyChanged(Datasource.ItemPropertyChangeEvent<Entity> e) {
-            if (aggregationCells != null) {
+            if (isAggregatable() && aggregationCells != null) {
                 final CollectionDatasource ds = WebAbstractTable.this.getDatasource();
                 component.aggregate(new AggregationContainer.Context(ds.getItemIds()));
 
