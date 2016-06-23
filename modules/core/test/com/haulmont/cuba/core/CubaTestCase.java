@@ -26,10 +26,7 @@ import com.haulmont.cuba.testsupport.TestDataSource;
 import junit.framework.TestCase;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * DEPRECATED. Use TestContainer and JUnit4 test annotations:
@@ -99,7 +96,7 @@ public abstract class CubaTestCase extends TestCase {
             if (!initialized) {
                 System.setProperty("cuba.unitTestMode", "true");
                 cont = new CommonTestContainer();
-                cont.setAppComponentIds(getTestAppComponentIds());
+                cont.setAppComponents(getTestAppComponents());
                 cont.setAppPropertiesFiles(getTestAppProperties());
                 cont.setSpringConfig(getTestSpringConfig());
                 ((CommonTestContainer) cont).before();
@@ -132,8 +129,8 @@ public abstract class CubaTestCase extends TestCase {
         TestContext.getInstance().bind(AppContext.getProperty("cuba.dataSourceJndiName"), ds);
     }
 
-    protected List<String> getTestAppComponentIds() {
-        return Collections.emptyList();
+    protected Map<String, String> getTestAppComponents() {
+        return Collections.emptyMap();
     }
 
     protected List<String> getTestAppProperties() {

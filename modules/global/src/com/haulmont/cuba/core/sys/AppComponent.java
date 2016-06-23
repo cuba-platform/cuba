@@ -26,7 +26,6 @@ import java.util.Properties;
  */
 public class AppComponent implements Comparable<AppComponent> {
 
-    public static final String ATTR_ID = "App-Component-Id";
     public static final String ATTR_VERSION = "App-Component-Version";
     public static final String ATTR_ARTIFACT_GROUP = "App-Component-Artifact-Group";
     public static final String ATTR_DESCR = "App-Component-Descriptor";
