@@ -323,8 +323,8 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
             setEditable(false);
         }
 
-        handleFilteredAttributes(this.datasource, metaProperty, this);
-        this.datasource.addItemChangeListener(e -> handleFilteredAttributes(this.datasource, metaProperty, this));
+        handleFilteredAttributes(this, this.datasource, metaPropertyPath);
+        this.datasource.addItemChangeListener(e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath));
     }
 
     protected void fireChangeListeners(Object newValue) {

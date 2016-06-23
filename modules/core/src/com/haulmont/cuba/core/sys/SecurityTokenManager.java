@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.sys;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.haulmont.cuba.core.app.ServerConfig;
+import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.global.Configuration;
 import org.json.JSONArray;
@@ -47,7 +48,7 @@ public class SecurityTokenManager {
      * Encrypt filtered data and write the result to the security token
      */
     public void writeSecurityToken(BaseGenericIdEntity<?> resultEntity) {
-        Multimap<String, UUID> filtered = resultEntity.__filteredData();
+        Multimap<String, UUID> filtered = BaseEntityInternalAccess.getFilteredData(resultEntity);
         JSONObject jsonObject = new JSONObject();
         if (filtered != null) {
             Set<Map.Entry<String, Collection<UUID>>> entries = filtered.asMap().entrySet();
@@ -57,14 +58,14 @@ public class SecurityTokenManager {
                 jsonObject.put(entry.getKey(), entry.getValue());
                 filteredAttributes[i++] = entry.getKey();
             }
-            resultEntity.__filteredAttributes(filteredAttributes);
+            BaseEntityInternalAccess.setFilteredAttributes(resultEntity, filteredAttributes);
         }
 
         String json = jsonObject.toString();
         try {
             Cipher cipher = getCipher(Cipher.ENCRYPT_MODE);
             byte[] encrypted = cipher.doFinal(json.getBytes("UTF-8"));
-            resultEntity.__securityToken(encrypted);
+            BaseEntityInternalAccess.setSecurityToken(resultEntity, encrypted);
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while generating security token", e);
         }
@@ -74,14 +75,14 @@ public class SecurityTokenManager {
      * Decrypt security token and read filtered data
      */
     public void readSecurityToken(BaseGenericIdEntity<?> resultEntity) {
-        if (resultEntity.__securityToken() == null) {
+        if (BaseEntityInternalAccess.getSecurityToken(resultEntity) == null) {
             return;
         }
 
-        resultEntity.__filteredData(null);
+        BaseEntityInternalAccess.setFilteredData(resultEntity, null);
         try {
             Cipher cipher = getCipher(Cipher.DECRYPT_MODE);
-            byte[] decrypted = cipher.doFinal(resultEntity.__securityToken());
+            byte[] decrypted = cipher.doFinal(BaseEntityInternalAccess.getSecurityToken(resultEntity));
             String json = new String(decrypted, "UTF-8");
             JSONObject jsonObject = new JSONObject(json);
             for (Object key : jsonObject.keySet()) {
@@ -115,7 +116,8 @@ public class SecurityTokenManager {
      */
     public void addFiltered(BaseGenericIdEntity<?> entity, String property, UUID uuid) {
         initFiltered(entity);
-        entity.__filteredData().put(property, uuid);
+
+        BaseEntityInternalAccess.getFilteredData(entity).put(property, uuid);
     }
 
     /**
@@ -123,15 +125,15 @@ public class SecurityTokenManager {
      */
     public void addFiltered(BaseGenericIdEntity<?> entity, String property, Collection<UUID> uuids) {
         initFiltered(entity);
-        entity.__filteredData().putAll(property, uuids);
+        BaseEntityInternalAccess.getFilteredData(entity).putAll(property, uuids);
     }
 
     /**
      * INTERNAL.
      */
     protected void initFiltered(BaseGenericIdEntity<?> entity) {
-        if (entity.__filteredData() == null) {
-            entity.__filteredData(ArrayListMultimap.create());
+        if (BaseEntityInternalAccess.getFilteredData(entity) == null) {
+            BaseEntityInternalAccess.setFilteredData(entity, ArrayListMultimap.create());
         }
     }
 }

@@ -184,8 +184,8 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
         }
 
         if (metaProperty.getRange().isEnum()) {
-            final Enumeration enumeration = metaProperty.getRange().asEnumeration();
-            final Class<Enum> javaClass = enumeration.getJavaClass();
+            Enumeration enumeration = metaProperty.getRange().asEnumeration();
+            Class<Enum> javaClass = enumeration.getJavaClass();
 
             setOptionsList(Arrays.asList(javaClass.getEnumConstants()));
             setCaptionMode(CaptionMode.ITEM);
@@ -208,8 +208,8 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
             setEditable(false);
         }
 
-        handleFilteredAttributes(this.datasource, metaProperty, this);
-        this.datasource.addItemChangeListener(e -> handleFilteredAttributes(this.datasource, metaProperty, this));
+        handleFilteredAttributes(this, this.datasource, metaPropertyPath);
+        this.datasource.addItemChangeListener(e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath));
     }
 
     protected void fireChangeListeners(Object newValue) {

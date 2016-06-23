@@ -25,6 +25,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -448,7 +449,9 @@ public class XMLConverter2 implements Converter {
                 Element propertyEl = (Element) el;
 
                 if (entity instanceof BaseGenericIdEntity && "__securityToken".equals(propertyEl.getName())) {
-                    ((BaseGenericIdEntity) entity).__securityToken(Base64.getDecoder().decode(propertyEl.getText()));
+                    byte[] securityToken = Base64.getDecoder().decode(propertyEl.getText());
+
+                    BaseEntityInternalAccess.setSecurityToken((BaseGenericIdEntity) entity, securityToken);
                     continue;
                 }
 
@@ -578,13 +581,20 @@ public class XMLConverter2 implements Converter {
             return;
         }
 
-        if (entity instanceof BaseGenericIdEntity && ((BaseGenericIdEntity) entity).__securityToken() != null) {
-            BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) entity;
-            instanceEl.addElement("__securityToken").setText(Base64.getEncoder().encodeToString(baseGenericIdEntity.__securityToken()));
-            if (baseGenericIdEntity.__filteredAttributes() != null) {
-                Element filteredAttributes = instanceEl.addElement("__filteredAttributes");
-                Arrays.stream(baseGenericIdEntity.__filteredAttributes())
-                        .forEach(obj -> filteredAttributes.addElement("a").setText(obj));
+        if (entity instanceof BaseGenericIdEntity) {
+            byte[] securityToken = BaseEntityInternalAccess.getSecurityToken((BaseGenericIdEntity) entity);
+
+            if (securityToken != null) {
+                BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) entity;
+                instanceEl.addElement("__securityToken").setText(Base64.getEncoder().encodeToString(securityToken));
+
+                String[] filteredAttributes = BaseEntityInternalAccess.getFilteredAttributes(baseGenericIdEntity);
+
+                if (filteredAttributes != null) {
+                    Element filteredAttributesElement = instanceEl.addElement("__filteredAttributes");
+                    Arrays.stream(filteredAttributes)
+                            .forEach(obj -> filteredAttributesElement.addElement("a").setText(obj));
+                }
             }
         }
 

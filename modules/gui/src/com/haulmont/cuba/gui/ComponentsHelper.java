@@ -18,6 +18,8 @@ package com.haulmont.cuba.gui;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.MetadataObject;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.*;
@@ -30,6 +32,9 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.haulmont.cuba.core.entity.BaseEntityInternalAccess.getFilteredAttributes;
 
 /**
  * Utility class working with GenericUI components.
@@ -499,20 +504,37 @@ public abstract class ComponentsHelper {
     }
 
     /**
-     *  Set field's "required" flag to false if the value has been filtered by Row Level Security
-     *  This is necessary to allow user to submit form with filtered attribute even if attribute is required
+     * Set field's "required" flag to false if the value has been filtered by Row Level Security
+     * This is necessary to allow user to submit form with filtered attribute even if attribute is required
      */
-    public static void handleFilteredAttributes(Datasource datasource, MetaProperty metaProperty, Field component) {
-        if (datasource.getState() == Datasource.State.VALID
+    public static void handleFilteredAttributes(Field component, Datasource datasource, MetaPropertyPath mpp) {
+        if (component.isRequired()
+                && datasource.getState() == Datasource.State.VALID
                 && datasource.getItem() != null
-                && metaProperty.getRange().isClass()) {
-            Entity item = datasource.getItem();
-            if (item instanceof BaseGenericIdEntity) {
-                Object value = item.getValue(metaProperty.getName());
-                BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) item;
-                String[] filteredAttributes = baseGenericIdEntity.__filteredAttributes();
+                && mpp.getMetaProperty().getRange().isClass()) {
+
+            Entity targetItem = datasource.getItem();
+
+            MetaProperty[] propertiesChain = mpp.getMetaProperties();
+            if (propertiesChain.length > 1) {
+                List<String> basePropertiesList = Arrays.stream(propertiesChain)
+                        .limit(propertiesChain.length - 1)
+                        .map(MetadataObject::getName)
+                        .collect(Collectors.toList());
+
+                String basePropertyItem = StringUtils.join(basePropertiesList, '.');
+                targetItem = datasource.getItem().getValueEx(basePropertyItem);
+            }
+
+            if (targetItem instanceof BaseGenericIdEntity) {
+                String metaPropertyName = mpp.getMetaProperty().getName();
+                Object value = targetItem.getValue(metaPropertyName);
+
+                BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) targetItem;
+                String[] filteredAttributes = getFilteredAttributes(baseGenericIdEntity);
+
                 if (value == null && filteredAttributes != null
-                        && Arrays.stream(filteredAttributes).anyMatch(attr -> metaProperty.getName().equals(attr))) {
+                        && ArrayUtils.contains(filteredAttributes, metaPropertyName)) {
                     component.setRequired(false);
                 }
             }

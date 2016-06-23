@@ -49,7 +49,6 @@ import java.util.UUID;
  * </ul>
  * or most commonly used {@link StandardEntity}.
  * </p>
- *
  */
 @MappedSuperclass
 public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements BaseEntity<T> {
@@ -186,48 +185,6 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
     @Nullable
     public Map<String, CategoryAttributeValue> getDynamicAttributes() {
         return dynamicAttributes;
-    }
-
-    /**
-     * INTERNAL.
-     */
-    public Multimap<String, UUID> __filteredData() {
-        return __filteredData;
-    }
-
-    /**
-     * INTERNAL.
-     */
-    public void __filteredData(Multimap<String, UUID> filtered) {
-        this.__filteredData = filtered;
-    }
-
-    /**
-     * INTERNAL.
-     */
-    public byte[] __securityToken() {
-        return __securityToken;
-    }
-
-    /**
-     * INTERNAL.
-     */
-    public void __securityToken(byte[] securityToken) {
-        this.__securityToken = securityToken;
-    }
-
-    /**
-     * INTERNAL.
-     */
-    public String[] __filteredAttributes() {
-        return __filteredAttributes;
-    }
-
-    /**
-     * INTERNAL.
-     */
-    public void __filteredAttributes(String[] __filteredAttributes) {
-        this.__filteredAttributes = __filteredAttributes;
     }
 
     @Override

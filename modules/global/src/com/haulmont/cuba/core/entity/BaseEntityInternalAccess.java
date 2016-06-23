@@ -16,6 +16,10 @@
 
 package com.haulmont.cuba.core.entity;
 
+import com.google.common.collect.Multimap;
+
+import java.util.UUID;
+
 /**
  * For internal use only.
  */
@@ -24,73 +28,67 @@ public final class BaseEntityInternalAccess {
     private BaseEntityInternalAccess() {
     }
 
-    /**
-     * INTERNAL.
-     */
     public static boolean isNew(BaseGenericIdEntity entity) {
         return entity.__new;
     }
 
-    /**
-     * INTERNAL.
-     */
     public static void setNew(BaseGenericIdEntity entity, boolean cubaNew) {
         entity.__new = cubaNew;
     }
 
-    /**
-     * INTERNAL.
-     */
     public static boolean isManaged(BaseGenericIdEntity entity) {
         return entity.__managed;
     }
 
-    /**
-     * INTERNAL.
-     */
     public static void setManaged(BaseGenericIdEntity entity, boolean cubaManaged) {
         entity.__managed = cubaManaged;
     }
 
-    /**
-     * INTERNAL.
-     */
     public static boolean isDetached(BaseGenericIdEntity entity) {
         return entity.__detached;
     }
 
-    /**
-     * INTERNAL.
-     */
     public static void setDetached(BaseGenericIdEntity entity, boolean detached) {
         entity.__detached = detached;
     }
 
-    /**
-     * INTERNAL.
-     */
     public static boolean isRemoved(BaseGenericIdEntity entity) {
         return entity.__removed;
     }
 
-    /**
-     * INTERNAL.
-     */
     public static void setRemoved(BaseGenericIdEntity entity, boolean removed) {
         entity.__removed = removed;
     }
 
-    /**
-     * INTERNAL
-     */
     public static String[] getInaccessibleAttributes(BaseGenericIdEntity entity) {
         return entity.__inaccessibleAttributes;
     }
 
-    /**
-     * INTERNAL
-     */
     public static void setInaccessibleAttributes(BaseGenericIdEntity entity, String[] __inaccessibleAttributes) {
         entity.__inaccessibleAttributes = __inaccessibleAttributes;
+    }
+
+    public static Multimap<String, UUID> getFilteredData(BaseGenericIdEntity entity) {
+        return entity.__filteredData;
+    }
+
+    public static void setFilteredData(BaseGenericIdEntity entity, Multimap<String, UUID> filteredData) {
+        entity.__filteredData = filteredData;
+    }
+
+    public static byte[] getSecurityToken(BaseGenericIdEntity entity) {
+        return entity.__securityToken;
+    }
+
+    public static void setSecurityToken(BaseGenericIdEntity entity, byte[] securityToken) {
+        entity.__securityToken = securityToken;
+    }
+
+    public static String[] getFilteredAttributes(BaseGenericIdEntity entity) {
+        return entity.__filteredAttributes;
+    }
+
+    public static void setFilteredAttributes(BaseGenericIdEntity entity, String[] filteredAttributes) {
+        entity.__filteredAttributes = filteredAttributes;
     }
 }

@@ -95,8 +95,8 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends We
             setEditable(false);
         }
 
-        handleFilteredAttributes(this.datasource, metaProperty, this);
-        this.datasource.addItemChangeListener(e -> handleFilteredAttributes(this.datasource, metaProperty, this));
+        handleFilteredAttributes(this, this.datasource, metaPropertyPath);
+        this.datasource.addItemChangeListener(e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath));
     }
 
     protected void resolveMetaPropertyPath(MetaClass metaClass, String property) {

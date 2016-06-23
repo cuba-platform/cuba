@@ -19,13 +19,13 @@
 
 package com.haulmont.cuba.restapi;
 
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -45,6 +45,8 @@ import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.*;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 @Component
 public class JSONConverter implements Converter {
@@ -249,12 +251,13 @@ public class JSONConverter implements Converter {
             }
 
             if (entity instanceof BaseGenericIdEntity && "__securityToken".equals(propertyName)) {
-                ((BaseGenericIdEntity) entity).__securityToken(Base64.getDecoder().decode(json.getString("__securityToken")));
+                byte[] securityToken = Base64.getDecoder().decode(json.getString("__securityToken"));
+                BaseEntityInternalAccess.setSecurityToken((BaseGenericIdEntity) entity, securityToken);
                 continue;
             }
 
             MetaPropertyPath metaPropertyPath = metadata.getTools().resolveMetaPropertyPath(metaClass, propertyName);
-            Preconditions.checkNotNullArgument(metaPropertyPath, "Could not resolve property '%s' in '%s'", propertyName, metaClass);
+            checkNotNullArgument(metaPropertyPath, "Could not resolve property '%s' in '%s'", propertyName, metaClass);
             MetaProperty property = metaPropertyPath.getMetaProperty();
 
             if (!attrModifyPermitted(metaClass, property.getName()))
@@ -609,13 +612,21 @@ public class JSONConverter implements Converter {
             return root;
         }
 
-        if (entity instanceof BaseGenericIdEntity && ((BaseGenericIdEntity) entity).__securityToken() != null) {
-            BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) entity;
-            root.set("__securityToken", Base64.getEncoder().encodeToString(baseGenericIdEntity.__securityToken()));
-            if (baseGenericIdEntity.__filteredAttributes() != null) {
-                MyJSONObject.Array array = new MyJSONObject.Array();
-                Arrays.stream(baseGenericIdEntity.__filteredAttributes()).forEach(obj -> array.add("\"" + obj + "\""));
-                root.set("__filteredAttributes", array);
+        if (entity instanceof BaseGenericIdEntity) {
+            byte[] securityToken = BaseEntityInternalAccess.getSecurityToken((BaseGenericIdEntity) entity);
+
+            if (securityToken != null) {
+                BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) entity;
+                root.set("__securityToken", Base64.getEncoder().encodeToString(securityToken));
+                String[] filteredAttributes = BaseEntityInternalAccess.getFilteredAttributes(baseGenericIdEntity);
+
+                if (filteredAttributes != null) {
+                    MyJSONObject.Array array = new MyJSONObject.Array();
+
+                    Arrays.stream(filteredAttributes).forEach(obj -> array.add("\"" + obj + "\""));
+
+                    root.set("__filteredAttributes", array);
+                }
             }
         }
 
