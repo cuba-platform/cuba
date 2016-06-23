@@ -1524,8 +1524,6 @@
                                 <xs:attributeGroup ref="hasId"/>
 
                                 <xs:attribute name="flex" type="xs:float"/>
-
-                                <xs:attributeGroup ref="hasVisibility"/>
                             </xs:complexType>
                         </xs:element>
                     </xs:sequence>
