@@ -383,12 +383,14 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
         // after all lazy tabs listeners
         if (!componentTabChangeListenerInitialized) {
             component.addSelectedTabChangeListener(event -> {
+                if (context != null) {
+                    context.executeInjectTasks();
+                }
                 // Fire GUI listener
                 fireTabChanged();
                 // Execute outstanding post init tasks after GUI listener.
                 // We suppose that context.executePostInitTasks() executes a task once and then remove it from task list.
                 if (context != null) {
-                    context.executeInjectTasks();
                     context.executePostInitTasks();
                 }
 
