@@ -44,4 +44,9 @@ public class EntityImportExportServiceBean implements EntityImportExportService 
     public Collection<Entity> importEntities(byte[] zipBytes, EntityImportView view) {
         return entityImportExport.importEntities(zipBytes, view);
     }
+
+    @Override
+    public Collection<Entity> importEntities(Collection<? extends Entity> entities, EntityImportView entityImportView) {
+        return entityImportExport.importEntities(entities, entityImportView);
+    }
 }

@@ -91,6 +91,11 @@ public class EntityImportView implements Serializable {
         return this;
     }
 
+    public EntityImportView addProperty(EntityImportViewProperty property) {
+        properties.put(property.getName(), property);
+        return this;
+    }
+
     public EntityImportViewProperty getProperty(String name) {
         return properties.get(name);
     }

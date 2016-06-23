@@ -17,12 +17,8 @@
 
 package com.haulmont.cuba.core.app.serialization;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.TypeAdapter;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
@@ -36,7 +32,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -47,6 +42,8 @@ import java.util.*;
 public class EntitySerialization implements EntitySerializationAPI {
 
     protected Logger log = LoggerFactory.getLogger(EntitySerialization.class);
+
+    protected static final String ENTITY_NAME_PROP = "_entityName";
 
     @Inject
     protected MetadataTools metadataTools;
@@ -77,133 +74,53 @@ public class EntitySerialization implements EntitySerializationAPI {
     }
 
     @Override
+    public String toJson(Entity entity,
+                         @Nullable View view,
+                         EntitySerializationOption... options) {
+        context.remove();
+        return createGsonForSerialization(view, options).toJson(entity);
+    }
+
+    @Override
     public String toJson(Collection<? extends Entity> entities) {
         return toJson(entities, null);
     }
 
     @Override
-    public String toJson(Entity entity, View view) {
+    public String toJson(Collection<? extends Entity> entities,
+                         @Nullable View view,
+                         EntitySerializationOption... options) {
         context.remove();
-        return toJson(Collections.singletonList(entity), view);
+        return createGsonForSerialization(view, options).toJson(entities);
     }
 
     @Override
-    public String toJson(Collection<? extends Entity> entities, View view) {
+    public Entity entityFromJson(String json,
+                                 @Nullable MetaClass metaClass,
+                                 EntitySerializationOption... options) {
         context.remove();
-        return createGson(view).toJson(entities);
+        return createGsonForDeserialization(metaClass, options).fromJson(json, Entity.class);
     }
 
     @Override
-    public <T extends Entity> Collection<T> fromJson(String json) {
+    public <T extends Entity> Collection<T> entitiesCollectionFromJson(String json,
+                                                                       @Nullable MetaClass metaClass,
+                                                                       EntitySerializationOption... options) {
         context.remove();
-        Type collectionType = new TypeToken<Collection<? extends Entity>>(){}.getType();
-        return createGson(null).fromJson(json, collectionType);
+        Type collectionType = new TypeToken<Collection<T>>(){}.getType();
+        return createGsonForDeserialization(metaClass, options).fromJson(json, collectionType);
     }
 
-    public Gson createGson(@Nullable View view) {
+    protected Gson createGsonForSerialization(@Nullable View view, EntitySerializationOption... options) {
         return new GsonBuilder()
-                .registerTypeHierarchyAdapter(Entity.class, new TypeAdapter<Entity>() {
-                    @Override
-                    public void write(JsonWriter out, Entity entity) throws IOException {
-                        writeEntity(out, entity, view);
-                    }
-
-                    @Override
-                    public Entity read(JsonReader in) throws IOException {
-                        return readEntity(in);
-                    }
-                })
+                .registerTypeHierarchyAdapter(Entity.class, new EntitySerializer(view, options))
                 .create();
     }
 
-    protected void writeEntity(JsonWriter out, Entity entity, @Nullable View view) throws IOException {
-        out.beginObject();
-        MetaClass metaClass = entity.getMetaClass();
-        if (!metadataTools.isEmbeddable(metaClass)) {
-            MetaProperty primaryKeyProperty = metadataTools.getPrimaryKeyProperty(entity.getMetaClass());
-            if (primaryKeyProperty == null)
-                throw new EntitySerializationException("Primary key property not found for entity " + metaClass.getName());
-            Datatype id = Datatypes.getNN(primaryKeyProperty.getJavaType());
-            out.name("id");
-            out.value(entity.getMetaClass().getName() + "-" + id.format(entity.getId()));
-            Map<Object, Entity> processedObjects = context.get().getProcessedEntities();
-            if (!processedObjects.containsKey(entity.getId())) {
-                processedObjects.put(entity.getId(), entity);
-                writeFields(out, entity, view);
-            }
-        } else {
-            writeFields(out, entity, view);
-        }
-        out.endObject();
-    }
-
-    protected boolean propertyWritingAllowed(MetaProperty metaProperty, Entity entity) {
-        return !"id".equalsIgnoreCase(metaProperty.getName())
-                && PersistenceHelper.isLoaded(entity, metaProperty.getName());
-    }
-
-    protected void writeFields(JsonWriter out, Entity entity, @Nullable View view) throws IOException {
-        for (MetaProperty metaProperty : entity.getMetaClass().getProperties()) {
-            if (propertyWritingAllowed(metaProperty, entity)) {
-                ViewProperty viewProperty = null;
-                if (view != null) {
-                    viewProperty = view.getProperty(metaProperty.getName());
-                    if (viewProperty == null) continue;
-                }
-                Field field = getField(entity.getClass(), metaProperty.getName());
-                if (field == null) {
-                    log.error("Field {} for class {} not found", metaProperty.getName(), entity.getClass().getName());
-                    continue;
-                }
-                makeFieldAccessible(field);
-
-                Object fieldValue;
-                try {
-                    fieldValue = field.get(entity);
-                } catch (IllegalAccessException e) {
-                    throw new EntitySerializationException("Error reading a value of field " + field.getName(), e);
-                }
-                if (fieldValue == null) continue;
-
-                Range propertyRange = metaProperty.getRange();
-                if (propertyRange.isDatatype()) {
-                    writeSimpleProperty(out, fieldValue, metaProperty);
-                } else if (propertyRange.isEnum()) {
-                    out.name(metaProperty.getName());
-                    out.value(fieldValue.toString());
-                } else if (propertyRange.isClass()) {
-                    if (fieldValue instanceof Entity) {
-                        out.name(metaProperty.getName());
-                        writeEntity(out, (Entity) fieldValue, viewProperty != null ? viewProperty.getView() : null);
-                    } else if (fieldValue instanceof Collection) {
-                        out.name(metaProperty.getName());
-                        writeCollection(out, (Collection) fieldValue, viewProperty != null ? viewProperty.getView() : null);
-                    }
-                }
-            }
-        }
-    }
-
-    protected void writeSimpleProperty(JsonWriter out, Object value, MetaProperty property) throws IOException {
-        if (value != null) {
-            out.name(property.getName());
-            Datatype datatype = Datatypes.get(property.getJavaType());
-            if (datatype != null) {
-                out.value(datatype.format(value));
-            } else {
-                out.value(String.valueOf(value));
-            }
-        }
-    }
-
-    protected void writeCollection(JsonWriter out, Collection value, @Nullable View view) throws IOException {
-        out.beginArray();
-        for (Object o : value) {
-            if (o instanceof Entity) {
-                writeEntity(out, (Entity) o, view);
-            }
-        }
-        out.endArray();
+    protected Gson createGsonForDeserialization(@Nullable MetaClass metaClass, EntitySerializationOption... options) {
+        return new GsonBuilder()
+                .registerTypeHierarchyAdapter(Entity.class, new EntityDeserializer(metaClass, options))
+                .create();
     }
 
     @Nullable
@@ -224,131 +141,313 @@ public class EntitySerialization implements EntitySerializationAPI {
         }
     }
 
-    protected Entity readEntity(JsonReader in) throws IOException {
-        in.beginObject();
-        in.nextName();
-        String idValue = in.nextString();
-        EntityLoadInfo entityLoadInfo = EntityLoadInfo.parse(idValue);
-        if (entityLoadInfo == null) {
-            throw new EntitySerializationException("Entity info " + idValue + " cannot be parsed");
-        }
+    protected class EntitySerializer implements JsonSerializer<Entity> {
 
-        MetaClass metaClass = entityLoadInfo.getMetaClass();
-        Entity entity = metadata.create(metaClass);
-        clearFields(entity);
-        entity.setValue("id", entityLoadInfo.getId());
+        protected boolean complexIdFormat;
+        protected boolean compactRepeatedEntities = false;
+        protected View view;
 
-        Map<Object, Entity> processedEntities = context.get().getProcessedEntities();
-        Entity processedEntity = processedEntities.get(entity.getId());
-        if (processedEntity != null) {
-            entity = processedEntity;
-        } else {
-            processedEntities.put(entity.getId(), entity);
-            readFields(in, metaClass, entity);
-        }
-        in.endObject();
-        return entity;
-    }
-
-    protected Entity readEmbeddedEntity(JsonReader in, Class<?> entityClass) throws IOException {
-        in.beginObject();
-        MetaClass metaClass = metadata.getClassNN(entityClass);
-        Entity entity = metadata.create(metaClass);
-        clearFields(entity);
-        Map<Object, Entity> processedEntities = context.get().getProcessedEntities();
-        Entity processedEntity = processedEntities.get(entity.getId());
-        if (processedEntity != null) {
-            entity = processedEntity;
-        } else {
-            processedEntities.put(entity.getId(), entity);
-            readFields(in, metaClass, entity);
-        }
-        in.endObject();
-        return entity;
-    }
-
-    private void clearFields(Entity entity) {
-        for (MetaProperty metaProperty : entity.getMetaClass().getProperties()) {
-            Field field = getField(entity.getClass(), metaProperty.getName());
-            if (field != null) {
-                makeFieldAccessible(field);
-                try {
-                    field.set(entity, null);
-                } catch (IllegalAccessException e) {
-                    throw new EntitySerializationException("Can't get access to field " + field.getName() + " of class " + entity.getClass().getName(), e);
+        public EntitySerializer(@Nullable View view, EntitySerializationOption... options) {
+            this.view = view;
+            if (options != null) {
+                for (EntitySerializationOption option : options) {
+                    if (option == EntitySerializationOption.COMPLEX_ID_FORMAT)
+                        complexIdFormat = true;
+                    if (option == EntitySerializationOption.COMPACT_REPEATED_ENTITIES)
+                        compactRepeatedEntities = true;
                 }
             }
         }
-    }
 
-    protected void readFields(JsonReader in, MetaClass metaClass, Entity entity) throws IOException {
-        while (in.hasNext()) {
-            String propertyName = in.nextName();
-            MetaProperty metaProperty = metaClass.getProperty(propertyName);
-            if (metaProperty != null) {
-                Class<?> propertyType = metaProperty.getJavaType();
-                Range propertyRange = metaProperty.getRange();
-                if (propertyRange.isDatatype()) {
-                    Object value = readSimpleProperty(in, propertyType);
-                    entity.setValue(propertyName, value);
-                } else if (propertyRange.isEnum()) {
-                    String stringValue = in.nextString();
-                    try {
-                        Object value = propertyRange.asEnumeration().parse(stringValue);
-                        entity.setValue(propertyName, value);
-                    } catch (ParseException e) {
-                        throw new EntitySerializationException(String.format("An error occurred while parsing enum. Class [%s]. Value [%s].", propertyType, stringValue), e);
+        @Override
+        public JsonElement serialize(Entity entity, Type typeOfSrc, JsonSerializationContext context) {
+            return serializeEntity(entity, view, new HashSet<>());
+        }
+
+        protected JsonObject serializeEntity(Entity entity, @Nullable View view, Set<Entity> cyclicReferences) {
+            JsonObject jsonObject = new JsonObject();
+            MetaClass metaClass = entity.getMetaClass();
+            if (!metadataTools.isEmbeddable(metaClass)) {
+                if (!complexIdFormat) {
+                    jsonObject.addProperty(ENTITY_NAME_PROP, metaClass.getName());
+                }
+                writeIdField(entity, jsonObject);
+                if (compactRepeatedEntities) {
+                    Map<Object, Entity> processedObjects = context.get().getProcessedEntities();
+                    if (!processedObjects.containsKey(entity.getId())) {
+                        processedObjects.put(entity.getId(), entity);
+                        writeFields(entity, jsonObject, view, cyclicReferences);
                     }
-                } else if (propertyRange.isClass()) {
-                    if (Entity.class.isAssignableFrom(propertyType)) {
-                        if (metadataTools.isEmbedded(metaProperty)) {
-                            entity.setValue(propertyName, readEmbeddedEntity(in, propertyType));
-                        } else {
-                            entity.setValue(propertyName, readEntity(in));
-                        }
-                    } else if (Collection.class.isAssignableFrom(propertyType)) {
-                        Collection entities = readCollection(in, propertyType);
-                        entity.setValue(propertyName, entities);
-                    } else {
-                        in.skipValue();
+                } else {
+                    if (!cyclicReferences.contains(entity)) {
+                        cyclicReferences.add(entity);
+                        writeFields(entity, jsonObject, view, cyclicReferences);
                     }
                 }
             } else {
-                in.skipValue();
+                writeFields(entity, jsonObject, view, cyclicReferences);
+            }
+            return jsonObject;
+        }
+
+        protected void writeIdField(Entity entity, JsonObject jsonObject) {
+            MetaProperty primaryKeyProperty = metadataTools.getPrimaryKeyProperty(entity.getMetaClass());
+            if (primaryKeyProperty == null)
+                throw new EntitySerializationException("Primary key property not found for entity " + entity.getMetaClass());
+            Datatype idDatatype = Datatypes.getNN(primaryKeyProperty.getJavaType());
+            String idValue = complexIdFormat ? entity.getMetaClass().getName() + "-" + idDatatype.format(entity.getId()) : idDatatype.format(entity.getId());
+            jsonObject.addProperty("id", idValue);
+        }
+
+        protected boolean propertyWritingAllowed(MetaProperty metaProperty, Entity entity) {
+            return !"id".equals(metaProperty.getName()) && PersistenceHelper.isLoaded(entity, metaProperty.getName());
+        }
+
+        protected void writeFields(Entity entity, JsonObject jsonObject, @Nullable View view, Set<Entity> cyclicReferences) {
+            for (MetaProperty metaProperty : entity.getMetaClass().getProperties()) {
+                if (propertyWritingAllowed(metaProperty, entity)) {
+                    ViewProperty viewProperty = null;
+                    if (view != null) {
+                        viewProperty = view.getProperty(metaProperty.getName());
+                        if (viewProperty == null) continue;
+                    }
+                    Field field = getField(entity.getClass(), metaProperty.getName());
+                    if (field == null) {
+                        log.error("Field {} for class {} not found", metaProperty.getName(), entity.getClass().getName());
+                        continue;
+                    }
+                    makeFieldAccessible(field);
+
+                    Object fieldValue;
+                    try {
+                        fieldValue = field.get(entity);
+                    } catch (IllegalAccessException e) {
+                        throw new EntitySerializationException("Error reading a value of field " + field.getName(), e);
+                    }
+                    if (fieldValue == null) continue;
+
+                    Range propertyRange = metaProperty.getRange();
+                    if (propertyRange.isDatatype()) {
+                        writeSimpleProperty(jsonObject, fieldValue, metaProperty);
+                    } else if (propertyRange.isEnum()) {
+                        jsonObject.addProperty(metaProperty.getName(), fieldValue.toString());
+                    } else if (propertyRange.isClass()) {
+                        if (fieldValue instanceof Entity) {
+                            JsonObject propertyJsonObject = serializeEntity((Entity) fieldValue,
+                                    viewProperty != null ? viewProperty.getView() : null,
+                                    new HashSet<>(cyclicReferences));
+                            jsonObject.add(metaProperty.getName(), propertyJsonObject);
+                        } else if (fieldValue instanceof Collection) {
+                            JsonArray jsonArray = serializeCollection((Collection) fieldValue,
+                                    viewProperty != null ? viewProperty.getView() : null,
+                                    new HashSet<>(cyclicReferences));
+                            jsonObject.add(metaProperty.getName(), jsonArray);
+                        }
+                    }
+                }
+            }
+        }
+
+        protected void writeSimpleProperty(JsonObject jsonObject, Object fieldValue, MetaProperty property) {
+            String propertyName = property.getName();
+            if (fieldValue != null) {
+                if (fieldValue instanceof Number) {
+                    jsonObject.addProperty(propertyName, (Number) fieldValue);
+                } else if (fieldValue instanceof Boolean) {
+                    jsonObject.addProperty(propertyName, (Boolean) fieldValue);
+                } else {
+                    Datatype datatype = Datatypes.get(property.getJavaType());
+                    if (datatype != null) {
+                        jsonObject.addProperty(propertyName, datatype.format(fieldValue));
+                    } else {
+                        jsonObject.addProperty(propertyName, String.valueOf(fieldValue));
+                    }
+                }
+            } else {
+                jsonObject.add(propertyName, null);
+            }
+        }
+
+        protected JsonArray serializeCollection(Collection value, @Nullable View view, Set<Entity> cyclicReferences) {
+            JsonArray jsonArray = new JsonArray();
+            value.stream()
+                    .filter(e -> e instanceof Entity)
+                    .forEach(e -> {
+                        JsonObject jsonObject = serializeEntity((Entity) e, view, cyclicReferences);
+                        jsonArray.add(jsonObject);
+                    });
+            return jsonArray;
+        }
+    }
+
+    protected class EntityDeserializer implements JsonDeserializer<Entity> {
+
+        protected boolean complexIdFormat = false;
+        protected MetaClass metaClass;
+
+        public EntityDeserializer(MetaClass metaClass, EntitySerializationOption... options) {
+            this.metaClass = metaClass;
+            if (options != null) {
+                for (EntitySerializationOption option : options) {
+                    if (option == EntitySerializationOption.COMPLEX_ID_FORMAT)
+                        complexIdFormat = true;
+                }
+            }
+        }
+
+        @Override
+        public Entity deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            return readEntity(jsonElement.getAsJsonObject(), metaClass);
+        }
+
+        protected Entity readEntity(JsonObject jsonObject, @Nullable MetaClass metaClass) {
+            Entity entity;
+            JsonPrimitive idPrimitive = jsonObject.getAsJsonPrimitive("id");
+            if (complexIdFormat) {
+                if (idPrimitive == null) {
+                    throw new EntitySerializationException("id property not found in json");
+                }
+                String idValue = idPrimitive.getAsString();
+                EntityLoadInfo entityLoadInfo = EntityLoadInfo.parse(idValue);
+                if (entityLoadInfo == null) {
+                    throw new EntitySerializationException("Entity info " + idValue + " cannot be parsed");
+                }
+                entity = metadata.create(entityLoadInfo.getMetaClass());
+                clearFields(entity);
+                entity.setValue("id", entityLoadInfo.getId());
+            } else {
+                MetaClass resultMetaClass = metaClass;
+                JsonPrimitive entityNameJsonPrimitive = jsonObject.getAsJsonPrimitive(ENTITY_NAME_PROP);
+                if (entityNameJsonPrimitive != null) {
+                    String entityName = entityNameJsonPrimitive.getAsString();
+                    resultMetaClass = metadata.getClass(entityName);
+                }
+
+                if (resultMetaClass == null) {
+                    throw new EntitySerializationException("Cannot deserialize an entity. MetaClass is not defined");
+                }
+
+                entity = metadata.create(resultMetaClass);
+                clearFields(entity);
+                if (idPrimitive != null) {
+                    String idString = idPrimitive.getAsString();
+                    MetaProperty primaryKeyProperty = metadataTools.getPrimaryKeyProperty(resultMetaClass);
+                    if (primaryKeyProperty == null)
+                        throw new EntitySerializationException("Primary key property not found for entity " + resultMetaClass);
+                    Datatype idDatatype = Datatypes.getNN(primaryKeyProperty.getJavaType());
+                    try {
+                        entity.setValue("id", idDatatype.parse(idString));
+                    } catch (ParseException e) {
+                        throw new EntitySerializationException(e);
+                    }
+                }
+            }
+
+            readFields(jsonObject, entity);
+            return entity;
+        }
+
+        protected boolean propertyReadRequired(String propertyName) {
+            return !"id".equals(propertyName) && !ENTITY_NAME_PROP.equals(propertyName);
+        }
+
+        protected void readFields(JsonObject jsonObject, Entity entity) {
+            for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+                String propertyName = entry.getKey();
+                if (!propertyReadRequired(propertyName)) continue;
+                JsonElement propertyValue = entry.getValue();
+                MetaProperty metaProperty = entity.getMetaClass().getProperty(propertyName);
+                if (metaProperty != null) {
+                    if (propertyValue.isJsonNull()) {
+                        entity.setValue(propertyName, null);
+                        continue;
+                    }
+                    Class<?> propertyType = metaProperty.getJavaType();
+                    Range propertyRange = metaProperty.getRange();
+                    if (propertyRange.isDatatype()) {
+                        Object value = readSimpleProperty(propertyValue, propertyType);
+                        entity.setValue(propertyName, value);
+                    } else if (propertyRange.isEnum()) {
+                        String stringValue = propertyValue.getAsString();
+                        try {
+                            Object value = propertyRange.asEnumeration().parse(stringValue);
+                            entity.setValue(propertyName, value);
+                        } catch (ParseException e) {
+                            throw new EntitySerializationException(String.format("An error occurred while parsing enum. Class [%s]. Value [%s].", propertyType, stringValue), e);
+                        }
+                    } else if (propertyRange.isClass()) {
+                        if (Entity.class.isAssignableFrom(propertyType)) {
+                            if (metadataTools.isEmbedded(metaProperty)) {
+                                entity.setValue(propertyName, readEmbeddedEntity(propertyValue.getAsJsonObject(), metaProperty));
+                            } else {
+                                entity.setValue(propertyName, readEntity(propertyValue.getAsJsonObject(), propertyRange.asClass()));
+                            }
+                        } else if (Collection.class.isAssignableFrom(propertyType)) {
+                            Collection entities = readCollection(propertyValue.getAsJsonArray(), metaProperty);
+                            entity.setValue(propertyName, entities);
+                        }
+                    }
+                } else {
+                    throw new EntitySerializationException("Entity " + entity.getMetaClass().getName() + " doesn't contain a '" + propertyName + "' property");
+                }
+            }
+
+        }
+
+        protected Object readSimpleProperty(JsonElement valueElement, Class<?> propertyType) {
+            String value = valueElement.getAsString();
+            Object parsedValue = null;
+            try {
+                Datatype<?> datatype = Datatypes.get(propertyType);
+                if (datatype != null) {
+                    parsedValue = datatype.parse(value);
+                }
+                return parsedValue;
+            } catch (ParseException e) {
+                throw new EntitySerializationException(String.format("An error occurred while parsing property. Class [%s]. Value [%s].", propertyType, value), e);
+            }
+        }
+
+        protected Entity readEmbeddedEntity(JsonObject jsonObject, MetaProperty metaProperty) {
+            MetaClass metaClass = metaProperty.getRange().asClass();
+            Entity entity = metadata.create(metaClass);
+            clearFields(entity);
+            readFields(jsonObject, entity);
+            return entity;
+        }
+
+        protected Collection readCollection(JsonArray jsonArray, MetaProperty metaProperty) {
+            Collection<Entity> entities;
+            Class<?> propertyType = metaProperty.getJavaType();
+            if (List.class.isAssignableFrom(propertyType)) {
+                entities = new ArrayList<>();
+            } else if (Set.class.isAssignableFrom(propertyType)) {
+                entities = new LinkedHashSet<>();
+            } else {
+                throw new EntitySerializationException(String.format("Could not instantiate collection with class [%s].", propertyType));
+            }
+
+            jsonArray.forEach(jsonElement -> {
+                Entity entityForList = readEntity(jsonElement.getAsJsonObject(), metaProperty.getRange().asClass());
+                entities.add(entityForList);
+            });
+            return entities;
+        }
+
+        protected void clearFields(Entity entity) {
+            for (MetaProperty metaProperty : entity.getMetaClass().getProperties()) {
+                if ("id".equals(metaProperty.getName())) continue;
+                Field field = getField(entity.getClass(), metaProperty.getName());
+                if (field != null) {
+                    makeFieldAccessible(field);
+                    try {
+                        field.set(entity, null);
+                    } catch (IllegalAccessException e) {
+                        throw new EntitySerializationException("Can't get access to field " + field.getName() + " of class " + entity.getClass().getName(), e);
+                    }
+                }
             }
         }
     }
 
-    protected Object readSimpleProperty(JsonReader in, Class<?> propertyType) throws IOException {
-        String value = in.nextString();
-        Object parsedValue = null;
-        try {
-            Datatype<?> datatype = Datatypes.get(propertyType);
-            if (datatype != null) {
-                parsedValue = datatype.parse(value);
-            }
-            return parsedValue;
-        } catch (ParseException e) {
-            throw new EntitySerializationException(String.format("An error occurred while parsing property. Class [%s]. Value [%s].", propertyType, value), e);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    protected Collection readCollection(JsonReader in, Class<?> propertyType) throws IOException {
-        Collection entities;
-        if (List.class.isAssignableFrom(propertyType)) {
-            entities = new ArrayList<>();
-        } else if (Set.class.isAssignableFrom(propertyType)) {
-            entities = new LinkedHashSet<>();
-        } else {
-            throw new EntitySerializationException(String.format("Could not instantiate collection with class [%s].", propertyType));
-        }
-        in.beginArray();
-        while (in.hasNext()) {
-            Entity entityForList = readEntity(in);
-            entities.add(entityForList);
-        }
-        in.endArray();
-        return entities;
-    }
 }

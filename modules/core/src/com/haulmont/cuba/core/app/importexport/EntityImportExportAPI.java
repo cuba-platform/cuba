@@ -23,8 +23,8 @@ import com.haulmont.cuba.core.global.View;
 import java.util.Collection;
 
 /**
- * Class that is used for exporting a collection of entities and importing them. See full javadocs in {@link EntityImportExportService}
- *
+ * Class that is used for exporting a collection of entities and importing them. See full javadocs in the {@link
+ * EntityImportExportService}
  */
 public interface EntityImportExportAPI {
 
@@ -44,4 +44,9 @@ public interface EntityImportExportAPI {
      * See documentation for {@link EntityImportExportService#importEntities(byte[], EntityImportView)}
      */
     Collection<Entity> importEntities(byte[] zipBytes, EntityImportView entityImportView);
+
+    /**
+     * See documentation for {@link EntityImportExportService#importEntities(Collection, EntityImportView)}
+     */
+    Collection<Entity> importEntities(Collection<? extends Entity> entities, EntityImportView view);
 }

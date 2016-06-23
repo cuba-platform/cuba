@@ -739,6 +739,13 @@ configure(restApiModule) {
         compile(group: 'org.json', name: 'json', version: '20140107')
         compile(groovyArtifact)
 
+        compile(group: 'org.springframework.security', name: 'spring-security-core', version: springSecurityVersion)
+        compile(group: 'org.springframework.security', name: 'spring-security-web', version: springSecurityVersion)
+        compile(group: 'org.springframework.security', name: 'spring-security-config', version: springSecurityVersion)
+        compile(group: 'org.springframework.security.oauth', name: 'spring-security-oauth2', version: '2.0.10.RELEASE') {
+            exclude(group: "org.springframework.security")
+        }
+
         testCompile(clientModule.sourceSets.test.output)
     }
 }

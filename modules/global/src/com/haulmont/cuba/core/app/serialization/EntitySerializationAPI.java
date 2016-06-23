@@ -17,69 +17,100 @@
 
 package com.haulmont.cuba.core.app.serialization;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 /**
  * Class that is used for serialization and deserialization of entities to JSON.
- *
  */
 public interface EntitySerializationAPI {
 
     String NAME = "cuba_EntitySerialization";
 
     /**
-     * Serialize a single entity to the JSON format. Method works like the {@link #toJson(Collection)}
-     * method with a collection containing a single entity as an argument.
+     * Serializes a single entity to the JSON object graph.
+     * <p>
+     * If the {@code view} parameter is null then all loaded entity properties will be presented in JSON, otherwise only
+     * loaded properties that are in the view will be in the JSON object.
+     * <p>
+     * The {@code options} parameter specify come additional options for the serialization process. For example, a
+     * repeated entities may be replaced with the object with the only "id" property, making the result JSON more
+     * compact. See {@link EntitySerializationOption} for details.
+     * <p>
+     * Additionally, an "_entityName" property is added to the JSON objects that represent an entity.
      *
-     * @param entity an entity to serialize
-     * @return a string that represent a JSON array which contains a single entity object.
+     * @param entity  an entity to be serialized
+     * @param view    a view that defines which entity properties should be added to the result JSON object
+     * @param options options specifying how an entity should be serialized
+     * @return a string that represents a JSON object
+     */
+    String toJson(Entity entity,
+                  @Nullable View view,
+                  EntitySerializationOption... options);
+
+    /**
+     * Serialized a collection of entities to the JSON array. Method works like the {@link #toJson(Entity, View,
+     * EntitySerializationOption...)}, but return a JSON array as a result.
+     *
+     * @param entities a list of entities to be serialized
+     * @param view     a view that defines which entity properties should be added to the result JSON object
+     * @param options  options specifying how an entity should be serialized
+     * @return a string that represents a JSON array of objects.
+     */
+    String toJson(Collection<? extends Entity> entities,
+                  @Nullable View view,
+                  EntitySerializationOption... options);
+
+    /**
+     * An overloaded version of the {@link #toJson(Entity, View, EntitySerializationOption...)} method with a null
+     * {@code view} parameter and with no serialization options.
+     *
+     * @param entity an entity to be serialized
+     * @return a string that represents a JSON object
      */
     String toJson(Entity entity);
 
     /**
-     * <p>Serialize a collection of entities to JSON format. The method will return a string
-     * that represents a JSON array of entity objects.</p>
-     * <p>Each object contains all fields of entity graph that are not null. Entity id value is written in the
-     * format that is used by {@link com.haulmont.cuba.core.global.EntityLoadInfo} class, e.g:
-     * {@code sec$User-60885987-1b61-4247-94c7-dff348347f93}</p>
+     * An overloaded version of the {@link #toJson(Collection, View, EntitySerializationOption...)} method with a null
+     * {@code view} parameter and with no serialization options.
      *
-     * @param entities a collection of entities to serialize
-     * @return a string that represent a JSON array which contains entity objects.
+     * @param entities a collection of entities to be serialized
+     * @return a string that represent a JSON array which contains entity objects
      */
     String toJson(Collection<? extends Entity> entities);
 
-    /**
-     * Serialize a single entity to the JSON format. Method works like the {@link #toJson(Collection, View)}
-     * method with a collection containing a single entity as an argument.
-     *
-     * @param entity an entity to serialize
-     * @param view a view that restricts an entity instance graph during the serialization
-     * @return a string that represent a JSON array which contains a single entity object.
-     */
-    String toJson(Entity entity, View view);
 
     /**
-     * <p>Serialize a collection of entities to JSON format. The method will return a string
-     * that represents a JSON array of entity objects.</p>
-     * <p>Each object contains all fields of entity graph that are not null are included to the {@code view} parameter.
-     * Entity id value is written in the format that is used by {@link com.haulmont.cuba.core.global.EntityLoadInfo}
-     * class, e.g: {@code sec$User-60885987-1b61-4247-94c7-dff348347f93}.</p>
+     * Deserializes a JSON object to the entity.
+     * <p>
+     * The {@code metaClass} parameter defines a result entity metaClass. It is optional. It must be defined if the JSON
+     * object doesn't contain an "_entityName" property.
+     * <p>
+     * An entity may be serialized to the JSON in slightly different formats. The format is defined by the {@code
+     * options} parameter. See {@link EntitySerializationOption} for details.
      *
-     * @param entities a collection of entities to serialize
-     * @param view a view that restricts an entity instance graph during the serialization
-     * @return a string that represent a JSON array which contains entity objects.
+     * @param json      a string that represents a JSON object
+     * @param metaClass a metaClass of the entity that will be created
+     * @param options   options specifying how a JSON object graph was serialized
+     * @return an entity
      */
-    String toJson(Collection<? extends Entity> entities, View view);
+    <T extends Entity> T entityFromJson(String json,
+                                        @Nullable MetaClass metaClass,
+                                        EntitySerializationOption... options);
 
     /**
-     * Deserialize a JSON string to the collection of entities.
+     * Deserializes a JSON array of objects to entities collection
      *
-     * @param json a string that represents a JSON array of entity objects
-     * @param <T> an entity class
-     * @return a collection of entities
+     * @param json      a string that represents a JSON array of objects
+     * @param metaClass a metaClass of the entities that will be created
+     * @param options   options specifying how a JSON object graph was serialized
+     * @return an entities collection
      */
-    <T extends Entity> Collection<T> fromJson(String json);
+    <T extends Entity> Collection<T> entitiesCollectionFromJson(String json,
+                                                                @Nullable MetaClass metaClass,
+                                                                EntitySerializationOption... options);
 }

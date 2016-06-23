@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2008-2016 Haulmont.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:oauth2="http://www.springframework.org/schema/security/oauth2"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/security/oauth2
+       http://www.springframework.org/schema/security/spring-security-oauth2.xsd
+	   http://www.springframework.org/schema/beans
+	   http://www.springframework.org/schema/beans/spring-beans.xsd
+	   http://www.springframework.org/schema/security
+	   http://www.springframework.org/schema/security/spring-security-4.0.xsd
+	   http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-4.2.xsd">
+
+    <context:annotation-config/>
+    <context:component-scan base-package="com.haulmont.restapi"/>
+
+    <!-- According to the spec the token endpoint should be secured by the basic authentication -->
+    <http pattern="/dispatch/oauth/**"
+          create-session="stateless"
+          authentication-manager-ref="clientAuthenticationManager"
+          xmlns="http://www.springframework.org/schema/security">
+        <anonymous enabled="false"/>
+        <http-basic entry-point-ref="clientAuthenticationEntryPoint"/>
+        <csrf disabled="true"/>
+    </http>
+
+    <!-- Authentication manager that is used by token endpoint. Checks client credentials in http header -->
+    <security:authentication-manager id="clientAuthenticationManager">
+        <security:authentication-provider user-service-ref="clientDetailsUserDetailsService"/>
+    </security:authentication-manager>
+
+    <bean id="clientDetailsUserDetailsService" class="org.springframework.security.oauth2.provider.client.ClientDetailsUserDetailsService">
+        <constructor-arg ref="clientDetailsService" />
+    </bean>
+
+    <!-- The predefined list of API clients. External apps must provide this credentials in Authentication header when
+    accessing the auth token -->
+    <oauth2:client-details-service id="clientDetailsService">
+        <oauth2:client
+                client-id="client"
+                secret="secret"
+                authorized-grant-types="password"
+                scope="rest-api"/>
+    </oauth2:client-details-service>
+
+    <!-- Specifies token endpoint.-->
+    <oauth2:authorization-server
+            client-details-service-ref="clientDetailsService"
+            token-services-ref="tokenServices" >
+        <oauth2:password authentication-manager-ref="userAuthenticationManager"/>
+    </oauth2:authorization-server>
+
+    <bean id="userAuthenticationProvider" class="com.haulmont.restapi.auth.CubaUserAuthenticationProvider"/>
+
+    <security:authentication-manager alias="userAuthenticationManager">
+        <security:authentication-provider ref="userAuthenticationProvider"/>
+    </security:authentication-manager>
+
+    <!--todo MG try to remove clientDetailsService-->
+    <bean id="tokenServices" class="org.springframework.security.oauth2.provider.token.DefaultTokenServices">
+        <property name="tokenStore" ref="tokenStore"/>
+        <property name="clientDetailsService" ref="clientDetailsService"/>
+    </bean>
+
+    <bean id="tokenStore" class="com.haulmont.restapi.auth.CubaInMemoryTokenStore"/>
+
+    <oauth2:resource-server id="resourceFilter" token-services-ref="tokenServices" />
+
+    <http pattern="/dispatch/entities/**"
+          create-session="stateless"
+          entry-point-ref="oauthAuthenticationEntryPoint"
+          xmlns="http://www.springframework.org/schema/security">
+        <!--<intercept-url pattern="/dispatch/entities/**"/>-->
+        <anonymous enabled="false"/>
+        <csrf disabled="true"/>
+        <!--<http-basic entry-point-ref="clientAuthenticationEntryPoint"/>-->
+        <custom-filter ref="resourceFilter" before="PRE_AUTH_FILTER"/>
+    </http>
+
+
+    <bean id="clientAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint"/>
+
+    <bean id="clientCredentialsTokenEndpointFilter"
+          class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
+        <property name="authenticationManager" ref="clientAuthenticationManager"/>
+    </bean>
+
+    <bean id="oauthAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
+        <property name="realmName" value="test" />
+    </bean>
+
+</beans>
