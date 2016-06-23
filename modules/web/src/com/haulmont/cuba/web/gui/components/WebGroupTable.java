@@ -837,12 +837,14 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         public void itemPropertyChanged(Datasource.ItemPropertyChangeEvent<Entity> e) {
             super.itemPropertyChanged(e);
 
-            if (datasource instanceof GroupDatasource) {
-                GroupDatasource groupDs = ((GroupDatasource) datasource);
-                @SuppressWarnings("unchecked")
-                Collection<GroupInfo> roots = groupDs.rootGroups();
-                for (final GroupInfo root : roots) {
-                    component.aggregate(new CubaGroupTable.GroupAggregationContext(component, root));
+            if (isAggregatable() && aggregationCells != null) {
+                if (datasource instanceof GroupDatasource) {
+                    GroupDatasource groupDs = ((GroupDatasource) datasource);
+                    @SuppressWarnings("unchecked")
+                    Collection<GroupInfo> roots = groupDs.rootGroups();
+                    for (final GroupInfo root : roots) {
+                        component.aggregate(new CubaGroupTable.GroupAggregationContext(component, root));
+                    }
                 }
             }
         }
