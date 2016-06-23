@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.PersistenceSecurity;
 import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -51,6 +52,9 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
 
     @Inject
     protected Configuration configuration;
+
+    @Inject
+    protected Persistence persistence;
 
     @Override
     public boolean applyConstraints(Query query) {
@@ -123,12 +127,11 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
     @Override
     @SuppressWarnings("unchecked")
     public void restoreFilteredData(BaseGenericIdEntity<?> resultEntity) {
-        Persistence persistence = AppBeans.get(Persistence.NAME);
         EntityManager entityManager = persistence.getEntityManager();
 
         securityTokenManager.readSecurityToken(resultEntity);
 
-        if (resultEntity.__securityToken() == null) {
+        if (BaseEntityInternalAccess.getSecurityToken(resultEntity) == null) {
             List<ConstraintData> existingConstraints = getConstraints(resultEntity.getMetaClass(),
                     constraint -> constraint.getCheckType().memory());
             if (CollectionUtils.isNotEmpty(existingConstraints)) {
@@ -138,7 +141,7 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
             }
         }
 
-        Multimap<String, UUID> filtered = resultEntity.__filteredData();
+        Multimap<String, UUID> filtered = BaseEntityInternalAccess.getFilteredData(resultEntity);
         if (filtered == null) {
             return;
         }

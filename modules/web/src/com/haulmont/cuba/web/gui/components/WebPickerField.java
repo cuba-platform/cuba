@@ -176,8 +176,8 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
         metaPropertyPath = getResolvedMetaPropertyPath(datasource.getMetaClass(), property);
         metaProperty = metaPropertyPath.getMetaProperty();
 
-        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
-        final Property itemProperty = wrapper.getItemProperty(metaPropertyPath);
+        ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
+        Property itemProperty = wrapper.getItemProperty(metaPropertyPath);
 
         component.setPropertyDataSource(itemProperty);
 
@@ -211,8 +211,8 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
             setEditable(false);
         }
 
-        handleFilteredAttributes(this.datasource, metaProperty, this);
-        this.datasource.addItemChangeListener(e -> handleFilteredAttributes(this.datasource, metaProperty, this));
+        handleFilteredAttributes(this, this.datasource, metaPropertyPath);
+        this.datasource.addItemChangeListener(e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath));
     }
 
     @Override

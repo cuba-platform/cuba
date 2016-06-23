@@ -99,8 +99,8 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
             setEditable(false);
         }
 
-        handleFilteredAttributes(this.datasource, metaProperty, this);
-        this.datasource.addItemChangeListener(e -> handleFilteredAttributes(this.datasource, metaProperty, this));
+        handleFilteredAttributes(this, this.datasource, metaPropertyPath);
+        this.datasource.addItemChangeListener(e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath));
     }
 
     protected EnumerationContainer createEnumContainer(List options) {

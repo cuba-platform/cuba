@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.testsupport.TestContainer;
@@ -48,7 +49,7 @@ public class SecurityTokenManagerTest {
         securityTokenManager.writeSecurityToken(user);
         securityTokenManager.readSecurityToken(user);
 
-        List<UUID> userRoles = (List<UUID>) user.__filteredData().get("userRoles");
+        List<UUID> userRoles = (List<UUID>) BaseEntityInternalAccess.getFilteredData(user).get("userRoles");
         Assert.assertEquals(4, userRoles.size());
         Assert.assertEquals(id1, userRoles.get(0));
         Assert.assertEquals(id2, userRoles.get(1));
