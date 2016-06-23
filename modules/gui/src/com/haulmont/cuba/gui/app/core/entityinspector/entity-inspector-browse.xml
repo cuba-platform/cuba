@@ -20,6 +20,7 @@
         caption="msg://browserCaption">
 
     <companions>
+        <web class="com.haulmont.cuba.web.app.core.entityinspector.EntityInspectorBrowseCompanion"/>
         <desktop class="com.haulmont.cuba.desktop.app.core.entityinspector.EntityInspectorBrowseCompanion"/>
     </companions>
 
@@ -28,6 +29,7 @@
             <label value="msg://entityType" align="MIDDLE_LEFT"/>
             <lookupField id="entitiesLookup" width="theme://cuba.gui.EntityInspectorBrowse.entitiesSelect.width"/>
             <checkBox id="removedRecords" caption="msg://showRemovedRecords" align="MIDDLE_LEFT"/>
+            <checkBox id="textSelection" caption="msg://textSelection" align="MIDDLE_LEFT" visible="false"/>
         </hbox>
         <vbox id="filterBox" spacing="true"/>
         <vbox id="tableBox"/>
