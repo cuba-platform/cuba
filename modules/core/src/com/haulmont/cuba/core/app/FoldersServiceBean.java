@@ -86,6 +86,7 @@ public class FoldersServiceBean implements FoldersService {
         stopWatch.start();
 
         List<AppFolder> result = new ArrayList<>();
+        List<AppFolder> list = new ArrayList<>();
 
         Transaction tx = persistence.createTransaction();
         try {
@@ -94,41 +95,55 @@ public class FoldersServiceBean implements FoldersService {
             TypedQuery<AppFolder> q = em.createQuery(
                     "select f from " + effectiveMetaClass.getName() + " f order by f.sortOrder, f.name",
                     AppFolder.class);
-            List<AppFolder> list = q.getResultList();
+            list = q.getResultList();
 
-            if (!list.isEmpty()) {
-                Binding binding = new Binding();
-                binding.setVariable("persistence", persistence);
-                binding.setVariable("metadata", metadata);
-                binding.setVariable("userSession", userSessionSource.getUserSession());
-                for (AppFolder folder : list) {
+            for (AppFolder folder : list) {
+                folder.getParent(); // fetch parent
+                result.add(folder);
+            }
+            tx.commit();
+        } finally {
+            tx.end();
+            stopWatch.stop();
+        }
+
+        if (!list.isEmpty()) {
+            Binding binding = new Binding();
+            binding.setVariable("persistence", persistence);
+            binding.setVariable("metadata", metadata);
+            binding.setVariable("userSession", userSessionSource.getUserSession());
+
+            for (AppFolder folder : list) {
+                Transaction folderTx = persistence.createTransaction();
+                try {
+                    boolean evaluatedVisibilityScript = true;
                     try {
                         if (!StringUtils.isBlank(folder.getVisibilityScript())) {
                             binding.setVariable("folder", folder);
                             Boolean visible = runScript(folder.getVisibilityScript(), binding);
-                            if (BooleanUtils.isFalse(visible))
+                            if (BooleanUtils.isFalse(visible)) {
                                 continue;
+                            }
                         }
                     } catch (Exception e) {
                         log.warn(String.format("Unable to evaluate AppFolder visibility script for folder: id: %s ," +
                                 " name: %s", folder.getId(), folder.getName()), e);
-                        //continue;
+                        // because EclipseLink Query marks transaction as rollback-only on JPQL syntax errors
+                        evaluatedVisibilityScript = false;
                     }
 
-                    loadFolderQuantity(binding, folder);
+                    boolean evaluatedQuantityScript = loadFolderQuantity(binding, folder);
 
-                    folder.getParent(); // fetch parent
-                    result.add(folder);
+                    if (evaluatedVisibilityScript && evaluatedQuantityScript) {
+                        folderTx.commit();
+                    }
+                } finally{
+                    folderTx.end();
                 }
             }
-
-            tx.commit();
-            return result;
-        } finally {
-            tx.end();
-
-            stopWatch.stop();
         }
+
+        return result;
     }
 
     protected  <T> T runScript(String script, Binding binding) {
@@ -138,6 +153,7 @@ public class FoldersServiceBean implements FoldersService {
             script = resources.getResourceAsString(script);
         }
         result = scripting.evaluateGroovy(script, binding);
+
         return (T) result;
     }
 
@@ -148,40 +164,47 @@ public class FoldersServiceBean implements FoldersService {
         StopWatch stopWatch = new Log4JStopWatch("AppFolders");
         stopWatch.start();
 
-        Transaction tx = persistence.createTransaction();
         try {
             if (!folders.isEmpty()) {
                 Binding binding = new Binding();
                 for (AppFolder folder : folders) {
-                    loadFolderQuantity(binding, folder);
+                    Transaction tx = persistence.createTransaction();
+                    try {
+                        if (loadFolderQuantity(binding, folder)) {
+                            tx.commit();
+                        }
+                    } finally {
+                        tx.end();
+                    }
                 }
             }
 
-            tx.commit();
             return folders;
         } finally {
-            tx.end();
-
             stopWatch.stop();
         }
     }
 
-    protected void loadFolderQuantity(Binding binding, AppFolder folder) {
-        try {
-            if (!StringUtils.isBlank(folder.getQuantityScript())) {
-                binding.setVariable("persistence", persistence);
-                binding.setVariable("metadata", metadata);
-                String variable = "style";
-                binding.setVariable("folder", folder);
-                binding.setVariable(variable, null);
+    protected boolean loadFolderQuantity(Binding binding, AppFolder folder) {
+        if (!StringUtils.isBlank(folder.getQuantityScript())) {
+            binding.setVariable("persistence", persistence);
+            binding.setVariable("metadata", metadata);
+            String variable = "style";
+            binding.setVariable("folder", folder);
+            binding.setVariable(variable, null);
+
+            try {
                 Number qty = runScript(folder.getQuantityScript(), binding);
                 folder.setItemStyle((String) binding.getVariable(variable));
                 folder.setQuantity(qty == null ? null : qty.intValue());
+            } catch (Exception e) {
+                log.warn(String.format("Unable to evaluate AppFolder quantity script for folder: id: %s ," +
+                        " name: %s", folder.getId(), folder.getName()), e);
+                return false;
             }
-        } catch (Exception e) {
-            log.warn(String.format("Unable to evaluate AppFolder quantity script for folder: id: %s ," +
-                    " name: %s", folder.getId(), folder.getName()), e);
         }
+
+        return true;
     }
 
     @Override
