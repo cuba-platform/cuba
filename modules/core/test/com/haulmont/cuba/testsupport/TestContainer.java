@@ -106,7 +106,7 @@ public class TestContainer extends ExternalResource {
     private Logger log;
 
     protected String springConfig;
-    protected Map<String, String> appComponents;
+    protected List<String> appComponents;
     protected List<String> appPropertiesFiles;
     protected String dbDriver;
     protected String dbUrl;
@@ -124,7 +124,7 @@ public class TestContainer extends ExternalResource {
         log = LoggerFactory.getLogger(TestContainer.class);
 
         springConfig = "test-spring.xml";
-        appComponents = Collections.emptyMap();
+        appComponents = Collections.emptyList();
         appPropertiesFiles = Arrays.asList("cuba-app.properties", "test-app.properties");
         dbDriver = "org.hsqldb.jdbc.JDBCDriver";
         dbUrl = "jdbc:hsqldb:hsql://localhost/cubadb";
@@ -181,7 +181,7 @@ public class TestContainer extends ExternalResource {
         context.getLogger(logger).setLevel(level);
     }
 
-    public Map<String, String> getAppComponents() {
+    public List<String> getAppComponents() {
         return appComponents;
     }
 
@@ -198,7 +198,7 @@ public class TestContainer extends ExternalResource {
         return this;
     }
 
-    public TestContainer setAppComponents(Map<String, String> appComponents) {
+    public TestContainer setAppComponents(List<String> appComponents) {
         this.appComponents = appComponents;
         return this;
     }

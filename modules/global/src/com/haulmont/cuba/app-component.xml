@@ -14,8 +14,7 @@
   ~ limitations under the License.
   -->
 
-<app-component xmlns="http://schemas.haulmont.com/cuba/app-component.xsd"
-               id="cuba">
+<app-component xmlns="http://schemas.haulmont.com/cuba/app-component.xsd">
 
     <module name="global" blocks="*">
         <artifact name="cuba-global" appJar="true"/>

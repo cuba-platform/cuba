@@ -129,8 +129,8 @@ public abstract class CubaTestCase extends TestCase {
         TestContext.getInstance().bind(AppContext.getProperty("cuba.dataSourceJndiName"), ds);
     }
 
-    protected Map<String, String> getTestAppComponents() {
-        return Collections.emptyMap();
+    protected List<String> getTestAppComponents() {
+        return Collections.emptyList();
     }
 
     protected List<String> getTestAppProperties() {

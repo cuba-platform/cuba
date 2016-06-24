@@ -17,7 +17,6 @@
 package com.haulmont.cuba.core.sys;
 
 import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -32,10 +31,10 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.jar.Manifest;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Holds the list of {@link AppComponent}s.
@@ -45,8 +44,6 @@ public class AppComponents {
     private Logger log = LoggerFactory.getLogger(AppComponents.class);
 
     private final List<AppComponent> components = new ArrayList<>();
-
-    private Map<String, String> componentIdsToDescriptors;
 
     private String block;
 
@@ -59,27 +56,11 @@ public class AppComponents {
     }
 
     /**
-     * This constructor is used in runtime when component descriptors are discovered from JAR manifests.
      * @param componentIds  identifiers of components to be used
      * @param block         current application block (core, web, etc.)
      */
     public AppComponents(List<String> componentIds, String block) {
         this(block);
-        loadAll(componentIds);
-    }
-
-    /**
-     * This constructor is used in tests when component descriptors should be provided explicitly.
-     * @param componentIdsToDescriptors map of component identifiers to descriptor paths
-     * @param block                     current application block (core, web, etc.)
-     */
-    public AppComponents(Map<String, String> componentIdsToDescriptors, String block) {
-        this(block);
-        this.componentIdsToDescriptors = componentIdsToDescriptors;
-        loadAll(componentIdsToDescriptors.keySet());
-    }
-
-    private void loadAll(Collection<String> componentIds) {
         for (String compId : componentIds) {
             AppComponent component = get(compId);
             if (component == null) {
@@ -89,7 +70,13 @@ public class AppComponents {
             if (!components.contains(component))
                 components.add(component);
         }
-        Collections.sort(components);
+        Collections.sort(components, (c1, c2) -> {
+            int res = c1.compareTo(c2);
+            if (res != 0)
+                return res;
+            else
+                return componentIds.indexOf(c1.getId()) - componentIds.indexOf(c2.getId());
+        });
         log.info("Using app components: " + components);
     }
 
@@ -169,61 +156,18 @@ public class AppComponents {
     }
 
     private Document getDescriptorDoc(AppComponent component) throws IOException, DocumentException {
-        Document doc = null;
-        SAXReader reader = new SAXReader();
-
-        if (componentIdsToDescriptors != null) {
-            for (String descriptorPath : componentIdsToDescriptors.values()) {
-                InputStream descrStream = getClass().getClassLoader().getResourceAsStream(descriptorPath);
-                if (descrStream == null)
-                    throw new RuntimeException("App component descriptor was not found in '" + descriptorPath + "'");
-                Document descrDoc;
-                try {
-                    descrDoc = reader.read(new InputStreamReader(descrStream, StandardCharsets.UTF_8));
-                } catch (DocumentException e) {
-                    throw new RuntimeException("Error reading app component descriptor '" + descriptorPath + "'", e);
-                } finally {
-                    IOUtils.closeQuietly(descrStream);
-                }
-                if (component.getId().equals(descrDoc.getRootElement().attributeValue("id"))) {
-                    doc = descrDoc;
-                    log.debug("Loading app component descriptor '{}'", descriptorPath);
-                    break;
-                }
-            }
-        } else {
-            Enumeration<URL> manifests = getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
-            while (manifests.hasMoreElements()) {
-                Manifest man;
-                InputStream manStream = manifests.nextElement().openStream();
-                try {
-                    man = new Manifest(manStream);
-                } finally {
-                    IOUtils.closeQuietly(manStream);
-                }
-                String descriptorPath = man.getMainAttributes().getValue(AppComponent.ATTR_DESCR);
-                if (!Strings.isNullOrEmpty(descriptorPath)) {
-                    InputStream descrStream = getClass().getClassLoader().getResourceAsStream(descriptorPath);
-                    if (descrStream == null)
-                        throw new RuntimeException("App component descriptor was not found in '" + descriptorPath + "'");
-                    Document descrDoc;
-                    try {
-                        descrDoc = reader.read(new InputStreamReader(descrStream, StandardCharsets.UTF_8));
-                    } finally {
-                        IOUtils.closeQuietly(descrStream);
-                    }
-                    if (component.getId().equals(descrDoc.getRootElement().attributeValue("id"))) {
-                        doc = descrDoc;
-                        log.debug("Loading app component descriptor '{}'", descriptorPath);
-                        break;
-                    }
-                }
-            }
+        String descriptorPath = component.getDescriptorPath();
+        InputStream descrStream = getClass().getClassLoader().getResourceAsStream(descriptorPath);
+        if (descrStream == null)
+            throw new RuntimeException("App component descriptor was not found in '" + descriptorPath + "'");
+        try {
+            SAXReader reader = new SAXReader();
+            return reader.read(new InputStreamReader(descrStream, StandardCharsets.UTF_8));
+        } catch (DocumentException e) {
+            throw new RuntimeException("Error reading app component descriptor '" + descriptorPath + "'", e);
+        } finally {
+            IOUtils.closeQuietly(descrStream);
         }
-
-        if (doc == null)
-            throw new RuntimeException("App component '" + component +"' was not found on the classpath");
-        return doc;
     }
 
     private List<String> splitCommaSeparatedValue(String value) {
