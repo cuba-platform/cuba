@@ -44,6 +44,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -342,6 +343,21 @@ public class AppPropertiesLocator {
                 entity.setDataTypeName(datatype.getName());
             else
                 entity.setDataTypeName(Datatypes.getNN(String.class).getName());
+        }
+
+        String dataTypeName = entity.getDataTypeName();
+        if (!dataTypeName.equals("enum")) {
+            Datatype datatype = Datatypes.get(dataTypeName);
+            String v = null;
+            try {
+                v = entity.getDefaultValue();
+                datatype.parse(v);
+                v = entity.getCurrentValue();
+                datatype.parse(v);
+            } catch (ParseException e) {
+                log.debug("Cannot parse '{}' with {} datatype, using StringDatatype for property {}", v, datatype, entity.getName());
+                entity.setDataTypeName(Datatypes.getNN(String.class).getName());
+            }
         }
     }
 }
