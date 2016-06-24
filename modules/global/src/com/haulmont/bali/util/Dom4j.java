@@ -16,7 +16,6 @@
  */
 package com.haulmont.bali.util;
 
-import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.dom4j.Attribute;
@@ -60,7 +59,7 @@ public final class Dom4j {
     }
 
     private static SAXReader getSaxReader() {
-        String useThreadLocalCache = AppContext.getProperty("cuba.saxParserThreadLocalCache");
+        String useThreadLocalCache = System.getProperty("cuba.saxParserThreadLocalCache");
         if (useThreadLocalCache == null || Boolean.parseBoolean(useThreadLocalCache)) {
             try {
                 return new SAXReader(getParser().getXMLReader());
