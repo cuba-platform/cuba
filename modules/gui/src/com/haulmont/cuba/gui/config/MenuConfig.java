@@ -172,6 +172,7 @@ public class MenuConfig {
 
                 loadShortcut(menuItem, element);
                 loadStylename(element, menuItem);
+                loadDescription(element, menuItem);
                 loadMenuItems(element, menuItem);
 
 //                if (menuItem.getChildren().isEmpty()) {
@@ -185,6 +186,7 @@ public class MenuConfig {
                     menuItem.setDescriptor(element);
                     loadShortcut(menuItem, element);
                     loadStylename(element, menuItem);
+                    loadDescription(element, menuItem);
                 }
             } else if ("separator".equals(element.getName())) {
                 String id = element.attributeValue("id");
@@ -204,6 +206,13 @@ public class MenuConfig {
             } else {
                 addItem(rootItems, menuItem, nextToItem, before);
             }
+        }
+    }
+
+    protected void loadDescription(Element element, MenuItem menuItem) {
+        String description = element.attributeValue("description");
+        if (StringUtils.isNotBlank(description)) {
+            menuItem.setDescription(description);
         }
     }
 

@@ -37,6 +37,7 @@ public class MenuItem {
 
     private String id;
     private String stylename;
+    private String description;
     private Element descriptor;
     private boolean separator = false;
 
@@ -75,6 +76,14 @@ public class MenuItem {
 
     public Element getDescriptor() {
         return descriptor;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getStylename() {

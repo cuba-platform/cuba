@@ -108,6 +108,7 @@ public class MenuBuilder {
             createSubMenu(menuItem, item, session);
             assignTestId(menuItem, item);
             assignStyleName(menuItem, item);
+            assignDescription(menuItem, item);
             if (isMenuItemEmpty(menuItem)) {
                 menuBar.removeItem(menuItem);
             }
@@ -122,6 +123,8 @@ public class MenuBuilder {
                         MenuBar.MenuItem menuItem = (child.isSeparator()) ? vItem.addSeparator() : vItem.addItem(MenuConfig.getMenuItemCaption(child.getId()), createMenuBarCommand(child));
                         assignShortcut(menuItem, child);
                         assignTestId(menuItem, child);
+                        assignDescription(menuItem, child);
+                        assignStyleName(menuItem, child);
                     }
                 } else {
                     if (child.isPermitted(session)) {
@@ -129,6 +132,8 @@ public class MenuBuilder {
                         assignShortcut(menuItem, child);
                         createSubMenu(menuItem, child, session);
                         assignTestId(menuItem, child);
+                        assignDescription(menuItem, child);
+                        assignStyleName(menuItem, child);
                         if (isMenuItemEmpty(menuItem)) {
                             vItem.removeChild(menuItem);
                         }
@@ -202,6 +207,12 @@ public class MenuBuilder {
     protected void assignStyleName(MenuBar.MenuItem menuItem, MenuItem conf) {
         if (conf.getStylename() != null) {
             menuItem.setStyleName("ms " + conf.getStylename());
+        }
+    }
+
+    protected void assignDescription(MenuBar.MenuItem menuItem, MenuItem conf) {
+        if (conf.getDescription() != null) {
+            menuItem.setDescription(conf.getDescription());
         }
     }
 }
