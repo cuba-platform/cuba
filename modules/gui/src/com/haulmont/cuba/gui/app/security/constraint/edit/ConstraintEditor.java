@@ -113,6 +113,9 @@ public class ConstraintEditor extends AbstractEditor {
     @Inject
     protected WindowConfig windowConfig;
 
+    @Inject
+    private LookupField type;
+
     protected Map<Object, String> entities;
 
     @Override
@@ -146,15 +149,20 @@ public class ConstraintEditor extends AbstractEditor {
         asList(groovyScript, groovyScriptLabel, groovyScriptHelp)
                 .forEach(component -> component.setVisible(item.getCheckType().memory()));
         asList(joinClause, joinClauseLabel, joinClauseHelp, whereClause, whereClauseLabel, whereClauseHelp)
-                .forEach(component -> component.setVisible(item.getCheckType().database()));
+                .forEach(component -> component.setVisible(item.getCheckType().database() &&
+                        item.getOperationType() != ConstraintOperationType.CREATE &&
+                        item.getOperationType() != ConstraintOperationType.DELETE &&
+                        item.getOperationType() != ConstraintOperationType.UPDATE));
         asList(code, codeLabel)
                 .forEach(component -> component.setVisible(item.getOperationType() == ConstraintOperationType.CUSTOM));
 
-        if (item.getCheckType() == ConstraintCheckType.DATABASE) {
-            item.setOperationType(ConstraintOperationType.READ);
-            operationType.setEnabled(false);
+        if (item.getOperationType() != ConstraintOperationType.ALL &&
+                item.getOperationType() != ConstraintOperationType.CUSTOM &&
+                item.getOperationType() != ConstraintOperationType.READ) {
+            item.setCheckType(ConstraintCheckType.MEMORY);
+            type.setEnabled(false);
         } else {
-            operationType.setEnabled(true);
+            type.setEnabled(true);
         }
 
         if (item.getCheckType() == ConstraintCheckType.DATABASE_AND_MEMORY
