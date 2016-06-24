@@ -49,6 +49,12 @@
                                      width="${width}"/>
                         <label value=""/>
                     </row>
+                    <row id="operationTypeRow">
+                        <label value="msg://com.haulmont.cuba.security.entity/Constraint.operationType"
+                               align="MIDDLE_LEFT"/>
+                        <lookupField id="operationType" textInputAllowed="false" datasource="constraint" property="operationType" required="true"
+                                     width="${width}"/>
+                    </row>
                     <row id="typeRow">
                         <label value="msg://com.haulmont.cuba.security.entity/Constraint.checkType"
                                align="MIDDLE_LEFT"/>
@@ -56,12 +62,6 @@
                                      required="true"
                                      width="${width}"/>
                         <label value=""/>
-                    </row>
-                    <row id="operationTypeRow">
-                        <label value="msg://com.haulmont.cuba.security.entity/Constraint.operationType"
-                               align="MIDDLE_LEFT"/>
-                        <lookupField id="operationType" textInputAllowed="false" datasource="constraint" property="operationType" required="true"
-                                     width="${width}"/>
                     </row>
                     <row id="codeRow">
                         <label id="codeLabel" value="msg://com.haulmont.cuba.security.entity/Constraint.code"
