@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.app.scheduling;
 
 import com.haulmont.cuba.core.entity.ScheduledTask;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -40,4 +41,6 @@ public interface Coordinator {
     void end(Context context);
 
     boolean isLastExecutionFinished(ScheduledTask task, long now);
+
+    long getLastFinished(ScheduledTask task);
 }

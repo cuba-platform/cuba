@@ -20,7 +20,8 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
 public enum SchedulingType implements EnumClass<String> {
     CRON("C"),
-    PERIOD("P");
+    PERIOD("P"),
+    FIXED_DELAY("D");
 
     private final String id;
 

@@ -233,6 +233,7 @@ create table SYS_SCHEDULED_EXECUTION (
     primary key(ID)
 )^
 create index IDX_SYS_SCH_EXE_TAS_STA_TIM on SYS_SCHEDULED_EXECUTION(TASK_ID, START_TIME)^
+create index IDX_SYS_SCH_EXE_TAS_FI_TIM on SYS_SCHEDULED_EXECUTION(TASK_ID, FINISH_TIME)^
 
 create table SYS_SCHEDULED_TASK (
     ID varchar2(32) not null,

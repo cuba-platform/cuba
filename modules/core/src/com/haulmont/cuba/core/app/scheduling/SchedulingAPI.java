@@ -55,13 +55,20 @@ public interface SchedulingAPI {
     void processScheduledTasks(boolean onlyIfActive);
 
     /**
-     * Mark the sheduled task as running/not running in the internal list. This method should not be used in the
+     * Mark the scheduled task as running/not running in the internal list. This method should not be used in the
      * application code.
      * @param task      task instance
      * @param running   true to mark as running, false to mark as not running
      * @return flag indicates concurrent task execution if value is true
      */
     boolean setRunning(ScheduledTask task, boolean running);
+
+    /**
+     * Mark the scheduled task as finished in the internal list. This method should not be used in the
+     * application code.
+     * @param task      task instance
+     */
+    void setFinished(ScheduledTask task);
 
     /**
      * @return a list of active task instances in detached state

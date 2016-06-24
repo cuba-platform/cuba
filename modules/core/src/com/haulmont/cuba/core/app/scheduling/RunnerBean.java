@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.app.ServerInfoAPI;
 import com.haulmont.cuba.core.app.scheduled.MethodParameterInfo;
 import com.haulmont.cuba.core.entity.ScheduledExecution;
 import com.haulmont.cuba.core.entity.ScheduledTask;
+import com.haulmont.cuba.core.entity.SchedulingType;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Scripting;
@@ -104,33 +105,31 @@ public class RunnerBean implements Runner {
         // It's better not to pass an entity instance in managed state to another thread
         final ScheduledTask taskCopy = metadata.getTools().copy(task);
 
-        executorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                log.debug(taskCopy + ": running");
-                try {
-                    boolean runConcurrent = scheduling.setRunning(taskCopy, true);
-                    if (!runConcurrent) {
+        executorService.submit(() -> {
+            log.debug("{}: running", taskCopy);
+            try {
+                boolean runConcurrent = scheduling.setRunning(taskCopy, true);
+                if (!runConcurrent) {
+                    try {
+                        setSecurityContext(taskCopy, userSession);
+                        ScheduledExecution execution = registerExecutionStart(taskCopy, now);
+                        statisticsCounter.incCubaScheduledTasksCount();
                         try {
-                            setSecurityContext(taskCopy, userSession);
-                            ScheduledExecution execution = registerExecutionStart(taskCopy, now);
-                            statisticsCounter.incCubaScheduledTasksCount();
-                            try {
-                                Object result = executeTask(taskCopy);
-                                registerExecutionFinish(taskCopy, execution, result);
-                            } catch (Throwable throwable) {
-                                registerExecutionFinish(taskCopy, execution, throwable);
-                                throw throwable;
-                            }
-                        } finally {
-                            scheduling.setRunning(taskCopy, false);
+                            Object result = executeTask(taskCopy);
+                            registerExecutionFinish(taskCopy, execution, result);
+                        } catch (Throwable throwable) {
+                            registerExecutionFinish(taskCopy, execution, throwable);
+                            throw throwable;
                         }
-                    } else {
-                        log.info("Detected concurrent task execution: {}, skip it", taskCopy);
+                    } finally {
+                        scheduling.setRunning(taskCopy, false);
+                        scheduling.setFinished(task);
                     }
-                } catch (Throwable throwable) {
-                    log.error("Error running " + taskCopy, throwable);
+                } else {
+                    log.info("Detected concurrent task execution: {}, skip it", taskCopy);
                 }
+            } catch (Throwable throwable) {
+                log.error("Error running {}", taskCopy, throwable);
             }
         });
     }
@@ -148,10 +147,10 @@ public class RunnerBean implements Runner {
     }
 
     protected ScheduledExecution registerExecutionStart(ScheduledTask task, long now) {
-        if (!BooleanUtils.isTrue(task.getLogStart()) && !BooleanUtils.isTrue(task.getSingleton()))
+        if (!BooleanUtils.isTrue(task.getLogStart()) && !BooleanUtils.isTrue(task.getSingleton()) && task.getSchedulingType() != SchedulingType.FIXED_DELAY)
             return null;
 
-        log.trace(task + ": registering execution start");
+        log.trace("{}: registering execution start", task);
 
         Transaction tx = persistence.createTransaction();
         try {
@@ -172,10 +171,11 @@ public class RunnerBean implements Runner {
     }
 
     protected void registerExecutionFinish(ScheduledTask task, ScheduledExecution execution, Object result) {
-        if ((!BooleanUtils.isTrue(task.getLogFinish()) && !BooleanUtils.isTrue(task.getSingleton())) || execution == null)
+        if ((!BooleanUtils.isTrue(task.getLogFinish()) && !BooleanUtils.isTrue(task.getSingleton()) && task.getSchedulingType() != SchedulingType.FIXED_DELAY)
+                || execution == null)
             return;
 
-        log.trace(task + ": registering execution finish");
+        log.trace("{}: registering execution finish", task);
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
@@ -193,7 +193,7 @@ public class RunnerBean implements Runner {
     protected Object executeTask(ScheduledTask task) {
         switch (task.getDefinedBy()) {
             case BEAN: {
-                log.trace(task + ": invoking bean");
+                log.trace("{}: invoking bean", task);
                 Object bean = AppBeans.get(task.getBeanName());
                 try {
                     List<MethodParameterInfo> methodParams = task.getMethodParameters();
