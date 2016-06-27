@@ -22,14 +22,14 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.gui.components.UploadComponentSupport;
+import com.haulmont.cuba.gui.components.UploadField;
 
 import javax.swing.*;
 import java.util.Set;
 
 public abstract class DesktopAbstractUploadComponent<T extends JComponent>
         extends DesktopAbstractComponent<T>
-        implements UploadComponentSupport {
+        implements UploadField {
 
     protected static final int BYTES_IN_MEGABYTE = 1048576;
 

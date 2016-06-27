@@ -18,10 +18,9 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
 
-import java.util.Set;
 import java.util.UUID;
 
-public interface FileUploadField extends UploadComponentSupport {
+public interface FileUploadField extends UploadField {
     String NAME = "upload";
 
     @Deprecated

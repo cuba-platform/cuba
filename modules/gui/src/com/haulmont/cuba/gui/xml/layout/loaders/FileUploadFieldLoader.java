@@ -19,7 +19,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.FileUploadField;
-import com.haulmont.cuba.gui.components.UploadComponentSupport;
+import com.haulmont.cuba.gui.components.UploadField;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -81,7 +81,7 @@ public class FileUploadFieldLoader extends AbstractComponentLoader<FileUploadFie
         if (StringUtils.isNotEmpty(dropZoneId)) {
             Component dropZone = context.getFrame().getComponent(dropZoneId);
             if (dropZone instanceof BoxLayout) {
-                uploadField.setDropZone(new UploadComponentSupport.DropZone((BoxLayout) dropZone));
+                uploadField.setDropZone(new UploadField.DropZone((BoxLayout) dropZone));
             }
         }
 

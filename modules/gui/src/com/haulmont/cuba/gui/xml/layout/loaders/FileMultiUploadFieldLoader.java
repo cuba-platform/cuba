@@ -78,7 +78,7 @@ public class FileMultiUploadFieldLoader extends AbstractComponentLoader<FileMult
         if (StringUtils.isNotEmpty(dropZoneId)) {
             Component dropZone = context.getFrame().getComponent(dropZoneId);
             if (dropZone instanceof BoxLayout) {
-                uploadField.setDropZone(new UploadComponentSupport.DropZone((BoxLayout) dropZone));
+                uploadField.setDropZone(new UploadField.DropZone((BoxLayout) dropZone));
             }
         }
 

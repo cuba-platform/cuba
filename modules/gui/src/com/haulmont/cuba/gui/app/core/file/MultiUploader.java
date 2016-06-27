@@ -22,7 +22,7 @@ import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.FileMultiUploadField;
-import com.haulmont.cuba.gui.components.UploadComponentSupport;
+import com.haulmont.cuba.gui.components.UploadField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
@@ -54,7 +54,7 @@ public class MultiUploader extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        multiUpload.setDropZone(new UploadComponentSupport.DropZone(this));
+        multiUpload.setDropZone(new UploadField.DropZone(this));
 
         getDialogOptions()
                 .setHeight(themeConstants.getInt("cuba.gui.multiupload.height"))

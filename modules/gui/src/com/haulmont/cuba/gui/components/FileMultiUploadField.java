@@ -17,10 +17,9 @@
 package com.haulmont.cuba.gui.components;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
-public interface FileMultiUploadField extends UploadComponentSupport {
+public interface FileMultiUploadField extends UploadField {
 
     String NAME = "multiUpload";
 

@@ -18,12 +18,12 @@
 package com.haulmont.cuba.gui.components.compatibility;
 
 import com.haulmont.cuba.gui.components.FileUploadField;
-import com.haulmont.cuba.gui.components.UploadComponentSupport;
+import com.haulmont.cuba.gui.components.UploadField;
 
 @Deprecated
-public class FileUploadFieldListenerWrapper implements UploadComponentSupport.FileUploadStartListener,
-                                                       UploadComponentSupport.FileUploadFinishListener,
-                                                       UploadComponentSupport.FileUploadErrorListener,
+public class FileUploadFieldListenerWrapper implements UploadField.FileUploadStartListener,
+                                                       UploadField.FileUploadFinishListener,
+                                                       UploadField.FileUploadErrorListener,
                                                        FileUploadField.FileUploadSucceedListener {
     private final FileUploadField.Listener listener;
 
@@ -32,17 +32,17 @@ public class FileUploadFieldListenerWrapper implements UploadComponentSupport.Fi
     }
 
     @Override
-    public void fileUploadError(UploadComponentSupport.FileUploadErrorEvent e) {
+    public void fileUploadError(UploadField.FileUploadErrorEvent e) {
         listener.uploadFailed(new FileUploadField.Listener.Event(e.getFileName(), e.getCause()));
     }
 
     @Override
-    public void fileUploadFinish(UploadComponentSupport.FileUploadFinishEvent e) {
+    public void fileUploadFinish(UploadField.FileUploadFinishEvent e) {
         listener.uploadFinished(new FileUploadField.Listener.Event(e.getFileName()));
     }
 
     @Override
-    public void fileUploadStart(UploadComponentSupport.FileUploadStartEvent e) {
+    public void fileUploadStart(UploadField.FileUploadStartEvent e) {
         listener.uploadStarted(new FileUploadField.Listener.Event(e.getFileName()));
     }
 

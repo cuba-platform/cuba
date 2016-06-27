@@ -18,12 +18,12 @@
 package com.haulmont.cuba.gui.components.compatibility;
 
 import com.haulmont.cuba.gui.components.FileMultiUploadField;
-import com.haulmont.cuba.gui.components.UploadComponentSupport;
+import com.haulmont.cuba.gui.components.UploadField;
 
 @Deprecated
-public class MultiUploadFieldListenerWrapper implements UploadComponentSupport.FileUploadStartListener,
-                                                        UploadComponentSupport.FileUploadErrorListener,
-                                                        UploadComponentSupport.FileUploadFinishListener,
+public class MultiUploadFieldListenerWrapper implements UploadField.FileUploadStartListener,
+                                                        UploadField.FileUploadErrorListener,
+                                                        UploadField.FileUploadFinishListener,
                                                         FileMultiUploadField.QueueUploadCompleteListener {
 
     private final FileMultiUploadField.UploadListener listener;
@@ -33,17 +33,17 @@ public class MultiUploadFieldListenerWrapper implements UploadComponentSupport.F
     }
 
     @Override
-    public void fileUploadError(UploadComponentSupport.FileUploadErrorEvent e) {
+    public void fileUploadError(UploadField.FileUploadErrorEvent e) {
         //todo rewrite generated body
     }
 
     @Override
-    public void fileUploadFinish(UploadComponentSupport.FileUploadFinishEvent e) {
+    public void fileUploadFinish(UploadField.FileUploadFinishEvent e) {
         //todo rewrite generated body
     }
 
     @Override
-    public void fileUploadStart(UploadComponentSupport.FileUploadStartEvent e) {
+    public void fileUploadStart(UploadField.FileUploadStartEvent e) {
         //todo rewrite generated body
     }
 
