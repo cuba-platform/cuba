@@ -16,78 +16,12 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.BoxLayout;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.FileUploadField;
-import com.haulmont.cuba.gui.components.UploadField;
-import org.apache.commons.lang.StringUtils;
-import org.dom4j.Element;
 
-import java.util.Arrays;
-import java.util.HashSet;
-
-public class FileUploadFieldLoader extends AbstractComponentLoader<FileUploadField> {
+public class FileUploadFieldLoader extends AbstractUploadFieldLoader<FileUploadField> {
     @Override
     public void createComponent() {
         resultComponent = (FileUploadField) factory.createComponent(FileUploadField.NAME);
         loadId(resultComponent, element);
-    }
-
-    @Override
-    public void loadComponent() {
-        assignFrame(resultComponent);
-
-        loadEnable(resultComponent, element);
-        loadVisible(resultComponent, element);
-
-        loadStyleName(resultComponent, element);
-        loadAlign(resultComponent, element);
-
-        loadHeight(resultComponent, element);
-        loadWidth(resultComponent, element);
-        loadIcon(resultComponent, element);
-
-        loadCaption(resultComponent, element);
-        loadDescription(resultComponent, element);
-
-        loadAccept(resultComponent, element);
-
-        loadPermittedExtensions(resultComponent, element);
-
-        loadDropZone(resultComponent, element);
-
-        String fileSizeLimit = element.attributeValue("fileSizeLimit");
-        if (StringUtils.isNotEmpty(fileSizeLimit)) {
-            resultComponent.setFileSizeLimit(Long.valueOf(fileSizeLimit));
-        }
-    }
-
-    protected void loadAccept(FileUploadField uploadField, Element element) {
-        String accept = element.attributeValue("accept");
-        if (StringUtils.isNotEmpty(accept)) {
-            uploadField.setAccept(accept);
-        }
-    }
-
-    protected void loadPermittedExtensions(FileUploadField uploadField, Element element) {
-        String permittedExtensions = element.attributeValue("permittedExtensions");
-        if (StringUtils.isNotEmpty(permittedExtensions)) {
-            uploadField.setPermittedExtensions(new HashSet<>(Arrays.asList(permittedExtensions.split("\\s*,\\s*"))));
-        }
-    }
-
-    protected void loadDropZone(FileUploadField uploadField, Element element) {
-        String dropZoneId = element.attributeValue("dropZone");
-        if (StringUtils.isNotEmpty(dropZoneId)) {
-            Component dropZone = context.getFrame().getComponent(dropZoneId);
-            if (dropZone instanceof BoxLayout) {
-                uploadField.setDropZone(new UploadField.DropZone((BoxLayout) dropZone));
-            }
-        }
-
-        String dropZonePrompt = element.attributeValue("dropZonePrompt");
-        if (StringUtils.isNotEmpty(dropZonePrompt)) {
-            uploadField.setDropZonePrompt(loadResourceString(dropZonePrompt));
-        }
     }
 }
