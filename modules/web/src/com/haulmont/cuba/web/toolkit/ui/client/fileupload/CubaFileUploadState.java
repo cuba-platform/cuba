@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.fileupload;
 
+import com.vaadin.shared.Connector;
 import com.vaadin.shared.annotations.NoLayout;
 import com.vaadin.shared.ui.TabIndexState;
 
@@ -52,4 +53,10 @@ public class CubaFileUploadState extends TabIndexState {
 
     @NoLayout
     public Set<String> permittedExtensions;
+
+    @NoLayout
+    public Connector dropZone;
+
+    @NoLayout
+    public String dropZonePrompt;
 }

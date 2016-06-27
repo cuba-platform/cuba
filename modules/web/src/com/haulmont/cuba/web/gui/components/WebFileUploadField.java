@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.FileUploadField;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.compatibility.FileUploadFieldListenerWrapper;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.web.toolkit.FileUploadTypesHelper;
@@ -29,6 +30,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaUpload;
 import com.haulmont.cuba.web.toolkit.ui.UploadComponent;
 import com.vaadin.server.Page;
 import com.vaadin.server.WebBrowser;
+import com.vaadin.ui.Component;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -148,6 +150,7 @@ public class WebFileUploadField extends WebAbstractUploadComponent<UploadCompone
         impl.setUnableToUploadFileMessage(messages.getMainMessage("upload.unableToUploadFile"));
         impl.setCancelButtonCaption(messages.getMainMessage("upload.cancel"));
         impl.setCaption(messages.getMainMessage("upload.submit"));
+        impl.setDropZonePrompt(messages.getMainMessage("upload.singleDropZonePrompt"));
         impl.setDescription(null);
 
         impl.setFileSizeLimit(getActualFileSizeLimit());
@@ -339,6 +342,34 @@ public class WebFileUploadField extends WebAbstractUploadComponent<UploadCompone
         if (!StringUtils.equals(accept, getAccept())) {
             this.accept = accept;
             component.setAccept(FileUploadTypesHelper.convertToMIME(accept));
+        }
+    }
+
+    @Override
+    public void setDropZone(DropZone dropZone) {
+        super.setDropZone(dropZone);
+
+        if (component instanceof CubaFileUpload) {
+            if (dropZone == null) {
+                ((CubaFileUpload) component).setDropZone(null);
+            } else {
+                com.haulmont.cuba.gui.components.Component target = dropZone.getTarget();
+                if (target instanceof Window.Wrapper) {
+                    target = ((Window.Wrapper) target).getWrappedWindow();
+                }
+
+                Component vComponent = target.unwrapComposition(Component.class);
+                ((CubaFileUpload) this.component).setDropZone(vComponent);
+            }
+        }
+    }
+
+    @Override
+    public void setDropZonePrompt(String dropZonePrompt) {
+        super.setDropZonePrompt(dropZonePrompt);
+
+        if (component instanceof CubaFileUpload) {
+            ((CubaFileUpload) component).setDropZonePrompt(dropZonePrompt);
         }
     }
 

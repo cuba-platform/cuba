@@ -443,6 +443,14 @@
         <xs:attribute name="expand" type="xs:string"/>
     </xs:attributeGroup>
 
+    <xs:attributeGroup name="isUploadComponent">
+        <xs:attribute name="accept" type="xs:string"/>
+        <xs:attribute name="permittedExtensions" type="xs:string"/>
+        <xs:attribute name="fileSizeLimit" type="xs:long"/>
+        <xs:attribute name="dropZone" type="xs:string"/>
+        <xs:attribute name="dropZonePrompt" type="resourceString"/>
+    </xs:attributeGroup>
+
     <xs:attributeGroup name="isDatasource">
         <xs:attribute name="id" type="xs:string" use="required"/>
         <xs:attribute name="class" type="xs:string"/>
@@ -914,9 +922,8 @@
         <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEnableProp"/>
-        <xs:attribute name="accept" type="xs:string"/>
-        <xs:attribute name="permittedExtensions" type="xs:string"/>
-        <xs:attribute name="fileSizeLimit" type="xs:long"/>
+
+        <xs:attributeGroup ref="isUploadComponent"/>
     </xs:complexType>
 
     <!-- FileMultiUploadField -->
@@ -928,9 +935,8 @@
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasIcon"/>
-        <xs:attribute name="accept" type="xs:string"/>
-        <xs:attribute name="permittedExtensions" type="xs:string"/>
-        <xs:attribute name="fileSizeLimit" type="xs:long"/>
+
+        <xs:attributeGroup ref="isUploadComponent"/>
     </xs:complexType>
 
     <!-- Embedded -->

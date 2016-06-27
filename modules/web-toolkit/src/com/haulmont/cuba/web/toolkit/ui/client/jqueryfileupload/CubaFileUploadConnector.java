@@ -21,10 +21,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaFileUpload;
 import com.haulmont.cuba.web.toolkit.ui.client.fileupload.CubaFileUploadClientRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.fileupload.CubaFileUploadServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.fileupload.CubaFileUploadState;
-import com.vaadin.client.ApplicationConnection;
-import com.vaadin.client.Paintable;
-import com.vaadin.client.UIDL;
-import com.vaadin.client.VCaption;
+import com.vaadin.client.*;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.AbstractComponentConnector;
 import com.vaadin.client.ui.Icon;
@@ -65,6 +62,7 @@ public class CubaFileUploadConnector extends AbstractComponentConnector implemen
         super.onUnregister();
 
         getWidget().cancelAllUploads();
+        getWidget().setDropZone(null, null);
     }
 
     @Override
@@ -175,6 +173,12 @@ public class CubaFileUploadConnector extends AbstractComponentConnector implemen
 
         if (stateChangeEvent.hasPropertyChanged("permittedExtensions")) {
             getWidget().permittedExtensions = getState().permittedExtensions;
+        }
+
+        if (stateChangeEvent.hasPropertyChanged("dropZone")) {
+            ComponentConnector dropZone = (ComponentConnector) getState().dropZone;
+
+            getWidget().setDropZone(dropZone != null ? dropZone.getWidget() : null, getState().dropZonePrompt);
         }
 
         if (!isEnabled() || isReadOnly()) {

@@ -16,8 +16,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.FileMultiUploadField;
-import com.haulmont.cuba.gui.components.FileUploadField;
+import com.haulmont.cuba.gui.components.*;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -50,7 +49,9 @@ public class FileMultiUploadFieldLoader extends AbstractComponentLoader<FileMult
 
         loadAccept(resultComponent, element);
 
-        loadPermittedExtentions(resultComponent, element);
+        loadPermittedExtensions(resultComponent, element);
+
+        loadDropZone(resultComponent, element);
 
         String fileSizeLimit = element.attributeValue("fileSizeLimit");
         if (StringUtils.isNotEmpty(fileSizeLimit)) {
@@ -65,10 +66,25 @@ public class FileMultiUploadFieldLoader extends AbstractComponentLoader<FileMult
         }
     }
 
-    protected void loadPermittedExtentions(FileMultiUploadField uploadField, Element element) {
+    protected void loadPermittedExtensions(FileMultiUploadField uploadField, Element element) {
         String permittedExtensions = element.attributeValue("permittedExtensions");
         if (StringUtils.isNotEmpty(permittedExtensions)) {
             uploadField.setPermittedExtensions(new HashSet<>(Arrays.asList(permittedExtensions.split("\\s*,\\s*"))));
+        }
+    }
+
+    protected void loadDropZone(FileMultiUploadField uploadField, Element element) {
+        String dropZoneId = element.attributeValue("dropZone");
+        if (StringUtils.isNotEmpty(dropZoneId)) {
+            Component dropZone = context.getFrame().getComponent(dropZoneId);
+            if (dropZone instanceof BoxLayout) {
+                uploadField.setDropZone(new UploadComponentSupport.DropZone((BoxLayout) dropZone));
+            }
+        }
+
+        String dropZonePrompt = element.attributeValue("dropZonePrompt");
+        if (StringUtils.isNotEmpty(dropZonePrompt)) {
+            uploadField.setDropZonePrompt(loadResourceString(dropZonePrompt));
         }
     }
 }

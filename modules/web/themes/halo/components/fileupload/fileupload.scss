@@ -100,4 +100,52 @@
       float: right;
     }
   }
+
+  .v-layout.#{$primary-stylename}-dropzone {
+    position: relative;
+
+    &:before {
+      @include box-defaults;
+
+      content: "";
+      position: absolute;
+      z-index: 10;
+
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+
+      @include valo-textfield-focus-style;
+      border-radius: $v-border-radius;
+      outline: 2px solid $v-focus-color;
+    }
+
+    &:after {
+      content: attr(dropzone-prompt);
+      font-size: $v-font-size--h1;
+      position: absolute;
+      background: $v-panel-background-color;
+      border: valo-border();
+      padding: ceil($v-unit-size/2);
+      border-radius: $v-border-radius;
+
+      z-index: 10;
+
+      display: block;
+      top: 50%;
+      left: 50%;
+
+      -webkit-transform: translateY(-50%) translateX(-50%);
+      -moz-transform: translateY(-50%) translateX(-50%);
+      -ms-transform: translateY(-50%) translateX(-50%);
+      transform: translateY(-50%) translateX(-50%);
+    }
+
+    .v-expand {
+      opacity: 0.5;
+    }
+  }
 }

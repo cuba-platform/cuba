@@ -37,6 +37,10 @@ public abstract class DesktopAbstractUploadComponent<T extends JComponent>
 
     protected Set<String> permittedExtensions;
 
+    // just stub
+    protected DropZone dropZone;
+    protected String dropZonePrompt;
+
     @Override
     public long getFileSizeLimit() {
         return fileSizeLimit;
@@ -79,5 +83,23 @@ public abstract class DesktopAbstractUploadComponent<T extends JComponent>
             fileSizeLimitString = String.valueOf(configuration.getConfig(ClientConfig.class).getMaxUploadSizeMb());
         }
         return fileSizeLimitString;
+    }
+
+    @Override
+    public void setDropZone(DropZone dropZone) {
+        this.dropZone = dropZone;
+    }
+
+    @Override
+    public DropZone getDropZone() {
+        return dropZone;
+    }
+
+    public String getDropZonePrompt() {
+        return dropZonePrompt;
+    }
+
+    public void setDropZonePrompt(String dropZonePrompt) {
+        this.dropZonePrompt = dropZonePrompt;
     }
 }

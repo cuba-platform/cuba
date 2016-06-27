@@ -36,7 +36,9 @@ import org.slf4j.LoggerFactory;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 @JavaScript({
         "vaadin://resources/jqueryfileupload/jquery.ui.widget-1.11.4.min.js",
@@ -282,6 +284,26 @@ public class CubaFileUpload extends AbstractComponent
 
     public void setReceiver(Receiver receiver) {
         this.receiver = receiver;
+    }
+
+    public Component getDropZone() {
+        return (Component) getState(false).dropZone;
+    }
+
+    public void setDropZone(Component component) {
+        if (getDropZone() != component) {
+            getState().dropZone = component;
+        }
+    }
+
+    public String getDropZonePrompt() {
+        return getState(false).dropZonePrompt;
+    }
+
+    public void setDropZonePrompt(String dropZonePrompt) {
+        if (!StringUtils.equals(getDropZonePrompt(), dropZonePrompt)) {
+            getState().dropZonePrompt = dropZonePrompt;
+        }
     }
 
     protected com.vaadin.server.StreamVariable getStreamVariable() {

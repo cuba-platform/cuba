@@ -70,6 +70,8 @@ public class FileEditor extends AbstractEditor<FileDescriptor> {
         super.init(params);
 
         getDialogOptions().setWidthAuto();
+
+        uploadField.setDropZone(new UploadComponentSupport.DropZone(this));
     }
 
     @Override

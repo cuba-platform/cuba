@@ -19,16 +19,32 @@ package com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.DragOverEvent;
+import com.google.gwt.event.dom.client.DragOverHandler;
+import com.google.gwt.event.dom.client.DropEvent;
+import com.google.gwt.event.dom.client.DropHandler;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.RootPanel;
+import fi.jasoft.dragdroplayouts.client.ui.util.HTML5Support;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.CubaFileUploadWidget.CUBA_FILEUPLOAD_DROPZONE_CLASS;
+
 public class JQueryFileUploadOverlay {
+
+    protected static boolean globalDragDropHandlersAttached = false;
+    protected static Timer dragStopTimer;
 
     protected Element fileInput;
     protected String uploadUrl;
 
     protected List<JavaScriptObject> currentXHRs = new ArrayList<JavaScriptObject>();
+
+    protected static List<Element> dropZones = new ArrayList<Element>();
+
+    private Element dropZoneElement;
 
     public JQueryFileUploadOverlay(Element fileInput) {
         this.fileInput = fileInput;
@@ -47,7 +63,7 @@ public class JQueryFileUploadOverlay {
         upload.fileupload({
             dropZone: upload,
             dataType: 'json',
-            autoUpload : false,
+            autoUpload: false,
             sequentialUploads: true
         });
 
@@ -176,4 +192,99 @@ public class JQueryFileUploadOverlay {
     protected void fileUploadSucceed(String fileName) {
         // change file name in upload window
     }
+
+    public void setDropZone(Element dropZoneElement) {
+        setDropZone(fileInput, dropZoneElement);
+
+        if (dropZoneElement != null) {
+            if (!globalDragDropHandlersAttached) {
+                subscribeGlobalDragDropHandlers();
+
+                globalDragDropHandlersAttached = true;
+            }
+
+            if (!dropZones.contains(dropZoneElement)) {
+                dropZones.add(dropZoneElement);
+            }
+        } else {
+            dropZones.remove(this.dropZoneElement);
+        }
+
+        this.dropZoneElement = dropZoneElement;
+    }
+
+    private void subscribeGlobalDragDropHandlers() {
+        RootPanel.get().addBitlessDomHandler(new DragOverHandler() {
+            @Override
+            public void onDragOver(DragOverEvent event) {
+                globalDocumentDragOver(event.getNativeEvent());
+
+                if (dropZones.size() > 0) {
+                    event.preventDefault();
+                }
+            }
+        }, DragOverEvent.getType());
+
+        // prevent misses leading to opening of file inside browser
+        RootPanel.get().addBitlessDomHandler(new DropHandler() {
+            @Override
+            public void onDrop(DropEvent event) {
+                if (dropZones.size() > 0) {
+                    event.preventDefault();
+                }
+            }
+        }, DropEvent.getType());
+
+        // CAUTION add compatibility layer with Vaadin DragDropLayouts
+        HTML5Support.setGlobalDragOverHandler(new DragOverHandler() {
+            @Override
+            public void onDragOver(DragOverEvent event) {
+                globalDocumentDragOver(event.getNativeEvent());
+            }
+        });
+    }
+
+    protected static void globalDocumentDragOver(JavaScriptObject event) {
+        if (isDragEventContainsFiles(event)) {
+            // find all drop zones and add classname
+            for (Element dropZone : dropZones) {
+                dropZone.addClassName(CUBA_FILEUPLOAD_DROPZONE_CLASS);
+            }
+
+            if (dragStopTimer != null) {
+                dragStopTimer.cancel();
+            }
+
+            dragStopTimer = new Timer() {
+                @Override
+                public void run() {
+                    for (Element dropZone : dropZones) {
+                        dropZone.removeClassName(CUBA_FILEUPLOAD_DROPZONE_CLASS);
+                    }
+                    dragStopTimer = null;
+                }
+            };
+            dragStopTimer.schedule(100);
+        }
+    }
+
+    protected native void setDropZone(Element fileInput, Element dropZoneElement) /*-{
+        //noinspection JSUnresolvedFunction
+        var upload = $wnd.jQuery(fileInput);
+
+        upload.fileupload({
+            dropZone: dropZoneElement
+        });
+    }-*/;
+
+    protected native static boolean isDragEventContainsFiles(JavaScriptObject event) /*-{
+        if (event && event.dataTransfer && event.dataTransfer.types) {
+            for (var i = 0; i < event.dataTransfer.types.length; i++) {
+                if (event.dataTransfer.types[i] == "Files") {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }-*/;
 }
