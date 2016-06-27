@@ -148,7 +148,7 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
                 throw new IllegalStateException("Component already has parent");
             }
 
-            topPanel.add(DesktopComponentsHelper.unwrap(panel));
+            topPanel.add(DesktopComponentsHelper.unwrap(panel), BorderLayout.LINE_START);
             topPanel.setVisible(true);
             panel.setParent(this);
         }
