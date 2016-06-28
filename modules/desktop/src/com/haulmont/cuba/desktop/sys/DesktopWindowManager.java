@@ -22,8 +22,7 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DesktopConfig;
 import com.haulmont.cuba.desktop.TopLevelFrame;
@@ -59,6 +58,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import javax.inject.Provider;
 import javax.swing.*;
 import javax.swing.Timer;
 import java.awt.*;
@@ -461,7 +461,6 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     protected void addShortcuts(final Window window) {
-        Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
 
         String closeShortcut = clientConfig.getCloseShortcut();
@@ -873,7 +872,6 @@ public class DesktopWindowManager extends WindowManager {
     protected JPopupMenu createWindowPopupMenu(final Window window) {
         JPopupMenu popupMenu = new JPopupMenu();
 
-        Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
 
         if (clientConfig.getManualScreenSettingsSaving()) {
@@ -978,7 +976,6 @@ public class DesktopWindowManager extends WindowManager {
 
     protected String formatTabCaption(String caption, String description) {
         String s = formatTabDescription(caption, description);
-        Configuration configuration = AppBeans.get(Configuration.NAME);
         int maxLength = configuration.getConfig(DesktopConfig.class).getMainTabCaptionLength();
         if (s.length() > maxLength) {
             return s.substring(0, maxLength) + "...";
@@ -1163,7 +1160,6 @@ public class DesktopWindowManager extends WindowManager {
     public void showNotification(String caption, String description, NotificationType type) {
         backgroundWorker.checkUIAccess();
 
-        Configuration configuration = AppBeans.get(Configuration.NAME);
         DesktopConfig config = configuration.getConfig(DesktopConfig.class);
 
         if (!NotificationType.isHTML(type)) {
@@ -1182,8 +1178,7 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     protected void showNotificationDialog(String text, NotificationType type) {
-        Messages messages = AppBeans.get(Messages.NAME);
-        String title = messages.getMessage(AppConfig.getMessagesPack(), "notification.title." + type);
+        String title = messages.getMainMessage("notification.title." + type);
 
         Icon icon = convertNotificationType(type);
 
@@ -1329,13 +1324,14 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     protected void assignDialogShortcuts(final JDialog dialog, JPanel panel, final Action[] actions) {
-        Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
 
         InputMap inputMap = panel.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         ActionMap actionMap = panel.getActionMap();
 
-        KeyCombination okCombination = KeyCombination.create(clientConfig.getCommitShortcut());
+        String commitShortcut = getConfigValueIfConnected(clientConfig::getCommitShortcut, "cuba.gui.commitShortcut", "CTRL-ENTER");
+
+        KeyCombination okCombination = KeyCombination.create(commitShortcut);
         KeyStroke okKeyStroke = DesktopComponentsHelper.convertKeyCombination(okCombination);
 
         inputMap.put(okKeyStroke, "okAction");
@@ -1357,7 +1353,9 @@ public class DesktopWindowManager extends WindowManager {
             }
         });
 
-        KeyCombination closeCombination = KeyCombination.create(clientConfig.getCloseShortcut());
+        String closeShortcut = getConfigValueIfConnected(clientConfig::getCloseShortcut, "cuba.gui.closeShortcut", "ESCAPE");
+
+        KeyCombination closeCombination = KeyCombination.create(closeShortcut);
         KeyStroke closeKeyStroke = DesktopComponentsHelper.convertKeyCombination(closeCombination);
 
         inputMap.put(closeKeyStroke, "closeAction");
@@ -1775,6 +1773,20 @@ public class DesktopWindowManager extends WindowManager {
         } else {
             runIfOk.run();
         }
+    }
+
+    protected String getConfigValueIfConnected(Provider<String> valueProvider,
+                                               String fallbackProperty, String fallbackValue) {
+        if (App.getInstance().getConnection().isConnected()) {
+            return valueProvider.get();
+        }
+
+        String propertyValue = AppContext.getProperty(fallbackProperty);
+        if (propertyValue != null) {
+            return propertyValue;
+        }
+
+        return fallbackValue;
     }
 
     @Override

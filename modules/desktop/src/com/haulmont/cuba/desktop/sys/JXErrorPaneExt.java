@@ -76,7 +76,12 @@ public class JXErrorPaneExt extends JXErrorPane {
         };
         copyButton.addActionListener(copyToClipboardListener);
 
-        if (StringUtils.isNotBlank(clientConfig.getSupportEmail())) {
+        String supportEmail = null;
+        if (App.getInstance().getConnection().isConnected()) {
+            supportEmail = clientConfig.getSupportEmail();
+        }
+
+        if (StringUtils.isNotBlank(supportEmail)) {
             setErrorReporter(new ErrorReporter() {
                 @Override
                 public void reportError(ErrorInfo info) throws NullPointerException {
