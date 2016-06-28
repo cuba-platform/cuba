@@ -303,6 +303,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         settingsBtn = componentsFactory.createComponent(PopupButton.class);
         settingsBtn.setIcon("icons/gear.png");
+        settingsBtn.setStyleName("filter-settings-button");
         filterHelper.setInternalDebugId(settingsBtn, "settingsBtn");
         createFilterActions();
 
