@@ -312,6 +312,8 @@ public abstract class WindowManager {
 
     protected Security security = AppBeans.get(Security.NAME);
 
+    protected Configuration configuration = AppBeans.get(Configuration.NAME);
+
     protected BackgroundWorker backgroundWorker = AppBeans.get(BackgroundWorker.NAME);
 
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
@@ -417,7 +419,6 @@ public abstract class WindowManager {
         componentLoaderContext.setFrame(windowWrapper);
         componentLoaderContext.executePostInitTasks();
 
-        Configuration configuration = AppBeans.get(Configuration.NAME);
         if (configuration.getConfig(GlobalConfig.class).getTestMode()) {
             initDebugIds(clientSpecificWindow);
         }

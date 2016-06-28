@@ -100,7 +100,6 @@ public class WebWindowManager extends WindowManager {
         this.app = app;
         this.appWindow = appWindow;
 
-        Configuration configuration = AppBeans.get(Configuration.NAME);
         webConfig = configuration.getConfig(WebConfig.class);
         clientConfig = configuration.getConfig(ClientConfig.class);
         screenProfiler = AppBeans.get(ScreenProfiler.NAME);
@@ -1604,7 +1603,7 @@ public class WebWindowManager extends WindowManager {
         };
     }
 
-    protected static class DialogWindowActionHandler implements com.vaadin.event.Action.Handler {
+    protected class DialogWindowActionHandler implements com.vaadin.event.Action.Handler {
 
         protected Window window;
         protected com.vaadin.event.Action saveSettingsAction;
@@ -1621,8 +1620,6 @@ public class WebWindowManager extends WindowManager {
         @Override
         public com.vaadin.event.Action[] getActions(Object target, Object sender) {
             if (!initialized) {
-                Messages messages = AppBeans.get(Messages.NAME);
-
                 saveSettingsAction = new com.vaadin.event.Action(messages.getMainMessage("actions.saveSettings"));
                 restoreToDefaultsAction = new com.vaadin.event.Action(messages.getMainMessage("actions.restoreToDefaults"));
                 analyzeAction = new com.vaadin.event.Action(messages.getMainMessage("actions.analyzeLayout"));
@@ -1632,7 +1629,6 @@ public class WebWindowManager extends WindowManager {
 
             List<com.vaadin.event.Action> actions = new ArrayList<>(3);
 
-            Configuration configuration = AppBeans.get(Configuration.NAME);
             ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
             if (clientConfig.getManualScreenSettingsSaving()) {
                 actions.add(saveSettingsAction);
