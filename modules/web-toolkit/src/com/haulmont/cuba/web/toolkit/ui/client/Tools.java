@@ -24,6 +24,7 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.button.CubaButtonWidget;
 import com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.CubaFileUploadWidget;
@@ -42,6 +43,7 @@ import com.vaadin.client.ui.orderedlayout.VAbstractOrderedLayout;
 public class Tools {
 
     public static final String SELECTED_ITEM_STYLE = "cuba-context-menu-button-selected";
+    public static final String CUBA_CONTEXT_MENU_CONTAINER = "cuba-context-menu-container";
 
     private static ToolsImpl impl;
 
@@ -77,7 +79,7 @@ public class Tools {
     }
 
     public static VOverlay createCubaTablePopup(boolean autoClose) {
-        final VOverlay tableCustomPopup = autoClose ? createAutoCloseablePopup() : new VOverlay();
+        final VOverlay tableCustomPopup = autoClose ? createContextMenu() : new VOverlay();
 
         tableCustomPopup.setStyleName("cuba-table-popup");
 
@@ -90,10 +92,6 @@ public class Tools {
         tableContextMenu.setStyleName("cuba-context-menu");
 
         return tableContextMenu;
-    }
-
-    protected static VOverlay createAutoCloseablePopup() {
-        return new TableOverlay();
     }
 
     protected static VOverlay createContextMenu() {
@@ -174,10 +172,12 @@ public class Tools {
     public static void resetItemSelection(Widget popup) {
         if (popup instanceof VAbstractOrderedLayout) {
             VAbstractOrderedLayout content = (VAbstractOrderedLayout) popup;
-            for (Widget slot : content) {
-                VButton button = (VButton) ((Slot) slot).getWidget();
-                if (button != null && button.getStyleName().contains(SELECTED_ITEM_STYLE)) {
-                    button.removeStyleName(SELECTED_ITEM_STYLE);
+            if (content.getStyleName().contains(CUBA_CONTEXT_MENU_CONTAINER)) {
+                for (Widget slot : content) {
+                    VButton button = (VButton) ((Slot) slot).getWidget();
+                    if (button != null && button.getStyleName().contains(SELECTED_ITEM_STYLE)) {
+                        button.removeStyleName(SELECTED_ITEM_STYLE);
+                    }
                 }
             }
         }
@@ -192,12 +192,17 @@ public class Tools {
         if (widget instanceof VVerticalLayout) {
             resetItemSelection(widget);
 
-            int widgetCount = ((VVerticalLayout) widget).getWidgetCount();
-            if (widgetCount > 1) {
-                Widget verticalSlot = ((VVerticalLayout) widget).getWidget(0);
-                Widget buttonWidget = ((Slot) verticalSlot).getWidget();
-                buttonWidget.addStyleName(SELECTED_ITEM_STYLE);
-                ((CubaButtonWidget) buttonWidget).setFocus(true);
+            VVerticalLayout verticalLayout = (VVerticalLayout) widget;
+            if (verticalLayout.getStyleName().contains(CUBA_CONTEXT_MENU_CONTAINER)) {
+                int widgetCount = verticalLayout.getWidgetCount();
+                if (widgetCount > 1) {
+                    Widget verticalSlot = verticalLayout.getWidget(0);
+                    Widget buttonWidget = ((Slot) verticalSlot).getWidget();
+                    buttonWidget.addStyleName(SELECTED_ITEM_STYLE);
+                    if (buttonWidget instanceof FocusWidget) {
+                        ((FocusWidget) buttonWidget).setFocus(true);
+                    }
+                }
             }
         }
 
