@@ -103,17 +103,14 @@ public class QueryTransformerRegexTest extends TestCase {
     }
 
 
-    public void testInvalidEntity() {
+    public void testNotCorrectEntityAliasInWhere() {
         QueryTransformerRegex transformer = new QueryTransformerRegex(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
                         "group by c.level having c.level > 0 order by c.level");
-        // commented out, because since 3.4 we don't check equality of targetEntity and an entity in the query
-//        try {
-            transformer.addWhere("a.createdBy = :par1");
-//            fail();
-//        } catch (Exception e) {
-//            assertTrue(e instanceof RuntimeException);
-//        }
+        //since 3.4 we don't check equality of targetEntity and an entity in the query
+        transformer.addWhere("a.createdBy = :par1");
+        assertEquals("select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 and (a.createdBy = :par1) " +
+                "group by c.level having c.level > 0 order by c.level", transformer.getResult());
     }
 
     public void testJoin() {
