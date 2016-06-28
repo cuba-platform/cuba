@@ -47,6 +47,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.beans.PropertyChangeListener;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashSet;
@@ -94,8 +95,10 @@ public class PersistenceTools {
                     result.add(property.getName());
             }
         } else {
-            ObjectChangeSet objectChanges =
-                    ((AttributeChangeListener)((ChangeTracker) entity)._persistence_getPropertyChangeListener()).getObjectChangeSet();
+            PropertyChangeListener propertyChangeListener = ((ChangeTracker) entity)._persistence_getPropertyChangeListener();
+            if (propertyChangeListener == null)
+                throw new IllegalStateException("Entity '" + entity + "' is a ChangeTracker but has no PropertyChangeListener");
+            ObjectChangeSet objectChanges = ((AttributeChangeListener) propertyChangeListener).getObjectChangeSet();
             if (objectChanges != null) // can be null for example in AFTER_DELETE entity listener
                 result.addAll(objectChanges.getChangedAttributeNames());
         }

@@ -310,10 +310,19 @@ configure(coreModule) {
     	testRuntime(postgres)
     }
 
+    task enhanceTestModel(type: CubaTestEnhancing) {
+        persistenceConfig = 'cuba-test-persistence.xml'
+    }
+
     test {
         scanForTestClasses = false
         includes = ['**/*Test.class']
         jvmArgs '-XX:-UseSplitVerifier'
+    }
+
+    task testEntityCache(type: Test) {
+        scanForTestClasses = false
+        includes = ['com/haulmont/cuba/entity_cache/EntityCacheTestSuite.class']
     }
 
     assembleDbScripts {
@@ -348,6 +357,14 @@ configure(coreModule) {
         dbName = hsqlDbName
         dbUser = 'sa'
         dbPassword = ''
+    }
+
+    task createTestDb(dependsOn: assembleDbScripts, description: 'Creates local HSQL database', type: CubaDbCreation) {
+        dbms = 'hsql'
+        dbName = hsqlDbName
+        dbUser = 'sa'
+        dbPassword = ''
+        auxiliaryScript = file('test/com/haulmont/cuba/testmodel/create-db.sql')
     }
 }
 

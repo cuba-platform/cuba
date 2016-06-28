@@ -125,7 +125,7 @@ public class TestContainer extends ExternalResource {
 
         springConfig = "test-spring.xml";
         appComponents = Collections.emptyList();
-        appPropertiesFiles = Arrays.asList("cuba-app.properties", "test-app.properties");
+        appPropertiesFiles = Arrays.asList("cuba-app.properties", "test-app.properties", "cuba-test-app.properties");
         dbDriver = "org.hsqldb.jdbc.JDBCDriver";
         dbUrl = "jdbc:hsqldb:hsql://localhost/cubadb";
         dbUser = "sa";
