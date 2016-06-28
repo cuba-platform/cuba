@@ -382,6 +382,10 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
                 }
                 // Init lazy tab if needed
                 initLazyTab((JComponent) impl.getSelectedComponent());
+
+                // Fire GUI listener
+                fireTabChanged();
+
                 // Execute outstanding post init tasks after GUI listener.
                 // We suppose that context.executePostInitTasks() executes a task once and then remove it from task list.
                 if (context != null) {
@@ -394,8 +398,6 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
                 } else {
                     log.warn("Please specify Frame for TabSheet");
                 }
-                // Fire GUI listener
-                fireTabChanged();
             });
             componentTabChangeListenerInitialized = true;
         }
