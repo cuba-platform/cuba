@@ -1106,6 +1106,18 @@ public class QueryTransformerAstBasedTest {
     }
 
     @Test
+    public void testNotCorrectEntityAliasInWhere() {
+        DomainModel model = prepareDomainModel();
+        QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by c.level having c.level > 0 order by c.level");
+        //since 3.4 we don't check equality of targetEntity and an entity in the query
+        transformer.addWhere("a.createdBy = :par1");
+        assertEquals("select c from sec$GroupHierarchy h join h.parent.constraints c where (h.group = ?1) and (a.createdBy = :par1) " +
+                "group by c.level having c.level > 0 order by c.level", transformer.getResult());
+    }
+
+    @Test
     public void testAddWhereWithInExpression() throws RecognitionException {
         DomainModel model = prepareDomainModel();
 
