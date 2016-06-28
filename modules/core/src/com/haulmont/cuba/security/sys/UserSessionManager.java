@@ -239,6 +239,7 @@ public class UserSessionManager implements UserSessionFinder {
      * @param sessionId session's ID
      * @return          session instance or null if not found
      */
+    @Override
     public UserSession findSession(UUID sessionId) {
         return sessions.get(sessionId, false);
     }

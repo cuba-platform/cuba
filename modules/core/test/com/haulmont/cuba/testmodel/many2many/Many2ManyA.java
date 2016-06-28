@@ -23,8 +23,6 @@ import com.haulmont.cuba.core.global.DeletePolicy;
 import javax.persistence.*;
 import java.util.Set;
 
-/**
- */
 @Entity(name = "test$Many2ManyA")
 @Table(name = "TEST_MANY2MANY_A")
 public class Many2ManyA extends StandardEntity {

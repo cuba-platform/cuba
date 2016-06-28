@@ -162,6 +162,7 @@ public class DatePickerDocument extends PlainDocument {
                                     result.setCharAt(i + shift + 1, '0');
                                 else result.insert(i + shift + 1, '0');
                                 SwingUtilities.invokeLater(new Runnable() {
+                                    @Override
                                     public void run() {
                                         field.setCaretPosition(field.getCaretPosition() - 1);
                                     }
@@ -204,6 +205,7 @@ public class DatePickerDocument extends PlainDocument {
                                     result.setCharAt(i + shift, text.charAt(i));
                                     result.insert(i + shift + 1, '0');
                                     SwingUtilities.invokeLater(new Runnable() {
+                                        @Override
                                         public void run() {
                                             field.setCaretPosition(field.getCaretPosition() - 1);
                                         }
@@ -245,6 +247,7 @@ public class DatePickerDocument extends PlainDocument {
                             result.insert(i + shift + 1 + 1, '0');
                             shift++;
                             SwingUtilities.invokeLater(new Runnable() {
+                                @Override
                                 public void run() {
                                     field.setCaretPosition(field.getCaretPosition() - 1);
                                 }
@@ -269,6 +272,7 @@ public class DatePickerDocument extends PlainDocument {
                             result.insert(i + shift + 2, '0');
                             shift++;
                             SwingUtilities.invokeLater(new Runnable() {
+                                @Override
                                 public void run() {
                                     field.setCaretPosition(field.getCaretPosition() - 1);
                                 }

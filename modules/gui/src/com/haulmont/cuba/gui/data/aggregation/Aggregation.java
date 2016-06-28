@@ -19,10 +19,6 @@ package com.haulmont.cuba.gui.data.aggregation;
 
 import java.util.Collection;
 
-/**
- *
- * @param <T>
- */
 public interface Aggregation<T> {
 
     T sum(Collection<T> items);

@@ -282,6 +282,7 @@ public interface Window extends Frame, Component.HasCaption {
          * Called by the framework to validate, commit and close the screen if commit was successful.
          * <p/> Passes {@link #COMMIT_ACTION_ID} to associated {@link CloseListener}s.
          */
+        @Override
         void commitAndClose();
 
         /**

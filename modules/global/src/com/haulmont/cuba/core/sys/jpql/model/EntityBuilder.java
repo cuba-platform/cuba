@@ -21,11 +21,6 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 
-/**
- * User: Alex Chevelev
- * Date: 13.10.2010
- * Time: 20:41:42
- */
 public class EntityBuilder {
     private EntityImpl result;
 

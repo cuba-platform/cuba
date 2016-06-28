@@ -36,11 +36,6 @@ import java.util.Set;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
-/**
- * User: Alex Chevelev
- * Date: 13.10.2010
- * Time: 18:01:03
- */
 public class HintProviderTest {
     @Test
     public void requestHint_entityNameHint_simple() throws RecognitionException {

@@ -228,6 +228,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
         return globalConfig.getWebContextName() + ".jgroups";
     }
 
+    @Override
     public int getActiveThreadsCount() {
         return executor.getActiveCount();
     }
@@ -294,6 +295,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
         return clusterStateStat.toString();
     }
 
+    @Override
     public String printMessagesStat() {
         StringBuilder messagesStats = new StringBuilder();
         for (Map.Entry<String, MessageStat> entry : messagesStat.entrySet()) {

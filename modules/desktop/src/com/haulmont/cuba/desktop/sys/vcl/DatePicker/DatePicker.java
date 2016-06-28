@@ -52,6 +52,7 @@ public class DatePicker extends JXDatePicker {
         setUI(new CustomDatePickerUI());
     }
 
+    @Override
     public void setEditor(final JFormattedTextField editor) {
         final int ENTER_CODE = 10;
 
@@ -89,6 +90,7 @@ public class DatePicker extends JXDatePicker {
             setFormats(format);
     }
 
+    @Override
     public void setLinkDay(Date linkDay) {
         MessageFormat todayFormat = new MessageFormat(AppBeans.get(Messages.class).getMessage("com.haulmont.cuba.desktop", "DatePicker.linkFormat"));
         todayFormat.setFormat(0, new SimpleDateFormat(Datatypes.getFormatStrings(AppBeans.get(UserSessionSource.class).getLocale()).getDateFormat()));
@@ -96,6 +98,7 @@ public class DatePicker extends JXDatePicker {
         super.setLinkDay(linkDay);
     }
 
+    @Override
     public void setFormats(String... formats) {
         super.setFormats(formats);
         format = formats[0];
@@ -108,6 +111,7 @@ public class DatePicker extends JXDatePicker {
             getEditor().setValue(prevVal);
     }
 
+    @Override
     public void setFormats(DateFormat... formats) {
         if (formats != null) {
             Contract.asNotNull(formats, "the array of formats " + "must not contain null elements");
@@ -133,6 +137,7 @@ public class DatePicker extends JXDatePicker {
         return mask.toString();
     }
 
+    @Override
     public DateFormat[] getFormats() {
         if (getEditor() != null) {
             return super.getFormats();
@@ -141,6 +146,7 @@ public class DatePicker extends JXDatePicker {
     }
 
     public class CustomDatePickerFormatter extends DatePickerFormatter {
+        @Override
         public void install(final JFormattedTextField ftf) {
             try {
                 if (valueToString(ftf.getValue()) == null && format != null) {
@@ -158,6 +164,7 @@ public class DatePicker extends JXDatePicker {
             super(formats, locale);
         }
 
+        @Override
         public Object stringToValue(String text) throws ParseException {
             if (text == null || text.trim().length() == 0 || ObjectUtils.equals(getMask(format), text)) {
                 return null;

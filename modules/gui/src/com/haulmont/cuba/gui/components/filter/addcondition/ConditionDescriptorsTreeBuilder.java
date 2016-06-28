@@ -44,7 +44,6 @@ import java.util.regex.Pattern;
 /**
  * Builds a {@link com.haulmont.bali.datastruct.Tree} of {@link com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor}.
  * These descriptors are used in a new condition dialog.
- *
  */
 @Component(ConditionDescriptorsTreeBuilderAPI.NAME)
 @Scope("prototype")
@@ -79,6 +78,7 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
         excludedProperties = new ArrayList<>();
     }
 
+    @Override
     public Tree<AbstractConditionDescriptor> build() {
         Messages messages = AppBeans.get(Messages.class);
         String messagesPack = filter.getFrame().getMessagesPack();

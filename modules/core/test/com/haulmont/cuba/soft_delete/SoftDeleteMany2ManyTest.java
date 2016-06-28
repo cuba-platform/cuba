@@ -35,8 +35,6 @@ import java.util.HashSet;
 
 import static org.junit.Assert.*;
 
-/**
- */
 public class SoftDeleteMany2ManyTest {
 
     @ClassRule

@@ -650,11 +650,13 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
             return editable;
         }
 
+        @Override
         public void setEnabled(boolean enabled) {
             this.enabled = enabled;
             removeButton.setEnabled(enabled);
         }
 
+        @Override
         public boolean isEnabled() {
             return enabled;
         }

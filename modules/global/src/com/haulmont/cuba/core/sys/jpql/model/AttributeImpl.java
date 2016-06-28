@@ -17,11 +17,6 @@
 
 package com.haulmont.cuba.core.sys.jpql.model;
 
-/**
- * User: Alex Chevelev
- * Date: 13.10.2010
- * Time: 23:12:41
- */
 public class AttributeImpl implements Attribute {
     private final Class simpleType;
     private final String name;
@@ -83,6 +78,7 @@ public class AttributeImpl implements Attribute {
         this.userFriendlyName = userFriendlyName;
     }
 
+    @Override
     public boolean isEmbedded() {
         return isEmbedded;
     }

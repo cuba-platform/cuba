@@ -344,6 +344,7 @@ public class VclTestApp extends JFrame {
         final Timer timer = new Timer(3000, null);
         timer.addActionListener(
                 new ActionListener() {
+                    @Override
                     public void actionPerformed(ActionEvent e) {
                         if (!MouseInfo.getPointerInfo().getLocation().equals(location)) {
                             System.out.println("Hide popup " + popup);

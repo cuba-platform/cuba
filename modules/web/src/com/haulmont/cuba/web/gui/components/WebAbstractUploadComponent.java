@@ -93,10 +93,12 @@ public abstract class WebAbstractUploadComponent<T extends com.vaadin.ui.Compone
         this.dropZone = dropZone;
     }
 
+    @Override
     public String getDropZonePrompt() {
         return dropZonePrompt;
     }
 
+    @Override
     public void setDropZonePrompt(String dropZonePrompt) {
         this.dropZonePrompt = dropZonePrompt;
     }

@@ -25,8 +25,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import java.util.Set;
 
-/**
- */
 @Entity(name = "test$Many2ManyB")
 @Table(name = "TEST_MANY2MANY_B")
 public class Many2ManyB extends StandardEntity {

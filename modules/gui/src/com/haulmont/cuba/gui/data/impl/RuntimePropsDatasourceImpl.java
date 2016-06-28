@@ -85,6 +85,7 @@ public class RuntimePropsDatasourceImpl
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public MetaClass resolveCategorizedEntityClass() {
         if (categorizedEntityClass == null) {
             return mainDs.getMetaClass();

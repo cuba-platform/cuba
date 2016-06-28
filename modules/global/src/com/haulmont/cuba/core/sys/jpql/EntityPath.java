@@ -20,11 +20,6 @@ package com.haulmont.cuba.core.sys.jpql;
 import com.haulmont.cuba.core.sys.jpql.pointer.EntityPointer;
 import com.haulmont.cuba.core.sys.jpql.pointer.Pointer;
 
-/**
- * User: Alex Chevelev
- * Date: 13.10.2010
- * Time: 23:27:26
- */
 public class EntityPath {
     public String topEntityVariableName;
     public String[] traversedFields;

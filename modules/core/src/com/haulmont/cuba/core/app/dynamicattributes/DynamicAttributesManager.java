@@ -182,6 +182,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
         return targetMetaClass;
     }
 
+    @Override
     public void storeDynamicAttributes(BaseGenericIdEntity entity) {
         if (persistence.isInTransaction()) {
             doStoreDynamicAttributes(entity);
@@ -196,6 +197,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
         }
     }
 
+    @Override
     public <E extends BaseGenericIdEntity> void fetchDynamicAttributes(List<E> entities) {
         if (persistence.isInTransaction()) {
             doFetchDynamicAttributes(entities);

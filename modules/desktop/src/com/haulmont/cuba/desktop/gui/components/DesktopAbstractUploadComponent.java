@@ -95,10 +95,12 @@ public abstract class DesktopAbstractUploadComponent<T extends JComponent>
         return dropZone;
     }
 
+    @Override
     public String getDropZonePrompt() {
         return dropZonePrompt;
     }
 
+    @Override
     public void setDropZonePrompt(String dropZonePrompt) {
         this.dropZonePrompt = dropZonePrompt;
     }

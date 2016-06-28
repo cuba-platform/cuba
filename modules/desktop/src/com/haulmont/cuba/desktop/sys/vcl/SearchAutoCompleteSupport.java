@@ -180,6 +180,7 @@ import java.util.Comparator;
  * </ul>
  *
  */
+@SuppressWarnings("override")
 public final class SearchAutoCompleteSupport<E> {
 
     private static final ParsePosition PARSE_POSITION = new ParsePosition(0);

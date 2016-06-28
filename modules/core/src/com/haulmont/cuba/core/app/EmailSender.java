@@ -59,6 +59,7 @@ public class EmailSender implements EmailSenderAPI {
         this.mailSender = mailSender;
     }
 
+    @Override
     public void sendEmail(SendingMessage sendingMessage) throws MessagingException {
         MimeMessage msg = createMimeMessage(sendingMessage);
 

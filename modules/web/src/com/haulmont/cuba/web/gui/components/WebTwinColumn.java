@@ -187,6 +187,7 @@ public class WebTwinColumn extends WebAbstractOptionsField<CubaTwinColSelect> im
         this.styleProvider = styleProvider;
         if (styleProvider != null) {
             component.setStyleGenerator(new CubaTwinColSelect.OptionStyleGenerator() {
+                @Override
                 public String generateStyle(AbstractSelect source, Object itemId, boolean selected) {
                     final Entity item = optionsDatasource.getItem(itemId);
                     return styleProvider.getStyleName(item, itemId, component.isSelected(itemId));

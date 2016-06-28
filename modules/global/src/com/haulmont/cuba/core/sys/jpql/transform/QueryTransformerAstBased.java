@@ -264,6 +264,7 @@ public class QueryTransformerAstBased implements QueryTransformer {
         addedParams.clear();
     }
 
+    @Override
     public void replaceInCondition(String paramName) {
         getQueryTransformer().replaceInCondition(paramName);
     }

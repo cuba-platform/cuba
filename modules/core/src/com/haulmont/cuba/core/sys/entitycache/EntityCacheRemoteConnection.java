@@ -97,17 +97,21 @@ public class EntityCacheRemoteConnection extends BroadcastRemoteConnection {
         processReceivedObject(object, "");
     }
 
+    @Override
     protected boolean areAllResourcesFreedOnClose() {
         return !isLocal();
     }
 
+    @Override
     protected void closeInternal() {
     }
 
+    @Override
     protected void createDisplayString() {
         this.displayString = Helper.getShortClassName(this) + "[" + serviceId.toString() + "]";
     }
 
+    @Override
     protected boolean shouldCheckServiceId() {
         return false;
     }

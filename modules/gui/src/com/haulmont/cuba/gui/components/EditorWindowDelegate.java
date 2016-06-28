@@ -238,6 +238,7 @@ public class EditorWindowDelegate extends WindowDelegate {
         return ((DatasourceImplementation) ds).getParent();
     }
 
+    @Override
     public boolean isModified() {
         if (readOnly)
             return false;

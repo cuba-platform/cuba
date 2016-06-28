@@ -97,6 +97,7 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
         filterReg.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/dispatch/*");
     }
 
+    @Override
     protected ClassPathXmlApplicationContext createClassPathXmlApplicationContext(String[] locations) {
         return new CubaClassPathXmlApplicationContext(locations) {
             /**

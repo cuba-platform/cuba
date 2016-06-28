@@ -33,6 +33,7 @@ public interface TokenList extends Field, Component.BelongToFrame, Component.Has
     CaptionMode getCaptionMode();
     void setCaptionMode(CaptionMode captionMode);
 
+    @Override
     CollectionDatasource getDatasource();
     void setDatasource(CollectionDatasource datasource);
 

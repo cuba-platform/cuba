@@ -39,10 +39,12 @@ public class TestListener implements
 
     public static final List<String> events = new ArrayList<>();
 
+    @Override
     public void onAfterInsert(Server entity) {
         events.add("onAfterInsert: " + entity.getId());
     }
 
+    @Override
     public void onAfterUpdate(Server entity) {
         events.add("onAfterUpdate: " + entity.getId());
 
@@ -75,6 +77,7 @@ public class TestListener implements
         }
     }
 
+    @Override
     public void onAfterDelete(Server entity) {
         events.add("onAfterDelete: " + entity.getId());
     }
