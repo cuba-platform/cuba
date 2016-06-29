@@ -110,6 +110,10 @@ public class ExcludeAction extends RemoveAction {
             } else {
                 doRemove(selected, autocommit);
                 afterRemove(selected);
+
+                if (afterRemoveHandler != null) {
+                    afterRemoveHandler.handle(selected);
+                }
             }
         }
     }
