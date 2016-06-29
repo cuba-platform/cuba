@@ -47,6 +47,7 @@ public class AddAction extends BaseAction implements Action.HasOpenType {
 
     protected Window.Lookup.Handler handler;
     protected WindowManager.OpenType openType;
+    protected AfterAddHandler afterAddHandler;
 
     protected String windowId;
     protected Map<String, Object> windowParams;
@@ -126,6 +127,14 @@ public class AddAction extends BaseAction implements Action.HasOpenType {
         }
 
         return super.isPermitted();
+    }
+
+    public AfterAddHandler getAfterAddHandler() {
+        return afterAddHandler;
+    }
+
+    public void setAfterAddHandler(AfterAddHandler afterAddHandler) {
+        this.afterAddHandler = afterAddHandler;
     }
 
     /**
@@ -215,6 +224,10 @@ public class AddAction extends BaseAction implements Action.HasOpenType {
         this.windowParams = windowParams;
     }
 
+    interface AfterAddHandler {
+        void handle(Collection items);
+    }
+
     /**
      * The default implementation of <code>Lookup.Handler</code>, adding items to owner's datasource if they are not
      * there yet. <br/>
@@ -277,6 +290,10 @@ public class AddAction extends BaseAction implements Action.HasOpenType {
                 }
             } finally {
                 ds.resumeListeners();
+            }
+
+            if (afterAddHandler != null) {
+                afterAddHandler.handle(items);
             }
         }
     }
