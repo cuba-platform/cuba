@@ -59,6 +59,10 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
 
     protected ItemClickListener itemClickListener;
 
+    protected AfterLookupCloseHandler afterLookupCloseHandler;
+
+    protected AfterLookupSelectionHandler afterLookupSelectionHandler;
+
     protected boolean inline;
 
     protected WebButton addButton;
@@ -437,6 +441,26 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
     }
 
     @Override
+    public AfterLookupCloseHandler getAfterLookupCloseHandler() {
+        return afterLookupCloseHandler;
+    }
+
+    @Override
+    public void setAfterLookupCloseHandler(AfterLookupCloseHandler afterLookupCloseHandler) {
+        this.afterLookupCloseHandler = afterLookupCloseHandler;
+    }
+
+    @Override
+    public AfterLookupSelectionHandler getAfterLookupSelectionHandler() {
+        return afterLookupSelectionHandler;
+    }
+
+    @Override
+    public void setAfterLookupSelectionHandler(AfterLookupSelectionHandler afterLookupSelectionHandler) {
+        this.afterLookupSelectionHandler = afterLookupSelectionHandler;
+    }
+
+    @Override
     public Position getPosition() {
         return position;
     }
@@ -622,7 +646,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                             wm.getDialogParams().setResizable(true);
                         }
 
-                        wm.openLookup(windowInfo, new Window.Lookup.Handler() {
+                        Window.Lookup lookup = wm.openLookup(windowInfo, new Window.Lookup.Handler() {
                             @Override
                             public void handleLookup(Collection items) {
                                 if (isEditable()) {
@@ -634,9 +658,19 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                                             datasource.addItem((Entity) item);
                                         }
                                     }
+
+                                    if (afterLookupSelectionHandler != null) {
+                                        afterLookupSelectionHandler.onSelect(items);
+                                    }
                                 }
                             }
                         }, lookupOpenMode, params);
+
+                        if (afterLookupCloseHandler != null) {
+                            lookup.addCloseListener(actionId ->
+                                    afterLookupCloseHandler.onClose(lookup, actionId)
+                            );
+                        }
                     }
                 });
             }
