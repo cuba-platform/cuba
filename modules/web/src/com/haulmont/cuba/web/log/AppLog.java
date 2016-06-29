@@ -25,6 +25,7 @@ import com.vaadin.data.Validator;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.ErrorEvent;
 import com.vaadin.ui.AbstractComponent;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,19 +37,23 @@ import java.util.List;
 
 public class AppLog {
 
+    private static Logger log = LoggerFactory.getLogger(AppLog.class);
+
     private transient LinkedList<LogItem> items = new LinkedList<>();
 
     private static final int CAPACITY = AppBeans.get(Configuration.class)
             .getConfig(WebConfig.class).getAppLogMaxItemsCount();
 
-    private static Logger log = LoggerFactory.getLogger(AppLog.class);
-
     public void log(LogItem item) {
-        String msg = item.getMessage() + "\n" + item.getStacktrace();
+        String msg = item.getMessage();
+        if (item.getStacktrace() != null) {
+            msg += "\n" + item.getStacktrace();
+        }
+
         if (item.getLevel().equals(LogLevel.ERROR))
             log.error(msg);
         else
-            log.debug(item.getLevel() + ": " + msg);
+            log.debug("{}: {}",  item.getLevel(), msg);
         
         if (items.size() >= CAPACITY) {
             items.removeLast();
@@ -91,6 +96,15 @@ public class AppLog {
             // Most likely client browser closed socket
             LogItem item = new LogItem(LogLevel.WARNING,
                     "SocketException in CommunicationManager. Most likely client (browser) closed socket.", null);
+            log(item);
+            return;
+        }
+
+        // Support Tomcat 8 ClientAbortException
+        if (StringUtils.contains(ExceptionUtils.getMessage(t), "ClientAbortException")) {
+            // Most likely client browser closed socket
+            LogItem item = new LogItem(LogLevel.WARNING,
+                    "ClientAbortException on write response to client. Most likely client (browser) closed socket.", null);
             log(item);
             return;
         }

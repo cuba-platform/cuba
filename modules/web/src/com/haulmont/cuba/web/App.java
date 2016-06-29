@@ -294,6 +294,10 @@ public abstract class App {
      * @return WindowManager instance or null if the current UI has no AppWindow
      */
     public WebWindowManager getWindowManager() {
+        if (getAppUI() == null) {
+            return null;
+        }
+
         AppWindow appWindow = getAppUI().getAppWindow();
         return appWindow != null ? appWindow.getWindowManager() : null;
     }

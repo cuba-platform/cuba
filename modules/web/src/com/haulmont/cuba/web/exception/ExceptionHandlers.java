@@ -20,6 +20,7 @@ import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.exception.GenericExceptionHandler;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.WebWindowManager;
 import com.vaadin.server.ErrorEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +37,10 @@ import java.util.*;
  * <strong>id</strong>, e.g. <code>refapp_ExceptionHandlersConfiguration</code></p>
  *
  * <p>An instance of this class is bound to {@link App}.</p>
- *
  */
 public class ExceptionHandlers {
+
+    private static Logger log = LoggerFactory.getLogger(ExceptionHandlers.class);
 
     protected App app;
 
@@ -47,8 +49,6 @@ public class ExceptionHandlers {
     protected LinkedList<GenericExceptionHandler> genericHandlers = new LinkedList<>();
 
     protected ExceptionHandler defaultHandler;
-
-    private Logger log = LoggerFactory.getLogger(getClass());
 
     public ExceptionHandlers(App app) {
         this.app = app;
@@ -97,9 +97,13 @@ public class ExceptionHandlers {
             if (handler.handle(event, app))
                 return;
         }
-        for (GenericExceptionHandler handler : genericHandlers) {
-            if (handler.handle(event.getThrowable(), app.getWindowManager()))
-                return;
+
+        WebWindowManager wm = app.getWindowManager();
+        if (wm != null) {
+            for (GenericExceptionHandler handler : genericHandlers) {
+                if (handler.handle(event.getThrowable(), wm))
+                    return;
+            }
         }
         defaultHandler.handle(event, app);
     }
@@ -123,7 +127,7 @@ public class ExceptionHandlers {
                 try {
                     addHandler(ReflectionHelper.<ExceptionHandler>newInstance(aClass));
                 } catch (NoSuchMethodException e) {
-                    log.error("Unable to instantiate " + aClass, e);
+                    log.error("Unable to instantiate {}", aClass, e);
                 }
             }
         }
