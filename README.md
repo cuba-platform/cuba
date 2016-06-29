@@ -10,7 +10,7 @@ You can also build a snapshot version of the platform from the source code and u
 
 In order to build the platform from source, you need to install the following:
 * Java 8 Development Kit (JDK)
-* [Gradle](https://gradle.org) (tested on 2.6, but newer versions may also work)
+* [Gradle](https://gradle.org) (tested on 2.13, but newer versions may also work)
 * [CUBA Gradle Plugin](https://github.com/cuba-platform/cuba-gradle-plugin)
 
 Let's assume that you have cloned CUBA Gradle Plugin and CUBA into the following directories:
@@ -47,3 +47,17 @@ That's all. Now you can generate IDE project files and build and deploy your app
  gradle idea
  gradle deploy
  ```
+
+## Third-party dependencies
+
+The platform uses a number of forked third-party libraries. They can be found in the following source code repositories:
+
+* [eclipselink](https://github.com/cuba-platform/eclipselink)
+* [vaadin](https://github.com/cuba-platform/vaadin)
+* [vaadin-dragdroplayouts](https://github.com/cuba-platform/vaadin-dragdroplayouts)
+* [vaadin-googlemaps](https://github.com/cuba-platform/vaadin-googlemaps)
+* [vaadin-aceeditor](https://github.com/cuba-platform/vaadin-aceeditor)
+* [swingx-core](https://github.com/cuba-platform/swingx-core)
+* [apache-poi](https://github.com/cuba-platform/apache-poi)
+
+All dependencies are also located in our artifacts repository, so you don't have to build them from sources in order to build and use the platform.
