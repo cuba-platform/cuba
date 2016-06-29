@@ -94,6 +94,10 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
 
     protected boolean simple = false;
 
+    protected AfterLookupCloseHandler afterLookupCloseHandler;
+
+    protected AfterLookupSelectionHandler afterLookupSelectionHandler;
+
     protected boolean multiselect;
 
     protected PickerField.LookupAction lookupAction;
@@ -441,6 +445,26 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
     }
 
     @Override
+    public AfterLookupCloseHandler getAfterLookupCloseHandler() {
+        return afterLookupCloseHandler;
+    }
+
+    @Override
+    public void setAfterLookupCloseHandler(AfterLookupCloseHandler afterLookupCloseHandler) {
+        this.afterLookupCloseHandler = afterLookupCloseHandler;
+    }
+
+    @Override
+    public AfterLookupSelectionHandler getAfterLookupSelectionHandler() {
+        return afterLookupSelectionHandler;
+    }
+
+    @Override
+    public void setAfterLookupSelectionHandler(AfterLookupSelectionHandler afterLookupSelectionHandler) {
+        this.afterLookupSelectionHandler = afterLookupSelectionHandler;
+    }
+
+    @Override
     public void setTokenStyleGenerator(TokenStyleGenerator tokenStyleGenerator) {
         this.tokenStyleGenerator = tokenStyleGenerator;
     }
@@ -765,7 +789,7 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
                 }
             }
 
-            wm.openLookup(windowInfo, new Window.Lookup.Handler() {
+            Window.Lookup lookupWindow = wm.openLookup(windowInfo, new Window.Lookup.Handler() {
                 @Override
                 public void handleLookup(Collection items) {
                     if (isEditable()) {
@@ -777,9 +801,19 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
                                 datasource.addItem((Entity) item);
                             }
                         }
+
+                        if (afterLookupSelectionHandler != null) {
+                            afterLookupSelectionHandler.onSelect(items);
+                        }
                     }
                 }
             }, lookupOpenMode, params);
+
+            if (afterLookupCloseHandler != null) {
+                lookupWindow.addCloseListener(actionId ->
+                        afterLookupCloseHandler.onClose(lookupWindow, actionId)
+                );
+            }
         }
     }
 
