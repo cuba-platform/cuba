@@ -74,6 +74,7 @@ public class LayoutLoaderConfig {
 
         config.register(DateField.NAME, DateFieldLoader.class);
         config.register(TimeField.NAME, TimeFieldLoader.class);
+        config.register(DatePicker.NAME, DatePickerLoader.class);
         config.register(LookupField.NAME, LookupFieldLoader.class);
         config.register(PickerField.NAME, PickerFieldLoader.class);
         config.register(LookupPickerField.NAME, LookupPickerFieldLoader.class);

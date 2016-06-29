@@ -94,6 +94,7 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(RowsCount.NAME, WebRowsCount.class);
         classes.put(RelatedEntities.NAME, WebRelatedEntities.class);
         classes.put(BulkEditor.NAME, WebBulkEditor.class);
+        classes.put(DatePicker.NAME, WebDatePicker.class);
 
         classes.put(EntityLinkField.NAME, WebEntityLinkField.class);
 

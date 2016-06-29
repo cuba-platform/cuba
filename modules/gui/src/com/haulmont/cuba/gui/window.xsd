@@ -639,6 +639,34 @@
         <xs:attributeGroup ref="hasDatasource"/>
     </xs:complexType>
 
+    <!-- DatePicker -->
+    <xs:complexType name="datePickerComponent">
+        <xs:attributeGroup ref="hasId"/>
+
+        <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasEditable"/>
+        <xs:attributeGroup ref="hasEnableProp"/>
+        <xs:attributeGroup ref="hasCaption"/>
+        <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasAlign"/>
+        <xs:attributeGroup ref="hasSize"/>
+
+        <xs:attribute name="resolution">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="DAY"/>
+                    <xs:enumeration value="MONTH"/>
+                    <xs:enumeration value="YEAR"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+
+        <xs:attribute name="rangeStart" type="xs:string"/>
+        <xs:attribute name="rangeEnd" type="xs:string"/>
+
+        <xs:attributeGroup ref="hasDatasource"/>
+    </xs:complexType>
+
     <!-- BaseField -->
     <xs:complexType name="baseFieldComponent">
         <xs:attributeGroup ref="hasId"/>
@@ -1822,6 +1850,7 @@
                 <xs:element name="label" type="labelComponent"/>
                 <xs:element name="link" type="linkComponent"/>
                 <xs:element name="checkBox" type="checkBoxComponent"/>
+                <xs:element name="datePicker" type="datePickerComponent"/>
 
                 <xs:element name="textArea" type="textAreaComponent"/>
                 <xs:element name="textField" type="textFieldComponent"/>
