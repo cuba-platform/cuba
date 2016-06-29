@@ -55,6 +55,16 @@ public class TwinColumnLoader extends AbstractFieldLoader<TwinColumn> {
         if (StringUtils.isNotEmpty(addBtnEnabled)) {
             resultComponent.setAddAllBtnEnabled(Boolean.parseBoolean(addBtnEnabled));
         }
+
+        String rightColumnCaption = element.attributeValue("rightColumnCaption");
+        if (StringUtils.isNotEmpty(rightColumnCaption)) {
+            resultComponent.setRightColumnCaption(loadResourceString(rightColumnCaption));
+        }
+
+        String leftColumnCaption = element.attributeValue("leftColumnCaption");
+        if (StringUtils.isNotEmpty(leftColumnCaption)) {
+            resultComponent.setLeftColumnCaption(loadResourceString(leftColumnCaption));
+        }
     }
 
     @Override

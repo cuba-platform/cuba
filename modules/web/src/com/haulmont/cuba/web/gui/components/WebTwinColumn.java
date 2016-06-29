@@ -208,6 +208,26 @@ public class WebTwinColumn extends WebAbstractOptionsField<CubaTwinColSelect> im
         return component.isAddAllBtnEnabled();
     }
 
+    @Override
+    public void setLeftColumnCaption(String leftColumnCaption) {
+        component.setLeftColumnCaption(leftColumnCaption);
+    }
+
+    @Override
+    public String getLeftColumnCaption() {
+        return component.getLeftColumnCaption();
+    }
+
+    @Override
+    public void setRightColumnCaption(String rightColumnCaption) {
+        component.setRightColumnCaption(rightColumnCaption);
+    }
+
+    @Override
+    public String getRightColumnCaption() {
+        return component.getRightColumnCaption();
+    }
+
     protected <T> T getValueFromKey(Object key) {
         if (key instanceof Collection) {
             final Set<Object> set = new LinkedHashSet<>();

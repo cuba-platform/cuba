@@ -33,6 +33,32 @@ public interface TwinColumn extends OptionsField {
     void setAddAllBtnEnabled(boolean enabled);
     boolean isAddAllBtnEnabled();
 
+    /**
+     * Set caption for the left column.
+     *
+     * @param leftColumnCaption
+     */
+    void setLeftColumnCaption(String leftColumnCaption);
+    /**
+     * Return caption of the left column.
+     *
+     * @return caption text or null if not set.
+     */
+    String getLeftColumnCaption();
+
+    /**
+     * Set caption for the right column.
+     *
+     * @param rightColumnCaption
+     */
+    void setRightColumnCaption(String rightColumnCaption);
+    /**
+     * Return caption of the right column.
+     *
+     * @return caption text or null if not set.
+     */
+    String getRightColumnCaption();
+
     interface StyleProvider {
         String getStyleName(Entity item, Object property, boolean selected);
         String getItemIcon(Entity item, boolean selected);

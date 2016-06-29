@@ -1350,6 +1350,9 @@
         <xs:attributeGroup ref="hasCaptionSource"/>
         <xs:attributeGroup ref="hasRequirements"/>
 
+        <xs:attribute name="leftColumnCaption" type="xs:string"/>
+        <xs:attribute name="rightColumnCaption" type="xs:string"/>
+
         <xs:attribute name="columns" type="xs:string"/>
         <xs:attribute name="rows" type="xs:string"/>
         <xs:attribute name="addAllBtnEnabled" type="xs:boolean"/>
