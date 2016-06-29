@@ -382,8 +382,15 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
         @Override
         protected int getIconsOffsetWidth() {
-            int currentWidth = super.getIconsOffsetWidth();
-            return presentationsEditIcon.getOffsetWidth() + currentWidth;
+            Style presentationsIconStyle = presentationsEditIcon.getElement().getStyle();
+            if ("none".equals(presentationsIconStyle.getDisplay())) {
+                return super.getIconsOffsetWidth();
+            }
+
+            ComputedStyle cs = new ComputedStyle(presentationsEditIcon.getElement());
+            double right = cs.getDoubleProperty("right");
+
+            return (int) Math.ceil(right + cs.getWidth());
         }
 
         @Override

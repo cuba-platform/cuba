@@ -191,6 +191,11 @@
     content: "\f0dc";
   }
 
+  .#{$primary-stylename}-header-cell-asc .#{$primary-stylename}-sort-indicator,
+  .#{$primary-stylename}-header-cell-desc .#{$primary-stylename}-sort-indicator {
+    cursor: pointer;
+  }
+
   .#{$primary-stylename}-header-cell .#{$primary-stylename}-sort-indicator {
     background: transparent;
     width: round($v-unit-size/2);
@@ -208,6 +213,13 @@
     opacity: 1;
     @if $v-animations-enabled {
       @include transition(opacity 200ms 100ms);
+    }
+  }
+
+  .#{$primary-stylename}-header-sortable:not(:hover) .#{$primary-stylename}-resizer {
+    margin-left: -$v-table-resizer-width !important;
+    @if $v-animations-enabled {
+      @include transition(margin-left 200ms 1s);
     }
   }
 
