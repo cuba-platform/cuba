@@ -200,7 +200,9 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
 
     @Override
     public <T> T getValue() {
-        if ((datasource != null) && (metaPropertyPath != null) && (datasource.getState() == Datasource.State.VALID)) {
+        if ((datasource != null) && (metaPropertyPath != null)
+                && (datasource.getState() == Datasource.State.VALID)
+                && (datasource.getItem() != null)) {
             return datasource.getItem().getValue(metaProperty.getName());
         } else {
             return (T) prevValue;
