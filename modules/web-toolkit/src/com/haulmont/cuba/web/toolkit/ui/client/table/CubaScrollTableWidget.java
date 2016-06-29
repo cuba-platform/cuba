@@ -346,6 +346,19 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
         }
 
         @Override
+        protected int getIconsOffsetWidth() {
+            Style presentationsIconStyle = presentationsEditIcon.getElement().getStyle();
+            if ("none".equals(presentationsIconStyle.getDisplay())) {
+                return super.getIconsOffsetWidth();
+            }
+
+            ComputedStyle cs = new ComputedStyle(presentationsEditIcon.getElement());
+            double right = cs.getDoubleProperty("right");
+
+            return (int) Math.ceil(right + cs.getWidth());
+        }
+
+        @Override
         public void onBrowserEvent(Event event) {
             super.onBrowserEvent(event);
 

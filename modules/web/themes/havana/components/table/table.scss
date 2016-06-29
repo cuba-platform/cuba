@@ -232,6 +232,26 @@
       margin-top: 4px;
     }
 
+    .#{$primary-stylename}-header-cell {
+      position: relative;
+    }
+
+    .#{$primary-stylename}-header-cell .#{$primary-stylename}-sort-indicator {
+      width: 10px;
+      height: 12px;
+      background: transparent;
+      background-repeat: no-repeat;
+      margin-right: 3px;
+      margin-top: 4px;
+      position: absolute;
+      right: 5px;
+    }
+
+    .#{$primary-stylename}-header-cell .#{$primary-stylename}-sort-indicator {
+      background-image: url(sprites/sort-menu-indicator.png); /** sprite-ref: components; */
+      opacity: 0;
+    }
+
     .#{$primary-stylename}-header-cell-asc .#{$primary-stylename}-sort-indicator {
       background-image: url(sprites/sort-asc.png); /** sprite-ref: components; */
     }
@@ -334,5 +354,30 @@
     overflow: auto;
     padding: 3px;
     border: 1px solid $cuba-field-focused-border-color;
+  }
+
+  .#{$primary-stylename}-header-sortable:hover .#{$primary-stylename}-sort-indicator {
+    opacity: 1;
+  }
+
+  .cuba-table-contextmenu {
+    background-color: white;
+    padding: 3px 3px;
+    border: 1px solid #4d7ab2;
+  }
+
+  .cuba-table-contextmenu .cuba-table-contextmenu-item {
+    padding: 3px 7px;
+    font-size: 12px;
+    font-family: $cuba-havana-fonts;
+  }
+
+  .cuba-table-contextmenu .cuba-table-contextmenu-item:hover {
+    background: $cuba-field-selection-color;
+    color: #ecf2f8;
+  }
+
+  .#{$primary-stylename} .cuba-sort-indicator-visible {
+    opacity: 1 !important;
   }
 }
