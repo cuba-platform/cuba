@@ -83,10 +83,8 @@ public class AppUI extends UI implements ErrorHandler {
                     app.getAppLog().log(event);
                 } catch (Throwable e) {
                     //noinspection ThrowableResultOfMethodCallIgnored
-                    log.error("Error handling exception\nOriginal exception:\n"
-                                    + ExceptionUtils.getStackTrace(event.getThrowable())
-                                    + "\nException in handlers:\n"
-                                    + ExceptionUtils.getStackTrace(e)
+                    log.error("Error handling exception\nOriginal exception:\n{}\nException in handlers:\n{}",
+                            ExceptionUtils.getStackTrace(event.getThrowable()), ExceptionUtils.getStackTrace(e)
                     );
                 }
             });
@@ -263,9 +261,9 @@ public class AppUI extends UI implements ErrorHandler {
             app.getAppLog().log(event);
         } catch (Throwable e) {
             //noinspection ThrowableResultOfMethodCallIgnored
-            log.error(String.format("Error handling exception\nOriginal exception:\n%s\nException in handlers:\n%s",
+            log.error("Error handling exception\nOriginal exception:\n{}\nException in handlers:\n{}",
                     ExceptionUtils.getStackTrace(event.getThrowable()),
-                    ExceptionUtils.getStackTrace(e)));
+                    ExceptionUtils.getStackTrace(e));
         }
     }
 

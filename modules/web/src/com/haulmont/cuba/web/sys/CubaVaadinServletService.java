@@ -50,7 +50,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.Callable;
 
 public class CubaVaadinServletService extends VaadinServletService {
 
@@ -79,13 +78,15 @@ public class CubaVaadinServletService extends VaadinServletService {
         }
 
         addSessionInitListener(event -> {
-            event.getSession().getSession().setMaxInactiveInterval(webConfig.getHttpSessionExpirationTimeoutSec());
-            log.debug("HTTP session " + event.getSession() + " initialized, timeout="
-                    + event.getSession().getSession().getMaxInactiveInterval() + "sec");
+            WrappedSession wrappedSession = event.getSession().getSession();
+            wrappedSession.setMaxInactiveInterval(webConfig.getHttpSessionExpirationTimeoutSec());
+
+            log.debug("HTTP session {} initialized, timeout={} sec",
+                    event.getSession(), wrappedSession.getMaxInactiveInterval());
         });
 
         addSessionDestroyListener(event -> {
-            log.debug("HTTP session destroyed: " + event.getSession());
+            log.debug("HTTP session destroyed: {}", event.getSession());
             App app = event.getSession().getAttribute(App.class);
             if (app != null) {
                 app.cleanupBackgroundTasks();
@@ -178,16 +179,14 @@ public class CubaVaadinServletService extends VaadinServletService {
         return cubaRequestHandlers;
     }
 
-    protected static boolean withUserSession(VaadinSession session, Callable<Boolean> handler) throws IOException {
+    protected static boolean withUserSession(VaadinSession session, RequestHandlerAction<Boolean> handler) throws IOException {
         UserSession userSession = session.getAttribute(UserSession.class);
         if (userSession != null) {
             AppContext.setSecurityContext(new SecurityContext(userSession));
         }
 
         try {
-            return handler.call();
-        } catch (Exception e) {
-            throw new IOException("Exception in request handler", e);
+            return handler.handle();
         } finally {
             AppContext.setSecurityContext(null);
         }
@@ -276,7 +275,6 @@ public class CubaVaadinServletService extends VaadinServletService {
 
     // Add ability to handle hearbeats in App
     protected static class CubaHeartbeatHandler extends HeartbeatHandler {
-
         private Logger log = LoggerFactory.getLogger(CubaHeartbeatHandler.class);
 
         @Override
@@ -286,7 +284,7 @@ public class CubaVaadinServletService extends VaadinServletService {
                 boolean result = super.synchronizedHandleRequest(session, request, response);
 
                 if (log.isTraceEnabled()) {
-                    log.trace("Handle heartbeat " + request.getRemoteHost() + " " + request.getRemoteAddr());
+                    log.trace("Handle heartbeat {} {}", request.getRemoteHost(), request.getRemoteAddr());
                 }
 
                 if (result && App.isBound()) {
@@ -301,6 +299,8 @@ public class CubaVaadinServletService extends VaadinServletService {
     // Set security context to AppContext for normal UI requests
     protected static class CubaUidlRequestHandler extends UidlRequestHandler {
 
+        protected ScreenProfiler profiler = AppBeans.get(ScreenProfiler.NAME);
+
         @Override
         public boolean synchronizedHandleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response)
                 throws IOException {
@@ -313,7 +313,7 @@ public class CubaVaadinServletService extends VaadinServletService {
                 @Override
                 protected void writePerformanceData(UI ui, Writer writer) throws IOException {
                     super.writePerformanceData(ui, writer);
-                    ScreenProfiler profiler = AppBeans.get(ScreenProfiler.NAME);
+
                     String profilerMarker = profiler.getCurrentProfilerMarker(ui);
                     if (profilerMarker != null) {
                         profiler.setCurrentProfilerMarker(ui, null);
@@ -363,5 +363,9 @@ public class CubaVaadinServletService extends VaadinServletService {
         } else {
             return super.createVaadinSession(request);
         }
+    }
+
+    protected interface RequestHandlerAction<T> {
+        T handle() throws IOException;
     }
 }
