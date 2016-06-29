@@ -16,9 +16,11 @@
  */
 package com.haulmont.cuba.gui.data.aggregation.impl;
 
+import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.data.aggregation.NumberAggregationHelper;
 
 import java.util.Collection;
+import java.util.EnumSet;
 
 public abstract class BasicNumberAggregation<T extends Number> extends BasicAggregation <T> {
 
@@ -57,6 +59,11 @@ public abstract class BasicNumberAggregation<T extends Number> extends BasicAggr
             }
         }
         return convert(helper.max());
+    }
+
+    @Override
+    public EnumSet<AggregationInfo.Type> getSupportedAggregationTypes() {
+        return EnumSet.allOf(AggregationInfo.Type.class);
     }
 
     @Override

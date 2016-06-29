@@ -16,10 +16,12 @@
  */
 package com.haulmont.cuba.gui.data.aggregation.impl;
 
+import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.data.aggregation.NumberAggregationHelper;
 
 import java.util.Date;
 import java.util.Collection;
+import java.util.EnumSet;
 
 public class DateAggregation extends BasicAggregation<Date> {
     public DateAggregation() {
@@ -48,5 +50,10 @@ public class DateAggregation extends BasicAggregation<Date> {
         }
         Double result = helper.max();
         return result != null ? new Date(result.longValue()) : null;
+    }
+
+    @Override
+    public EnumSet<AggregationInfo.Type> getSupportedAggregationTypes() {
+        return EnumSet.of(AggregationInfo.Type.COUNT, AggregationInfo.Type.MIN, AggregationInfo.Type.MAX);
     }
 }
