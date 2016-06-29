@@ -17,7 +17,10 @@
 
 package com.haulmont.cuba.gui.data.aggregation;
 
+import com.haulmont.cuba.gui.components.AggregationInfo;
+
 import java.util.Collection;
+import java.util.EnumSet;
 
 public interface Aggregation<T> {
 
@@ -32,4 +35,6 @@ public interface Aggregation<T> {
     int count(Collection<T> items);
 
     Class<T> getResultClass();
+
+    EnumSet<AggregationInfo.Type> getSupportedAggregationTypes();
 }

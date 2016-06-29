@@ -39,6 +39,7 @@ import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.aggregation.Aggregation;
 import com.haulmont.cuba.gui.data.aggregation.Aggregations;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
@@ -828,6 +829,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 }
 
                 if (column.getAggregation() != null && isAggregatable()) {
+                    checkAggregation(column.getAggregation());
+
                     component.addContainerPropertyAggregation(column.getId(),
                             WebComponentsHelper.convertAggregationType(column.getAggregation().getType()));
                 }
@@ -1497,6 +1500,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public void addAggregationProperty(Column column, AggregationInfo.Type type) {
+        checkAggregation(column.getAggregation());
+
         component.addContainerPropertyAggregation(column.getId(), WebComponentsHelper.convertAggregationType(type));
 
         if (column.getAggregation() != null) {
@@ -1656,11 +1661,21 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         }
     }
 
-    protected boolean isAggregationCorrect(AggregationInfo aggregationInfo) {
+    protected void checkAggregation(AggregationInfo aggregationInfo) {
         MetaPropertyPath propertyPath = aggregationInfo.getPropertyPath();
-        MetaProperty[] metaProperties = propertyPath.getMetaProperties();
-        Class<?> javaType = metaProperties[metaProperties.length - 1].getJavaType();
-        return Aggregations.get(javaType) != null || aggregationInfo.getType() == AggregationInfo.Type.CUSTOM;
+        Class<?> javaType = propertyPath.getMetaProperty().getJavaType();
+        Aggregation<?> aggregation = Aggregations.get(javaType);
+        AggregationInfo.Type aggregationType = aggregationInfo.getType();
+
+        if (aggregationType == AggregationInfo.Type.CUSTOM)
+            return;
+
+        if (aggregation != null && aggregation.getSupportedAggregationTypes().contains(aggregationType))
+            return;
+
+        String msg = String.format("Unable to aggregate column \"%s\" with data type %s with default aggregation strategy: %s",
+                propertyPath, propertyPath.getRange(), aggregationInfo.getType());
+        throw new IllegalArgumentException(msg);
     }
 
     protected Map<Object, Object> __aggregate(AggregationContainer container, AggregationContainer.Context context) {
@@ -1669,12 +1684,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             final Table.Column column = columns.get(propertyId);
             AggregationInfo aggregation = column.getAggregation();
             if (aggregation != null) {
-                if (!isAggregationCorrect(aggregation)) {
-                    String msg = String.format("Unable to aggregate column \"%s\" with data type %s with default aggregation strategy: %s",
-                            column.getId(), aggregation.getPropertyPath().getRange(), aggregation.getType());
-                    throw new UnsupportedOperationException(msg);
-                }
-
+                checkAggregation(aggregation);
                 aggregationInfos.add(aggregation);
             }
         }

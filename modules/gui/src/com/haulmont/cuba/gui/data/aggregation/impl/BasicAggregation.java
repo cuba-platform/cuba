@@ -16,9 +16,11 @@
  */
 package com.haulmont.cuba.gui.data.aggregation.impl;
 
+import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.data.aggregation.Aggregation;
 
 import java.util.Collection;
+import java.util.EnumSet;
 
 public class BasicAggregation<T> implements Aggregation<T> {
 
@@ -56,5 +58,10 @@ public class BasicAggregation<T> implements Aggregation<T> {
     @Override
     public Class<T> getResultClass() {
         return clazz;
+    }
+
+    @Override
+    public EnumSet<AggregationInfo.Type> getSupportedAggregationTypes() {
+        return EnumSet.of(AggregationInfo.Type.COUNT);
     }
 }
