@@ -167,6 +167,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             component.setColumnAlignment(column.getId(),
                     WebComponentsHelper.convertColumnAlignment(column.getAlignment()));
         }
+
+        final String caption = StringUtils.capitalize(column.getCaption() != null ? column.getCaption() : getColumnCaption(column.getId()));
+        setColumnHeader(column.getId(), caption);
+
         column.setOwner(this);
     }
 
