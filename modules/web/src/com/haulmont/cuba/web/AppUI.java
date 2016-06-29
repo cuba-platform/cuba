@@ -17,14 +17,12 @@
 
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.sys.LinkHandler;
+import com.haulmont.cuba.web.toolkit.ui.CubaClientManager;
 import com.haulmont.cuba.web.toolkit.ui.client.appui.AppUIClientRpc;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Push;
@@ -68,8 +66,10 @@ public class AppUI extends UI implements ErrorHandler {
 
     protected Map<String, String> profiledScreens;
 
+    protected CubaClientManager clientManager;
+
     public AppUI() {
-        log.trace("Creating UI " + this);
+        log.trace("Creating UI {}", this);
         if (!App.isBound()) {
             app = createApplication();
 
@@ -77,20 +77,17 @@ public class AppUI extends UI implements ErrorHandler {
             vSession.setAttribute(App.class, app);
 
             // set root error handler for all session
-            vSession.setErrorHandler(new ErrorHandler() {
-                @Override
-                public void error(com.vaadin.server.ErrorEvent event) {
-                    try {
-                        app.getExceptionHandlers().handle(event);
-                        app.getAppLog().log(event);
-                    } catch (Throwable e) {
-                        //noinspection ThrowableResultOfMethodCallIgnored
-                        log.error("Error handling exception\nOriginal exception:\n"
-                                        + ExceptionUtils.getStackTrace(event.getThrowable())
-                                        + "\nException in handlers:\n"
-                                        + ExceptionUtils.getStackTrace(e)
-                        );
-                    }
+            vSession.setErrorHandler((ErrorHandler) event -> {
+                try {
+                    app.getExceptionHandlers().handle(event);
+                    app.getAppLog().log(event);
+                } catch (Throwable e) {
+                    //noinspection ThrowableResultOfMethodCallIgnored
+                    log.error("Error handling exception\nOriginal exception:\n"
+                                    + ExceptionUtils.getStackTrace(event.getThrowable())
+                                    + "\nException in handlers:\n"
+                                    + ExceptionUtils.getStackTrace(e)
+                    );
                 }
             });
 
@@ -106,6 +103,8 @@ public class AppUI extends UI implements ErrorHandler {
         setTabIndex(-1);
 
         initJsLibraries();
+
+        initInternalComponents();
     }
 
     /**
@@ -139,6 +138,11 @@ public class AppUI extends UI implements ErrorHandler {
      * If you want to include scripts to generated page statically see {@link com.haulmont.cuba.web.sys.CubaBootstrapListener}.
      */
     protected void initJsLibraries() {
+    }
+
+    protected void initInternalComponents() {
+        clientManager = new CubaClientManager();
+        clientManager.extend(this);
     }
 
     protected App createApplication() {
@@ -259,11 +263,9 @@ public class AppUI extends UI implements ErrorHandler {
             app.getAppLog().log(event);
         } catch (Throwable e) {
             //noinspection ThrowableResultOfMethodCallIgnored
-            log.error("Error handling exception\nOriginal exception:\n"
-                    + ExceptionUtils.getStackTrace(event.getThrowable())
-                    + "\nException in handlers:\n"
-                    + ExceptionUtils.getStackTrace(e)
-            );
+            log.error(String.format("Error handling exception\nOriginal exception:\n%s\nException in handlers:\n%s",
+                    ExceptionUtils.getStackTrace(event.getThrowable()),
+                    ExceptionUtils.getStackTrace(e)));
         }
     }
 
@@ -296,7 +298,7 @@ public class AppUI extends UI implements ErrorHandler {
 
     @Override
     public void detach() {
-        log.trace("Detaching UI " + this);
+        log.trace("Detaching UI {}", this);
         super.detach();
     }
 
@@ -330,5 +332,24 @@ public class AppUI extends UI implements ErrorHandler {
         for (String profilerMarker : profilerMarkers) {
             profiledScreens.remove(profilerMarker);
         }
+    }
+
+    protected void updateClientSystemMessages(Locale locale) {
+        CubaClientManager.SystemMessages msgs = new CubaClientManager.SystemMessages();
+        Messages messages = AppBeans.get(Messages.NAME);
+
+        msgs.communicationErrorCaption = messages.getMainMessage("communicationErrorCaption", locale);
+        msgs.communicationErrorMessage = messages.getMainMessage("communicationErrorMessage", locale);
+
+        msgs.sessionExpiredErrorCaption = messages.getMainMessage("sessionExpiredErrorCaption", locale);
+        msgs.sessionExpiredErrorMessage = messages.getMainMessage("sessionExpiredErrorMessage", locale);
+
+        msgs.authorizationErrorCaption = messages.getMainMessage("authorizationErrorCaption", locale);
+        msgs.authorizationErrorMessage = messages.getMainMessage("authorizationErrorMessage", locale);
+
+        clientManager.updateSystemMessagesLocale(msgs);
+
+        getReconnectDialogConfiguration().setDialogText(messages.getMainMessage("reconnectDialogText", locale));
+        getReconnectDialogConfiguration().setDialogTextGaveUp(messages.getMainMessage("reconnectDialogTextGaveUp", locale));
     }
 }

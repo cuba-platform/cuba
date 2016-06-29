@@ -50,8 +50,6 @@ public class AppWindow extends UIView implements CubaHistoryControl.HistoryBackH
 
     protected final WebWindowManager windowManager;
 
-    protected CubaClientManager clientManager;
-
     protected CubaFileDownloader fileDownloader;
 
     protected CubaHistoryControl historyControl;
@@ -114,9 +112,6 @@ public class AppWindow extends UIView implements CubaHistoryControl.HistoryBackH
      * init system components
      */
     protected void initInternalComponents() {
-        clientManager = new CubaClientManager();
-        clientManager.extend(this);
-
         fileDownloader = new CubaFileDownloader();
         fileDownloader.extend(this);
 
@@ -130,20 +125,10 @@ public class AppWindow extends UIView implements CubaHistoryControl.HistoryBackH
     }
     
     protected void updateClientSystemMessages() {
-        CubaClientManager.SystemMessages msgs = new CubaClientManager.SystemMessages();
         UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
         Locale locale = sessionSource.getLocale();
 
-        msgs.communicationErrorCaption = messages.getMainMessage("communicationErrorCaption", locale);
-        msgs.communicationErrorMessage = messages.getMainMessage("communicationErrorMessage", locale);
-
-        msgs.sessionExpiredErrorCaption = messages.getMainMessage("sessionExpiredErrorCaption", locale);
-        msgs.sessionExpiredErrorMessage = messages.getMainMessage("sessionExpiredErrorMessage", locale);
-
-        msgs.authorizationErrorCaption = messages.getMainMessage("authorizationErrorCaption", locale);
-        msgs.authorizationErrorMessage = messages.getMainMessage("authorizationErrorMessage", locale);
-
-        clientManager.updateSystemMessagesLocale(msgs);
+        ui.updateClientSystemMessages(locale);
     }
 
     /**
