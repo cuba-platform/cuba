@@ -20,6 +20,7 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
+import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
@@ -79,7 +80,10 @@ public abstract class AbstractSearchFolder extends Folder {
 
     @MetaProperty
     public String getLocName() {
-        Messages messages = AppBeans.get(Messages.NAME);
-        return messages.getMainMessage(name);
+        if (StringUtils.isNotEmpty(name)) {
+            Messages messages = AppBeans.get(Messages.NAME);
+            return messages.getMainMessage(name);
+        }
+        return null;
     }
 }
