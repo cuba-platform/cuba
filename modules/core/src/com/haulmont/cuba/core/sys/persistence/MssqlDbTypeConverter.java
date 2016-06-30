@@ -68,6 +68,8 @@ public class MssqlDbTypeConverter implements DbTypeConverter {
             return new Timestamp(((Date) value).getTime());
         if (value instanceof UUID)
             return value.toString();
+        if (value instanceof Boolean)
+            return ((Boolean) value) ? 1 : 0;
         return value;
     }
 
