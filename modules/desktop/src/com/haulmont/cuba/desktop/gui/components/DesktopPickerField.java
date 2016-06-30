@@ -203,8 +203,9 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
         if ((datasource != null) && (metaPropertyPath != null)
                 && (datasource.getState() == Datasource.State.VALID)
                 && (datasource.getItem() != null)) {
-            return datasource.getItem().getValue(metaProperty.getName());
+            return datasource.getItem().getValueEx(metaPropertyPath.toString());
         } else {
+            //noinspection unchecked
             return (T) prevValue;
         }
     }
@@ -220,6 +221,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
         if (value != null) {
             Class fieldClass = getMetaClass().getJavaClass();
             Class<?> valueClass = value.getClass();
+            //noinspection unchecked
             if (!fieldClass.isAssignableFrom(valueClass)) {
                 throw new IllegalArgumentException(
                         String.format("Could not set value with class %s to field with class %s",
