@@ -65,7 +65,7 @@ public class CubaTabSheetWidget extends VDDTabSheet {
     }
 
     public void assignAdditionalCellStyles(int navIndex) {
-        if (navIndex >=0) {
+        if (navIndex >= 0) {
             int i = 0;
             boolean firstVisibleAfterSelection = false;
             for (Widget widget : tabBar) {
@@ -117,5 +117,20 @@ public class CubaTabSheetWidget extends VDDTabSheet {
 
             super.onClose();
         }
+    }
+
+    @Override
+    public boolean loadTabSheet(int tabIndex) {
+        Widget currentlyDisplayedWidget = getCurrentlyDisplayedWidget();
+
+        boolean loaded = super.loadTabSheet(tabIndex);
+        if (loaded) {
+            /*
+            * We have to set zero opacity in case of chart inside of tab
+            * because "visibility" property doesn't work for SVG elements
+            * */
+            currentlyDisplayedWidget.getElement().getStyle().setOpacity(0);
+        }
+        return loaded;
     }
 }
