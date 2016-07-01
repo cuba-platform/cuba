@@ -836,6 +836,7 @@ public abstract class WindowManager {
 
         context.executeInjectTasks();
         context.setFrame(component);
+        context.executePostWrapTasks();
         context.executePostInitTasks();
 
         loadDescriptorWatch.stop();
@@ -1016,6 +1017,7 @@ public abstract class WindowManager {
         injectStopWatch.stop();
 
         context.executeInjectTasks();
+        context.executePostWrapTasks();
 
         init(wrappingWindow, params);
     }

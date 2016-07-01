@@ -27,7 +27,6 @@ import java.util.Map;
 
 /**
  * Base interface for loaders which create components by XML definitions.
- *
  */
 public interface ComponentLoader<T extends Component> {
 
@@ -38,6 +37,9 @@ public interface ComponentLoader<T extends Component> {
 
         void addPostInitTask(PostInitTask task);
         void executePostInitTasks();
+
+        void addPostWrapTask(PostWrapTask task);
+        void executePostWrapTasks();
 
         void addInjectTask(InjectTask task);
         void executeInjectTasks();
@@ -76,6 +78,19 @@ public interface ComponentLoader<T extends Component> {
     interface InjectTask {
         /**
          * This method will be invoked after window components loading before window initialization.
+         *
+         * @param context loader context
+         * @param window top-most window
+         */
+        void execute(Context context, Frame window);
+    }
+
+    /**
+     * PostInitTasks are used to perform deferred initialization of visual components that requires window controller.
+     */
+    interface PostWrapTask {
+        /**
+         * This method will be invoked after window wrapped with its controller.
          *
          * @param context loader context
          * @param window top-most window

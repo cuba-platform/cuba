@@ -377,6 +377,7 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
             impl.addChangeListener(e -> {
                 if (context != null) {
                     context.executeInjectTasks();
+                    context.executePostWrapTasks();
                 }
                 // Init lazy tab if needed
                 initLazyTab((JComponent) impl.getSelectedComponent());

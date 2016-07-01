@@ -1257,6 +1257,8 @@
         <xs:attribute name="linkScreen" type="xs:string"/>
         <xs:attribute name="linkScreenOpenType" type="openType"/>
         <xs:attribute name="linkInvoke" type="xs:string"/>
+
+        <xs:attribute name="generator" type="xs:string"/>
     </xs:complexType>
 
     <!-- FieldGroup -->

@@ -33,6 +33,7 @@ import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
+import com.haulmont.cuba.gui.xml.DeclarativeFieldGenerator;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
@@ -144,6 +145,10 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
         String custom = element.attributeValue("custom");
         if (StringUtils.isNotEmpty(custom)) {
             customField = Boolean.parseBoolean(custom);
+        }
+
+        if (StringUtils.isNotEmpty(element.attributeValue("generator"))) {
+            customField = true;
         }
 
         if (!customField && ds == null) {
@@ -495,7 +500,8 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
         for (FieldGroup.FieldConfig field : resultComponent.getFields()) {
             if (!field.isCustom()) {
-                if (!DynamicAttributesUtils.isDynamicAttribute(field.getId())) {//the following does not make sense for dynamic attrs
+                if (!DynamicAttributesUtils.isDynamicAttribute(field.getId())) {
+                    // the following does not make sense for dynamic attributes
                     loadValidators(resultComponent, field);
                     loadRequired(resultComponent, field);
                     loadEnable(resultComponent, field);
@@ -505,8 +511,17 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
             }
         }
 
+        for (FieldGroup.FieldConfig field : resultComponent.getFields()) {
+            String generator = field.getXmlDescriptor().attributeValue("generator");
+            if (generator != null) {
+                context.addPostWrapTask((boundContext, window) ->
+                    resultComponent.addCustomField(field, new DeclarativeFieldGenerator(resultComponent, generator))
+                );
+            }
+        }
+
         // deffer attribute loading for custom fields
-        context.addPostInitTask((context1, window) -> {
+        context.addPostInitTask((boundContext, window) -> {
             for (FieldGroup.FieldConfig field : resultComponent.getFields()) {
                 if (field.isCustom()) {
                     Component fieldComponent = resultComponent.getFieldComponent(field);
