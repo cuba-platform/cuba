@@ -22,7 +22,6 @@ import com.haulmont.cuba.gui.components.autocomplete.Suggester;
 import org.apache.commons.lang.StringUtils;
 
 public interface SourceCodeEditor extends Field {
-
     String NAME = "sourceCodeEditor";
 
     enum Mode {
@@ -77,4 +76,8 @@ public interface SourceCodeEditor extends Field {
      * @return if Tab key handling is enabled
      */
     boolean isHandleTabKey();
+
+    @SuppressWarnings("unchecked")
+    @Override
+    String getValue();
 }

@@ -36,7 +36,7 @@ public interface DatePicker extends Field {
     /**
      * Set resolution of the DatePicker.
      *
-     * @param resolution
+     * @param resolution resolution
      */
     void setResolution(Resolution resolution);
 
@@ -50,8 +50,7 @@ public interface DatePicker extends Field {
      * Set start of range. If the value is set before this
      * date, the component will not validate.
      *
-     * @param rangeStart
-     *            - allowed start of range
+     * @param rangeStart allowed start of range
      */
     void setRangeStart(Date rangeStart);
 
@@ -65,8 +64,11 @@ public interface DatePicker extends Field {
      * Set end of range. If the value is set after this
      * date, the component will not validate.
      *
-     * @param rangeEnd
-     *            - allowed end of range
+     * @param rangeEnd end of allowed range
      */
     void setRangeEnd(Date rangeEnd);
+
+    @SuppressWarnings("unchecked")
+    @Override
+    Date getValue();
 }

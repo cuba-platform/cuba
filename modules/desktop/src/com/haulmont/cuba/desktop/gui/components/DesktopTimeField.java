@@ -288,10 +288,11 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <T> T getValue() {
+    public Date getValue() {
         try {
-            return (T) new SimpleDateFormat(timeFormat).parse(impl.getText());
+            return new SimpleDateFormat(timeFormat).parse(impl.getText());
         } catch (ParseException e) {
             return null;
         }

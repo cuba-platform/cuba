@@ -45,7 +45,6 @@ import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -179,11 +178,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
     }
 
     protected void changeTableTextSelectionEnabled() {
-        if (BooleanUtils.isTrue(textSelection.getValue())) {
-            companion.setTextSelectionEnabled(entitiesTable, true);
-        } else {
-            companion.setTextSelectionEnabled(entitiesTable, false);
-        }
+        companion.setTextSelectionEnabled(entitiesTable, textSelection.isChecked());
     }
 
     protected void createEntitiesTable(MetaClass meta) {
@@ -245,7 +240,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
                 .buildCollectionDatasource();
 
         entitiesDs.setLoadDynamicAttributes(true);
-        entitiesDs.setSoftDeletion(BooleanUtils.isFalse(removedRecords.getValue()));
+        entitiesDs.setSoftDeletion(removedRecords.isChecked());
         entitiesDs.setQuery(String.format("select e from %s e", meta.getName()));
 
         entitiesTable.setDatasource(entitiesDs);

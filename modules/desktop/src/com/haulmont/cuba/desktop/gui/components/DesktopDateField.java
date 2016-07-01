@@ -217,10 +217,11 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         });
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <T> T getValue() {
+    public Date getValue() {
         try {
-            return (T) constructDate();
+            return constructDate();
         } catch (Exception e) {
             return null;
         }

@@ -16,18 +16,23 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.vaadin.ui.RichTextArea;
+import com.haulmont.cuba.gui.components.RichTextArea;
 
-public class WebRichTextArea extends WebAbstractField<RichTextArea>
-        implements com.haulmont.cuba.gui.components.RichTextArea {
+public class WebRichTextArea extends WebAbstractField<com.vaadin.ui.RichTextArea> implements RichTextArea {
 
     public WebRichTextArea() {
-        component = new RichTextArea();
+        component = new com.vaadin.ui.RichTextArea();
         attachListener(component);
 
         component.setImmediate(true);
         component.setNullRepresentation("");
         component.setInvalidAllowed(false);
         component.setInvalidCommitted(true);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public String getValue() {
+        return super.getValue();
     }
 }

@@ -52,8 +52,8 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T getValue() {
-        return (T) (Boolean) impl.isSelected();
+    public Boolean getValue() {
+        return impl.isSelected();
     }
 
     @Override
@@ -206,5 +206,10 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
         if (!ObjectUtils.equals(oldValue, newValue)) {
             fireValueChanged(oldValue, newValue);
         }
+    }
+
+    @Override
+    public boolean isChecked() {
+        return impl.isSelected();
     }
 }

@@ -180,18 +180,19 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <T> T getValue() {
+    public Date getValue() {
         Object value = super.getValue();
         if (value instanceof String) {
             try {
-                return (T) new SimpleDateFormat(timeFormat).parse((String) value);
+                return new SimpleDateFormat(timeFormat).parse((String) value);
             } catch (ParseException e) {
-                log.debug("Unable to parse value of component " + getId() + "\n" + e.getMessage());
+                log.debug("Unable to parse value of component {}\n{}", getId(), e.getMessage());
                 return null;
             }
         } else {
-            return (T) value;
+            return (Date) value;
         }
     }
 

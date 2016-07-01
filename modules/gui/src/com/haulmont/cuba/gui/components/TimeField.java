@@ -16,8 +16,9 @@
  */
 package com.haulmont.cuba.gui.components;
 
-public interface TimeField extends Field {
+import java.util.Date;
 
+public interface TimeField extends Field {
     String NAME = "timeField";
 
     boolean getShowSeconds();
@@ -25,4 +26,8 @@ public interface TimeField extends Field {
 
     String getFormat();
     void setFormat(String timeFormat);
+
+    @SuppressWarnings("unchecked")
+    @Override
+    Date getValue();
 }

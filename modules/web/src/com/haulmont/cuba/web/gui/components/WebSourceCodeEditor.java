@@ -154,10 +154,11 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
         return component.isHandleTabKey();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <T> T getValue() {
+    public String getValue() {
         String value = super.getValue();
-        return (T) Strings.emptyToNull(value);
+        return Strings.emptyToNull(value);
     }
 
     protected class SourceCodeEditorSuggester implements org.vaadin.aceeditor.Suggester {

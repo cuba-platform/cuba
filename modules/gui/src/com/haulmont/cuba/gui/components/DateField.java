@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import java.util.Date;
 import java.util.TimeZone;
 
 public interface DateField extends Field {
@@ -40,4 +41,8 @@ public interface DateField extends Field {
 
     TimeZone getTimeZone();
     void setTimeZone(TimeZone timeZone);
+
+    @SuppressWarnings("unchecked")
+    @Override
+    Date getValue();
 }

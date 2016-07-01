@@ -56,6 +56,12 @@ public class WebMaskedField extends WebAbstractTextField<CubaMaskedTextField> im
         component.setSendNullRepresentation(sendNullRepresentation);
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public String getValue() {
+        return super.getValue();
+    }
+
     @Override
     public Datatype getDatatype() {
         return null;

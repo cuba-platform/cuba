@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
@@ -30,9 +31,10 @@ public class WebCheckBox extends WebAbstractField<com.vaadin.ui.CheckBox> implem
 
     public WebCheckBox() {
         this.component = new CubaCheckBox();
-        attachListener(component);
         component.setImmediate(true);
         component.setInvalidCommitted(true);
+
+        attachListener(component);
     }
 
     @Override
@@ -44,9 +46,12 @@ public class WebCheckBox extends WebAbstractField<com.vaadin.ui.CheckBox> implem
                     @Override
                     public Object getValue() {
                         Object value = super.getValue();
-                        if (value == null && propertyPath.getRange().isDatatype()
-                                && propertyPath.getRange().asDatatype().equals(Datatypes.get(Boolean.class))) {
-                            value = Boolean.FALSE;
+                        if (value == null) {
+                            Range range = propertyPath.getRange();
+                            if (range.isDatatype()
+                                    && range.asDatatype().equals(Datatypes.get(Boolean.class))) {
+                                value = Boolean.FALSE;
+                            }
                         }
                         return value;
                     }
@@ -62,5 +67,16 @@ public class WebCheckBox extends WebAbstractField<com.vaadin.ui.CheckBox> implem
         } else {
             super.setValue(value);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Boolean getValue() {
+        return super.getValue();
+    }
+
+    @Override
+    public boolean isChecked() {
+        return Boolean.TRUE.equals(getValue());
     }
 }

@@ -216,8 +216,8 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T getValue() {
-        return (T) constructDate();
+    public Date getValue() {
+        return constructDate();
     }
 
     @Override

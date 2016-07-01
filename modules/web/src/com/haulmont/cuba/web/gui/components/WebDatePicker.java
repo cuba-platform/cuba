@@ -156,4 +156,10 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
     public void setRangeEnd(Date rangeEnd) {
         component.setRangeEnd(rangeEnd);
     }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Date getValue() {
+        return super.getValue();
+    }
 }

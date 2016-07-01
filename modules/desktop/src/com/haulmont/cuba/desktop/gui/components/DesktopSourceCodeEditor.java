@@ -190,4 +190,10 @@ public class DesktopSourceCodeEditor extends DesktopAbstractTextField<RSyntaxTex
     public boolean isHandleTabKey() {
         return handleTabKey;
     }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public String getValue() {
+        return super.getValue();
+    }
 }

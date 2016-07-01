@@ -31,4 +31,8 @@ public interface PasswordField extends TextInputField, TextInputField.MaxLengthL
      * False value disables saving passwords in browser.
      */
     void setAutocomplete(Boolean autocomplete);
+
+    @SuppressWarnings("unchecked")
+    @Override
+    String getValue();
 }

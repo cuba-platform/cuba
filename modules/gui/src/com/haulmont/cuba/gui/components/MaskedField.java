@@ -81,4 +81,8 @@ public interface MaskedField extends TextField {
 
     boolean isSendNullRepresentation();
     void setSendNullRepresentation(boolean sendNullRepresentation);
+
+    @SuppressWarnings("unchecked")
+    @Override
+    String getValue();
 }
