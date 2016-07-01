@@ -32,7 +32,6 @@ import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 /**
  * Encapsulates {@link com.haulmont.cuba.gui.components.Component.ActionsHolder} functionality for web frames and
  * windows.
- *
  */
 public class WebFrameActionsHolder {
 
@@ -57,7 +56,7 @@ public class WebFrameActionsHolder {
             }
         }
 
-        if (action.getShortcut() != null) {
+        if (action.getShortcutCombination() != null) {
             actions.put(WebComponentsHelper.createShortcutAction(action), action);
         }
 

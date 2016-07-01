@@ -98,8 +98,8 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
                 }
 
                 String description = action.getDescription();
-                if (description == null && action.getShortcut() != null) {
-                    description = action.getShortcut().format();
+                if (description == null && action.getShortcutCombination() != null) {
+                    description = action.getShortcutCombination().format();
                 }
                 if (description != null && component.getDescription() == null) {
                     component.setDescription(description);

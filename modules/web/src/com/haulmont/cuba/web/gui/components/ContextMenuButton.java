@@ -45,11 +45,11 @@ public abstract class ContextMenuButton extends WebButton {
         if (action != null) {
             String caption = action.getCaption();
             if (!StringUtils.isEmpty(caption)) {
-                if (action.getShortcut() != null) {
+                if (action.getShortcutCombination() != null) {
                     StringBuilder sb = new StringBuilder();
                     sb.append(caption);
-                    if (action.getShortcut() != null) {
-                        sb.append(" (").append(action.getShortcut().format()).append(")");
+                    if (action.getShortcutCombination() != null) {
+                        sb.append(" (").append(action.getShortcutCombination().format()).append(")");
                     }
                     caption = sb.toString();
                     component.setCaption(caption);
@@ -60,11 +60,11 @@ public abstract class ContextMenuButton extends WebButton {
 
     @Override
     public void setCaption(String caption) {
-        if (action.getShortcut() != null) {
+        if (action.getShortcutCombination() != null) {
             StringBuilder sb = new StringBuilder();
             sb.append(caption);
-            if (action.getShortcut() != null) {
-                sb.append(" (").append(action.getShortcut().format()).append(")");
+            if (action.getShortcutCombination() != null) {
+                sb.append(" (").append(action.getShortcutCombination().format()).append(")");
             }
             caption = sb.toString();
         }

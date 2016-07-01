@@ -1901,12 +1901,12 @@ public class DesktopWindowManager extends WindowManager {
         }
 
         @Override
-        public KeyCombination getShortcut() {
+        public KeyCombination getShortcutCombination() {
             return null;
         }
 
         @Override
-        public void setShortcut(KeyCombination shortcut) {
+        public void setShortcutCombination(KeyCombination shortcut) {
         }
 
         @Override

@@ -61,7 +61,7 @@ public class WebPickerFieldActionHandler implements Action.Handler {
 
         updateOrderedShortcuts();
 
-        KeyCombination combination = action.getShortcut();
+        KeyCombination combination = action.getShortcutCombination();
         if (combination != null) {
             int key = combination.getKey().getCode();
             int[] modifiers = KeyCombination.Modifier.codes(combination.getModifiers());

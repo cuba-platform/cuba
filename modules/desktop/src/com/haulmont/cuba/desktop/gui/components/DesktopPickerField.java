@@ -490,10 +490,10 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
             }
         });
 
-        if (action.getShortcut() != null) {
+        if (action.getShortcutCombination() != null) {
             InputMap inputMap = getImpl().getInputField().getInputMap(JComponent.WHEN_FOCUSED);
 
-            KeyStroke shortcutKeyStroke = DesktopComponentsHelper.convertKeyCombination(action.getShortcut());
+            KeyStroke shortcutKeyStroke = DesktopComponentsHelper.convertKeyCombination(action.getShortcutCombination());
             inputMap.put(shortcutKeyStroke, action.getId());
         }
 

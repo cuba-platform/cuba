@@ -348,7 +348,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
 
     protected Action getEnterAction() {
         for (Action action : getActions()) {
-            KeyCombination kc = action.getShortcut();
+            KeyCombination kc = action.getShortcutCombination();
             if (kc != null) {
                 if ((kc.getModifiers() == null || kc.getModifiers().length == 0)
                         && kc.getKey() == KeyCombination.Key.ENTER) {
@@ -1959,8 +1959,8 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
                 if (action.getIcon() != null) {
                     menuItem.setIcon(App.getInstance().getResources().getIcon(action.getIcon()));
                 }
-                if (action.getShortcut() != null) {
-                    menuItem.setAccelerator(convertKeyCombination(action.getShortcut()));
+                if (action.getShortcutCombination() != null) {
+                    menuItem.setAccelerator(convertKeyCombination(action.getShortcutCombination()));
                 }
                 menuItem.setEnabled(action.isEnabled());
                 menuItem.addActionListener(

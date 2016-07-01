@@ -56,8 +56,8 @@ public interface Action {
      *
      * @return action's shortcut
      */
-    KeyCombination getShortcut();
-    void setShortcut(KeyCombination shortcut);
+    KeyCombination getShortcutCombination();
+    void setShortcutCombination(KeyCombination shortcut);
 
     /**
      * Set shortcut from string representation.

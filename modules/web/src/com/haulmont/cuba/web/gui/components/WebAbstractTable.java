@@ -690,7 +690,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     protected Action getEnterAction() {
         for (Action action : getActions()) {
-            KeyCombination kc = action.getShortcut();
+            KeyCombination kc = action.getShortcutCombination();
             if (kc != null) {
                 if ((kc.getModifiers() == null || kc.getModifiers().length == 0)
                         && kc.getKey() == KeyCombination.Key.ENTER) {

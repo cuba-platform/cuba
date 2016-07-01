@@ -26,7 +26,6 @@ import java.util.Map;
  * Handles active shortcuts for actions holder (Table or Tree)
  *
  * @param <T> type of shortcut descriptor
- *
  */
 public abstract class ShortcutsDelegate<T> {
 
@@ -43,10 +42,10 @@ public abstract class ShortcutsDelegate<T> {
     }
 
     public void addAction(@Nullable Action oldAction, Action newAction) {
-        KeyCombination newShortcut = newAction.getShortcut();
+        KeyCombination newShortcut = newAction.getShortcutCombination();
         if (newShortcut != null) {
             if (oldAction != null) {
-                KeyCombination oldShortcut = oldAction.getShortcut();
+                KeyCombination oldShortcut = oldAction.getShortcutCombination();
                 if (newShortcut.equals(oldShortcut)) {
                     removeShortcut(oldAction);
                 } else if (oldShortcut != null) {
@@ -59,7 +58,7 @@ public abstract class ShortcutsDelegate<T> {
             addShortcut(newAction.getId(), newShortcut);
         } else {
             if (oldAction != null) {
-                KeyCombination oldShortcut = oldAction.getShortcut();
+                KeyCombination oldShortcut = oldAction.getShortcutCombination();
                 if (oldShortcut != null) {
                     removeShortcut(oldAction);
                     // find and assign alternative
@@ -73,8 +72,8 @@ public abstract class ShortcutsDelegate<T> {
         if (action != null) {
             removeShortcut(action);
             // find and assign alternative
-            if (action.getShortcut() != null) {
-                addAlternativeShortcut(action.getShortcut());
+            if (action.getShortcutCombination() != null) {
+                addAlternativeShortcut(action.getShortcutCombination());
             }
         }
     }
@@ -83,12 +82,12 @@ public abstract class ShortcutsDelegate<T> {
         Action alternativeAction = null;
         for (Action action : getActions()) {
             // find last action with same shortcut
-            if (kc.equals(action.getShortcut())) {
+            if (kc.equals(action.getShortcutCombination())) {
                 alternativeAction = action;
             }
         }
         if (alternativeAction != null) {
-            addShortcut(alternativeAction.getId(), alternativeAction.getShortcut());
+            addShortcut(alternativeAction.getId(), alternativeAction.getShortcutCombination());
         }
     }
 
@@ -107,7 +106,7 @@ public abstract class ShortcutsDelegate<T> {
         }
 
         for (Action oldAction : getActions()) {
-            if (keyCombination.equals(oldAction.getShortcut())) {
+            if (keyCombination.equals(oldAction.getShortcutCombination())) {
                 removeShortcut(oldAction);
             }
         }

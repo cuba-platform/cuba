@@ -26,7 +26,6 @@ import com.haulmont.cuba.web.toolkit.ui.CubaPopupButton;
 import com.haulmont.cuba.web.toolkit.ui.CubaPopupButtonLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nonnull;
@@ -414,12 +413,12 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         }
 
         @Override
-        public KeyCombination getShortcut() {
+        public KeyCombination getShortcutCombination() {
             return null;
         }
 
         @Override
-        public void setShortcut(KeyCombination shortcut) {
+        public void setShortcutCombination(KeyCombination shortcut) {
         }
 
         @Override

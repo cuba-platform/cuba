@@ -533,8 +533,8 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
                 if (action.getIcon() != null) {
                     menuItem.setIcon(App.getInstance().getResources().getIcon(action.getIcon()));
                 }
-                if (action.getShortcut() != null) {
-                    menuItem.setAccelerator(DesktopComponentsHelper.convertKeyCombination(action.getShortcut()));
+                if (action.getShortcutCombination() != null) {
+                    menuItem.setAccelerator(DesktopComponentsHelper.convertKeyCombination(action.getShortcutCombination()));
                 }
                 menuItem.setEnabled(action.isEnabled());
                 menuItem.addActionListener(e -> action.actionPerform(DesktopTree.this));

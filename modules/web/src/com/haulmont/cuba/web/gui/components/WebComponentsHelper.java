@@ -309,7 +309,7 @@ public class WebComponentsHelper {
     }
 
     public static com.vaadin.event.ShortcutAction createShortcutAction(com.haulmont.cuba.gui.components.Action action) {
-        KeyCombination keyCombination = action.getShortcut();
+        KeyCombination keyCombination = action.getShortcutCombination();
         if (keyCombination != null) {
             return new com.vaadin.event.ShortcutAction(
                     action.getCaption(),

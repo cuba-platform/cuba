@@ -111,12 +111,12 @@ public abstract class AbstractAction implements Action {
     }
 
     @Override
-    public KeyCombination getShortcut() {
+    public KeyCombination getShortcutCombination() {
         return shortcut;
     }
 
     @Override
-    public void setShortcut(KeyCombination shortcut) {
+    public void setShortcutCombination(KeyCombination shortcut) {
         KeyCombination oldValue = this.shortcut;
         if (!Objects.equals(oldValue, shortcut)) {
             this.shortcut = shortcut;
@@ -127,9 +127,9 @@ public abstract class AbstractAction implements Action {
     @Override
     public void setShortcut(String shortcut) {
         if (shortcut != null) {
-            setShortcut(KeyCombination.create(shortcut));
+            setShortcutCombination(KeyCombination.create(shortcut));
         } else {
-            setShortcut((KeyCombination) null);
+            setShortcutCombination(null);
         }
     }
 

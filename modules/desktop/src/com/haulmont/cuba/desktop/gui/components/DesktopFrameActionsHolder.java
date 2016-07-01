@@ -31,7 +31,6 @@ import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 /**
  * Encapsulates {@link com.haulmont.cuba.gui.components.Component.ActionsHolder} functionality for desktop frames and
  * windows.
- *
  */
 public class DesktopFrameActionsHolder {
 
@@ -64,8 +63,8 @@ public class DesktopFrameActionsHolder {
             }
         }
 
-        if (action.getShortcut() != null) {
-            KeyStroke keyStroke = DesktopComponentsHelper.convertKeyCombination(action.getShortcut());
+        if (action.getShortcutCombination() != null) {
+            KeyStroke keyStroke = DesktopComponentsHelper.convertKeyCombination(action.getShortcutCombination());
             InputMap inputMap = panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
             inputMap.put(keyStroke, action.getId());
             ActionMap actionMap = panel.getActionMap();
@@ -83,7 +82,7 @@ public class DesktopFrameActionsHolder {
 
     public void removeAction(Action action) {
         if (actionList.remove(action)) {
-            if (action.getShortcut() != null) {
+            if (action.getShortcutCombination() != null) {
                 InputMap inputMap = panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
                 ActionMap actionMap = panel.getActionMap();
                 KeyStroke keyStroke = shortcutActions.get(action);
