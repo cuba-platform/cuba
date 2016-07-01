@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.app.security.user.edit;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
@@ -61,10 +62,10 @@ public class UserEditor extends AbstractEditor<User> {
     protected CollectionDatasource<UserSubstitution, UUID> substitutionsDs;
 
     @Inject
-    protected Table rolesTable;
+    protected Table<UserRole> rolesTable;
 
     @Inject
-    protected Table substTable;
+    protected Table<UserSubstitution> substTable;
 
     @Inject
     protected FieldGroup fieldGroupLeft;
@@ -113,16 +114,24 @@ public class UserEditor extends AbstractEditor<User> {
     public void init(Map<String, Object> params) {
         userDs.addItemPropertyChangeListener(new NameBuilderListener<>(userDs));
         userDs.addItemPropertyChangeListener(e -> {
-            if (e.getProperty().equals("timeZoneAuto")) {
+            if ("timeZoneAuto".equals(e.getProperty())) {
                 timeZoneLookup.setEnabled(!Boolean.TRUE.equals(e.getValue()));
             }
         });
 
-        rolesTable.addAction(new AddRoleAction());
+        AddRoleAction addRoleAction = new AddRoleAction();
+        addRoleAction.setEnabled(security.isEntityOpPermitted(metadata.getClass(UserRole.class), EntityOp.CREATE));
+        rolesTable.addAction(addRoleAction);
         rolesTable.addAction(new EditRoleAction());
-        rolesTable.addAction(new RemoveRoleAction(rolesTable, false));
 
-        substTable.addAction(new AddSubstitutedAction());
+        RemoveRoleAction removeRoleAction = new RemoveRoleAction(rolesTable, false);
+        removeRoleAction.setEnabled(security.isEntityOpPermitted(metadata.getClass(UserRole.class), EntityOp.DELETE));
+        rolesTable.addAction(removeRoleAction);
+
+        AddSubstitutedAction addSubstitutedAction = new AddSubstitutedAction();
+        addSubstitutedAction.setEnabled(security.isEntityOpPermitted(metadata.getClass(UserSubstitution.class), EntityOp.CREATE));
+
+        substTable.addAction(addSubstitutedAction);
         substTable.addAction(new EditSubstitutedAction());
         substTable.addAction(new RemoveAction(substTable, false));
 
@@ -158,7 +167,7 @@ public class UserEditor extends AbstractEditor<User> {
         timeZoneLookup.setEnabled(!Boolean.TRUE.equals(getItem().getTimeZoneAuto()));
 
         // Do not show roles which are not allowed by security constraints
-        LoadContext lc = new LoadContext(Role.class);
+        LoadContext<Role> lc = new LoadContext<>(Role.class);
         lc.setQueryString("select r from sec$Role r");
         lc.setView(View.MINIMAL);
         List<Role> allowedRoles = dataSupplier.loadList(lc);
@@ -187,7 +196,7 @@ public class UserEditor extends AbstractEditor<User> {
     }
 
     protected void initUserGroup(User user) {
-        LoadContext ctx = new LoadContext(Group.class);
+        LoadContext<Group> ctx = new LoadContext<>(Group.class);
         ctx.setQueryString("select g from sec$Group g");
         ctx.setView(View.MINIMAL);
         List<Group> groups = dataSupplier.loadList(ctx);
@@ -196,8 +205,8 @@ public class UserEditor extends AbstractEditor<User> {
         }
     }
 
-    private void addDefaultRoles(User user) {
-        LoadContext ctx = new LoadContext(Role.class);
+    protected void addDefaultRoles(User user) {
+        LoadContext<Role> ctx = new LoadContext<>(Role.class);
         ctx.setQueryString("select r from sec$Role r where r.defaultRole = true");
         List<Role> defaultRoles = dataSupplier.loadList(ctx);
 
@@ -206,7 +215,7 @@ public class UserEditor extends AbstractEditor<User> {
             newRoles.addAll(user.getUserRoles());
         }
 
-        final MetaClass metaClass = rolesDs.getMetaClass();
+        MetaClass metaClass = rolesDs.getMetaClass();
         for (Role role : defaultRoles) {
             UserRole userRole = dataSupplier.newInstance(metaClass);
             userRole.setRole(role);
@@ -217,121 +226,110 @@ public class UserEditor extends AbstractEditor<User> {
         user.setUserRoles(newRoles);
     }
 
-    private void initCustomFields(final boolean isNew) {
-        fieldGroupLeft.addCustomField("passw", new FieldGroup.CustomFieldGenerator() {
-            @Override
-            public Component generateField(Datasource datasource, String propertyId) {
-                passwField = factory.createComponent(PasswordField.class);
-                if (isNew) {
-                    passwField.setRequiredMessage(getMessage("passwMsg"));
+    protected void initCustomFields(final boolean isNew) {
+        fieldGroupLeft.addCustomField("passw", (datasource, propertyId) -> {
+            passwField = factory.createComponent(PasswordField.class);
+            if (isNew) {
+                passwField.setRequiredMessage(getMessage("passwMsg"));
 
-                    Companion companion = getCompanion();
-                    if (companion != null) {
-                        companion.initPasswordField(passwField);
-                    } else {
-                        passwField.setRequired(true);
-                    }
-                    passwField.addValueChangeListener(e -> ((DatasourceImplementation) userDs).setModified(true));
+                Companion companion = getCompanion();
+                if (companion != null) {
+                    companion.initPasswordField(passwField);
                 } else {
-                    passwField.setVisible(false);
+                    passwField.setRequired(true);
                 }
-                return passwField;
+                passwField.addValueChangeListener(e ->
+                        ((DatasourceImplementation) userDs).setModified(true)
+                );
+            } else {
+                passwField.setVisible(false);
             }
+            return passwField;
         });
 
-        fieldGroupLeft.addCustomField("confirmPassw", new FieldGroup.CustomFieldGenerator() {
-            @Override
-            public Component generateField(Datasource datasource, String propertyId) {
-                confirmPasswField = factory.createComponent(PasswordField.class);
-                if (isNew) {
-                    confirmPasswField.setRequiredMessage(getMessage("confirmPasswMsg"));
+        fieldGroupLeft.addCustomField("confirmPassw", (datasource, propertyId) -> {
+            confirmPasswField = factory.createComponent(PasswordField.class);
+            if (isNew) {
+                confirmPasswField.setRequiredMessage(getMessage("confirmPasswMsg"));
 
-                    Companion companion = getCompanion();
-                    if (companion != null) {
-                        companion.initPasswordField(confirmPasswField);
-                    } else {
-                        confirmPasswField.setRequired(true);
-                    }
-                    confirmPasswField.addValueChangeListener(e -> ((DatasourceImplementation) userDs).setModified(true));
+                Companion companion = getCompanion();
+                if (companion != null) {
+                    companion.initPasswordField(confirmPasswField);
                 } else {
-                    confirmPasswField.setVisible(false);
+                    confirmPasswField.setRequired(true);
                 }
-                return confirmPasswField;
+                confirmPasswField.addValueChangeListener(e ->
+                        ((DatasourceImplementation) userDs).setModified(true)
+                );
+            } else {
+                confirmPasswField.setVisible(false);
             }
+            return confirmPasswField;
         });
 
-        fieldGroupRight.addCustomField("language", new FieldGroup.CustomFieldGenerator() {
-            @Override
-            public Component generateField(Datasource datasource, String propertyId) {
-                languageLookup = factory.createComponent(LookupField.class);
+        fieldGroupRight.addCustomField("language", (datasource, propertyId) -> {
+            languageLookup = factory.createComponent(LookupField.class);
 
-                languageLookup.setDatasource(datasource, propertyId);
-                languageLookup.setRequired(false);
+            languageLookup.setDatasource(datasource, propertyId);
+            languageLookup.setRequired(false);
 
-                Map<String, Locale> locales = configuration.getConfig(GlobalConfig.class).getAvailableLocales();
-                TreeMap<String, Object> options = new TreeMap<>();
-                for (Map.Entry<String, Locale> entry : locales.entrySet()) {
-                    options.put(entry.getKey(), messages.getTools().localeToString(entry.getValue()));
-                }
-                languageLookup.setOptionsMap(options);
-                return languageLookup;
+            Map<String, Locale> locales = configuration.getConfig(GlobalConfig.class).getAvailableLocales();
+            Map<String, Object> options = new TreeMap<>();
+            for (Map.Entry<String, Locale> entry : locales.entrySet()) {
+                options.put(entry.getKey(), messages.getTools().localeToString(entry.getValue()));
             }
+            languageLookup.setOptionsMap(options);
+            return languageLookup;
         });
 
-        fieldGroupRight.addCustomField("timeZone", new FieldGroup.CustomFieldGenerator() {
-            @Override
-            public Component generateField(Datasource datasource, String propertyId) {
-                HBoxLayout hbox = factory.createComponent(HBoxLayout.class);
-                hbox.setSpacing(true);
+        fieldGroupRight.addCustomField("timeZone", (datasource, propertyId) -> {
+            HBoxLayout hbox = factory.createComponent(HBoxLayout.class);
+            hbox.setSpacing(true);
 
-                timeZoneLookup = factory.createComponent(LookupField.class);
+            timeZoneLookup = factory.createComponent(LookupField.class);
 
-                timeZoneLookup.setDatasource(datasource, propertyId);
-                timeZoneLookup.setRequired(false);
+            timeZoneLookup.setDatasource(datasource, propertyId);
+            timeZoneLookup.setRequired(false);
 
-                MetaClass userMetaClass = userDs.getMetaClass();
-                timeZoneLookup.setEditable(fieldGroupRight.isEditable()
-                        && security.isEntityAttrUpdatePermitted(userMetaClass, propertyId));
+            MetaClass userMetaClass = userDs.getMetaClass();
+            timeZoneLookup.setEditable(fieldGroupRight.isEditable()
+                    && security.isEntityAttrUpdatePermitted(userMetaClass, propertyId));
 
-                Map<String, Object> options = new TreeMap<>();
-                for (String id : TimeZone.getAvailableIDs()) {
-                    TimeZone timeZone = TimeZone.getTimeZone(id);
-                    options.put(timeZones.getDisplayNameLong(timeZone), id);
-                }
-                timeZoneLookup.setOptionsMap(options);
-
-                hbox.add(timeZoneLookup);
-
-                CheckBox autoDetectField = factory.createComponent(CheckBox.class);
-                autoDetectField.setDatasource(datasource, "timeZoneAuto");
-                autoDetectField.setCaption(messages.getMainMessage("timeZone.auto"));
-                autoDetectField.setDescription(messages.getMainMessage("timeZone.auto.descr"));
-                autoDetectField.setAlignment(Alignment.MIDDLE_RIGHT);
-
-                autoDetectField.setEditable(fieldGroupRight.isEditable()
-                        && security.isEntityAttrUpdatePermitted(userMetaClass, "timeZoneAuto"));
-
-                hbox.add(autoDetectField);
-
-                hbox.expand(timeZoneLookup);
-
-                return hbox;
+            Map<String, Object> options = new TreeMap<>();
+            for (String id : TimeZone.getAvailableIDs()) {
+                TimeZone timeZone = TimeZone.getTimeZone(id);
+                options.put(timeZones.getDisplayNameLong(timeZone), id);
             }
+            timeZoneLookup.setOptionsMap(options);
+
+            hbox.add(timeZoneLookup);
+
+            CheckBox autoDetectField = factory.createComponent(CheckBox.class);
+            autoDetectField.setDatasource(datasource, "timeZoneAuto");
+            autoDetectField.setCaption(messages.getMainMessage("timeZone.auto"));
+            autoDetectField.setDescription(messages.getMainMessage("timeZone.auto.descr"));
+            autoDetectField.setAlignment(Alignment.MIDDLE_RIGHT);
+
+            autoDetectField.setEditable(fieldGroupRight.isEditable()
+                    && security.isEntityAttrUpdatePermitted(userMetaClass, "timeZoneAuto"));
+
+            hbox.add(autoDetectField);
+
+            hbox.expand(timeZoneLookup);
+
+            return hbox;
         });
 
-        fieldGroupRight.addCustomField("group", new FieldGroup.CustomFieldGenerator() {
-            @Override
-            public Component generateField(Datasource datasource, String propertyId) {
-                PickerField pickerField = factory.createComponent(PickerField.class);
-                pickerField.setDatasource(datasource, propertyId);
-                pickerField.setRequired(true);
-                pickerField.setRequiredMessage(getMessage("groupMsg"));
+        fieldGroupRight.addCustomField("group", (datasource, propertyId) -> {
+            PickerField pickerField = factory.createComponent(PickerField.class);
+            pickerField.setDatasource(datasource, propertyId);
+            pickerField.setRequired(true);
+            pickerField.setRequiredMessage(getMessage("groupMsg"));
 
-                PickerField.LookupAction action = pickerField.addLookupAction();
-                action.setLookupScreenOpenType(OpenType.DIALOG);
+            PickerField.LookupAction action = pickerField.addLookupAction();
+            action.setLookupScreenOpenType(OpenType.DIALOG);
 
-                return pickerField;
-            }
+            return pickerField;
         });
     }
 
@@ -397,55 +395,54 @@ public class UserEditor extends AbstractEditor<User> {
     }
 
     protected class AddRoleAction extends AbstractAction {
-
         public AddRoleAction() {
             super("add");
 
             icon = themeConstants.get("actions.Add.icon");
 
+            setCaption(getMessage("actions.Add"));
+
             ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
             setShortcut(clientConfig.getTableAddShortcut());
         }
 
+        protected Collection<String> getExistingRoleNames() {
+            User user = userDs.getItem();
+            Collection<String> existingRoleNames = new HashSet<>();
+            if (user.getUserRoles() != null) {
+                for (UserRole userRole : user.getUserRoles()) {
+                    if (userRole.getRole() != null)
+                        existingRoleNames.add(userRole.getRole().getName());
+                }
+            }
+            return existingRoleNames;
+        }
+
         @Override
         public void actionPerform(Component component) {
-            Map<String, Object> lookupParams = Collections.singletonMap("windowOpener", "sec$User.edit");
-            Lookup roleLookupWindow = openLookup("sec$Role.lookup", new Lookup.Handler() {
-                @Override
-                public void handleLookup(Collection items) {
-                    Collection<String> existingRoleNames = getExistingRoleNames();
-                    rolesDs.suspendListeners();
-                    try {
-                        for (Object item : items) {
-                            Role role = (Role) item;
-                            if (existingRoleNames.contains(role.getName())) continue;
+            Lookup roleLookupWindow = openLookup(Role.class, items -> {
+                Collection<String> existingRoleNames = getExistingRoleNames();
+                rolesDs.suspendListeners();
+                try {
+                    for (Object item : items) {
+                        Role role = (Role) item;
 
-                            final MetaClass metaClass = rolesDs.getMetaClass();
-                            UserRole userRole = dataSupplier.newInstance(metaClass);
-                            userRole.setRole(role);
-                            userRole.setUser(userDs.getItem());
-
-                            rolesDs.addItem(userRole);
-                            existingRoleNames.add(role.getName());
+                        if (existingRoleNames.contains(role.getName())) {
+                            continue;
                         }
-                    } finally {
-                        rolesDs.resumeListeners();
-                    }
-                }
 
-                private Collection<String> getExistingRoleNames() {
-                    User user = userDs.getItem();
-                    Collection<String> existingRoleNames = new HashSet<>();
-                    if (user.getUserRoles() != null) {
-                        for (UserRole userRole : user.getUserRoles()) {
-                            if (userRole.getRole() != null)
-                                existingRoleNames.add(userRole.getRole().getName());
-                        }
-                    }
-                    return existingRoleNames;
-                }
+                        MetaClass metaClass = rolesDs.getMetaClass();
+                        UserRole userRole = dataSupplier.newInstance(metaClass);
+                        userRole.setRole(role);
+                        userRole.setUser(userDs.getItem());
 
-            }, OpenType.THIS_TAB, lookupParams);
+                        rolesDs.addItem(userRole);
+                        existingRoleNames.add(role.getName());
+                    }
+                } finally {
+                    rolesDs.resumeListeners();
+                }
+            }, OpenType.THIS_TAB, ParamsMap.of("windowOpener", "sec$User.edit"));
 
             roleLookupWindow.addCloseListener(actionId -> {
                 rolesTable.requestFocus();
@@ -456,32 +453,22 @@ public class UserEditor extends AbstractEditor<User> {
                 ((Table) lookupComponent).setMultiSelect(true);
             }
         }
-
-        @Override
-        public boolean isEnabled() {
-            return super.isEnabled() &&
-                    security.isEntityOpPermitted(
-                            metadata.getSession().getClass(UserRole.class), EntityOp.CREATE);
-        }
-
-        @Override
-        public String getCaption() {
-            return getMessage("actions.Add");
-        }
     }
 
     protected class EditRoleAction extends ItemTrackingAction {
-
         public EditRoleAction() {
             super("edit");
 
             icon = themeConstants.get("actions.Edit.icon");
+
+            setCaption(getMessage("actions.Edit"));
         }
 
         @Override
         public void actionPerform(Component component) {
             if (rolesDs.getItem() == null)
                 return;
+
             Window window = openEditor("sec$Role.edit", rolesDs.getItem().getRole(), OpenType.THIS_TAB);
             window.addCloseListener(actionId -> {
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
@@ -489,11 +476,6 @@ public class UserEditor extends AbstractEditor<User> {
                 }
                 rolesTable.requestFocus();
             });
-        }
-
-        @Override
-        public String getCaption() {
-            return getMessage("actions.Edit");
         }
     }
 
@@ -508,6 +490,7 @@ public class UserEditor extends AbstractEditor<User> {
         @Override
         protected void confirmAndRemove(Set selected) {
             hasDefaultRole = hasDefaultRole(selected);
+
             super.confirmAndRemove(selected);
         }
 
@@ -527,17 +510,9 @@ public class UserEditor extends AbstractEditor<User> {
             }
             return false;
         }
-
-        @Override
-        public boolean isEnabled() {
-            return super.isEnabled() &&
-                    security.isEntityOpPermitted(
-                            metadata.getSession().getClass(UserRole.class), EntityOp.DELETE);
-        }
     }
 
     protected class AddSubstitutedAction extends AbstractAction {
-
         public AddSubstitutedAction() {
             super("add");
 
@@ -549,27 +524,17 @@ public class UserEditor extends AbstractEditor<User> {
 
         @Override
         public void actionPerform(Component component) {
-            final UserSubstitution substitution = metadata.create(UserSubstitution.class);
+            UserSubstitution substitution = metadata.create(UserSubstitution.class);
             substitution.setUser(userDs.getItem());
 
-            int dialogWidth = themeConstants.getInt("cuba.gui.UserEditor.substitutionEditor.width");
-            Window substitutionEditor = openEditor("sec$UserSubstitution.edit", substitution,
-                    OpenType.DIALOG.width(dialogWidth), substitutionsDs);
-            substitutionEditor.addCloseListener(actionId -> {
+            Window editor = openEditor(substitution, OpenType.DIALOG, ParamsMap.empty(), substitutionsDs);
+            editor.addCloseListener(actionId -> {
                 substTable.requestFocus();
             });
-        }
-
-        @Override
-        public boolean isEnabled() {
-            return super.isEnabled() &&
-                    security.isEntityOpPermitted(
-                            metadata.getSession().getClass(UserSubstitution.class), EntityOp.CREATE);
         }
     }
 
     protected class EditSubstitutedAction extends ItemTrackingAction {
-
         public EditSubstitutedAction() {
             super("edit");
 
@@ -578,12 +543,9 @@ public class UserEditor extends AbstractEditor<User> {
 
         @Override
         public void actionPerform(Component component) {
-            getDialogOptions().setWidth(themeConstants.getInt("cuba.gui.UserEditor.substitutionEditor.width"));
-
             if (substitutionsDs.getItem() != null) {
-                Window substitutionEditor = openEditor("sec$UserSubstitution.edit", substitutionsDs.getItem(),
-                        OpenType.DIALOG, substitutionsDs);
-                substitutionEditor.addCloseListener(actionId -> {
+                Window editor = openEditor(substitutionsDs.getItem(), OpenType.DIALOG, ParamsMap.empty(), substitutionsDs);
+                editor.addCloseListener(actionId -> {
                     substTable.requestFocus();
                 });
             }
