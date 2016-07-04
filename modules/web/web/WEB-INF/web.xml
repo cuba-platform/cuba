@@ -44,6 +44,9 @@
     </context-param>
 
     <listener>
+        <listener-class>com.vaadin.server.communication.JSR356WebsocketInitializer</listener-class>
+    </listener>
+    <listener>
         <listener-class>com.haulmont.cuba.web.sys.WebAppContextLoader</listener-class>
     </listener>
 
