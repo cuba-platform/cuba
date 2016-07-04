@@ -224,7 +224,7 @@ public class AddAction extends BaseAction implements Action.HasOpenType {
         this.windowParams = windowParams;
     }
 
-    interface AfterAddHandler {
+    public interface AfterAddHandler {
         void handle(Collection items);
     }
 
