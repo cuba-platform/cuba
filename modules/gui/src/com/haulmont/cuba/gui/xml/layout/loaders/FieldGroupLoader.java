@@ -512,11 +512,13 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
         }
 
         for (FieldGroup.FieldConfig field : resultComponent.getFields()) {
-            String generator = field.getXmlDescriptor().attributeValue("generator");
-            if (generator != null) {
-                context.addPostWrapTask((boundContext, window) ->
-                    resultComponent.addCustomField(field, new DeclarativeFieldGenerator(resultComponent, generator))
-                );
+            if (field.getXmlDescriptor() != null) {
+                String generator = field.getXmlDescriptor().attributeValue("generator");
+                if (generator != null) {
+                    context.addPostWrapTask((boundContext, window) ->
+                            resultComponent.addCustomField(field, new DeclarativeFieldGenerator(resultComponent, generator))
+                    );
+                }
             }
         }
 
