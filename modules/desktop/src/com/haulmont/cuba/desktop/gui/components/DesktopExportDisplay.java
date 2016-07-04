@@ -50,6 +50,8 @@ import java.io.InputStream;
 @Scope("prototype")
 public class DesktopExportDisplay implements ExportDisplay {
 
+    private static final String RESERVED_SYMBOLS = "\\/:*?\"<>|";
+
     @Inject
     protected BackgroundWorker backgroundWorker;
 
@@ -81,11 +83,11 @@ public class DesktopExportDisplay implements ExportDisplay {
         }
 
         String dialogMessage = messages.getMessage(getClass(), "export.saveFile");
+        String correctName = StringUtils.replaceChars(fileName, RESERVED_SYMBOLS, "_");
+        dialogMessage = String.format(dialogMessage, correctName);
+
+        final String finalFileName = correctName;
         String fileCaption = messages.getMessage(getClass(), "export.fileCaption");
-
-        dialogMessage = String.format(dialogMessage, fileName);
-
-        final String finalFileName = fileName;
         getFrame().getWindowManager().showOptionDialog(fileCaption, dialogMessage, Frame.MessageType.CONFIRMATION,
                 new com.haulmont.cuba.gui.components.Action[]{
                         new AbstractAction("action.openFile", Status.PRIMARY) {
