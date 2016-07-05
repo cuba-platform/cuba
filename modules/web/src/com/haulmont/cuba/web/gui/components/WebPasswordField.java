@@ -46,4 +46,10 @@ public class WebPasswordField extends WebAbstractTextField<CubaPasswordField> im
     public void setAutocomplete(Boolean value) {
         component.setAutocomplete(value);
     }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public String getValue() {
+        return super.getValue();
+    }
 }

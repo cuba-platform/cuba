@@ -56,7 +56,16 @@ public class DesktopPasswordField extends DesktopAbstractTextField<JPasswordFiel
         this.autocomplete = value;
     }
 
-    private class PasswordFlushableField extends JPasswordField implements Flushable {
+    @SuppressWarnings("unchecked")
+    @Override
+    public String getValue() {
+        return super.getValue();
+    }
+
+    protected class PasswordFlushableField extends JPasswordField implements Flushable {
+
+        public PasswordFlushableField() {
+        }
 
         @Override
         public void flushValue() {

@@ -83,9 +83,9 @@ public class DesktopProgressBar extends DesktopAbstractComponent<JProgressBar> i
     }
 
     @Override
-    public <T> T getValue() {
+    public Float getValue() {
         Float value = convertValueFromSwing(impl.getValue());
-        return (T) value;
+        return value;
     }
 
     @Override
