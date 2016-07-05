@@ -1997,6 +1997,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                         initialConditions = conditions.toConditionsList();
                         fillConditionsLayout(ConditionsFocusType.NONE);
                     }
+                    settingsBtn.requestFocus();
                 });
             } else {
                 String xml = filterEntity.getFolder() == null ?  filterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE)
@@ -2052,6 +2053,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                     initialConditions = conditions.toConditionsList();
                     fillConditionsLayout(ConditionsFocusType.NONE);
                 }
+                settingsBtn.requestFocus();
             });
         }
 
@@ -2093,6 +2095,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 } else {
                     requestFocusToParamEditComponent();
                 }
+                settingsBtn.requestFocus();
             });
         }
 
@@ -2146,9 +2149,15 @@ public class FilterDelegateImpl implements FilterDelegate {
                                 @Override
                                 public void actionPerform(Component component) {
                                     removeFilterEntity();
+                                    settingsBtn.requestFocus();
                                 }
                             },
-                            new DialogAction(Type.NO, Status.PRIMARY)
+                            new DialogAction(Type.NO, Status.PRIMARY) {
+                                @Override
+                                public void actionPerform(Component component) {
+                                    settingsBtn.requestFocus();
+                                }
+                            }
                     });
         }
 
