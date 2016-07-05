@@ -144,7 +144,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
         return linkField;
     }
 
-    private Component createUuidField(Datasource datasource, String property) {
+    protected Component createUuidField(Datasource datasource, String property) {
         MaskedField maskedField = componentsFactory.createComponent(MaskedField.class);
         maskedField.setDatasource(datasource, property);
         maskedField.setMask("hhhhhhhh-hhhh-hhhh-hhhh-hhhhhhhhhhhh");

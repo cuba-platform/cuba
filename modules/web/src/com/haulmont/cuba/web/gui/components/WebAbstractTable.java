@@ -128,6 +128,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     protected static final int MAX_TEXT_LENGTH_GAP = 10;
 
     protected Security security = AppBeans.get(Security.NAME);
+    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
     protected boolean settingsEnabled = true;
 
     protected Datasource.ItemPropertyChangeListener aggregationDatasourceListener;
@@ -571,7 +572,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         });
 
         component.setSelectable(true);
-        component.setTableFieldFactory(new WebTableFieldFactory());
+        component.setTableFieldFactory(createFieldFactory());
         component.setColumnCollapsingAllowed(true);
         component.setColumnReorderingAllowed(true);
 
@@ -590,6 +591,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         componentComposition.setExpandRatio(component, 1);
 
         component.setCellStyleGenerator(createStyleGenerator());
+    }
+
+    protected WebTableFieldFactory createFieldFactory() {
+        return new WebTableFieldFactory(this);
+    }
+
+    protected void setFieldFactory(WebTableFieldFactory fieldFactory) {
+        component.setTableFieldFactory(fieldFactory);
     }
 
     protected void setClientCaching(T component) {
@@ -744,7 +753,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         Preconditions.checkNotNullArgument(datasource, "datasource is null");
 
         MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
         final Collection<Object> columns;
         if (this.columns.isEmpty()) {
@@ -2115,7 +2123,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         }
     }
 
-    protected class WebTableFieldFactory extends AbstractFieldFactory implements TableFieldFactory {
+    protected static class WebTableFieldFactory extends AbstractFieldFactory implements TableFieldFactory {
+        protected WebAbstractTable<?, ?> webTable;
+
+        public WebTableFieldFactory(WebAbstractTable<?, ?> webTable) {
+            this.webTable = webTable;
+        }
 
         @Override
         public com.vaadin.ui.Field<?> createField(com.vaadin.data.Container container,
@@ -2123,11 +2136,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
             String fieldPropertyId = String.valueOf(propertyId);
 
-            Column columnConf = columns.get(propertyId);
+            Column columnConf = webTable.columns.get(propertyId);
 
             Item item = container.getItem(itemId);
             Entity entity = ((ItemWrapper) item).getItem();
-            Datasource fieldDatasource = getItemDatasource(entity);
+            Datasource fieldDatasource = webTable.getItemDatasource(entity);
 
             com.haulmont.cuba.gui.components.Component columnComponent =
                     createField(fieldDatasource, fieldPropertyId, columnConf.getXmlDescriptor());
@@ -2135,9 +2148,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             if (columnComponent instanceof Field) {
                 Field cubaField = (Field) columnComponent;
 
-                if (requiredColumns != null && requiredColumns.containsKey(columnConf)) {
+                if (webTable.requiredColumns != null && webTable.requiredColumns.containsKey(columnConf)) {
                     cubaField.setRequired(true);
-                    cubaField.setRequiredMessage(requiredColumns.get(columnConf));
+                    cubaField.setRequiredMessage(webTable.requiredColumns.get(columnConf));
                 }
             }
 
@@ -2150,13 +2163,13 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             if (columnComponent instanceof BelongToFrame) {
                 BelongToFrame belongToFrame = (BelongToFrame) columnComponent;
                 if (belongToFrame.getFrame() == null) {
-                    belongToFrame.setFrame(getFrame());
+                    belongToFrame.setFrame(webTable.getFrame());
                 }
             }
 
             applyPermissions(columnComponent);
 
-            columnComponent.setParent(WebAbstractTable.this);
+            columnComponent.setParent(webTable);
 
             Component componentImpl = getComponentImplementation(columnComponent);
             if (componentImpl instanceof com.vaadin.ui.Field) {
@@ -2191,7 +2204,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 if (propertyPath != null) {
                     MetaClass metaClass = dsComponent.getDatasource().getMetaClass();
                     dsComponent.setEditable(dsComponent.isEditable()
-                            && security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString()));
+                            && webTable.security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString()));
                 }
             }
         }
@@ -2199,13 +2212,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         @Override
         @Nullable
         protected CollectionDatasource getOptionsDatasource(Datasource fieldDatasource, String propertyId) {
-            if (datasource == null)
+            if (webTable.datasource == null) {
                 throw new IllegalStateException("Table datasource is null");
+            }
 
-            MetaPropertyPath metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
-                    .resolveMetaPropertyPath(datasource.getMetaClass(), propertyId);
-            Column columnConf = columns.get(metaPropertyPath);
-            final DsContext dsContext = datasource.getDsContext();
+            MetaClass metaClass = webTable.datasource.getMetaClass();
+            MetaPropertyPath metaPropertyPath = webTable.metadataTools.resolveMetaPropertyPath(metaClass, propertyId);
+            Column columnConf = webTable.columns.get(metaPropertyPath);
+            DsContext dsContext = webTable.datasource.getDsContext();
 
             String optDsName = columnConf.getXmlDescriptor() != null ?
                     columnConf.getXmlDescriptor().attributeValue("optionsDatasource") : "";
@@ -2214,8 +2228,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 return null;
             } else {
                 CollectionDatasource ds = (CollectionDatasource) dsContext.get(optDsName);
-                if (ds == null)
-                    throw new IllegalStateException("Options datasource for table column '" + propertyId + "' not found: " + optDsName);
+                if (ds == null) {
+                    throw new IllegalStateException(
+                            String.format("Options datasource for table column '%s' not found: %s", propertyId, optDsName));
+                }
 
                 return ds;
             }

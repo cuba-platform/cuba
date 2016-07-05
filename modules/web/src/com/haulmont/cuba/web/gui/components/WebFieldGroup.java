@@ -39,8 +39,7 @@ import org.dom4j.Element;
 
 import java.util.*;
 
-public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup>
-        implements com.haulmont.cuba.gui.components.FieldGroup {
+public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup> implements FieldGroup {
 
     protected Map<String, FieldConfig> fields = new LinkedHashMap<>();
     protected Map<FieldConfig, Integer> fieldsColumn = new HashMap<>();
@@ -51,7 +50,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup>
     protected Set<FieldConfig> readOnlyFields = new HashSet<>();
 
     protected Datasource<Entity> datasource;
-    protected FieldFactory fieldFactory = new WebFieldGroupFieldFactory();
+    protected FieldFactory fieldFactory;
 
     protected int cols = 1;
 
@@ -84,6 +83,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup>
             }
         };
         component.setLayout(new CubaFieldGroupLayout());
+        fieldFactory = createFieldFactory();
     }
 
     @Override
@@ -978,17 +978,22 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup>
         }
     }
 
-    protected class WebFieldGroupFieldFactory extends AbstractFieldFactory {
+    protected static class WebFieldGroupFieldFactory extends AbstractFieldFactory {
+        protected WebFieldGroup fieldGroup;
+
+        public WebFieldGroupFieldFactory(WebFieldGroup fieldGroup) {
+            this.fieldGroup = fieldGroup;
+        }
 
         @Override
         protected CollectionDatasource getOptionsDatasource(Datasource datasource, String property) {
-            FieldConfig field = fields.get(property);
+            FieldConfig field = fieldGroup.fields.get(property);
 
             Element descriptor = field.getXmlDescriptor();
             String optDsName = descriptor == null ? null : descriptor.attributeValue("optionsDatasource");
 
             if (StringUtils.isNotBlank(optDsName)) {
-                DsContext dsContext = WebFieldGroup.this.getFrame().getDsContext();
+                DsContext dsContext = fieldGroup.getFrame().getDsContext();
                 CollectionDatasource optDs = findDatasourceRecursively(dsContext, optDsName);
                 if (optDs == null) {
                     throw new IllegalStateException("Options datasource not found: " + optDsName);
@@ -999,7 +1004,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup>
             return null;
         }
 
-        private CollectionDatasource findDatasourceRecursively(DsContext dsContext, String dsName) {
+        protected CollectionDatasource findDatasourceRecursively(DsContext dsContext, String dsName) {
             if (dsContext == null) {
                 return null;
             }
@@ -1035,5 +1040,17 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup>
         public Component getField() {
             return field;
         }
+    }
+
+    protected WebFieldGroupFieldFactory createFieldFactory() {
+        return new WebFieldGroupFieldFactory(this);
+    }
+
+    public FieldFactory getFieldFactory() {
+        return fieldFactory;
+    }
+
+    public void setFieldFactory(FieldFactory fieldFactory) {
+        this.fieldFactory = fieldFactory;
     }
 }
