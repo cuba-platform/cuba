@@ -42,7 +42,7 @@ import java.util.*;
  * Controller that is used for operations with predefined JPQL queries
  */
 @RestController
-@RequestMapping("/queries")
+@RequestMapping("/api/queries")
 public class QueriesController {
 
     @Inject

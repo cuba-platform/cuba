@@ -34,7 +34,7 @@
     <context:component-scan base-package="com.haulmont.restapi"/>
 
     <!-- According to the spec the token endpoint should be secured by the basic authentication -->
-    <http pattern="/dispatch/oauth/**"
+    <http pattern="/dispatch/api/oauth/**"
           create-session="stateless"
           authentication-manager-ref="clientAuthenticationManager"
           xmlns="http://www.springframework.org/schema/security">
@@ -64,6 +64,7 @@
 
     <!-- Specifies token endpoint.-->
     <oauth2:authorization-server
+            token-endpoint-url="/api/oauth/token"
             client-details-service-ref="clientDetailsService"
             token-services-ref="tokenServices" >
         <oauth2:password authentication-manager-ref="userAuthenticationManager"/>
@@ -85,7 +86,7 @@
 
     <oauth2:resource-server id="resourceFilter" token-services-ref="tokenServices" />
 
-    <http pattern="/dispatch/entities/**"
+    <http pattern="/dispatch/api/entities/**"
           create-session="stateless"
           entry-point-ref="oauthAuthenticationEntryPoint"
           xmlns="http://www.springframework.org/schema/security">
@@ -96,7 +97,7 @@
         <custom-filter ref="resourceFilter" before="PRE_AUTH_FILTER"/>
     </http>
 
-    <http pattern="/dispatch/queries/**"
+    <http pattern="/dispatch/api/queries/**"
           create-session="stateless"
           entry-point-ref="oauthAuthenticationEntryPoint"
           xmlns="http://www.springframework.org/schema/security">

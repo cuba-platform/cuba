@@ -47,7 +47,7 @@ import java.util.UUID;
  * Controller that performs CRUD entity operations
  */
 @RestController
-@RequestMapping(value = "/entities", produces = "application/json; charset=UTF-8")
+@RequestMapping(value = "/api/entities", produces = "application/json; charset=UTF-8")
 public class EntitiesController {
 
     @Inject

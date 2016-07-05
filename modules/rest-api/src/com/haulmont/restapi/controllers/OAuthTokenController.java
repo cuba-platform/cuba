@@ -40,7 +40,7 @@ public class OAuthTokenController {
     @Inject
     private OAuthTokenRevoker oAuthTokenRevoker;
 
-    @RequestMapping(value = "/oauth/revoke", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/oauth/revoke", method = RequestMethod.POST)
     public ResponseEntity<Void> revokeToken(@RequestParam("token") final String token,
                                             @RequestParam(value = "token_hint", required = false) final String tokenHint, final Principal principal) {
         log.info("POST {}, /oauth/revoke; token = {}, tokenHint = {}", token, tokenHint);
