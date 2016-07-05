@@ -31,7 +31,7 @@ import java.util.LinkedList;
 
 public class CubaComboBoxWidget extends VFilterSelect implements ShortcutActionHandler.ShortcutActionHandlerOwner, HasEnabled {
 
-    private static final String READONLY_STYLE = "readonly";
+    private static final String READONLY_STYLE_SUFFIX = "readonly";
     private static final String PROMPT_STYLE = "prompt";
     private static final String CUBA_DISABLED_OR_READONLY = "cuba-disabled-or-readonly";
     private static final String CUBA_EMPTY_VALUE = "cuba-empty-value";
@@ -158,7 +158,7 @@ public class CubaComboBoxWidget extends VFilterSelect implements ShortcutActionH
     }
 
     protected boolean isReadonly() {
-        return getStyleName().contains(READONLY_STYLE);
+        return getStyleName().contains(getStylePrimaryName() + "-" + READONLY_STYLE_SUFFIX);
     }
 
     protected void refreshEnabledOrReadonly() {
