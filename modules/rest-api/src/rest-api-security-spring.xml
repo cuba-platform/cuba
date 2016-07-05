@@ -82,7 +82,7 @@
         <property name="clientDetailsService" ref="clientDetailsService"/>
     </bean>
 
-    <bean id="tokenStore" class="com.haulmont.restapi.auth.CubaInMemoryTokenStore"/>
+    <bean id="tokenStore" class="com.haulmont.restapi.auth.ClientProxyTokenStore"/>
 
     <oauth2:resource-server id="resourceFilter" token-services-ref="tokenServices" />
 

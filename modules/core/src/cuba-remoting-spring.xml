@@ -44,4 +44,9 @@
         <property name="serviceInterface" value="com.haulmont.cuba.core.app.LocalizedMessageService"/>
     </bean>
 
+    <bean name="/cuba_ServerTokenStore" class="com.haulmont.cuba.core.sys.remoting.HttpServiceExporter">
+        <property name="service" ref="cuba_ServerTokenStore"/>
+        <property name="serviceInterface" value="com.haulmont.cuba.restapi.ServerTokenStore"/>
+    </bean>
+
 </beans>
