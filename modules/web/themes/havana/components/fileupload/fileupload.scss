@@ -126,7 +126,7 @@
       transform: translateY(-50%) translateX(-50%);
     }
 
-    .v-expand {
+    & > div {
       opacity: 0.4;
     }
   }
