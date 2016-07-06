@@ -209,10 +209,10 @@ public class CubaVaadinServletService extends VaadinServletService {
         }
     }
 
-    // Add suport for CubaFileUpload component with XHR upload mechanism
+    // Add support for CubaFileUpload component with XHR upload mechanism
     protected static class CubaFileUploadHandler extends FileUploadHandler {
 
-        private Logger log = LoggerFactory.getLogger(CubaHeartbeatHandler.class);
+        private Logger log = LoggerFactory.getLogger(CubaFileUploadHandler.class);
 
         @Override
         protected boolean isSuitableUploadComponent(ClientConnector source) {
