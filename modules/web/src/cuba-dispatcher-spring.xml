@@ -34,6 +34,8 @@
     <context:annotation-config/>
 
     <context:component-scan base-package="com.haulmont.cuba.web.controllers"/>
+    <context:component-scan base-package="com.haulmont.restapi"/>
+
 
     <!-- Supports LastModified interface for MVC controllers classes -->
     <bean class="com.haulmont.cuba.web.controllers.CachedAnnotationMethodHandlerAdapter"/>

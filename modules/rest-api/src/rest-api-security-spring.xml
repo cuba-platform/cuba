@@ -86,28 +86,16 @@
 
     <oauth2:resource-server id="resourceFilter" token-services-ref="tokenServices" />
 
-    <http pattern="/dispatch/api/entities/**"
+    <http pattern="/dispatch/api/**"
           create-session="stateless"
           entry-point-ref="oauthAuthenticationEntryPoint"
           xmlns="http://www.springframework.org/schema/security">
-        <!--<intercept-url pattern="/dispatch/entities/**"/>-->
+        <intercept-url pattern="/dispatch/api/entities/**" access="hasRole('USER')"/>
+        <intercept-url pattern="/dispatch/api/queries/**" access="hasRole('USER')"/>
         <anonymous enabled="false"/>
         <csrf disabled="true"/>
-        <!--<http-basic entry-point-ref="clientAuthenticationEntryPoint"/>-->
         <custom-filter ref="resourceFilter" before="PRE_AUTH_FILTER"/>
     </http>
-
-    <http pattern="/dispatch/api/queries/**"
-          create-session="stateless"
-          entry-point-ref="oauthAuthenticationEntryPoint"
-          xmlns="http://www.springframework.org/schema/security">
-        <!--<intercept-url pattern="/dispatch/entities/**"/>-->
-        <anonymous enabled="false"/>
-        <csrf disabled="true"/>
-        <!--<http-basic entry-point-ref="clientAuthenticationEntryPoint"/>-->
-        <custom-filter ref="resourceFilter" before="PRE_AUTH_FILTER"/>
-    </http>
-
 
     <bean id="clientAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint"/>
 
