@@ -16,16 +16,12 @@
  */
 package com.haulmont.cuba.core.entity;
 
-import com.haulmont.cuba.core.global.UuidProvider;
-
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import java.util.UUID;
 
 /**
  * Base class for persistent entities with Integer identifier.
- *
  */
 @MappedSuperclass
 public abstract class BaseIntegerIdEntity extends BaseGenericIdEntity<Integer> {
@@ -36,13 +32,6 @@ public abstract class BaseIntegerIdEntity extends BaseGenericIdEntity<Integer> {
     @Column(name = "ID")
     protected Integer id;
 
-    @Column(name = "UUID", nullable = false)
-    protected UUID uuid;
-
-    protected BaseIntegerIdEntity() {
-        uuid = UuidProvider.createUuid();
-    }
-
     @Override
     public Integer getId() {
         return id;
@@ -51,14 +40,5 @@ public abstract class BaseIntegerIdEntity extends BaseGenericIdEntity<Integer> {
     @Override
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    @Override
-    public UUID getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
     }
 }

@@ -16,14 +16,14 @@
  */
 package com.haulmont.cuba.core.listener;
 
-import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.Entity;
 
 /**
  * Defines the contract for handling of entities after they have been updated in DB.<br>
  * Any updates through the EntityManager are impossible!
  *
  */
-public interface AfterUpdateEntityListener<T extends BaseEntity> {
+public interface AfterUpdateEntityListener<T extends Entity> {
 
     /**
      * Executes after the object has been updated in DB.

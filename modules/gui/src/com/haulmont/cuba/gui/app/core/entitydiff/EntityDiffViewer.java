@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.gui.app.core.entitydiff;
 
-import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
 import com.haulmont.cuba.core.entity.diff.EntityDiff;
 import com.haulmont.cuba.core.entity.diff.EntityPropertyDiff;
@@ -113,7 +113,7 @@ public class EntityDiffViewer extends AbstractFrame {
         diffTable.expandAll();
     }
 
-    public void loadVersions(BaseEntity entity) {
+    public void loadVersions(Entity entity) {
         snapshotsDs.setEntity(entity);
         snapshotsDs.refresh();
 

@@ -153,8 +153,8 @@ public class CategoryAttributeValue extends StandardEntity {
             setBooleanValue((Boolean) value);
         } else if (value instanceof UUID) {
             setEntityValue((UUID) value);
-        } else if (value instanceof Entity) {
-            setEntityValue(((Entity) value).getUuid());
+        } else if (value instanceof HasUuid) {
+            setEntityValue(((HasUuid) value).getUuid());
         } else if (value instanceof String) {
             setStringValue((String) value);
         } else {

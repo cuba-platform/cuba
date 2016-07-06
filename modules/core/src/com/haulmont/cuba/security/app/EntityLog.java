@@ -24,8 +24,8 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.TypedQuery;
-import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.HasUuid;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.persistence.EntityAttributeChanges;
@@ -171,25 +171,25 @@ public class EntityLog implements EntityLogAPI {
         log.debug("Loaded: entitiesAuto=" + entitiesAuto.size() + ", entitiesManual=" + entitiesManual.size());
     }
 
-    private String getEntityName(BaseEntity entity) {
+    private String getEntityName(Entity entity) {
         MetaClass metaClass = metadata.getSession().getClassNN(entity.getClass());
         MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
         return originalMetaClass != null ? originalMetaClass.getName() : metaClass.getName();
     }
 
-    protected boolean doNotRegister(BaseEntity entity) {
-        return entity == null || entity instanceof EntityLogItem || !isEnabled();
+    protected boolean doNotRegister(Entity entity) {
+        return entity == null || !(entity instanceof HasUuid) || entity instanceof EntityLogItem || !isEnabled();
     }
 
     @Override
-    public void registerCreate(BaseEntity entity) {
+    public void registerCreate(Entity entity) {
         if (entity == null)
             return;
         registerCreate(entity, false);
     }
 
     @Override
-    public void registerCreate(BaseEntity entity, boolean auto) {
+    public void registerCreate(Entity entity, boolean auto) {
         if (doNotRegister(entity))
             return;
 
@@ -210,7 +210,7 @@ public class EntityLog implements EntityLogAPI {
             item.setUser(findUser(em));
             item.setType(EntityLogItem.Type.CREATE);
             item.setEntity(entityName);
-            item.setEntityId(entity.getUuid());
+            item.setEntityId(((HasUuid) entity).getUuid());
 
             Properties properties = new Properties();
             for (String attr : attributes) {
@@ -241,17 +241,17 @@ public class EntityLog implements EntityLogAPI {
     }
 
     @Override
-    public void registerModify(BaseEntity entity) {
+    public void registerModify(Entity entity) {
         registerModify(entity, false);
     }
 
     @Override
-    public void registerModify(BaseEntity entity, boolean auto) {
+    public void registerModify(Entity entity, boolean auto) {
         registerModify(entity, auto, null);
     }
 
     @Override
-    public void registerModify(BaseEntity entity, boolean auto, @Nullable EntityAttributeChanges changes) {
+    public void registerModify(Entity entity, boolean auto, @Nullable EntityAttributeChanges changes) {
         if (doNotRegister(entity))
             return;
 
@@ -286,7 +286,7 @@ public class EntityLog implements EntityLogAPI {
                 item.setUser(findUser(em));
                 item.setType(EntityLogItem.Type.MODIFY);
                 item.setEntity(entityName);
-                item.setEntityId(entity.getUuid());
+                item.setEntityId(((HasUuid) entity).getUuid());
                 item.setChanges(getChanges(properties));
 
                 em.persist(item);
@@ -306,7 +306,7 @@ public class EntityLog implements EntityLogAPI {
         return changes;
     }
 
-    protected void writeAttribute(Properties properties, BaseEntity entity, String attr) {
+    protected void writeAttribute(Properties properties, Entity entity, String attr) {
         if (!PersistenceHelper.isLoaded(entity, attr))
             return;
 
@@ -324,12 +324,12 @@ public class EntityLog implements EntityLogAPI {
     }
 
     @Override
-    public void registerDelete(BaseEntity entity) {
+    public void registerDelete(Entity entity) {
         registerDelete(entity, false);
     }
 
     @Override
-    public void registerDelete(BaseEntity entity, boolean auto) {
+    public void registerDelete(Entity entity, boolean auto) {
         if (doNotRegister(entity))
             return;
 
@@ -350,7 +350,7 @@ public class EntityLog implements EntityLogAPI {
             item.setUser(findUser(em));
             item.setType(EntityLogItem.Type.DELETE);
             item.setEntity(entityName);
-            item.setEntityId(entity.getUuid());
+            item.setEntityId(((HasUuid) entity).getUuid());
 
             Properties properties = new Properties();
             for (String attr : attributes) {

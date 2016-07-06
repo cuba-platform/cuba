@@ -26,12 +26,18 @@ import java.util.Date;
  * <p/>Optimistically locked, implements Updatable and SoftDelete.
  */
 @MappedSuperclass
-public class StandardEntity extends BaseUuidEntity implements Versioned, Updatable, SoftDelete {
+public class StandardEntity extends BaseUuidEntity implements Versioned, Creatable, Updatable, SoftDelete {
     private static final long serialVersionUID = 5642226839555253331L;
 
     @Version
     @Column(name = "VERSION", nullable = false)
     protected Integer version;
+
+    @Column(name = "CREATE_TS")
+    protected Date createTs;
+
+    @Column(name = "CREATED_BY", length = LOGIN_FIELD_LEN)
+    protected String createdBy;
 
     @Column(name = "UPDATE_TS")
     protected Date updateTs;
@@ -53,6 +59,26 @@ public class StandardEntity extends BaseUuidEntity implements Versioned, Updatab
     @Override
     public void setVersion(Integer version) {
         this.version = version;
+    }
+
+    @Override
+    public Date getCreateTs() {
+        return createTs;
+    }
+
+    @Override
+    public void setCreateTs(Date createTs) {
+        this.createTs = createTs;
+    }
+
+    @Override
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    @Override
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 
     @Override

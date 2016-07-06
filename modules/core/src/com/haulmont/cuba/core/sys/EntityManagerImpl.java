@@ -35,9 +35,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import javax.persistence.EntityNotFoundException;
 import java.sql.Connection;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class EntityManagerImpl implements EntityManager {
 
@@ -89,11 +87,9 @@ public class EntityManagerImpl implements EntityManager {
         if (PersistenceHelper.isManaged(entity))
             return entity;
 
-        if (entity instanceof BaseEntity) {
-            entityListenerMgr.fireListener((BaseEntity) entity, EntityListenerType.BEFORE_ATTACH);
-        }
+        entityListenerMgr.fireListener(entity, EntityListenerType.BEFORE_ATTACH);
 
-        if (PersistenceHelper.isNew(entity)) {
+        if (PersistenceHelper.isNew(entity) && entity.getId() != null) {
             // if a new instance is passed to merge(), we suppose it is persistent but "not detached"
             Entity destEntity = findOrCreate(entity.getClass(), entity.getId());
             deepCopyIgnoringNulls(entity, destEntity);
@@ -149,11 +145,12 @@ public class EntityManagerImpl implements EntityManager {
         Preconditions.checkNotNullArgument(entityClass, "entityClass is null");
         Preconditions.checkNotNullArgument(id, "id is null");
 
-        log.debug("find {} by id={}", entityClass.getSimpleName(), id);
+        Object realId = getRealId(id);
+        log.debug("find {} by id={}", entityClass.getSimpleName(), realId);
         MetaClass metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(entityClass);
         Class<T> javaClass = metaClass.getJavaClass();
 
-        return delegate.find(javaClass, id);
+        return delegate.find(javaClass, realId);
     }
 
     @Nullable
@@ -176,11 +173,12 @@ public class EntityManagerImpl implements EntityManager {
         return find(entityClass, id, viewArray);
     }
 
-    private <T extends Entity> T findWithViews(MetaClass metaClass, Object key, List<View> views) {
-        log.debug("find {} by id={}, views={}", metaClass.getJavaClass().getSimpleName(), key, views);
+    private <T extends Entity> T findWithViews(MetaClass metaClass, Object id, List<View> views) {
+        Object realId = getRealId(id);
+        log.debug("find {} by id={}, views={}", metaClass.getJavaClass().getSimpleName(), realId, views);
         Query query = createQuery("select e from " + metaClass.getName() + " e where e.id = ?1");
         ((QueryImpl) query).setSingleResultExpected(true);
-        query.setParameter(1, key);
+        query.setParameter(1, realId);
         for (View view : views) {
             query.addView(view);
         }
@@ -192,7 +190,7 @@ public class EntityManagerImpl implements EntityManager {
     public <T extends Entity<K>, K> T getReference(Class<T> clazz, K id) {
         Class<T> effectiveClass = metadata.getExtendedEntities().getEffectiveClass(clazz);
 
-        T reference = delegate.getReference(effectiveClass, id);
+        T reference = delegate.getReference(effectiveClass, getRealId(id));
         BaseEntityInternalAccess.setNew((BaseGenericIdEntity) reference, false);
         return reference;
     }
@@ -369,7 +367,20 @@ public class EntityManagerImpl implements EntityManager {
     protected <T extends Entity> T internalMerge(T entity) {
         try {
             disableSoftDelete(true);
-            return delegate.merge(entity);
+
+            UUID uuid = null;
+            if (entity.getId() instanceof IdProxy) {
+                uuid = ((IdProxy) entity.getId()).getUuid();
+            }
+
+            T merged = delegate.merge(entity);
+
+            if (entity.getId() instanceof IdProxy
+                    && uuid != null
+                    && !uuid.equals(((IdProxy) merged.getId()).getUuid())) {
+                ((IdProxy) merged.getId()).setUuid(uuid);
+            }
+            return merged;
         } finally {
             disableSoftDelete(!softDeletion);
         }
@@ -377,5 +388,9 @@ public class EntityManagerImpl implements EntityManager {
 
     protected void disableSoftDelete(boolean disable) {
         delegate.setProperty("cuba.disableSoftDelete", disable);
+    }
+
+    private Object getRealId(Object id) {
+        return id instanceof IdProxy ? ((IdProxy) id).getNN() : id;
     }
 }

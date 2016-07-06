@@ -197,7 +197,7 @@ public class MetadataTools {
     /**
      * Determine whether the given property is system-level. A property is considered system if it is defined not
      * in an entity class but in one of its base interfaces:
-     * {@link BaseEntity}, {@link Updatable}, {@link SoftDelete}, {@link Versioned}
+     * {@link Entity}, {@link Creatable}, {@link Updatable}, {@link SoftDelete}, {@link Versioned}
      */
     public boolean isSystem(MetaProperty metaProperty) {
         Objects.requireNonNull(metaProperty, "metaProperty is null");
@@ -257,7 +257,7 @@ public class MetadataTools {
      */
     public boolean isEmbedded(MetaProperty metaProperty) {
         Objects.requireNonNull(metaProperty, "metaProperty is null");
-        return metaProperty.getAnnotatedElement().isAnnotationPresent(Embedded.class);
+        return Boolean.TRUE.equals(metaProperty.getAnnotations().get("embedded"));
     }
 
     /**

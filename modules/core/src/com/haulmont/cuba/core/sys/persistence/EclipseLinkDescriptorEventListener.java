@@ -54,7 +54,7 @@ public class EclipseLinkDescriptorEventListener implements DescriptorEventListen
     protected PersistenceImplSupport support;
 
     protected boolean justDeleted(SoftDelete entity) {
-        return entity.isDeleted() && persistence.getTools().getDirtyFields((BaseEntity) entity).contains("deleteTs");
+        return entity.isDeleted() && persistence.getTools().getDirtyFields((Entity) entity).contains("deleteTs");
     }
 
     @Override
@@ -105,12 +105,12 @@ public class EclipseLinkDescriptorEventListener implements DescriptorEventListen
 
     @Override
     public void postDelete(DescriptorEvent event) {
-        manager.fireListener((BaseEntity) event.getSource(), EntityListenerType.AFTER_DELETE);
+        manager.fireListener((Entity) event.getSource(), EntityListenerType.AFTER_DELETE);
     }
 
     @Override
     public void postInsert(DescriptorEvent event) {
-        manager.fireListener((BaseEntity) event.getSource(), EntityListenerType.AFTER_INSERT);
+        manager.fireListener((Entity) event.getSource(), EntityListenerType.AFTER_INSERT);
     }
 
     @Override
@@ -129,7 +129,7 @@ public class EclipseLinkDescriptorEventListener implements DescriptorEventListen
 
     @Override
     public void postUpdate(DescriptorEvent event) {
-        manager.fireListener((BaseEntity) event.getSource(), EntityListenerType.AFTER_UPDATE);
+        manager.fireListener((Entity) event.getSource(), EntityListenerType.AFTER_UPDATE);
     }
 
     @Override
@@ -146,11 +146,13 @@ public class EclipseLinkDescriptorEventListener implements DescriptorEventListen
 
     @Override
     public void prePersist(DescriptorEvent event) {
-        BaseEntity entity = (BaseEntity) event.getObject();
-        entity.setCreatedBy(userSessionSource.getUserSession().getUser().getLogin());
+        Entity entity = (Entity) event.getObject();
         Date ts = timeSource.currentTimestamp();
-        entity.setCreateTs(ts);
 
+        if (entity instanceof Creatable) {
+            ((Creatable) entity).setCreatedBy(userSessionSource.getUserSession().getUser().getLogin());
+            ((Creatable) entity).setCreateTs(ts);
+        }
         if (entity instanceof Updatable) {
             ((Updatable) entity).setUpdateTs(ts);
         }
@@ -162,7 +164,7 @@ public class EclipseLinkDescriptorEventListener implements DescriptorEventListen
 
     @Override
     public void preUpdate(DescriptorEvent event) {
-        BaseEntity entity = (BaseEntity) event.getObject();
+        Entity entity = (Entity) event.getObject();
         if (!((entity instanceof SoftDelete) && justDeleted((SoftDelete) entity)) && (entity instanceof Updatable)) {
             Updatable updatable = (Updatable) event.getObject();
             updatable.setUpdatedBy(userSessionSource.getUserSession().getUser().getLogin());

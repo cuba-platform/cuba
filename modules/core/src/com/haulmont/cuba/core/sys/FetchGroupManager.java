@@ -21,7 +21,6 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import org.apache.commons.lang.StringUtils;
@@ -299,7 +298,10 @@ public class FetchGroupManager {
             // Always add uuid property if the entity has primary key not of type UUID
             if (!BaseUuidEntity.class.isAssignableFrom(entityClass)
                     && !EmbeddableEntity.class.isAssignableFrom(entityClass)) {
-                fetchGroupFields.add(createFetchGroupField(entityClass, parentField, "uuid"));
+                MetaProperty uuidProp = metadata.getClassNN(entityClass).getProperty("uuid");
+                if (uuidProp != null && metadataTools.isPersistent(uuidProp)) {
+                    fetchGroupFields.add(createFetchGroupField(entityClass, parentField, "uuid"));
+                }
             }
         }
 
@@ -326,25 +328,6 @@ public class FetchGroupManager {
                         View relatedView = viewRepository.getView(relatedMetaProp.getRange().asClass(), View.MINIMAL);
                         processView(relatedView, field, fetchGroupFields, useFetchGroup);
                     }
-                }
-            }
-        }
-    }
-
-    private void includeSystemProperties(View view, FetchGroupField parentField, Set<FetchGroupField> fetchGroupFields) {
-        Class<? extends Entity> entityClass = view.getEntityClass();
-        MetaClass metaClass = metadata.getClassNN(entityClass);
-        if (BaseEntity.class.isAssignableFrom(entityClass)) {
-            for (String property : getInterfaceProperties(BaseEntity.class)) {
-                if (metadataTools.isPersistent(metaClass.getPropertyNN(property))) {
-                    fetchGroupFields.add(createFetchGroupField(entityClass, parentField, property));
-                }
-            }
-        }
-        if (Updatable.class.isAssignableFrom(entityClass)) {
-            for (String property : getInterfaceProperties(Updatable.class)) {
-                if (metadataTools.isPersistent(metaClass.getPropertyNN(property))) {
-                    fetchGroupFields.add(createFetchGroupField(entityClass, parentField, property));
                 }
             }
         }

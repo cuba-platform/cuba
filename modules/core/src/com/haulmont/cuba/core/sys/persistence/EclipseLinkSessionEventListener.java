@@ -19,7 +19,7 @@ package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -62,7 +62,7 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
 
             setCacheable(metaClass, desc, session);
 
-            if (BaseEntity.class.isAssignableFrom(desc.getJavaClass())) {
+            if (Entity.class.isAssignableFrom(desc.getJavaClass())) {
                 desc.getEventManager().addListener(descriptorEventListener);
             }
 

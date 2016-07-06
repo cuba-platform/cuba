@@ -12,30 +12,37 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
-
 package com.haulmont.cuba.core.entity;
 
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 
 /**
- * Base class for persistent entities with String identifier.
- * <p>
- * Does not define an identifier field. Inheritors must define a field of type String and add
- * {@link javax.persistence.Id} annotation to it, e.g.
- * <pre>
- *  &#64;Id
- *  &#64;Column(name = "CODE")
- *  protected String code;
- * </pre>
- *
+ * Base class for persistent entities with Identity identifier.
  */
 @MappedSuperclass
-public abstract class BaseStringIdEntity extends BaseGenericIdEntity<String> {
+public abstract class BaseIdentityIdEntity extends BaseGenericIdEntity<IdProxy> {
 
-    private static final long serialVersionUID = -1887225952123433245L;
+    private static final long serialVersionUID = 3083677558630811496L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
+    protected Long id;
+
+    @Transient
+    protected IdProxy idProxy;
 
     @Override
-    public abstract String getId();
+    public IdProxy getId() {
+        if (idProxy == null) {
+            idProxy = new IdProxy(this);
+        }
+        return idProxy;
+    }
+
+    @Override
+    public void setId(IdProxy idProxy) {
+        this.id = idProxy.get();
+    }
 }

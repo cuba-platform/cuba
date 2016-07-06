@@ -16,13 +16,13 @@
  */
 package com.haulmont.cuba.core.listener;
 
-import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.Entity;
 
 /**
  * Defines the contract for handling of entities before they have been updated in DB.
  *
  */
-public interface BeforeUpdateEntityListener<T extends BaseEntity> {
+public interface BeforeUpdateEntityListener<T extends Entity> {
 
     /**
      * Executes before the object has been updated in DB.

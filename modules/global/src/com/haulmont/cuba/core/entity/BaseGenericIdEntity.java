@@ -29,13 +29,12 @@ import com.haulmont.cuba.core.global.TimeSource;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;
-import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -51,7 +50,7 @@ import java.util.UUID;
  * </p>
  */
 @MappedSuperclass
-public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements BaseEntity<T> {
+public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements Entity<T> {
 
     private static final long serialVersionUID = -8400641366148656528L;
 
@@ -81,12 +80,6 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
     @Transient
     protected Map<String, CategoryAttributeValue> dynamicAttributes = null;
 
-    @Column(name = "CREATE_TS")
-    protected Date createTs;
-
-    @Column(name = "CREATED_BY", length = LOGIN_FIELD_LEN)
-    protected String createdBy;
-
     public abstract void setId(T id);
 
     private void writeObject(java.io.ObjectOutputStream out) throws IOException {
@@ -102,28 +95,8 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
     }
 
     @Override
-    public Date getCreateTs() {
-        return createTs;
-    }
-
-    @Override
-    public void setCreateTs(Date createTs) {
-        this.createTs = createTs;
-    }
-
-    @Override
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    @Override
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    @Override
     public void setValue(String property, Object newValue, boolean checkEquals) {
-        if (DynamicAttributesUtils.isDynamicAttribute(property)) {
+        if (this instanceof HasUuid && DynamicAttributesUtils.isDynamicAttribute(property)) {
             Preconditions.checkState(dynamicAttributes != null, "Dynamic attributes should be loaded explicitly");
             String attributeCode = DynamicAttributesUtils.decodeAttributeCode(property);
             CategoryAttributeValue categoryAttributeValue = dynamicAttributes.get(attributeCode);
@@ -144,7 +117,7 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
 
                     categoryAttributeValue = metadata.create(CategoryAttributeValue.class);
                     categoryAttributeValue.setValue(newValue);
-                    categoryAttributeValue.setEntityId(getUuid());
+                    categoryAttributeValue.setEntityId(((HasUuid) this).getUuid());
                     categoryAttributeValue.setCode(attributeCode);
                     DynamicAttributes dynamicAttributesBean = AppBeans.get(DynamicAttributes.NAME);
                     categoryAttributeValue.setCategoryAttribute(
@@ -188,6 +161,22 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
     }
 
     @Override
+    public boolean equals(Object other) {
+        if (this == other)
+            return true;
+
+        if (other == null || getClass() != other.getClass())
+            return false;
+
+        return Objects.equals(getId(), ((BaseGenericIdEntity) other).getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getId() != null ? getId().hashCode() : 0;
+    }
+
+    @Override
     public String toString() {
         String state = "";
         if (__new)
@@ -200,6 +189,6 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
             state += "removed,";
         if (state.length() > 0)
             state = state.substring(0, state.length() - 1);
-        return super.toString() + " [" + state + "]";
+        return getClass().getName() + "-" + getId() + " [" + state + "]";
     }
 }

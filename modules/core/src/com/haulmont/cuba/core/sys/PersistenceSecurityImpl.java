@@ -27,6 +27,7 @@ import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.HasUuid;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.jpql.JpqlSyntaxException;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
@@ -40,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -116,11 +118,14 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
 
     @Override
     public void applyConstraints(Collection<Entity> entities) {
-        internalApplyConstraints(entities, new HashSet<>());
+        List<Entity> supportedEntities = entities.stream().filter(e -> e instanceof HasUuid).collect(Collectors.toList());
+        internalApplyConstraints(supportedEntities, new HashSet<>());
     }
 
     @Override
     public boolean applyConstraints(Entity entity) {
+        if (!(entity instanceof HasUuid))
+            return false;
         return internalApplyConstraints(entity, new HashSet<>());
     }
 
@@ -206,7 +211,7 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
         for (Iterator<Entity> iterator = entities.iterator(); iterator.hasNext(); ) {
             Entity next = iterator.next();
             if (internalApplyConstraints(next, handled)) {
-                filtered.add(next.getUuid());
+                filtered.add(((HasUuid) next).getUuid());
                 //we ignore situations when the collection is immutable
                 iterator.remove();
             }
@@ -226,8 +231,8 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
             return true;
         }
 
-        if (handled.contains(entity.getUuid())) return false;
-        handled.add(entity.getUuid());
+        if (handled.contains(((HasUuid) entity).getUuid())) return false;
+        handled.add(((HasUuid) entity).getUuid());
 
         for (MetaProperty property : metaClass.getProperties()) {
             if (metadataTools.isPersistent(property) && PersistenceHelper.isLoaded(entity, property.getName())) {
@@ -237,13 +242,13 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
                     if (entity instanceof BaseGenericIdEntity) {
                         securityTokenManager.addFiltered((BaseGenericIdEntity) entity, property.getName(), filtered);
                     }
-                } else if (value instanceof Entity) {
+                } else if (value instanceof Entity && value instanceof HasUuid) {
                     Entity valueEntity = (Entity) value;
                     if (internalApplyConstraints(valueEntity, handled)) {
                         //we ignore the situation when the field is read-only
                         entity.setValue(property.getName(), null);
                         if (entity instanceof BaseGenericIdEntity) {
-                            securityTokenManager.addFiltered((BaseGenericIdEntity) entity, property.getName(), valueEntity.getUuid());
+                            securityTokenManager.addFiltered((BaseGenericIdEntity) entity, property.getName(), ((HasUuid) valueEntity).getUuid());
                         }
                     }
                 }

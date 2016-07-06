@@ -24,9 +24,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.UuidProvider;
-
-import java.util.UUID;
 
 @com.haulmont.chile.core.annotations.MetaClass(name = "sec$AbstractTarget")
 @SystemLevel
@@ -42,8 +39,6 @@ public class AbstractPermissionTarget extends AbstractInstance
     @MetaProperty(mandatory = true)
     protected String permissionValue;
 
-    private UUID uuid = UuidProvider.createUuid();
-
     public AbstractPermissionTarget(String id, String caption) {
         this.id = id;
         this.caption = caption;
@@ -52,11 +47,6 @@ public class AbstractPermissionTarget extends AbstractInstance
     @Override
     public String getId() {
         return id;
-    }
-
-    @Override
-    public UUID getUuid() {
-        return uuid;
     }
 
     @Override

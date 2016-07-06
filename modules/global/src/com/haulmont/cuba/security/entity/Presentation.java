@@ -18,6 +18,7 @@ package com.haulmont.cuba.security.entity;
 
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.Creatable;
 import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
@@ -31,7 +32,13 @@ import java.util.Date;
 @Table(name = "SEC_PRESENTATION")
 @NamePattern("%s|name")
 @SystemLevel
-public class Presentation extends BaseUuidEntity implements Updatable {
+public class Presentation extends BaseUuidEntity implements Creatable, Updatable {
+
+    @Column(name = "CREATE_TS")
+    protected Date createTs;
+
+    @Column(name = "CREATED_BY", length = LOGIN_FIELD_LEN)
+    protected String createdBy;
 
     @Column(name = "COMPONENT")
     private String componentId;
@@ -59,6 +66,26 @@ public class Presentation extends BaseUuidEntity implements Updatable {
     private Boolean isDefault;
 
     private static final long serialVersionUID = -3151934186797540532L;
+
+    @Override
+    public Date getCreateTs() {
+        return createTs;
+    }
+
+    @Override
+    public void setCreateTs(Date createTs) {
+        this.createTs = createTs;
+    }
+
+    @Override
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    @Override
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
 
     public Boolean getAutoSave() {
         return autoSave;

@@ -92,13 +92,13 @@ public class EntityParamsDatasource extends CollectionDatasourceImpl<InfoParamEn
                 includeParam("table.showInfoAction.version", version.toString());
             }
 
-            if (instance instanceof BaseEntity) {
-                BaseEntity baseEntity = (BaseEntity) instance;
-                if (baseEntity.getCreateTs() != null) {
-                    includeParam("table.showInfoAction.createTs", df.format(((BaseEntity) instance).getCreateTs()));
+            if (instance instanceof Creatable) {
+                Creatable creatableEntity = (Creatable) instance;
+                if (creatableEntity.getCreateTs() != null) {
+                    includeParam("table.showInfoAction.createTs", df.format(((Creatable) instance).getCreateTs()));
                 }
-                if (baseEntity.getCreatedBy() != null) {
-                    includeParam("table.showInfoAction.createdBy", baseEntity.getCreatedBy());
+                if (creatableEntity.getCreatedBy() != null) {
+                    includeParam("table.showInfoAction.createdBy", creatableEntity.getCreatedBy());
                 }
             }
 
@@ -127,8 +127,9 @@ public class EntityParamsDatasource extends CollectionDatasourceImpl<InfoParamEn
     protected Entity reloadInstance(Entity instance) {
         View reloadView = new View(instance.getMetaClass().getJavaClass(), true);
 
-        if (instance instanceof BaseEntity) {
-            reloadView.addProperty("id");
+        reloadView.addProperty("id");
+
+        if (instance instanceof Creatable) {
             reloadView.addProperty("createTs");
             reloadView.addProperty("createdBy");
         }

@@ -20,9 +20,10 @@ package com.haulmont.cuba.core.app;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
+import com.haulmont.cuba.core.entity.HasUuid;
 import com.haulmont.cuba.core.entity.diff.EntityDiff;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.User;
@@ -193,18 +194,21 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
     }
 
     @Override
-    public EntitySnapshot createSnapshot(BaseEntity entity, View view) {
+    public EntitySnapshot createSnapshot(Entity entity, View view) {
         return createSnapshot(entity, view, timeSource.currentTimestamp());
     }
 
     @Override
-    public EntitySnapshot createSnapshot(BaseEntity entity, View view, Date snapshotDate) {
+    public EntitySnapshot createSnapshot(Entity entity, View view, Date snapshotDate) {
         User user = userSessionSource.getUserSession().getUser();
         return createSnapshot(entity, view, snapshotDate, user);
     }
 
     @Override
-    public EntitySnapshot createSnapshot(BaseEntity entity, View view, Date snapshotDate, User author) {
+    public EntitySnapshot createSnapshot(Entity entity, View view, Date snapshotDate, User author) {
+        if (!(entity instanceof HasUuid))
+            throw new UnsupportedOperationException("Entity " + entity + " has no persistent UUID attribute");
+
         Preconditions.checkNotNullArgument(entity);
         Preconditions.checkNotNullArgument(view);
         Preconditions.checkNotNullArgument(snapshotDate);
@@ -217,7 +221,7 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
         }
 
         EntitySnapshot snapshot = metadata.create(EntitySnapshot.class);
-        snapshot.setEntityId(entity.getUuid());
+        snapshot.setEntityId(((HasUuid) entity).getUuid());
 
         MetaClass metaClass = getOriginalOrCurrentMetaClass(entity.getClass());
 
@@ -242,7 +246,7 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
     }
 
     @Override
-    public BaseEntity extractEntity(EntitySnapshot snapshot) {
+    public Entity extractEntity(EntitySnapshot snapshot) {
         String xml = snapshot.getSnapshotXml();
         return (BaseUuidEntity) fromXML(xml);
     }

@@ -18,7 +18,7 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
 import com.haulmont.cuba.core.entity.diff.EntityDiff;
 import com.haulmont.cuba.core.global.View;
@@ -52,7 +52,7 @@ public interface EntitySnapshotService {
      * @param view View
      * @return Snapshot
      */
-    EntitySnapshot createSnapshot(BaseEntity entity, View view);
+    EntitySnapshot createSnapshot(Entity entity, View view);
 
     /**
      * Create snapshot for Entity with specific date and store it to database
@@ -62,7 +62,7 @@ public interface EntitySnapshotService {
      * @param snapshotDate Date
      * @return Snapshot
      */
-    EntitySnapshot createSnapshot(BaseEntity entity, View view, Date snapshotDate);
+    EntitySnapshot createSnapshot(Entity entity, View view, Date snapshotDate);
 
     /**
      * Create snapshot for Entity with specific date and author and store it to database
@@ -73,14 +73,14 @@ public interface EntitySnapshotService {
      * @param author       Author
      * @return Snapshot
      */
-    EntitySnapshot createSnapshot(BaseEntity entity, View view, Date snapshotDate, User author);
+    EntitySnapshot createSnapshot(Entity entity, View view, Date snapshotDate, User author);
 
     /**
      * Get entity from snapshot
      * @param snapshot Snapshot
      * @return Entity
      */
-    BaseEntity extractEntity(EntitySnapshot snapshot);
+    Entity extractEntity(EntitySnapshot snapshot);
 
     /**
      * Get Diff for snapshots

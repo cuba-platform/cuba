@@ -31,12 +31,18 @@ import java.util.Date;
 @Entity(name = "sys$Config")
 @Table(name = "SYS_CONFIG")
 @SystemLevel
-public class Config extends BaseUuidEntity implements Versioned, Updatable {
+public class Config extends BaseUuidEntity implements Versioned, Creatable, Updatable {
     private static final long serialVersionUID = -2103060811330948816L;
 
     @Version
     @Column(name = "VERSION")
     private Integer version;
+
+    @Column(name = "CREATE_TS")
+    protected Date createTs;
+
+    @Column(name = "CREATED_BY", length = LOGIN_FIELD_LEN)
+    protected String createdBy;
 
     @Column(name = "UPDATE_TS")
     private Date updateTs;
@@ -58,6 +64,26 @@ public class Config extends BaseUuidEntity implements Versioned, Updatable {
     @Override
     public void setVersion(Integer version) {
         this.version = version;
+    }
+
+    @Override
+    public Date getCreateTs() {
+        return createTs;
+    }
+
+    @Override
+    public void setCreateTs(Date createTs) {
+        this.createTs = createTs;
+    }
+
+    @Override
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    @Override
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 
     @Override

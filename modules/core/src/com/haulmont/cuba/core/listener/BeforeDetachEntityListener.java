@@ -17,14 +17,14 @@
 package com.haulmont.cuba.core.listener;
 
 import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.Entity;
 
 /**
  * Defines the contract for handling entities right before they are detached from an EntityManager
  * on transaction commit.
  *
  */
-public interface BeforeDetachEntityListener<T extends BaseEntity> {
+public interface BeforeDetachEntityListener<T extends Entity> {
 
     /**
      * Executes before the object is detached from an EntityManager on transaction commit.

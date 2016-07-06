@@ -21,6 +21,7 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.IdProxy;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.persistence.DbmsFeatures;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
@@ -345,7 +346,9 @@ public class QueryImpl<T> implements TypedQuery<T> {
     public TypedQuery<T> setParameter(String name, Object value, boolean implicitConversions) {
         checkState();
 
-        if (implicitConversions) {
+        if (value instanceof IdProxy) {
+            value = ((IdProxy) value).getNN();
+        } else if (implicitConversions) {
             value = handleImplicitConversions(value);
         }
         params.add(new Param(name, value));
@@ -390,6 +393,8 @@ public class QueryImpl<T> implements TypedQuery<T> {
             } catch (NoSuchMethodException e) {
                 throw new RuntimeException("Error setting parameter value", e);
             }
+        } else if (value instanceof IdProxy) {
+            value = ((IdProxy) value).getNN();
         } else if (implicitConversions) {
             value = handleImplicitConversions(value);
         }

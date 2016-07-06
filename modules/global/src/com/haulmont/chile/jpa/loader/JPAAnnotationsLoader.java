@@ -93,6 +93,7 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader {
                 || field.isAnnotationPresent(ManyToMany.class)
                 || field.isAnnotationPresent(OneToOne.class)
                 || field.isAnnotationPresent(Embedded.class)
+                || field.isAnnotationPresent(EmbeddedId.class)
                 || super.isMetaPropertyField(field);
     }
 
@@ -229,7 +230,9 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader {
             if (isPrimaryKey(field)) {
                 metaProperty.getAnnotations().put("primaryKey", true);
                 metaProperty.getDomain().getAnnotations().put("primaryKey", metaProperty.getName());
-            } else if (isEmbedded(field)) {
+            }
+
+            if (isEmbedded(field)) {
                 metaProperty.getAnnotations().put("embedded", true);
             }
 
@@ -247,11 +250,11 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader {
     }
 
     protected boolean isPrimaryKey(Field field) {
-        return field.isAnnotationPresent(Id.class);
+        return field.isAnnotationPresent(Id.class) || field.isAnnotationPresent(EmbeddedId.class);
     }
 
     protected boolean isEmbedded(Field field) {
-        return field.isAnnotationPresent(Embedded.class);
+        return field.isAnnotationPresent(Embedded.class) || field.isAnnotationPresent(EmbeddedId.class);
     }
 
     protected boolean isPersistent(Field field) {
@@ -260,6 +263,7 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader {
                 || field.isAnnotationPresent(OneToMany.class)
                 || field.isAnnotationPresent(ManyToMany.class)
                 || field.isAnnotationPresent(OneToOne.class)
-                || field.isAnnotationPresent(Embedded.class);
+                || field.isAnnotationPresent(Embedded.class)
+                || field.isAnnotationPresent(EmbeddedId.class);
     }
 }

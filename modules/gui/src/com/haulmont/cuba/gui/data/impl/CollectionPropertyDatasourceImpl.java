@@ -138,19 +138,15 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     public T getItem(K id) {
         backgroundWorker.checkUIAccess();
 
-        if (id instanceof Entity) {
-            return (T) id;
-        } else {
-            Collection<T> collection = __getCollection();
-            if (collection != null) {
-                for (T t : collection) {
-                    if (t.getId().equals(id)) {
-                        return t;
-                    }
+        Collection<T> collection = __getCollection();
+        if (collection != null) {
+            for (T t : collection) {
+                if (t.getId().equals(id)) {
+                    return t;
                 }
             }
-            return null;
         }
+        return null;
     }
 
     @Override
@@ -579,16 +575,12 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             return false;
         }
 
-        if (itemId instanceof Entity) {
-            return collection.contains(itemId);
-        } else {
-            for (T item : collection) {
-                if (item.getId().equals(itemId)) {
-                    return true;
-                }
+        for (T item : collection) {
+            if (item.getId().equals(itemId)) {
+                return true;
             }
-            return false;
         }
+        return false;
     }
 
     @Override

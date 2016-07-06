@@ -46,3 +46,29 @@ create table TEST_MANY2MANY_AB_LINK2 (
     constraint TEST_MANY2MANY_AB_LINK2_A foreign key (A_ID) references TEST_MANY2MANY_A(ID),
     constraint TEST_MANY2MANY_AB_LINK2_B foreign key (B_ID) references TEST_MANY2MANY_B(ID)
 )^
+
+------------------------------------------------------------------------------------------------------------
+
+create table TEST_IDENTITY (
+    ID bigint identity,
+    NAME varchar(50),
+    EMAIL varchar(100)
+)^
+
+------------------------------------------------------------------------------------------------------------
+
+create table TEST_IDENTITY_UUID (
+    ID bigint identity,
+    UUID varchar(36),
+    NAME varchar(50)
+)^
+
+------------------------------------------------------------------------------------------------------------
+
+create table TEST_COMPOSITE_KEY (
+    TENANT integer not null,
+    ENTITY_ID bigint not null,
+    NAME varchar(50),
+    EMAIL varchar(100),
+    primary key (TENANT, ENTITY_ID)
+)^

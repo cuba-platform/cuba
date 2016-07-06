@@ -18,7 +18,7 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.Creatable;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.Updatable;
@@ -299,7 +299,7 @@ public class View implements Serializable {
             result.add(pkName);
         }
 
-        addSystemPropertiesFrom(BaseEntity.class, entityClass, metaClass, metadata, result);
+        addSystemPropertiesFrom(Creatable.class, entityClass, metaClass, metadata, result);
         addSystemPropertiesFrom(Updatable.class, entityClass, metaClass, metadata, result);
         addSystemPropertiesFrom(SoftDelete.class, entityClass, metaClass, metadata, result);
 

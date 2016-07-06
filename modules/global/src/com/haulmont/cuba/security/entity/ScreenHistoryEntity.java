@@ -18,6 +18,7 @@ package com.haulmont.cuba.security.entity;
 
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.Creatable;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserFormatTools;
@@ -26,6 +27,7 @@ import com.haulmont.cuba.security.global.UserSession;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.*;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -35,7 +37,7 @@ import java.util.UUID;
 @Entity(name = "sec$ScreenHistory")
 @Table(name = "SEC_SCREEN_HISTORY")
 @SystemLevel
-public class ScreenHistoryEntity extends BaseUuidEntity {
+public class ScreenHistoryEntity extends BaseUuidEntity implements Creatable {
 
     private static final long serialVersionUID = 1L;
 
@@ -45,6 +47,12 @@ public class ScreenHistoryEntity extends BaseUuidEntity {
         setUser(userSession.getUser());
         setSubstitutedUser(userSession.getSubstitutedUser());
     }
+
+    @Column(name = "CREATE_TS")
+    protected Date createTs;
+
+    @Column(name = "CREATED_BY", length = LOGIN_FIELD_LEN)
+    protected String createdBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
@@ -62,6 +70,26 @@ public class ScreenHistoryEntity extends BaseUuidEntity {
 
     @Column(name = "ENTITY_ID")
     protected UUID entityId;
+
+    @Override
+    public Date getCreateTs() {
+        return createTs;
+    }
+
+    @Override
+    public void setCreateTs(Date createTs) {
+        this.createTs = createTs;
+    }
+
+    @Override
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    @Override
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
 
     public User getUser() {
         return user;

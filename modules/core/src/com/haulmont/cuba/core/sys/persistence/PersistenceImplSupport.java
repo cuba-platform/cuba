@@ -214,7 +214,7 @@ public class PersistenceImplSupport {
 
             Collection<Object> instances = container.getAllInstances();
             for (Object instance : instances) {
-                if (instance instanceof BaseEntity) {
+                if (instance instanceof Entity) {
                     // if cache is enabled, the entity can have EntityFetchGroup instead of CubaEntityFetchGroup
                     if (instance instanceof FetchGroupTracker) {
                         FetchGroupTracker entity = (FetchGroupTracker) instance;
@@ -223,7 +223,7 @@ public class PersistenceImplSupport {
                             entity._persistence_setFetchGroup(new CubaEntityFetchGroup(fetchGroup));
                     }
 
-                    entityListenerManager.fireListener((BaseEntity) instance, EntityListenerType.BEFORE_DETACH);
+                    entityListenerManager.fireListener((Entity) instance, EntityListenerType.BEFORE_DETACH);
                 }
             }
         }
@@ -294,7 +294,7 @@ public class PersistenceImplSupport {
             return false;
         }
 
-        protected void enqueueForFts(BaseEntity entity, FtsChangeType changeType) {
+        protected void enqueueForFts(Entity entity, FtsChangeType changeType) {
             if (!FtsConfigHelper.getEnabled())
                 return;
             try {
@@ -312,7 +312,7 @@ public class PersistenceImplSupport {
             }
         }
 
-        protected void processDeletePolicy(BaseEntity entity) {
+        protected void processDeletePolicy(Entity entity) {
             DeletePolicyProcessor processor = AppBeans.get(DeletePolicyProcessor.NAME); // prototype
             processor.setEntity(entity);
             processor.process();

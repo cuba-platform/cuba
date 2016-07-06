@@ -26,6 +26,7 @@
         <class>com.haulmont.cuba.core.entity.BaseLongIdEntity</class>
         <class>com.haulmont.cuba.core.entity.BaseIntegerIdEntity</class>
         <class>com.haulmont.cuba.core.entity.BaseStringIdEntity</class>
+        <class>com.haulmont.cuba.core.entity.BaseIdentityIdEntity</class>
         <class>com.haulmont.cuba.core.entity.StandardEntity</class>
         <class>com.haulmont.cuba.core.entity.Server</class>
         <class>com.haulmont.cuba.core.entity.Config</class>
@@ -74,7 +75,9 @@
         <class>com.haulmont.cuba.core.entity.dummy.DummyStringIdEntity</class>
         <class>com.haulmont.cuba.core.entity.dummy.DummyIntegerIdEntity</class>
         <class>com.haulmont.cuba.core.entity.dummy.DummyLongIdEntity</class>
+        <class>com.haulmont.cuba.core.entity.dummy.DummyIdentityIdEntity</class>
         <class>com.haulmont.cuba.core.entity.dummy.DummyCategorizedEntity</class>
+        <class>com.haulmont.cuba.core.entity.dummy.DummyEmbeddableEntity</class>
 
         <properties>
             <property name="eclipselink.weaving"

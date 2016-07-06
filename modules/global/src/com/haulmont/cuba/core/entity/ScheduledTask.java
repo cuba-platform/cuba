@@ -18,7 +18,6 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.app.scheduled.MethodParameterInfo;
@@ -46,7 +45,7 @@ import java.util.List;
 @Table(name = "SYS_SCHEDULED_TASK")
 @NamePattern("#name|beanName,methodName,className,scriptName")
 @SystemLevel
-public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDelete {
+public class ScheduledTask extends BaseUuidEntity implements Creatable, Updatable, SoftDelete {
 
     private static final long serialVersionUID = -2330884126746644884L;
 
@@ -54,16 +53,22 @@ public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDele
     // Moreover unfortunately OpenJPA issues a lot of unnecessary "select version from ..." when loads versioned
     // objects with PESSIMISTIC lock type.
 
+    @Column(name = "CREATE_TS")
+    protected Date createTs;
+
+    @Column(name = "CREATED_BY", length = LOGIN_FIELD_LEN)
+    protected String createdBy;
+
     @Column(name = "UPDATE_TS")
     protected Date updateTs;
 
-    @Column(name = "UPDATED_BY", length = LOGIN_FIELD_LEN)
+    @Column(name = "UPDATED_BY", length = 50)
     protected String updatedBy;
 
     @Column(name = "DELETE_TS")
     protected Date deleteTs;
 
-    @Column(name = "DELETED_BY", length = LOGIN_FIELD_LEN)
+    @Column(name = "DELETED_BY", length = 50)
     protected String deletedBy;
 
     @Column(name = "DEFINED_BY")
@@ -135,6 +140,26 @@ public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDele
     //the following field is part of private API, please do not use it
     @Transient
     protected volatile long currentStartTimestamp;
+
+    @Override
+    public Date getCreateTs() {
+        return createTs;
+    }
+
+    @Override
+    public void setCreateTs(Date createTs) {
+        this.createTs = createTs;
+    }
+
+    @Override
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    @Override
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
 
     @Override
     public Date getUpdateTs() {

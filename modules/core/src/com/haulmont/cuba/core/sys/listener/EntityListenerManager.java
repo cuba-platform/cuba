@@ -17,7 +17,7 @@
 package com.haulmont.cuba.core.sys.listener;
 
 import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.listener.*;
@@ -84,7 +84,7 @@ public class EntityListenerManager {
 
     protected Map<Key, List> cache = new ConcurrentHashMap<>();
 
-    protected Map<Class<? extends BaseEntity>, Set<String>> dynamicListeners = new ConcurrentHashMap<>();
+    protected Map<Class<? extends Entity>, Set<String>> dynamicListeners = new ConcurrentHashMap<>();
 
     protected ReadWriteLock lock = new ReentrantReadWriteLock();
 
@@ -96,7 +96,7 @@ public class EntityListenerManager {
      * @param entityClass   entity
      * @param listenerClass listener class
      */
-    public void addListener(Class<? extends BaseEntity> entityClass, Class<?> listenerClass) {
+    public void addListener(Class<? extends Entity> entityClass, Class<?> listenerClass) {
         lock.writeLock().lock();
         try {
             Set<String> set = dynamicListeners.get(entityClass);
@@ -118,7 +118,7 @@ public class EntityListenerManager {
      * @param entityClass   entity
      * @param listenerClass listener class
      */
-    public void removeListener(Class<? extends BaseEntity> entityClass, Class<?> listenerClass) {
+    public void removeListener(Class<? extends Entity> entityClass, Class<?> listenerClass) {
         lock.writeLock().lock();
         try {
             Set<String> set = dynamicListeners.get(entityClass);
@@ -138,7 +138,7 @@ public class EntityListenerManager {
      * @param entityClass      entity
      * @param listenerBeanName listener bean name
      */
-    public void addListener(Class<? extends BaseEntity> entityClass, String listenerBeanName) {
+    public void addListener(Class<? extends Entity> entityClass, String listenerBeanName) {
         lock.writeLock().lock();
         try {
             Set<String> set = dynamicListeners.get(entityClass);
@@ -160,7 +160,7 @@ public class EntityListenerManager {
      * @param entityClass      entity
      * @param listenerBeanName listener bean name
      */
-    public void removeListener(Class<? extends BaseEntity> entityClass, String listenerBeanName) {
+    public void removeListener(Class<? extends Entity> entityClass, String listenerBeanName) {
         lock.writeLock().lock();
         try {
             Set<String> set = dynamicListeners.get(entityClass);
@@ -175,7 +175,7 @@ public class EntityListenerManager {
     }
 
     @SuppressWarnings("unchecked")
-    public void fireListener(BaseEntity entity, EntityListenerType type) {
+    public void fireListener(Entity entity, EntityListenerType type) {
         if (!enabled)
             return;
 
@@ -238,7 +238,7 @@ public class EntityListenerManager {
         this.enabled = enable;
     }
 
-    protected void logExecution(EntityListenerType type, BaseEntity entity) {
+    protected void logExecution(EntityListenerType type, Entity entity) {
         if (log.isDebugEnabled()) {
             StringBuilder sb = new StringBuilder();
             sb.append("Executing ").append(type).append(" entity listener for ")
@@ -259,7 +259,7 @@ public class EntityListenerManager {
         }
     }
 
-    protected List<?> getListener(Class<? extends BaseEntity> entityClass, EntityListenerType type) {
+    protected List<?> getListener(Class<? extends Entity> entityClass, EntityListenerType type) {
         Key key = new Key(entityClass, type);
 
         lock.readLock().lock();
@@ -276,7 +276,7 @@ public class EntityListenerManager {
         }
     }
 
-    protected List<?> findListener(Class<? extends BaseEntity> entityClass, EntityListenerType type) {
+    protected List<?> findListener(Class<? extends Entity> entityClass, EntityListenerType type) {
         log.trace("get listener " + type + " for class " + entityClass.getName());
         List<String> names = getDeclaredListeners(entityClass);
         if (names.isEmpty()) {
@@ -318,7 +318,7 @@ public class EntityListenerManager {
         return result;
     }
 
-    protected List<String> getDeclaredListeners(Class<? extends BaseEntity> entityClass) {
+    protected List<String> getDeclaredListeners(Class<? extends Entity> entityClass) {
         List<String> listeners = new ArrayList<>();
 
         List<Class> superclasses = ClassUtils.getAllSuperclasses(entityClass);

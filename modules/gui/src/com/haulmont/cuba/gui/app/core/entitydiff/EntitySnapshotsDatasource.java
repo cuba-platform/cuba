@@ -18,8 +18,9 @@
 package com.haulmont.cuba.gui.app.core.entitydiff;
 
 import com.haulmont.cuba.core.app.EntitySnapshotService;
-import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
+import com.haulmont.cuba.core.entity.HasUuid;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.data.impl.CustomCollectionDatasource;
 
@@ -27,7 +28,7 @@ import java.util.*;
 
 public class EntitySnapshotsDatasource extends CustomCollectionDatasource<EntitySnapshot, UUID> {
 
-    protected BaseEntity entity;
+    protected Entity entity;
     protected List<EntitySnapshot> snapshots;
 
     @Override
@@ -35,19 +36,19 @@ public class EntitySnapshotsDatasource extends CustomCollectionDatasource<Entity
         return false;
     }
 
-    public BaseEntity getEntity() {
+    public Entity getEntity() {
         return entity;
     }
 
-    public void setEntity(BaseEntity entity) {
+    public void setEntity(Entity entity) {
         this.entity = entity;
     }
 
     @Override
     protected Collection<EntitySnapshot> getEntities(Map<String, Object> params) {
-        if (entity != null) {
+        if (entity != null && entity instanceof HasUuid) {
             EntitySnapshotService snapshotService = AppBeans.get(EntitySnapshotService.NAME);
-            snapshots = snapshotService.getSnapshots(entity.getMetaClass(), entity.getUuid());
+            snapshots = snapshotService.getSnapshots(entity.getMetaClass(), ((HasUuid) entity).getUuid());
             return snapshots;
         }
         return Collections.emptyList();

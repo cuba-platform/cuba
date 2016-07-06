@@ -23,7 +23,6 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.EmbeddableEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
@@ -33,8 +32,8 @@ import com.haulmont.cuba.core.sys.ViewHelper;
 import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
@@ -102,8 +101,8 @@ public class EntityDiffManager {
         result.setAfterSnapshot(second);
 
         if (!diffView.getProperties().isEmpty()) {
-            BaseEntity firstEntity = first != null ? snapshotAPI.extractEntity(first) : null;
-            BaseEntity secondEntity = snapshotAPI.extractEntity(second);
+            Entity firstEntity = first != null ? snapshotAPI.extractEntity(first) : null;
+            Entity secondEntity = snapshotAPI.extractEntity(second);
 
             result.setBeforeEntity(firstEntity);
             result.setAfterEntity(secondEntity);

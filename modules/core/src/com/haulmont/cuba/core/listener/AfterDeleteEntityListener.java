@@ -16,7 +16,7 @@
  */
 package com.haulmont.cuba.core.listener;
 
-import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.Entity;
 
 /**
  * Defines the contract for handling of entities after they have been deleted or
@@ -24,7 +24,7 @@ import com.haulmont.cuba.core.entity.BaseEntity;
  * Any updates through the EntityManager are impossible!
  *
  */
-public interface AfterDeleteEntityListener<T extends BaseEntity> {
+public interface AfterDeleteEntityListener<T extends Entity> {
 
     /**
      * Executes after the object has been deleted or marked as deleted in DB.

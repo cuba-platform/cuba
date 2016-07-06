@@ -18,7 +18,7 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
 import com.haulmont.cuba.core.entity.diff.EntityDiff;
 import com.haulmont.cuba.core.global.View;
@@ -44,22 +44,22 @@ public class EntitySnapshotServiceBean implements EntitySnapshotService {
     }
 
     @Override
-    public EntitySnapshot createSnapshot(BaseEntity entity, View view) {
+    public EntitySnapshot createSnapshot(Entity entity, View view) {
         return snapshotAPI.createSnapshot(entity, view);
     }
 
     @Override
-    public EntitySnapshot createSnapshot(BaseEntity entity, View view, Date snapshotDate) {
+    public EntitySnapshot createSnapshot(Entity entity, View view, Date snapshotDate) {
         return snapshotAPI.createSnapshot(entity, view, snapshotDate);
     }
 
     @Override
-    public EntitySnapshot createSnapshot(BaseEntity entity, View view, Date snapshotDate, User author) {
+    public EntitySnapshot createSnapshot(Entity entity, View view, Date snapshotDate, User author) {
         return snapshotAPI.createSnapshot(entity, view, snapshotDate, author);
     }
 
     @Override
-    public BaseEntity extractEntity(EntitySnapshot snapshot) {
+    public Entity extractEntity(EntitySnapshot snapshot) {
         return snapshotAPI.extractEntity(snapshot);
     }
 

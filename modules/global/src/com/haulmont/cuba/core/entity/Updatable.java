@@ -19,8 +19,7 @@ package com.haulmont.cuba.core.entity;
 import java.util.Date;
 
 /**
- * Interface to be implemented by entities that support update information saving.
- *
+ * Interface to be implemented by entities that contain information about who updated them and when.
  */
 public interface Updatable {
 

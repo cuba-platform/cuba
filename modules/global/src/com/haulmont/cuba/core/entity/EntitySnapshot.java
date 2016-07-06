@@ -39,9 +39,15 @@ import java.util.UUID;
 @Entity(name = "sys$EntitySnapshot")
 @Table(name = "SYS_ENTITY_SNAPSHOT")
 @SystemLevel
-public class EntitySnapshot extends BaseUuidEntity {
+public class EntitySnapshot extends BaseUuidEntity implements Creatable {
 
     private static final long serialVersionUID = 4835363127711391591L;
+
+    @Column(name = "CREATE_TS")
+    protected Date createTs;
+
+    @Column(name = "CREATED_BY", length = LOGIN_FIELD_LEN)
+    protected String createdBy;
 
     @Column(name = "VIEW_XML")
     private String viewXml;
@@ -61,6 +67,26 @@ public class EntitySnapshot extends BaseUuidEntity {
 
     @Column(name = "ENTITY_ID")
     private UUID entityId;
+
+    @Override
+    public Date getCreateTs() {
+        return createTs;
+    }
+
+    @Override
+    public void setCreateTs(Date createTs) {
+        this.createTs = createTs;
+    }
+
+    @Override
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    @Override
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
 
     public String getViewXml() {
         return viewXml;

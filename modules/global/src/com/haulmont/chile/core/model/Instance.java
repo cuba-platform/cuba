@@ -20,17 +20,11 @@ import com.haulmont.chile.core.common.ValueListener;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;
-import java.util.UUID;
 
 /**
  * Interface to be implemented by data model objects.
  */
 public interface Instance extends Serializable {
-
-    /**
-     * @return globally unique identifier of this instance
-     */
-    UUID getUuid();
 
     /**
      * @return metaclass of this object. Throws exception if the metaclass is not found.

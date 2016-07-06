@@ -137,28 +137,4 @@ public abstract class AbstractInstance implements Instance {
     public void setValueEx(String name, Object value) {
         InstanceUtils.setValueEx(this, name, value);
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        AbstractInstance that = (AbstractInstance) o;
-
-        return !(getUuid() != null ? !getUuid().equals(that.getUuid()) : that.getUuid() != null);
-    }
-
-    @Override
-    public int hashCode() {
-        return getUuid() != null ? getUuid().hashCode() : 0;
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getName() + "-" + getUuid();
-    }
 }

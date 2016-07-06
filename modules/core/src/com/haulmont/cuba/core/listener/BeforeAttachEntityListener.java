@@ -16,13 +16,13 @@
  */
 package com.haulmont.cuba.core.listener;
 
-import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.Entity;
 
 /**
  * Defines the contract for handling entities right before they are attached to an EntityManager on merge operation.
  *
  */
-public interface BeforeAttachEntityListener<T extends BaseEntity> {
+public interface BeforeAttachEntityListener<T extends Entity> {
 
     /**
      * Executes before the object is attached to an EntityManager on merge operation.

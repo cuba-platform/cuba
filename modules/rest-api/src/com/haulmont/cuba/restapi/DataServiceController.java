@@ -22,6 +22,7 @@ import com.haulmont.cuba.client.sys.cache.ClientCacheManager;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.DomainDescriptionService;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.HasUuid;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -315,9 +316,11 @@ public class DataServiceController {
         for (Object id : newInstanceIds) {
             for (Object instance : commitInstances) {
                 Entity entity = (Entity) instance;
-                String entityFullId = EntityLoadInfo.create(entity).toString();
-                if (entityFullId.equals(id) && entity.getUuid() == null) {
-                    entity.setValue("uuid", UuidProvider.createUuid());
+                if (entity instanceof HasUuid) {
+                    String entityFullId = EntityLoadInfo.create(entity).toString();
+                    if (entityFullId.equals(id) && ((HasUuid) entity).getUuid() == null) {
+                        ((HasUuid) entity).setUuid(UuidProvider.createUuid());
+                    }
                 }
             }
         }

@@ -19,18 +19,24 @@ package com.haulmont.cuba.core.entity;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.persistence.Column;
 import java.util.Date;
 
 @Entity(name = "sys$Server")
 @Table(name = "SYS_SERVER")
 @NamePattern("%s|name")
 @SystemLevel
-public class Server extends BaseUuidEntity implements Updatable {
+public class Server extends BaseUuidEntity implements Creatable, Updatable {
 
     private static final long serialVersionUID = 1892335683693067357L;
+
+    @Column(name = "CREATE_TS")
+    protected Date createTs;
+
+    @Column(name = "CREATED_BY", length = LOGIN_FIELD_LEN)
+    protected String createdBy;
 
     @Column(name = "UPDATE_TS")
     protected Date updateTs;
@@ -46,6 +52,26 @@ public class Server extends BaseUuidEntity implements Updatable {
 
     @Column(name = "DATA")
     private String data;
+
+    @Override
+    public Date getCreateTs() {
+        return createTs;
+    }
+
+    @Override
+    public void setCreateTs(Date createTs) {
+        this.createTs = createTs;
+    }
+
+    @Override
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    @Override
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
 
     @Override
     public Date getUpdateTs() {

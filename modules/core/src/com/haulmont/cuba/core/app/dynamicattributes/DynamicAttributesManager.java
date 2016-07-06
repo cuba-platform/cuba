@@ -43,6 +43,7 @@ import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 @Component(DynamicAttributesManagerAPI.NAME)
 public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
@@ -184,6 +185,8 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
 
     @Override
     public void storeDynamicAttributes(BaseGenericIdEntity entity) {
+        if (!(entity instanceof HasUuid))
+            return;
         if (persistence.isInTransaction()) {
             doStoreDynamicAttributes(entity);
         } else {
@@ -199,12 +202,15 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
 
     @Override
     public <E extends BaseGenericIdEntity> void fetchDynamicAttributes(List<E> entities) {
+        List<E> supportedEntities = entities.stream().filter(e -> e instanceof HasUuid).collect(Collectors.toList());
+        if (supportedEntities.isEmpty())
+            return;
         if (persistence.isInTransaction()) {
-            doFetchDynamicAttributes(entities);
+            doFetchDynamicAttributes(supportedEntities);
         } else {
             Transaction tx = persistence.createTransaction();
             try {
-                doFetchDynamicAttributes(entities);
+                doFetchDynamicAttributes(supportedEntities);
                 tx.commit();
             } finally {
                 tx.end();
@@ -247,7 +253,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
                 @Nullable
                 @Override
                 public UUID apply(@Nullable Entity input) {
-                    return input != null ? input.getUuid() : null;
+                    return input != null ? ((HasUuid) input).getUuid() : null;
                 }
             });
 
@@ -264,7 +270,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
             handleAttributeValuesForIds(currentIds, attributeValuesForEntity);
 
             for (BaseGenericIdEntity entity : entities) {
-                Collection<CategoryAttributeValue> theEntityAttributeValues = attributeValuesForEntity.get(entity.getUuid());
+                Collection<CategoryAttributeValue> theEntityAttributeValues = attributeValuesForEntity.get(((HasUuid) entity).getUuid());
                 Map<String, CategoryAttributeValue> map = new HashMap<>();
                 entity.setDynamicAttributes(map);
                 if (CollectionUtils.isNotEmpty(theEntityAttributeValues)) {

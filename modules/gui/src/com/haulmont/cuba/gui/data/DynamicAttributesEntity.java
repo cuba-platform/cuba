@@ -17,16 +17,18 @@
 package com.haulmont.cuba.gui.data;
 
 import com.haulmont.chile.core.common.ValueListener;
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
-import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.CategoryAttributeValue;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.UuidProvider;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Specific entity, delegating all calls to internal BaseGenericIdEntity.
@@ -34,7 +36,7 @@ import java.util.*;
  * Obsolete. Will be removed in future releases.
  *
  */
-public class DynamicAttributesEntity implements BaseEntity {
+public class DynamicAttributesEntity implements Entity {
     private static final long serialVersionUID = -8091230910619941201L;
     protected BaseGenericIdEntity mainItem;
     protected UUID id;
@@ -51,29 +53,6 @@ public class DynamicAttributesEntity implements BaseEntity {
     @Override
     public UUID getId() {
         return id;
-    }
-
-    @Override
-    public UUID getUuid() {
-        return id;
-    }
-
-    @Override
-    public Date getCreateTs() {
-        return null;
-    }
-
-    @Override
-    public void setCreateTs(Date date) {
-    }
-
-    @Override
-    public String getCreatedBy() {
-        return null;
-    }
-
-    @Override
-    public void setCreatedBy(String createdBy) {
     }
 
     @Override

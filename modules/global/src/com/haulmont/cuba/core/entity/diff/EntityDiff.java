@@ -20,7 +20,7 @@ package com.haulmont.cuba.core.entity.diff;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
-import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.View;
@@ -45,9 +45,9 @@ public class EntityDiff extends AbstractNotPersistentEntity implements Serializa
 
     private EntitySnapshot afterSnapshot;
 
-    private BaseEntity beforeEntity;
+    private Entity beforeEntity;
 
-    private BaseEntity afterEntity;
+    private Entity afterEntity;
 
     private List<EntityPropertyDiff> propertyDiffs = new ArrayList<>();
 
@@ -79,19 +79,19 @@ public class EntityDiff extends AbstractNotPersistentEntity implements Serializa
         this.afterSnapshot = afterSnapshot;
     }
 
-    public BaseEntity getBeforeEntity() {
+    public Entity getBeforeEntity() {
         return beforeEntity;
     }
 
-    public void setBeforeEntity(BaseEntity beforeEntity) {
+    public void setBeforeEntity(Entity beforeEntity) {
         this.beforeEntity = beforeEntity;
     }
 
-    public BaseEntity getAfterEntity() {
+    public Entity getAfterEntity() {
         return afterEntity;
     }
 
-    public void setAfterEntity(BaseEntity afterEntity) {
+    public void setAfterEntity(Entity afterEntity) {
         this.afterEntity = afterEntity;
     }
 

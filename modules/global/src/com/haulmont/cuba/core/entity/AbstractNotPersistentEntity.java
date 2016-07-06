@@ -33,7 +33,9 @@ import java.util.UUID;
  *
  */
 @com.haulmont.chile.core.annotations.MetaClass(name = "AbstractNotPersistentEntity")
-public abstract class AbstractNotPersistentEntity extends AbstractInstance implements Entity<UUID>, CubaEnhancingDisabled {
+public abstract class AbstractNotPersistentEntity
+        extends AbstractInstance
+        implements Entity<UUID>, HasUuid, CubaEnhancingDisabled {
 
     private static final long serialVersionUID = -2846020822531467401L;
 
@@ -46,6 +48,11 @@ public abstract class AbstractNotPersistentEntity extends AbstractInstance imple
     @Override
     public UUID getUuid() {
         return id;
+    }
+
+    @Override
+    public void setUuid(UUID uuid) {
+        id = uuid;
     }
 
     @Override
@@ -73,5 +80,29 @@ public abstract class AbstractNotPersistentEntity extends AbstractInstance imple
                 propertyChanged(property, oldValue, obj);
             }
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        AbstractNotPersistentEntity that = (AbstractNotPersistentEntity) o;
+
+        return !(getUuid() != null ? !getUuid().equals(that.getUuid()) : that.getUuid() != null);
+    }
+
+    @Override
+    public int hashCode() {
+        return getUuid() != null ? getUuid().hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getName() + "-" + getUuid();
     }
 }

@@ -19,17 +19,23 @@ package com.haulmont.cuba.core.entity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.commons.lang.StringUtils;
 
-import javax.persistence.Entity;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.util.Date;
 
 @Entity(name = "sys$EntityStatistics")
 @Table(name = "SYS_ENTITY_STATISTICS")
 @SystemLevel
-public class EntityStatistics extends BaseUuidEntity implements Updatable {
+public class EntityStatistics extends BaseUuidEntity implements Creatable, Updatable {
 
     private static final long serialVersionUID = -1734840995849860033L;
+
+    @Column(name = "CREATE_TS")
+    protected Date createTs;
+
+    @Column(name = "CREATED_BY", length = LOGIN_FIELD_LEN)
+    protected String createdBy;
 
     @Column(name = "UPDATE_TS")
     private Date updateTs;
@@ -54,6 +60,26 @@ public class EntityStatistics extends BaseUuidEntity implements Updatable {
 
     @Column(name = "LOOKUP_SCREEN_THRESHOLD")
     private Integer lookupScreenThreshold;
+
+    @Override
+    public Date getCreateTs() {
+        return createTs;
+    }
+
+    @Override
+    public void setCreateTs(Date createTs) {
+        this.createTs = createTs;
+    }
+
+    @Override
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    @Override
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
 
     @Override
     public String getUpdatedBy() {

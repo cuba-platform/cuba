@@ -24,16 +24,11 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.UuidProvider;
-
-import java.util.UUID;
 
 @com.haulmont.chile.core.annotations.MetaClass(name = "sec$AttributeTarget")
 @SystemLevel
 public class AttributeTarget extends AbstractInstance
         implements Entity<String> {
-
-    private UUID uuid = UuidProvider.createUuid();
 
     @MetaProperty(mandatory = true)
     private String id;
@@ -48,11 +43,6 @@ public class AttributeTarget extends AbstractInstance
     @Override
     public String getId() {
         return id;
-    }
-
-    @Override
-    public UUID getUuid() {
-        return uuid;
     }
 
     @Override

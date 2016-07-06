@@ -24,12 +24,12 @@ import javax.persistence.MappedSuperclass;
 import java.util.UUID;
 
 /**
- * Base class for persistent entities with UUID identifier.<br>
- * Inherit from it if you need an entity without optimistic locking, update and soft deletion info.
- *
+ * Base class for persistent entities with UUID identifier.
+ * <p>
+ * Inherit from it if you need an entity without optimistic locking, create, update and soft deletion info.
  */
 @MappedSuperclass
-public abstract class BaseUuidEntity extends BaseGenericIdEntity<UUID> {
+public abstract class BaseUuidEntity extends BaseGenericIdEntity<UUID> implements HasUuid {
 
     private static final long serialVersionUID = -2217624132287086972L;
 
@@ -54,5 +54,9 @@ public abstract class BaseUuidEntity extends BaseGenericIdEntity<UUID> {
     @Override
     public UUID getUuid() {
         return id;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.id = uuid;
     }
 }

@@ -22,7 +22,6 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
@@ -46,7 +45,7 @@ public class DeletePolicyProcessor {
 
     protected Logger log = LoggerFactory.getLogger(getClass());
 
-    protected BaseEntity entity;
+    protected Entity entity;
     protected MetaClass metaClass;
 
     protected Persistence persistence;
@@ -62,11 +61,11 @@ public class DeletePolicyProcessor {
         this.entityManager = persistence.getEntityManager();
     }
 
-    public BaseEntity getEntity() {
+    public Entity getEntity() {
         return entity;
     }
 
-    public void setEntity(BaseEntity entity) {
+    public void setEntity(Entity entity) {
         this.entity = entity;
         this.metaClass = metadata.getSession().getClass(entity.getClass());
         primaryKeyName = metadata.getTools().getPrimaryKeyName(metaClass);
@@ -153,7 +152,7 @@ public class DeletePolicyProcessor {
                             }
                         }
                     } else {
-                        BaseEntity value = getReference(entity, property);
+                        Entity value = getReference(entity, property);
                         if (value != null && checkIfEntityBelongsToMaster(property, value)) {
                             if (!(value instanceof SoftDelete)) {
                                 if (PersistenceHelper.isLoaded(entity, property.getName())) {
@@ -179,7 +178,7 @@ public class DeletePolicyProcessor {
         }
     }
 
-    protected void hardDeleteNotLoadedReference(BaseEntity entity, MetaProperty property, BaseEntity reference) {
+    protected void hardDeleteNotLoadedReference(Entity entity, MetaProperty property, Entity reference) {
         List<Runnable> list = persistence.getEntityManagerContext().getAttribute(PersistenceImpl.RUN_BEFORE_COMMIT_ATTR);
         if (list == null) {
             list = new ArrayList<>();
@@ -245,7 +244,7 @@ public class DeletePolicyProcessor {
         }
     }
 
-    protected BaseEntity getReference(Entity entity, MetaProperty property) {
+    protected Entity getReference(Entity entity, MetaProperty property) {
         if (PersistenceHelper.isLoaded(entity, property.getName()))
             return entity.getValue(property.getName());
         else {
@@ -253,11 +252,11 @@ public class DeletePolicyProcessor {
                     "select e." + property.getName() + " from " + entity.getMetaClass().getName() + " e where e." + primaryKeyName + " = ?1");
             query.setParameter(1, entity.getId());
             Object refEntity = query.getFirstResult();
-            return (BaseEntity) refEntity;
+            return (Entity) refEntity;
         }
     }
 
-    protected boolean checkIfEntityBelongsToMaster(MetaProperty property, BaseEntity entityToRemove) {
+    protected boolean checkIfEntityBelongsToMaster(MetaProperty property, Entity entityToRemove) {
         MetaProperty inverseProperty = property.getInverse();
         if (inverseProperty != null) {
             Entity master = entityToRemove.getValue(inverseProperty.getName());
@@ -343,8 +342,8 @@ public class DeletePolicyProcessor {
         String qstr = String.format(template, entityName, property.getName());
         Query query = entityManager.createQuery(qstr);
         query.setParameter(1, entity.getId());
-        List<BaseEntity> list = query.getResultList();
-        for (BaseEntity e : list) {
+        List<Entity> list = query.getResultList();
+        for (Entity e : list) {
             entityManager.remove(e);
         }
     }
@@ -357,8 +356,8 @@ public class DeletePolicyProcessor {
             String qstr = String.format(template, entityName, property.getName());
             Query query = entityManager.createQuery(qstr);
             query.setParameter(1, entity.getId());
-            List<BaseEntity> list = query.getResultList();
-            for (BaseEntity e : list) {
+            List<Entity> list = query.getResultList();
+            for (Entity e : list) {
                 if (property.getRange().getCardinality().isMany()) {
                     Collection collection = e.getValue(property.getName());
                     if (collection != null) {

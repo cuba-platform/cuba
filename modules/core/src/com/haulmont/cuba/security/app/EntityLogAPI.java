@@ -16,7 +16,7 @@
  */
 package com.haulmont.cuba.security.app;
 
-import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.sys.persistence.EntityAttributeChanges;
 
 import javax.annotation.Nullable;
@@ -39,24 +39,24 @@ public interface EntityLogAPI {
     /**
      * Logs creation of an entity which is configured for manual logging (LoggedEntity.auto == false).
      */
-    void registerCreate(BaseEntity entity);
+    void registerCreate(Entity entity);
 
     /**
      * Logs creation of an entity which is configured for auto or manual logging
      * (depending on the {@code auto} parameter).
      */
-    void registerCreate(BaseEntity entity, boolean auto);
+    void registerCreate(Entity entity, boolean auto);
 
     /**
      * Logs modification of an entity which is configured for manual logging (LoggedEntity.auto == false).
      */
-    void registerModify(BaseEntity entity);
+    void registerModify(Entity entity);
 
     /**
      * Logs modification of an entity which is configured for auto or manual logging
      * (depending on the {@code auto} parameter).
      */
-    void registerModify(BaseEntity entity, boolean auto);
+    void registerModify(Entity entity, boolean auto);
 
 
     /**
@@ -64,18 +64,18 @@ public interface EntityLogAPI {
      * (depending on the {@code auto} parameter).
      * @param changes attribute changes provided by caller
      */
-    void registerModify(BaseEntity entity, boolean auto, @Nullable EntityAttributeChanges changes);
+    void registerModify(Entity entity, boolean auto, @Nullable EntityAttributeChanges changes);
 
     /**
      * Logs deletion of an entity which is configured for manual logging (LoggedEntity.auto == false).
      */
-    void registerDelete(BaseEntity entity);
+    void registerDelete(Entity entity);
 
     /**
      * Logs deletion of an entity which is configured for auto or manual logging
      * (depending on the {@code auto} parameter).
      */
-    void registerDelete(BaseEntity entity, boolean auto);
+    void registerDelete(Entity entity, boolean auto);
 
     /**
      * Invalidates configuration cache.

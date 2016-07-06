@@ -35,11 +35,12 @@ public class CubaAnnotationsLoader extends JPAAnnotationsLoader {
     private static final List<Class> SYSTEM_INTERFACES = Arrays.<Class>asList(
             Instance.class,
             Entity.class,
-            BaseEntity.class,
             BaseGenericIdEntity.class,
             Versioned.class,
+            Creatable.class,
             Updatable.class,
-            SoftDelete.class
+            SoftDelete.class,
+            HasUuid.class
     );
 
     public CubaAnnotationsLoader(Session session) {
