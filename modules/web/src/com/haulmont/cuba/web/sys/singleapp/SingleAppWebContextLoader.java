@@ -71,9 +71,11 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
 
         CubaHttpFilter cubaHttpFilter = new CubaHttpFilter();
         FilterRegistration.Dynamic cubaHttpFilterReg = servletContext.addFilter("CubaHttpFilter", cubaHttpFilter);
+        cubaHttpFilterReg.setAsyncSupported(true);
         cubaHttpFilterReg.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
 
         FilterRegistration.Dynamic filterReg = servletContext.addFilter("WebSingleWarHttpFilter", new SetClassLoaderFilter());
+        filterReg.setAsyncSupported(true);
         filterReg.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/*");
         filterReg.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/dispatch/*");
     }
