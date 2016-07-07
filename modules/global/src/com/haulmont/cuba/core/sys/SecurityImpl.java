@@ -52,7 +52,7 @@ import static java.lang.String.format;
 @Component(Security.NAME)
 @PerformanceLog
 public class SecurityImpl implements Security {
-    protected final Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(SecurityImpl.class);
 
     @Inject
     protected UserSessionSource userSessionSource;
@@ -207,14 +207,13 @@ public class SecurityImpl implements Security {
             try {
                 Object o = scripting.evaluateGroovy(groovyScript.replace("{E}", "theEntity"), params);
                 if (Boolean.FALSE.equals(o)) {
-                    log.trace(format("Entity does not match security constraint. " +
-                            "Entity class [%s]. Entity [%s]. Constraint [%s].", metaClassName, entity.getId(), constraint.getCheckType()));
+                    log.trace("Entity does not match security constraint. Entity class [{}]. Entity [{}]. Constraint [{}].",
+                            metaClassName, entity.getId(), constraint.getCheckType());
                     return false;
                 }
             } catch (Exception e) {
-                log.error(format("An error occurred while applying constraint's groovy script. " +
-                        "The entity has been filtered." +
-                        "Entity class [%s]. Entity [%s].", metaClassName, entity.getId()), e);
+                log.error("An error occurred while applying constraint's groovy script. The entity has been filtered." +
+                          "Entity class [{}]. Entity [{}].", metaClassName, entity.getId(), e);
                 return false;
             }
         }
@@ -241,7 +240,7 @@ public class SecurityImpl implements Security {
             Datatype datatype = Datatypes.get(clazz);
             return datatype != null ? datatype.parse(parameterValue) : parameterValue;
         } catch (ParseException e) {
-            log.error(format("Could not parse a value from constraint. Class [%s], value [%s].", clazz, parameterValue), e);
+            log.error("Could not parse a value from constraint. Class [{}], value [{}].", clazz, parameterValue, e);
             throw new RowLevelSecurityException(format("Could not parse a value from constraint. Class [%s], value [%s]. " +
                     "Please see the logs.", clazz, parameterValue), null);
         }

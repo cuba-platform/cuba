@@ -42,11 +42,10 @@ import java.util.*;
 
 /**
  * Implementation of {@link TypedQuery} interface based on EclipseLink.
- *
  */
 public class QueryImpl<T> implements TypedQuery<T> {
 
-    private Logger log = LoggerFactory.getLogger(QueryImpl.class);
+    private final Logger log = LoggerFactory.getLogger(QueryImpl.class);
 
     private Metadata metadata;
     private javax.persistence.EntityManager emDelegate;
@@ -81,7 +80,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
             View view = views.isEmpty() ? null : views.get(0);
 
             if (isNative) {
-                log.trace("Creating SQL query: " + queryString);
+                log.trace("Creating SQL query: {}", queryString);
                 if (resultClass == null)
                     query = (JpaQuery) emDelegate.createNativeQuery(queryString);
                 else {
@@ -93,9 +92,9 @@ public class QueryImpl<T> implements TypedQuery<T> {
                     query = (JpaQuery) emDelegate.createNativeQuery(queryString, effectiveClass);
                 }
             } else {
-                log.trace("Creating JPQL query: " + queryString);
+                log.trace("Creating JPQL query: {}", queryString);
                 String s = transformQueryString();
-                log.trace("Transformed JPQL query: " + s);
+                log.trace("Transformed JPQL query: {}", s);
 
                 Class effectiveClass = getEffectiveResultClass();
                 if (effectiveClass != null) {

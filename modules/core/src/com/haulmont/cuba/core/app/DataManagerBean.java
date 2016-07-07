@@ -86,13 +86,14 @@ public class DataManagerBean implements DataManager {
     @Nullable
     @Override
     public <E extends Entity> E load(LoadContext<E> context) {
-        if (log.isDebugEnabled())
-            log.debug("load: metaClass=" + context.getMetaClass() + ", id=" + context.getId() + ", view=" + context.getView());
+        if (log.isDebugEnabled()) {
+            log.debug("load: metaClass={}, id={}, view={}", context.getMetaClass(), context.getId(), context.getView());
+        }
 
         final MetaClass metaClass = metadata.getSession().getClassNN(context.getMetaClass());
 
         if (!isEntityOpPermitted(metaClass, EntityOp.READ)) {
-            log.debug("reading of " + metaClass + " not permitted, returning null");
+            log.debug("reading of {} not permitted, returning null", metaClass);
             return null;
         }
 
@@ -146,7 +147,7 @@ public class DataManagerBean implements DataManager {
         MetaClass metaClass = metadata.getClassNN(context.getMetaClass());
 
         if (!isEntityOpPermitted(metaClass, EntityOp.READ)) {
-            log.debug("reading of " + metaClass + " not permitted, returning empty list");
+            log.debug("reading of {} not permitted, returning empty list", metaClass);
             return Collections.emptyList();
         }
 
@@ -201,7 +202,7 @@ public class DataManagerBean implements DataManager {
         MetaClass metaClass = metadata.getClassNN(context.getMetaClass());
 
         if (!isEntityOpPermitted(metaClass, EntityOp.READ)) {
-            log.debug("reading of " + metaClass + " not permitted, returning 0");
+            log.debug("reading of {} not permitted, returning 0", metaClass);
             return 0;
         }
 

@@ -44,7 +44,7 @@ public class FetchGroupManager {
 
     public static final String NAME = "cuba_FetchGroupManager";
 
-    private Logger log = LoggerFactory.getLogger(FetchGroupManager.class);
+    private final Logger log = LoggerFactory.getLogger(FetchGroupManager.class);
 
     @Inject
     private Metadata metadata;
