@@ -24,14 +24,9 @@
     <layout expand="loggersGroupBox" spacing="true">
         <hbox spacing="true" width="100%" expand="newLoggerTextField">
             <textField id="newLoggerTextField"/>
-            <button id="addButton" caption="msg://actions.Add" icon="icons/add.png" width="120px" invoke="addLogger"/>
-        </hbox>
-        <hbox spacing="true" width="100%" expand="loggerSearchField">
-            <textField id="loggerSearchField"/>
-            <button id="clearSearchButton" caption="msg://actions.Clear" icon="icons/clear.png" invoke="clearFilterLogger"/>
             <button id="searchButton" caption="msg://filter.search"  width="120px" icon="icons/search.png" invoke="filterLogger"/>
+            <button id="addButton" caption="msg://actions.Add" icon="icons/plus-btn.png" width="120px" invoke="addLogger"/>
         </hbox>
-
         <scrollBox id="loggersGroupBox" scrollBars="vertical">
             <grid id="loggersGrid" width="100%" spacing="true">
                 <columns>

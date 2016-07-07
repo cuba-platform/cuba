@@ -21,10 +21,6 @@ import ch.qos.logback.classic.Level;
 import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.cuba.core.sys.logging.LoggingHelper;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Button;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.GridLayout;
-import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
@@ -49,9 +45,6 @@ public class ControlLoggerWindow extends AbstractWindow {
     @Inject
     protected ComponentsFactory componentsFactory;
 
-    @Inject
-    private TextField loggerSearchField;
-
     protected final Map<String, HBoxLayout> fieldMap = new HashMap<>();
 
     protected final Map<String, Level> levels = new HashMap<>();
@@ -67,6 +60,8 @@ public class ControlLoggerWindow extends AbstractWindow {
 
         loggersMap = (Map<String, Level>) params.get("loggersMap");
         fillLoggerGrid();
+
+        WebComponentsHelper.addEnterShortcut(newLoggerTextField, this::filterLogger);
     }
 
     protected void fillLoggerGrid() {
@@ -160,13 +155,13 @@ public class ControlLoggerWindow extends AbstractWindow {
     }
 
     public void filterLogger() {
-        if (loggerSearchField.getValue() == null) {
+        if (newLoggerTextField.getValue() == null) {
             fillLoggerGrid();
         } else {
             loggersGrid.removeAll();
 
             for (Map.Entry<String, Level> levelEntry : loggersMap.entrySet()) {
-                String keyword = loggerSearchField.getValue().toString();
+                String keyword = newLoggerTextField.getValue().toString();
                 String loggerName = levelEntry.getKey();
 
                 if (loggerName.toLowerCase().contains(keyword.toLowerCase())) {
@@ -181,10 +176,5 @@ public class ControlLoggerWindow extends AbstractWindow {
                 }
             }
         }
-    }
-
-    public void clearFilterLogger() {
-        fillLoggerGrid();
-        loggerSearchField.setValue(null);
     }
 }
