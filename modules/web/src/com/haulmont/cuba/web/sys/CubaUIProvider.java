@@ -25,6 +25,8 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.vaadin.server.DefaultUIProvider;
 import com.vaadin.server.UICreateEvent;
+import com.vaadin.shared.communication.PushMode;
+import com.vaadin.shared.ui.ui.Transport;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.Cookie;
@@ -33,15 +35,13 @@ import java.util.Set;
 
 /**
  * Custom provider for possible extension
- *
  */
 public class CubaUIProvider extends DefaultUIProvider {
+    protected Configuration configuration = AppBeans.get(Configuration.NAME);
 
     @Override
     public String getTheme(UICreateEvent event) {
         // get theme from cookies before app ui initialized for smooth theme enabling
-
-        Configuration configuration = AppBeans.get(Configuration.NAME);
         WebConfig webConfig = configuration.getConfig(WebConfig.class);
         GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
 
@@ -73,5 +73,27 @@ public class CubaUIProvider extends DefaultUIProvider {
             }
         }
         return null;
+    }
+
+    @Override
+    public PushMode getPushMode(UICreateEvent event) {
+        WebConfig webConfig = configuration.getConfig(WebConfig.class);
+
+        if (!webConfig.getPushEnabled()) {
+            return PushMode.DISABLED;
+        }
+
+        return super.getPushMode(event);
+    }
+
+    @Override
+    public Transport getPushTransport(UICreateEvent event) {
+        WebConfig webConfig = configuration.getConfig(WebConfig.class);
+
+        if (webConfig.getUsePushLongPolling()) {
+            return Transport.LONG_POLLING;
+        }
+
+        return super.getPushTransport(event);
     }
 }
