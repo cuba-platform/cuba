@@ -20,20 +20,22 @@ package com.haulmont.cuba.restapi;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.restapi.controllers.ServicesController;
+import com.haulmont.restapi.exception.RestAPIException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -132,4 +134,61 @@ public class RestServicePermissions {
         methods.add(methodName);
     }
 
+    public List<ServiceInfo> getServiceInfos() {
+        lock.readLock().lock();
+        try {
+            checkInitialized();
+            List<ServiceInfo> infos = new ArrayList<>();
+            for (Map.Entry<String, Set<String>> entry : serviceMethods.entrySet()) {
+                infos.add(new ServiceInfo(entry.getKey(), new HashSet<>(entry.getValue())));
+            }
+            return infos;
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    @Nullable
+    public ServiceInfo getServiceInfo(String serviceName) {
+        lock.readLock().lock();
+        try {
+            checkInitialized();
+            Set<String> methods = serviceMethods.get(serviceName);
+            if (methods == null) {
+                return null;
+            }
+            return new ServiceInfo(serviceName, methods);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    /**
+     * Class stores an information about the service permitted for REST API
+     */
+    public static class ServiceInfo {
+        private String service;
+        private Set<String> methods;
+
+        public ServiceInfo(String service, Set<String> methods) {
+            this.service = service;
+            this.methods = methods;
+        }
+
+        public String getService() {
+            return service;
+        }
+
+        public void setService(String service) {
+            this.service = service;
+        }
+
+        public Set<String> getMethods() {
+            return methods;
+        }
+
+        public void setMethods(Set<String> methods) {
+            this.methods = methods;
+        }
+    }
 }

@@ -92,6 +92,7 @@
           xmlns="http://www.springframework.org/schema/security">
         <intercept-url pattern="/dispatch/api/entities/**" access="hasRole('USER')"/>
         <intercept-url pattern="/dispatch/api/queries/**" access="hasRole('USER')"/>
+        <intercept-url pattern="/dispatch/api/services/**" access="hasRole('USER')"/>
         <anonymous enabled="false"/>
         <csrf disabled="true"/>
         <custom-filter ref="resourceFilter" before="PRE_AUTH_FILTER"/>
