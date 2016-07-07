@@ -1404,21 +1404,25 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     protected void checkCanOpenWindow(WindowInfo windowInfo, OpenType openType, Map<String, Object> params) {
-        if (OpenMode.NEW_TAB == openType.getOpenMode()) {
-            //noinspection StatementWithEmptyBody
-            if (!windowInfo.getMultipleOpen() && getWindow(getHash(windowInfo, params)) != null) {
-                //window is already open
-            } else {
-                int maxCount = webConfig.getMaxTabCount();
-                if (maxCount > 0 && maxCount <= tabs.size()) {
-                    new Notification(
-                            messages.formatMainMessage("tooManyOpenTabs.message", maxCount),
-                            Notification.Type.WARNING_MESSAGE
-                    ).show(Page.getCurrent());
+        if (openType.getOpenMode() != OpenMode.NEW_TAB) {
+            return;
+        }
 
-                    throw new SilentException();
-                }
-            }
+        if (!windowInfo.getMultipleOpen() && getWindow(getHash(windowInfo, params)) != null) {
+            //window is already open
+            return;
+        }
+
+        int maxCount = webConfig.getMaxTabCount();
+        if (maxCount > 0 && maxCount <= tabs.size()) {
+            Notification notification = new Notification(
+                    messages.formatMainMessage("tooManyOpenTabs.message", maxCount),
+                    Notification.Type.WARNING_MESSAGE
+            );
+            notification.setDelayMsec(WARNING_NOTIFICATION_DELAY_MSEC);
+            notification.show(ui.getPage());
+
+            throw new SilentException();
         }
     }
 
