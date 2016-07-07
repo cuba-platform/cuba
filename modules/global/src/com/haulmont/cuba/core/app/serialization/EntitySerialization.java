@@ -107,7 +107,7 @@ public class EntitySerialization implements EntitySerializationAPI {
                                                                        @Nullable MetaClass metaClass,
                                                                        EntitySerializationOption... options) {
         context.remove();
-        Type collectionType = new TypeToken<Collection<T>>(){}.getType();
+        Type collectionType = new TypeToken<Collection<Entity>>(){}.getType();
         return createGsonForDeserialization(metaClass, options).fromJson(json, collectionType);
     }
 
