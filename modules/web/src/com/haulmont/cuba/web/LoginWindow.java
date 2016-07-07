@@ -445,11 +445,15 @@ public class LoginWindow extends UIView {
 
         if (StringUtils.isEmpty(login) || StringUtils.isEmpty(password)) {
             String message = messages.getMainMessage("loginWindow.emptyLoginOrPassword", resolvedLocale);
-            new Notification(message, Type.WARNING_MESSAGE).show(ui.getPage());
+            Notification notification = new Notification(message, Type.WARNING_MESSAGE);
+            notification.setDelayMsec(WebWindowManager.WARNING_NOTIFICATION_DELAY_MSEC);
+            notification.show(ui.getPage());
             return;
         }
 
-        if (!bruteForceProtectionCheck(login, app.getClientAddress())) return;
+        if (!bruteForceProtectionCheck(login, app.getClientAddress())) {
+            return;
+        }
 
         try {
             Locale locale = getUserLocale();
@@ -480,10 +484,13 @@ public class LoginWindow extends UIView {
                 }
             }
         } catch (LoginException e) {
-            log.info("Login failed: " + e.toString());
+            log.info("Login failed: {}", e.toString());
+
             String message = StringUtils.abbreviate(e.getMessage(), 1000);
             String bruteForceMsg = registerUnsuccessfulLoginAttempt(login, app.getClientAddress());
-            if (!Strings.isNullOrEmpty(bruteForceMsg)) message = bruteForceMsg;
+            if (!Strings.isNullOrEmpty(bruteForceMsg))  {
+                message = bruteForceMsg;
+            }
             showLoginException(message);
         } catch (Exception e) {
             log.warn("Unable to login", e);
