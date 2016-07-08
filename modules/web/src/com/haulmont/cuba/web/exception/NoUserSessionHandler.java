@@ -70,8 +70,8 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
 
             WebWindowManager wm = app.getWindowManager();
             wm.showOptionDialog(
-                    messages.getMessage(getClass(), "dialogs.Information", locale),
-                    messages.getMessage(getClass(), "noUserSession.message", locale),
+                    messages.getMainMessage("dialogs.Information", locale),
+                    messages.getMainMessage("noUserSession.message", locale),
                     Frame.MessageType.CONFIRMATION,
                     new Action[]{new LoginAction()}
             );

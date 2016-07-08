@@ -120,7 +120,7 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
     private void showValidationMessage() {
         Messages messages = AppBeans.get(Messages.NAME);
         DesktopComponentsHelper.getTopLevelFrame(this).showNotification(
-                messages.getMessage(AppConfig.getMessagesPack(), "validationFail"),
+                messages.getMainMessage("validationFail"),
                 com.haulmont.cuba.gui.components.Frame.NotificationType.TRAY
         );
     }

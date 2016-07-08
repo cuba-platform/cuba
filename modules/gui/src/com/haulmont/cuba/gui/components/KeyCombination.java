@@ -75,13 +75,13 @@ public class KeyCombination {
                 if (sb.length() > 0) {
                     sb.append("+");
                 }
-                sb.append(messages.getMessage(getClass(), SHORTCUT_PREFIX + modifier.name()));
+                sb.append(messages.getMainMessage(SHORTCUT_PREFIX + modifier.name()));
             }
         }
         if (sb.length() > 0) {
             sb.append("+");
         }
-        sb.append(messages.getMessage(getClass(), SHORTCUT_PREFIX + key.name()));
+        sb.append(messages.getMainMessage(SHORTCUT_PREFIX + key.name()));
         return sb.toString();
     }
 

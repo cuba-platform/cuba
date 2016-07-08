@@ -111,7 +111,7 @@ public class ExceptionDialog extends CubaWindow {
             }
         });
 
-        setCaption(caption != null ? caption : messages.getMessage(ExceptionDialog.class, "exceptionDialog.caption"));
+        setCaption(caption != null ? caption : messages.getMainMessage("exceptionDialog.caption"));
 
         ThemeConstants theme = ui.getApp().getThemeConstants();
         setWidth(theme.get("cuba.web.ExceptionDialog.width"));
@@ -138,7 +138,7 @@ public class ExceptionDialog extends CubaWindow {
         buttonsLayout.setWidth("100%");
         mainLayout.addComponent(buttonsLayout);
 
-        Button closeButton = new CubaButton(messages.getMessage(ExceptionDialog.class, "exceptionDialog.closeBtn"));
+        Button closeButton = new CubaButton(messages.getMainMessage("exceptionDialog.closeBtn"));
         closeButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -147,7 +147,7 @@ public class ExceptionDialog extends CubaWindow {
         });
         buttonsLayout.addComponent(closeButton);
 
-        showStackTraceButton = new CubaButton(messages.getMessage(ExceptionDialog.class, "exceptionDialog.showStackTrace"));
+        showStackTraceButton = new CubaButton(messages.getMainMessage("exceptionDialog.showStackTrace"));
         showStackTraceButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -164,11 +164,11 @@ public class ExceptionDialog extends CubaWindow {
         String cubaCopyLogContentClass = cubaLogContentClass + "-" + UUID.randomUUID();
 
         if (browserSupportCopy()) {
-            copyButton = new CubaButton(messages.getMessage(ExceptionDialog.class, "exceptionDialog.copyStackTrace"));
+            copyButton = new CubaButton(messages.getMainMessage("exceptionDialog.copyStackTrace"));
             copyButton.setVisible(false);
             CubaCopyButtonExtension copyExtension = CubaCopyButtonExtension.copyWith(copyButton, cubaCopyLogContentClass);
             copyExtension.addCopyListener(event ->
-                    Notification.show(messages.getMessage(ExceptionDialog.class,
+                    Notification.show(messages.getMainMessage(
                             event.isSuccess() ? "exceptionDialog.copingSuccessful" : "exceptionDialog.copingFailed"),
                             Notification.Type.TRAY_NOTIFICATION));
             buttonsLayout.addComponent(copyButton);
@@ -176,7 +176,7 @@ public class ExceptionDialog extends CubaWindow {
 
         if (userSessionSource.getUserSession() != null) {
             if (!StringUtils.isBlank(clientConfig.getSupportEmail())) {
-                final Button reportButton = new CubaButton(messages.getMessage(ExceptionDialog.class, "exceptionDialog.reportBtn"));
+                final Button reportButton = new CubaButton(messages.getMainMessage("exceptionDialog.reportBtn"));
                 reportButton.addClickListener(new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
@@ -192,7 +192,7 @@ public class ExceptionDialog extends CubaWindow {
             }
         }
 
-        Button logoutButton = new CubaButton(messages.getMessage(ExceptionDialog.class, "exceptionDialog.logout"));
+        Button logoutButton = new CubaButton(messages.getMainMessage("exceptionDialog.logout"));
         logoutButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -320,7 +320,7 @@ public class ExceptionDialog extends CubaWindow {
                 copyButton.setVisible(true);
             }
 
-            showStackTraceButton.setCaption(messages.getMessage(ExceptionDialog.class, "exceptionDialog.hideStackTrace"));
+            showStackTraceButton.setCaption(messages.getMainMessage("exceptionDialog.hideStackTrace"));
 
             mainLayout.addComponent(stackTraceTextArea);
             mainLayout.setExpandRatio(stackTraceTextArea, 1.0f);
@@ -338,7 +338,7 @@ public class ExceptionDialog extends CubaWindow {
                 copyButton.setVisible(false);
             }
 
-            showStackTraceButton.setCaption(messages.getMessage(ExceptionDialog.class, "exceptionDialog.showStackTrace"));
+            showStackTraceButton.setCaption(messages.getMainMessage("exceptionDialog.showStackTrace"));
 
             mainLayout.setHeight(-1, Unit.PIXELS);
             mainLayout.removeComponent(stackTraceTextArea);
@@ -376,10 +376,10 @@ public class ExceptionDialog extends CubaWindow {
 
             EmailService emailService = AppBeans.get(EmailService.NAME);
             emailService.sendEmail(info);
-            Notification.show(messages.getMessage(ExceptionDialog.class, "exceptionDialog.emailSent"));
+            Notification.show(messages.getMainMessage("exceptionDialog.emailSent"));
         } catch (Throwable e) {
             log.error("Error sending exception report", e);
-            Notification.show(messages.getMessage(ExceptionDialog.class, "exceptionDialog.emailSendingErr"));
+            Notification.show(messages.getMainMessage("exceptionDialog.emailSendingErr"));
         }
     }
 
@@ -387,11 +387,11 @@ public class ExceptionDialog extends CubaWindow {
         App app = AppUI.getCurrent().getApp();
         final WebWindowManager wm = app.getWindowManager();
         wm.showOptionDialog(
-                messages.getMessage(ExceptionDialog.class, "exceptionDialog.logoutCaption"),
-                messages.getMessage(ExceptionDialog.class, "exceptionDialog.logoutMessage"),
+                messages.getMainMessage("exceptionDialog.logoutCaption"),
+                messages.getMainMessage("exceptionDialog.logoutMessage"),
                 Frame.MessageType.WARNING,
                 new Action[]{
-                        new AbstractAction(messages.getMessage(WebWindow.class, "closeApplication")) {
+                        new AbstractAction(messages.getMainMessage("closeApplication")) {
                             @Override
                             public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                                 forceLogout();

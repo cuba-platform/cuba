@@ -140,7 +140,7 @@ public class TablePresentations extends VerticalLayout {
 
     protected void setDefaultItemStyle(com.vaadin.ui.MenuBar.MenuItem item) {
         addStyleForItem(item, MENUITEM_STYLE_DEFAULT);
-        item.setDescription(getMessage("PresentationsPopup.defaultPresentation"));
+        item.setDescription(messages.getMainMessage("PresentationsPopup.defaultPresentation"));
     }
 
     protected void addStyleForItem(com.vaadin.ui.MenuBar.MenuItem item, String styleName) {
@@ -177,7 +177,7 @@ public class TablePresentations extends VerticalLayout {
     protected void initLayout() {
         setSpacing(true);
 
-        Label titleLabel = new Label(getMessage("PresentationsPopup.title"));
+        Label titleLabel = new Label(messages.getMainMessage("PresentationsPopup.title"));
         titleLabel.setStyleName("cuba-table-presentations-title");
         titleLabel.setWidth("-1px");
         addComponent(titleLabel);
@@ -191,14 +191,14 @@ public class TablePresentations extends VerticalLayout {
         addComponent(menuBar);
 
         button = new WebPopupButton();
-        button.setCaption(getMessage("PresentationsPopup.actions"));
+        button.setCaption(messages.getMainMessage("PresentationsPopup.actions"));
         addComponent(button.<Component>getComponent());
         setComponentAlignment(button.<Component>getComponent(), Alignment.MIDDLE_CENTER);
 
         textSelectionCheckBox = new CheckBox();
         textSelectionCheckBox.setImmediate(true);
         textSelectionCheckBox.setInvalidCommitted(true);
-        textSelectionCheckBox.setCaption(getMessage("PresentationsPopup.textSelection"));
+        textSelectionCheckBox.setCaption(messages.getMainMessage("PresentationsPopup.textSelection"));
         addComponent(textSelectionCheckBox);
         textSelectionCheckBox.setPropertyDataSource(new AbstractProperty() {
             @Override

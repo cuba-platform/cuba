@@ -103,7 +103,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         WebWindowManager windowManager = app.getWindowManager();
         if (windowManager != null) {
             windowManager.showNotification(
-                    messages.getMessage(DefaultExceptionHandler.class, "exceptionDialog.caption", app.getLocale()),
+                    messages.getMainMessage("exceptionDialog.caption", app.getLocale()),
                     rootCause.getClass().getSimpleName() + (rootCause.getMessage() != null ? "\n" + rootCause.getMessage() : ""),
                     Frame.NotificationType.ERROR
             );

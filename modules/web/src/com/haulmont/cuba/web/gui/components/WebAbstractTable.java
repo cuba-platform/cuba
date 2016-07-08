@@ -502,9 +502,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         component.setShowBufferedSourceException(false);
 
         Messages messages = AppBeans.get(Messages.NAME);
-        component.setSortAscendingLabel(messages.getMessage(WebAbstractTable.class, "tableSort.ascending"));
-        component.setSortResetLabel(messages.getMessage(WebAbstractTable.class, "tableSort.reset"));
-        component.setSortDescendingLabel(messages.getMessage(WebAbstractTable.class, "tableSort.descending"));
+        component.setSortAscendingLabel(messages.getMainMessage("tableSort.ascending"));
+        component.setSortResetLabel(messages.getMainMessage("tableSort.reset"));
+        component.setSortDescendingLabel(messages.getMainMessage("tableSort.descending"));
 
         setClientCaching(component);
 
@@ -1872,7 +1872,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
             if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {
                 Messages messages = AppBeans.get(Messages.NAME);
-                wm.showNotification(messages.getMessage(EntityLinkField.class, "OpenAction.objectIsDeleted"),
+                wm.showNotification(messages.getMainMessage("OpenAction.objectIsDeleted"),
                         Frame.NotificationType.HUMANIZED);
                 return;
             }

@@ -455,7 +455,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
 
             if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {
                 wm.showNotification(
-                        messages.getMessage(getClass(), "OpenAction.objectIsDeleted"),
+                        messages.getMainMessage("OpenAction.objectIsDeleted"),
                         Frame.NotificationType.HUMANIZED);
                 return;
             }

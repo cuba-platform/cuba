@@ -51,7 +51,7 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
         component.setInvalidCommitted(true);
 
         Messages messages = AppBeans.get(Messages.NAME);
-        component.setDateOutOfRangeMessage(messages.getMessage(WebAbstractTable.class, "datePicker.dateOutOfRangeMessage"));
+        component.setDateOutOfRangeMessage(messages.getMainMessage("datePicker.dateOutOfRangeMessage"));
     }
 
     @Override

@@ -311,7 +311,7 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
         if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {
             Messages messages = AppBeans.get(Messages.NAME);
             wm.showNotification(
-                    messages.getMessage(EntityLinkField.class, "OpenAction.objectIsDeleted"),
+                    messages.getMainMessage("OpenAction.objectIsDeleted"),
                     Frame.NotificationType.HUMANIZED);
             return;
         }
