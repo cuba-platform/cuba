@@ -43,13 +43,14 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.lang.reflect.Field;
 
 public class WebComponentsHelper {
 
@@ -86,7 +87,7 @@ public class WebComponentsHelper {
                         return resource;
                     }
                 } catch (NoSuchFieldException | IllegalAccessException e) {
-                    LogFactory.getLog(WebComponentsHelper.class).warn("Unable to use font icon " + fontIcon);
+                    LoggerFactory.getLogger(WebComponentsHelper.class).warn("Unable to use font icon " + fontIcon);
                 }
             }
 
@@ -95,7 +96,7 @@ public class WebComponentsHelper {
             try {
                 return getFontIconResource(resURL);
             } catch (NoSuchFieldException | IllegalAccessException e) {
-                LogFactory.getLog(WebComponentsHelper.class).warn("Unable to use font icon " + resURL);
+                LoggerFactory.getLogger(WebComponentsHelper.class).warn("Unable to use font icon " + resURL);
             }
             return null;
         } else {
@@ -484,7 +485,7 @@ public class WebComponentsHelper {
                     return resource;
                 }
             } catch (NoSuchFieldException | IllegalAccessException e) {
-                LogFactory.getLog(WebComponentsHelper.class).warn("Unable to use font icon " + fontIcon);
+                LoggerFactory.getLogger(WebComponentsHelper.class).warn("Unable to use font icon {}", fontIcon);
             }
         }
         return new VersionedThemeResource(iconName);

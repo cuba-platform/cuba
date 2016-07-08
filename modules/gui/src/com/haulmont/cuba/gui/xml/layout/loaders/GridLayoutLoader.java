@@ -23,8 +23,8 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -187,7 +187,7 @@ public class GridLayoutLoader extends ContainerLoader<GridLayout> {
                                 context.getFullFrameId(), "colspan", cspan);
                     }
                     if (cspan == 1) {
-                        LogFactory.getLog(getClass()).warn("Do not use colspan=\"1\", it will have no effect");
+                        LoggerFactory.getLogger(GridLayoutLoader.class).warn("Do not use colspan=\"1\", it will have no effect");
                     }
                 }
 
@@ -198,7 +198,7 @@ public class GridLayoutLoader extends ContainerLoader<GridLayout> {
                                 context.getFullFrameId(), "rowspan", rspan);
                     }
                     if (rspan == 1) {
-                        LogFactory.getLog(getClass()).warn("Do not use rowspan=\"1\", it will have no effect");
+                        LoggerFactory.getLogger(GridLayoutLoader.class).warn("Do not use rowspan=\"1\", it will have no effect");
                     }
                 }
 

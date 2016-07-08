@@ -27,7 +27,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +53,7 @@ public class CollectionDsHelper {
                             "Specified transient property %s in view for datasource with persistent entity %s",
                             name, metaClass.getName());
 
-                    LogFactory.getLog(CollectionDsHelper.class).warn(message);
+                    LoggerFactory.getLogger(CollectionDsHelper.class).warn(message);
                     continue;
                 }
 
@@ -76,9 +76,9 @@ public class CollectionDsHelper {
             }
         } else {
             if (view != null) {
-                String message = String.format("Specified view %s for datasource with not persistent entity %s",
-                        view.getName(), metaClass.getName());
-                LogFactory.getLog(CollectionDsHelper.class).warn(message);
+                LoggerFactory.getLogger(CollectionDsHelper.class).
+                        warn("Specified view {} for datasource with not persistent entity {}",
+                                view.getName(), metaClass.getName());
             }
 
             for (MetaProperty metaProperty : metaClass.getProperties()) {

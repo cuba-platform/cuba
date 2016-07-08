@@ -34,8 +34,8 @@ import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldWrapper;
 import com.vaadin.ui.AbstractComponent;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -377,7 +377,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup> implemen
         if (!this.fields.isEmpty()) {
             component.setRows(rowsCount());
         } else if (datasource != null) {
-            LogFactory.getLog(getClass()).warn("Field group does not have fields");
+            LoggerFactory.getLogger(WebFieldGroup.class).warn("Field group does not have fields");
         }
 
         assignAutoDebugId();

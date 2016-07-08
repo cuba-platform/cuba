@@ -36,8 +36,8 @@ import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.xml.DeclarativeFieldGenerator;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -534,8 +534,8 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                         loadEnable(resultComponent, field);
                         loadVisible(resultComponent, field);
                     } else {
-                        LogFactory.getLog(FieldGroupLoader.class).warn(
-                                "Missing component for custom field " + field.getId());
+                        LoggerFactory.getLogger(FieldGroupLoader.class).warn(
+                                "Missing component for custom field {}", field.getId());
                     }
                 }
             }

@@ -28,8 +28,8 @@ import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.text.StrBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -40,16 +40,16 @@ import java.util.*;
 @Component("cuba_ConfigStorageCommon")
 public class ConfigStorageCommon {
 
+    private final Logger log = LoggerFactory.getLogger(ConfigStorageCommon.class);
+
     @Inject
     protected Configuration configuration;
 
     @Inject
     protected LoginService loginService;
 
-    protected final Log log = LogFactory.getLog(ConfigStorageCommon.class);
-
     public String printAppProperties(String prefix) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (String name : AppContext.getPropertyNames()) {
             if (prefix == null || name.startsWith(prefix)) {
                 list.add(name + "=" + AppContext.getProperty(name));

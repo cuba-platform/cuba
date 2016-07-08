@@ -23,9 +23,9 @@ import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.ApplicationSession;
 import com.haulmont.cuba.gui.settings.SettingsClient;
 import com.haulmont.cuba.security.app.UserSettingService;
-import org.apache.commons.logging.LogFactory;
-
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Map;
@@ -63,14 +63,14 @@ public class DesktopSettingsClient implements SettingsClient {
 
     @Override
     public void deleteSettings(String name) {
-        getCache().put(name, Optional.<String>absent());
+        getCache().put(name, Optional.absent());
         userSettingService.deleteSettings(ClientType.DESKTOP, name);
     }
 
     protected Map<String, Optional<String>> getCache() {
         ApplicationSession session = App.getInstance().getApplicationSession();
         if (session == null) {
-            LogFactory.getLog(getClass()).warn("Application disconnected, used fake empty session");
+            LoggerFactory.getLogger(DesktopSettingsClient.class).warn("Application disconnected, used fake empty session");
             return new ConcurrentHashMap<>();
         }
 

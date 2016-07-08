@@ -38,8 +38,8 @@ import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -199,7 +199,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         if (!this.fields.isEmpty()) {
             rows = rowsCount();
         } else if (datasource != null) {
-            LogFactory.getLog(getClass()).warn("Field group does not have fields");
+            LoggerFactory.getLogger(DesktopFieldGroup.class).warn("Field group does not have fields");
         }
 
         assignAutoDebugId();

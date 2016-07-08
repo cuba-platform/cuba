@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.core.sys.jmx;
 
-import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jmx.support.MBeanRegistrationSupport;
@@ -34,11 +33,10 @@ import java.util.Map;
  * if it complies to MyObject -> MyObjectMBean naming scheme.
  * <br/>
  * Instead it uses {@link AnnotationMBeanInfoAssembler} to construct MBean descriptor for every bean.
- *
  */
 public class MBeanExporter extends org.springframework.jmx.export.MBeanExporter {
 
-    private Logger log = LoggerFactory.getLogger(MBeanExporter.class);
+    private final Logger log = LoggerFactory.getLogger(MBeanExporter.class);
 
     public MBeanExporter() {
         setAssembler(new AnnotationMBeanInfoAssembler());
@@ -46,7 +44,7 @@ public class MBeanExporter extends org.springframework.jmx.export.MBeanExporter 
         try {
             Field loggerField = MBeanRegistrationSupport.class.getDeclaredField("logger");
             loggerField.setAccessible(true);
-            loggerField.set(this, LogFactory.getLog(org.springframework.jmx.export.MBeanExporter.class));
+            loggerField.set(this, LoggerFactory.getLogger(org.springframework.jmx.export.MBeanExporter.class));
         } catch (NoSuchFieldException | IllegalAccessException ignore) {
         }
     }

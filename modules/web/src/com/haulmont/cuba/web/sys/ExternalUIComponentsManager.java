@@ -22,11 +22,10 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.web.gui.WebComponentsFactory;
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -38,12 +37,11 @@ import java.util.List;
 /**
  * Class registers external components that are supplied in separate jars or defined in 'cuba-ui-component.xml'
  * descriptor of 'web' module.
- *
  */
 @org.springframework.stereotype.Component("cuba_ExternalUIComponentsManager")
 public class ExternalUIComponentsManager {
 
-    protected static final Log log = LogFactory.getLog(ExternalUIComponentsManager.class);
+    private final Logger log = LoggerFactory.getLogger(ExternalUIComponentsManager.class);
 
     @PostConstruct
     public void postConstruct() {
@@ -85,13 +83,14 @@ public class ExternalUIComponentsManager {
                     if (Component.class.isAssignableFrom(componentClass)) {
                         WebComponentsFactory.registerComponent(name, (Class<? extends Component>) componentClass);
                     } else {
-                        log.warn("Component " + componentClassName + " is not a subclass of com.haulmont.cuba.gui.components.Component");
+                        log.warn("Component {} is not a subclass of com.haulmont.cuba.gui.components.Component", componentClassName);
                     }
 
                     if (ComponentLoader.class.isAssignableFrom(componentLoaderClass)) {
                         LayoutLoaderConfig.registerLoader(name, (Class<? extends ComponentLoader>) componentLoaderClass);
                     } else {
-                        log.warn("Component loader " + componentLoaderClassName + " is not a subclass of com.haulmont.cuba.gui.xml.layout.ComponentLoader");
+                        log.warn("Component loader {} is not a subclass of com.haulmont.cuba.gui.xml.layout.ComponentLoader",
+                                componentLoaderClassName);
                     }
                 }
             }

@@ -40,7 +40,8 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -601,9 +602,9 @@ public class BulkEditorWindow extends AbstractWindow {
 
         Set<Entity> commited = dataSupplier.commit(new CommitContext(items));
 
-        LogFactory.getLog(getClass()).info(String.format(
-                "Applied bulk editing for %s entries of %s. Changed properties: %s",
-                commited.size(), metaClass, StringUtils.join(fields, ", ")));
+        Logger logger = LoggerFactory.getLogger(BulkEditorWindow.class);
+        logger.info("Applied bulk editing for {} entries of {}. Changed properties: {}",
+                commited.size(), metaClass, StringUtils.join(fields, ", "));
 
         showNotification(formatMessage("bulk.successMessage", commited.size()), NotificationType.HUMANIZED);
         close(COMMIT_ACTION_ID);

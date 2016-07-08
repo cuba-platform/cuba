@@ -25,7 +25,7 @@ import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -174,7 +174,7 @@ public class CubaResizableTextAreaWrapper extends CustomField {
         if (getState(false).resizable
                 && (textArea.getRows() > 0 && textArea.getColumns() > 0
                 || isPercentageSize())) {
-            LogFactory.getLog(getClass()).warn(
+            LoggerFactory.getLogger(CubaResizableTextAreaWrapper.class).warn(
                     "TextArea with fixed rows and cols or percentage size can not be resizable");
             getState().resizable = false;
         }

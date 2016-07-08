@@ -37,7 +37,7 @@ import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -238,7 +238,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
                 WindowManager wm;
                 Window window = ComponentsHelper.getWindow(pickerField);
                 if (window == null) {
-                    LogFactory.getLog(PickerField.class).warn("Please specify Frame for PickerField");
+                    LoggerFactory.getLogger(PickerField.class).warn("Please specify Frame for PickerField");
 
                     wm = AppBeans.get(WindowManagerProvider.class).get();
                 } else {
