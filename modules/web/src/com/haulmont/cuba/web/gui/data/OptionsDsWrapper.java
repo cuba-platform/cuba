@@ -118,9 +118,13 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
 
         ignoreListeners = true;
 
-        if (UI.getCurrent().getConnectorTracker().isWritingResponse()) {
-            // Suppress containerItemSetChange listeners during painting, undefined behavior may be occurred
-            return;
+        UI currentUi = UI.getCurrent();
+        if (currentUi != null) {
+            // ignore in tests
+            if (currentUi.getConnectorTracker().isWritingResponse()) {
+                // Suppress containerItemSetChange listeners during painting, undefined behavior may be occurred
+                return;
+            }
         }
 
         if (itemSetChangeListeners != null) {
