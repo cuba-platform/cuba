@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.sys.jmx;
 
+import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jmx.support.MBeanRegistrationSupport;
@@ -44,7 +45,7 @@ public class MBeanExporter extends org.springframework.jmx.export.MBeanExporter 
         try {
             Field loggerField = MBeanRegistrationSupport.class.getDeclaredField("logger");
             loggerField.setAccessible(true);
-            loggerField.set(this, LoggerFactory.getLogger(org.springframework.jmx.export.MBeanExporter.class));
+            loggerField.set(this, LogFactory.getLog(org.springframework.jmx.export.MBeanExporter.class));
         } catch (NoSuchFieldException | IllegalAccessException ignore) {
         }
     }
