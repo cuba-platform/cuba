@@ -691,7 +691,12 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
 
         protected void adoptMissingValue(Object value) {
             if (!ObjectUtils.equals(missingValue, value)) {
-                if (optionsDatasource != null && !optionsDatasource.containsItem(value)) {
+                Object itemId = null;
+                if (value instanceof Entity) {
+                    itemId = ((Entity) value).getId();
+                }
+
+                if (optionsDatasource != null && !optionsDatasource.containsItem(itemId)) {
                     missingValue = value;
                 } else if (optionsList != null && !optionsList.contains(value)) {
                     missingValue = value;

@@ -136,8 +136,8 @@ public class EditorWindowDelegate extends WindowDelegate {
             if (!PersistenceHelper.isNew(item)
                     && !parentDs.getItemsToCreate().contains(item) && !parentDs.getItemsToUpdate().contains(item)
                     && parentDs instanceof CollectionDatasource
-                    && ((CollectionDatasource) parentDs).containsItem(item)) {
-                item = dataservice.reload(item, ds.getView(), ds.getMetaClass());
+                    && ((CollectionDatasource) parentDs).containsItem(item.getId())) {
+                item = dataservice.reload(item, ds.getView(), ds.getMetaClass(), ds.getLoadDynamicAttributes());
                 if (parentDs instanceof CollectionPropertyDatasourceImpl) {
                     ((CollectionPropertyDatasourceImpl) parentDs).replaceItem(item);
                 } else {

@@ -687,7 +687,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
             }
 
             if (e.getDs().getState() == Datasource.State.VALID && e.getDs().getItem() != null) {
-                if (e.getDs().containsItem(e.getDs().getItem())) {
+                if (e.getDs().containsItem(e.getDs().getItem().getId())) {
                     newSelection.add((E) e.getDs().getItem());
                 }
             }
@@ -1852,7 +1852,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
         if (item != null) {
             setSelected(Collections.singleton(item));
         } else {
-            setSelected(Collections.<E>emptySet());
+            setSelected(Collections.emptySet());
         }
     }
 
