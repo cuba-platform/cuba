@@ -1454,6 +1454,7 @@
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasSpacingMargin"/>
+        <xs:attributeGroup ref="hasVisibility"/>
 
         <xs:attribute name="orientation" type="orientation"/>
         <xs:attribute name="scrollBars" type="scrollBars"/>
