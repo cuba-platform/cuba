@@ -19,12 +19,10 @@ package com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.DragOverEvent;
-import com.google.gwt.event.dom.client.DragOverHandler;
-import com.google.gwt.event.dom.client.DropEvent;
-import com.google.gwt.event.dom.client.DropHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.vaadin.client.VConsole;
 import fi.jasoft.dragdroplayouts.client.ui.util.HTML5Support;
 
 import java.util.ArrayList;
@@ -213,17 +211,38 @@ public class JQueryFileUploadOverlay {
         this.dropZoneElement = dropZoneElement;
     }
 
-    private void subscribeGlobalDragDropHandlers() {
+    protected void subscribeGlobalDragDropHandlers() {
         RootPanel.get().addBitlessDomHandler(new DragOverHandler() {
             @Override
             public void onDragOver(DragOverEvent event) {
-                globalDocumentDragOver(event.getNativeEvent());
+                globalDocumentDragOver(event);
 
                 if (dropZones.size() > 0) {
                     event.preventDefault();
                 }
             }
         }, DragOverEvent.getType());
+
+        RootPanel.get().addBitlessDomHandler(new DragLeaveHandler() {
+            @Override
+            public void onDragLeave(DragLeaveEvent event) {
+                globalDocumentDragLeave(event);
+            }
+        }, DragLeaveEvent.getType());
+
+        RootPanel.get().addBitlessDomHandler(new DragEndHandler() {
+            @Override
+            public void onDragEnd(DragEndEvent event) {
+                globalDocumentDragEnd(event);
+            }
+        }, DragEndEvent.getType());
+
+        RootPanel.get().addBitlessDomHandler(new DropHandler() {
+            @Override
+            public void onDrop(DropEvent event) {
+                globalDocumentDrop(event);
+            }
+        }, DropEvent.getType());
 
         // prevent misses leading to opening of file inside browser
         RootPanel.get().addBitlessDomHandler(new DropHandler() {
@@ -239,33 +258,57 @@ public class JQueryFileUploadOverlay {
         HTML5Support.setGlobalDragOverHandler(new DragOverHandler() {
             @Override
             public void onDragOver(DragOverEvent event) {
-                globalDocumentDragOver(event.getNativeEvent());
+                globalDocumentDragOver(event);
             }
         });
     }
 
-    protected static void globalDocumentDragOver(JavaScriptObject event) {
-        if (isDragEventContainsFiles(event)) {
+    protected static void globalDocumentDrop(DropEvent event) {
+        hideDropZones();
+    }
+
+    protected static void globalDocumentDragEnd(DragEndEvent event) {
+        hideDropZones();
+    }
+
+    protected static void globalDocumentDragLeave(DragLeaveEvent event) {
+        hideDropZones();
+    }
+
+    protected static void globalDocumentDragOver(DragOverEvent event) {
+        showDropZones(event);
+    }
+
+    protected static void showDropZones(DragOverEvent event) {
+        if (isDragEventContainsFiles(event.getNativeEvent())) {
+            if (dragStopTimer != null) {
+                dragStopTimer.cancel();
+            }
+            dragStopTimer = null;
+
             // find all drop zones and add classname
             for (Element dropZone : dropZones) {
                 dropZone.addClassName(CUBA_FILEUPLOAD_DROPZONE_CLASS);
             }
-
-            if (dragStopTimer != null) {
-                dragStopTimer.cancel();
-            }
-
-            dragStopTimer = new Timer() {
-                @Override
-                public void run() {
-                    for (Element dropZone : dropZones) {
-                        dropZone.removeClassName(CUBA_FILEUPLOAD_DROPZONE_CLASS);
-                    }
-                    dragStopTimer = null;
-                }
-            };
-            dragStopTimer.schedule(100);
         }
+    }
+
+    protected static void hideDropZones() {
+        if (dragStopTimer != null) {
+            dragStopTimer.cancel();
+        }
+
+        dragStopTimer = new Timer() {
+            @Override
+            public void run() {
+                for (Element dropZone : dropZones) {
+                    dropZone.removeClassName(CUBA_FILEUPLOAD_DROPZONE_CLASS);
+                }
+
+                dragStopTimer = null;
+            }
+        };
+        dragStopTimer.schedule(300);
     }
 
     protected native void setDropZone(Element fileInput, Element dropZoneElement) /*-{
