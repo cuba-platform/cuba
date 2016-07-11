@@ -80,6 +80,7 @@
 @import "app/app-scrollbar";
 @import "app/folders-pane";
 @import "app/diff-viewer";
+@import "app/report-parameters";
 
 @mixin halo {
   @include valo;
@@ -147,4 +148,5 @@
   @include cuba-folders-pane;
   @include cuba-progressbar;
   @include cuba-diff-viewer;
+  @include cuba-report-parameters;
 }
