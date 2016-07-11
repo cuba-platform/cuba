@@ -8,6 +8,10 @@
   .cuba-resizabletextarea-wrapper {
     position: relative;
     overflow: hidden;
+
+    .v-textarea {
+      min-height: 15px;
+    }
   }
 
   .#{$primary-stylename}-resize-corner {
