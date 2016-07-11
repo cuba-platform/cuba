@@ -25,17 +25,16 @@ import java.util.Map;
  * interact with the execution environment.
  *
  * @param <T> task progress measurement unit
- *
  */
 public interface TaskLifeCycle<T> {
-
     /**
      * Publish changes to show progress.
      *
      * @param changes Changes
+     * @throws InterruptedException if task was interrupted by calling {@link BackgroundTaskHandler#cancel()}
      */
     @SuppressWarnings({"unchecked"})
-    void publish(T... changes);
+    void publish(T... changes) throws InterruptedException;
 
     /**
      * @return true if the working thread has been interrupted

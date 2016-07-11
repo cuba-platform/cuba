@@ -351,7 +351,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
         UploadToStorageProgressListener progressListener = new UploadToStorageProgressListener() {
             @Override
-            public void progressChanged(UUID fileId, long uploadedBytes, long totalBytes) {
+            public void progressChanged(UUID fileId, long uploadedBytes, long totalBytes) throws InterruptedException {
                 taskLifeCycle.publish(uploadedBytes);
             }
         };
@@ -400,5 +400,18 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
             builder.append(formatter.format(lastModified)).append("\n");
         }
         return builder.toString();
+    }
+
+    /**
+     * Listener to be notified about the progress of uploading file from the temporary storage
+     * into middleware FileStorage.
+     */
+    interface UploadToStorageProgressListener {
+        /**
+         * @param fileId        temporary file ID
+         * @param uploadedBytes current uploaded bytes count
+         * @param totalBytes    total contents size
+         */
+        void progressChanged(UUID fileId, long uploadedBytes, long totalBytes) throws InterruptedException;
     }
 }

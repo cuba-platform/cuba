@@ -228,7 +228,11 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 return runnableTask.run(new TaskLifeCycle<T>() {
                     @SafeVarargs
                     @Override
-                    public final void publish(T... changes) {
+                    public final void publish(T... changes) throws InterruptedException {
+                        if (Thread.currentThread().isInterrupted()) {
+                            throw new InterruptedException("Task is interrupted and is trying to publish changes");
+                        }
+
                         handleProgress(changes);
                     }
 

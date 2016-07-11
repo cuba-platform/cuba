@@ -28,7 +28,6 @@ import java.util.UUID;
 
 /**
  * Client API for uploading files and transfer them to the middleware FileStorage.
- *
  */
 public interface FileUploadingAPI {
 
@@ -43,19 +42,6 @@ public interface FileUploadingAPI {
          * @param receivedBytes current uploaded bytes count
          */
         void progressChanged(UUID fileId, int receivedBytes);
-    }
-
-    /**
-     * Listener to be notified about the progress of uploading file from the temporary storage
-     * into middleware FileStorage.
-     */
-    interface UploadToStorageProgressListener {
-        /**
-         * @param fileId        temporary file ID
-         * @param uploadedBytes current uploaded bytes count
-         * @param totalBytes    total contents size
-         */
-        void progressChanged(UUID fileId, long uploadedBytes, long totalBytes);
     }
 
     /**

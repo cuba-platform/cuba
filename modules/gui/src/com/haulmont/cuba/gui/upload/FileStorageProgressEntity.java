@@ -22,47 +22,51 @@ import org.apache.http.entity.FileEntity;
 import java.io.*;
 import java.util.UUID;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 public class FileStorageProgressEntity extends FileEntity {
 
     private final long size;
     private final UUID fileId;
-    private final FileUploadingAPI.UploadToStorageProgressListener listener;
+    private final FileUploading.UploadToStorageProgressListener listener;
 
     public FileStorageProgressEntity(File file, String contentType, UUID fileId,
-                                     FileUploadingAPI.UploadToStorageProgressListener listener) {
+                                     FileUploading.UploadToStorageProgressListener listener) {
         super(file, contentType);
+
+        checkNotNullArgument(listener);
+        checkNotNullArgument(fileId);
 
         this.listener = listener;
         this.size = file.length();
         this.fileId = fileId;
-
-        checkNotNull(listener);
-        checkNotNull(fileId);
     }
 
     @Override
-    public void writeTo(OutputStream outstream) throws IOException {
+    public void writeTo(OutputStream outStream) throws IOException {
         long transferredBytes = 0L;
 
-        if (outstream == null) {
+        if (outStream == null) {
             throw new IllegalArgumentException("Output stream may not be null");
         }
 
-        try (InputStream instream = new FileInputStream(this.file)) {
+        try (InputStream inStream = new FileInputStream(this.file)) {
             byte[] tmp = new byte[4096];
             int readedBytes;
-            while ((readedBytes = instream.read(tmp)) != -1) {
+            while ((readedBytes = inStream.read(tmp)) != -1) {
                 if (Thread.currentThread().isInterrupted())
                     throw new InterruptedIOException();
 
-                outstream.write(tmp, 0, readedBytes);
+                outStream.write(tmp, 0, readedBytes);
 
                 transferredBytes += readedBytes;
-                listener.progressChanged(fileId, transferredBytes, size);
+                try {
+                    listener.progressChanged(fileId, transferredBytes, size);
+                } catch (InterruptedException e) {
+                    throw new InterruptedIOException();
+                }
             }
-            outstream.flush();
+            outStream.flush();
         }
     }
 }

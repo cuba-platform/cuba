@@ -120,14 +120,19 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
         @Override
         protected final V doInBackground() throws Exception {
-            Thread.currentThread().setName("BackgroundTaskThread");
+            Thread.currentThread().setName(String.format("BackgroundTaskThread-%s",
+                    System.identityHashCode(Thread.currentThread())));
             try {
                 if (!Thread.currentThread().isInterrupted()) {
                     // do not run any activity if canceled before start
                     result = runnableTask.run(new TaskLifeCycle<T>() {
                         @SafeVarargs
                         @Override
-                        public final void publish(T... changes) {
+                        public final void publish(T... changes) throws InterruptedException {
+                            if (Thread.currentThread().isInterrupted()) {
+                                throw new InterruptedException("Task is interrupted and is trying to publish changes");
+                            }
+
                             handleProgress(changes);
                         }
 
