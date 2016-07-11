@@ -37,7 +37,6 @@ public class CubaResizableTextAreaWrapperWidget extends VCustomComponent {
 
     protected static final int MOUSE_EVENTS = Event.ONMOUSEDOWN | Event.ONMOUSEMOVE | Event.ONMOUSEUP | Event.ONMOUSEOVER;
     protected static final int MINIMAL_WIDTH = 17;
-    protected static final int MINIMAL_HEIGHT = 17;
 
     public boolean isResizable() {
         return resizeElement != null;
@@ -132,8 +131,10 @@ public class CubaResizableTextAreaWrapperWidget extends VCustomComponent {
             int absoluteLeft = getAbsoluteLeft();
             int absoluteTop = getAbsoluteTop();
 
+            ComputedStyle cs = new ComputedStyle(getElement().getFirstChildElement());
+
             //do not allow mirror-functionality
-            if (mouseY > absoluteTop + MINIMAL_HEIGHT && mouseX > absoluteLeft + MINIMAL_WIDTH) {
+            if (mouseY > absoluteTop + cs.getDoubleProperty("min-height") && mouseX > absoluteLeft + MINIMAL_WIDTH) {
                 int width = mouseX - absoluteLeft + 2;
                 int height = mouseY - absoluteTop + 2;
 
