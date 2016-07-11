@@ -117,6 +117,20 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
     }
 
     @Override
+    public boolean filterByConstraints(Collection<Entity> entities) {
+        boolean filtered = false;
+        for (Iterator<Entity> iterator = entities.iterator(); iterator.hasNext(); ) {
+            Entity entity = iterator.next();
+            if (entity instanceof HasUuid && !isPermittedInMemory(entity)) {
+                //we ignore situations when the collection is immutable
+                iterator.remove();
+                filtered = true;
+            }
+        }
+        return filtered;
+    }
+
+    @Override
     public void applyConstraints(Collection<Entity> entities) {
         List<Entity> supportedEntities = entities.stream().filter(e -> e instanceof HasUuid).collect(Collectors.toList());
         internalApplyConstraints(supportedEntities, new HashSet<>());
@@ -226,10 +240,7 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
     protected boolean internalApplyConstraints(Entity entity, Set<UUID> handled) {
         MetaClass metaClass = entity.getMetaClass();
 
-        if (!isPermitted(entity, constraint ->
-                constraint.getCheckType().memory()
-                        && (constraint.getOperationType() == ConstraintOperationType.READ
-                        || constraint.getOperationType() == ConstraintOperationType.ALL))) {
+        if (!isPermittedInMemory(entity)) {
             return true;
         }
 
@@ -265,5 +276,12 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
         }
 
         return false;
+    }
+
+    protected boolean isPermittedInMemory(Entity entity) {
+        return isPermitted(entity, constraint ->
+                constraint.getCheckType().memory()
+                        && (constraint.getOperationType() == ConstraintOperationType.READ
+                        || constraint.getOperationType() == ConstraintOperationType.ALL));
     }
 }

@@ -538,36 +538,53 @@ public class DataManagerBean implements DataManager {
         return copy;
     }
 
+    @SuppressWarnings("unchecked")
     protected <E extends Entity> List<E> getResultList(LoadContext<E> context, Query query, boolean ensureDistinct) {
         List<E> list = executeQuery(query, false);
-        if (!ensureDistinct || list.size() == 0)
+        boolean filteredByConstraints = false;
+        int initialSize = list.size();
+        if (initialSize == 0) {
             return list;
+        }
+        if (needFilterByConstraints(context)) {
+            filteredByConstraints = security.filterByConstraints((Collection<Entity>) list);
+        }
+        if (!ensureDistinct) {
+            return filteredByConstraints ? getResultListIterative(context, query, list, initialSize) : list;
+        }
 
         int requestedFirst = context.getQuery().getFirstResult();
         LinkedHashSet<E> set = new LinkedHashSet<>(list);
-        if (set.size() == list.size() && requestedFirst == 0) {
-            // If this is the first chunk and it has no duplicates, just return it
+        if (set.size() == list.size() && requestedFirst == 0 && !filteredByConstraints) {
+            // If this is the first chunk and it has no duplicates and security constraints is not applied, just return it
             return list;
         }
         // In case of not first chunk, even if there where no duplicates, start filling the set from zero
         // to ensure correct paging
+        return getResultListIterative(context, query, set, initialSize);
+    }
 
+    @SuppressWarnings("unchecked")
+    protected <E extends Entity> List<E> getResultListIterative(LoadContext<E> context, Query query,
+                                                                Collection<E> filteredCollection,
+                                                                int initialSize) {
+        int requestedFirst = context.getQuery().getFirstResult();
         int requestedMax = context.getQuery().getMaxResults();
 
         if (requestedMax == 0) {
             // set contains all items if query without paging
-            return new ArrayList<>(set);
+            return new ArrayList<>(filteredCollection);
         }
 
-        int setSize = list.size() + requestedFirst;
-        int factor = list.size() / set.size() * 2;
+        int setSize = initialSize + requestedFirst;
+        int factor = initialSize / filteredCollection.size() * 2;
 
-        set.clear();
+        filteredCollection.clear();
 
         int firstResult = 0;
         int maxResults = (requestedFirst + requestedMax) * factor;
         int i = 0;
-        while (set.size() < setSize) {
+        while (filteredCollection.size() < setSize) {
             if (i++ > 10) {
                 log.warn("In-memory distinct: endless loop detected for " + context);
                 break;
@@ -575,19 +592,23 @@ public class DataManagerBean implements DataManager {
             query.setFirstResult(firstResult);
             query.setMaxResults(maxResults);
             //noinspection unchecked
-            list = query.getResultList();
-            if (list.size() == 0)
+            List<E> list = query.getResultList();
+            if (list.size() == 0) {
                 break;
-            set.addAll(list);
+            }
+            if (needFilterByConstraints(context)) {
+                security.filterByConstraints((Collection<Entity>) list);
+            }
+            filteredCollection.addAll(list);
 
             firstResult = firstResult + maxResults;
         }
 
         // Copy by iteration because subList() returns non-serializable class
-        int max = Math.min(requestedFirst + requestedMax, set.size());
+        int max = Math.min(requestedFirst + requestedMax, filteredCollection.size());
         List<E> result = new ArrayList<>(max - requestedFirst);
         int j = 0;
-        for (E item : set) {
+        for (E item : filteredCollection) {
             if (j >= max)
                 break;
             if (j >= requestedFirst)
@@ -763,6 +784,15 @@ public class DataManagerBean implements DataManager {
         }
         return false;
     }
+
+    protected boolean needFilterByConstraints(LoadContext context) {
+        if (!isAuthorizationRequired() || !userSessionSource.getUserSession().hasConstraints()) {
+            return false;
+        }
+        MetaClass metaClass = metadata.getSession().getClassNN(context.getMetaClass());
+        return security.hasConstraints(metaClass);
+    }
+
 
     protected Set<Class> collectEntityClasses(View view, Set<View> visited) {
         if (visited.contains(view)) {
