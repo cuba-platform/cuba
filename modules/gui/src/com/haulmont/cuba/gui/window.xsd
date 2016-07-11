@@ -782,6 +782,27 @@
         </xs:complexContent>
     </xs:complexType>
 
+    <!-- ColorPicker -->
+    <xs:complexType name="colorPickerComponent">
+
+        <xs:complexContent>
+            <xs:extension base="baseFieldComponent">
+                <xs:attribute name="popupCaption" type="xs:string"/>
+                <xs:attribute name="confirmButtonCaption" type="xs:string"/>
+                <xs:attribute name="cancelButtonCaption" type="xs:string"/>
+                <xs:attribute name="swatchesTabCaption" type="xs:string"/>
+                <xs:attribute name="lookupAllCaption" type="xs:string"/>
+                <xs:attribute name="lookupRedCaption" type="xs:string"/>
+                <xs:attribute name="lookupGreenCaption" type="xs:string"/>
+                <xs:attribute name="lookupBlueCaption" type="xs:string"/>
+
+                <xs:attribute name="swatchesVisible" type="xs:boolean"/>
+                <xs:attribute name="rgbVisible" type="xs:boolean"/>
+                <xs:attribute name="hsvVisible" type="xs:boolean"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
     <!-- TimeField -->
     <xs:complexType name="timeFieldComponent">
         <xs:complexContent>
@@ -1871,6 +1892,7 @@
                 <xs:element name="lookupPickerField" type="lookupPickerFieldComponent"/>
                 <xs:element name="searchPickerField" type="searchPickerFieldComponent"/>
 
+                <xs:element name="colorPicker" type="colorPickerComponent"/>
                 <xs:element name="optionsGroup" type="optionsGroupComponent"/>
                 <xs:element name="optionsList" type="optionsListComponent"/>
                 <xs:element name="progressBar" type="progressBarComponent"/>

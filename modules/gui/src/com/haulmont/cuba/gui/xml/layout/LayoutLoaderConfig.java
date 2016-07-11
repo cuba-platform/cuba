@@ -77,6 +77,7 @@ public class LayoutLoaderConfig {
         config.register(DatePicker.NAME, DatePickerLoader.class);
         config.register(LookupField.NAME, LookupFieldLoader.class);
         config.register(PickerField.NAME, PickerFieldLoader.class);
+        config.register(ColorPicker.NAME, ColorPickerLoader.class);
         config.register(LookupPickerField.NAME, LookupPickerFieldLoader.class);
         config.register(SearchPickerField.NAME, SearchPickerFieldLoader.class);
         config.register(OptionsGroup.NAME, OptionsGroupLoader.class);

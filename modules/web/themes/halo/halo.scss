@@ -23,6 +23,7 @@
 
 // Components
 @import "components/tree/tree";
+@import "components/colorpicker/colorpicker";
 @import "components/link/link";
 @import "components/panel/panel";
 @import "components/table/table";
@@ -112,6 +113,7 @@
   @include halo-contextmenu-addon;
   @include halo-textarea;
   @include halo-draganddrop;
+  @include halo-colorpicker;
 
   @include halo-cuba-groupbox;
   @include halo-cuba-tokenlist;

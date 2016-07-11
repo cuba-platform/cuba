@@ -71,6 +71,7 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(LookupField.NAME, WebLookupField.class);
         classes.put(SearchField.NAME, WebSearchField.class);
         classes.put(PickerField.NAME, WebPickerField.class);
+        classes.put(ColorPicker.NAME, WebColorPicker.class);
         classes.put(LookupPickerField.NAME, WebLookupPickerField.class);
         classes.put(SearchPickerField.NAME, WebSearchPickerField.class);
         classes.put(OptionsGroup.NAME, WebOptionsGroup.class);
