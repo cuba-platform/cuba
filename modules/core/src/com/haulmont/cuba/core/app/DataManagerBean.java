@@ -206,26 +206,55 @@ public class DataManagerBean implements DataManager {
             return 0;
         }
 
-        QueryTransformer transformer = QueryTransformerFactory.createTransformer(context.getQuery().getQueryString());
-        transformer.replaceWithCount();
-        context = context.copy();
-        context.getQuery().setQueryString(transformer.getResult());
-
         queryResultsManager.savePreviousQueryResults(context);
 
-        Number result;
-        try (Transaction tx = persistence.createTransaction()) {
-            EntityManager em = persistence.getEntityManager();
-            em.setSoftDeletion(context.isSoftDeletion());
-            persistence.getEntityManagerContext().setDbHints(context.getDbHints());
+        if (security.hasMemoryConstraints(metaClass, ConstraintOperationType.READ, ConstraintOperationType.ALL) ) {
+            context = context.copy();
+            List resultList;
+            try (Transaction tx = persistence.createTransaction()) {
+                EntityManager em = persistence.getEntityManager();
+                em.setSoftDeletion(context.isSoftDeletion());
+                persistence.getEntityManagerContext().setDbHints(context.getDbHints());
 
-            Query query = createQuery(em, context);
-            result = (Number) query.getSingleResult();
+                boolean ensureDistinct = false;
+                if (serverConfig.getInMemoryDistinct() && context.getQuery() != null) {
+                    QueryTransformer transformer = QueryTransformerFactory.createTransformer(
+                            context.getQuery().getQueryString());
+                    ensureDistinct = transformer.removeDistinct();
+                    if (ensureDistinct) {
+                        context.getQuery().setQueryString(transformer.getResult());
+                    }
+                }
+                context.getQuery().setFirstResult(0);
+                context.getQuery().setMaxResults(0);
 
-            tx.commit();
+                Query query = createQuery(em, context);
+                query.setView(createRestrictedView(context));
+
+                resultList = getResultList(context, query, ensureDistinct);
+                tx.commit();
+            }
+            return resultList.size();
+        } else {
+            QueryTransformer transformer = QueryTransformerFactory.createTransformer(context.getQuery().getQueryString());
+            transformer.replaceWithCount();
+            context = context.copy();
+            context.getQuery().setQueryString(transformer.getResult());
+
+            Number result;
+            try (Transaction tx = persistence.createTransaction()) {
+                EntityManager em = persistence.getEntityManager();
+                em.setSoftDeletion(context.isSoftDeletion());
+                persistence.getEntityManagerContext().setDbHints(context.getDbHints());
+
+                Query query = createQuery(em, context);
+                result = (Number) query.getSingleResult();
+
+                tx.commit();
+            }
+
+            return result.longValue();
         }
-
-        return result.longValue();
     }
 
     @Override
