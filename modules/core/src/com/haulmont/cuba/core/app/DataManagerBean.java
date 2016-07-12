@@ -585,7 +585,7 @@ public class DataManagerBean implements DataManager {
         int maxResults = (requestedFirst + requestedMax) * factor;
         int i = 0;
         while (filteredCollection.size() < setSize) {
-            if (i++ > 10) {
+            if (i++ > 1000) {
                 log.warn("In-memory distinct: endless loop detected for " + context);
                 break;
             }
