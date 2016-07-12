@@ -606,7 +606,7 @@ public class DataManagerBean implements DataManager {
         }
 
         int setSize = initialSize + requestedFirst;
-        int factor = initialSize / filteredCollection.size() * 2;
+        int factor = filteredCollection.size() == 0 ? 2 : initialSize / filteredCollection.size() * 2;
 
         filteredCollection.clear();
 
