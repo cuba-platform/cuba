@@ -20,7 +20,9 @@ package com.haulmont.cuba.core.app.scheduling;
 import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.core.entity.SchedulingType;
 import com.haulmont.cuba.core.global.TimeSource;
+import com.haulmont.cuba.testsupport.TestContainer;
 import junit.framework.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -35,6 +37,9 @@ import static junit.framework.Assert.assertTrue;
 public class SchedulingTest {
 
     private SimpleDateFormat simpleDateFormat;
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     public SchedulingTest() {
         simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");

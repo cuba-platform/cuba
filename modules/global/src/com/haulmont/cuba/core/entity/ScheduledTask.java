@@ -17,12 +17,13 @@
 
 package com.haulmont.cuba.core.entity;
 
+import com.google.common.base.MoreObjects;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.app.scheduled.MethodParameterInfo;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import org.apache.commons.lang.BooleanUtils;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -32,6 +33,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,7 +41,6 @@ import java.util.List;
 
 /**
  * Entity that stores an information about a scheduled task.
- *
  */
 @Entity(name = "sys$ScheduledTask")
 @Table(name = "SYS_SCHEDULED_TASK")
@@ -435,13 +436,21 @@ public class ScheduledTask extends BaseUuidEntity implements Creatable, Updatabl
 
     @Override
     public String toString() {
-        return "ScheduledTask{" +
-                id + ", " +
-                beanName + '.' + methodName +
-                (BooleanUtils.isTrue(singleton) ? ", singleton" : "") +
-                ", period=" + period +
-                (startDate != null ? ", startDate=" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(startDate) : "") +
-                '}';
+        MoreObjects.ToStringHelper builder = MoreObjects.toStringHelper("ScheduledTask")
+                .omitNullValues()
+                .addValue(id);
+        String[] fields = new String[]{"beanName", "methodName", "className", "scriptName", "singleton", "period", "cron", "startDate"};
+        for (String field : fields) {
+            if (PersistenceHelper.isLoaded(this, field)) {
+                Object value = getValue(field);
+                if (value instanceof Date) {
+                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                    value = df.format(value);
+                }
+                builder.add(field, value);
+            }
+        }
+        return builder.toString();
     }
 
     @MetaProperty

@@ -98,14 +98,4 @@ public class ScheduledExecution extends BaseUuidEntity {
 
         return (finishTime.getTime() - startTime.getTime()) / 1000;
     }
-
-    @Override
-    public String toString() {
-        return "ScheduledExecution{" +
-                "task=" + task +
-                ", host='" + server + '\'' +
-                ", startTime=" + startTime +
-                (finishTime != null ? ", finishTime=" : "") +
-                '}';
-    }
 }
