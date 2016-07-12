@@ -579,24 +579,24 @@ public class DataManagerBean implements DataManager {
             filteredByConstraints = security.filterByConstraints((Collection<Entity>) list);
         }
         if (!ensureDistinct) {
-            return filteredByConstraints ? getResultListIterative(context, query, list, initialSize) : list;
+            return filteredByConstraints ? getResultListIteratively(context, query, list, initialSize) : list;
         }
 
         int requestedFirst = context.getQuery().getFirstResult();
         LinkedHashSet<E> set = new LinkedHashSet<>(list);
         if (set.size() == list.size() && requestedFirst == 0 && !filteredByConstraints) {
-            // If this is the first chunk and it has no duplicates and security constraints is not applied, just return it
+            // If this is the first chunk and it has no duplicates and security constraints are not applied, just return it
             return list;
         }
         // In case of not first chunk, even if there where no duplicates, start filling the set from zero
         // to ensure correct paging
-        return getResultListIterative(context, query, set, initialSize);
+        return getResultListIteratively(context, query, set, initialSize);
     }
 
     @SuppressWarnings("unchecked")
-    protected <E extends Entity> List<E> getResultListIterative(LoadContext<E> context, Query query,
-                                                                Collection<E> filteredCollection,
-                                                                int initialSize) {
+    protected <E extends Entity> List<E> getResultListIteratively(LoadContext<E> context, Query query,
+                                                                  Collection<E> filteredCollection,
+                                                                  int initialSize) {
         int requestedFirst = context.getQuery().getFirstResult();
         int requestedMax = context.getQuery().getMaxResults();
 
