@@ -39,10 +39,7 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.text.ParseException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 
 import static com.haulmont.cuba.security.entity.ConstraintOperationType.ALL;
@@ -179,6 +176,17 @@ public class SecurityImpl implements Security {
         UserSession userSession = userSessionSource.getUserSession();
         String mainMetaClassName = extendedEntities.getOriginalOrThisMetaClass(metaClass).getName();
         return userSession.hasConstraints(mainMetaClassName);
+    }
+
+    @Override
+    public boolean hasMemoryConstraints(MetaClass metaClass, ConstraintOperationType... operationTypes) {
+        UserSession userSession = userSessionSource.getUserSession();
+        String mainMetaClassName = extendedEntities.getOriginalOrThisMetaClass(metaClass).getName();
+        List<ConstraintData> constraints = userSession.getConstraints(mainMetaClassName, constraint ->
+            constraint.getCheckType().memory() && constraint.getOperationType() != null
+                    && Arrays.asList(operationTypes).contains(constraint.getOperationType())
+        );
+        return !constraints.isEmpty();
     }
 
     protected List<ConstraintData> getConstraints(MetaClass metaClass, Predicate<ConstraintData> predicate) {
