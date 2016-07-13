@@ -45,7 +45,7 @@ import static java.lang.String.format;
 
 @PerformanceLog
 public class PersistenceSecurityImpl extends SecurityImpl implements PersistenceSecurity {
-    protected final Logger log = LoggerFactory.getLogger(getClass());
+    protected final Logger log = LoggerFactory.getLogger(PersistenceSecurityImpl.class);
 
     @Inject
     protected SecurityTokenManager securityTokenManager;
@@ -130,7 +130,10 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
 
     @Override
     public void applyConstraints(Collection<Entity> entities) {
-        internalApplyConstraints(entities, new HashSet<>());
+        Set<UUID> handled = new LinkedHashSet<>();
+        entities.stream().forEach(entity -> {
+            internalApplyConstraints(entity, handled);
+        });
     }
 
     @Override
@@ -203,13 +206,15 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
                 transformer.addJoinAndWhere(join, where);
             }
         } catch (JpqlSyntaxException e) {
-            log.error(String.format("Syntax errors found in constraint's JPQL expressions. Entity [%s]. Constraint ID [%s].",
-                    entityName, constraint.getId()), e);
+            log.error("Syntax errors found in constraint's JPQL expressions. Entity [{}]. Constraint ID [{}].",
+                      entityName, constraint.getId(), e);
+
             throw new RowLevelSecurityException(
                     "Syntax errors found in constraint's JPQL expressions. Please see the logs.", entityName);
         } catch (Exception e) {
-            log.error(String.format("An error occurred when applying security constraint. Entity [%s]. Constraint ID [%s].",
-                    entityName, constraint.getId()), e);
+            log.error("An error occurred when applying security constraint. Entity [{}]. Constraint ID [{}].",
+                      entityName, constraint.getId(), e);
+
             throw new RowLevelSecurityException(
                     "An error occurred when applying security constraint. Please see the logs.", entityName);
         }
@@ -237,7 +242,10 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
             return true;
         }
 
-        if (handled.contains(entity.getUuid())) return false;
+        if (handled.contains(entity.getUuid())) {
+            return false;
+        }
+
         handled.add(entity.getUuid());
 
         for (MetaProperty property : metaClass.getProperties()) {
