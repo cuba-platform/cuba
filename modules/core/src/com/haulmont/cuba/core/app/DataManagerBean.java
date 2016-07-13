@@ -98,6 +98,7 @@ public class DataManagerBean implements DataManager {
         }
 
         E result = null;
+        boolean needToApplyInMemoryConstraints = needToApplyInMemoryConstraints(context);
         try (Transaction tx = persistence.createTransaction()) {
             final EntityManager em = persistence.getEntityManager();
 
@@ -119,7 +120,7 @@ public class DataManagerBean implements DataManager {
                 result = resultList.get(0);
             }
 
-            if (result != null && needToApplyInMemoryConstraints(context) && security.applyConstraints(result)) {
+            if (result != null && needToApplyInMemoryConstraints && security.filterByConstraints(result)) {
                 result = null;
             }
 
@@ -130,7 +131,12 @@ public class DataManagerBean implements DataManager {
             tx.commit();
         }
 
-        attributeSecurity.afterLoad(result);
+        if (result != null) {
+            if (needToApplyInMemoryConstraints) {
+                security.applyConstraints(result);
+            }
+            attributeSecurity.afterLoad(result);
+        }
 
         return result;
     }
@@ -174,10 +180,6 @@ public class DataManagerBean implements DataManager {
 
             resultList = getResultList(context, query, ensureDistinct);
 
-            if (needToApplyInMemoryConstraints(context)) {
-                security.applyConstraints((Collection<Entity>) resultList);
-            }
-
             // Fetch dynamic attributes
             if (context.getView() != null
                     && BaseGenericIdEntity.class.isAssignableFrom(context.getView().getEntityClass())
@@ -186,6 +188,10 @@ public class DataManagerBean implements DataManager {
             }
 
             tx.commit();
+        }
+
+        if (needToApplyInMemoryConstraints(context)) {
+            security.applyConstraints((Collection<Entity>) resultList);
         }
 
         attributeSecurity.afterLoad(resultList);
@@ -385,11 +391,14 @@ public class DataManagerBean implements DataManager {
 
                 if (isAuthorizationRequired() && userSessionSource.getUserSession().hasConstraints()) {
                     security.filterByConstraints(res);
-                    security.applyConstraints(res);
                 }
             }
 
             tx.commit();
+        }
+
+        if (isAuthorizationRequired() && userSessionSource.getUserSession().hasConstraints()) {
+            security.applyConstraints(res);
         }
 
         for (Entity entity : res) {
