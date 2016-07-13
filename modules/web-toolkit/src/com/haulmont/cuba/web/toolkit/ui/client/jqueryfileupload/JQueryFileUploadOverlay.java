@@ -22,7 +22,6 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.vaadin.client.VConsole;
 import fi.jasoft.dragdroplayouts.client.ui.util.HTML5Support;
 
 import java.util.ArrayList;
@@ -261,10 +260,17 @@ public class JQueryFileUploadOverlay {
                 globalDocumentDragOver(event);
             }
         });
+
+        HTML5Support.setGlobalDropHandler(new DropHandler() {
+            @Override
+            public void onDrop(DropEvent event) {
+                globalDocumentDrop(event);
+            }
+        });
     }
 
     protected static void globalDocumentDrop(DropEvent event) {
-        hideDropZones();
+        forceHideDropZones();
     }
 
     protected static void globalDocumentDragEnd(DragEndEvent event) {
@@ -301,14 +307,20 @@ public class JQueryFileUploadOverlay {
         dragStopTimer = new Timer() {
             @Override
             public void run() {
-                for (Element dropZone : dropZones) {
-                    dropZone.removeClassName(CUBA_FILEUPLOAD_DROPZONE_CLASS);
-                }
-
-                dragStopTimer = null;
+                forceHideDropZones();
             }
         };
         dragStopTimer.schedule(300);
+    }
+
+    protected static void forceHideDropZones() {
+        for (Element dropZone : dropZones) {
+            dropZone.removeClassName(CUBA_FILEUPLOAD_DROPZONE_CLASS);
+        }
+        if (dragStopTimer != null) {
+            dragStopTimer.cancel();
+        }
+        dragStopTimer = null;
     }
 
     protected native void setDropZone(Element fileInput, Element dropZoneElement) /*-{
