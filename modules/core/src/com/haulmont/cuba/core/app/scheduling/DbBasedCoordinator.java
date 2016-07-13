@@ -24,8 +24,8 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.ScheduledTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import javax.persistence.LockModeType;
 import java.util.Date;
@@ -35,7 +35,6 @@ import java.util.List;
  * Implementation of {@link Coordinator} interface, performing synchronization of singleton schedulers on the main
  * database.
  * <p>This implementation should not be used if the database is overloaded.</p>
- *
  */
 @Component(Coordinator.NAME)
 public class DbBasedCoordinator implements Coordinator {
@@ -106,6 +105,16 @@ public class DbBasedCoordinator implements Coordinator {
             log.trace(task + ": finished at " + date.getTime());
             return true;
         }
+    }
+
+    @Override
+    public long getLastFinished(ScheduledTask task) {
+        EntityManager em = persistence.getEntityManager();
+        Query query = em.createQuery(
+                "select max(e.finishTime) from sys$ScheduledExecution e where e.task.id = ?1")
+                .setParameter(1, task.getId());
+        Date date = (Date) query.getFirstResult();
+        return date == null ? 0 : date.getTime();
     }
 
     protected synchronized List<ScheduledTask> getTasks() {

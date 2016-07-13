@@ -404,6 +404,7 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
                 if (context != null) {
                     context.executeInjectTasks();
                     context.executePostWrapTasks();
+                    context.executeInitTasks();
                 }
                 // Fire GUI listener
                 fireTabChanged();

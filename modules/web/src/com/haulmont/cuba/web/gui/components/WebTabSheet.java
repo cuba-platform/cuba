@@ -310,7 +310,9 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         context = loader.getContext();
 
         if (!postInitTaskAdded) {
-            context.addPostInitTask((context1, window) -> initComponentTabChangeListener());
+            context.addPostInitTask((context1, window) ->
+                    initComponentTabChangeListener()
+            );
             postInitTaskAdded = true;
         }
 
@@ -435,6 +437,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
                 if (context != null) {
                     context.executeInjectTasks();
                     context.executePostWrapTasks();
+                    context.executeInitTasks();
                 }
                 // Fire GUI listener
                 fireTabChanged();

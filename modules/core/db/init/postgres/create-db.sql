@@ -141,6 +141,7 @@ create table SYS_SCHEDULED_EXECUTION (
 )^
 
 create index IDX_SYS_SCHEDULED_EXECUTION_TASK_START_TIME  on SYS_SCHEDULED_EXECUTION (TASK_ID, START_TIME)^
+create index IDX_SYS_SCHEDULED_EXECUTION_TASK_FINISH_TIME on SYS_SCHEDULED_EXECUTION (TASK_ID, FINISH_TIME)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -723,6 +724,8 @@ create table SYS_CATEGORY_ATTR (
     REQUIRED boolean,
     LOOKUP boolean,
     TARGET_SCREENS varchar(4000),
+    WIDTH varchar(20),
+    ROWS_COUNT integer,
     --
     primary key (ID),
     constraint SYS_CATEGORY_ATTR_CATEGORY_ID foreign key (CATEGORY_ID) references SYS_CATEGORY(ID)

@@ -60,42 +60,42 @@ public class SchedulingTest {
         scheduledTask.setCron("*/5 * * * * *");
 
         //scheduler has failed couple of runs and now we should run it
-        long currentStart = scheduling.calculateCurrentStart(scheduledTask, date("2013-11-13 15:29:00").getTime(), date("2013-11-13 15:30:00").getTime(), 0, 10000l);
+        long currentStart = scheduling.calculateNextCronDate(scheduledTask, date("2013-11-13 15:29:00").getTime(), date("2013-11-13 15:30:00").getTime(), 10000l);
         assertEquals(date("2013-11-13 15:29:55"), new Date(currentStart));
 
         //last run was year ago, so now-frame should be considered
-        currentStart = scheduling.calculateCurrentStart(scheduledTask, date("2012-11-13 15:29:00").getTime(), date("2013-11-13 15:30:00").getTime(), 0, 10000l);
+        currentStart = scheduling.calculateNextCronDate(scheduledTask, date("2012-11-13 15:29:00").getTime(), date("2013-11-13 15:30:00").getTime(), 10000l);
         assertEquals(date("2013-11-13 15:29:55"), new Date(currentStart));
 
         //last run was very close to now, last start date should be considered
-        currentStart = scheduling.calculateCurrentStart(scheduledTask, date("2013-11-13 15:29:59").getTime(), date("2013-11-13 15:30:01").getTime(), 0, 10000l);
+        currentStart = scheduling.calculateNextCronDate(scheduledTask, date("2013-11-13 15:29:59").getTime(), date("2013-11-13 15:30:01").getTime(), 10000l);
         assertEquals(date("2013-11-13 15:30:00"), new Date(currentStart));
 
         scheduledTask.setCron("0 0 0 * * FRI");
 
         //task should run in next friday
-        currentStart = scheduling.calculateCurrentStart(scheduledTask, date("2013-11-08 01:01:01").getTime(), date("2013-11-13 15:30:00").getTime(), 0, 10000l);
+        currentStart = scheduling.calculateNextCronDate(scheduledTask, date("2013-11-08 01:01:01").getTime(), date("2013-11-13 15:30:00").getTime(), 10000l);
         assertEquals(date("2013-11-15 00:00:00"), new Date(currentStart));
 
-        currentStart = scheduling.calculateCurrentStart(scheduledTask, date("2013-11-08 01:01:01").getTime(), date("2013-11-08 01:01:02").getTime(), 0, 600000l);
+        currentStart = scheduling.calculateNextCronDate(scheduledTask, date("2013-11-08 01:01:01").getTime(), date("2013-11-08 01:01:02").getTime(), 600000l);
         assertEquals(date("2013-11-15 00:00:00"), new Date(currentStart));
 
         //task is late but matches frame
-        currentStart = scheduling.calculateCurrentStart(scheduledTask, date("2013-11-07 23:59:59").getTime(), date("2013-11-08 00:01:00").getTime(), 0, 600000l);
+        currentStart = scheduling.calculateNextCronDate(scheduledTask, date("2013-11-07 23:59:59").getTime(), date("2013-11-08 00:01:00").getTime(), 600000l);
         assertEquals(date("2013-11-8 00:00:00"), new Date(currentStart));
 
         //task is late and does not match frame
-        currentStart = scheduling.calculateCurrentStart(scheduledTask, date("2013-11-07 23:59:59").getTime(), date("2013-11-08 00:11:00").getTime(), 0, 600000l);
+        currentStart = scheduling.calculateNextCronDate(scheduledTask, date("2013-11-07 23:59:59").getTime(), date("2013-11-08 00:11:00").getTime(), 600000l);
         assertEquals(date("2013-11-15 00:00:00"), new Date(currentStart));
 
         scheduledTask.setCron("0 59 1 * * *");
 
         //time shift forward
-        currentStart = scheduling.calculateCurrentStart(scheduledTask, date("2013-10-26 1:59:59").getTime(), date("2013-10-27 00:00:00").getTime(), 0, 600000l);
+        currentStart = scheduling.calculateNextCronDate(scheduledTask, date("2013-10-26 1:59:59").getTime(), date("2013-10-27 00:00:00").getTime(), 600000l);
         assertEquals(date("2013-10-27 01:59:00"), new Date(currentStart));
 
         //time shift backward
-        currentStart = scheduling.calculateCurrentStart(scheduledTask, date("2013-03-30 1:59:00").getTime(), date("2013-03-31 00:00:00").getTime(), 0, 600000l);
+        currentStart = scheduling.calculateNextCronDate(scheduledTask, date("2013-03-30 1:59:00").getTime(), date("2013-03-31 00:00:00").getTime(), 600000l);
         assertEquals(date("2013-03-31 01:59:00"), new Date(currentStart));
     }
 

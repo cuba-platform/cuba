@@ -33,21 +33,23 @@ import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.support.CronSequenceGenerator;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
  * Class that manages {@link ScheduledTask}s in distributed environment.
- *
  */
 @Component(SchedulingAPI.NAME)
 public class Scheduling implements SchedulingAPI {
@@ -81,7 +83,9 @@ public class Scheduling implements SchedulingAPI {
 
     protected ConcurrentMap<ScheduledTask, Long> runningTasks = new ConcurrentHashMap<>();
 
-    protected Map<ScheduledTask, Long> lastStartCache = new HashMap<>();
+    protected Map<ScheduledTask, Long> lastStartCache = new ConcurrentHashMap<>();
+
+    protected Map<ScheduledTask, Long> lastFinishCache = new ConcurrentHashMap<>();
 
     protected volatile long schedulingStartTime;
 
@@ -137,6 +141,11 @@ public class Scheduling implements SchedulingAPI {
     }
 
     @Override
+    public void setFinished(ScheduledTask task) {
+        lastFinishCache.put(task, timeSource.currentTimeMillis());
+    }
+
+    @Override
     public boolean isActive() {
         return configuration.getConfig(ServerConfig.class).getSchedulingActive();
     }
@@ -168,7 +177,7 @@ public class Scheduling implements SchedulingAPI {
 
     protected void processTask(ScheduledTask task) {
         if (isRunning(task)) {
-            log.trace(task + " is running");
+            log.trace("{} is running", task);
             return;
         }
 
@@ -189,12 +198,18 @@ public class Scheduling implements SchedulingAPI {
 
             if (BooleanUtils.isTrue(task.getSingleton())) {
                 if (task.getStartDate() != null || SchedulingType.CRON == task.getSchedulingType()) {
-                    long currentStart = calculateCurrentStart(task, task.getLastStart(), now, period, frame);
-
-                    if (needToStartNow(now, frame, task.getLastStart(), currentStart)) {
+                    long currentStart;
+                    if (SchedulingType.FIXED_DELAY == task.getSchedulingType()) {
+                        currentStart = calculateNextDelayDate(task, task.getLastStart(), coordinator.getLastFinished(task), now, frame, period);
+                    } else if (SchedulingType.CRON == task.getSchedulingType()) {
+                        currentStart = calculateNextCronDate(task, task.getLastStart(), now, frame);
+                    } else {
+                        currentStart = calculateNextPeriodDate(task, task.getLastStart(), now, frame, period);
+                    }
+                    if (needToStartInTimeFrame(now, frame, task.getLastStart(), currentStart)) {
                         runSingletonTask(task, now, me);
                     } else {
-                        log.trace(task + "\n not in time frame to start");
+                        log.trace("{}\n not in time frame to start", task);
                     }
                 } else {
                     Integer lastServerPriority = task.getLastStartServer() == null ?
@@ -208,40 +223,56 @@ public class Scheduling implements SchedulingAPI {
                     boolean giveChanceToPreviousHost = lastServerWasNotMe(task, me)
                             && (lastServerPriority != null && serverPriority.compareTo(lastServerPriority) > 0);
 
-                    if (log.isTraceEnabled())
-                        log.trace(task + "\n now=" + now + " lastStart=" + task.getLastStart()
-                                + " lastServer=" + task.getLastStartServer() + " shouldSwitch=" + shouldSwitch
-                                + " giveChanceToPreviousHost=" + giveChanceToPreviousHost);
+                    log.trace("{}\n now={} lastStart={} lastServer={} shouldSwitch={} giveChanceToPreviousHost={}",
+                            task, now, task.getLastStart(), task.getLastStartServer(), shouldSwitch, giveChanceToPreviousHost);
 
-                    if (task.getLastStart() == 0
-                            || shouldSwitch
-                            || (task.getLastStart() + (giveChanceToPreviousHost ? period + period / 2 : period) <= now)) {
+                    if (task.getLastStart() == 0 || shouldSwitch) {
                         runSingletonTask(task, now, me);
                     } else {
-                        log.trace(task + "\n time has not come and we shouldn't switch");
+                        long delay = giveChanceToPreviousHost ? period + period / 2 : period;
+                        if (SchedulingType.FIXED_DELAY == task.getSchedulingType()) {
+                            long lastFinish = coordinator.getLastFinished(task);
+                            if ((task.getLastStart() < lastFinish || !lastFinishCache.containsKey(task)) && lastFinish + delay < now) {
+                                runSingletonTask(task, now, me);
+                            } else {
+                                log.trace("{}\n time has not come and we shouldn't switch", task);
+                            }
+                        } else if (task.getLastStart() + delay <= now) {
+                            runSingletonTask(task, now, me);
+                        } else {
+                            log.trace("{}\n time has not come and we shouldn't switch", task);
+                        }
                     }
                 }
             } else {
-                Long lastStart = lastStartCache.get(task);
-                if (lastStart == null) {
-                    lastStart = 0L;
-                }
+                Long lastStart = lastStartCache.getOrDefault(task, 0L);
+                Long lastFinish = lastFinishCache.getOrDefault(task, 0L);
                 if (task.getStartDate() != null || SchedulingType.CRON == task.getSchedulingType()) {
-                    long currentStart = calculateCurrentStart(task, lastStart, now, period, frame);
-
-                    if (needToStartNow(now, frame, lastStart, currentStart)) {
+                    long currentStart;
+                    if (SchedulingType.FIXED_DELAY == task.getSchedulingType()) {
+                        currentStart = calculateNextDelayDate(task, lastStart, lastFinish, now, frame, period);
+                    } else if (SchedulingType.CRON == task.getSchedulingType()) {
+                        currentStart = calculateNextCronDate(task, lastStart, now, frame);
+                    } else {
+                        currentStart = calculateNextPeriodDate(task, lastStart, now, frame, period);
+                    }
+                    if (needToStartInTimeFrame(now, frame, lastStart, currentStart)) {
                         runTask(task, now);
                     } else {
-                        log.trace(task + "\n not in time frame to start");
+                        log.trace("{}\n not in time frame to start", task);
                     }
                 } else {
-                    if (log.isTraceEnabled())
-                        log.trace(task + "\n now=" + now + " lastStart= " + lastStart);
-
-                    if (now >= lastStart + period) {
+                    log.trace("{}\n now={} lastStart={} lastFinish={}", task, now, lastStart, lastFinish);
+                    if (SchedulingType.FIXED_DELAY == task.getSchedulingType()) {
+                        if ((lastStart == 0 || lastStart < lastFinish) && now >= lastFinish + period) {
+                            runTask(task, now);
+                        } else {
+                            log.trace("{}\n time has not come", task);
+                        }
+                    } else if (now >= lastStart + period) {
                         runTask(task, now);
                     } else {
-                        log.trace(task + "\n time has not come");
+                        log.trace("{}\n time has not come", task);
                     }
                 }
             }
@@ -250,42 +281,48 @@ public class Scheduling implements SchedulingAPI {
         }
     }
 
-    private boolean needToStartNow(long now, long frame, long lastStart, long currentStart) {
+    protected boolean needToStartInTimeFrame(long now, long frame, long lastStart, long currentStart) {
         return currentStart <= now && now < currentStart + frame && lastStart < currentStart;
     }
 
-    protected long calculateCurrentStart(ScheduledTask task, long lastStart, long now, long period, long frame) {
-        String cron = task.getCron();
-        if (SchedulingType.CRON == task.getSchedulingType()) {
-            StopWatch sw = new Log4JStopWatch("Cron next date calculations");
-            CronSequenceGenerator cronSequenceGenerator = new CronSequenceGenerator(cron, getCurrentTimeZone());
-            //if last start = 0 (task never has run) or to far in the past, we use (NOW - FRAME) timestamp for pivot time
-            //this approach should work fine cause cron works with absolute time
-            long pivotPreviousTime = Math.max(lastStart, now - frame);
+    protected long calculateNextCronDate(ScheduledTask task, long date, long currentDate, long frame) {
+        StopWatch sw = new Log4JStopWatch("Cron next date calculations");
+        CronSequenceGenerator cronSequenceGenerator = new CronSequenceGenerator(task.getCron(), getCurrentTimeZone());
+        //if last start = 0 (task never has run) or to far in the past, we use (NOW - FRAME) timestamp for pivot time
+        //this approach should work fine cause cron works with absolute time
+        long pivotPreviousTime = Math.max(date, currentDate - frame);
 
-            Date currentStart = null;
-            Date nextDate = cronSequenceGenerator.next(new Date(pivotPreviousTime));
-            while (nextDate.getTime() < now) {//if next date is in past try to find next date nearest to now
-                currentStart = nextDate;
-                nextDate = cronSequenceGenerator.next(nextDate);
-            }
-
-            if (currentStart == null) {
-                currentStart = nextDate;
-            }
-
-            log.trace(task + "\n now=" + now + " frame=" + frame
-                    + " currentStart=" + currentStart + " lastStart=" + lastStart + " cron=" + cron);
-            sw.stop();
-            return currentStart.getTime();
-        } else {
-            long repetitions = (now - task.getStartDate().getTime()) / period;
-            long currentStart = task.getStartDate().getTime() + repetitions * period;
-
-            log.trace(task + "\n now=" + now + " frame=" + frame + " repetitions=" + repetitions +
-                    " currentStart=" + currentStart + " lastStart=" + lastStart);
-            return currentStart;
+        Date currentStart = null;
+        Date nextDate = cronSequenceGenerator.next(new Date(pivotPreviousTime));
+        while (nextDate.getTime() < currentDate) {//if next date is in past try to find next date nearest to now
+            currentStart = nextDate;
+            nextDate = cronSequenceGenerator.next(nextDate);
         }
+
+        if (currentStart == null) {
+            currentStart = nextDate;
+        }
+        log.trace("{}\n now={} frame={} currentStart={} lastStart={} cron={}",
+                task, currentDate, frame, currentStart, task.getCron());
+        sw.stop();
+        return currentStart.getTime();
+    }
+
+    protected long calculateNextPeriodDate(ScheduledTask task, long date, long currentDate, long frame, long period) {
+        long repetitions = (currentDate - task.getStartDate().getTime()) / period;
+        long currentStart = task.getStartDate().getTime() + repetitions * period;
+        log.trace("{}\n now={} frame={} repetitions={} currentStart={} lastStart={}",
+                task, currentDate, frame, repetitions, currentStart, date);
+        return currentStart;
+    }
+
+    protected long calculateNextDelayDate(ScheduledTask task, long lastStart, long lastFinish, long currentDate, long frame, long period) {
+        long fromDate = lastFinish != 0 ? lastFinish : task.getStartDate().getTime();
+        long repetitions = (currentDate - fromDate) / period;
+        long currentStart = fromDate + repetitions * period;
+        log.trace("{}\n now={} frame={} repetitions={} currentStart={} lastStart={} lastFinish={}",
+                task, currentDate, frame, repetitions, currentStart, lastStart, lastFinish);
+        return currentStart;
     }
 
     protected TimeZone getCurrentTimeZone() {

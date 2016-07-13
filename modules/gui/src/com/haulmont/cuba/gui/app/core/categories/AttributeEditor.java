@@ -52,16 +52,23 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     static {
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.BOOLEAN, "defaultBoolean");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.STRING, "defaultString");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.STRING, "width");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.STRING, "rowsCount");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DOUBLE, "defaultDouble");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DOUBLE, "width");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.INTEGER, "defaultInt");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.INTEGER, "width");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DATE, "defaultDate");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DATE, "defaultDateIsCurrent");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DATE, "width");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENUMERATION, "enumeration");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENUMERATION, "defaultString");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENUMERATION, "width");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "entityClass");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "screen");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "lookup");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "defaultEntityId");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "width");
     }
 
     protected CategoryAttribute attribute;

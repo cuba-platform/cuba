@@ -44,6 +44,9 @@ public interface ComponentLoader<T extends Component> {
         void addInjectTask(InjectTask task);
         void executeInjectTasks();
 
+        void addInitTask(InitTask task);
+        void executeInitTasks();
+
         Frame getFrame();
         void setFrame(Frame frame);
 
@@ -76,6 +79,19 @@ public interface ComponentLoader<T extends Component> {
      * For internal use only.
      */
     interface InjectTask {
+        /**
+         * This method will be invoked after window components loading before window initialization.
+         *
+         * @param context loader context
+         * @param window top-most window
+         */
+        void execute(Context context, Frame window);
+    }
+
+    /**
+     * For internal use only.
+     */
+    interface InitTask {
         /**
          * This method will be invoked after window components loading before window initialization.
          *

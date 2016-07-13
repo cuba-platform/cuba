@@ -971,6 +971,7 @@
         <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEnableProp"/>
+        <xs:attributeGroup ref="hasStyle"/>
 
         <xs:attributeGroup ref="isUploadComponent"/>
     </xs:complexType>
@@ -984,6 +985,7 @@
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasIcon"/>
+        <xs:attributeGroup ref="hasStyle"/>
 
         <xs:attributeGroup ref="isUploadComponent"/>
     </xs:complexType>

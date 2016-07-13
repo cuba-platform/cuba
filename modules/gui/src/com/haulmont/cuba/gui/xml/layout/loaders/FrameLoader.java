@@ -62,6 +62,7 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
         parentContext.addInjectTask(new FrameInjectPostInitTask(wrappingFrame, params));
 
         boolean wrapped = StringUtils.isNotBlank(rootFrameElement.attributeValue("class"));
+        parentContext.addInitTask(new FrameLoaderInitTask(wrappingFrame, params, wrapped));
         parentContext.addPostInitTask(new FrameLoaderPostInitTask(wrappingFrame, params, wrapped));
     }
 
@@ -176,6 +177,7 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
         initWrapperFrame(resultComponent, element, parentContext.getParams(), parentContext);
 
         parentContext.getInjectTasks().addAll(innerContext.getInjectTasks());
+        parentContext.getInitTasks().addAll(innerContext.getInitTasks());
         parentContext.getPostInitTasks().addAll(innerContext.getPostInitTasks());
 
         setContext(parentContext);
@@ -229,13 +231,12 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
         }
     }
 
-    protected class FrameLoaderPostInitTask implements PostInitTask {
-
+    protected class FrameLoaderInitTask implements InitTask {
         protected final Frame frame;
         protected final Map<String, Object> params;
         protected final boolean wrapped;
 
-        public FrameLoaderPostInitTask(Frame frame, Map<String, Object> params, boolean wrapped) {
+        public FrameLoaderInitTask(Frame frame, Map<String, Object> params, boolean wrapped) {
             this.frame = frame;
             this.params = params;
             this.wrapped = wrapped;
@@ -255,6 +256,25 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
 
                     initStopWatch.stop();
                 }
+            }
+        }
+    }
+
+    protected class FrameLoaderPostInitTask implements PostInitTask {
+        protected final Frame frame;
+        protected final Map<String, Object> params;
+        protected final boolean wrapped;
+
+        public FrameLoaderPostInitTask(Frame frame, Map<String, Object> params, boolean wrapped) {
+            this.frame = frame;
+            this.params = params;
+            this.wrapped = wrapped;
+        }
+
+        @Override
+        public void execute(Context context, Frame window) {
+            if (wrapped) {
+                String loggingId = ComponentsHelper.getFullFrameId(this.frame);
 
                 StopWatch uiPermissionsWatch = new Log4JStopWatch(loggingId + "#" +
                         UIPerformanceLogger.LifeCycle.UI_PERMISSIONS,

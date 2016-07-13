@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -131,16 +130,23 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
     }
 
     @Override
-    public void applyConstraints(Collection<Entity> entities) {
-        List<Entity> supportedEntities = entities.stream().filter(e -> e instanceof HasUuid).collect(Collectors.toList());
-        internalApplyConstraints(supportedEntities, new HashSet<>());
+    public boolean filterByConstraints(Entity entity) {
+        return entity instanceof HasUuid && !isPermittedInMemory(entity);
     }
 
     @Override
-    public boolean applyConstraints(Entity entity) {
-        if (!(entity instanceof HasUuid))
-            return false;
-        return internalApplyConstraints(entity, new HashSet<>());
+    public void applyConstraints(Collection<Entity> entities) {
+        Set<UUID> handled = new LinkedHashSet<>();
+        entities.stream().filter(entity -> entity instanceof HasUuid).forEach(entity -> {
+            internalApplyConstraints(entity, handled, false);
+        });
+    }
+
+    @Override
+    public void applyConstraints(Entity entity) {
+        if (entity instanceof HasUuid) {
+            internalApplyConstraints(entity, new HashSet<>(), false);
+        }
     }
 
     @Override
@@ -209,13 +215,13 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
             }
         } catch (JpqlSyntaxException e) {
             log.error("Syntax errors found in constraint's JPQL expressions. Entity [{}]. Constraint ID [{}].",
-                      entityName, constraint.getId(), e);
+                    entityName, constraint.getId(), e);
 
             throw new RowLevelSecurityException(
                     "Syntax errors found in constraint's JPQL expressions. Please see the logs.", entityName);
         } catch (Exception e) {
             log.error("An error occurred when applying security constraint. Entity [{}]. Constraint ID [{}].",
-                      entityName, constraint.getId(), e);
+                    entityName, constraint.getId(), e);
 
             throw new RowLevelSecurityException(
                     "An error occurred when applying security constraint. Please see the logs.", entityName);
@@ -226,7 +232,7 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
         Set<UUID> filtered = new LinkedHashSet<>();
         for (Iterator<Entity> iterator = entities.iterator(); iterator.hasNext(); ) {
             Entity next = iterator.next();
-            if (internalApplyConstraints(next, handled)) {
+            if (internalApplyConstraints(next, handled, true)) {
                 filtered.add(((HasUuid) next).getUuid());
                 //we ignore situations when the collection is immutable
                 iterator.remove();
@@ -237,10 +243,10 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
     }
 
     @SuppressWarnings("unchecked")
-    protected boolean internalApplyConstraints(Entity entity, Set<UUID> handled) {
+    protected boolean internalApplyConstraints(Entity entity, Set<UUID> handled, boolean checkPermitted) {
         MetaClass metaClass = entity.getMetaClass();
 
-        if (!isPermittedInMemory(entity)) {
+        if (!isPermittedInMemory(entity) && checkPermitted) {
             return true;
         }
 
@@ -260,7 +266,7 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
                     }
                 } else if (value instanceof Entity && value instanceof HasUuid) {
                     Entity valueEntity = (Entity) value;
-                    if (internalApplyConstraints(valueEntity, handled)) {
+                    if (internalApplyConstraints(valueEntity, handled, true)) {
                         //we ignore the situation when the field is read-only
                         entity.setValue(property.getName(), null);
                         if (entity instanceof BaseGenericIdEntity) {

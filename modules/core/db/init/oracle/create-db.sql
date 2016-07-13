@@ -77,6 +77,8 @@ create table SYS_CATEGORY_ATTR (
     REQUIRED char(1),
     LOOKUP char(1),
     TARGET_SCREENS varchar2(4000),
+    WIDTH varchar2(20),
+    ROWS_COUNT integer,
     primary key(ID)
 )^
 create index IDX_SYS_CATEGORY_ATTR_CATEGORY on SYS_CATEGORY_ATTR(CATEGORY_ID)^
@@ -233,6 +235,7 @@ create table SYS_SCHEDULED_EXECUTION (
     primary key(ID)
 )^
 create index IDX_SYS_SCH_EXE_TAS_STA_TIM on SYS_SCHEDULED_EXECUTION(TASK_ID, START_TIME)^
+create index IDX_SYS_SCH_EXE_TAS_FI_TIM on SYS_SCHEDULED_EXECUTION(TASK_ID, FINISH_TIME)^
 
 create table SYS_SCHEDULED_TASK (
     ID varchar2(32) not null,

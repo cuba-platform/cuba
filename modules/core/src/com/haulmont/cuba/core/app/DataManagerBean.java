@@ -98,6 +98,7 @@ public class DataManagerBean implements DataManager {
         }
 
         E result = null;
+        boolean needToApplyInMemoryConstraints = needToApplyInMemoryConstraints(context);
         try (Transaction tx = persistence.createTransaction()) {
             final EntityManager em = persistence.getEntityManager();
 
@@ -115,8 +116,13 @@ public class DataManagerBean implements DataManager {
 
             //noinspection unchecked
             List<E> resultList = executeQuery(query, singleResult);
-            if (!resultList.isEmpty())
+            if (!resultList.isEmpty()) {
                 result = resultList.get(0);
+            }
+
+            if (result != null && needToApplyInMemoryConstraints && security.filterByConstraints(result)) {
+                result = null;
+            }
 
             if (result instanceof BaseGenericIdEntity && context.isLoadDynamicAttributes()) {
                 dynamicAttributesManagerAPI.fetchDynamicAttributes(Collections.singletonList((BaseGenericIdEntity) result));
@@ -125,11 +131,12 @@ public class DataManagerBean implements DataManager {
             tx.commit();
         }
 
-        if (result != null && needToApplyConstraints(context) && security.applyConstraints(result)) {
-            return null;
+        if (result != null) {
+            if (needToApplyInMemoryConstraints) {
+                security.applyConstraints(result);
+            }
+            attributeSecurity.afterLoad(result);
         }
-
-        attributeSecurity.afterLoad(result);
 
         return result;
     }
@@ -183,7 +190,7 @@ public class DataManagerBean implements DataManager {
             tx.commit();
         }
 
-        if (needToApplyConstraints(context)) {
+        if (needToApplyInMemoryConstraints(context)) {
             security.applyConstraints((Collection<Entity>) resultList);
         }
 
@@ -208,7 +215,7 @@ public class DataManagerBean implements DataManager {
 
         queryResultsManager.savePreviousQueryResults(context);
 
-        if (security.hasMemoryConstraints(metaClass, ConstraintOperationType.READ, ConstraintOperationType.ALL) ) {
+        if (security.hasMemoryConstraints(metaClass, ConstraintOperationType.READ, ConstraintOperationType.ALL)) {
             context = context.copy();
             List resultList;
             try (Transaction tx = persistence.createTransaction()) {
@@ -380,6 +387,10 @@ public class DataManagerBean implements DataManager {
                             res.add(categoryAttributeValue);
                         }
                     }
+                }
+
+                if (isAuthorizationRequired() && userSessionSource.getUserSession().hasConstraints()) {
+                    security.filterByConstraints(res);
                 }
             }
 
@@ -561,7 +572,7 @@ public class DataManagerBean implements DataManager {
         View view = context.getView() != null ? context.getView() :
                 viewRepository.getView(metadata.getClassNN(context.getMetaClass()), View.LOCAL);
         View copy = View.copy(attributeSecurity.createRestrictedView(view));
-        if (context.isLoadPartialEntities()) {
+        if (context.isLoadPartialEntities() && !needToApplyInMemoryConstraints(context)) {
             copy.setLoadPartialEntities(true);
         }
         return copy;
@@ -570,16 +581,17 @@ public class DataManagerBean implements DataManager {
     @SuppressWarnings("unchecked")
     protected <E extends Entity> List<E> getResultList(LoadContext<E> context, Query query, boolean ensureDistinct) {
         List<E> list = executeQuery(query, false);
-        boolean filteredByConstraints = false;
         int initialSize = list.size();
         if (initialSize == 0) {
             return list;
         }
-        if (needFilterByConstraints(context)) {
+        boolean needApplyConstraints = needToApplyInMemoryConstraints(context);
+        boolean filteredByConstraints = false;
+        if (needApplyConstraints) {
             filteredByConstraints = security.filterByConstraints((Collection<Entity>) list);
         }
         if (!ensureDistinct) {
-            return filteredByConstraints ? getResultListIteratively(context, query, list, initialSize) : list;
+            return filteredByConstraints ? getResultListIteratively(context, query, list, initialSize, true) : list;
         }
 
         int requestedFirst = context.getQuery().getFirstResult();
@@ -590,13 +602,13 @@ public class DataManagerBean implements DataManager {
         }
         // In case of not first chunk, even if there where no duplicates, start filling the set from zero
         // to ensure correct paging
-        return getResultListIteratively(context, query, set, initialSize);
+        return getResultListIteratively(context, query, set, initialSize, needApplyConstraints);
     }
 
     @SuppressWarnings("unchecked")
     protected <E extends Entity> List<E> getResultListIteratively(LoadContext<E> context, Query query,
                                                                   Collection<E> filteredCollection,
-                                                                  int initialSize) {
+                                                                  int initialSize, boolean needApplyConstraints) {
         int requestedFirst = context.getQuery().getFirstResult();
         int requestedMax = context.getQuery().getMaxResults();
 
@@ -614,7 +626,7 @@ public class DataManagerBean implements DataManager {
         int maxResults = (requestedFirst + requestedMax) * factor;
         int i = 0;
         while (filteredCollection.size() < setSize) {
-            if (i++ > 1000) {
+            if (i++ > 10000) {
                 log.warn("In-memory distinct: endless loop detected for " + context);
                 break;
             }
@@ -625,7 +637,7 @@ public class DataManagerBean implements DataManager {
             if (list.size() == 0) {
                 break;
             }
-            if (needFilterByConstraints(context)) {
+            if (needApplyConstraints) {
                 security.filterByConstraints((Collection<Entity>) list);
             }
             filteredCollection.addAll(list);
@@ -796,32 +808,24 @@ public class DataManagerBean implements DataManager {
         return null;
     }
 
-    protected boolean needToApplyConstraints(LoadContext context) {
+    protected boolean needToApplyInMemoryConstraints(LoadContext context) {
         if (!isAuthorizationRequired() || !userSessionSource.getUserSession().hasConstraints()) {
             return false;
         }
 
         if (context.getView() == null) {
-            return false;
+            MetaClass metaClass = metadata.getSession().getClassNN(context.getMetaClass());
+            return security.hasMemoryConstraints(metaClass, ConstraintOperationType.READ, ConstraintOperationType.ALL);
         }
 
         Session session = metadata.getSession();
         for (Class aClass : collectEntityClasses(context.getView(), new HashSet<>())) {
-            if (security.hasConstraints(session.getClassNN(aClass))) {
+            if (security.hasMemoryConstraints(session.getClassNN(aClass), ConstraintOperationType.READ, ConstraintOperationType.ALL)) {
                 return true;
             }
         }
         return false;
     }
-
-    protected boolean needFilterByConstraints(LoadContext context) {
-        if (!isAuthorizationRequired() || !userSessionSource.getUserSession().hasConstraints()) {
-            return false;
-        }
-        MetaClass metaClass = metadata.getSession().getClassNN(context.getMetaClass());
-        return security.hasConstraints(metaClass);
-    }
-
 
     protected Set<Class> collectEntityClasses(View view, Set<View> visited) {
         if (visited.contains(view)) {
