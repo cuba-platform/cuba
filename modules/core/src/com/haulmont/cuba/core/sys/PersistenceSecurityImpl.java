@@ -132,8 +132,10 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
 
     @Override
     public void applyConstraints(Collection<Entity> entities) {
-        List<Entity> supportedEntities = entities.stream().filter(e -> e instanceof HasUuid).collect(Collectors.toList());
-        internalApplyConstraints(supportedEntities, new HashSet<>());
+        Set<UUID> handled = new LinkedHashSet<>();
+        entities.stream().filter(entity -> entity instanceof HasUuid).forEach(entity -> {
+            internalApplyConstraints(entity, handled);
+        });
     }
 
     @Override

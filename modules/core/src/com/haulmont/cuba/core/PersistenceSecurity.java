@@ -60,8 +60,8 @@ public interface PersistenceSecurity extends Security {
     boolean applyConstraints(Entity entity);
 
     /**
-     * Applies in-memory constraints to the collection of entities and filter the collection
-     * @param entities -
+     * Applies in-memory constraints to the entity fields
+     * @param entities - collection of entities
      */
     void applyConstraints(Collection<Entity> entities);
 
