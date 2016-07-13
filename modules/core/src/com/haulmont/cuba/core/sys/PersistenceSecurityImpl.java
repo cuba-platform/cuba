@@ -45,7 +45,7 @@ import static java.lang.String.format;
 
 @PerformanceLog
 public class PersistenceSecurityImpl extends SecurityImpl implements PersistenceSecurity {
-    protected final Logger log = LoggerFactory.getLogger(PersistenceSecurityImpl.class);
+    private final Logger log = LoggerFactory.getLogger(PersistenceSecurityImpl.class);
 
     @Inject
     protected SecurityTokenManager securityTokenManager;
@@ -129,16 +129,21 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
     }
 
     @Override
+    public boolean filterByConstraints(Entity entity) {
+        return !isPermittedInMemory(entity);
+    }
+
+    @Override
     public void applyConstraints(Collection<Entity> entities) {
         Set<UUID> handled = new LinkedHashSet<>();
         entities.stream().forEach(entity -> {
-            internalApplyConstraints(entity, handled);
+            internalApplyConstraints(entity, handled, false);
         });
     }
 
     @Override
-    public boolean applyConstraints(Entity entity) {
-        return internalApplyConstraints(entity, new HashSet<>());
+    public void applyConstraints(Entity entity) {
+        internalApplyConstraints(entity, new HashSet<>(), false);
     }
 
     @Override
@@ -224,7 +229,7 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
         Set<UUID> filtered = new LinkedHashSet<>();
         for (Iterator<Entity> iterator = entities.iterator(); iterator.hasNext(); ) {
             Entity next = iterator.next();
-            if (internalApplyConstraints(next, handled)) {
+            if (internalApplyConstraints(next, handled, true)) {
                 filtered.add(next.getUuid());
                 //we ignore situations when the collection is immutable
                 iterator.remove();
@@ -235,10 +240,10 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
     }
 
     @SuppressWarnings("unchecked")
-    protected boolean internalApplyConstraints(Entity entity, Set<UUID> handled) {
+    protected boolean internalApplyConstraints(Entity entity, Set<UUID> handled, boolean checkPermitted) {
         MetaClass metaClass = entity.getMetaClass();
 
-        if (!isPermittedInMemory(entity)) {
+        if (!isPermittedInMemory(entity) && checkPermitted) {
             return true;
         }
 
@@ -258,7 +263,7 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
                     }
                 } else if (value instanceof Entity) {
                     Entity valueEntity = (Entity) value;
-                    if (internalApplyConstraints(valueEntity, handled)) {
+                    if (internalApplyConstraints(valueEntity, handled, true)) {
                         //we ignore the situation when the field is read-only
                         entity.setValue(property.getName(), null);
                         if (entity instanceof BaseGenericIdEntity) {

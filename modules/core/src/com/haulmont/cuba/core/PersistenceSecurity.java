@@ -55,9 +55,8 @@ public interface PersistenceSecurity extends Security {
     /**
      * Applies in-memory constraints to the entity
      * @param entity -
-     * @return true, if entity should be filtered from client output
      */
-    boolean applyConstraints(Entity entity);
+    void applyConstraints(Entity entity);
 
     /**
      * Applies in-memory constraints to the entity fields
@@ -70,6 +69,13 @@ public interface PersistenceSecurity extends Security {
      * @param entities - collection of entities that will be filtered
      */
     boolean filterByConstraints(Collection<Entity> entities);
+
+    /**
+     * Filter entities in collection by in-memory constraints
+     * @param entity - collection of entities that will be filtered
+     * @return true, if entity should be filtered from client output
+     */
+    boolean filterByConstraints(Entity entity);
 
     /**
      * Reads security token and restores filtered data
