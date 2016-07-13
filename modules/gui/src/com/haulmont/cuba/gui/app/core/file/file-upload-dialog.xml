@@ -20,10 +20,13 @@
         messagesPack="com.haulmont.cuba.gui.app.core.file"
         caption="msg://fileUploadDialog.caption"
         focusComponent="fileUpload">
-
+    <dialogMode width="400px"/>
     <layout>
-        <hbox>
-            <upload id="fileUpload"/>
-        </hbox>
+        <vbox spacing="true">
+            <hbox id="dropZone" width="100%" height="100px" stylename="cuba-static-drop-zone">
+                <label stylename="cuba-upload-dropzone-description" value="msg://uploadDescription" align="MIDDLE_CENTER"/>
+            </hbox>
+            <upload id="fileUpload" dropZone="dropZone" align="MIDDLE_CENTER"/>
+        </vbox>
     </layout>
 </window>
