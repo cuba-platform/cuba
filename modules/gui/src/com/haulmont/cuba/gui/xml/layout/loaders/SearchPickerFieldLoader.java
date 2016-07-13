@@ -55,11 +55,6 @@ public class SearchPickerFieldLoader extends SearchFieldLoader {
         if (StringUtils.isNotEmpty(minSearchStringLength)) {
             searchPickerField.setMinSearchStringLength(Integer.parseInt(minSearchStringLength));
         }
-
-        if (StringUtils.isEmpty(searchPickerField.getInputPrompt())) {
-            Messages messages = AppBeans.get(Messages.class);
-            searchPickerField.setInputPrompt(messages.getMainMessage("searchPickerField.inputPrompt"));
-        }
     }
 
     @Override

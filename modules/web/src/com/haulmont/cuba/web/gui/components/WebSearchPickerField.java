@@ -18,6 +18,8 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SearchPickerField;
@@ -27,6 +29,7 @@ import com.vaadin.data.Property;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -47,6 +50,9 @@ public class WebSearchPickerField extends WebSearchField implements SearchPicker
             }
         };
         pickerField = new WebPickerField(picker);
+
+        Messages messages = AppBeans.get(Messages.class);
+        setInputPrompt(messages.getMainMessage("searchPickerField.inputPrompt"));
 
         // Required for custom components in fieldgroup
         initValueSync(selectComponent, picker);
